@@ -36,7 +36,7 @@ namespace OrchardCore.Deployment.Controllers
         [DeleteFileResultFilter]
         public async Task<IActionResult> Execute(long id)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Export))
             {
                 return Forbid();
             }

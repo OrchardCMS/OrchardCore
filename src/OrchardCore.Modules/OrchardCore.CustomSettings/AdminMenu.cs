@@ -8,11 +8,13 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.CustomSettings
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
-        private readonly CustomSettingsService _customSettingsService;
-        protected readonly IStringLocalizer S;
         private static readonly ConcurrentDictionary<string, RouteValueDictionary> _routeValues = [];
+
+        private readonly CustomSettingsService _customSettingsService;
+
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(
             IStringLocalizer<AdminMenu> localizer,

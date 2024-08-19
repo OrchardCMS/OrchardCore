@@ -66,7 +66,7 @@ namespace OrchardCore.Media
         public PathString AssetsRequestPath { get; set; }
 
         /// <summary>
-        /// The path used to store media assets. The path can be relative to the tenant's App_Data folder, or absolute.
+        /// The name of the folder used to store media assets inside the App_Data folder.
         /// </summary>
         public string AssetsPath { get; set; }
 

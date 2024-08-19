@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.ViewModels;
@@ -13,16 +13,16 @@ using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Html.Settings
 {
-    public class HtmlBodyPartMonacoEditorSettingsDriver : ContentTypePartDefinitionDisplayDriver<HtmlBodyPart>
+    public sealed class HtmlBodyPartMonacoEditorSettingsDriver : ContentTypePartDefinitionDisplayDriver<HtmlBodyPart>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public HtmlBodyPartMonacoEditorSettingsDriver(IStringLocalizer<HtmlBodyPartMonacoEditorSettingsDriver> stringLocalizer)
         {
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<MonacoSettingsViewModel>("HtmlBodyPartMonacoSettings_Edit", model =>
             {
@@ -32,8 +32,7 @@ namespace OrchardCore.Html.Settings
                     settings.Options = JConvert.SerializeObject(new { automaticLayout = true, language = "html" }, JOptions.Indented);
                 }
                 model.Options = settings.Options;
-            })
-            .Location("Editor");
+            }).Location("Editor");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -60,7 +59,7 @@ namespace OrchardCore.Html.Settings
                 }
             }
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

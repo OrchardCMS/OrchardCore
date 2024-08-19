@@ -4,7 +4,7 @@ using OrchardCore.Workflows.Display;
 
 namespace OrchardCore.Forms.Workflows.Drivers
 {
-    public class AddModelValidationErrorTaskDisplayDriver : ActivityDisplayDriver<AddModelValidationErrorTask, AddModelValidationErrorTaskViewModel>
+    public sealed class AddModelValidationErrorTaskDisplayDriver : ActivityDisplayDriver<AddModelValidationErrorTask, AddModelValidationErrorTaskViewModel>
     {
         protected override void EditActivity(AddModelValidationErrorTask activity, AddModelValidationErrorTaskViewModel model)
         {

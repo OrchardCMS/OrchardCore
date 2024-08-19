@@ -19,12 +19,12 @@ namespace OrchardCore.Workflows.Helpers
         {
             var value = dictionary.GetValue(key);
 
-            if (value != null)
+            if (value == null)
             {
-                return (TValue)value;
+                return default;
             }
 
-            return default;
+            return (TValue)value;
         }
 
         /// <summary>

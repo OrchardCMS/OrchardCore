@@ -6,15 +6,14 @@ using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Drivers
 {
-    public class TimeFieldDisplayDriver : ContentFieldDisplayDriver<TimeField>
+    public sealed class TimeFieldDisplayDriver : ContentFieldDisplayDriver<TimeField>
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public TimeFieldDisplayDriver(IStringLocalizer<TimeFieldDisplayDriver> localizer)
         {
@@ -44,14 +43,14 @@ namespace OrchardCore.ContentFields.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TimeField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(TimeField field, UpdateFieldEditorContext context)
         {
-            await updater.TryUpdateModelAsync(field, Prefix, f => f.Value);
+            await context.Updater.TryUpdateModelAsync(field, Prefix, f => f.Value);
             var settings = context.PartFieldDefinition.GetSettings<TimeFieldSettings>();
 
             if (settings.Required && field.Value == null)
             {
-                updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(field.Value), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);

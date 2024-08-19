@@ -4,7 +4,7 @@ using OrchardCore.Environment.Shell.Configuration;
 
 namespace OrchardCore.Environment.Shell.Builders
 {
-    public class ShellContextOptionsSetup : IConfigureOptions<ShellContextOptions>
+    public sealed class ShellContextOptionsSetup : IConfigureOptions<ShellContextOptions>
     {
         private readonly IShellConfiguration _shellConfiguration;
 

@@ -34,7 +34,7 @@ namespace OrchardCore.Media.Processing
                 return;
             }
 
-            var mediaTokenSettings = (await _siteService.GetSiteSettingsAsync()).As<MediaTokenSettings>();
+            var mediaTokenSettings = await _siteService.GetSettingsAsync<MediaTokenSettings>();
 
             if (mediaTokenSettings.HashKey == null)
             {

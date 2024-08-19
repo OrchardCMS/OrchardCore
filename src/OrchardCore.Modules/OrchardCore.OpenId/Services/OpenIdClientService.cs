@@ -24,11 +24,8 @@ namespace OrchardCore.OpenId.Services
             S = stringLocalizer;
         }
 
-        public async Task<OpenIdClientSettings> GetSettingsAsync()
-        {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<OpenIdClientSettings>();
-        }
+        public Task<OpenIdClientSettings> GetSettingsAsync()
+            => _siteService.GetSettingsAsync<OpenIdClientSettings>();
 
         public async Task<OpenIdClientSettings> LoadSettingsAsync()
         {

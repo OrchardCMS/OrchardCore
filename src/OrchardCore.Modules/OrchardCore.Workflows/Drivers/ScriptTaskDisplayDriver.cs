@@ -7,7 +7,7 @@ using OrchardCore.Workflows.ViewModels;
 
 namespace OrchardCore.Workflows.Drivers
 {
-    public class ScriptTaskDisplayDriver : ActivityDisplayDriver<ScriptTask, ScriptTaskViewModel>
+    public sealed class ScriptTaskDisplayDriver : ActivityDisplayDriver<ScriptTask, ScriptTaskViewModel>
     {
         protected override void EditActivity(ScriptTask source, ScriptTaskViewModel model)
         {

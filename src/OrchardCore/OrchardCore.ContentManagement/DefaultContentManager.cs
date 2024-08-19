@@ -201,7 +201,7 @@ namespace OrchardCore.ContentManagement
                 .Distinct()
                 .ToArray();
 
-            if (ids?.Length == 0)
+            if (ids == null || ids.Length == 0)
             {
                 return [];
             }

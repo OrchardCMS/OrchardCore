@@ -65,7 +65,7 @@ namespace OrchardCore.Users.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword()
         {
-            if (!(await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword)
+            if (!(await _siteService.GetSettingsAsync<ResetPasswordSettings>()).AllowResetPassword)
             {
                 return NotFound();
             }
@@ -80,7 +80,7 @@ namespace OrchardCore.Users.Controllers
         [ActionName(nameof(ForgotPassword))]
         public async Task<IActionResult> ForgotPasswordPOST()
         {
-            if (!(await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword)
+            if (!(await _siteService.GetSettingsAsync<ResetPasswordSettings>()).AllowResetPassword)
             {
                 return NotFound();
             }
@@ -130,7 +130,7 @@ namespace OrchardCore.Users.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(string code = null)
         {
-            if (!(await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword)
+            if (!(await _siteService.GetSettingsAsync<ResetPasswordSettings>()).AllowResetPassword)
             {
                 return NotFound();
             }
@@ -152,7 +152,7 @@ namespace OrchardCore.Users.Controllers
         [ActionName(nameof(ResetPassword))]
         public async Task<IActionResult> ResetPasswordPOST()
         {
-            if (!(await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>().AllowResetPassword)
+            if (!(await _siteService.GetSettingsAsync<ResetPasswordSettings>()).AllowResetPassword)
             {
                 return NotFound();
             }
@@ -191,7 +191,7 @@ namespace OrchardCore.Users.Controllers
                 return false;
             }
 
-            return (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail
+            return (await _siteService.GetSettingsAsync<RegistrationSettings>()).UsersMustValidateEmail
                 && !await _userManager.IsEmailConfirmedAsync(user);
         }
     }

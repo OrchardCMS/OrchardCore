@@ -13,72 +13,34 @@ namespace OrchardCore.Resources.Liquid
 {
     public class ResourcesTag
     {
-        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder _, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, TextWriter writer, TextEncoder _, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
-            var resourceManager = services.GetRequiredService<IResourceManager>();
+            var processors = services.GetRequiredService<IEnumerable<IResourcesTagHelperProcessor>>();
 
-            var type = ResourceType.Footer;
+            var processorContext = new ResourcesTagHelperProcessorContext(ResourceTagType.Footer, writer);
 
             foreach (var argument in argumentsList)
             {
                 switch (argument.Name)
                 {
-#pragma warning disable CA1806 // Do not ignore method results
-                    case "type": Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), out type); break;
-#pragma warning restore CA1806 // Do not ignore method results
+                    case "type":
+                        var typeString = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                        if (Enum.TryParse<ResourceTagType>(typeString, out var type))
+                        {
+                            processorContext = processorContext with { Type = type };
+                        }
+
+                        break;
                 }
             }
 
-            switch (type)
+            foreach (var processor in processors)
             {
-                case ResourceType.Meta:
-                    resourceManager.RenderMeta(writer);
-                    break;
-
-                case ResourceType.HeadLink:
-                    resourceManager.RenderHeadLink(writer);
-                    break;
-
-                case ResourceType.Stylesheet:
-                    resourceManager.RenderStylesheet(writer);
-                    break;
-
-                case ResourceType.HeadScript:
-                    resourceManager.RenderHeadScript(writer);
-                    break;
-
-                case ResourceType.FootScript:
-                    resourceManager.RenderFootScript(writer);
-                    break;
-
-                case ResourceType.Header:
-                    resourceManager.RenderMeta(writer);
-                    resourceManager.RenderHeadLink(writer);
-                    resourceManager.RenderStylesheet(writer);
-                    resourceManager.RenderHeadScript(writer);
-                    break;
-
-                case ResourceType.Footer:
-                    resourceManager.RenderFootScript(writer);
-                    break;
-
-                default:
-                    break;
+                await processor.ProcessAsync(processorContext);
             }
 
             return Completion.Normal;
-        }
-
-        public enum ResourceType
-        {
-            Meta,
-            HeadLink,
-            Stylesheet,
-            HeadScript,
-            FootScript,
-            Header,
-            Footer
         }
     }
 }

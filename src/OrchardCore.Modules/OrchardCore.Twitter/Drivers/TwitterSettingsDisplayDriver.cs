@@ -14,7 +14,7 @@ using OrchardCore.Twitter.ViewModels;
 
 namespace OrchardCore.Twitter.Drivers
 {
-    public class TwitterSettingsDisplayDriver : SectionDisplayDriver<ISite, TwitterSettings>
+    public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSettings>
     {
         private readonly IShellReleaseManager _shellReleaseManager;
         private readonly IAuthorizationService _authorizationService;
@@ -36,7 +36,10 @@ namespace OrchardCore.Twitter.Drivers
             _logger = logger;
         }
 
-        public override async Task<IDisplayResult> EditAsync(TwitterSettings settings, BuildEditorContext context)
+        protected override string SettingsGroupId
+            => TwitterConstants.Features.Twitter;
+
+        public override async Task<IDisplayResult> EditAsync(ISite site, TwitterSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -45,7 +48,7 @@ namespace OrchardCore.Twitter.Drivers
                 return null;
             }
 
-            return Initialize<TwitterSettingsViewModel>("XSettings_Edit", model =>
+            return Initialize<TwitterSettingsViewModel>("TwitterSettings_Edit", model =>
             {
                 model.APIKey = settings.ConsumerKey;
                 if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
@@ -85,37 +88,35 @@ namespace OrchardCore.Twitter.Drivers
                 {
                     model.AccessTokenSecret = string.Empty;
                 }
-            }).Location("Content:5").OnGroup(TwitterConstants.Features.Twitter);
+            }).Location("Content:5")
+            .OnGroup(SettingsGroupId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(TwitterSettings settings, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ISite site, TwitterSettings settings, UpdateEditorContext context)
         {
-            if (context.GroupId == TwitterConstants.Features.Twitter)
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitter))
             {
-                var user = _httpContextAccessor.HttpContext?.User;
-                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitter))
-                {
-                    return null;
-                }
-
-                var model = new TwitterSettingsViewModel();
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                settings.ConsumerKey = model.APIKey;
-                settings.AccessToken = model.AccessToken;
-
-                if (context.Updater.ModelState.IsValid)
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
-
-                    settings.ConsumerSecret = protector.Protect(model.APISecretKey);
-                    settings.AccessTokenSecret = protector.Protect(model.AccessTokenSecret);
-                }
-
-                _shellReleaseManager.RequestRelease();
+                return null;
             }
 
-            return await EditAsync(settings, context);
+            var model = new TwitterSettingsViewModel();
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            settings.ConsumerKey = model.APIKey;
+            settings.AccessToken = model.AccessToken;
+
+            if (context.Updater.ModelState.IsValid)
+            {
+                var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
+
+                settings.ConsumerSecret = protector.Protect(model.APISecretKey);
+                settings.AccessTokenSecret = protector.Protect(model.AccessTokenSecret);
+            }
+
+            _shellReleaseManager.RequestRelease();
+
+            return await EditAsync(site, settings, context);
         }
     }
 }

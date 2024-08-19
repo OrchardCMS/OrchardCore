@@ -8,7 +8,7 @@ namespace OrchardCore.Localization.GraphQL
     /// Represents the localization module entry point for Graph QL.
     /// </summary>
     [RequireFeatures("OrchardCore.Apis.GraphQL")]
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         /// <inheritdocs />
         public override void ConfigureServices(IServiceCollection services)

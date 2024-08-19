@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 
@@ -16,9 +17,9 @@ namespace OrchardCore.ContentLocalization.GraphQL
             }
         ];
 
-        public IEnumerable<IndexAlias> GetAliases()
+        public ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
         {
-            return _aliases;
+            return ValueTask.FromResult<IEnumerable<IndexAlias>>(_aliases);
         }
     }
 }

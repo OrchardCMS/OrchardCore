@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using Lucene.Net.Analysis.Standard;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +12,8 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Queries;
+using OrchardCore.Queries.Core;
+using OrchardCore.Queries.Sql.Migrations;
 using OrchardCore.Recipes;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Lucene.Deployment;
@@ -28,7 +29,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Lucene
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -48,25 +49,22 @@ namespace OrchardCore.Search.Lucene
                     new StandardAnalyzer(LuceneSettings.DefaultVersion))));
 
             services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
-
             services.AddScoped<IContentHandler, LuceneIndexingContentHandler>();
-            services.AddLuceneQueries();
 
-            // LuceneQuerySource is registered for both the Queries module and local usage.
-            services.AddScoped<IQuerySource, LuceneQuerySource>();
-            services.AddScoped<LuceneQuerySource>();
+            services.AddLuceneQueries()
+                .AddQuerySource<LuceneQuerySource>(LuceneQuerySource.SourceName);
+
             services.AddRecipeExecutionStep<LuceneIndexStep>();
             services.AddRecipeExecutionStep<LuceneIndexRebuildStep>();
             services.AddRecipeExecutionStep<LuceneIndexResetStep>();
             services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
-
-            // Allows to serialize 'LuceneQuery' from its base type.
-            services.AddJsonDerivedTypeInfo<LuceneQuery, Query>();
+            services.AddDataMigration<LuceneQueryMigrations>();
+            services.AddScoped<IQueryHandler, LuceneQueryHandler>();
         }
     }
 
     [RequireFeatures("OrchardCore.Search")]
-    public class SearchStartup : StartupBase
+    public sealed class SearchStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -77,7 +75,7 @@ namespace OrchardCore.Search.Lucene
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public sealed class DeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -89,7 +87,7 @@ namespace OrchardCore.Search.Lucene
     }
 
     [Feature("OrchardCore.Search.Lucene.Worker")]
-    public class LuceneWorkerStartup : StartupBase
+    public sealed class LuceneWorkerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -98,7 +96,7 @@ namespace OrchardCore.Search.Lucene
     }
 
     [Feature("OrchardCore.Search.Lucene.ContentPicker")]
-    public class LuceneContentPickerStartup : StartupBase
+    public sealed class LuceneContentPickerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -109,7 +107,7 @@ namespace OrchardCore.Search.Lucene
     }
 
     [RequireFeatures("OrchardCore.ContentTypes")]
-    public class ContentTypesStartup : StartupBase
+    public sealed class ContentTypesStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

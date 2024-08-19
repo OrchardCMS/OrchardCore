@@ -5,7 +5,7 @@ using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Themes.TheComingSoonTheme
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection serviceCollection)
         {

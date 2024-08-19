@@ -6,7 +6,7 @@ using OrchardCore.XmlRpc.Models;
 
 namespace OrchardCore.Html.RemotePublishing
 {
-    public class HtmlBodyMetaWeblogDriver : MetaWeblogDriver
+    public sealed class HtmlBodyMetaWeblogDriver : MetaWeblogDriver
     {
         public override void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem)
         {

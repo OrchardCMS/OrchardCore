@@ -14,7 +14,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
     /// <summary>
     /// This recipe step resets an Elasticsearch index.
     /// </summary>
-    public class ElasticIndexResetStep : IRecipeStepHandler
+    public sealed class ElasticIndexResetStep : IRecipeStepHandler
     {
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
@@ -33,7 +33,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes
                     var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticIndexSettingsService>();
                     var elasticIndexManager = scope.ServiceProvider.GetRequiredService<ElasticIndexManager>();
 
-                    var indexNames = model.IncludeAll ? (await elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray() : model.Indices;
+                    var indexNames = model.IncludeAll
+                    ? (await elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray()
+                    : model.Indices;
 
                     foreach (var indexName in indexNames)
                     {

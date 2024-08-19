@@ -21,7 +21,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Seo
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -34,7 +34,7 @@ namespace OrchardCore.Seo
             services.AddScoped<IContentDisplayDriver, SeoContentDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, SeoMetaPartSettingsDisplayDriver>();
 
-            // This must be last, and the module dependant on Contents so this runs after the part handlers.
+            // This must be last, and the module dependent on Contents so this runs after the part handlers.
             services.AddScoped<IContentHandler, SeoMetaSettingsHandler>();
             services.AddScoped<IContentItemIndexHandler, SeoMetaPartContentIndexHandler>();
 

@@ -5,9 +5,9 @@ using OrchardCore.Security;
 
 namespace OrchardCore.Recipes
 {
-    public class AdminMenu : INavigationProvider
+    public sealed class AdminMenu : INavigationProvider
     {
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
@@ -24,7 +24,8 @@ namespace OrchardCore.Recipes
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Recipes"], S["Recipes"].PrefixPosition(), recipes => recipes
-                        .AddClass("recipes").Id("recipes")
+                        .AddClass("recipes")
+                        .Id("recipes")
                         .Permission(StandardPermissions.SiteOwner)
                         .Action("Index", "Admin", "OrchardCore.Recipes")
                         .LocalNav()

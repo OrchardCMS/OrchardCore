@@ -6,6 +6,7 @@ First of all, thank you for thinking about contributing to Orchard Core!
 
 One of the easiest ways to contribute is to participate in discussions under [GitHub issues](https://github.com/OrchardCMS/OrchardCore/issues). You can also contribute by submitting pull requests with code changes, reviewing pull requests by others, assisting other community members on the [discussion board](https://github.com/OrchardCMS/OrchardCore/discussions), [evangelizing Orchard Core](https://github.com/Lombiq/Orchard-Ambassadors-Toolbox) in your own communities, or help organizing events.
 
+- [Opening and managing issues](managing-issues.md)
 - [Contributing code](contributing-code.md)
 - [Contributing documentation](contributing-documentation.md)
 - [Reviewing pull requests](reviewing-pull-requests.md)

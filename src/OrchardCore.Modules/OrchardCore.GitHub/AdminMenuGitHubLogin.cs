@@ -1,13 +1,11 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.GitHub
 {
-    [Feature(GitHubConstants.Features.GitHubAuthentication)]
-    public class AdminMenuGitHubLogin : INavigationProvider
+    public sealed class AdminMenuGitHubLogin : INavigationProvider
     {
         private static readonly RouteValueDictionary _routeValues = new()
         {
@@ -15,7 +13,7 @@ namespace OrchardCore.GitHub
             { "groupId", GitHubConstants.Features.GitHubAuthentication },
         };
 
-        protected readonly IStringLocalizer S;
+        internal readonly IStringLocalizer S;
 
         public AdminMenuGitHubLogin(IStringLocalizer<AdminMenuGitHubLogin> localizer)
         {

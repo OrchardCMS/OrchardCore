@@ -3,24 +3,27 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Alias.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Alias.Settings
 {
-    public class AliasPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<AliasPart>
+    public sealed class AliasPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<AliasPart>
     {
         private readonly ILiquidTemplateManager _templateManager;
-        protected readonly IStringLocalizer S;
 
-        public AliasPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<AliasPartSettingsDisplayDriver> localizer)
+        internal readonly IStringLocalizer S;
+
+        public AliasPartSettingsDisplayDriver(
+            ILiquidTemplateManager templateManager,
+            IStringLocalizer<AliasPartSettingsDisplayDriver> localizer)
         {
             _templateManager = templateManager;
             S = localizer;
         }
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
         {
             return Initialize<AliasPartSettingsViewModel>("AliasPartSettings_Edit", model =>
             {
@@ -36,7 +39,9 @@ namespace OrchardCore.Alias.Settings
         {
             var model = new AliasPartSettingsViewModel();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Pattern, m => m.Options);
+            await context.Updater.TryUpdateModelAsync(model, Prefix,
+                m => m.Pattern,
+                m => m.Options);
 
             if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
             {
@@ -44,10 +49,14 @@ namespace OrchardCore.Alias.Settings
             }
             else
             {
-                context.Builder.WithSettings(new AliasPartSettings { Pattern = model.Pattern, Options = model.Options });
+                context.Builder.WithSettings(new AliasPartSettings
+                {
+                    Pattern = model.Pattern,
+                    Options = model.Options,
+                });
             }
 
-            return Edit(contentTypePartDefinition, context.Updater);
+            return Edit(contentTypePartDefinition, context);
         }
     }
 }

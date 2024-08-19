@@ -4,7 +4,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Menu;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
     public static readonly Permission ManageMenu = new("ManageMenu", "Manage menus");
 

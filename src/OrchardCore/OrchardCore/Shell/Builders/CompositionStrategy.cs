@@ -14,13 +14,16 @@ namespace OrchardCore.Environment.Shell.Builders
     public class CompositionStrategy : ICompositionStrategy
     {
         private readonly IExtensionManager _extensionManager;
+        private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly ILogger _logger;
 
         public CompositionStrategy(
             IExtensionManager extensionManager,
+            ITypeFeatureProvider typeFeatureProvider,
             ILogger<CompositionStrategy> logger)
         {
             _extensionManager = extensionManager;
+            _typeFeatureProvider = typeFeatureProvider;
             _logger = logger;
         }
 
@@ -35,17 +38,26 @@ namespace OrchardCore.Environment.Shell.Builders
 
             var features = await _extensionManager.LoadFeaturesAsync(featureNames);
 
-            var entries = new Dictionary<Type, FeatureEntry>();
+            var entries = new Dictionary<Type, IEnumerable<IFeatureInfo>>();
 
             foreach (var feature in features)
             {
-                foreach (var exportedType in feature.ExportedTypes)
+                foreach (var exportedType in _typeFeatureProvider.GetTypesForFeature(feature))
                 {
                     var requiredFeatures = RequireFeaturesAttribute.GetRequiredFeatureNamesForType(exportedType);
 
                     if (requiredFeatures.All(x => featureNames.Contains(x)))
                     {
-                        entries.Add(exportedType, feature);
+                        if (entries.TryGetValue(exportedType, out var featureDependencies))
+                        {
+                            featureDependencies = featureDependencies.Append(feature).ToArray();
+                        }
+                        else
+                        {
+                            featureDependencies = [feature];
+                        }
+
+                        entries[exportedType] = featureDependencies;
                     }
                 }
             }

@@ -41,9 +41,14 @@ public static class CreateEndpoint
         HttpContext httpContext,
         bool draft = false)
     {
-        if (!await authorizationService.AuthorizeAsync(httpContext.User, Permissions.AccessContentApi))
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi))
         {
             return httpContext.ChallengeOrForbid("Api");
+        }
+
+        if (model is null)
+        {
+            return TypedResults.BadRequest();
         }
 
         var contentItem = await contentManager.GetAsync(model.ContentItemId, VersionOptions.DraftRequired);

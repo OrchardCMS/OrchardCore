@@ -10,7 +10,7 @@ using YesSql;
 
 namespace OrchardCore.Menu
 {
-    public class Migrations : DataMigration
+    public sealed class Migrations : DataMigration
     {
         private readonly IRecipeMigrator _recipeMigrator;
         private readonly ISession _session;

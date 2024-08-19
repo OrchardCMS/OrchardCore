@@ -12,12 +12,11 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.AdminDashboard.Drivers
 {
-    public class DashboardContentDisplayDriver : ContentDisplayDriver
+    public sealed class DashboardContentDisplayDriver : ContentDisplayDriver
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentManager _contentManager;
-
 
         public DashboardContentDisplayDriver(IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
@@ -26,7 +25,6 @@ namespace OrchardCore.AdminDashboard.Drivers
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
             _contentManager = contentManager;
-
         }
 
         public override async Task<IDisplayResult> DisplayAsync(ContentItem model, BuildDisplayContext context)

@@ -1,21 +1,22 @@
+using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Layers.Deployment
 {
-    public class AllLayersDeploymentStepDriver : DisplayDriver<DeploymentStep, AllLayersDeploymentStep>
+    public sealed class AllLayersDeploymentStepDriver : DisplayDriver<DeploymentStep, AllLayersDeploymentStep>
     {
-        public override IDisplayResult Display(AllLayersDeploymentStep step)
+        public override Task<IDisplayResult> DisplayAsync(AllLayersDeploymentStep step, BuildDisplayContext context)
         {
             return
-                Combine(
+                CombineAsync(
                     View("AllLayersDeploymentStep_Summary", step).Location("Summary", "Content"),
                     View("AllLayersDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(AllLayersDeploymentStep step)
+        public override IDisplayResult Edit(AllLayersDeploymentStep step, BuildEditorContext context)
         {
             return View("AllLayersDeploymentStep_Edit", step).Location("Content");
         }

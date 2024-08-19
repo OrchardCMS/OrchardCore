@@ -5,10 +5,11 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Resources.Liquid;
+using OrchardCore.Resources.Services;
 
 namespace OrchardCore.Resources
 {
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         private readonly IShellConfiguration _shellConfiguration;
 
@@ -34,6 +35,8 @@ namespace OrchardCore.Resources
 
             var resourceConfiguration = _shellConfiguration.GetSection("OrchardCore_Resources");
             serviceCollection.Configure<ResourceOptions>(resourceConfiguration);
+
+            serviceCollection.AddScoped<IResourcesTagHelperProcessor, ResourcesTagHelperProcessor>();
         }
     }
 }

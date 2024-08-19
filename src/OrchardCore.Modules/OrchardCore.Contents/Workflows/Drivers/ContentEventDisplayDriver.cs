@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.ViewModels;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Display;
 
@@ -24,19 +24,19 @@ namespace OrchardCore.Contents.Workflows.Drivers
             target.SelectedContentTypeNames = source.ContentTypeFilter;
         }
 
-        public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(TActivity model, UpdateEditorContext context)
         {
             var viewModel = new TViewModel();
-            await updater.TryUpdateModelAsync(viewModel, Prefix, x => x.SelectedContentTypeNames);
+            await context.Updater.TryUpdateModelAsync(viewModel, Prefix, x => x.SelectedContentTypeNames);
 
-            model.ContentTypeFilter = (await FilterContentTypesQueryAsync(viewModel.SelectedContentTypeNames)).ToList();
+            model.ContentTypeFilter = (await FilterContentTypesQueryAsync(viewModel.SelectedContentTypeNames)).ToArray();
 
-            return Edit(model);
+            return await EditAsync(model, context);
         }
 
-        public override IDisplayResult Display(TActivity activity)
+        public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)
         {
-            return Combine(
+            return CombineAsync(
                 Shape($"{typeof(TActivity).Name}_Fields_Thumbnail", new ContentEventViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
                 Factory($"{typeof(TActivity).Name}_Fields_Design", async ctx =>
                 {
@@ -57,6 +57,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
         protected async Task<IEnumerable<string>> FilterContentTypesQueryAsync(IEnumerable<string> contentTypeNames)
         {
             var contentTypeDefinitions = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).ToDictionary(x => x.Name);
+
             return contentTypeNames.Where(x => !string.IsNullOrWhiteSpace(x) && contentTypeDefinitions.ContainsKey(x));
         }
     }

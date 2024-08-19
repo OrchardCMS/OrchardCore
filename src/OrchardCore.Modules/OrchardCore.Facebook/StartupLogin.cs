@@ -18,7 +18,7 @@ using OrchardCore.Settings;
 namespace OrchardCore.Facebook
 {
     [Feature(FacebookConstants.Features.Login)]
-    public class StartupLogin : StartupBase
+    public sealed class StartupLogin : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

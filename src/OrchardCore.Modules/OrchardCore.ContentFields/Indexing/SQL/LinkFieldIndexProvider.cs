@@ -14,7 +14,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
     {
         // Maximum length that MySql can support in an index under utf8 collation is 768,
         // minus 1 for the `DocumentId` integer (character size = integer size = 4 bytes).
-        // minus 1 (freeing 4 bytes) for the additional 'Published' and 'Latest' booleans.
+        // minus 1 (freeing 4 bytes) for the additional 'Published' and 'Latest' boolean.
         public const int MaxUrlSize = 766;
         public const int MaxTextSize = 766;
 
@@ -52,11 +52,6 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                         return null;
                     }
 
-                    if (!contentItem.Latest && !contentItem.Published)
-                    {
-                        return null;
-                    }
-
                     // Lazy initialization because of ISession cyclic dependency
                     _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
@@ -67,6 +62,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     if (contentTypeDefinition == null)
                     {
                         _ignoredTypes.Add(contentItem.ContentType);
+
                         return null;
                     }
 
@@ -74,10 +70,11 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                         .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(LinkField)))
                         .ToArray();
 
-                    // This type doesn't have any LinkField, ignore it
+                    // This type doesn't have any LinkField, ignore it.
                     if (fieldDefinitions.Length == 0)
                     {
                         _ignoredTypes.Add(contentItem.ContentType);
+
                         return null;
                     }
 

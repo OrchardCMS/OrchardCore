@@ -17,7 +17,7 @@ namespace OrchardCore.Resources.Liquid
     {
         private static readonly char[] _separators = [',', ' '];
 
-        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             var services = ((LiquidTemplateContext)context).Services;
             var resourceManager = services.GetRequiredService<IResourceManager>();

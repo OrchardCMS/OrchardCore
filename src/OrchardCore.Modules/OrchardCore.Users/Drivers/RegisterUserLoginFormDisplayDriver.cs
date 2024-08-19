@@ -17,7 +17,7 @@ public sealed class RegisterUserLoginFormDisplayDriver : DisplayDriver<LoginForm
 
     public override async Task<IDisplayResult> EditAsync(LoginForm model, BuildEditorContext context)
     {
-        var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
+        var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
 
         if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
         {

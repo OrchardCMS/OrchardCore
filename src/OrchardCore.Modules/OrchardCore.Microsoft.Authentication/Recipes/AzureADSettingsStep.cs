@@ -11,7 +11,7 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
     /// <summary>
     /// This recipe step sets general Microsoft Entra ID settings.
     /// </summary>
-    public class AzureADSettingsStep : IRecipeStepHandler
+    public sealed class AzureADSettingsStep : IRecipeStepHandler
     {
         private readonly IAzureADService _azureADService;
 
@@ -39,7 +39,7 @@ namespace OrchardCore.Microsoft.Authentication.Recipes
         }
     }
 
-    public class AzureADSettingsStepModel
+    public sealed class AzureADSettingsStepModel
     {
         public string DisplayName { get; set; }
         public string AppId { get; set; }

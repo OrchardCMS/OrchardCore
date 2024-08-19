@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,10 +8,15 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Roles.CommonPermissions.ManageRoles'.")]
     public static readonly Permission ManageRoles = CommonPermissions.ManageRoles;
+
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Roles.CommonPermissions.AssignRoles'.")]
     public static readonly Permission AssignRoles = CommonPermissions.AssignRoles;
+
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Security.StandardPermissions.SiteOwner'.")]
     public static readonly Permission SiteOwner = StandardPermissions.SiteOwner;
 
     private readonly IRoleService _roleService;
@@ -28,9 +34,9 @@ public class Permissions : IPermissionProvider
 
         var list = new List<Permission>(roleNames.Count + 3)
         {
-            ManageRoles,
-            AssignRoles,
-            SiteOwner,
+            CommonPermissions.ManageRoles,
+            CommonPermissions.AssignRoles,
+            StandardPermissions.SiteOwner,
         };
 
         foreach (var roleName in roleNames)
@@ -48,8 +54,8 @@ public class Permissions : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
-                ManageRoles,
-                SiteOwner,
+                CommonPermissions.ManageRoles,
+                StandardPermissions.SiteOwner,
             ],
         },
     ];

@@ -1,10 +1,10 @@
 namespace OrchardCore.Users;
 
-public class UserConstants
+public static class UserConstants
 {
     public const string TwoFactorAuthenticationClaimType = "TwoFacAuth";
 
-    public class Features
+    public static class Features
     {
         public const string Users = "OrchardCore.Users";
 
@@ -16,11 +16,8 @@ public class UserConstants
 
         public const string SmsAuthenticator = "OrchardCore.Users.2FA.Sms";
 
-        public const string UserEmailConfirmation = "OrchardCore.Users.EmailConfirmation";
-
         public const string UserRegistration = "OrchardCore.Users.Registration";
 
         public const string ResetPassword = "OrchardCore.Users.ResetPassword";
-
     }
 }

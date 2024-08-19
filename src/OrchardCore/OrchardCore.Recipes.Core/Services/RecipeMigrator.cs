@@ -39,20 +39,29 @@ namespace OrchardCore.Recipes.Services
 
         public async Task<string> ExecuteAsync(string recipeFileName, IDataMigration migration)
         {
-            var featureInfo = _typeFeatureProvider.GetFeatureForDependency(migration.GetType());
+            var extensionInfo = _typeFeatureProvider.GetExtensionForDependency(migration.GetType());
 
-            var recipeBasePath = Path.Combine(featureInfo.Extension.SubPath, "Migrations").Replace('\\', '/');
+            var recipeBasePath = Path.Combine(extensionInfo.SubPath, "Migrations").Replace('\\', '/');
             var recipeFilePath = Path.Combine(recipeBasePath, recipeFileName).Replace('\\', '/');
             var recipeFileInfo = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(recipeFilePath);
             var recipeDescriptor = await _recipeReader.GetRecipeDescriptorAsync(recipeBasePath, recipeFileInfo, _hostingEnvironment.ContentRootFileProvider);
+
+            if (recipeDescriptor == null)
+            {
+                return null;
+            }
+
             recipeDescriptor.RequireNewScope = false;
 
             var environment = new Dictionary<string, object>();
 
-            await _environmentProviders.OrderBy(x => x.Order).InvokeAsync((provider, env) => provider.PopulateEnvironmentAsync(env), environment, _logger);
+            await _environmentProviders.OrderBy(x => x.Order)
+                .InvokeAsync((provider, env) => provider.PopulateEnvironmentAsync(env), environment, _logger);
 
             var executionId = Guid.NewGuid().ToString("n");
+
             return await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, environment, CancellationToken.None);
         }
     }
 }
+
