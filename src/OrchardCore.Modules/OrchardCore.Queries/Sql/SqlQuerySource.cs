@@ -85,7 +85,7 @@ public sealed class SqlQuerySource : IQuerySource
         {
             sqlQueryResults.Items = queryResults
                 .Select<object, JsonObject>(document => JObject.FromObject(document, _jsonSerializerOptions))
-                .ToList();
+                .ToArray();
 
             return sqlQueryResults;
         }
