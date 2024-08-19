@@ -24,7 +24,7 @@ public sealed class SqlQuerySource : IQuerySource
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IDbConnectionAccessor _dbConnectionAccessor;
     private readonly ISession _session;
-    private readonly ILogger<SqlQuerySource> _logger;
+    private readonly ILogger _logger;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly TemplateOptions _templateOptions;
 
