@@ -80,6 +80,7 @@ public sealed class SqlQuerySource : IQuerySource
         await connection.OpenAsync();
 
         await using var transaction = await connection.BeginTransactionAsync(configuration.IsolationLevel);
+
         var queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
 
         if (!query.ReturnContentItems)
