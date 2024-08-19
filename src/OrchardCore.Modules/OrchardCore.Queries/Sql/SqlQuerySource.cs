@@ -114,16 +114,16 @@ public sealed class SqlQuerySource : IQuerySource
 
                 if (rowDictionary.TryGetValue(column, out var documentIdObject))
                 {
-			return documentIdObject switch
-	                {
-                    	    long longValue => longValue,
-                    	    int intValue => intValue, 
-                    	    { } otherObject => 
-                    	        long.TryParse(otherObject.ToString(), CultureInfo.InvariantCulture, out var parsedValue)
+                    return documentIdObject switch
+                    {
+                        long longValue => longValue,
+                        int intValue => intValue,
+                        { } otherObject =>
+                            long.TryParse(otherObject.ToString(), CultureInfo.InvariantCulture, out var parsedValue)
                                 ? parsedValue
                                 : 0,
-                    	     _ => 0,
-                	};
+                        _ => 0,
+                    };
                 }
 
                 return 0;
