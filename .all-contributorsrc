@@ -3177,6 +3177,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "davidpuplava",
+      "name": "David Puplava",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5144137?v=4",
+      "profile": "https://www.davidpuplava.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

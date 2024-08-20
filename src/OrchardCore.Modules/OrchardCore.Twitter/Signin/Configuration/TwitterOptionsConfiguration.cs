@@ -59,14 +59,14 @@ public class TwitterOptionsConfiguration :
         if (string.IsNullOrWhiteSpace(settings.Item1.ConsumerKey) ||
             string.IsNullOrWhiteSpace(settings.Item1.ConsumerSecret))
         {
-            _logger.LogWarning("The Twitter login provider is enabled but not configured.");
+            _logger.LogWarning("The X (Twitter) login provider is enabled but not configured.");
 
             return;
         }
 
         options.AddScheme(TwitterDefaults.AuthenticationScheme, builder =>
         {
-            builder.DisplayName = "Twitter";
+            builder.DisplayName = "X (Twitter)";
             builder.HandlerType = typeof(TwitterHandler);
         });
     }
@@ -91,7 +91,7 @@ public class TwitterOptionsConfiguration :
         }
         catch
         {
-            _logger.LogError("The Twitter Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
+            _logger.LogError("The X (Twitter) Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
         }
 
         if (settings.Item2.CallbackPath.HasValue)
@@ -114,7 +114,7 @@ public class TwitterOptionsConfiguration :
         {
             if (_shellSettings.IsRunning())
             {
-                _logger.LogWarning("Integration with Twitter is not correctly configured.");
+                _logger.LogWarning("Integration with X (Twitter) is not correctly configured.");
             }
 
             return null;

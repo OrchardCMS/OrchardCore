@@ -47,4 +47,7 @@ public class UserEventHandler : UserEventHandlerBase
             correlationId: user.UserId
         );
     }
+
+    public override Task ConfirmedAsync(UserConfirmContext context)
+        => TriggerWorkflowEventAsync(nameof(UserConfirmedEvent), (User)context.User);
 }

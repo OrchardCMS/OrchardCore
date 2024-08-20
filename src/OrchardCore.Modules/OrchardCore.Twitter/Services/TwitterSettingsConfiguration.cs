@@ -45,7 +45,7 @@ public sealed class TwitterSettingsConfiguration : IConfigureOptions<TwitterSett
         {
             if (_shellSettings.IsRunning())
             {
-                _logger.LogWarning("Twitter is not correctly configured.");
+                _logger.LogWarning("X (Twitter) is not correctly configured.");
             }
 
             return null;
