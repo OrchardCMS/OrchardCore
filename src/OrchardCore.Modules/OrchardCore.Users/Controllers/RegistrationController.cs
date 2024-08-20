@@ -109,6 +109,7 @@ public sealed class RegistrationController : Controller
         // If we got this far, something failed. Let's redisplay form.
         return View(shape);
     }
+
     [AllowAnonymous]
     public IActionResult RegistrationPending(string returnUrl = null)
         => View(new { ReturnUrl = returnUrl });
