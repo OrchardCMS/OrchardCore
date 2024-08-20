@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Cache;
@@ -143,11 +139,15 @@ public sealed class SecureMediaPermissions : IPermissionProvider
         await foreach (var entry in _fileStore.GetDirectoryContentAsync())
         {
             if (!entry.IsDirectory)
+            {
                 continue;
+            }
 
             if (entry.Name == _mediaOptions.AssetsUsersFolder ||
                 entry.Name == _attachedMediaFieldFileService.MediaFieldsFolder)
+            {
                 continue;
+            }
 
             var folderPath = entry.Path;
 

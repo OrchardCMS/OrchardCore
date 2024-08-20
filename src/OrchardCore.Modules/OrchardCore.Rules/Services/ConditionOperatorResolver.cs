@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Rules.Services;

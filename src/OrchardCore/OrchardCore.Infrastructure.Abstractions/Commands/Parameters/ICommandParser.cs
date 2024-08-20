@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Security;
 using System.Text;
 
@@ -55,7 +54,9 @@ public class CommandParser : ICommandParser
         public void MoveNext()
         {
             if (!EOF)
+            {
                 _index++;
+            }
         }
     }
 
@@ -88,7 +89,10 @@ public class CommandParser : ICommandParser
                 case ' ':
                 case '\t':
                     if (state.StringBuilder.Length > 0)
+                    {
                         state.AddArgument();
+                    }
+
                     state.MoveNext();
                     break;
 
@@ -99,7 +103,10 @@ public class CommandParser : ICommandParser
             }
         }
         if (state.StringBuilder.Length > 0)
+        {
             state.AddArgument();
+        }
+
         return state.Arguments;
     }
 

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.Notifications.Models;
 
 public class NotificationQueryResult

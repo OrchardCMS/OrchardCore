@@ -1,7 +1,4 @@
-using System;
 using System.IO.Compression;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
@@ -16,7 +13,7 @@ using YesSql;
 namespace OrchardCore.Deployment.Controllers;
 
 [Admin("DeploymentPlan/ExportFile/{action}/{id?}", "DeploymentPlanExportFile{action}")]
-public class ExportFileController : Controller
+public sealed class ExportFileController : Controller
 {
     private readonly IDeploymentManager _deploymentManager;
     private readonly IAuthorizationService _authorizationService;

@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -16,9 +15,15 @@ public class DateTimeJsonConverter : JsonConverter<DateTime>
             throw new ArgumentException("Unexpected type to convert.", nameof(typeToConvert));
         }
 
-        if (!reader.TryGetDateTime(out var value) && DateTime.TryParse(reader.GetString()!, out value))
+        if (!reader.TryGetDateTime(out var value))
         {
-            return value;
+            var stringValue = reader.GetString();
+            if (DateTime.TryParse(stringValue, out value))
+            {
+                return value;
+            }
+
+            throw new JsonException($"Unable to convert \"{stringValue}\" to DateTime.");
         }
 
         return value;

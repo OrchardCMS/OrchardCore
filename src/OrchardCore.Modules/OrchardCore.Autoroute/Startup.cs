@@ -1,4 +1,3 @@
-using System;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Builder;

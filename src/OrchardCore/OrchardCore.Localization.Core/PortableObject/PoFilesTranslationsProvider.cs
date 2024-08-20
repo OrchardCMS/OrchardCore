@@ -1,4 +1,3 @@
-using System.IO;
 using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Localization.PortableObject;

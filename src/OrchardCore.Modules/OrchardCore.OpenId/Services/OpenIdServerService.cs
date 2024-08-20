@@ -1,15 +1,10 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
@@ -239,9 +234,9 @@ public class OpenIdServerService : IOpenIdServerService
     {
         var certificates = ImmutableArray.CreateBuilder<(X509Certificate2, StoreLocation, StoreName)>();
 
-        foreach (StoreLocation location in Enum.GetValues<StoreLocation>())
+        foreach (var location in Enum.GetValues<StoreLocation>())
         {
-            foreach (StoreName name in Enum.GetValues<StoreName>())
+            foreach (var name in Enum.GetValues<StoreName>())
             {
                 // Note: on non-Windows platforms, an exception can
                 // be thrown if the store location/name doesn't exist.

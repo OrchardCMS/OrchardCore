@@ -1,4 +1,9 @@
+using OrchardCore.Entities;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Localization;
+using OrchardCore.Localization.Models;
+using OrchardCore.Settings;
+using OrchardCore.Tests.Apis.Context;
 
 namespace OrchardCore.Tests.Localization;
 
@@ -43,7 +48,7 @@ public class LocalizationManagerTests
             .Setup(o => o.LoadTranslations(It.Is<string>(culture => culture == "cs"), It.IsAny<CultureDictionary>()))
             .Callback<string, CultureDictionary>((culture, dictioanry) => dictioanry.MergeTranslations(new[] { dictionaryRecord }));
 
-        var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, new[] { _translationProvider.Object }, _memoryCache);
+        var manager = new LocalizationManager([_pluralRuleProvider.Object], [_translationProvider.Object], _memoryCache);
 
         var dictionary = manager.GetDictionary(CultureInfo.GetCultureInfo("cs"));
         var key = new CultureDictionaryRecordKey { MessageId = "ball" };
@@ -67,10 +72,56 @@ public class LocalizationManagerTests
             It.IsAny<CultureDictionary>())
         );
 
-        var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object, highPriorityRuleProvider.Object }, new[] { _translationProvider.Object }, _memoryCache);
+        var manager = new LocalizationManager([_pluralRuleProvider.Object, highPriorityRuleProvider.Object], [_translationProvider.Object], _memoryCache);
 
         var dictionary = manager.GetDictionary(CultureInfo.GetCultureInfo("cs"));
 
         Assert.Equal(dictionary.PluralRule, csPluralRuleOverride);
+    }
+
+    [Theory]
+    [InlineData("en", "Hello en !")]
+    [InlineData("zh-CN", "你好！")]
+    public async Task TestLocalizationRule(string culture, string expected)
+    {
+        var context = new SiteContext();
+        await context.InitializeAsync();
+
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var shellFeaturesManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
+            var availableFeatures = await shellFeaturesManager.GetAvailableFeaturesAsync();
+            var featureIds = new string[] { "OrchardCore.Localization.ContentLanguageHeader", "OrchardCore.Localization" };
+            var features = availableFeatures.Where(feature => featureIds.Contains(feature.Id));
+
+            await shellFeaturesManager.EnableFeaturesAsync(features, true);
+
+            var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
+            var siteSettings = await siteService.LoadSiteSettingsAsync();
+
+            siteSettings.Alter<LocalizationSettings>("LocalizationSettings", localizationSettings =>
+            {
+                localizationSettings.DefaultCulture = culture;
+                localizationSettings.SupportedCultures = [culture];
+            });
+
+            await siteService.UpdateSiteSettingsAsync(siteSettings);
+
+            var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
+            var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
+
+            await shellHost.ReleaseShellContextAsync(shellSettings);
+        });
+
+        await context.UsingTenantScopeAsync(scope =>
+        {
+            using var cultureScope = CultureScope.Create(culture, culture);
+            var localizer = scope.ServiceProvider.GetRequiredService<IStringLocalizer<LocalizationManagerTests>>();
+
+            // Assert
+            Assert.Equal(expected, localizer["hello!"]);
+
+            return Task.CompletedTask;
+        });
     }
 }

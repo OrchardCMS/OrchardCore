@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Zones;
@@ -75,17 +73,13 @@ public class ZoneOnDemand : Shape
         return true;
     }
 
-    public static bool operator ==(ZoneOnDemand _, object b)
-    {
+    public static bool operator ==(ZoneOnDemand _, object b) =>
         // If ZoneOnDemand is compared to null it must return true.
-        return b == null || ReferenceEquals(b, Nil.Instance);
-    }
+        b == null || ReferenceEquals(b, Nil.Instance);
 
-    public static bool operator !=(ZoneOnDemand a, object b)
-    {
+    public static bool operator !=(ZoneOnDemand a, object b) =>
         // If ZoneOnDemand is compared to null it must return true.
-        return !(a == b);
-    }
+        !(a == b);
 
     public override bool Equals(object obj)
     {

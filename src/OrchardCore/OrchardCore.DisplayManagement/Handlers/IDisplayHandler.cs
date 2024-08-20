@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.DisplayManagement.Handlers;
 
 public interface IDisplayHandler<TModel>

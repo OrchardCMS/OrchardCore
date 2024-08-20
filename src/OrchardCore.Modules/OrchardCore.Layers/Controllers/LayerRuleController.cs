@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -17,7 +13,7 @@ using OrchardCore.Rules.Services;
 namespace OrchardCore.Layers.Controllers;
 
 [Admin("Layers/Rules/{action}", "Layers.Rules.{action}")]
-public class LayerRuleController : Controller
+public sealed class LayerRuleController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IDisplayManager<Condition> _displayManager;
@@ -27,7 +23,7 @@ public class LayerRuleController : Controller
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
-    protected readonly IHtmlLocalizer H;
+    internal readonly IHtmlLocalizer H;
 
     public LayerRuleController(
         IAuthorizationService authorizationService,

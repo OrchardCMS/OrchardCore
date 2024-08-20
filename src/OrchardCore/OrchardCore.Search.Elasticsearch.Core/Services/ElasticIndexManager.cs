@@ -1,12 +1,7 @@
-
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Elasticsearch.Net;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -329,10 +324,12 @@ public sealed class ElasticIndexManager
             var descriptor = new BulkDescriptor();
 
             foreach (var id in contentItemIds)
+            {
                 descriptor.Delete<Dictionary<string, object>>(d => d
                     .Index(GetFullIndexName(indexName))
                     .Id(id)
                 );
+            }
 
             var response = await _elasticClient.BulkAsync(descriptor);
 

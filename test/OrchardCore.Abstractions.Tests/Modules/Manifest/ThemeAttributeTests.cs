@@ -2,13 +2,11 @@
 // TODO: MWP: rinse and repeat for module marker ...
 using System;
 using System.Linq;
-
-namespace OrchardCore.DisplayManagement.Manifest;
-
-using Modules.Manifest;
+using OrchardCore.Modules.Manifest;
 using Xunit;
 using Xunit.Abstractions;
 
+namespace OrchardCore.DisplayManagement.Manifest;
 /// <inheritdoc/>
 public class ThemeAttributeTests : ModuleAttributeTests<ThemeAttribute>
 {

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.AuditTrail.Drivers;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.DisplayManagement.Handlers;

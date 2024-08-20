@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.DisplayManagement.Implementation;
 
 public interface IShapeDisplayEvents

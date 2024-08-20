@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;

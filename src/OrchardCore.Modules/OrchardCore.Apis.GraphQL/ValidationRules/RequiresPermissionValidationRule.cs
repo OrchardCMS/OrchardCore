@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
 using GraphQL.Validation;
@@ -47,7 +44,9 @@ public class RequiresPermissionValidationRule : IValidationRule
                 var fieldDef = validationContext.TypeInfo.GetFieldDef();
 
                 if (fieldDef == null)
+                {
                     return;
+                }
 
                 // check target field
                 await AuthorizeNodePermissionAsync(fieldAst, fieldDef, validationContext, userContext);

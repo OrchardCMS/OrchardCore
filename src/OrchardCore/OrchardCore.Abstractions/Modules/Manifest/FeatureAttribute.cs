@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using static System.StringSplitOptions;
 
 namespace OrchardCore.Modules.Manifest;
-
-using static StringSplitOptions;
 
 /// <summary>
 /// Defines a Feature in a Module, can be used multiple times.

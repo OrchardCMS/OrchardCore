@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.Entities;
 
 namespace OrchardCore.Notifications;

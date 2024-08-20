@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email;
 using OrchardCore.Users.Models;

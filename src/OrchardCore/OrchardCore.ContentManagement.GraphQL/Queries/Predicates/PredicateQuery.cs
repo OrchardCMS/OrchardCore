@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using YesSql;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
 
 public class PredicateQuery : IPredicateQuery
 {
-    private readonly IConfiguration _configuration;
     private readonly IEnumerable<IIndexPropertyProvider> _propertyProviders;
 
     private readonly HashSet<string> _usedAliases = [];
@@ -19,7 +15,6 @@ public class PredicateQuery : IPredicateQuery
         IEnumerable<IIndexPropertyProvider> propertyProviders)
     {
         Dialect = configuration.SqlDialect;
-        _configuration = configuration;
         _propertyProviders = propertyProviders;
     }
 

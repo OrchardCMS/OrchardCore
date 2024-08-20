@@ -1,10 +1,8 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Contents.AuditTrail.ViewModels;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.AuditTrail.Drivers;

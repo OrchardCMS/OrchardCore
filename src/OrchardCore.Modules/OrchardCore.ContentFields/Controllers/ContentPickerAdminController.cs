@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +12,7 @@ using OrchardCore.Contents;
 namespace OrchardCore.ContentFields.Controllers;
 
 [Admin]
-public class ContentPickerAdminController : Controller
+public sealed class ContentPickerAdminController : Controller
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IContentManager _contentManager;

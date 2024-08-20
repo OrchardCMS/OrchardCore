@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;

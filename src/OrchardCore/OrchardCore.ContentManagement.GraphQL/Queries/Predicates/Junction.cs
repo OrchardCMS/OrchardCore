@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Text;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
@@ -23,8 +22,10 @@ public abstract class Junction : IPredicate
 
     public void SearchUsedAlias(IPredicateQuery predicateQuery)
     {
-        if (_predicates.Count == 0) return;
-
+        if (_predicates.Count == 0)
+        {
+            return;
+        }
 
         for (var i = 0; i < _predicates.Count; i++)
         {
@@ -35,7 +36,10 @@ public abstract class Junction : IPredicate
 
     public string ToSqlString(IPredicateQuery predicateQuery)
     {
-        if (_predicates.Count == 0) return EmptyExpression;
+        if (_predicates.Count == 0)
+        {
+            return EmptyExpression;
+        }
 
         var sqlBuilder = new StringBuilder();
 

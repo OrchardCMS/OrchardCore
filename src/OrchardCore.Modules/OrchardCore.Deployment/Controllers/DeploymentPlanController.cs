@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -23,7 +19,7 @@ using YesSql.Services;
 namespace OrchardCore.Deployment.Controllers;
 
 [Admin("DeploymentPlan/{action}/{id?}", "DeploymentPlan{action}")]
-public class DeploymentPlanController : Controller
+public sealed class DeploymentPlanController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
@@ -36,8 +32,8 @@ public class DeploymentPlanController : Controller
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IShapeFactory _shapeFactory;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public DeploymentPlanController(
         IAuthorizationService authorizationService,

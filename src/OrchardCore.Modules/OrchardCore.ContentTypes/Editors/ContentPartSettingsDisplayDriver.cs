@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.ViewModels;

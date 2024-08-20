@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentTypes.Controllers;
 using OrchardCore.Mvc.Core.Utilities;

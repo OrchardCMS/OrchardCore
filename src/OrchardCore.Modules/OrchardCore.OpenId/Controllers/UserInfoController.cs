@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +13,7 @@ namespace OrchardCore.OpenId.Controllers;
 // Note: the error descriptions used in this controller are deliberately not localized as
 // the OAuth 2.0 specification only allows select US-ASCII characters in error_description.
 [Feature(OpenIdConstants.Features.Server), SkipStatusCodePages]
-public class UserInfoController : Controller
+public sealed class UserInfoController : Controller
 {
     // GET/POST: /connect/userinfo
     [AcceptVerbs("GET", "POST")]

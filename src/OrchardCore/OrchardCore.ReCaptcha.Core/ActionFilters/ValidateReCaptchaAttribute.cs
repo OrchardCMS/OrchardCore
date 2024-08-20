@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -25,7 +23,9 @@ public class ValidateReCaptchaAttribute : ActionFilterAttribute
         var reCaptchaResponse = context.HttpContext.Request?.Form?[Constants.ReCaptchaServerResponseHeaderName].ToString();
 
         if (!string.IsNullOrWhiteSpace(reCaptchaResponse))
+        {
             isValidCaptcha = await recaptchaService.VerifyCaptchaResponseAsync(reCaptchaResponse);
+        }
 
         var isRobot = false;
 
