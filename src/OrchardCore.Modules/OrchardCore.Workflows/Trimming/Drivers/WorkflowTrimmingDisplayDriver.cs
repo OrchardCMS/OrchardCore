@@ -7,7 +7,6 @@ using OrchardCore.Documents;
 using OrchardCore.Settings;
 using OrchardCore.Workflows.Trimming.Models;
 using OrchardCore.Workflows.Trimming.ViewModels;
-using static Dapper.SqlMapper;
 
 namespace OrchardCore.Workflows.Trimming.Drivers;
 
