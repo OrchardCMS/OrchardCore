@@ -39,9 +39,9 @@ public sealed class SqlQuerySource : IQuerySource
         _liquidTemplateManager = liquidTemplateManager;
         _dbConnectionAccessor = dbConnectionAccessor;
         _session = session;
-        _logger = logger;
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
         _templateOptions = templateOptions.Value;
+        _logger = logger;
     }
 
     public string Name
