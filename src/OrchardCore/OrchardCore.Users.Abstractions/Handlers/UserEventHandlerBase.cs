@@ -27,5 +27,5 @@ public abstract class UserEventHandlerBase : IUserEventHandler
     public virtual Task EnabledAsync(UserContext context) => Task.CompletedTask;
 
     /// <inheritdocs />
-    public virtual Task ConfirmedAsync(UserContext context) => Task.CompletedTask;
+    public virtual Task ConfirmedAsync(UserConfirmContext context) => Task.CompletedTask;
 }

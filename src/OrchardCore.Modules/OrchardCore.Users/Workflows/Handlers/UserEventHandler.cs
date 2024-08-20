@@ -48,6 +48,6 @@ public class UserEventHandler : UserEventHandlerBase
         );
     }
 
-    public override Task ConfirmedAsync(UserContext context)
+    public override Task ConfirmedAsync(UserConfirmContext context)
         => TriggerWorkflowEventAsync(nameof(UserConfirmedEvent), (User)context.User);
 }

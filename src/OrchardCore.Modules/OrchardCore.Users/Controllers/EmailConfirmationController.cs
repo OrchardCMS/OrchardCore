@@ -18,28 +18,28 @@ public sealed class EmailConfirmationController : Controller
     private readonly UserManager<IUser> _userManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
+    private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
+    private readonly ILogger _logger;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
-    private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
-    private readonly ILogger _logger;
 
     public EmailConfirmationController(
         UserManager<IUser> userManager,
         IAuthorizationService authorizationService,
         INotifier notifier,
-        IHtmlLocalizer<EmailConfirmationController> htmlLocalizer,
-        IStringLocalizer<EmailConfirmationController> stringLocalizer,
         IEnumerable<IUserEventHandler> userEventHandlers,
-        ILogger<EmailConfirmationController> logger)
+        ILogger<EmailConfirmationController> logger,
+        IHtmlLocalizer<EmailConfirmationController> htmlLocalizer,
+        IStringLocalizer<EmailConfirmationController> stringLocalizer)
     {
         _userManager = userManager;
         _authorizationService = authorizationService;
         _notifier = notifier;
-        H = htmlLocalizer;
-        S = stringLocalizer;
         _userEventHandlers = userEventHandlers;
         _logger = logger;
+        H = htmlLocalizer;
+        S = stringLocalizer;
     }
 
     [AllowAnonymous]
@@ -61,7 +61,8 @@ public sealed class EmailConfirmationController : Controller
 
         if (result.Succeeded)
         {
-            await _userEventHandlers.InvokeAsync((handler, context) => handler.ConfirmedAsync(userContext), UserContext(user), _logger);
+            var userContext = new UserConfirmContext(user) { ConfirmationType = UserConfirmationType.Email };
+            await _userEventHandlers.InvokeAsync((handler, context) => handler.ConfirmedAsync(userContext), userContext, _logger);
 
             return View();
         }
