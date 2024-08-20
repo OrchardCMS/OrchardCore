@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +10,6 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
-using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Controllers;
@@ -31,7 +27,6 @@ public sealed class RegistrationController : Controller
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
-    private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
 
     public RegistrationController(
         UserManager<IUser> userManager,
@@ -42,8 +37,7 @@ public sealed class RegistrationController : Controller
         IDisplayManager<RegisterUserForm> registerUserDisplayManager,
         IUpdateModelAccessor updateModelAccessor,
         IHtmlLocalizer<RegistrationController> htmlLocalizer,
-        IStringLocalizer<RegistrationController> stringLocalizer,
-        IEnumerable<IUserEventHandler> userEventHandlers)
+        IStringLocalizer<RegistrationController> stringLocalizer)
     {
         _userManager = userManager;
         _authorizationService = authorizationService;
@@ -54,7 +48,6 @@ public sealed class RegistrationController : Controller
         _updateModelAccessor = updateModelAccessor;
         H = htmlLocalizer;
         S = stringLocalizer;
-        _userEventHandlers = userEventHandlers;
     }
 
     [AllowAnonymous]
@@ -116,37 +109,6 @@ public sealed class RegistrationController : Controller
         // If we got this far, something failed. Let's redisplay form.
         return View(shape);
     }
-
-    [HttpGet]
-    [AllowAnonymous]
-    public async Task<IActionResult> ConfirmEmail(string userId, string code)
-    {
-        if (userId == null || code == null)
-        {
-            return RedirectToAction(nameof(Register));
-        }
-
-        var user = await _userManager.FindByIdAsync(userId);
-
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        var result = await _userManager.ConfirmEmailAsync(user, code);
-
-        if (result.Succeeded)
-        {
-            var userContext = new UserContext(user);
-            await _userEventHandlers.InvokeAsync((handler, context) => handler.ConfirmedAsync(userContext), userContext, _logger);
-
-            return View();
-        }
-
-        return NotFound();
-    }
-
-    [HttpGet]
     [AllowAnonymous]
     public IActionResult RegistrationPending(string returnUrl = null)
         => View(new { ReturnUrl = returnUrl });

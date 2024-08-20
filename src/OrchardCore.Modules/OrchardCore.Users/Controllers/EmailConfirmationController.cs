@@ -1,11 +1,15 @@
 using System.Security.Claims;
+using Castle.Core.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Controllers;
@@ -18,19 +22,25 @@ public sealed class EmailConfirmationController : Controller
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
+    private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
+    private readonly ILogger<EmailConfirmationController> _logger;
 
     public EmailConfirmationController(
         UserManager<IUser> userManager,
         IAuthorizationService authorizationService,
         INotifier notifier,
         IHtmlLocalizer<EmailConfirmationController> htmlLocalizer,
-        IStringLocalizer<EmailConfirmationController> stringLocalizer)
+        IStringLocalizer<EmailConfirmationController> stringLocalizer,
+        IEnumerable<IUserEventHandler> userEventHandlers,
+        ILogger<EmailConfirmationController> logger)
     {
         _userManager = userManager;
         _authorizationService = authorizationService;
         _notifier = notifier;
         H = htmlLocalizer;
         S = stringLocalizer;
+        _userEventHandlers = userEventHandlers;
+        _logger = logger;
     }
 
     [AllowAnonymous]
@@ -52,6 +62,9 @@ public sealed class EmailConfirmationController : Controller
 
         if (result.Succeeded)
         {
+            var userContext = new UserContext(user);
+            await _userEventHandlers.InvokeAsync((handler, context) => handler.ConfirmedAsync(userContext), userContext, _logger);
+
             return View();
         }
 
