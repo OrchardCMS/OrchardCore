@@ -22,7 +22,7 @@ public sealed class EmailConfirmationController : Controller
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
     private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
-    private readonly ILogger<EmailConfirmationController> _logger;
+    private readonly ILogger _logger;
 
     public EmailConfirmationController(
         UserManager<IUser> userManager,
@@ -61,8 +61,7 @@ public sealed class EmailConfirmationController : Controller
 
         if (result.Succeeded)
         {
-            var userContext = new UserContext(user);
-            await _userEventHandlers.InvokeAsync((handler, context) => handler.ConfirmedAsync(userContext), userContext, _logger);
+            await _userEventHandlers.InvokeAsync((handler, context) => handler.ConfirmedAsync(userContext), UserContext(user), _logger);
 
             return View();
         }

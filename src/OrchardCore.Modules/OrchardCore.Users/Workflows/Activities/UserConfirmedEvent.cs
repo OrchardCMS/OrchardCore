@@ -6,7 +6,11 @@ namespace OrchardCore.Users.Workflows.Activities;
 
 public class UserConfirmedEvent : UserEvent
 {
-    public UserConfirmedEvent(IUserService userService, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<UserUpdatedEvent> localizer) : base(userService, scriptEvaluator, localizer)
+    public UserConfirmedEvent(
+        IUserService userService, 
+        IWorkflowScriptEvaluator scriptEvaluator, 
+        IStringLocalizer<UserUpdatedEvent> stringLocalizer) 
+        : base(userService, scriptEvaluator, stringLocalizer)
     {
     }
 
