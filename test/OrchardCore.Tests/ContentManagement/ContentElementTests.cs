@@ -67,25 +67,30 @@ public class ContentElementTests
         Assert.Same(contentPart, actualPart);
     }
 
-    [Theory]
-    [InlineData(15)]
-    [InlineData(-15)]
-    [InlineData(null)]
-    public void Apply_WhenCalledWithNullProperty_SetThePropertyToNull(int? minutes)
+    [Fact]
+    public void Apply_WhenCalledWithNullProperty_SetThePropertyToNull()
     {
-        // Arrange
         var contentItem = new ContentItem();
 
-        // Act
         contentItem.Apply(new TestContentPart()
         {
-            Minutes = minutes,
+            Minutes = -15,
         });
 
-        var part = contentItem.As<TestContentPart>();
+        var instance = contentItem.As<TestContentPart>();
 
-        // Assert
-        Assert.Equal(minutes, part.Minutes);
+        Assert.NotNull(instance);
+        Assert.Equal(-15, instance.Minutes);
+
+        contentItem.Apply(new TestContentPart()
+        {
+            Minutes = null,
+        });
+
+        // Using 'dynamic' to bypass object retrieval from the cache when using '.Get()' or '.As()' extension methods.
+        var minutes = (int?)contentItem.Content.TestContentPart.Minutes;
+
+        Assert.Null(minutes);
     }
 }
 
