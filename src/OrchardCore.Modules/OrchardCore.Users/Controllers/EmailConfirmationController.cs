@@ -61,8 +61,7 @@ public sealed class EmailConfirmationController : Controller
 
         if (result.Succeeded)
         {
-            var userContext = new UserContext(user);
-            await _userEventHandlers.InvokeAsync((handler, context) => handler.ConfirmedAsync(userContext), userContext, _logger);
+            await _userEventHandlers.InvokeAsync((handler, context) => handler.ConfirmedAsync(userContext), UserContext(user), _logger);
 
             return View();
         }
