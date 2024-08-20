@@ -22,7 +22,7 @@ public sealed class EmailConfirmationController : Controller
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
     private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
-    private readonly ILogger<EmailConfirmationController> _logger;
+    private readonly ILogger _logger;
 
     public EmailConfirmationController(
         UserManager<IUser> userManager,
