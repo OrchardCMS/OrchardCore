@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Text.Json.Settings;
 
 namespace OrchardCore.ContentManagement;
@@ -15,6 +16,11 @@ public static class ContentExtensions
     {
         MergeArrayHandling = MergeArrayHandling.Replace,
         MergeNullValueHandling = MergeNullValueHandling.Merge
+    };
+
+    private static readonly JsonSerializerOptions _jsonReadExistingObjectSettings = new(JOptions.Default)
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
     };
 
     /// <summary>
@@ -186,7 +192,7 @@ public static class ContentExtensions
         var elementData = contentElement.Data[name] as JsonObject;
         if (elementData is not null)
         {
-            elementData.Merge(JObject.FromObject(element), _jsonMergeSettings);
+            elementData.Merge(JObject.FromObject(element, _jsonReadExistingObjectSettings), _jsonMergeSettings);
         }
         else
         {
