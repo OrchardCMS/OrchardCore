@@ -14,7 +14,9 @@ public class UserConfirmedEvent : UserEvent
     {
     }
 
-    public override string Name => nameof(UserConfirmedEvent);
+    public override string Name 
+        => nameof(UserConfirmedEvent);
 
-    public override LocalizedString DisplayText => S["User Confirmed Event"];
+    public override LocalizedString DisplayText 
+        => S["User Confirmed Event"];
 }

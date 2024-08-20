@@ -2,5 +2,5 @@
 
 public enum UserConfirmationType
 {
-    Email
+    Email,
 }

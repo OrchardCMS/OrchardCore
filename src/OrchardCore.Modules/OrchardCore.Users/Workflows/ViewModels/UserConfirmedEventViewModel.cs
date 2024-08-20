@@ -9,7 +9,7 @@ public class UserConfirmedEventViewModel : UserEventViewModel<UserConfirmedEvent
     }
 
     public UserConfirmedEventViewModel(UserConfirmedEvent activity)
+        : base(activity)
     {
-        Activity = activity;
     }
 }
