@@ -17,15 +17,15 @@ using OrchardCore.Recipes.Models;
 namespace OrchardCore.Deployment.Controllers;
 
 [Admin("DeploymentPlan/Import/{action}", "DeploymentPlanImport{action}")]
-public class ImportController : Controller
+public sealed class ImportController : Controller
 {
     private readonly IDeploymentManager _deploymentManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public ImportController(
         IDeploymentManager deploymentManager,

@@ -18,7 +18,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Search;
 
-public class SearchController : Controller
+public sealed class SearchController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ISiteService _siteService;
@@ -29,7 +29,7 @@ public class SearchController : Controller
     private readonly IShapeFactory _shapeFactory;
     private readonly ILogger _logger;
 
-    protected readonly IHtmlLocalizer H;
+    internal readonly IHtmlLocalizer H;
 
     public SearchController(
         IAuthorizationService authorizationService,

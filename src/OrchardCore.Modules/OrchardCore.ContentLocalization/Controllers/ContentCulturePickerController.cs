@@ -10,7 +10,7 @@ using OrchardCore.Settings;
 namespace OrchardCore.ContentLocalization.Controllers;
 
 [Feature("OrchardCore.ContentLocalization.ContentCulturePicker")]
-public class ContentCulturePickerController : Controller
+public sealed class ContentCulturePickerController : Controller
 {
     private readonly ISiteService _siteService;
     private readonly ILocalizationService _locationService;

@@ -17,17 +17,18 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.ContentTypes.Controllers;
 
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IContentDefinitionService _contentDefinitionService;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDocumentStore _documentStore;
     private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public AdminController(
         IContentDefinitionDisplayManager contentDefinitionDisplayManager,

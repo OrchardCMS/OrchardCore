@@ -16,7 +16,7 @@ using OrchardCore.Setup.ViewModels;
 
 namespace OrchardCore.Setup.Controllers;
 
-public class SetupController : Controller
+public sealed class SetupController : Controller
 {
     private readonly IClock _clock;
     private readonly ISetupService _setupService;
@@ -26,7 +26,8 @@ public class SetupController : Controller
     private readonly IEmailAddressValidator _emailAddressValidator;
     private readonly IEnumerable<DatabaseProvider> _databaseProviders;
     private readonly ILogger _logger;
-    protected readonly IStringLocalizer S;
+
+    internal readonly IStringLocalizer S;
 
     public SetupController(
         IClock clock,

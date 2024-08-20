@@ -15,7 +15,7 @@ using OrchardCore.Recipes.Models;
 
 namespace OrchardCore.Deployment.Remote.Controllers;
 
-public class ImportRemoteInstanceController : Controller
+public sealed class ImportRemoteInstanceController : Controller
 {
     private readonly RemoteClientService _remoteClientService;
     private readonly IDeploymentManager _deploymentManager;
@@ -23,8 +23,8 @@ public class ImportRemoteInstanceController : Controller
     private readonly ILogger _logger;
     private readonly IDataProtector _dataProtector;
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public ImportRemoteInstanceController(
         IDataProtectionProvider dataProtectionProvider,

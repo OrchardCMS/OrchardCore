@@ -30,7 +30,7 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 namespace OrchardCore.Users.Controllers;
 
 [Authorize]
-public class AccountController : AccountBaseController
+public sealed class AccountController : AccountBaseController
 {
     public const string DefaultExternalLoginProtector = "DefaultExternalLogin";
 
@@ -56,8 +56,8 @@ public class AccountController : AccountBaseController
         MergeNullValueHandling = MergeNullValueHandling.Merge
     };
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public AccountController(
         IUserService userService,

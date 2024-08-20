@@ -12,9 +12,9 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.ContentFields.Controllers;
 
-[RequireFeatures(OrchardCore.Users.UserConstants.Features.Users)]
+[RequireFeatures(Users.UserConstants.Features.Users)]
 [Admin]
-public class UserPickerAdminController : Controller
+public sealed class UserPickerAdminController : Controller
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IContentManager _contentManager;

@@ -10,7 +10,7 @@ using IHttpContextAccessor = Microsoft.AspNetCore.Http.IHttpContextAccessor;
 
 namespace OrchardCore.Demo.Controllers;
 
-public class ContentController : Controller
+public sealed class ContentController : Controller
 {
     private readonly IContentItemDisplayManager _contentDisplay;
     private readonly IContentManager _contentManager;

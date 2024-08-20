@@ -16,7 +16,7 @@ using YesSql;
 namespace OrchardCore.Menu.Controllers;
 
 [Admin("Menu/{action}/{id?}", "Menu{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IContentManager _contentManager;
     private readonly IAuthorizationService _authorizationService;
@@ -24,8 +24,9 @@ public class AdminController : Controller
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ISession _session;
     private readonly INotifier _notifier;
-    protected readonly IHtmlLocalizer H;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         ISession session,

@@ -7,7 +7,7 @@ using OrchardCore.XmlRpc.Services;
 
 namespace OrchardCore.XmlRpc.Controllers;
 
-public class HomeController : Controller
+public sealed class HomeController : Controller
 {
     private readonly IXmlRpcWriter _writer;
     private readonly IEnumerable<IXmlRpcHandler> _xmlRpcHandlers;

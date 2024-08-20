@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace OrchardCore.Admin.Controllers;
 
 [Authorize]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     public IActionResult Index()
     {

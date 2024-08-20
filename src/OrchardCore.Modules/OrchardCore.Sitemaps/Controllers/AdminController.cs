@@ -18,7 +18,7 @@ using OrchardCore.Sitemaps.ViewModels;
 namespace OrchardCore.Sitemaps.Controllers;
 
 [Admin("Sitemaps/{action}/{sitemapId?}", "Sitemaps{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
@@ -33,8 +33,8 @@ public class AdminController : Controller
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         ISitemapHelperService sitemapService,

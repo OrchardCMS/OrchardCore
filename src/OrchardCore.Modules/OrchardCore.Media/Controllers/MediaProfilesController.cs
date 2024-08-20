@@ -19,7 +19,7 @@ using ResizeMode = OrchardCore.Media.Processing.ResizeMode;
 namespace OrchardCore.Media.Controllers;
 
 [Admin("MediaProfiles/{action}", "MediaProfiles.{action}")]
-public class MediaProfilesController : Controller
+public sealed class MediaProfilesController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
@@ -30,8 +30,8 @@ public class MediaProfilesController : Controller
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public MediaProfilesController(
         IAuthorizationService authorizationService,

@@ -11,12 +11,13 @@ using OrchardCore.Users.ViewModels;
 namespace OrchardCore.Users.Controllers;
 
 [Feature("OrchardCore.Users.ChangeEmail")]
-public class ChangeEmailController : Controller
+public sealed class ChangeEmailController : Controller
 {
     private readonly IUserService _userService;
     private readonly UserManager<IUser> _userManager;
     private readonly ISiteService _siteService;
-    protected readonly IStringLocalizer S;
+
+    internal readonly IStringLocalizer S;
 
     public ChangeEmailController(
         IUserService userService,

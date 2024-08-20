@@ -15,7 +15,7 @@ using YesSql;
 namespace OrchardCore.Taxonomies.Controllers;
 
 [Admin]
-public class TagController : Controller, IUpdateModel
+public sealed class TagController : Controller, IUpdateModel
 {
     private readonly IContentManager _contentManager;
     private readonly IAuthorizationService _authorizationService;

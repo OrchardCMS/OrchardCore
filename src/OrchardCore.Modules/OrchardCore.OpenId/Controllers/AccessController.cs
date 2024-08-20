@@ -23,7 +23,7 @@ namespace OrchardCore.OpenId.Controllers;
 // Note: the error descriptions used in this controller are deliberately not localized as
 // the OAuth 2.0 specification only allows select US-ASCII characters in error_description.
 [Authorize, Feature(OpenIdConstants.Features.Server)]
-public class AccessController : Controller
+public sealed class AccessController : Controller
 {
     private readonly IOpenIdApplicationManager _applicationManager;
     private readonly IOpenIdAuthorizationManager _authorizationManager;

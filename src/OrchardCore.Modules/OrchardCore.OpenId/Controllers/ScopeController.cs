@@ -17,7 +17,7 @@ namespace OrchardCore.OpenId.Controllers;
 
 [Feature(OpenIdConstants.Features.Management)]
 [Admin("OpenId/Scope/{action}/{id?}", "OpenIdScope{action}")]
-public class ScopeController : Controller
+public sealed class ScopeController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IOpenIdScopeManager _scopeManager;
@@ -28,7 +28,7 @@ public class ScopeController : Controller
     private readonly ShellSettings _shellSettings;
     private readonly IShellHost _shellHost;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public ScopeController(
         IOpenIdScopeManager scopeManager,
