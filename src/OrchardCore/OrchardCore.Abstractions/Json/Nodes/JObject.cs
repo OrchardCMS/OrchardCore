@@ -102,6 +102,7 @@ public static class JObject
                 {
                     jsonObject[item.Key] = null;
                 }
+
                 continue;
             }
 
