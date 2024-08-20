@@ -101,10 +101,15 @@ public static class JObject
         {
             if (item.Value is null)
             {
+                if (settings!.MergeNullValueHandling == MergeNullValueHandling.Merge)
+                {
+                    jsonObject[item.Key] = null;
+                }
                 continue;
             }
 
             var existingProperty = jsonObject[item.Key];
+
             if (existingProperty is null)
             {
                 jsonObject[item.Key] = item.Value.Clone();
@@ -126,7 +131,7 @@ public static class JObject
             if (existingProperty is JsonValue || existingProperty.GetValueKind() != item.Value.GetValueKind())
             {
                 if (item.Value.GetValueKind() != JsonValueKind.Null ||
-                    settings?.MergeNullValueHandling == MergeNullValueHandling.Merge)
+                    settings!.MergeNullValueHandling == MergeNullValueHandling.Merge)
                 {
                     jsonObject[item.Key] = item.Value.Clone();
                 }
