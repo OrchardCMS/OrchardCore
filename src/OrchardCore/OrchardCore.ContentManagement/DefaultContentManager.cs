@@ -50,7 +50,7 @@ public class DefaultContentManager : IContentManager
         _clock = clock;
     }
 
-    public IEnumerable<IBulkContentEventHandler> BulkContentHandlers { get; private set; }
+    public IEnumerable<IBulkContentEventHandler> BulkContentEventHandlers { get; private set; }
     public IEnumerable<IContentHandler> Handlers { get; private set; }
 
     public IEnumerable<IContentHandler> _reversedHandlers;
