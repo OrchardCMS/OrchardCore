@@ -29,6 +29,29 @@ public sealed class NotificationMigrations : DataMigration
             collection: NotificationConstants.NotificationCollection
         );
 
-        return 1;
+        await SchemaBuilder.AlterIndexTableAsync<NotificationIndex>(table => table
+            .CreateIndex("IDX_NotificationIndex_UserId",
+                "DocumentId",
+                "UserId",
+                "IsRead",
+                "CreatedAtUtc"),
+            collection: NotificationConstants.NotificationCollection
+        );
+
+        return 2;
+    }
+
+    public async Task<int> UpdateFrom1Async()
+    {
+        await SchemaBuilder.AlterIndexTableAsync<NotificationIndex>(table => table
+            .CreateIndex("IDX_NotificationIndex_UserId",
+                "DocumentId",
+                "UserId",
+                "IsRead",
+                "CreatedAtUtc"),
+            collection: NotificationConstants.NotificationCollection
+        );
+
+        return 2;
     }
 }
