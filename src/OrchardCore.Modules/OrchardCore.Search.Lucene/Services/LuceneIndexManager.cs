@@ -206,7 +206,7 @@ public class LuceneIndexManager : IDisposable
 
             switch (entry.Type)
             {
-                case DocumentIndex.Types.Boolean:
+                case DocumentIndexBase.Types.Boolean:
                     // Store "true"/"false" for boolean.
                     doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value).ToLowerInvariant(), store));
 
@@ -216,7 +216,7 @@ public class LuceneIndexManager : IDisposable
                     }
                     break;
 
-                case DocumentIndex.Types.DateTime:
+                case DocumentIndexBase.Types.DateTime:
                     if (entry.Value != null)
                     {
                         if (entry.Value is DateTimeOffset)
@@ -246,7 +246,7 @@ public class LuceneIndexManager : IDisposable
                     }
                     break;
 
-                case DocumentIndex.Types.Integer:
+                case DocumentIndexBase.Types.Integer:
                     if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
                     {
                         doc.Add(new Int64Field(entry.Name, value, store));
@@ -263,7 +263,7 @@ public class LuceneIndexManager : IDisposable
 
                     break;
 
-                case DocumentIndex.Types.Number:
+                case DocumentIndexBase.Types.Number:
                     if (entry.Value != null)
                     {
                         doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), store));
@@ -279,7 +279,7 @@ public class LuceneIndexManager : IDisposable
                     }
                     break;
 
-                case DocumentIndex.Types.Text:
+                case DocumentIndexBase.Types.Text:
                     if (entry.Value != null && !string.IsNullOrEmpty(Convert.ToString(entry.Value)))
                     {
                         var stringValue = Convert.ToString(entry.Value);
@@ -319,7 +319,7 @@ public class LuceneIndexManager : IDisposable
                     }
                     break;
 
-                case DocumentIndex.Types.GeoPoint:
+                case DocumentIndexBase.Types.GeoPoint:
                     var strategy = new RecursivePrefixTreeStrategy(_grid, entry.Name);
 
                     if (entry.Value != null && entry.Value is DocumentIndexBase.GeoPoint point)
