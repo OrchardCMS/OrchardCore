@@ -285,7 +285,7 @@ public class AzureAIIndexDocumentManager
                     }
                     break;
 
-                case DocumentIndexBase.Types.DateTime:
+                case Types.DateTime:
 
                     if (entry.Value is DateTimeOffset offsetValue)
                     {
@@ -298,7 +298,7 @@ public class AzureAIIndexDocumentManager
 
                     break;
 
-                case DocumentIndexBase.Types.Integer:
+                case Types.Integer:
                     if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
                     {
                         doc.TryAdd(map.AzureFieldKey, value);
@@ -306,21 +306,21 @@ public class AzureAIIndexDocumentManager
 
                     break;
 
-                case DocumentIndexBase.Types.Number:
+                case Types.Number:
                     if (entry.Value != null)
                     {
                         doc.TryAdd(map.AzureFieldKey, Convert.ToDouble(entry.Value));
                     }
                     break;
 
-                case DocumentIndexBase.Types.GeoPoint:
+                case Types.GeoPoint:
                     if (entry.Value != null)
                     {
                         doc.TryAdd(map.AzureFieldKey, entry.Value);
                     }
                     break;
 
-                case DocumentIndexBase.Types.Text:
+                case Types.Text:
                     if (entry.Value != null)
                     {
                         var stringValue = Convert.ToString(entry.Value);
