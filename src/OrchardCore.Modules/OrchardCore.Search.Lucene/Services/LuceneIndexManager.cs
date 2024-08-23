@@ -14,6 +14,7 @@ using OrchardCore.Modules;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Services;
 using Spatial4n.Context;
+using static OrchardCore.Indexing.DocumentIndexBase;
 using Directory = System.IO.Directory;
 using LDirectory = Lucene.Net.Store.Directory;
 using LuceneLock = Lucene.Net.Store.Lock;
@@ -206,7 +207,7 @@ public class LuceneIndexManager : IDisposable
 
             switch (entry.Type)
             {
-                case DocumentIndex.Types.Boolean:
+                case Types.Boolean:
                     // Store "true"/"false" for boolean.
                     doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value).ToLowerInvariant(), store));
 
@@ -216,7 +217,7 @@ public class LuceneIndexManager : IDisposable
                     }
                     break;
 
-                case DocumentIndex.Types.DateTime:
+                case Types.DateTime:
                     if (entry.Value != null)
                     {
                         if (entry.Value is DateTimeOffset)
@@ -246,7 +247,7 @@ public class LuceneIndexManager : IDisposable
                     }
                     break;
 
-                case DocumentIndex.Types.Integer:
+                case Types.Integer:
                     if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
                     {
                         doc.Add(new Int64Field(entry.Name, value, store));
@@ -263,7 +264,7 @@ public class LuceneIndexManager : IDisposable
 
                     break;
 
-                case DocumentIndex.Types.Number:
+                case Types.Number:
                     if (entry.Value != null)
                     {
                         doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), store));
@@ -279,7 +280,7 @@ public class LuceneIndexManager : IDisposable
                     }
                     break;
 
-                case DocumentIndex.Types.Text:
+                case Types.Text:
                     if (entry.Value != null && !string.IsNullOrEmpty(Convert.ToString(entry.Value)))
                     {
                         var stringValue = Convert.ToString(entry.Value);
@@ -319,10 +320,10 @@ public class LuceneIndexManager : IDisposable
                     }
                     break;
 
-                case DocumentIndex.Types.GeoPoint:
+                case Types.GeoPoint:
                     var strategy = new RecursivePrefixTreeStrategy(_grid, entry.Name);
 
-                    if (entry.Value != null && entry.Value is DocumentIndex.GeoPoint point)
+                    if (entry.Value != null && entry.Value is DocumentIndexBase.GeoPoint point)
                     {
                         var geoPoint = _ctx.MakePoint((double)point.Longitude, (double)point.Latitude);
                         foreach (var field in strategy.CreateIndexableFields(geoPoint))
@@ -422,7 +423,7 @@ public class LuceneIndexManager : IDisposable
     }
 
     /// <summary>
-    /// Releases all readers and writers. This can be used after some time of innactivity to free resources.
+    /// Releases all readers and writers. This can be used after some time of inactivity to free resources.
     /// </summary>
     public void FreeReaderWriter()
     {
@@ -456,7 +457,7 @@ public class LuceneIndexManager : IDisposable
     }
 
     /// <summary>
-    /// Releases all readers and writers. This can be used after some time of innactivity to free resources.
+    /// Releases all readers and writers. This can be used after some time of inactivity to free resources.
     /// </summary>
     public void FreeReaderWriter(string indexName)
     {
