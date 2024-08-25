@@ -10,9 +10,9 @@ namespace OrchardCore.Users.TimeZone.Drivers;
 
 public sealed class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserTimeZone>
 {
-    private readonly UserTimeZoneService _userTimeZoneService;
+    private readonly IUserTimeZoneService _userTimeZoneService;
 
-    public UserTimeZoneDisplayDriver(UserTimeZoneService userTimeZoneService)
+    public UserTimeZoneDisplayDriver(IUserTimeZoneService userTimeZoneService)
     {
         _userTimeZoneService = userTimeZoneService;
     }

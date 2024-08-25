@@ -7,9 +7,9 @@ namespace OrchardCore.Users.TimeZone.Services;
 /// </summary>
 public class UserTimeZoneSelector : ITimeZoneSelector
 {
-    private readonly UserTimeZoneService _userTimeZoneService;
+    private readonly IUserTimeZoneService _userTimeZoneService;
 
-    public UserTimeZoneSelector(UserTimeZoneService userTimeZoneService)
+    public UserTimeZoneSelector(IUserTimeZoneService userTimeZoneService)
     {
         _userTimeZoneService = userTimeZoneService;
     }

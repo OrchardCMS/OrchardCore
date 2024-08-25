@@ -9,7 +9,7 @@ using OrchardCore.Users.TimeZone.Models;
 
 namespace OrchardCore.Users.TimeZone.Services;
 
-public class UserTimeZoneService
+public class UserTimeZoneService : IUserTimeZoneService
 {
     private const string EmptyTimeZone = "empty";
     private const string CacheKey = "UserTimeZone/";
