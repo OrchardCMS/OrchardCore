@@ -361,7 +361,8 @@ public sealed class TemplateController : Controller
             var templatesDocument = options.AdminTemplates
                     ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
                     : await _templatesManager.LoadTemplatesDocumentAsync();
-            var checkedContentItems = templatesDocument.Templates.Where(x => itemIds.Contains(x.Key));
+            var checkedContentItems = templatesDocument.Templates.Where(x =>
+                itemIdList.Contains(x.Key, StringComparer.OrdinalIgnoreCase));
 
             switch (options.BulkAction)
             {
