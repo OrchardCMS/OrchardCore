@@ -56,8 +56,8 @@ public sealed class GoogleAnalyticsStartup : StartupBase
         services.AddScoped<IPermissionProvider, GoogleAnalyticsPermissionsProvider>();
         services.AddSingleton<IGoogleAnalyticsService, GoogleAnalyticsService>();
 
-        services.AddSiteDisplayDriver<GoogleAnalyticsSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, GoogleAnalyticsAdminMenu>();
+        services.AddScoped<IDisplayDriver<ISite>, GoogleAnalyticsSettingsDisplayDriver>();
+        services.AddNavigationProvider<GoogleAnalyticsAdminMenu>();
         services.Configure<MvcOptions>((options) =>
         {
             options.Filters.Add<GoogleAnalyticsFilter>();
@@ -73,8 +73,8 @@ public sealed class GoogleTagManagerStartup : StartupBase
         services.AddScoped<IPermissionProvider, GoogleTagManagerPermissionProvider>();
         services.AddSingleton<IGoogleTagManagerService, GoogleTagManagerService>();
 
-        services.AddSiteDisplayDriver<GoogleTagManagerSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, GoogleTagManagerAdminMenu>();
+        services.AddScoped<IDisplayDriver<ISite>, GoogleTagManagerSettingsDisplayDriver>();
+        services.AddNavigationProvider<GoogleTagManagerAdminMenu>();
         services.Configure<MvcOptions>((options) =>
         {
             options.Filters.Add<GoogleTagManagerFilter>();
