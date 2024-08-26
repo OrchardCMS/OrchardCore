@@ -89,7 +89,7 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentDisplayDriver, TestContentElementDisplayDriver>();
         services.AddDataMigration<Migrations>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddContentPart<TestContentPartA>();
         services.AddScoped<IUserClaimsProvider, UserProfileClaimsProvider>();
 

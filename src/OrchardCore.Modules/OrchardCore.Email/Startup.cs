@@ -16,7 +16,7 @@ public sealed class Startup : StartupBase
     {
         services.AddEmailServices()
             .AddSiteDisplayDriver<EmailSettingsDisplayDriver>()
-            .AddScoped<IPermissionProvider, Permissions>()
+            .AddPermissionProvider<Permissions>()
             .AddNavigationProvider<AdminMenu>();
 
         services.AddDataMigration<EmailMigrations>();

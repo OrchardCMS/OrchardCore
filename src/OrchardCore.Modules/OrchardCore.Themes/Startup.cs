@@ -26,7 +26,7 @@ public sealed class Startup : StartupBase
     {
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
         services.AddRecipeExecutionStep<ThemesStep>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<IThemeSelector, SiteThemeSelector>();
         services.AddScoped<ISiteThemeService, SiteThemeService>();
         services.AddNavigationProvider<AdminMenu>();

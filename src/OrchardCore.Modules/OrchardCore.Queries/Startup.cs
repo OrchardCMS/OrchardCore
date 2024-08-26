@@ -26,7 +26,7 @@ public sealed class Startup : StartupBase
     {
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
     }
 }
 

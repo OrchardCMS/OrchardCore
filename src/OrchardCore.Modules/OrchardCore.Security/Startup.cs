@@ -19,7 +19,7 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IPermissionProvider, SecurityPermissions>();
+        services.AddPermissionProvider<SecurityPermissions>();
         services.AddSiteDisplayDriver<SecuritySettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<ISecurityService, SecurityService>();

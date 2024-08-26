@@ -29,7 +29,7 @@ public sealed class Startup : StartupBase
     {
         services.AddSiteDisplayDriver<LocalizationSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<ILocalizationService, LocalizationService>();
 
         services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").

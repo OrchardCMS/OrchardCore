@@ -51,11 +51,11 @@ public sealed class Startup : StartupBase
         });
 
         services.AddTransient<IAreaControllerRouteMapper, AdminAreaControllerRouteMapper>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<IThemeSelector, AdminThemeSelector>();
         services.AddScoped<IAdminThemeService, AdminThemeService>();
         services.AddSiteDisplayDriver<AdminSiteSettingsDisplayDriver>();
-        services.AddScoped<IPermissionProvider, PermissionsAdminSettings>();
+        services.AddPermissionProvider<PermissionsAdminSettings>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();
         services.AddScoped<IDisplayDriver<Navbar>, VisitSiteNavbarDisplayDriver>();

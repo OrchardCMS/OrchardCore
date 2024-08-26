@@ -45,7 +45,7 @@ public sealed class Startup : StartupBase
             return new ErrorInfoProvider(new ErrorInfoProviderOptions { ExposeExceptionDetails = settings.Value.ExposeExceptions });
         });
 
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<GraphQLMiddleware>();
 

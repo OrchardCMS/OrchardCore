@@ -17,6 +17,6 @@ public sealed class Startup : StartupBase
         services.AddScoped<RemoteInstanceService>();
         services.AddScoped<RemoteClientService>();
         services.AddScoped<IDeploymentTargetProvider, RemoteInstanceDeploymentTargetProvider>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
     }
 }

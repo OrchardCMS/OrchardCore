@@ -29,7 +29,7 @@ public sealed class GoogleAuthenticationStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IPermissionProvider, GoogleAuthenticationPermissionProvider>();
+        services.AddPermissionProvider<GoogleAuthenticationPermissionProvider>();
         services.AddSingleton<GoogleAuthenticationService, GoogleAuthenticationService>();
         services.AddSiteDisplayDriver<GoogleAuthenticationSettingsDisplayDriver>();
         services.AddNavigationProvider<GoogleAuthenticationAdminMenu>();
@@ -53,7 +53,7 @@ public sealed class GoogleAnalyticsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IPermissionProvider, GoogleAnalyticsPermissionsProvider>();
+        services.AddPermissionProvider<GoogleAnalyticsPermissionsProvider>();
         services.AddSingleton<IGoogleAnalyticsService, GoogleAnalyticsService>();
 
         services.AddSiteDisplayDriver<GoogleAnalyticsSettingsDisplayDriver>();
@@ -71,7 +71,7 @@ public sealed class GoogleTagManagerStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IPermissionProvider, GoogleTagManagerPermissionProvider>();
+        services.AddPermissionProvider<GoogleTagManagerPermissionProvider>();
         services.AddSingleton<IGoogleTagManagerService, GoogleTagManagerService>();
         services.AddSiteDisplayDriver<GoogleTagManagerSettingsDisplayDriver>();
         services.AddNavigationProvider<GoogleTagManagerAdminMenu>();

@@ -42,7 +42,7 @@ public sealed class Startup : StartupBase
         services.AddIndexProvider<AuditTrailEventIndexProvider>();
         services.AddSingleton<IBackgroundTask, AuditTrailBackgroundTask>();
 
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AuditTrailAdminMenu>();
         services.AddNavigationProvider<AuditTrailSettingsAdminMenu>();
 

@@ -62,7 +62,7 @@ public sealed class ShortcodeTemplatesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<ShortcodeTemplatesManager>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
 
         services.AddRecipeExecutionStep<ShortcodeTemplateStep>();

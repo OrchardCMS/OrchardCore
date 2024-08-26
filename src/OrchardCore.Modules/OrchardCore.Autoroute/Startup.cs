@@ -74,7 +74,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IContentHandler, DefaultRouteContentHandler>();
         services.AddScoped<IContentHandler, AutorouteContentHandler>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, AutoroutePartSettingsDisplayDriver>();
         services.AddScoped<IContentPartIndexHandler, AutoroutePartIndexHandler>();
 
