@@ -24,7 +24,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<CustomSettingsService>();
         services.AddScoped<IStereotypesProvider, CustomSettingsStereotypesProvider>();
         // Permissions
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<IAuthorizationHandler, CustomSettingsAuthorizationHandler>();
 
         services.AddRecipeExecutionStep<CustomSettingsStep>();

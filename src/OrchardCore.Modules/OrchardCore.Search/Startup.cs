@@ -30,7 +30,7 @@ public sealed class Startup : StartupBase
     {
         services.AddTransient<IConfigureOptions<SearchSettings>, SearchSettingsConfiguration>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddSiteDisplayDriver<SearchSettingsDisplayDriver>();
 
         services.AddContentPart<SearchFormPart>()

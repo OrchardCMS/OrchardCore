@@ -39,7 +39,7 @@ public sealed class Startup : StartupBase
         services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
         services.AddContentLocalization();
 
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
 
         services.AddScoped<IContentsAdminListFilter, LocalizationPartContentsAdminListFilter>();

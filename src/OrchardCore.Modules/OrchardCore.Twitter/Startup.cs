@@ -24,7 +24,7 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
     }
 }
 

@@ -32,7 +32,7 @@ public sealed class Startup : StartupBase
     {
         services.AddDataMigration<Migrations>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
 
         services.Configure<SitemapsOptions>(options =>
         {

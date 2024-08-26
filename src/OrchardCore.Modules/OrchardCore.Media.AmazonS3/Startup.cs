@@ -34,7 +34,7 @@ public sealed class Startup : Modules.StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddTransient<IConfigureOptions<AwsStorageOptions>, AwsStorageOptionsConfiguration>();
 
