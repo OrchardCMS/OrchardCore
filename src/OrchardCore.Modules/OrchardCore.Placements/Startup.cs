@@ -19,7 +19,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
 
         services.TryAddScoped<IPlacementStore, DatabasePlacementsStore>();
         services.AddScoped<PlacementsManager>();

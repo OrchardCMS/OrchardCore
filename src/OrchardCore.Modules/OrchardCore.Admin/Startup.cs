@@ -57,7 +57,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IAdminThemeService, AdminThemeService>();
         services.AddScoped<IDisplayDriver<ISite>, AdminSiteSettingsDisplayDriver>();
         services.AddScoped<IPermissionProvider, PermissionsAdminSettings>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();
         services.AddScoped<IDisplayDriver<Navbar>, VisitSiteNavbarDisplayDriver>();
 

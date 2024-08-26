@@ -20,7 +20,7 @@ public sealed class Startup : StartupBase
         services.AddRecipeExecutionStep<FeatureStep>();
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<IModuleService, ModuleService>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
 
         services.AddDeployment<AllFeaturesDeploymentSource, AllFeaturesDeploymentStep, AllFeaturesDeploymentStepDriver>();
     }

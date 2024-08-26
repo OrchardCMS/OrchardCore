@@ -16,7 +16,7 @@ public sealed class ExportContentToDeploymentTargetStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INavigationProvider, ExportContentToDeploymentTargetAdminMenu>();
+        services.AddNavigationProvider<ExportContentToDeploymentTargetAdminMenu>();
 
         services.AddScoped<IDisplayDriver<ISite>, ExportContentToDeploymentTargetSettingsDisplayDriver>();
 

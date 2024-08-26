@@ -39,7 +39,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IPermissionProvider, SeoPermissionProvider>();
         services.AddScoped<IDisplayDriver<ISite>, RobotsSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddTransient<IRobotsProvider, SiteSettingsRobotsProvider>();
     }
 

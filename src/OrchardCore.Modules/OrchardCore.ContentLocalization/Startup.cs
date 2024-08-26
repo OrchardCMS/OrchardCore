@@ -62,7 +62,7 @@ public sealed class ContentPickerStartup : StartupBase
     {
         services.AddScoped<IDisplayDriver<Navbar>, ContentCulturePickerNavbarDisplayDriver>();
         services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentCulturePickerService, ContentCulturePickerService>();
         services.AddScoped<IDisplayDriver<ISite>, ContentCulturePickerSettingsDriver>();
         services.AddScoped<IDisplayDriver<ISite>, ContentRequestCultureProviderSettingsDriver>();
