@@ -352,8 +352,11 @@ public sealed class TemplateController : Controller
         {
             return Forbid();
         }
+        
+        // Prevent multiple enumeration.
+        var itemIdList = itemIds as IList<string> ?? itemIds?.ToList() ?? new List<string>();
 
-        if (itemIds?.Count() > 0)
+        if (itemIdList.Count > 0)
         {
             var templatesDocument = options.AdminTemplates
                     ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
@@ -378,14 +381,7 @@ public sealed class TemplateController : Controller
             }
         }
 
-        if (options.AdminTemplates)
-        {
-            return RedirectToAction(nameof(Admin));
-        }
-        else
-        {
-            return RedirectToAction(nameof(Index));
-        }
+        return RedirectToAction(options.AdminTemplates ? nameof(Admin) : nameof(Index));
     }
 
     private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)
