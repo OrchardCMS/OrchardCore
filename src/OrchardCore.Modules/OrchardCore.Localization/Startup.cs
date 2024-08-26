@@ -29,7 +29,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IDisplayDriver<ISite>, LocalizationSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<ILocalizationService, LocalizationService>();
 

@@ -20,7 +20,7 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IDisplayDriver<ISite>, CustomSettingsDisplayDriver>();
         services.AddScoped<CustomSettingsService>();
         services.AddScoped<IStereotypesProvider, CustomSettingsStereotypesProvider>();

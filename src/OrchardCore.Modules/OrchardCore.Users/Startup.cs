@@ -204,7 +204,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IExternalLoginEventHandler, ScriptExternalLoginEventHandler>();
 
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
 
         services.AddScoped<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
 
@@ -367,7 +367,7 @@ public sealed class ChangeEmailStartup : StartupBase
             o.MemberAccessStrategy.Register<ChangeEmailViewModel>();
         });
 
-        services.AddScoped<INavigationProvider, ChangeEmailAdminMenu>();
+        services.AddNavigationProvider<ChangeEmailAdminMenu>();
         services.AddScoped<IDisplayDriver<ISite>, ChangeEmailSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<UserMenu>, ChangeEmailUserMenuDisplayDriver>();
     }
@@ -434,7 +434,7 @@ public sealed class RegistrationStartup : StartupBase
             o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
         });
 
-        services.AddScoped<INavigationProvider, RegistrationAdminMenu>();
+        services.AddNavigationProvider<RegistrationAdminMenu>();
         services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<LoginForm>, RegisterUserLoginFormDisplayDriver>();
         services.AddScoped<IDisplayDriver<RegisterUserForm>, RegisterUserFormDisplayDriver>();
@@ -515,7 +515,7 @@ public sealed class ResetPasswordStartup : StartupBase
             o.MemberAccessStrategy.Register<LostPasswordViewModel>();
         });
 
-        services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
+        services.AddNavigationProvider<ResetPasswordAdminMenu>();
         services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<ResetPasswordForm>, ResetPasswordFormDisplayDriver>();
 

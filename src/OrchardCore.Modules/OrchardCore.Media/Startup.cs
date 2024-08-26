@@ -137,7 +137,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IPermissionProvider, PermissionProvider>();
         services.AddScoped<IAuthorizationHandler, ManageMediaFolderAuthorizationHandler>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
 
         // ImageSharp
 
@@ -236,7 +236,7 @@ public sealed class MediaCacheStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IPermissionProvider, MediaCachePermissions>();
-        services.AddScoped<INavigationProvider, MediaCacheAdminMenu>();
+        services.AddNavigationProvider<MediaCacheAdminMenu>();
     }
 }
 

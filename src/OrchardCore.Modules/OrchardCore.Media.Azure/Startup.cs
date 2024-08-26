@@ -40,7 +40,7 @@ public sealed class Startup : Modules.StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddTransient<IConfigureOptions<MediaBlobStorageOptions>, MediaBlobStorageOptionsConfiguration>();
 
         // Only replace default implementation if options are valid.

@@ -25,7 +25,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<PreviewTemplatesProvider>();
         services.AddScoped<TemplatesManager>();
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddRecipeExecutionStep<TemplateStep>();
 
         // Template shortcuts in settings
@@ -47,7 +47,7 @@ public sealed class AdminTemplatesStartup : StartupBase
     {
         services.AddScoped<IShapeBindingResolver, AdminTemplatesShapeBindingResolver>();
         services.AddScoped<AdminPreviewTemplatesProvider>();
-        services.AddScoped<INavigationProvider, AdminTemplatesAdminMenu>();
+        services.AddNavigationProvider<AdminTemplatesAdminMenu>();
         services.AddRecipeExecutionStep<AdminTemplateStep>();
         services.AddDeployment<AllAdminTemplatesDeploymentSource, AllAdminTemplatesDeploymentStep, AllAdminTemplatesDeploymentStepDriver>();
     }

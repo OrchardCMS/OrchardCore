@@ -23,7 +23,7 @@ public sealed class Startup : StartupBase
         services.AddReCaptcha();
 
         services.AddScoped<IDisplayDriver<ISite>, ReCaptchaSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IPermissionProvider, Permissions>();
     }
 }

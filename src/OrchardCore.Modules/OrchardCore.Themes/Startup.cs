@@ -29,7 +29,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<IThemeSelector, SiteThemeSelector>();
         services.AddScoped<ISiteThemeService, SiteThemeService>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IThemeService, ThemeService>();
         services.AddScoped<ThemeTogglerService>();
         services.AddDeployment<ThemesDeploymentSource, ThemesDeploymentStep, ThemesDeploymentStepDriver>();

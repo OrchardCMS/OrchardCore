@@ -19,7 +19,7 @@ public sealed class Startup : StartupBase
     {
         services.AddDeploymentServices();
 
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IPermissionProvider, Permissions>();
 
         services.AddSingleton<IDeploymentTargetProvider, FileDownloadDeploymentTargetProvider>();
