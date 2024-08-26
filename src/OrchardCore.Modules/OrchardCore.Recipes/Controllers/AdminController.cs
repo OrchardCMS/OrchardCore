@@ -119,7 +119,7 @@ public sealed class AdminController : Controller
         {
             _logger.LogError(e, "Unable to import a recipe file.");
 
-            await _notifier.ErrorAsync(H["The recipe '{0}' failed to run do to the following errors: {1}", recipe.DisplayName, string.Join(' ', e.StepResult.Errors)]);
+            await _notifier.ErrorAsync(H["The recipe '{0}' failed to run due to the following errors: {1}", recipe.DisplayName, string.Join(' ', e.StepResult.Errors)]);
         }
         catch (Exception e)
         {
