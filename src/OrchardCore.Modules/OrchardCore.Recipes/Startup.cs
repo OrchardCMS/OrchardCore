@@ -14,7 +14,7 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
 
         services.AddRecipeExecutionStep<CommandStep>();
         services.AddRecipeExecutionStep<RecipesStep>();

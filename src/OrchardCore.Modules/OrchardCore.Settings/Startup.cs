@@ -73,7 +73,7 @@ public sealed class Startup : StartupBase
         // Site Settings editor
         services.AddScoped<IDisplayDriver<ISite>, DefaultSiteSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<ISite>, ButtonsSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
 
         services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
 

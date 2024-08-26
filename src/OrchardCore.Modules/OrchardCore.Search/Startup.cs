@@ -30,7 +30,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddTransient<IConfigureOptions<SearchSettings>, SearchSettingsConfiguration>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<IDisplayDriver<ISite>, SearchSettingsDisplayDriver>();
 

@@ -44,8 +44,8 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IBackgroundTask, AuditTrailBackgroundTask>();
 
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<INavigationProvider, AuditTrailAdminMenu>();
-        services.AddScoped<INavigationProvider, AuditTrailSettingsAdminMenu>();
+        services.AddNavigationProvider<AuditTrailAdminMenu>();
+        services.AddNavigationProvider<AuditTrailSettingsAdminMenu>();
 
         services.AddScoped<IDisplayDriver<ISite>, AuditTrailSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<ISite>, AuditTrailTrimmingSettingsDisplayDriver>();

@@ -16,7 +16,7 @@ internal static class ServiceCollectionExtensions
         services.AddScoped<IWorkflowTrimmingService, WorkflowTrimmingService>();
         services.AddSingleton<IBackgroundTask, WorkflowTrimmingBackgroundTask>();
         services.AddScoped<IDisplayDriver<ISite>, WorkflowTrimmingDisplayDriver>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.Configure<WorkflowTrimmingOptions>(shellConfiguration.GetSection("OrchardCore_Workflows:Trimming"));
 
         return services;

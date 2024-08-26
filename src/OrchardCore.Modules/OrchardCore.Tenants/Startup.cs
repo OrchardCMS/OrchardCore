@@ -31,7 +31,7 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<ITenantValidator, TenantValidator>();
         services.AddScoped<IShapeTableProvider, TenantShapeTableProvider>();
@@ -110,7 +110,7 @@ public sealed class FeatureProfilesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INavigationProvider, FeatureProfilesAdminMenu>();
+        services.AddNavigationProvider<FeatureProfilesAdminMenu>();
         services.AddScoped<FeatureProfilesManager>();
         services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
         services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();

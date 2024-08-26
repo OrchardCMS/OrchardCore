@@ -22,7 +22,7 @@ public sealed class Startup : StartupBase
     {
         services.AddScoped<IPermissionProvider, SecurityPermissions>();
         services.AddScoped<IDisplayDriver<ISite>, SecuritySettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
 
         services.AddSingleton<ISecurityService, SecurityService>();
 

@@ -30,7 +30,7 @@ public sealed class MicrosoftAccountStartup : StartupBase
 
         services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
         services.AddScoped<IDisplayDriver<ISite>, MicrosoftAccountSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, AdminMenuMicrosoftAccount>();
+        services.AddNavigationProvider<AdminMenuMicrosoftAccount>();
         services.AddRecipeExecutionStep<MicrosoftAccountSettingsStep>();
 
         services.AddTransient<IConfigureOptions<MicrosoftAccountSettings>, MicrosoftAccountSettingsConfiguration>();
@@ -58,7 +58,7 @@ public sealed class AzureADStartup : StartupBase
         services.AddRecipeExecutionStep<AzureADSettingsStep>();
 
         services.AddScoped<IDisplayDriver<ISite>, AzureADSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, AdminMenuAAD>();
+        services.AddNavigationProvider<AdminMenuAAD>();
 
         services.AddTransient<IConfigureOptions<AzureADSettings>, AzureADSettingsConfiguration>();
 
