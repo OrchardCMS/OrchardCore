@@ -93,7 +93,7 @@ public class AzureAISearchIndexingService
             Dictionary<string, ContentItem> allLatest = null;
 
             // Group all DocumentIndex by index to batch update them.
-            var updatedDocumentsByIndex = indexSettings.ToDictionary(x => x.IndexName, b => new List<DocumentIndex>());
+            var updatedDocumentsByIndex = indexSettings.ToDictionary(x => x.IndexName, b => new List<DocumentIndexBase>());
 
             var settingsByIndex = indexSettings.ToDictionary(x => x.IndexName);
 
