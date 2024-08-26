@@ -1,4 +1,5 @@
 using OrchardCore.Data.Documents;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Templates.Models;
 
@@ -10,18 +11,7 @@ public class TemplatesDocument : Document
     {
         get => _templates;
         
-        set
-        {
-            _templates.Clear();
-
-            if (value != null)
-            {
-                foreach (var (key, template) in value)
-                {
-                    _templates[key] = template;
-                }
-            }
-        }
+        set => _templates.SetItems(value);
     }
 }
 
