@@ -10,7 +10,6 @@ using OrchardCore.Search.AzureAI.Deployment;
 using OrchardCore.Search.AzureAI.Drivers;
 using OrchardCore.Search.AzureAI.Handlers;
 using OrchardCore.Search.AzureAI.Services;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI;
 
@@ -19,8 +18,8 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddAzureAISearchServices();
-        services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IDisplayDriver<ISite>, AzureAISearchDefaultSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<AzureAISearchDefaultSettingsDisplayDriver>();
+        services.AddNavigationProvider<AdminMenu>();
     }
 }
 
@@ -29,7 +28,7 @@ public sealed class SearchStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<ISite>, AzureAISearchSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<AzureAISearchSettingsDisplayDriver>();
         services.AddScoped<ISearchService, AzureAISearchService>();
         services.AddScoped<IAuthorizationHandler, AzureAISearchAuthorizationHandler>();
     }

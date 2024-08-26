@@ -14,7 +14,6 @@ using OrchardCore.Recipes;
 using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Seo;
-using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.Deployment;
@@ -32,7 +31,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDataMigration<Migrations>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IPermissionProvider, Permissions>();
 
         services.Configure<SitemapsOptions>(options =>
@@ -131,6 +130,6 @@ public sealed class SeoStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddTransient<IRobotsProvider, SitemapsRobotsProvider>();
-        services.AddScoped<IDisplayDriver<ISite>, SitemapsRobotsSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<SitemapsRobotsSettingsDisplayDriver>();
     }
 }

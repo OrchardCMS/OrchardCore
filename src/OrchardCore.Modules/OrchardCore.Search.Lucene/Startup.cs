@@ -25,7 +25,6 @@ using OrchardCore.Search.Lucene.Recipes;
 using OrchardCore.Search.Lucene.Services;
 using OrchardCore.Search.Lucene.Settings;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Lucene;
 
@@ -41,7 +40,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<LuceneIndexingService>();
         services.AddScoped<IModularTenantEvents, LuceneIndexInitializerService>();
         services.AddScoped<ILuceneSearchQueryService, LuceneSearchQueryService>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IPermissionProvider, Permissions>();
 
         services.Configure<LuceneOptions>(o =>
@@ -69,7 +68,7 @@ public sealed class SearchStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<ISearchService, LuceneSearchService>();
-        services.AddScoped<IDisplayDriver<ISite>, LuceneSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<LuceneSettingsDisplayDriver>();
         services.AddScoped<IAuthorizationHandler, LuceneAuthorizationHandler>();
     }
 }

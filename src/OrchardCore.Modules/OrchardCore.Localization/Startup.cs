@@ -13,7 +13,6 @@ using OrchardCore.Localization.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Localization;
@@ -28,8 +27,8 @@ public sealed class Startup : StartupBase
     /// <inheritdocs />
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<ISite>, LocalizationSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddSiteDisplayDriver<LocalizationSettingsDisplayDriver>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<ILocalizationService, LocalizationService>();
 
