@@ -20,7 +20,6 @@ using OrchardCore.Google.TagManager.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Google;
@@ -32,8 +31,9 @@ public sealed class GoogleAuthenticationStartup : StartupBase
     {
         services.AddScoped<IPermissionProvider, GoogleAuthenticationPermissionProvider>();
         services.AddSingleton<GoogleAuthenticationService, GoogleAuthenticationService>();
-        services.AddScoped<IDisplayDriver<ISite>, GoogleAuthenticationSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<GoogleAuthenticationSettingsDisplayDriver>();
         services.AddNavigationProvider<GoogleAuthenticationAdminMenu>();
+
         // Register the options initializers required by the Google Handler.
         services.TryAddEnumerable(new[]
         {
@@ -56,8 +56,9 @@ public sealed class GoogleAnalyticsStartup : StartupBase
         services.AddScoped<IPermissionProvider, GoogleAnalyticsPermissionsProvider>();
         services.AddSingleton<IGoogleAnalyticsService, GoogleAnalyticsService>();
 
-        services.AddScoped<IDisplayDriver<ISite>, GoogleAnalyticsSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<GoogleAnalyticsSettingsDisplayDriver>();
         services.AddNavigationProvider<GoogleAnalyticsAdminMenu>();
+
         services.Configure<MvcOptions>((options) =>
         {
             options.Filters.Add<GoogleAnalyticsFilter>();
@@ -72,9 +73,9 @@ public sealed class GoogleTagManagerStartup : StartupBase
     {
         services.AddScoped<IPermissionProvider, GoogleTagManagerPermissionProvider>();
         services.AddSingleton<IGoogleTagManagerService, GoogleTagManagerService>();
-
-        services.AddScoped<IDisplayDriver<ISite>, GoogleTagManagerSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<GoogleTagManagerSettingsDisplayDriver>();
         services.AddNavigationProvider<GoogleTagManagerAdminMenu>();
+
         services.Configure<MvcOptions>((options) =>
         {
             options.Filters.Add<GoogleTagManagerFilter>();

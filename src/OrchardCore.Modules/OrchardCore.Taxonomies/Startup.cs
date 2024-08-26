@@ -16,7 +16,6 @@ using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Taxonomies.Drivers;
 using OrchardCore.Taxonomies.Fields;
@@ -85,9 +84,8 @@ public sealed class ContentsAdminListStartup : StartupBase
     {
         services.AddScoped<IContentsAdminListFilter, TaxonomyContentsAdminListFilter>();
         services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, TaxonomyContentsAdminListDisplayDriver>();
-
         services.AddNavigationProvider<AdminMenu>();
-        services.AddScoped<IDisplayDriver<ISite>, TaxonomyContentsAdminListSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<TaxonomyContentsAdminListSettingsDisplayDriver>();
     }
 }
 

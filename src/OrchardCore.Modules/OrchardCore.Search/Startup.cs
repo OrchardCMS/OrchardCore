@@ -18,7 +18,6 @@ using OrchardCore.Search.Migrations;
 using OrchardCore.Search.Models;
 using OrchardCore.Search.ViewModels;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Search;
 
@@ -32,7 +31,7 @@ public sealed class Startup : StartupBase
         services.AddTransient<IConfigureOptions<SearchSettings>, SearchSettingsConfiguration>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<IDisplayDriver<ISite>, SearchSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<SearchSettingsDisplayDriver>();
 
         services.AddContentPart<SearchFormPart>()
                 .UseDisplayDriver<SearchFormPartDisplayDriver>();

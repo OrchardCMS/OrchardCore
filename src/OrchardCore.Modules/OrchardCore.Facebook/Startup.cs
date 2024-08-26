@@ -14,7 +14,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook;
 
@@ -31,7 +30,7 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
 
         services.AddSingleton<IFacebookService, FacebookService>();
-        services.AddScoped<IDisplayDriver<ISite>, FacebookSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<FacebookSettingsDisplayDriver>();
         services.AddRecipeExecutionStep<FacebookSettingsStep>();
 
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();

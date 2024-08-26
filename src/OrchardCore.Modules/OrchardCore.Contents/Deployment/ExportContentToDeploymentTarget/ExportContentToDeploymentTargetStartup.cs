@@ -6,7 +6,6 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
@@ -18,7 +17,7 @@ public sealed class ExportContentToDeploymentTargetStartup : StartupBase
     {
         services.AddNavigationProvider<ExportContentToDeploymentTargetAdminMenu>();
 
-        services.AddScoped<IDisplayDriver<ISite>, ExportContentToDeploymentTargetSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<ExportContentToDeploymentTargetSettingsDisplayDriver>();
 
         services.AddDeployment<ExportContentToDeploymentTargetDeploymentSource, ExportContentToDeploymentTargetDeploymentStep, ExportContentToDeploymentTargetDeploymentStepDriver>();
 

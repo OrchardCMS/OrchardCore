@@ -21,7 +21,6 @@ using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
 
 namespace OrchardCore.ContentLocalization;
@@ -64,8 +63,8 @@ public sealed class ContentPickerStartup : StartupBase
         services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentCulturePickerService, ContentCulturePickerService>();
-        services.AddScoped<IDisplayDriver<ISite>, ContentCulturePickerSettingsDriver>();
-        services.AddScoped<IDisplayDriver<ISite>, ContentRequestCultureProviderSettingsDriver>();
+        services.AddSiteDisplayDriver<ContentCulturePickerSettingsDriver>();
+        services.AddSiteDisplayDriver<ContentRequestCultureProviderSettingsDriver>();
         services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider()));
         services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
     }

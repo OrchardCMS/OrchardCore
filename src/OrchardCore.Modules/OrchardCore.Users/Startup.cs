@@ -33,7 +33,6 @@ using OrchardCore.Recipes.Services;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Setup.Events;
 using OrchardCore.Sms;
@@ -206,7 +205,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddNavigationProvider<AdminMenu>();
 
-        services.AddScoped<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<LoginSettingsDisplayDriver>();
 
         services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
         services.AddScoped<IDisplayDriver<User>, UserInformationDisplayDriver>();
@@ -367,8 +366,8 @@ public sealed class ChangeEmailStartup : StartupBase
             o.MemberAccessStrategy.Register<ChangeEmailViewModel>();
         });
 
+        services.AddSiteDisplayDriver<ChangeEmailSettingsDisplayDriver>();
         services.AddNavigationProvider<ChangeEmailAdminMenu>();
-        services.AddScoped<IDisplayDriver<ISite>, ChangeEmailSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<UserMenu>, ChangeEmailUserMenuDisplayDriver>();
     }
 }
@@ -434,8 +433,9 @@ public sealed class RegistrationStartup : StartupBase
             o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
         });
 
+        services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
-        services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
+
         services.AddScoped<IDisplayDriver<LoginForm>, RegisterUserLoginFormDisplayDriver>();
         services.AddScoped<IDisplayDriver<RegisterUserForm>, RegisterUserFormDisplayDriver>();
     }
@@ -515,10 +515,10 @@ public sealed class ResetPasswordStartup : StartupBase
             o.MemberAccessStrategy.Register<LostPasswordViewModel>();
         });
 
+        services.AddSiteDisplayDriver<ResetPasswordSettingsDisplayDriver>();
         services.AddNavigationProvider<ResetPasswordAdminMenu>();
-        services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
+        
         services.AddScoped<IDisplayDriver<ResetPasswordForm>, ResetPasswordFormDisplayDriver>();
-
         services.AddScoped<IDisplayDriver<LoginForm>, ForgotPasswordLoginFormDisplayDriver>();
         services.AddScoped<IDisplayDriver<ForgotPasswordForm>, ForgotPasswordFormDisplayDriver>();
     }
