@@ -94,7 +94,7 @@ public sealed class Startup : StartupBase
 
         services.AddElasticServices();
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
         services.AddDataMigration<ElasticsearchQueryMigrations>();
         services.AddScoped<IQueryHandler, ElasticsearchQueryHandler>();

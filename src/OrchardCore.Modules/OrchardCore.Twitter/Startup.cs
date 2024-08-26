@@ -34,7 +34,7 @@ public sealed class TwitterStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddSiteDisplayDriver<TwitterSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<ITwitterSettingsService, TwitterSettingsService>();
 
         services.AddRecipeExecutionStep<TwitterSettingsStep>();
@@ -65,7 +65,7 @@ public sealed class TwitterSigninStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INavigationProvider, AdminMenuSignin>();
+        services.AddNavigationProvider<AdminMenuSignin>();
         services.AddSingleton<ITwitterSigninService, TwitterSigninService>();
         services.AddSiteDisplayDriver<TwitterSigninSettingsDisplayDriver>();
         // Register the options initializers required by the Twitter Handler.

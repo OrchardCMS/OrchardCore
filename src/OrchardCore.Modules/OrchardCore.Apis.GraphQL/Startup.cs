@@ -46,7 +46,7 @@ public sealed class Startup : StartupBase
         });
 
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddTransient<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<GraphQLMiddleware>();
 
         services.AddGraphQL(builder => builder.AddSystemTextJson((options, sp) =>

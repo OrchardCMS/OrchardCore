@@ -33,8 +33,8 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddSiteDisplayDriver<HttpsSettingsDisplayDriver>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<IHttpsService, HttpsService>();
 
         services.AddScoped<IPermissionProvider, Permissions>();

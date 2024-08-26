@@ -18,8 +18,8 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddAzureAISearchServices();
-        services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddSiteDisplayDriver<AzureAISearchDefaultSettingsDisplayDriver>();
+        services.AddNavigationProvider<AdminMenu>();
     }
 }
 

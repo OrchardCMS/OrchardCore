@@ -35,7 +35,7 @@ public sealed class Startup : Modules.StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddTransient<IConfigureOptions<AwsStorageOptions>, AwsStorageOptionsConfiguration>();
 
         var storeOptions = new AwsStorageOptions().BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, _configuration, _logger);

@@ -27,7 +27,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
 
         services.AddSingleton<IFacebookService, FacebookService>();
         services.AddSiteDisplayDriver<FacebookSettingsDisplayDriver>();

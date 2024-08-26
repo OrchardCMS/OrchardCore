@@ -203,7 +203,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IExternalLoginEventHandler, ScriptExternalLoginEventHandler>();
 
         services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
 
         services.AddSiteDisplayDriver<LoginSettingsDisplayDriver>();
 
@@ -366,8 +366,8 @@ public sealed class ChangeEmailStartup : StartupBase
             o.MemberAccessStrategy.Register<ChangeEmailViewModel>();
         });
 
-        services.AddScoped<INavigationProvider, ChangeEmailAdminMenu>();
         services.AddSiteDisplayDriver<ChangeEmailSettingsDisplayDriver>();
+        services.AddNavigationProvider<ChangeEmailAdminMenu>();
         services.AddScoped<IDisplayDriver<UserMenu>, ChangeEmailUserMenuDisplayDriver>();
     }
 }
@@ -433,8 +433,9 @@ public sealed class RegistrationStartup : StartupBase
             o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
         });
 
-        services.AddScoped<INavigationProvider, RegistrationAdminMenu>();
         services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
+        services.AddNavigationProvider<RegistrationAdminMenu>();
+
         services.AddScoped<IDisplayDriver<LoginForm>, RegisterUserLoginFormDisplayDriver>();
         services.AddScoped<IDisplayDriver<RegisterUserForm>, RegisterUserFormDisplayDriver>();
     }
@@ -514,10 +515,10 @@ public sealed class ResetPasswordStartup : StartupBase
             o.MemberAccessStrategy.Register<LostPasswordViewModel>();
         });
 
-        services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
         services.AddSiteDisplayDriver<ResetPasswordSettingsDisplayDriver>();
+        services.AddNavigationProvider<ResetPasswordAdminMenu>();
+        
         services.AddScoped<IDisplayDriver<ResetPasswordForm>, ResetPasswordFormDisplayDriver>();
-
         services.AddScoped<IDisplayDriver<LoginForm>, ForgotPasswordLoginFormDisplayDriver>();
         services.AddScoped<IDisplayDriver<ForgotPasswordForm>, ForgotPasswordFormDisplayDriver>();
     }

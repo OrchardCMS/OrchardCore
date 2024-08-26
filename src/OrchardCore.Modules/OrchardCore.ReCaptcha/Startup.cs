@@ -20,9 +20,8 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddReCaptcha();
-
         services.AddSiteDisplayDriver<ReCaptchaSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IPermissionProvider, Permissions>();
     }
 }

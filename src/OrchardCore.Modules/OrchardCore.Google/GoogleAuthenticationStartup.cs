@@ -32,7 +32,8 @@ public sealed class GoogleAuthenticationStartup : StartupBase
         services.AddScoped<IPermissionProvider, GoogleAuthenticationPermissionProvider>();
         services.AddSingleton<GoogleAuthenticationService, GoogleAuthenticationService>();
         services.AddSiteDisplayDriver<GoogleAuthenticationSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, GoogleAuthenticationAdminMenu>();
+        services.AddNavigationProvider<GoogleAuthenticationAdminMenu>();
+
         // Register the options initializers required by the Google Handler.
         services.TryAddEnumerable(new[]
         {
@@ -56,7 +57,8 @@ public sealed class GoogleAnalyticsStartup : StartupBase
         services.AddSingleton<IGoogleAnalyticsService, GoogleAnalyticsService>();
 
         services.AddSiteDisplayDriver<GoogleAnalyticsSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, GoogleAnalyticsAdminMenu>();
+        services.AddNavigationProvider<GoogleAnalyticsAdminMenu>();
+
         services.Configure<MvcOptions>((options) =>
         {
             options.Filters.Add<GoogleAnalyticsFilter>();
@@ -71,9 +73,9 @@ public sealed class GoogleTagManagerStartup : StartupBase
     {
         services.AddScoped<IPermissionProvider, GoogleTagManagerPermissionProvider>();
         services.AddSingleton<IGoogleTagManagerService, GoogleTagManagerService>();
-
         services.AddSiteDisplayDriver<GoogleTagManagerSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, GoogleTagManagerAdminMenu>();
+        services.AddNavigationProvider<GoogleTagManagerAdminMenu>();
+
         services.Configure<MvcOptions>((options) =>
         {
             options.Filters.Add<GoogleTagManagerFilter>();
