@@ -1,10 +1,17 @@
 using OrchardCore.Data.Documents;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Shortcodes.Models;
 
 public class ShortcodeTemplatesDocument : Document
 {
-    public Dictionary<string, ShortcodeTemplate> ShortcodeTemplates { get; init; } = new Dictionary<string, ShortcodeTemplate>(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, ShortcodeTemplate> _shortcodeTemplates = new(StringComparer.OrdinalIgnoreCase);
+
+    public Dictionary<string, ShortcodeTemplate> ShortcodeTemplates
+    {
+        get => _shortcodeTemplates;
+        set => _shortcodeTemplates.SetItems(value);
+    }
 }
 
 public class ShortcodeTemplate

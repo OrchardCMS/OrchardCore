@@ -1,10 +1,17 @@
 using OrchardCore.Data.Documents;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Models;
 
 public class MediaProfilesDocument : Document
 {
-    public Dictionary<string, MediaProfile> MediaProfiles { get; init; } = new Dictionary<string, MediaProfile>(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, MediaProfile> _mediaProfiles = new(StringComparer.OrdinalIgnoreCase);
+
+    public Dictionary<string, MediaProfile> MediaProfiles
+    {
+        get => _mediaProfiles;
+        set => _mediaProfiles.SetItems(value);
+    }
 }
 
 public class MediaProfile
