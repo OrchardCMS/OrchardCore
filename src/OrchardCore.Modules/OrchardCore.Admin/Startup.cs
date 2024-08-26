@@ -22,7 +22,6 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Routing;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Admin;
@@ -55,7 +54,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IPermissionProvider, Permissions>();
         services.AddScoped<IThemeSelector, AdminThemeSelector>();
         services.AddScoped<IAdminThemeService, AdminThemeService>();
-        services.AddScoped<IDisplayDriver<ISite>, AdminSiteSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<AdminSiteSettingsDisplayDriver>();
         services.AddScoped<IPermissionProvider, PermissionsAdminSettings>();
         services.AddScoped<INavigationProvider, AdminMenu>();
         services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();

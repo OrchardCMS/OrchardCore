@@ -14,7 +14,6 @@ using OrchardCore.Recipes;
 using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Seo;
-using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.Deployment;
@@ -131,6 +130,6 @@ public sealed class SeoStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddTransient<IRobotsProvider, SitemapsRobotsProvider>();
-        services.AddScoped<IDisplayDriver<ISite>, SitemapsRobotsSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<SitemapsRobotsSettingsDisplayDriver>();
     }
 }

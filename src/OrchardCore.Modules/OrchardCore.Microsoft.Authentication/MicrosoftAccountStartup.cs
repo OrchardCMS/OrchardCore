@@ -17,7 +17,6 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Microsoft.Authentication;
 
@@ -29,7 +28,7 @@ public sealed class MicrosoftAccountStartup : StartupBase
         services.TryAddEnumerable(new ServiceDescriptor(typeof(IPermissionProvider), typeof(Permissions), ServiceLifetime.Scoped));
 
         services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
-        services.AddScoped<IDisplayDriver<ISite>, MicrosoftAccountSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<MicrosoftAccountSettingsDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenuMicrosoftAccount>();
         services.AddRecipeExecutionStep<MicrosoftAccountSettingsStep>();
 
@@ -57,7 +56,7 @@ public sealed class AzureADStartup : StartupBase
         services.AddSingleton<IAzureADService, AzureADService>();
         services.AddRecipeExecutionStep<AzureADSettingsStep>();
 
-        services.AddScoped<IDisplayDriver<ISite>, AzureADSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<AzureADSettingsDisplayDriver>();
         services.AddScoped<INavigationProvider, AdminMenuAAD>();
 
         services.AddTransient<IConfigureOptions<AzureADSettings>, AzureADSettingsConfiguration>();

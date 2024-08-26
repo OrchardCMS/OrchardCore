@@ -27,7 +27,6 @@ using OrchardCore.Search.Elasticsearch.Drivers;
 using OrchardCore.Search.Elasticsearch.Services;
 using OrchardCore.Search.Lucene.Handler;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Elasticsearch;
 
@@ -108,7 +107,7 @@ public sealed class SearchStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<ISearchService, ElasticsearchService>();
-        services.AddScoped<IDisplayDriver<ISite>, ElasticSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<ElasticSettingsDisplayDriver>();
         services.AddScoped<IAuthorizationHandler, ElasticsearchAuthorizationHandler>();
     }
 }
