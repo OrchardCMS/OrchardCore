@@ -96,17 +96,23 @@ public sealed class Startup : StartupBase
         services.TryAddEnumerable(
             ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
 
-        // Support razor runtime compilation only if in dev mode and if the 'refs' folder exists.
-        var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
-
-        if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
+        if (_hostingEnvironment.IsDevelopment())
         {
-            builder.AddRazorRuntimeCompilation();
-        }
+            // Support razor runtime compilation only if in dev mode and if the 'refs' folder exists.
+            var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
 
-        // Share across tenants a static compiler even if there is no runtime compilation
-        // because the compiler still uses its internal cache to retrieve compiled items.
-        services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
+            if (refsFolderExists)
+            {
+                builder.AddRazorRuntimeCompilation();
+            }
+        }
+        else
+        {
+            // Share across tenants a static compiler even if there is no runtime compilation
+            // because the compiler still uses its internal cache to retrieve compiled items.
+            // Register this provider only in production mode, as it may cause hot reload to fail in development mode.
+            services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
+        }
 
         services.TryAddEnumerable(
             ServiceDescriptor.Transient<IConfigureOptions<MvcRazorRuntimeCompilationOptions>, RazorCompilationOptionsSetup>());
