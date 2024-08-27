@@ -353,33 +353,32 @@ public sealed class TemplateController : Controller
             return Forbid();
         }
         
-        // Prevent multiple enumeration.
-        var itemIdList = itemIds as IList<string> ?? itemIds?.ToList() ?? new List<string>();
-
-        if (itemIdList.Count > 0)
+        switch (options.BulkAction)
         {
-            var templatesDocument = options.AdminTemplates
-                    ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
-                    : await _templatesManager.LoadTemplatesDocumentAsync();
-            var checkedContentItems = templatesDocument.Templates.Where(x =>
-                itemIdList.Contains(x.Key, StringComparer.OrdinalIgnoreCase));
-
-            switch (options.BulkAction)
-            {
-                case ContentsBulkAction.None:
-                    break;
-                case ContentsBulkAction.Remove:
-                    foreach (var item in checkedContentItems)
+            case ContentsBulkAction.None:
+                break;
+            case ContentsBulkAction.Remove:
+                if (itemIds != null)
+                {
+                    var templatesDocument = options.AdminTemplates
+                        ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
+                        : await _templatesManager.LoadTemplatesDocumentAsync();
+                    var checkedContentItemIds = templatesDocument.Templates.Keys
+                        .Union(itemIds, StringComparer.OrdinalIgnoreCase);
+                    
+                    foreach (var id in checkedContentItemIds)
                     {
                         await (options.AdminTemplates
-                                ? _adminTemplatesManager.RemoveTemplateAsync(item.Key)
-                                : _templatesManager.RemoveTemplateAsync(item.Key));
+                            ? _adminTemplatesManager.RemoveTemplateAsync(id)
+                            : _templatesManager.RemoveTemplateAsync(id));
                     }
+
                     await _notifier.SuccessAsync(H["Templates successfully removed."]);
-                    break;
-                default:
-                    return BadRequest();
-            }
+                }
+
+                break;
+            default:
+                return BadRequest();
         }
 
         return RedirectToAction(options.AdminTemplates ? nameof(Admin) : nameof(Index));
