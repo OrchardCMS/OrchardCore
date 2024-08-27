@@ -1,15 +1,11 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Data.Documents;
-using OrchardCore.Modules;
+using OrchardCore.Json.Serialization;
 
 namespace OrchardCore.Queries.Core.Models;
 
 public sealed class QueriesDocument : Document
 {
-    private readonly Dictionary<string, Query> _queries = new(StringComparer.OrdinalIgnoreCase);
-
-    public Dictionary<string, Query> Queries
-    {
-        get => _queries;
-        set => _queries.SetItems(value);
-    }
+    [JsonConverter(typeof(CaseInsensitiveDictionaryConverter<Query>))]
+    public Dictionary<string, Query> Queries { get; init; }
 }

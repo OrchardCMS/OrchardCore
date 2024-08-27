@@ -1,18 +1,13 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Data.Documents;
-using OrchardCore.Modules;
+using OrchardCore.Json.Serialization;
 
 namespace OrchardCore.Templates.Models;
 
 public class TemplatesDocument : Document
 {
-    private readonly Dictionary<string, Template> _templates = new(StringComparer.OrdinalIgnoreCase);
-
-    public Dictionary<string, Template> Templates
-    {
-        get => _templates;
-        
-        set => _templates.SetItems(value);
-    }
+    [JsonConverter(typeof(CaseInsensitiveDictionaryConverter<Template>))]
+    public Dictionary<string, Template> Templates { get; init; }
 }
 
 public class Template

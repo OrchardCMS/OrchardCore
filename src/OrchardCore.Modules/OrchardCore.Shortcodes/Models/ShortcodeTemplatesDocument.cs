@@ -1,17 +1,13 @@
+using System.Text.Json.Serialization;
 using OrchardCore.Data.Documents;
-using OrchardCore.Modules;
+using OrchardCore.Json.Serialization;
 
 namespace OrchardCore.Shortcodes.Models;
 
 public class ShortcodeTemplatesDocument : Document
 {
-    private readonly Dictionary<string, ShortcodeTemplate> _shortcodeTemplates = new(StringComparer.OrdinalIgnoreCase);
-
-    public Dictionary<string, ShortcodeTemplate> ShortcodeTemplates
-    {
-        get => _shortcodeTemplates;
-        set => _shortcodeTemplates.SetItems(value);
-    }
+    [JsonConverter(typeof(CaseInsensitiveDictionaryConverter<ShortcodeTemplate>))]
+    public Dictionary<string, ShortcodeTemplate> ShortcodeTemplates { get; init; }
 }
 
 public class ShortcodeTemplate
