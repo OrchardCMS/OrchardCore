@@ -51,9 +51,9 @@ public sealed class SqlQuerySource : IQuerySource
     {
         var metadata = query.As<SqlQueryMetadata>();
 
-        var sqlQueryResults = new SQLQueryResults 
-        { 
-            Items = [] 
+        var sqlQueryResults = new SQLQueryResults
+        {
+            Items = []
         };
 
         var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(metadata.Template, NullEncoder.Default,
