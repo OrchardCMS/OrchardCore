@@ -6,7 +6,7 @@ namespace OrchardCore.Users.Handlers;
 public class UserConfirmContext : UserContext
 {
     /// <inheritdocs />
-    public UserConfirmContext(IUser user) 
+    public UserConfirmContext(IUser user)
         : base(user)
     {
     }
