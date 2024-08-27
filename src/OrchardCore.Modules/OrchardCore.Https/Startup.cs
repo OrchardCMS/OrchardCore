@@ -37,7 +37,7 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<IHttpsService, HttpsService>();
 
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
 
         services.AddOptions<HttpsRedirectionOptions>()
             .Configure<IHttpsService>((options, service) =>

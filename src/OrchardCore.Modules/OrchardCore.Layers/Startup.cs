@@ -46,7 +46,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentHandler, LayerMetadataHandler>();
         services.AddIndexProvider<LayerMetadataIndexProvider>();
         services.AddDataMigration<Migrations>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddRecipeExecutionStep<LayerStep>();
         services.AddDeployment<AllLayersDeploymentSource, AllLayersDeploymentStep, AllLayersDeploymentStepDriver>();
         services.AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>();

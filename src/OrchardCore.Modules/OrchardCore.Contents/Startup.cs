@@ -139,8 +139,8 @@ public sealed class Startup : StartupBase
 
         services.AddContentManagement();
         services.AddContentManagementDisplay();
-        services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<IPermissionProvider, ContentTypePermissions>();
+        services.AddPermissionProvider<Permissions>();
+        services.AddPermissionProvider<ContentTypePermissions>();
         services.AddScoped<IAuthorizationHandler, ContentTypeAuthorizationHandler>();
         services.AddScoped<IShapeTableProvider, Shapes>();
         services.AddNavigationProvider<AdminMenu>();

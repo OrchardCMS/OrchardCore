@@ -202,7 +202,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<ICommandHandler, UserCommands>();
         services.AddScoped<IExternalLoginEventHandler, ScriptExternalLoginEventHandler>();
 
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
 
         services.AddSiteDisplayDriver<LoginSettingsDisplayDriver>();
@@ -256,7 +256,7 @@ public sealed class RolesStartup : StartupBase
         services.AddIndexProvider<UserByRoleNameIndexProvider>();
         services.AddScoped<IDisplayDriver<User>, UserRoleDisplayDriver>();
         services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
-        services.AddScoped<IPermissionProvider, UserRolePermissions>();
+        services.AddPermissionProvider<UserRolePermissions>();
         services.AddSingleton<IUsersAdminListFilterProvider, RolesAdminListFilterProvider>();
     }
 }
@@ -540,7 +540,7 @@ public sealed class CustomUserSettingsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
-        services.AddScoped<IPermissionProvider, CustomUserSettingsPermissions>();
+        services.AddPermissionProvider<CustomUserSettingsPermissions>();
         services.AddDeployment<CustomUserSettingsDeploymentSource, CustomUserSettingsDeploymentStep, CustomUserSettingsDeploymentStepDriver>();
         services.AddScoped<IStereotypesProvider, CustomUserSettingsStereotypesProvider>();
 

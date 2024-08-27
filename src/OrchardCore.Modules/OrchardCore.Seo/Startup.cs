@@ -36,7 +36,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentHandler, SeoMetaSettingsHandler>();
         services.AddScoped<IContentItemIndexHandler, SeoMetaPartContentIndexHandler>();
 
-        services.AddScoped<IPermissionProvider, SeoPermissionProvider>();
+        services.AddPermissionProvider<SeoPermissionProvider>();
         services.AddSiteDisplayDriver<RobotsSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddTransient<IRobotsProvider, SiteSettingsRobotsProvider>();

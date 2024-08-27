@@ -34,7 +34,7 @@ public sealed class Startup : StartupBase
         services.AddTwilioSmsProvider()
             .AddSiteDisplayDriver<TwilioSettingsDisplayDriver>();
 
-        services.AddScoped<IPermissionProvider, SmsPermissionProvider>();
+        services.AddPermissionProvider<SmsPermissionProvider>();
         services.AddSiteDisplayDriver<SmsSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
     }

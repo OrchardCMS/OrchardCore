@@ -32,7 +32,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<AdminMenu>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<ITenantValidator, TenantValidator>();
         services.AddScoped<IShapeTableProvider, TenantShapeTableProvider>();
         services.AddSetup();

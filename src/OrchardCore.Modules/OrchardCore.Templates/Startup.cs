@@ -24,7 +24,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IShapeBindingResolver, TemplatesShapeBindingResolver>();
         services.AddScoped<PreviewTemplatesProvider>();
         services.AddScoped<TemplatesManager>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddRecipeExecutionStep<TemplateStep>();
 
@@ -36,7 +36,7 @@ public sealed class Startup : StartupBase
         services.AddDeployment<AllTemplatesDeploymentSource, AllTemplatesDeploymentStep, AllTemplatesDeploymentStepDriver>();
 
         services.AddScoped<AdminTemplatesManager>();
-        services.AddScoped<IPermissionProvider, AdminTemplatesPermissions>();
+        services.AddPermissionProvider<AdminTemplatesPermissions>();
     }
 }
 

@@ -47,7 +47,7 @@ public sealed class Startup : StartupBase
 
         services.AddDataMigration<Migrations>();
         services.AddScoped<IShapeTableProvider, TermShapes>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
 
         // Taxonomy Part
         services.AddContentPart<TaxonomyPart>()

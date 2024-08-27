@@ -93,7 +93,7 @@ public sealed class Startup : StartupBase
         });
 
         services.AddElasticServices();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
         services.AddDataMigration<ElasticsearchQueryMigrations>();
