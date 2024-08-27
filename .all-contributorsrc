@@ -3186,6 +3186,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "shinexyt",
+      "name": "Hanming Xing",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12826837?v=4",
+      "profile": "https://github.com/shinexyt",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
