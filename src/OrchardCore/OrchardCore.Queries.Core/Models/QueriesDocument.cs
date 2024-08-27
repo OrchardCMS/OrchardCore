@@ -7,5 +7,5 @@ namespace OrchardCore.Queries.Core.Models;
 public sealed class QueriesDocument : Document
 {
     [JsonConverter(typeof(CaseInsensitiveDictionaryConverter<Query>))]
-    public Dictionary<string, Query> Queries { get; init; }
+    public Dictionary<string, Query> Queries { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 }

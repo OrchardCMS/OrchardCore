@@ -7,7 +7,7 @@ namespace OrchardCore.Templates.Models;
 public class TemplatesDocument : Document
 {
     [JsonConverter(typeof(CaseInsensitiveDictionaryConverter<Template>))]
-    public Dictionary<string, Template> Templates { get; init; }
+    public Dictionary<string, Template> Templates { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 }
 
 public class Template

@@ -7,7 +7,7 @@ namespace OrchardCore.Shortcodes.Models;
 public class ShortcodeTemplatesDocument : Document
 {
     [JsonConverter(typeof(CaseInsensitiveDictionaryConverter<ShortcodeTemplate>))]
-    public Dictionary<string, ShortcodeTemplate> ShortcodeTemplates { get; init; }
+    public Dictionary<string, ShortcodeTemplate> ShortcodeTemplates { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 }
 
 public class ShortcodeTemplate

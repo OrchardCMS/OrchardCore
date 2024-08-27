@@ -8,5 +8,5 @@ namespace OrchardCore.Tenants.Models;
 public class FeatureProfilesDocument : Document
 {
     [JsonConverter(typeof(CaseInsensitiveDictionaryConverter<FeatureProfile>))]
-    public Dictionary<string, FeatureProfile> FeatureProfiles { get; init; }
+    public Dictionary<string, FeatureProfile> FeatureProfiles { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 }

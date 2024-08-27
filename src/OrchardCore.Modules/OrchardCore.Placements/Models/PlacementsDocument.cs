@@ -8,5 +8,5 @@ namespace OrchardCore.Placements.Models;
 public class PlacementsDocument : Document
 {
     [JsonConverter(typeof(CaseInsensitiveDictionaryConverter<PlacementNode[]>))]
-    public Dictionary<string, PlacementNode[]> Placements { get; init; }
+    public Dictionary<string, PlacementNode[]> Placements { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 }

@@ -7,7 +7,7 @@ namespace OrchardCore.Media.Models;
 public class MediaProfilesDocument : Document
 {
     [JsonConverter(typeof(CaseInsensitiveDictionaryConverter<MediaProfile>))]
-    public Dictionary<string, MediaProfile> MediaProfiles { get; init; }
+    public Dictionary<string, MediaProfile> MediaProfiles { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 }
 
 public class MediaProfile
