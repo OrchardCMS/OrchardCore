@@ -44,12 +44,9 @@ public class TemplatesShapeBindingResolver : IShapeBindingResolver
             return null;
         }
 
-        if (_localTemplates?.Templates?.Count != 0)
+        if (_localTemplates?.Templates?.TryGetValue(shapeType, out var localTemplate) == true)
         {
-            if (_localTemplates.Templates.TryGetValue(shapeType, out var localTemplate))
-            {
-                return BuildShapeBinding(shapeType, localTemplate);
-            }
+            return BuildShapeBinding(shapeType, localTemplate);
         }
 
         _templatesDocument ??= await _templatesManager.GetTemplatesDocumentAsync();
