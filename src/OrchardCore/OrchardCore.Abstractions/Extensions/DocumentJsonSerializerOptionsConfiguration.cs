@@ -22,7 +22,7 @@ public sealed class DocumentJsonSerializerOptionsConfiguration : IConfigureOptio
         options.SerializerOptions.PropertyNameCaseInsensitive = JOptions.Base.PropertyNameCaseInsensitive;
         options.SerializerOptions.AllowTrailingCommas = JOptions.Base.AllowTrailingCommas;
         options.SerializerOptions.WriteIndented = JOptions.Base.WriteIndented;
-        options.SerializerOptions.PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate;
+        options.SerializerOptions.PreferredObjectCreationHandling = JOptions.Base.PreferredObjectCreationHandling;
 
         options.SerializerOptions.TypeInfoResolverChain.Add(new PolymorphicJsonTypeInfoResolver(_derivedTypesOptions));
 
