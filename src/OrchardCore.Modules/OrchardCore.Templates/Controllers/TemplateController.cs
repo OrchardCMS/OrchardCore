@@ -364,7 +364,7 @@ public sealed class TemplateController : Controller
                         ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
                         : await _templatesManager.LoadTemplatesDocumentAsync();
                     var checkedContentItemIds = templatesDocument.Templates.Keys
-                        .Union(itemIds, StringComparer.OrdinalIgnoreCase);
+                        .Intersect(itemIds, StringComparer.OrdinalIgnoreCase);
                     
                     foreach (var id in checkedContentItemIds)
                     {
