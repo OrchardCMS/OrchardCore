@@ -1,6 +1,8 @@
 using System.Globalization;
 using System.Xml.Linq;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
+using OrchardCore.Data.YesSql;
 using OrchardCore.Sitemaps.Aspects;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Models;
@@ -10,23 +12,24 @@ namespace OrchardCore.Contents.Sitemaps;
 
 public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<ContentTypesSitemapSource>
 {
-    private const int _batchSize = 500;
-
     private static readonly XNamespace _namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
 
     private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
     private readonly IContentManager _contentManager;
+    private readonly YesSqlOptions _yesSqlOptions;
     private readonly IContentItemsQueryProvider _contentItemsQueryProvider;
     private readonly IEnumerable<ISitemapContentItemExtendedMetadataProvider> _sitemapContentItemExtendedMetadataProviders;
 
     public ContentTypesSitemapSourceBuilder(
         IRouteableContentTypeCoordinator routeableContentTypeCoordinator,
         IContentManager contentManager,
+        IOptions<YesSqlOptions> yesSqlOptions,
         IContentItemsQueryProvider contentItemsQueryProvider,
         IEnumerable<ISitemapContentItemExtendedMetadataProvider> sitemapContentItemExtendedMetadataProviders)
     {
         _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
         _contentManager = contentManager;
+        _yesSqlOptions = yesSqlOptions.Value;
         _contentItemsQueryProvider = contentItemsQueryProvider;
         _sitemapContentItemExtendedMetadataProviders = sitemapContentItemExtendedMetadataProviders;
     }
@@ -38,47 +41,35 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
             context.Response.ResponseElement.Add(sciemp.GetExtendedAttribute);
         }
 
-        if (source.LimitedContentType != null && source.LimitedContentType.Take > 0)
-        {
-            var result = await _contentItemsQueryProvider.GetContentItemsAsync(source, new ContentItemsQueryContext
-            {
-                Skip = source.LimitedContentType.Skip,
-                Take = source.LimitedContentType.Take,
-            });
-
-            if (result.ContentItems == null || !result.ContentItems.Any())
-            {
-                return;
-            }
-
-            foreach (var contentItem in result.ContentItems)
-            {
-                var url = new XElement(_namespace + "url");
-
-                if (await BuildUrlsetMetadataAsync(source, context, result, contentItem, url))
-                {
-                    context.Response.ResponseElement.Add(url);
-                }
-            }
-
-            return;
-        }
-
         var queryContext = new ContentItemsQueryContext()
         {
-            Take = _batchSize,
+            Take = _yesSqlOptions.CommandsPageSize,
         };
+
+        var maxAllowed = int.MaxValue;
 
         if (source.LimitedContentType != null)
         {
             queryContext.Skip = source.LimitedContentType.Skip;
 
-            // Make sure the 'Take' value does not exceed the batch size.
-            queryContext.Take = Math.Min(source.LimitedContentType.Take, _batchSize);
+            if (source.LimitedContentType.Take > 0)
+            {
+                maxAllowed = source.LimitedContentType.Take;
+            }
         }
+
+        var total = 0;
+        var isLastBatch = false;
 
         while (true)
         {
+            if ((total + queryContext.Take) > maxAllowed)
+            {
+                queryContext.Take = total + queryContext.Take - maxAllowed;
+
+                isLastBatch = true;
+            }
+
             var result = await _contentItemsQueryProvider.GetContentItemsAsync(source, queryContext);
 
             if (result.ContentItems == null || !result.ContentItems.Any())
@@ -86,6 +77,10 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
                 break;
             }
 
+            var totalFound = result.ContentItems.Count();
+
+            total += totalFound;
+
             foreach (var contentItem in result.ContentItems)
             {
                 var url = new XElement(_namespace + "url");
@@ -94,6 +89,11 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
                 {
                     context.Response.ResponseElement.Add(url);
                 }
+            }
+
+            if (isLastBatch)
+            {
+                break;
             }
 
             queryContext.Skip += queryContext.Take;
