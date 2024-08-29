@@ -9,11 +9,6 @@ namespace OrchardCore.Users.TimeZone.Services;
 public interface IUserTimeZoneService
 {
     /// <summary>
-    /// Gets the current <see cref="HttpContext"/>.
-    /// </summary>
-    public HttpContext HttpContext { get; }
-
-    /// <summary>
     /// Gets the time zone for the specified user.
     /// </summary>
     /// <param name="user">The <see cref="IUser"/>.</param>

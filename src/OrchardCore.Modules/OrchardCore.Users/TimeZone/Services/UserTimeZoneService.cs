@@ -21,6 +21,7 @@ public class UserTimeZoneService : IUserTimeZoneService
 
     private readonly IClock _clock;
     private readonly IDistributedCache _distributedCache;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public UserTimeZoneService(
         IClock clock,
@@ -29,10 +30,8 @@ public class UserTimeZoneService : IUserTimeZoneService
     {
         _clock = clock;
         _distributedCache = distributedCache;
-        HttpContext = httpContextAccessor.HttpContext;
+        _httpContextAccessor = httpContextAccessor;
     }
-
-    public HttpContext HttpContext { get; }
 
     /// <inheritdoc/>
     public async ValueTask<ITimeZone> GetAsync(IUser user)
@@ -63,7 +62,7 @@ public class UserTimeZoneService : IUserTimeZoneService
     /// <inheritdoc/>
     private async ValueTask<string> GetTimeZoneIdAsync()
     {
-        var userName = HttpContext.User?.Identity?.Name;
+        var userName = _httpContextAccessor.HttpContext.User?.Identity?.Name;
 
         if (string.IsNullOrEmpty(userName))
         {
@@ -78,7 +77,7 @@ public class UserTimeZoneService : IUserTimeZoneService
         if (string.IsNullOrEmpty(timeZoneId))
         {
             // Delay-loading UserManager since it is registered as scoped
-            var userManager = HttpContext.RequestServices.GetRequiredService<UserManager<IUser>>();
+            var userManager = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<UserManager<IUser>>();
             var user = await userManager.FindByNameAsync(userName) as User;
             timeZoneId = user.As<UserTimeZone>()?.TimeZoneId;
 

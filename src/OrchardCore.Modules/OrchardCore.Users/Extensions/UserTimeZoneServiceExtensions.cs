@@ -12,6 +12,8 @@ namespace OrchardCore.Users;
 /// </summary>
 public static class UserTimeZoneServiceExtensions
 {
+    private static HttpContext HttpContext => new HttpContextAccessor().HttpContext;
+
     /// <summary>
     /// Gets the time zone for currently logged-in user.
     /// </summary>
@@ -20,7 +22,7 @@ public static class UserTimeZoneServiceExtensions
     {
         ArgumentNullException.ThrowIfNull(nameof(userTimeZoneService));
 
-        var currentUser = await GetCurrentUserAsync(userTimeZoneService.HttpContext);
+        var currentUser = await GetCurrentUserAsync();
 
         return await userTimeZoneService.GetAsync(currentUser);
     }
@@ -33,15 +35,15 @@ public static class UserTimeZoneServiceExtensions
     {
         ArgumentNullException.ThrowIfNull(nameof(userTimeZoneService));
 
-        var currentUser = await GetCurrentUserAsync(userTimeZoneService.HttpContext);
+        var currentUser = await GetCurrentUserAsync();
 
         await userTimeZoneService.UpdateAsync(currentUser);
     }
 
-    private static async Task<IUser> GetCurrentUserAsync(HttpContext httpContext)
+    private static async Task<IUser> GetCurrentUserAsync()
     {
-        var userName = httpContext.User?.Identity?.Name;
-        var userManager = httpContext.RequestServices.GetRequiredService<UserManager<IUser>>();
+        var userName = HttpContext.User?.Identity?.Name;
+        var userManager = HttpContext.RequestServices.GetRequiredService<UserManager<IUser>>();
 
         return await userManager.FindByNameAsync(userName) as User;
     }
