@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json;
 
 namespace OrchardCore.Json.Extensions;
@@ -9,37 +10,32 @@ public static class JsonSerializerOptionsExtensions
     /// </summary>
     public static JsonSerializerOptions Merge(this JsonSerializerOptions destination, JsonSerializerOptions source)
     {
-        destination.DefaultIgnoreCondition = source.DefaultIgnoreCondition;
-        destination.ReferenceHandler = source.ReferenceHandler;
-        destination.ReadCommentHandling = source.ReadCommentHandling;
-        destination.PropertyNameCaseInsensitive = source.PropertyNameCaseInsensitive;
-        destination.AllowTrailingCommas = source.AllowTrailingCommas;
-        destination.WriteIndented = source.WriteIndented;
-        destination.PropertyNamingPolicy = source.PropertyNamingPolicy;
-        destination.Encoder = source.Encoder;
-        destination.TypeInfoResolver = source.TypeInfoResolver;
-        destination.PreferredObjectCreationHandling = source.PreferredObjectCreationHandling;
+        var properties = typeof(JsonSerializerOptions)
+            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p.CanWrite && p.CanRead);
 
-        foreach (var resolver in source.TypeInfoResolverChain)
+        foreach (var property in properties)
         {
-            if (destination.TypeInfoResolverChain.Contains(resolver))
-            {
-                continue;
-            }
-
-            destination.TypeInfoResolverChain.Add(resolver);
+            var sourceValue = property.GetValue(source);
+            property.SetValue(destination, sourceValue);
         }
 
-        foreach (var converter in source.Converters)
-        {
-            if (destination.Converters.Contains(converter))
-            {
-                continue;
-            }
+        MergeCollections(destination.TypeInfoResolverChain, source.TypeInfoResolverChain);
+        MergeCollections(destination.Converters, source.Converters);
 
-            destination.Converters.Add(converter);
-        }
+        // destination.PreferredObjectCreationHandling = JsonObjectCreationHandling.Replace;
 
         return destination;
+    }
+
+    private static void MergeCollections<T>(IList<T> destination, IList<T> source)
+    {
+        foreach (var item in source)
+        {
+            if (!destination.Contains(item))
+            {
+                destination.Add(item);
+            }
+        }
     }
 }
