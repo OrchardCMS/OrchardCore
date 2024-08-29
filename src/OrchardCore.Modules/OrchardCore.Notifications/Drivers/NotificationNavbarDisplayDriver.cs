@@ -5,10 +5,9 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Notifications.Indexes;
+using OrchardCore.Notifications.CompiledQueries;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.ViewModels;
-using YesSql;
 
 namespace OrchardCore.Notifications.Drivers;
 
@@ -36,10 +35,7 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
         return Initialize<UserNotificationNavbarViewModel>("UserNotificationNavbar", async model =>
         {
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var notifications = (await _session.Query<Notification, NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection)
-                .OrderByDescending(x => x.CreatedAtUtc)
-                .Take(_notificationOptions.TotalUnreadNotifications + 1)
-                .ListAsync()).ToList();
+            var notifications = (await _session.ExecuteQuery(new QueryTopUnreadNotificationsByUserId(userId, _notificationOptions.TotalUnreadNotifications + 1), collection: NotificationConstants.NotificationCollection).ListAsync()).ToList();
 
             model.Notifications = notifications;
             model.MaxVisibleNotifications = _notificationOptions.TotalUnreadNotifications;
