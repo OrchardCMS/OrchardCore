@@ -2869,7 +2869,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             return _promise.then(null, fn);
           },
           // Keep pipe for back-compat
-          pipe: function pipe( /* fnDone, fnFail, fnProgress */
+          pipe: function pipe(/* fnDone, fnFail, fnProgress */
           ) {
             var fns = arguments;
             return _jQuery2.Deferred(function (newDefer) {
