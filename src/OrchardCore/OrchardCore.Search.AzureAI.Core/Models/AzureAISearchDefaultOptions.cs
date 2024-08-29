@@ -7,7 +7,7 @@ public class AzureAISearchDefaultOptions
 {
     public const string DefaultAnalyzer = LexicalAnalyzerName.Values.StandardLucene;
 
-    public readonly static string[] DefaultAnalyzers =
+    public static readonly string[] DefaultAnalyzers =
     [
         LexicalAnalyzerName.Values.ArMicrosoft,
         LexicalAnalyzerName.Values.ArLucene,

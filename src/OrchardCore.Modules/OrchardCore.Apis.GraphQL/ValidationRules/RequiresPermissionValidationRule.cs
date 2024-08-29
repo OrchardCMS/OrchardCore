@@ -9,8 +9,10 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules;
 
 public class RequiresPermissionValidationRule : IValidationRule
 {
-    public static readonly string ErrorCode = "Unauthorized";
+    public const string ErrorCode = "Unauthorized";
+
     private readonly IAuthorizationService _authorizationService;
+
     protected readonly IStringLocalizer S;
 
     public RequiresPermissionValidationRule(
