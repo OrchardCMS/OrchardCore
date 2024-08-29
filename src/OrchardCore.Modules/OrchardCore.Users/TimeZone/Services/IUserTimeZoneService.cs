@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Users.TimeZone.Services;
@@ -8,18 +9,24 @@ namespace OrchardCore.Users.TimeZone.Services;
 public interface IUserTimeZoneService
 {
     /// <summary>
-    /// Gets the time zone of the currently logged-in user.
+    /// Gets the current <see cref="HttpContext"/>.
     /// </summary>
-    public ValueTask<ITimeZone> GetTimeZoneAsync();
+    public HttpContext HttpContext { get; }
 
     /// <summary>
-    /// Updates the time zone of the currently logged-in user.
+    /// Gets the time zone for the specified user.
+    /// </summary>
+    /// <param name="user">The <see cref="IUser"/>.</param>
+    public ValueTask<ITimeZone> GetTimeZoneAsync(IUser user);
+
+    /// <summary>
+    /// Updates the time zone for the specified user.
     /// </summary>
     /// <param name="user">The <see cref="IUser"/>.</param>
     public ValueTask UpdateTimeZoneAsync(IUser user);
 
     /// <summary>
-    /// Gets the time zone identifier of the currently logged-in user.
+    /// Gets the time zone identifier.
     /// </summary>
     public ValueTask<string> GetTimeZoneIdAsync();
 }
