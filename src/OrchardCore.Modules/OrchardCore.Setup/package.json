@@ -4,5 +4,8 @@
   "dependencies": {
     "bootstrap": "5.3.3",
     "jquery": "3.7.1"
+  },
+  "devDependencies": {
+    "@popperjs/core": "2.11.8"
   }
 }
