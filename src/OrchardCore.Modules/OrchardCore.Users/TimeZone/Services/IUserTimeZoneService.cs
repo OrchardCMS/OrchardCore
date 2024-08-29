@@ -17,11 +17,11 @@ public interface IUserTimeZoneService
     /// Gets the time zone for the specified user.
     /// </summary>
     /// <param name="user">The <see cref="IUser"/>.</param>
-    public ValueTask<ITimeZone> GetTimeZoneAsync(IUser user);
+    public ValueTask<ITimeZone> GetAsync(IUser user);
 
     /// <summary>
     /// Updates the time zone for the specified user.
     /// </summary>
     /// <param name="user">The <see cref="IUser"/>.</param>
-    public ValueTask UpdateTimeZoneAsync(IUser user);
+    public ValueTask UpdateAsync(IUser user);
 }

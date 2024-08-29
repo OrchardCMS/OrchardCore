@@ -16,26 +16,26 @@ public static class UserTimeZoneServiceExtensions
     /// Gets the time zone for currently logged-in user.
     /// </summary>
     /// <param name="userTimeZoneService">The <see cref="IUserTimeZoneService"/>.</param>
-    public static async ValueTask<ITimeZone> GetTimeZoneAsync(this IUserTimeZoneService userTimeZoneService)
+    public static async ValueTask<ITimeZone> GetAsync(this IUserTimeZoneService userTimeZoneService)
     {
         ArgumentNullException.ThrowIfNull(nameof(userTimeZoneService));
 
         var currentUser = await GetCurrentUserAsync(userTimeZoneService.HttpContext);
 
-        return await userTimeZoneService.GetTimeZoneAsync(currentUser);
+        return await userTimeZoneService.GetAsync(currentUser);
     }
 
     /// <summary>
     /// Updates the time zone for currently logged-in user.
     /// </summary>
     /// <param name="userTimeZoneService">The <see cref="IUserTimeZoneService"/>.</param>
-    public static async ValueTask UpdateTimeZoneAsync(this IUserTimeZoneService userTimeZoneService)
+    public static async ValueTask UpdateAsync(this IUserTimeZoneService userTimeZoneService)
     {
         ArgumentNullException.ThrowIfNull(nameof(userTimeZoneService));
 
         var currentUser = await GetCurrentUserAsync(userTimeZoneService.HttpContext);
 
-        await userTimeZoneService.UpdateTimeZoneAsync(currentUser);
+        await userTimeZoneService.UpdateAsync(currentUser);
     }
 
     private static async Task<IUser> GetCurrentUserAsync(HttpContext httpContext)

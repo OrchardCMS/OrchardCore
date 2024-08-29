@@ -35,7 +35,7 @@ public class UserTimeZoneService : IUserTimeZoneService
     public HttpContext HttpContext { get; }
 
     /// <inheritdoc/>
-    public async ValueTask<ITimeZone> GetTimeZoneAsync(IUser user)
+    public async ValueTask<ITimeZone> GetAsync(IUser user)
     {
         var currentTimeZoneId = await GetTimeZoneIdAsync();
 
@@ -48,7 +48,7 @@ public class UserTimeZoneService : IUserTimeZoneService
     }
 
     /// <inheritdoc/>
-    public async ValueTask UpdateTimeZoneAsync(IUser user)
+    public async ValueTask UpdateAsync(IUser user)
     {
         var userName = user?.UserName;
 
