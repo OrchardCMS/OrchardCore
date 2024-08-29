@@ -916,7 +916,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     function filterHidden(item) {
       return !(item.hidden || this.options.hideDisabled && item.disabled);
     }
-    var Selectpicker = function Selectpicker(element, options) {
+    var _Selectpicker = function Selectpicker(element, options) {
       var that = this;
 
       // bootstrap-select has been initialized - revert valHooks.select.set back to its original function
@@ -965,22 +965,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
 
       // Expose public methods
-      this.val = Selectpicker.prototype.val;
-      this.render = Selectpicker.prototype.render;
-      this.refresh = Selectpicker.prototype.refresh;
-      this.setStyle = Selectpicker.prototype.setStyle;
-      this.selectAll = Selectpicker.prototype.selectAll;
-      this.deselectAll = Selectpicker.prototype.deselectAll;
-      this.destroy = Selectpicker.prototype.destroy;
-      this.remove = Selectpicker.prototype.remove;
-      this.show = Selectpicker.prototype.show;
-      this.hide = Selectpicker.prototype.hide;
+      this.val = _Selectpicker.prototype.val;
+      this.render = _Selectpicker.prototype.render;
+      this.refresh = _Selectpicker.prototype.refresh;
+      this.setStyle = _Selectpicker.prototype.setStyle;
+      this.selectAll = _Selectpicker.prototype.selectAll;
+      this.deselectAll = _Selectpicker.prototype.deselectAll;
+      this.destroy = _Selectpicker.prototype.destroy;
+      this.remove = _Selectpicker.prototype.remove;
+      this.show = _Selectpicker.prototype.show;
+      this.hide = _Selectpicker.prototype.hide;
       this.init();
     };
-    Selectpicker.VERSION = '1.14.0-beta3';
+    _Selectpicker.VERSION = '1.14.0-beta3';
 
     // part of this is duplicated in i18n/defaults-en_US.js. Make sure to update both.
-    Selectpicker.DEFAULTS = {
+    _Selectpicker.DEFAULTS = {
       noneSelectedText: 'Nothing selected',
       noneResultsText: 'No results matched {0}',
       countSelectedText: function countSelectedText(numSelected, numTotal) {
@@ -1035,8 +1035,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       sanitizeFn: null,
       whiteList: DefaultWhitelist
     };
-    Selectpicker.prototype = {
-      constructor: Selectpicker,
+    _Selectpicker.prototype = {
+      constructor: _Selectpicker,
       init: function init() {
         var that = this,
           id = this.$element.attr('id'),
@@ -2962,8 +2962,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           version.full = (getVersion() || '').split(' ')[0].split('.');
         } catch (err) {
           // fall back to use BootstrapVersion if set
-          if (Selectpicker.BootstrapVersion) {
-            version.full = Selectpicker.BootstrapVersion.split(' ')[0].split('.');
+          if (_Selectpicker.BootstrapVersion) {
+            version.full = _Selectpicker.BootstrapVersion.split(' ')[0].split('.');
           } else {
             version.full = [version.major, '0', '0'];
             console.warn('There was an issue retrieving Bootstrap\'s version. ' + 'Ensure Bootstrap is being loaded before bootstrap-select and there is no namespace collision. ' + 'If loading Bootstrap asynchronously, the version may need to be manually specified via $.fn.selectpicker.Constructor.BootstrapVersion.', err);
@@ -2976,15 +2976,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         // some defaults need to be changed if using Bootstrap 4
         // check to see if they have already been manually changed before forcing them to update
         var toUpdate = [];
-        if (Selectpicker.DEFAULTS.style === classNames.BUTTONCLASS) toUpdate.push({
+        if (_Selectpicker.DEFAULTS.style === classNames.BUTTONCLASS) toUpdate.push({
           name: 'style',
           className: 'BUTTONCLASS'
         });
-        if (Selectpicker.DEFAULTS.iconBase === classNames.ICONBASE) toUpdate.push({
+        if (_Selectpicker.DEFAULTS.iconBase === classNames.ICONBASE) toUpdate.push({
           name: 'iconBase',
           className: 'ICONBASE'
         });
-        if (Selectpicker.DEFAULTS.tickIcon === classNames.TICKICON) toUpdate.push({
+        if (_Selectpicker.DEFAULTS.tickIcon === classNames.TICKICON) toUpdate.push({
           name: 'tickIcon',
           className: 'TICKICON'
         });
@@ -2996,7 +2996,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         classNames.TICKICON = 'bs-ok-default';
         for (var i = 0; i < toUpdate.length; i++) {
           var option = toUpdate[i];
-          Selectpicker.DEFAULTS[option.name] = classNames[option.className];
+          _Selectpicker.DEFAULTS[option.name] = classNames[option.className];
         }
       }
       if (version.major > '4') {
@@ -3019,10 +3019,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 delete dataAttributes[dataAttr];
               }
             }
-            var config = $.extend({}, Selectpicker.DEFAULTS, $.fn.selectpicker.defaults || {}, getAttributesObject($this), dataAttributes, options); // this is correct order on initial render
-            config.template = $.extend({}, Selectpicker.DEFAULTS.template, $.fn.selectpicker.defaults ? $.fn.selectpicker.defaults.template : {}, dataAttributes.template, options.template);
-            config.source = $.extend({}, Selectpicker.DEFAULTS.source, $.fn.selectpicker.defaults ? $.fn.selectpicker.defaults.source : {}, options.source);
-            $this.data('selectpicker', data = new Selectpicker(this, config));
+            var config = $.extend({}, _Selectpicker.DEFAULTS, $.fn.selectpicker.defaults || {}, getAttributesObject($this), dataAttributes, options); // this is correct order on initial render
+            config.template = $.extend({}, _Selectpicker.DEFAULTS.template, $.fn.selectpicker.defaults ? $.fn.selectpicker.defaults.template : {}, dataAttributes.template, options.template);
+            config.source = $.extend({}, _Selectpicker.DEFAULTS.source, $.fn.selectpicker.defaults ? $.fn.selectpicker.defaults.source : {}, options.source);
+            $this.data('selectpicker', data = new _Selectpicker(this, config));
           } else if (options) {
             for (var i in options) {
               if (Object.prototype.hasOwnProperty.call(options, i)) {
@@ -3048,7 +3048,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     var old = $.fn.selectpicker;
     $.fn.selectpicker = Plugin;
-    $.fn.selectpicker.Constructor = Selectpicker;
+    $.fn.selectpicker.Constructor = _Selectpicker;
 
     // SELECTPICKER NO CONFLICT
     // ========================
@@ -3069,7 +3069,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return Dropdown.dataApiKeydownHandler;
       }
     }
-    $(document).off('keydown.bs.dropdown.data-api').on('keydown.bs.dropdown.data-api', ':not(.bootstrap-select) > [' + Selector.DATA_TOGGLE + ']', keydownHandler).on('keydown.bs.dropdown.data-api', ':not(.bootstrap-select) > .dropdown-menu', keydownHandler).on('keydown' + EVENT_KEY, '.bootstrap-select [' + Selector.DATA_TOGGLE + '], .bootstrap-select [role="listbox"], .bootstrap-select .bs-searchbox input', Selectpicker.prototype.keydown).on('focusin.modal', '.bootstrap-select [' + Selector.DATA_TOGGLE + '], .bootstrap-select [role="listbox"], .bootstrap-select .bs-searchbox input', function (e) {
+    $(document).off('keydown.bs.dropdown.data-api').on('keydown.bs.dropdown.data-api', ':not(.bootstrap-select) > [' + Selector.DATA_TOGGLE + ']', keydownHandler).on('keydown.bs.dropdown.data-api', ':not(.bootstrap-select) > .dropdown-menu', keydownHandler).on('keydown' + EVENT_KEY, '.bootstrap-select [' + Selector.DATA_TOGGLE + '], .bootstrap-select [role="listbox"], .bootstrap-select .bs-searchbox input', _Selectpicker.prototype.keydown).on('focusin.modal', '.bootstrap-select [' + Selector.DATA_TOGGLE + '], .bootstrap-select [role="listbox"], .bootstrap-select .bs-searchbox input', function (e) {
       e.stopPropagation();
     });
 

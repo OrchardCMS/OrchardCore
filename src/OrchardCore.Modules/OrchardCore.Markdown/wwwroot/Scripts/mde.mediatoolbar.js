@@ -3940,8 +3940,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           return this.primary.find(e, t);
         }, De(Mo);
         var Oo = 0,
-          Io = function Io(e, t, n, i, r) {
-            if (!(this instanceof Io)) return new Io(e, t, n, i, r);
+          _Io = function Io(e, t, n, i, r) {
+            if (!(this instanceof _Io)) return new _Io(e, t, n, i, r);
             null == n && (n = 0), So.call(this, [new ko([new Kt("", null)])]), this.first = n, this.scrollTop = this.scrollLeft = 0, this.cantEdit = !1, this.cleanGeneration = 1, this.modeFrontier = this.highlightFrontier = n;
             var o = it(n, 0);
             this.sel = Lr(o), this.history = new Wr(null), this.id = ++Oo, this.modeOption = t, this.lineSep = i, this.direction = "rtl" == r ? "rtl" : "ltr", this.extend = !1, "string" == typeof e && (e = this.splitLines(e)), Hr(this, {
@@ -3950,8 +3950,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               text: e
             }), io(this, Lr(o), $);
           };
-        Io.prototype = ee(So.prototype, {
-          constructor: Io,
+        _Io.prototype = ee(So.prototype, {
+          constructor: _Io,
           iter: function iter(e, t, n) {
             n ? this.iterN(e - this.first, t - e, n) : this.iterN(this.first, this.first + this.size, e);
           },
@@ -4271,7 +4271,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }), t;
           },
           copy: function copy(e) {
-            var t = new Io(Ye(this, this.first, this.first + this.size), this.modeOption, this.first, this.lineSep, this.direction);
+            var t = new _Io(Ye(this, this.first, this.first + this.size), this.modeOption, this.first, this.lineSep, this.direction);
             return t.scrollTop = this.scrollTop, t.scrollLeft = this.scrollLeft, t.sel = this.sel, t.extend = !1, e && (t.history.undoDepth = this.history.undoDepth, t.setHistory(this.getHistory())), t;
           },
           linkedDoc: function linkedDoc(e) {
@@ -4279,7 +4279,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             var t = this.first,
               n = this.first + this.size;
             null != e.from && e.from > t && (t = e.from), null != e.to && e.to < n && (n = e.to);
-            var i = new Io(Ye(this, t, n), e.mode || this.modeOption, t, this.lineSep, this.direction);
+            var i = new _Io(Ye(this, t, n), e.mode || this.modeOption, t, this.lineSep, this.direction);
             return e.sharedHist && (i.history = this.history), (this.linked || (this.linked = [])).push({
               doc: i,
               sharedHist: e.sharedHist
@@ -4337,7 +4337,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               _r(t), pi(t);
             }));
           })
-        }), Io.prototype.eachLine = Io.prototype.iter;
+        }), _Io.prototype.eachLine = _Io.prototype.iter;
         var zo = 0;
         function Ho(e) {
           var t = this;
@@ -5249,7 +5249,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           if (!(this instanceof Ma)) return new Ma(e, t);
           this.options = t = t ? _(t) : {}, _(Aa, t, !1);
           var i = t.value;
-          "string" == typeof i ? i = new Io(i, t.mode, null, t.lineSeparator, t.direction) : t.mode && (i.modeOption = t.mode), this.doc = i;
+          "string" == typeof i ? i = new _Io(i, t.mode, null, t.lineSeparator, t.direction) : t.mode && (i.modeOption = t.mode), this.doc = i;
           var r = new Ma.inputStyles[t.inputStyle](this),
             o = this.display = new br(e, i, r, t);
           for (var u in o.wrapper.CodeMirror = this, Sa(this), t.lineWrapping && (this.display.wrapper.className += " CodeMirror-wrap"), Vi(this), this.state = {
@@ -6042,10 +6042,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               p = t.wrapper.offsetParent.getBoundingClientRect();
             if (t.wrapper.style.cssText = "position: static", r.style.cssText = "position: absolute; width: 30px; height: 30px;\n      top: " + (e.clientY - p.top - 5) + "px; left: " + (e.clientX - p.left - 5) + "px;\n      z-index: 1000; background: " + (a ? "rgba(255, 255, 255, .05)" : "transparent") + ";\n      outline: none; border-width: 0; outline: none; overflow: hidden; opacity: .05; filter: alpha(opacity=5);", s && (c = r.ownerDocument.defaultView.scrollY), i.input.focus(), s && r.ownerDocument.defaultView.scrollTo(null, c), i.input.reset(), n.somethingSelected() || (r.value = t.prevInput = " "), t.contextMenuPending = v, i.selForContextMenu = n.doc.sel, clearTimeout(i.detectingSelectAll), a && l >= 9 && g(), k) {
               Se(e);
-              var m = function m() {
-                ge(window, "mouseup", m), setTimeout(v, 20);
+              var _m = function m() {
+                ge(window, "mouseup", _m), setTimeout(v, 20);
               };
-              pe(window, "mouseup", m);
+              pe(window, "mouseup", _m);
             } else setTimeout(v, 50);
           }
           function g() {
@@ -6059,10 +6059,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             if (t.contextMenuPending == v && (t.contextMenuPending = !1, t.wrapper.style.cssText = f, r.style.cssText = d, a && l < 9 && i.scrollbars.setScrollTop(i.scroller.scrollTop = u), null != r.selectionStart)) {
               (!a || a && l < 9) && g();
               var e = 0,
-                o = function o() {
-                  i.selForContextMenu == n.doc.sel && 0 == r.selectionStart && r.selectionEnd > 0 && "​" == t.prevInput ? ir(n, ho)(n) : e++ < 10 ? i.detectingSelectAll = setTimeout(o, 500) : (i.selForContextMenu = null, i.input.reset());
+                _o2 = function o() {
+                  i.selForContextMenu == n.doc.sel && 0 == r.selectionStart && r.selectionEnd > 0 && "​" == t.prevInput ? ir(n, ho)(n) : e++ < 10 ? i.detectingSelectAll = setTimeout(_o2, 500) : (i.selForContextMenu = null, i.input.reset());
                 };
-              i.detectingSelectAll = setTimeout(o, 200);
+              i.detectingSelectAll = setTimeout(_o2, 200);
             }
           }
         }, Ka.prototype.readOnlyChanged = function (e) {
@@ -6489,12 +6489,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           };
         }(Ma);
         var Za = "iter insert remove copy getEditor constructor".split(" ");
-        for (var Ya in Io.prototype) Io.prototype.hasOwnProperty(Ya) && q(Za, Ya) < 0 && (Ma.prototype[Ya] = function (e) {
+        for (var Ya in _Io.prototype) _Io.prototype.hasOwnProperty(Ya) && q(Za, Ya) < 0 && (Ma.prototype[Ya] = function (e) {
           return function () {
             return e.apply(this.doc, arguments);
           };
-        }(Io.prototype[Ya]));
-        return De(Io), Ma.inputStyles = {
+        }(_Io.prototype[Ya]));
+        return De(_Io), Ma.inputStyles = {
           textarea: Ka,
           contenteditable: Ua
         }, Ma.defineMode = function (e) {
@@ -6510,7 +6510,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }), Ma.defineMIME("text/plain", "null"), Ma.defineExtension = function (e, t) {
           Ma.prototype[e] = t;
         }, Ma.defineDocExtension = function (e, t) {
-          Io.prototype[e] = t;
+          _Io.prototype[e] = t;
         }, Ma.fromTextArea = function (e, t) {
           if ((t = t ? _(t) : {}).value = e.value, !t.tabindex && e.tabIndex && (t.tabindex = e.tabIndex), !t.placeholder && e.placeholder && (t.placeholder = e.placeholder), null == t.autofocus) {
             var n = N(e.ownerDocument);
@@ -6541,7 +6541,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }, t);
           return l;
         }, function (e) {
-          e.off = ge, e.on = pe, e.wheelEventPixels = kr, e.Doc = Io, e.splitLines = Oe, e.countColumn = W, e.findColumn = X, e.isWordChar = ne, e.Pass = U, e.signal = ve, e.Line = Kt, e.changeEnd = Tr, e.scrollbarModel = Gi, e.Pos = it, e.cmpPos = rt, e.modes = Re, e.mimeModes = Pe, e.resolveMode = We, e.getMode = je, e.modeExtensions = qe, e.extendMode = Ue, e.copyState = $e, e.startState = Ve, e.innerMode = Ge, e.commands = oa, e.keyMap = Vo, e.keyName = Jo, e.isModifierKey = Yo, e.lookupKey = Zo, e.normalizeKeyMap = Ko, e.StringStream = Xe, e.SharedTextMarker = Mo, e.TextMarker = Lo, e.LineWidget = Fo, e.e_preventDefault = Ce, e.e_stopPropagation = we, e.e_stop = Se, e.addClass = O, e.contains = B, e.rmClass = A, e.keyNames = qo;
+          e.off = ge, e.on = pe, e.wheelEventPixels = kr, e.Doc = _Io, e.splitLines = Oe, e.countColumn = W, e.findColumn = X, e.isWordChar = ne, e.Pass = U, e.signal = ve, e.Line = Kt, e.changeEnd = Tr, e.scrollbarModel = Gi, e.Pos = it, e.cmpPos = rt, e.modes = Re, e.mimeModes = Pe, e.resolveMode = We, e.getMode = je, e.modeExtensions = qe, e.extendMode = Ue, e.copyState = $e, e.startState = Ve, e.innerMode = Ge, e.commands = oa, e.keyMap = Vo, e.keyName = Jo, e.isModifierKey = Yo, e.lookupKey = Zo, e.normalizeKeyMap = Ko, e.StringStream = Xe, e.SharedTextMarker = Mo, e.TextMarker = Lo, e.LineWidget = Fo, e.e_preventDefault = Ce, e.e_stopPropagation = we, e.e_stop = Se, e.addClass = O, e.contains = B, e.rmClass = A, e.keyNames = qo;
         }(Ma), Ma.version = "5.65.9", Ma;
       });
     }, {}],
