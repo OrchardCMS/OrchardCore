@@ -12,7 +12,7 @@ namespace OrchardCore.DisplayManagement.Liquid;
 public class LiquidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeature>
 {
     public const string DefaultLiquidViewName = "DefaultLiquidViewName";
-    public const readonly string DefaultRazorViewPath = '/' + DefaultLiquidViewName + RazorViewEngine.ViewExtension;
+    public static readonly string DefaultRazorViewPath = '/' + DefaultLiquidViewName + RazorViewEngine.ViewExtension;
     public static readonly string DefaultLiquidViewPath = '/' + DefaultLiquidViewName + LiquidViewTemplate.ViewExtension;
 
     private static List<string> _sharedPaths;
