@@ -62,7 +62,7 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
 
     public async Task<TDocument> GetOrCreateMutableAsync(Func<Task<TDocument>> factoryAsync = null)
     {
-        TDocument document = null;
+        TDocument document;
 
         if (!_isVolatile)
         {

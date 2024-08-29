@@ -86,10 +86,10 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IBackgroundTask, TestBackgroundTask>();
         services.AddScoped<IShapeTableProvider, DemoShapeProvider>();
         services.AddShapeAttributes<DemoShapeProvider>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentDisplayDriver, TestContentElementDisplayDriver>();
         services.AddDataMigration<Migrations>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddContentPart<TestContentPartA>();
         services.AddScoped<IUserClaimsProvider, UserProfileClaimsProvider>();
 

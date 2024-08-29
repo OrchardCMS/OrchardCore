@@ -4,7 +4,7 @@ namespace OrchardCore.Templates.Models;
 
 public class TemplatesDocument : Document
 {
-    public Dictionary<string, Template> Templates { get; set; } = new Dictionary<string, Template>(StringComparer.OrdinalIgnoreCase);
+    public Dictionary<string, Template> Templates { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 }
 
 public class Template

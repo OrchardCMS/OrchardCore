@@ -21,7 +21,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Scripting;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Layers;
 
@@ -39,15 +38,15 @@ public sealed class Startup : StartupBase
             options.Filters.Add<LayerFilter>();
         });
 
-        services.AddScoped<IDisplayDriver<ISite>, LayerSiteSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<LayerSiteSettingsDisplayDriver>();
         services.AddContentPart<LayerMetadata>();
         services.AddScoped<IContentDisplayDriver, LayerMetadataWelder>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<ILayerService, LayerService>();
         services.AddScoped<IContentHandler, LayerMetadataHandler>();
         services.AddIndexProvider<LayerMetadataIndexProvider>();
         services.AddDataMigration<Migrations>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddRecipeExecutionStep<LayerStep>();
         services.AddDeployment<AllLayersDeploymentSource, AllLayersDeploymentStep, AllLayersDeploymentStepDriver>();
         services.AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>();

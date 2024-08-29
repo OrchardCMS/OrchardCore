@@ -135,9 +135,9 @@ public sealed class Startup : StartupBase
             return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, logger);
         });
 
-        services.AddScoped<IPermissionProvider, PermissionProvider>();
+        services.AddPermissionProvider<PermissionProvider>();
         services.AddScoped<IAuthorizationHandler, ManageMediaFolderAuthorizationHandler>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
 
         // ImageSharp
 
@@ -235,8 +235,8 @@ public sealed class MediaCacheStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IPermissionProvider, MediaCachePermissions>();
-        services.AddScoped<INavigationProvider, MediaCacheAdminMenu>();
+        services.AddPermissionProvider<MediaCachePermissions>();
+        services.AddNavigationProvider<MediaCacheAdminMenu>();
     }
 }
 
@@ -328,7 +328,7 @@ public sealed class SecureMediaStartup : StartupBase
     {
         // Marker service to easily detect if the feature has been enabled.
         services.AddSingleton<SecureMediaMarker>();
-        services.AddScoped<IPermissionProvider, SecureMediaPermissions>();
+        services.AddPermissionProvider<SecureMediaPermissions>();
         services.AddScoped<IAuthorizationHandler, ViewMediaFolderAuthorizationHandler>();
 
         services.AddSingleton<IMediaEventHandler, SecureMediaFileStoreEventHandler>();
