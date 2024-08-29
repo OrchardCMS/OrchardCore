@@ -24,9 +24,4 @@ public interface IUserTimeZoneService
     /// </summary>
     /// <param name="user">The <see cref="IUser"/>.</param>
     public ValueTask UpdateTimeZoneAsync(IUser user);
-
-    /// <summary>
-    /// Gets the time zone identifier.
-    /// </summary>
-    public ValueTask<string> GetTimeZoneIdAsync();
 }

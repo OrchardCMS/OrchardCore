@@ -61,7 +61,7 @@ public class UserTimeZoneService : IUserTimeZoneService
     }
 
     /// <inheritdoc/>
-    public async ValueTask<string> GetTimeZoneIdAsync()
+    private async ValueTask<string> GetTimeZoneIdAsync()
     {
         var userName = HttpContext.User?.Identity?.Name;
 
