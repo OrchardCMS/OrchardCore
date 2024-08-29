@@ -5,7 +5,7 @@ using OrchardCore.Modules;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.TimeZone.Services;
 
-namespace OrchardCore.Users.Extensions;
+namespace OrchardCore.Users;
 
 /// <summary>
 /// Provides an extension for <see cref="IUserTimeZoneService"/>.
