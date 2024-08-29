@@ -10,16 +10,16 @@ public interface IUserTimeZoneService
     /// <summary>
     /// Gets the time zone of the currently logged-in user.
     /// </summary>
-    public ValueTask<ITimeZone> GetUserTimeZoneAsync();
+    public ValueTask<ITimeZone> GetTimeZoneAsync();
 
     /// <summary>
     /// Updates the time zone of the currently logged-in user.
     /// </summary>
     /// <param name="user">The <see cref="IUser"/>.</param>
-    public ValueTask UpdateUserTimeZoneAsync(IUser user);
+    public ValueTask UpdateTimeZoneAsync(IUser user);
 
     /// <summary>
     /// Gets the time zone identifier of the currently logged-in user.
     /// </summary>
-    public ValueTask<string> GetCurrentUserTimeZoneIdAsync();
+    public ValueTask<string> GetTimeZoneIdAsync();
 }

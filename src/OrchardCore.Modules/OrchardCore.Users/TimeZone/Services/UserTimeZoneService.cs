@@ -30,9 +30,9 @@ public class UserTimeZoneService : IUserTimeZoneService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async ValueTask<ITimeZone> GetUserTimeZoneAsync()
+    public async ValueTask<ITimeZone> GetTimeZoneAsync()
     {
-        var currentTimeZoneId = await GetCurrentUserTimeZoneIdAsync();
+        var currentTimeZoneId = await GetTimeZoneIdAsync();
 
         if (string.IsNullOrEmpty(currentTimeZoneId))
         {
@@ -42,7 +42,7 @@ public class UserTimeZoneService : IUserTimeZoneService
         return _clock.GetTimeZone(currentTimeZoneId);
     }
 
-    public async ValueTask UpdateUserTimeZoneAsync(IUser user)
+    public async ValueTask UpdateTimeZoneAsync(IUser user)
     {
         var userName = user?.UserName;
 
@@ -54,7 +54,7 @@ public class UserTimeZoneService : IUserTimeZoneService
         return;
     }
 
-    public async ValueTask<string> GetCurrentUserTimeZoneIdAsync()
+    public async ValueTask<string> GetTimeZoneIdAsync()
     {
         var userName = _httpContextAccessor.HttpContext?.User?.Identity?.Name;
 

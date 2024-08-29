@@ -21,7 +21,7 @@ public class UserTimeZoneSelector : ITimeZoneSelector
             {
                 Priority = 100,
                 TimeZoneId = async () =>
-                    (await _userTimeZoneService.GetUserTimeZoneAsync())?.TimeZoneId
+                    (await _userTimeZoneService.GetTimeZoneAsync())?.TimeZoneId
             }
         );
     }
