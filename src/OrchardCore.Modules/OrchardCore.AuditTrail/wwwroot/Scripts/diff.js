@@ -676,7 +676,6 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       // hunk can't fit on the text. Return undefined
     };
   }
-
   function applyPatch(source, uniDiff) {
     var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     if (typeof uniDiff === 'string') {

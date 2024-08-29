@@ -1047,15 +1047,15 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
           }).wrap('<span data-tbw/>');
 
           // Wrap groups of inline elements in paragraphs (recursive)
-          var wrapInlinesInParagraphsFrom = function wrapInlinesInParagraphsFrom($from) {
+          var _wrapInlinesInParagraphsFrom = function wrapInlinesInParagraphsFrom($from) {
             if ($from.length !== 0) {
               var $finalParagraph = $from.nextUntil(blockElementsSelector).addBack().wrapAll('<p/>').parent(),
                 $nextElement = $finalParagraph.nextAll(inlineElementsSelector).first();
               $finalParagraph.next('br').remove();
-              wrapInlinesInParagraphsFrom($nextElement);
+              _wrapInlinesInParagraphsFrom($nextElement);
             }
           };
-          wrapInlinesInParagraphsFrom(t.$ed.children(inlineElementsSelector).first());
+          _wrapInlinesInParagraphsFrom(t.$ed.children(inlineElementsSelector).first());
           t.semanticTag('div', true);
 
           // Get rid of temporary span's
@@ -1284,7 +1284,6 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
       if (cmd === 'strikethrough' && t.o.semantic) {
         t.semanticTag('strike', t.o.semanticKeepAttributes, true); // browsers cannot undo e.g. <del> as they expect <strike>
       }
-
       try {
         t.doc.execCommand('styleWithCSS', false, forceCss || false);
       } catch (c) {}

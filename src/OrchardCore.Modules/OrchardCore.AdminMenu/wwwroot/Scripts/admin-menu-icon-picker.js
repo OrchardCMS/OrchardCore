@@ -484,14 +484,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       throw "Font Awesome Icon Picker Exception: " + e;
     }
   };
-  var t = function t(e, a) {
-    this._id = t._idCounter++;
+  var _t = function t(e, a) {
+    this._id = _t._idCounter++;
     this.element = c(e).addClass("iconpicker-element");
     this._trigger("iconpickerCreate", {
       iconpickerValue: this.iconpickerValue
     });
-    this.options = c.extend({}, t.defaultOptions, this.element.data(), a);
-    this.options.templates = c.extend({}, t.defaultOptions.templates, this.options.templates);
+    this.options = c.extend({}, _t.defaultOptions, this.element.data(), a);
+    this.options.templates = c.extend({}, _t.defaultOptions.templates, this.options.templates);
     this.options.originalPlacement = this.options.placement;
     this.container = f.isElement(this.options.container) ? c(this.options.container) : false;
     if (this.container === false) {
@@ -538,8 +538,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       iconpickerValue: this.iconpickerValue
     });
   };
-  t._idCounter = 0;
-  t.defaultOptions = {
+  _t._idCounter = 0;
+  _t.defaultOptions = {
     title: false,
     selected: false,
     defaultValue: false,
@@ -568,7 +568,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       iconpickerItem: '<a role="button" href="javascript:;" class="iconpicker-item"><i></i></a>'
     }
   };
-  t.batch = function (e, a) {
+  _t.batch = function (e, a) {
     var t = Array.prototype.slice.call(arguments, 2);
     return c(e).each(function () {
       var e = c(this).data("iconpicker");
@@ -577,8 +577,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     });
   };
-  t.prototype = {
-    constructor: t,
+  _t.prototype = {
+    constructor: _t,
     options: {},
     _id: 0,
     _trigger: function _trigger(e, a) {
@@ -1127,16 +1127,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return this.options.placement === "inline" || this.popover.hasClass("inline");
     }
   };
-  c.iconpicker = t;
+  c.iconpicker = _t;
   c.fn.iconpicker = function (a) {
     return this.each(function () {
       var e = c(this);
       if (!e.data("iconpicker")) {
-        e.data("iconpicker", new t(this, _typeof(a) === "object" ? a : {}));
+        e.data("iconpicker", new _t(this, _typeof(a) === "object" ? a : {}));
       }
     });
   };
-  t.defaultOptions = c.extend(t.defaultOptions, {
+  _t.defaultOptions = c.extend(_t.defaultOptions, {
     icons: [{
       title: "fab fa-500px",
       searchTerms: []
@@ -5395,7 +5395,6 @@ var iconPickerVue = new Vue({
         search: '<input type="search" class="form-control iconpicker-search" placeholder="" />' // just to leave empty the placeholder because it is not localized
       }
     });
-
     $('#inline-picker').on('iconpickerSelected', function (e) {
       var selected = e.iconpickerInstance.options.fullClassFormatter(e.iconpickerValue);
       if (self.targetInputField) {
