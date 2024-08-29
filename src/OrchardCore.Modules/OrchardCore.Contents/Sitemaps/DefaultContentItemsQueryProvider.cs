@@ -22,20 +22,20 @@ public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
         _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
     }
 
-    public async Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context)
+    public async Task<ContentItemsQueryResult> GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context)
     {
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(context);
+
         var routeableContentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
+
+        var query = _session.Query<ContentItem, ContentItemIndex>();
 
         if (source.IndexAll)
         {
             var rctdNames = routeableContentTypeDefinitions.Select(rctd => rctd.Name);
 
-            var queryResults = await _session.Query<ContentItem>()
-                .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(rctdNames))
-                .OrderBy(x => x.CreatedUtc)
-                .ListAsync();
-
-            context.ContentItems = queryResults;
+            query = query.Where(x => x.Published && x.ContentType.IsIn(rctdNames));
         }
         else if (source.LimitItems)
         {
@@ -43,17 +43,15 @@ public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
             var typeIsValid = routeableContentTypeDefinitions
                 .Any(ctd => string.Equals(source.LimitedContentType.ContentTypeName, ctd.Name, StringComparison.Ordinal));
 
-            if (typeIsValid)
+            if (!typeIsValid)
             {
-                var queryResults = await _session.Query<ContentItem>()
-                    .With<ContentItemIndex>(x => x.ContentType == source.LimitedContentType.ContentTypeName && x.Published)
-                    .OrderBy(x => x.CreatedUtc)
-                    .Skip(source.LimitedContentType.Skip)
-                    .Take(source.LimitedContentType.Take)
-                    .ListAsync();
-
-                context.ContentItems = queryResults;
+                return new ContentItemsQueryResult()
+                {
+                    ContentItems = [],
+                };
             }
+
+            query = query.Where(x => x.ContentType == source.LimitedContentType.ContentTypeName && x.Published);
         }
         else
         {
@@ -62,12 +60,18 @@ public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
                 .Where(ctd => source.ContentTypes.Any(s => string.Equals(ctd.Name, s.ContentTypeName, StringComparison.Ordinal)))
                 .Select(x => x.Name);
 
-            var queryResults = await _session.Query<ContentItem>()
-                .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
-                .OrderBy(x => x.CreatedUtc)
-                .ListAsync();
-
-            context.ContentItems = queryResults;
+            query = query.Where(x => x.ContentType.IsIn(typesToIndex) && x.Published);
         }
+
+        return new ContentItemsQueryResult
+        {
+            ContentItems = await query
+                .OrderBy(x => x.CreatedUtc)
+                .ThenBy(x => x.Id)
+                .Take(context.Take)
+                .Skip(context.Skip)
+                .ListAsync(),
+            ReferenceContentItems = [],
+        };
     }
 }

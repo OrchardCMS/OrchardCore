@@ -10,6 +10,8 @@ namespace OrchardCore.Contents.Sitemaps;
 
 public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<ContentTypesSitemapSource>
 {
+    private const int _batchSize = 500;
+
     private static readonly XNamespace _namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
 
     private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
@@ -21,8 +23,7 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
         IRouteableContentTypeCoordinator routeableContentTypeCoordinator,
         IContentManager contentManager,
         IContentItemsQueryProvider contentItemsQueryProvider,
-        IEnumerable<ISitemapContentItemExtendedMetadataProvider> sitemapContentItemExtendedMetadataProviders
-        )
+        IEnumerable<ISitemapContentItemExtendedMetadataProvider> sitemapContentItemExtendedMetadataProviders)
     {
         _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
         _contentManager = contentManager;
@@ -32,33 +33,83 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
 
     public override async Task BuildSourceAsync(ContentTypesSitemapSource source, SitemapBuilderContext context)
     {
-        var queryContext = new ContentItemsQueryContext();
-        await _contentItemsQueryProvider.GetContentItemsAsync(source, queryContext);
-
         foreach (var sciemp in _sitemapContentItemExtendedMetadataProviders)
         {
             context.Response.ResponseElement.Add(sciemp.GetExtendedAttribute);
         }
 
-        foreach (var contentItem in queryContext.ContentItems)
+        if (source.LimitedContentType != null && source.LimitedContentType.Take > 0)
         {
-            var url = new XElement(_namespace + "url");
-
-            if (await BuildUrlsetMetadataAsync(source, context, queryContext, contentItem, url))
+            var result = await _contentItemsQueryProvider.GetContentItemsAsync(source, new ContentItemsQueryContext
             {
-                context.Response.ResponseElement.Add(url);
+                Skip = source.LimitedContentType.Skip,
+                Take = source.LimitedContentType.Take,
+            });
+
+            if (result.ContentItems == null || !result.ContentItems.Any())
+            {
+                return;
             }
+
+            foreach (var contentItem in result.ContentItems)
+            {
+                var url = new XElement(_namespace + "url");
+
+                if (await BuildUrlsetMetadataAsync(source, context, result, contentItem, url))
+                {
+                    context.Response.ResponseElement.Add(url);
+                }
+            }
+
+            return;
+        }
+
+        var queryContext = new ContentItemsQueryContext()
+        {
+            Take = _batchSize,
+        };
+
+        if (source.LimitedContentType != null)
+        {
+            queryContext.Skip = source.LimitedContentType.Skip;
+
+            // Make sure the 'Take' value does not exceed the batch size.
+            queryContext.Take = Math.Min(source.LimitedContentType.Take, _batchSize);
+        }
+
+        while (true)
+        {
+            var result = await _contentItemsQueryProvider.GetContentItemsAsync(source, queryContext);
+
+            if (result.ContentItems == null || !result.ContentItems.Any())
+            {
+                break;
+            }
+
+            foreach (var contentItem in result.ContentItems)
+            {
+                var url = new XElement(_namespace + "url");
+
+                if (await BuildUrlsetMetadataAsync(source, context, result, contentItem, url))
+                {
+                    context.Response.ResponseElement.Add(url);
+                }
+            }
+
+            queryContext.Skip += queryContext.Take;
         }
     }
 
-    private async Task<bool> BuildUrlsetMetadataAsync(ContentTypesSitemapSource source, SitemapBuilderContext context, ContentItemsQueryContext queryContext, ContentItem contentItem, XElement url)
+    private async Task<bool> BuildUrlsetMetadataAsync(ContentTypesSitemapSource source, SitemapBuilderContext context, ContentItemsQueryResult queryResult, ContentItem contentItem, XElement url)
     {
         if (await BuildUrlAsync(context, contentItem, url))
         {
-            if (await BuildExtendedMetadataAsync(context, queryContext, contentItem, url))
+            if (await BuildExtendedMetadataAsync(context, queryResult, contentItem, url))
             {
                 PopulateLastMod(contentItem, url);
+
                 await PopulateChangeFrequencyPriority(source, contentItem, url);
+
                 return true;
             }
 
@@ -68,12 +119,12 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
         return false;
     }
 
-    private async Task<bool> BuildExtendedMetadataAsync(SitemapBuilderContext context, ContentItemsQueryContext queryContext, ContentItem contentItem, XElement url)
+    private async Task<bool> BuildExtendedMetadataAsync(SitemapBuilderContext context, ContentItemsQueryResult queryResult, ContentItem contentItem, XElement url)
     {
         var succeeded = true;
         foreach (var sc in _sitemapContentItemExtendedMetadataProviders)
         {
-            if (!await sc.ApplyExtendedMetadataAsync(context, queryContext, contentItem, url))
+            if (!await sc.ApplyExtendedMetadataAsync(context, queryResult, contentItem, url))
             {
                 succeeded = false;
             }
