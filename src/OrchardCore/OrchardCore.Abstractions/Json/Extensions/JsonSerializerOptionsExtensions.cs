@@ -23,8 +23,6 @@ public static class JsonSerializerOptionsExtensions
         MergeCollections(destination.TypeInfoResolverChain, source.TypeInfoResolverChain);
         MergeCollections(destination.Converters, source.Converters);
 
-        // destination.PreferredObjectCreationHandling = JsonObjectCreationHandling.Replace;
-
         return destination;
     }
 
@@ -32,10 +30,12 @@ public static class JsonSerializerOptionsExtensions
     {
         foreach (var item in source)
         {
-            if (!destination.Contains(item))
+            if (destination.Contains(item))
             {
-                destination.Add(item);
+                continue;
             }
+
+            destination.Add(item);
         }
     }
 }
