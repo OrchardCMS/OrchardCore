@@ -4258,6 +4258,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }, 20);
         } // Issue #1730
       }
+
       cm.display.input.receivedFocus();
     }
     restartBlink(cm);
@@ -4861,6 +4862,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       // Unique ID
       markArrays: null // Used by addMarkedSpan
     };
+
     pushOperation(cm.curOp);
   }
 
@@ -7635,9 +7637,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     for (var i = 0; i < markers.length; i++) loop(i);
   }
   var nextDocId = 0;
-  var _Doc = function Doc(text, mode, firstLine, lineSep, direction) {
-    if (!(this instanceof _Doc)) {
-      return new _Doc(text, mode, firstLine, lineSep, direction);
+  var Doc = function Doc(text, mode, firstLine, lineSep, direction) {
+    if (!(this instanceof Doc)) {
+      return new Doc(text, mode, firstLine, lineSep, direction);
     }
     if (firstLine == null) {
       firstLine = 0;
@@ -7666,8 +7668,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     });
     setSelection(this, simpleSelection(start), sel_dontScroll);
   };
-  _Doc.prototype = createObj(BranchChunk.prototype, {
-    constructor: _Doc,
+  Doc.prototype = createObj(BranchChunk.prototype, {
+    constructor: Doc,
     // Iterate over the document. Supports two forms -- with only one
     // argument, it calls that for each line in the document. With
     // three, it iterates over the range given by the first two (with
@@ -8115,7 +8117,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return index;
     },
     copy: function copy(copyHistory) {
-      var doc = new _Doc(getLines(this, this.first, this.first + this.size), this.modeOption, this.first, this.lineSep, this.direction);
+      var doc = new Doc(getLines(this, this.first, this.first + this.size), this.modeOption, this.first, this.lineSep, this.direction);
       doc.scrollTop = this.scrollTop;
       doc.scrollLeft = this.scrollLeft;
       doc.sel = this.sel;
@@ -8138,7 +8140,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (options.to != null && options.to < to) {
         to = options.to;
       }
-      var copy = new _Doc(getLines(this, from, to), options.mode || this.modeOption, from, this.lineSep, this.direction);
+      var copy = new Doc(getLines(this, from, to), options.mode || this.modeOption, from, this.lineSep, this.direction);
       if (options.sharedHist) {
         copy.history = this.history;
       }
@@ -8217,7 +8219,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   });
 
   // Public alias.
-  _Doc.prototype.eachLine = _Doc.prototype.iter;
+  Doc.prototype.eachLine = Doc.prototype.iter;
 
   // Kludge to work around strange IE behavior where it'll sometimes
   // re-fire a series of drag-related events right after the drop (#1551)
@@ -10119,7 +10121,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     copyObj(defaults, options, false);
     var doc = options.value;
     if (typeof doc == "string") {
-      doc = new _Doc(doc, options.mode, null, options.lineSeparator, options.direction);
+      doc = new Doc(doc, options.mode, null, options.lineSeparator, options.direction);
     } else if (options.mode) {
       doc.modeOption = options.mode;
     }
@@ -12174,6 +12176,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       } catch (e) {} // IE8 will throw if the textarea is display: none or not in DOM
     }
   };
+
   TextareaInput.prototype.blur = function () {
     this.textarea.blur();
   };
@@ -12370,17 +12373,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           prepareSelectAllHack();
         }
         var i = 0,
-          _poll = function poll() {
+          poll = function poll() {
             if (display.selForContextMenu == cm.doc.sel && te.selectionStart == 0 && te.selectionEnd > 0 && input.prevInput == "\u200B") {
               operation(cm, selectAll)(cm);
             } else if (i++ < 10) {
-              display.detectingSelectAll = setTimeout(_poll, 500);
+              display.detectingSelectAll = setTimeout(poll, 500);
             } else {
               display.selForContextMenu = null;
               display.input.reset();
             }
           };
-        display.detectingSelectAll = setTimeout(_poll, 200);
+        display.detectingSelectAll = setTimeout(poll, 200);
       }
     }
     if (ie && ie_version >= 9) {
@@ -12388,11 +12391,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     if (captureRightClick) {
       e_stop(e);
-      var _mouseup = function mouseup() {
-        off(window, "mouseup", _mouseup);
+      var mouseup = function mouseup() {
+        off(window, "mouseup", mouseup);
         setTimeout(rehide, 20);
       };
-      on(window, "mouseup", _mouseup);
+      on(window, "mouseup", mouseup);
     } else {
       setTimeout(rehide, 50);
     }
@@ -12469,7 +12472,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     CodeMirror.off = off;
     CodeMirror.on = on;
     CodeMirror.wheelEventPixels = wheelEventPixels;
-    CodeMirror.Doc = _Doc;
+    CodeMirror.Doc = Doc;
     CodeMirror.splitLines = splitLinesAuto;
     CodeMirror.countColumn = countColumn;
     CodeMirror.findColumn = findColumn;
@@ -12516,16 +12519,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
   // Set up methods on CodeMirror's prototype to redirect to the editor's document.
   var dontDelegate = "iter insert remove copy getEditor constructor".split(" ");
-  for (var prop in _Doc.prototype) {
-    if (_Doc.prototype.hasOwnProperty(prop) && indexOf(dontDelegate, prop) < 0) {
+  for (var prop in Doc.prototype) {
+    if (Doc.prototype.hasOwnProperty(prop) && indexOf(dontDelegate, prop) < 0) {
       CodeMirror.prototype[prop] = function (method) {
         return function () {
           return method.apply(this.doc, arguments);
         };
-      }(_Doc.prototype[prop]);
+      }(Doc.prototype[prop]);
     }
   }
-  eventMixin(_Doc);
+  eventMixin(Doc);
   CodeMirror.inputStyles = {
     "textarea": TextareaInput,
     "contenteditable": ContentEditableInput
@@ -12558,7 +12561,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     CodeMirror.prototype[name] = func;
   };
   CodeMirror.defineDocExtension = function (name, func) {
-    _Doc.prototype[name] = func;
+    Doc.prototype[name] = func;
   };
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);

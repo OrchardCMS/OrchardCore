@@ -120,15 +120,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var version = "3.7.1",
     rhtmlSuffix = /HTML$/i,
     // Define a local copy of jQuery
-    _jQuery2 = function jQuery(selector, context) {
+    jQuery = function jQuery(selector, context) {
       // The jQuery object is actually just the init constructor 'enhanced'
       // Need init if jQuery is called (just allow error to be thrown if not included)
-      return new _jQuery2.fn.init(selector, context);
+      return new jQuery.fn.init(selector, context);
     };
-  _jQuery2.fn = _jQuery2.prototype = {
+  jQuery.fn = jQuery.prototype = {
     // The current version of jQuery being used
     jquery: version,
-    constructor: _jQuery2,
+    constructor: jQuery,
     // The default length of a jQuery object is 0
     length: 0,
     toArray: function toArray() {
@@ -149,7 +149,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     // (returning the new matched element set)
     pushStack: function pushStack(elems) {
       // Build a new jQuery matched element set
-      var ret = _jQuery2.merge(this.constructor(), elems);
+      var ret = jQuery.merge(this.constructor(), elems);
 
       // Add the old object onto the stack (as a reference)
       ret.prevObject = this;
@@ -159,10 +159,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     // Execute a callback for every element in the matched set.
     each: function each(callback) {
-      return _jQuery2.each(this, callback);
+      return jQuery.each(this, callback);
     },
     map: function map(callback) {
-      return this.pushStack(_jQuery2.map(this, function (elem, i) {
+      return this.pushStack(jQuery.map(this, function (elem, i) {
         return callback.call(elem, i, elem);
       }));
     },
@@ -176,12 +176,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return this.eq(-1);
     },
     even: function even() {
-      return this.pushStack(_jQuery2.grep(this, function (_elem, i) {
+      return this.pushStack(jQuery.grep(this, function (_elem, i) {
         return (i + 1) % 2;
       }));
     },
     odd: function odd() {
-      return this.pushStack(_jQuery2.grep(this, function (_elem, i) {
+      return this.pushStack(jQuery.grep(this, function (_elem, i) {
         return i % 2;
       }));
     },
@@ -199,7 +199,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     sort: arr.sort,
     splice: arr.splice
   };
-  _jQuery2.extend = _jQuery2.fn.extend = function () {
+  jQuery.extend = jQuery.fn.extend = function () {
     var options,
       name,
       src,
@@ -244,13 +244,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
 
           // Recurse if we're merging plain objects or arrays
-          if (deep && copy && (_jQuery2.isPlainObject(copy) || (copyIsArray = Array.isArray(copy)))) {
+          if (deep && copy && (jQuery.isPlainObject(copy) || (copyIsArray = Array.isArray(copy)))) {
             src = target[name];
 
             // Ensure proper type for the source value
             if (copyIsArray && !Array.isArray(src)) {
               clone = [];
-            } else if (!copyIsArray && !_jQuery2.isPlainObject(src)) {
+            } else if (!copyIsArray && !jQuery.isPlainObject(src)) {
               clone = {};
             } else {
               clone = src;
@@ -258,7 +258,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             copyIsArray = false;
 
             // Never move original objects, clone them
-            target[name] = _jQuery2.extend(deep, clone, copy);
+            target[name] = jQuery.extend(deep, clone, copy);
 
             // Don't bring in undefined values
           } else if (copy !== undefined) {
@@ -271,7 +271,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     // Return the modified object
     return target;
   };
-  _jQuery2.extend({
+  jQuery.extend({
     // Unique for each copy of jQuery on the page
     expando: "jQuery" + (version + Math.random()).replace(/\D/g, ""),
     // Assume jQuery is ready without the ready module
@@ -342,7 +342,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         // If no nodeType, this is expected to be an array
         while (node = elem[i++]) {
           // Do not traverse comment nodes
-          ret += _jQuery2.text(node);
+          ret += jQuery.text(node);
         }
       }
       if (nodeType === 1 || nodeType === 11) {
@@ -364,7 +364,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var ret = results || [];
       if (arr != null) {
         if (isArrayLike(Object(arr))) {
-          _jQuery2.merge(ret, typeof arr === "string" ? [arr] : arr);
+          jQuery.merge(ret, typeof arr === "string" ? [arr] : arr);
         } else {
           push.call(ret, arr);
         }
@@ -448,11 +448,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     support: support
   });
   if (typeof Symbol === "function") {
-    _jQuery2.fn[Symbol.iterator] = arr[Symbol.iterator];
+    jQuery.fn[Symbol.iterator] = arr[Symbol.iterator];
   }
 
   // Populate the class2type map
-  _jQuery2.each("Boolean Number String Function Array Date RegExp Object Error Symbol".split(" "), function (_i, name) {
+  jQuery.each("Boolean Number String Function Array Date RegExp Object Error Symbol".split(" "), function (_i, name) {
     class2type["[object " + name + "]"] = name.toLowerCase();
   });
   function isArrayLike(obj) {
@@ -477,7 +477,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var rtrimCSS = new RegExp("^" + whitespace + "+|((?:^|[^\\\\])(?:\\\\.)*)" + whitespace + "+$", "g");
 
   // Note: an element does not contain itself
-  _jQuery2.contains = function (a, b) {
+  jQuery.contains = function (a, b) {
     var bup = b && b.parentNode;
     return a === bup || !!(bup && bup.nodeType === 1 && (
     // Support: IE 9 - 11+
@@ -502,7 +502,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     // Other potentially-special ASCII characters get backslash-escaped
     return "\\" + ch;
   }
-  _jQuery2.escapeSelector = function (sel) {
+  jQuery.escapeSelector = function (sel) {
     return (sel + "").replace(rcssescape, fcssescape);
   };
   var preferredDoc = document,
@@ -521,7 +521,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       rbuggyQSA,
       matches,
       // Instance-specific data
-      expando = _jQuery2.expando,
+      expando = jQuery.expando,
       dirruns = 0,
       done = 0,
       classCache = createCache(),
@@ -722,7 +722,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               if (newContext != context || !support.scope) {
                 // Capture the context ID, setting it first if necessary
                 if (nid = context.getAttribute("id")) {
-                  nid = _jQuery2.escapeSelector(nid);
+                  nid = jQuery.escapeSelector(nid);
                 } else {
                   context.setAttribute("id", nid = expando);
                 }
@@ -924,7 +924,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       // Update global variables
       document = doc;
       documentElement = document.documentElement;
-      documentIsHTML = !_jQuery2.isXMLDoc(document);
+      documentIsHTML = !jQuery.isXMLDoc(document);
 
       // Support: iOS 7 only, IE 9 - 11+
       // Older browsers didn't support unprefixed `matches`.
@@ -950,8 +950,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       // The broken getElementById methods don't pick up programmatically-set names,
       // so use a roundabout getElementsByName test
       support.getById = assert(function (el) {
-        documentElement.appendChild(el).id = _jQuery2.expando;
-        return !document.getElementsByName || !document.getElementsByName(_jQuery2.expando).length;
+        documentElement.appendChild(el).id = jQuery.expando;
+        return !document.getElementsByName || !document.getElementsByName(jQuery.expando).length;
       });
 
       // Support: IE 9 only
@@ -1218,7 +1218,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if ((context.ownerDocument || context) != document) {
         setDocument(context);
       }
-      return _jQuery2.contains(context, elem);
+      return jQuery.contains(context, elem);
     };
     find.attr = function (elem, name) {
       // Set document vars if needed
@@ -1245,7 +1245,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
      * Document sorting and removing duplicates
      * @param {ArrayLike} results
      */
-    _jQuery2.uniqueSort = function (results) {
+    jQuery.uniqueSort = function (results) {
       var elem,
         duplicates = [],
         j = 0,
@@ -1275,10 +1275,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       sortInput = null;
       return results;
     };
-    _jQuery2.fn.uniqueSort = function () {
-      return this.pushStack(_jQuery2.uniqueSort(_slice.apply(this)));
+    jQuery.fn.uniqueSort = function () {
+      return this.pushStack(jQuery.uniqueSort(_slice.apply(this)));
     };
-    Expr = _jQuery2.expr = {
+    Expr = jQuery.expr = {
       // Can be adjusted by the user
       cacheLength: 50,
       createPseudo: markFunction,
@@ -1575,7 +1575,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         contains: markFunction(function (text) {
           text = text.replace(runescape, funescape);
           return function (elem) {
-            return (elem.textContent || _jQuery2.text(elem)).indexOf(text) > -1;
+            return (elem.textContent || jQuery.text(elem)).indexOf(text) > -1;
           };
         }),
         // "Whether an element is represented by a :lang() selector
@@ -2137,7 +2137,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
             // Seedless set matches succeeding multiple successful matchers stipulate sorting
             if (outermost && !seed && setMatched.length > 0 && matchedCount + setMatchers.length > 1) {
-              _jQuery2.uniqueSort(results);
+              jQuery.uniqueSort(results);
             }
           }
 
@@ -2261,11 +2261,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       // Should return 1, but returns 4 (following)
       return el.compareDocumentPosition(document.createElement("fieldset")) & 1;
     });
-    _jQuery2.find = find;
+    jQuery.find = find;
 
     // Deprecated
-    _jQuery2.expr[":"] = _jQuery2.expr.pseudos;
-    _jQuery2.unique = _jQuery2.uniqueSort;
+    jQuery.expr[":"] = jQuery.expr.pseudos;
+    jQuery.unique = jQuery.uniqueSort;
 
     // These have always been private, but they used to be documented as part of
     // Sizzle so let's maintain them for now for backwards compatibility purposes.
@@ -2273,21 +2273,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     find.select = select;
     find.setDocument = setDocument;
     find.tokenize = tokenize;
-    find.escape = _jQuery2.escapeSelector;
-    find.getText = _jQuery2.text;
-    find.isXML = _jQuery2.isXMLDoc;
-    find.selectors = _jQuery2.expr;
-    find.support = _jQuery2.support;
-    find.uniqueSort = _jQuery2.uniqueSort;
+    find.escape = jQuery.escapeSelector;
+    find.getText = jQuery.text;
+    find.isXML = jQuery.isXMLDoc;
+    find.selectors = jQuery.expr;
+    find.support = jQuery.support;
+    find.uniqueSort = jQuery.uniqueSort;
 
     /* eslint-enable */
   })();
+
   var dir = function dir(elem, _dir, until) {
     var matched = [],
       truncate = until !== undefined;
     while ((elem = elem[_dir]) && elem.nodeType !== 9) {
       if (elem.nodeType === 1) {
-        if (truncate && _jQuery2(elem).is(until)) {
+        if (truncate && jQuery(elem).is(until)) {
           break;
         }
         matched.push(elem);
@@ -2304,56 +2305,56 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return matched;
   };
-  var rneedsContext = _jQuery2.expr.match.needsContext;
+  var rneedsContext = jQuery.expr.match.needsContext;
   var rsingleTag = /^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|)$/i;
 
   // Implement the identical functionality for filter and not
   function winnow(elements, qualifier, not) {
     if (isFunction(qualifier)) {
-      return _jQuery2.grep(elements, function (elem, i) {
+      return jQuery.grep(elements, function (elem, i) {
         return !!qualifier.call(elem, i, elem) !== not;
       });
     }
 
     // Single element
     if (qualifier.nodeType) {
-      return _jQuery2.grep(elements, function (elem) {
+      return jQuery.grep(elements, function (elem) {
         return elem === qualifier !== not;
       });
     }
 
     // Arraylike of elements (jQuery, arguments, Array)
     if (typeof qualifier !== "string") {
-      return _jQuery2.grep(elements, function (elem) {
+      return jQuery.grep(elements, function (elem) {
         return indexOf.call(qualifier, elem) > -1 !== not;
       });
     }
 
     // Filtered directly for both simple and complex selectors
-    return _jQuery2.filter(qualifier, elements, not);
+    return jQuery.filter(qualifier, elements, not);
   }
-  _jQuery2.filter = function (expr, elems, not) {
+  jQuery.filter = function (expr, elems, not) {
     var elem = elems[0];
     if (not) {
       expr = ":not(" + expr + ")";
     }
     if (elems.length === 1 && elem.nodeType === 1) {
-      return _jQuery2.find.matchesSelector(elem, expr) ? [elem] : [];
+      return jQuery.find.matchesSelector(elem, expr) ? [elem] : [];
     }
-    return _jQuery2.find.matches(expr, _jQuery2.grep(elems, function (elem) {
+    return jQuery.find.matches(expr, jQuery.grep(elems, function (elem) {
       return elem.nodeType === 1;
     }));
   };
-  _jQuery2.fn.extend({
+  jQuery.fn.extend({
     find: function find(selector) {
       var i,
         ret,
         len = this.length,
         self = this;
       if (typeof selector !== "string") {
-        return this.pushStack(_jQuery2(selector).filter(function () {
+        return this.pushStack(jQuery(selector).filter(function () {
           for (i = 0; i < len; i++) {
-            if (_jQuery2.contains(self[i], this)) {
+            if (jQuery.contains(self[i], this)) {
               return true;
             }
           }
@@ -2361,9 +2362,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       ret = this.pushStack([]);
       for (i = 0; i < len; i++) {
-        _jQuery2.find(selector, self[i], ret);
+        jQuery.find(selector, self[i], ret);
       }
-      return len > 1 ? _jQuery2.uniqueSort(ret) : ret;
+      return len > 1 ? jQuery.uniqueSort(ret) : ret;
     },
     filter: function filter(selector) {
       return this.pushStack(winnow(this, selector || [], false));
@@ -2375,7 +2376,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return !!winnow(this,
       // If this is a positional/relative selector, check membership in the returned set
       // so $("p:first").is("p:last") won't return true for a doc with two "p".
-      typeof selector === "string" && rneedsContext.test(selector) ? _jQuery2(selector) : selector || [], false).length;
+      typeof selector === "string" && rneedsContext.test(selector) ? jQuery(selector) : selector || [], false).length;
     }
   });
 
@@ -2388,7 +2389,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     // Strict HTML recognition (trac-11290: must start with <)
     // Shortcut simple #id case for speed
     rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]+))$/,
-    init = _jQuery2.fn.init = function (selector, context, root) {
+    init = jQuery.fn.init = function (selector, context, root) {
       var match, elem;
 
       // HANDLE: $(""), $(null), $(undefined), $(false)
@@ -2413,14 +2414,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (match && (match[1] || !context)) {
           // HANDLE: $(html) -> $(array)
           if (match[1]) {
-            context = context instanceof _jQuery2 ? context[0] : context;
+            context = context instanceof jQuery ? context[0] : context;
 
             // Option to run scripts is true for back-compat
             // Intentionally let the error be thrown if parseHTML is not present
-            _jQuery2.merge(this, _jQuery2.parseHTML(match[1], context && context.nodeType ? context.ownerDocument || context : document, true));
+            jQuery.merge(this, jQuery.parseHTML(match[1], context && context.nodeType ? context.ownerDocument || context : document, true));
 
             // HANDLE: $(html, props)
-            if (rsingleTag.test(match[1]) && _jQuery2.isPlainObject(context)) {
+            if (rsingleTag.test(match[1]) && jQuery.isPlainObject(context)) {
               for (match in context) {
                 // Properties of context are called as methods if possible
                 if (isFunction(this[match])) {
@@ -2466,16 +2467,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       } else if (isFunction(selector)) {
         return root.ready !== undefined ? root.ready(selector) :
         // Execute immediately if ready is not present
-        selector(_jQuery2);
+        selector(jQuery);
       }
-      return _jQuery2.makeArray(selector, this);
+      return jQuery.makeArray(selector, this);
     };
 
   // Give the init function the jQuery prototype for later instantiation
-  init.prototype = _jQuery2.fn;
+  init.prototype = jQuery.fn;
 
   // Initialize central reference
-  rootjQuery = _jQuery2(document);
+  rootjQuery = jQuery(document);
   var rparentsprev = /^(?:parents|prev(?:Until|All))/,
     // Methods guaranteed to produce a unique set when starting from a unique set
     guaranteedUnique = {
@@ -2484,14 +2485,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       next: true,
       prev: true
     };
-  _jQuery2.fn.extend({
+  jQuery.fn.extend({
     has: function has(target) {
-      var targets = _jQuery2(target, this),
+      var targets = jQuery(target, this),
         l = targets.length;
       return this.filter(function () {
         var i = 0;
         for (; i < l; i++) {
-          if (_jQuery2.contains(this, targets[i])) {
+          if (jQuery.contains(this, targets[i])) {
             return true;
           }
         }
@@ -2502,7 +2503,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         i = 0,
         l = this.length,
         matched = [],
-        targets = typeof selectors !== "string" && _jQuery2(selectors);
+        targets = typeof selectors !== "string" && jQuery(selectors);
 
       // Positional selectors never match, since there's no _selection_ context
       if (!rneedsContext.test(selectors)) {
@@ -2511,14 +2512,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             // Always skip document fragments
             if (cur.nodeType < 11 && (targets ? targets.index(cur) > -1 :
             // Don't pass non-elements to jQuery#find
-            cur.nodeType === 1 && _jQuery2.find.matchesSelector(cur, selectors))) {
+            cur.nodeType === 1 && jQuery.find.matchesSelector(cur, selectors))) {
               matched.push(cur);
               break;
             }
           }
         }
       }
-      return this.pushStack(matched.length > 1 ? _jQuery2.uniqueSort(matched) : matched);
+      return this.pushStack(matched.length > 1 ? jQuery.uniqueSort(matched) : matched);
     },
     // Determine the position of an element within the set
     index: function index(elem) {
@@ -2529,7 +2530,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
       // Index in selector
       if (typeof elem === "string") {
-        return indexOf.call(_jQuery2(elem), this[0]);
+        return indexOf.call(jQuery(elem), this[0]);
       }
 
       // Locate the position of the desired element
@@ -2538,7 +2539,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       elem.jquery ? elem[0] : elem);
     },
     add: function add(selector, context) {
-      return this.pushStack(_jQuery2.uniqueSort(_jQuery2.merge(this.get(), _jQuery2(selector, context))));
+      return this.pushStack(jQuery.uniqueSort(jQuery.merge(this.get(), jQuery(selector, context))));
     },
     addBack: function addBack(selector) {
       return this.add(selector == null ? this.prevObject : this.prevObject.filter(selector));
@@ -2548,7 +2549,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     while ((cur = cur[dir]) && cur.nodeType !== 1) {}
     return cur;
   }
-  _jQuery2.each({
+  jQuery.each({
     parent: function parent(elem) {
       var parent = elem.parentNode;
       return parent && parent.nodeType !== 11 ? parent : null;
@@ -2598,21 +2599,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (nodeName(elem, "template")) {
         elem = elem.content || elem;
       }
-      return _jQuery2.merge([], elem.childNodes);
+      return jQuery.merge([], elem.childNodes);
     }
   }, function (name, fn) {
-    _jQuery2.fn[name] = function (until, selector) {
-      var matched = _jQuery2.map(this, fn, until);
+    jQuery.fn[name] = function (until, selector) {
+      var matched = jQuery.map(this, fn, until);
       if (name.slice(-5) !== "Until") {
         selector = until;
       }
       if (selector && typeof selector === "string") {
-        matched = _jQuery2.filter(selector, matched);
+        matched = jQuery.filter(selector, matched);
       }
       if (this.length > 1) {
         // Remove duplicates
         if (!guaranteedUnique[name]) {
-          _jQuery2.uniqueSort(matched);
+          jQuery.uniqueSort(matched);
         }
 
         // Reverse order for parents* and prev-derivatives
@@ -2628,7 +2629,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   // Convert String-formatted options into Object-formatted ones
   function createOptions(options) {
     var object = {};
-    _jQuery2.each(options.match(rnothtmlwhite) || [], function (_, flag) {
+    jQuery.each(options.match(rnothtmlwhite) || [], function (_, flag) {
       object[flag] = true;
     });
     return object;
@@ -2656,10 +2657,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    *	stopOnFalse:	interrupt callings when a callback returns false
    *
    */
-  _jQuery2.Callbacks = function (options) {
+  jQuery.Callbacks = function (options) {
     // Convert options from String-formatted to Object-formatted if needed
     // (we check in cache first)
-    options = typeof options === "string" ? createOptions(options) : _jQuery2.extend({}, options);
+    options = typeof options === "string" ? createOptions(options) : jQuery.extend({}, options);
     var
       // Flag to know if list is currently firing
       firing,
@@ -2724,7 +2725,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               queue.push(memory);
             }
             (function add(args) {
-              _jQuery2.each(args, function (_, arg) {
+              jQuery.each(args, function (_, arg) {
                 if (isFunction(arg)) {
                   if (!options.unique || !self.has(arg)) {
                     list.push(arg);
@@ -2743,9 +2744,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         },
         // Remove a callback from the list
         remove: function remove() {
-          _jQuery2.each(arguments, function (_, arg) {
+          jQuery.each(arguments, function (_, arg) {
             var index;
-            while ((index = _jQuery2.inArray(arg, list, index)) > -1) {
+            while ((index = jQuery.inArray(arg, list, index)) > -1) {
               list.splice(index, 1);
 
               // Handle firing indexes
@@ -2759,7 +2760,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         // Check if a given callback is in the list.
         // If no argument is given, return whether or not list has callbacks attached.
         has: function has(fn) {
-          return fn ? _jQuery2.inArray(fn, list) > -1 : list.length > 0;
+          return fn ? jQuery.inArray(fn, list) > -1 : list.length > 0;
         },
         // Remove all callbacks from the list
         empty: function empty() {
@@ -2850,12 +2851,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       reject.apply(undefined, [value]);
     }
   }
-  _jQuery2.extend({
+  jQuery.extend({
     Deferred: function Deferred(func) {
       var tuples = [
         // action, add listener, callbacks,
         // ... .then handlers, argument index, [final state]
-        ["notify", "progress", _jQuery2.Callbacks("memory"), _jQuery2.Callbacks("memory"), 2], ["resolve", "done", _jQuery2.Callbacks("once memory"), _jQuery2.Callbacks("once memory"), 0, "resolved"], ["reject", "fail", _jQuery2.Callbacks("once memory"), _jQuery2.Callbacks("once memory"), 1, "rejected"]],
+        ["notify", "progress", jQuery.Callbacks("memory"), jQuery.Callbacks("memory"), 2], ["resolve", "done", jQuery.Callbacks("once memory"), jQuery.Callbacks("once memory"), 0, "resolved"], ["reject", "fail", jQuery.Callbacks("once memory"), jQuery.Callbacks("once memory"), 1, "rejected"]],
         _state = "pending",
         _promise = {
           state: function state() {
@@ -2872,8 +2873,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           pipe: function pipe( /* fnDone, fnFail, fnProgress */
           ) {
             var fns = arguments;
-            return _jQuery2.Deferred(function (newDefer) {
-              _jQuery2.each(tuples, function (_i, tuple) {
+            return jQuery.Deferred(function (newDefer) {
+              jQuery.each(tuples, function (_i, tuple) {
                 // Map tuples (progress, done, fail) to arguments (done, fail, progress)
                 var fn = isFunction(fns[tuple[4]]) && fns[tuple[4]];
 
@@ -2957,8 +2958,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                     try {
                       mightThrow();
                     } catch (e) {
-                      if (_jQuery2.Deferred.exceptionHook) {
-                        _jQuery2.Deferred.exceptionHook(e, process.error);
+                      if (jQuery.Deferred.exceptionHook) {
+                        jQuery.Deferred.exceptionHook(e, process.error);
                       }
 
                       // Support: Promises/A+ section 2.3.3.3.4.1
@@ -2985,21 +2986,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
                 } else {
                   // Call an optional hook to record the error, in case of exception
                   // since it's otherwise lost when execution goes async
-                  if (_jQuery2.Deferred.getErrorHook) {
-                    process.error = _jQuery2.Deferred.getErrorHook();
+                  if (jQuery.Deferred.getErrorHook) {
+                    process.error = jQuery.Deferred.getErrorHook();
 
                     // The deprecated alias of the above. While the name suggests
                     // returning the stack, not an error instance, jQuery just passes
                     // it directly to `console.warn` so both will work; an instance
                     // just better cooperates with source maps.
-                  } else if (_jQuery2.Deferred.getStackHook) {
-                    process.error = _jQuery2.Deferred.getStackHook();
+                  } else if (jQuery.Deferred.getStackHook) {
+                    process.error = jQuery.Deferred.getStackHook();
                   }
                   window.setTimeout(process);
                 }
               };
             }
-            return _jQuery2.Deferred(function (newDefer) {
+            return jQuery.Deferred(function (newDefer) {
               // progress_handlers.add( ... )
               tuples[0][3].add(resolve(0, newDefer, isFunction(onProgress) ? onProgress : Identity, newDefer.notifyWith));
 
@@ -3013,13 +3014,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           // Get a promise for this deferred
           // If obj is provided, the promise aspect is added to the object
           promise: function promise(obj) {
-            return obj != null ? _jQuery2.extend(obj, _promise) : _promise;
+            return obj != null ? jQuery.extend(obj, _promise) : _promise;
           }
         },
         deferred = {};
 
       // Add list-specific methods
-      _jQuery2.each(tuples, function (i, tuple) {
+      jQuery.each(tuples, function (i, tuple) {
         var list = tuple[2],
           stateString = tuple[5];
 
@@ -3088,7 +3089,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         resolveContexts = Array(i),
         resolveValues = _slice.call(arguments),
         // the primary Deferred
-        primary = _jQuery2.Deferred(),
+        primary = jQuery.Deferred(),
         // subordinate callback factory
         updateFunc = function updateFunc(i) {
           return function (value) {
@@ -3125,33 +3126,33 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   // If `jQuery.Deferred.getErrorHook` is defined, `asyncError` is an error
   // captured before the async barrier to get the original error cause
   // which may otherwise be hidden.
-  _jQuery2.Deferred.exceptionHook = function (error, asyncError) {
+  jQuery.Deferred.exceptionHook = function (error, asyncError) {
     // Support: IE 8 - 9 only
     // Console exists when dev tools are open, which can happen at any time
     if (window.console && window.console.warn && error && rerrorNames.test(error.name)) {
       window.console.warn("jQuery.Deferred exception: " + error.message, error.stack, asyncError);
     }
   };
-  _jQuery2.readyException = function (error) {
+  jQuery.readyException = function (error) {
     window.setTimeout(function () {
       throw error;
     });
   };
 
   // The deferred used on DOM ready
-  var readyList = _jQuery2.Deferred();
-  _jQuery2.fn.ready = function (fn) {
+  var readyList = jQuery.Deferred();
+  jQuery.fn.ready = function (fn) {
     readyList.then(fn)
 
     // Wrap jQuery.readyException in a function so that the lookup
     // happens at the time of error handling instead of callback
     // registration.
     ["catch"](function (error) {
-      _jQuery2.readyException(error);
+      jQuery.readyException(error);
     });
     return this;
   };
-  _jQuery2.extend({
+  jQuery.extend({
     // Is the DOM ready to be used? Set to true once it occurs.
     isReady: false,
     // A counter to track how many items to wait for before
@@ -3160,29 +3161,29 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     // Handle when the DOM is ready
     ready: function ready(wait) {
       // Abort if there are pending holds or we're already ready
-      if (wait === true ? --_jQuery2.readyWait : _jQuery2.isReady) {
+      if (wait === true ? --jQuery.readyWait : jQuery.isReady) {
         return;
       }
 
       // Remember that the DOM is ready
-      _jQuery2.isReady = true;
+      jQuery.isReady = true;
 
       // If a normal DOM Ready event fired, decrement, and wait if need be
-      if (wait !== true && --_jQuery2.readyWait > 0) {
+      if (wait !== true && --jQuery.readyWait > 0) {
         return;
       }
 
       // If there are functions bound, to execute
-      readyList.resolveWith(document, [_jQuery2]);
+      readyList.resolveWith(document, [jQuery]);
     }
   });
-  _jQuery2.ready.then = readyList.then;
+  jQuery.ready.then = readyList.then;
 
   // The ready event handler and self cleanup method
   function completed() {
     document.removeEventListener("DOMContentLoaded", completed);
     window.removeEventListener("load", completed);
-    _jQuery2.ready();
+    jQuery.ready();
   }
 
   // Catch cases where $(document).ready() is called
@@ -3191,7 +3192,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   // Older IE sometimes signals "interactive" too soon
   if (document.readyState === "complete" || document.readyState !== "loading" && !document.documentElement.doScroll) {
     // Handle it asynchronously to allow scripts the opportunity to delay ready
-    window.setTimeout(_jQuery2.ready);
+    window.setTimeout(jQuery.ready);
   } else {
     // Use the handy event callback
     document.addEventListener("DOMContentLoaded", completed);
@@ -3202,7 +3203,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
   // Multifunctional method to get and set values of a collection
   // The value/s can optionally be executed if it's a function
-  var _access = function access(elems, fn, key, value, chainable, emptyGet, raw) {
+  var access = function access(elems, fn, key, value, chainable, emptyGet, raw) {
     var i = 0,
       len = elems.length,
       bulk = key == null;
@@ -3211,7 +3212,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (toType(key) === "object") {
       chainable = true;
       for (i in key) {
-        _access(elems, fn, i, key[i], true, emptyGet, raw);
+        access(elems, fn, i, key[i], true, emptyGet, raw);
       }
 
       // Sets one value
@@ -3230,7 +3231,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         } else {
           bulk = fn;
           fn = function fn(elem, _key, value) {
-            return bulk.call(_jQuery2(elem), value);
+            return bulk.call(jQuery(elem), value);
           };
         }
       }
@@ -3276,7 +3277,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     return owner.nodeType === 1 || owner.nodeType === 9 || !+owner.nodeType;
   };
   function Data() {
-    this.expando = _jQuery2.expando + Data.uid++;
+    this.expando = jQuery.expando + Data.uid++;
   }
   Data.uid = 1;
   Data.prototype = {
@@ -3387,7 +3388,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
 
       // Remove the expando if there's no more data
-      if (key === undefined || _jQuery2.isEmptyObject(cache)) {
+      if (key === undefined || jQuery.isEmptyObject(cache)) {
         // Support: Chrome <=35 - 45
         // Webkit & Blink performance suffers when deleting properties
         // from DOM nodes, so set to undefined instead
@@ -3401,7 +3402,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     hasData: function hasData(owner) {
       var cache = owner[this.expando];
-      return cache !== undefined && !_jQuery2.isEmptyObject(cache);
+      return cache !== undefined && !jQuery.isEmptyObject(cache);
     }
   };
   var dataPriv = new Data();
@@ -3460,7 +3461,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return data;
   }
-  _jQuery2.extend({
+  jQuery.extend({
     hasData: function hasData(elem) {
       return dataUser.hasData(elem) || dataPriv.hasData(elem);
     },
@@ -3479,7 +3480,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       dataPriv.remove(elem, name);
     }
   });
-  _jQuery2.fn.extend({
+  jQuery.fn.extend({
     data: function data(key, value) {
       var i,
         name,
@@ -3516,7 +3517,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           dataUser.set(this, key);
         });
       }
-      return _access(this, function (value) {
+      return access(this, function (value) {
         var data;
 
         // The calling jQuery object (element matches) is not empty
@@ -3556,7 +3557,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       });
     }
   });
-  _jQuery2.extend({
+  jQuery.extend({
     queue: function queue(elem, type, data) {
       var queue;
       if (elem) {
@@ -3566,7 +3567,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         // Speed up dequeue by getting out quickly if this is just a lookup
         if (data) {
           if (!queue || Array.isArray(data)) {
-            queue = dataPriv.access(elem, type, _jQuery2.makeArray(data));
+            queue = dataPriv.access(elem, type, jQuery.makeArray(data));
           } else {
             queue.push(data);
           }
@@ -3576,12 +3577,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     dequeue: function dequeue(elem, type) {
       type = type || "fx";
-      var queue = _jQuery2.queue(elem, type),
+      var queue = jQuery.queue(elem, type),
         startLength = queue.length,
         fn = queue.shift(),
-        hooks = _jQuery2._queueHooks(elem, type),
+        hooks = jQuery._queueHooks(elem, type),
         next = function next() {
-          _jQuery2.dequeue(elem, type);
+          jQuery.dequeue(elem, type);
         };
 
       // If the fx queue is dequeued, always remove the progress sentinel
@@ -3608,13 +3609,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     _queueHooks: function _queueHooks(elem, type) {
       var key = type + "queueHooks";
       return dataPriv.get(elem, key) || dataPriv.access(elem, key, {
-        empty: _jQuery2.Callbacks("once memory").add(function () {
+        empty: jQuery.Callbacks("once memory").add(function () {
           dataPriv.remove(elem, [type + "queue", key]);
         })
       });
     }
   });
-  _jQuery2.fn.extend({
+  jQuery.fn.extend({
     queue: function queue(type, data) {
       var setter = 2;
       if (typeof type !== "string") {
@@ -3623,21 +3624,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         setter--;
       }
       if (arguments.length < setter) {
-        return _jQuery2.queue(this[0], type);
+        return jQuery.queue(this[0], type);
       }
       return data === undefined ? this : this.each(function () {
-        var queue = _jQuery2.queue(this, type, data);
+        var queue = jQuery.queue(this, type, data);
 
         // Ensure a hooks for this queue
-        _jQuery2._queueHooks(this, type);
+        jQuery._queueHooks(this, type);
         if (type === "fx" && queue[0] !== "inprogress") {
-          _jQuery2.dequeue(this, type);
+          jQuery.dequeue(this, type);
         }
       });
     },
     dequeue: function dequeue(type) {
       return this.each(function () {
-        _jQuery2.dequeue(this, type);
+        jQuery.dequeue(this, type);
       });
     },
     clearQueue: function clearQueue(type) {
@@ -3648,7 +3649,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     promise: function promise(type, obj) {
       var tmp,
         count = 1,
-        defer = _jQuery2.Deferred(),
+        defer = jQuery.Deferred(),
         elements = this,
         i = this.length,
         resolve = function resolve() {
@@ -3677,7 +3678,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var cssExpand = ["Top", "Right", "Bottom", "Left"];
   var documentElement = document.documentElement;
   var isAttached = function isAttached(elem) {
-      return _jQuery2.contains(elem.ownerDocument, elem);
+      return jQuery.contains(elem.ownerDocument, elem);
     },
     composed = {
       composed: true
@@ -3690,7 +3691,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   // leading to errors. We need to check for `getRootNode`.
   if (documentElement.getRootNode) {
     isAttached = function isAttached(elem) {
-      return _jQuery2.contains(elem.ownerDocument, elem) || elem.getRootNode(composed) === elem.ownerDocument;
+      return jQuery.contains(elem.ownerDocument, elem) || elem.getRootNode(composed) === elem.ownerDocument;
     };
   }
   var isHiddenWithinTree = function isHiddenWithinTree(elem, el) {
@@ -3704,7 +3705,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     // Support: Firefox <=43 - 45
     // Disconnected elements can have computed display: none, so first confirm that elem is
     // in the document.
-    isAttached(elem) && _jQuery2.css(elem, "display") === "none";
+    isAttached(elem) && jQuery.css(elem, "display") === "none";
   };
   function adjustCSS(elem, prop, valueParts, tween) {
     var adjusted,
@@ -3713,12 +3714,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       currentValue = tween ? function () {
         return tween.cur();
       } : function () {
-        return _jQuery2.css(elem, prop, "");
+        return jQuery.css(elem, prop, "");
       },
       initial = currentValue(),
-      unit = valueParts && valueParts[3] || (_jQuery2.cssNumber[prop] ? "" : "px"),
+      unit = valueParts && valueParts[3] || (jQuery.cssNumber[prop] ? "" : "px"),
       // Starting value computation is required for potential unit mismatches
-      initialInUnit = elem.nodeType && (_jQuery2.cssNumber[prop] || unit !== "px" && +initial) && rcssNum.exec(_jQuery2.css(elem, prop));
+      initialInUnit = elem.nodeType && (jQuery.cssNumber[prop] || unit !== "px" && +initial) && rcssNum.exec(jQuery.css(elem, prop));
     if (initialInUnit && initialInUnit[3] !== unit) {
       // Support: Firefox <=54
       // Halve the iteration target value to prevent interference from CSS upper bounds (gh-2144)
@@ -3732,14 +3733,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       while (maxIterations--) {
         // Evaluate and update our best guess (doubling guesses that zero out).
         // Finish if the scale equals or crosses 1 (making the old*new product non-positive).
-        _jQuery2.style(elem, prop, initialInUnit + unit);
+        jQuery.style(elem, prop, initialInUnit + unit);
         if ((1 - scale) * (1 - (scale = currentValue() / initial || 0.5)) <= 0) {
           maxIterations = 0;
         }
         initialInUnit = initialInUnit / scale;
       }
       initialInUnit = initialInUnit * 2;
-      _jQuery2.style(elem, prop, initialInUnit + unit);
+      jQuery.style(elem, prop, initialInUnit + unit);
 
       // Make sure we update the tween properties later on
       valueParts = valueParts || [];
@@ -3767,7 +3768,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return display;
     }
     temp = doc.body.appendChild(doc.createElement(nodeName));
-    display = _jQuery2.css(temp, "display");
+    display = jQuery.css(temp, "display");
     temp.parentNode.removeChild(temp);
     if (display === "none") {
       display = "block";
@@ -3820,7 +3821,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return elements;
   }
-  _jQuery2.fn.extend({
+  jQuery.fn.extend({
     show: function show() {
       return showHide(this, true);
     },
@@ -3833,9 +3834,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       return this.each(function () {
         if (isHiddenWithinTree(this)) {
-          _jQuery2(this).show();
+          jQuery(this).show();
         } else {
-          _jQuery2(this).hide();
+          jQuery(this).hide();
         }
       });
     }
@@ -3903,7 +3904,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       ret = [];
     }
     if (tag === undefined || tag && nodeName(context, tag)) {
-      return _jQuery2.merge([context], ret);
+      return jQuery.merge([context], ret);
     }
     return ret;
   }
@@ -3935,7 +3936,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (toType(elem) === "object") {
           // Support: Android <=4.0 only, PhantomJS 1 only
           // push.apply(_, arraylike) throws on ancient WebKit
-          _jQuery2.merge(nodes, elem.nodeType ? [elem] : elem);
+          jQuery.merge(nodes, elem.nodeType ? [elem] : elem);
 
           // Convert non-html into a text node
         } else if (!rhtml.test(elem)) {
@@ -3948,7 +3949,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           // Deserialize a standard representation
           tag = (rtagName.exec(elem) || ["", ""])[1].toLowerCase();
           wrap = wrapMap[tag] || wrapMap._default;
-          tmp.innerHTML = wrap[1] + _jQuery2.htmlPrefilter(elem) + wrap[2];
+          tmp.innerHTML = wrap[1] + jQuery.htmlPrefilter(elem) + wrap[2];
 
           // Descend through wrappers to the right content
           j = wrap[0];
@@ -3958,7 +3959,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
           // Support: Android <=4.0 only, PhantomJS 1 only
           // push.apply(_, arraylike) throws on ancient WebKit
-          _jQuery2.merge(nodes, tmp.childNodes);
+          jQuery.merge(nodes, tmp.childNodes);
 
           // Remember the top-level container
           tmp = fragment.firstChild;
@@ -3974,7 +3975,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     i = 0;
     while (elem = nodes[i++]) {
       // Skip elements already in the context collection (trac-4087)
-      if (selection && _jQuery2.inArray(elem, selection) > -1) {
+      if (selection && jQuery.inArray(elem, selection) > -1) {
         if (ignored) {
           ignored.push(elem);
         }
@@ -4050,15 +4051,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       origFn = fn;
       fn = function fn(event) {
         // Can use an empty set, since event contains the info
-        _jQuery2().off(event);
+        jQuery().off(event);
         return origFn.apply(this, arguments);
       };
 
       // Use same guid so caller can remove using origFn
-      fn.guid = origFn.guid || (origFn.guid = _jQuery2.guid++);
+      fn.guid = origFn.guid || (origFn.guid = jQuery.guid++);
     }
     return elem.each(function () {
-      _jQuery2.event.add(this, types, fn, data, selector);
+      jQuery.event.add(this, types, fn, data, selector);
     });
   }
 
@@ -4066,7 +4067,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Helper functions for managing events -- not part of the public interface.
    * Props to Dean Edwards' addEvent library for many of the ideas.
    */
-  _jQuery2.event = {
+  jQuery.event = {
     global: {},
     add: function add(elem, types, handler, data, selector) {
       var handleObjIn,
@@ -4097,12 +4098,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       // Ensure that invalid selectors throw exceptions at attach time
       // Evaluate against documentElement in case elem is a non-element node (e.g., document)
       if (selector) {
-        _jQuery2.find.matchesSelector(documentElement, selector);
+        jQuery.find.matchesSelector(documentElement, selector);
       }
 
       // Make sure that the handler has a unique ID, used to find/remove it later
       if (!handler.guid) {
-        handler.guid = _jQuery2.guid++;
+        handler.guid = jQuery.guid++;
       }
 
       // Init the element's event structure and main handler, if this is the first
@@ -4113,7 +4114,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         eventHandle = elemData.handle = function (e) {
           // Discard the second event of a jQuery.event.trigger() and
           // when an event is called after a page has unloaded
-          return typeof _jQuery2 !== "undefined" && _jQuery2.event.triggered !== e.type ? _jQuery2.event.dispatch.apply(elem, arguments) : undefined;
+          return typeof jQuery !== "undefined" && jQuery.event.triggered !== e.type ? jQuery.event.dispatch.apply(elem, arguments) : undefined;
         };
       }
 
@@ -4131,23 +4132,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
 
         // If event changes its type, use the special event handlers for the changed type
-        special = _jQuery2.event.special[type] || {};
+        special = jQuery.event.special[type] || {};
 
         // If selector defined, determine special event api type, otherwise given type
         type = (selector ? special.delegateType : special.bindType) || type;
 
         // Update special based on newly reset type
-        special = _jQuery2.event.special[type] || {};
+        special = jQuery.event.special[type] || {};
 
         // handleObj is passed to all event handlers
-        handleObj = _jQuery2.extend({
+        handleObj = jQuery.extend({
           type: type,
           origType: origType,
           data: data,
           handler: handler,
           guid: handler.guid,
           selector: selector,
-          needsContext: selector && _jQuery2.expr.match.needsContext.test(selector),
+          needsContext: selector && jQuery.expr.match.needsContext.test(selector),
           namespace: namespaces.join(".")
         }, handleObjIn);
 
@@ -4178,7 +4179,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
 
         // Keep track of which events have ever been used, for event optimization
-        _jQuery2.event.global[type] = true;
+        jQuery.event.global[type] = true;
       }
     },
     // Detach an event or set of events from an element
@@ -4210,11 +4211,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         // Unbind all events (on this namespace, if provided) for the element
         if (!type) {
           for (type in events) {
-            _jQuery2.event.remove(elem, type + types[t], handler, selector, true);
+            jQuery.event.remove(elem, type + types[t], handler, selector, true);
           }
           continue;
         }
-        special = _jQuery2.event.special[type] || {};
+        special = jQuery.event.special[type] || {};
         type = (selector ? special.delegateType : special.bindType) || type;
         handlers = events[type] || [];
         tmp = tmp[2] && new RegExp("(^|\\.)" + namespaces.join("\\.(?:.*\\.|)") + "(\\.|$)");
@@ -4238,14 +4239,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         // (avoids potential for endless recursion during removal of special event handlers)
         if (origCount && !handlers.length) {
           if (!special.teardown || special.teardown.call(elem, namespaces, elemData.handle) === false) {
-            _jQuery2.removeEvent(elem, type, elemData.handle);
+            jQuery.removeEvent(elem, type, elemData.handle);
           }
           delete events[type];
         }
       }
 
       // Remove data and the expando if it's no longer used
-      if (_jQuery2.isEmptyObject(events)) {
+      if (jQuery.isEmptyObject(events)) {
         dataPriv.remove(elem, "handle events");
       }
     },
@@ -4258,9 +4259,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         handlerQueue,
         args = new Array(arguments.length),
         // Make a writable jQuery.Event from the native event object
-        event = _jQuery2.event.fix(nativeEvent),
+        event = jQuery.event.fix(nativeEvent),
         handlers = (dataPriv.get(this, "events") || Object.create(null))[event.type] || [],
-        special = _jQuery2.event.special[event.type] || {};
+        special = jQuery.event.special[event.type] || {};
 
       // Use the fix-ed jQuery.Event rather than the (read-only) native event
       args[0] = event;
@@ -4275,7 +4276,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
 
       // Determine handlers
-      handlerQueue = _jQuery2.event.handlers.call(this, event, handlers);
+      handlerQueue = jQuery.event.handlers.call(this, event, handlers);
 
       // Run delegates first; they may want to stop propagation beneath us
       i = 0;
@@ -4288,7 +4289,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           if (!event.rnamespace || handleObj.namespace === false || event.rnamespace.test(handleObj.namespace)) {
             event.handleObj = handleObj;
             event.data = handleObj.data;
-            ret = ((_jQuery2.event.special[handleObj.origType] || {}).handle || handleObj.handler).apply(matched.elem, args);
+            ret = ((jQuery.event.special[handleObj.origType] || {}).handle || handleObj.handler).apply(matched.elem, args);
             if (ret !== undefined) {
               if ((event.result = ret) === false) {
                 event.preventDefault();
@@ -4338,7 +4339,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
               // Don't conflict with Object.prototype properties (trac-13203)
               sel = handleObj.selector + " ";
               if (matchedSelectors[sel] === undefined) {
-                matchedSelectors[sel] = handleObj.needsContext ? _jQuery2(sel, this).index(cur) > -1 : _jQuery2.find(sel, this, null, [cur]).length;
+                matchedSelectors[sel] = handleObj.needsContext ? jQuery(sel, this).index(cur) > -1 : jQuery.find(sel, this, null, [cur]).length;
               }
               if (matchedSelectors[sel]) {
                 matchedHandlers.push(handleObj);
@@ -4365,7 +4366,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return handlerQueue;
     },
     addProp: function addProp(name, hook) {
-      Object.defineProperty(_jQuery2.Event.prototype, name, {
+      Object.defineProperty(jQuery.Event.prototype, name, {
         enumerable: true,
         configurable: true,
         get: isFunction(hook) ? function () {
@@ -4388,7 +4389,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       });
     },
     fix: function fix(originalEvent) {
-      return originalEvent[_jQuery2.expando] ? originalEvent : new _jQuery2.Event(originalEvent);
+      return originalEvent[jQuery.expando] ? originalEvent : new jQuery.Event(originalEvent);
     },
     special: {
       load: {
@@ -4451,14 +4452,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     // Missing `isSetup` indicates a trigger call, which must force setup through jQuery.event.add
     if (!isSetup) {
       if (dataPriv.get(el, type) === undefined) {
-        _jQuery2.event.add(el, type, returnTrue);
+        jQuery.event.add(el, type, returnTrue);
       }
       return;
     }
 
     // Register the controller as a special universal handler for all event namespaces
     dataPriv.set(el, type, false);
-    _jQuery2.event.add(el, type, {
+    jQuery.event.add(el, type, {
       namespace: false,
       handler: function handler(event) {
         var result,
@@ -4489,7 +4490,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             // This technically gets the ordering wrong w.r.t. to `.trigger()` (in which the
             // bubbling surrogate propagates *after* the non-bubbling base), but that seems
             // less bad than duplication.
-          } else if ((_jQuery2.event.special[type] || {}).delegateType) {
+          } else if ((jQuery.event.special[type] || {}).delegateType) {
             event.stopPropagation();
           }
 
@@ -4497,7 +4498,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           // Fire an inner synthetic event with the original arguments
         } else if (saved) {
           // ...and capture the result
-          dataPriv.set(this, type, _jQuery2.event.trigger(saved[0], saved.slice(1), this));
+          dataPriv.set(this, type, jQuery.event.trigger(saved[0], saved.slice(1), this));
 
           // Abort handling of the native event by all jQuery handlers while allowing
           // native handlers on the same element to run. On target, this is achieved
@@ -4513,16 +4514,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     });
   }
-  _jQuery2.removeEvent = function (elem, type, handle) {
+  jQuery.removeEvent = function (elem, type, handle) {
     // This "if" is needed for plain objects
     if (elem.removeEventListener) {
       elem.removeEventListener(type, handle);
     }
   };
-  _jQuery2.Event = function (src, props) {
+  jQuery.Event = function (src, props) {
     // Allow instantiation without the 'new' keyword
-    if (!(this instanceof _jQuery2.Event)) {
-      return new _jQuery2.Event(src, props);
+    if (!(this instanceof jQuery.Event)) {
+      return new jQuery.Event(src, props);
     }
 
     // Event object
@@ -4550,20 +4551,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
     // Put explicitly provided properties onto the event object
     if (props) {
-      _jQuery2.extend(this, props);
+      jQuery.extend(this, props);
     }
 
     // Create a timestamp if incoming event doesn't have one
     this.timeStamp = src && src.timeStamp || Date.now();
 
     // Mark it as fixed
-    this[_jQuery2.expando] = true;
+    this[jQuery.expando] = true;
   };
 
   // jQuery.Event is based on DOM3 Events as specified by the ECMAScript Language Binding
   // https://www.w3.org/TR/2003/WD-DOM-Level-3-Events-20030331/ecma-script-binding.html
-  _jQuery2.Event.prototype = {
-    constructor: _jQuery2.Event,
+  jQuery.Event.prototype = {
+    constructor: jQuery.Event,
     isDefaultPrevented: returnFalse,
     isPropagationStopped: returnFalse,
     isImmediatePropagationStopped: returnFalse,
@@ -4593,7 +4594,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   };
 
   // Includes all common event props including KeyEvent and MouseEvent specific props
-  _jQuery2.each({
+  jQuery.each({
     altKey: true,
     bubbles: true,
     cancelable: true,
@@ -4625,8 +4626,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     toElement: true,
     touches: true,
     which: true
-  }, _jQuery2.event.addProp);
-  _jQuery2.each({
+  }, jQuery.event.addProp);
+  jQuery.each({
     focus: "focusin",
     blur: "focusout"
   }, function (type, delegateType) {
@@ -4640,7 +4641,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         // `handle` from private data would already wrap the event, but we need
         // to change the `type` here.
         var handle = dataPriv.get(this, "handle"),
-          event = _jQuery2.event.fix(nativeEvent);
+          event = jQuery.event.fix(nativeEvent);
         event.type = nativeEvent.type === "focusin" ? "focus" : "blur";
         event.isSimulated = true;
 
@@ -4660,10 +4661,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       } else {
         // For non-IE browsers, attach a single capturing handler on the document
         // while someone wants focusin/focusout.
-        _jQuery2.event.simulate(delegateType, nativeEvent.target, _jQuery2.event.fix(nativeEvent));
+        jQuery.event.simulate(delegateType, nativeEvent.target, jQuery.event.fix(nativeEvent));
       }
     }
-    _jQuery2.event.special[type] = {
+    jQuery.event.special[type] = {
       // Utilize native event if possible so blur/focus sequence is correct
       setup: function setup() {
         var attaches;
@@ -4729,7 +4730,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     // Support: IE 9 - 11+
     // To preserve relative focusin/focus & focusout/blur event order guaranteed on the 3.x branch,
     // attach a single handler for both events in IE.
-    _jQuery2.event.special[delegateType] = {
+    jQuery.event.special[delegateType] = {
       setup: function setup() {
         // Handle: regular nodes (via `this.ownerDocument`), window
         // (via `this.document`) & document (via `this`).
@@ -4776,13 +4777,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   // Safari sends mouseenter too often; see:
   // https://bugs.chromium.org/p/chromium/issues/detail?id=470258
   // for the description of the bug (it existed in older Chrome versions as well).
-  _jQuery2.each({
+  jQuery.each({
     mouseenter: "mouseover",
     mouseleave: "mouseout",
     pointerenter: "pointerover",
     pointerleave: "pointerout"
   }, function (orig, fix) {
-    _jQuery2.event.special[orig] = {
+    jQuery.event.special[orig] = {
       delegateType: fix,
       bindType: fix,
       handle: function handle(event) {
@@ -4793,7 +4794,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
         // For mouseenter/leave call the handler if related is outside the target.
         // NB: No relatedTarget if the mouse left/entered the browser window
-        if (!related || related !== target && !_jQuery2.contains(target, related)) {
+        if (!related || related !== target && !jQuery.contains(target, related)) {
           event.type = handleObj.origType;
           ret = handleObj.handler.apply(this, arguments);
           event.type = fix;
@@ -4802,7 +4803,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     };
   });
-  _jQuery2.fn.extend({
+  jQuery.fn.extend({
     on: function on(types, selector, data, fn) {
       return _on(this, types, selector, data, fn);
     },
@@ -4814,7 +4815,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (types && types.preventDefault && types.handleObj) {
         // ( event )  dispatched jQuery.Event
         handleObj = types.handleObj;
-        _jQuery2(types.delegateTarget).off(handleObj.namespace ? handleObj.origType + "." + handleObj.namespace : handleObj.origType, handleObj.selector, handleObj.handler);
+        jQuery(types.delegateTarget).off(handleObj.namespace ? handleObj.origType + "." + handleObj.namespace : handleObj.origType, handleObj.selector, handleObj.handler);
         return this;
       }
       if (_typeof(types) === "object") {
@@ -4833,7 +4834,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         fn = returnFalse;
       }
       return this.each(function () {
-        _jQuery2.event.remove(this, types, fn, selector);
+        jQuery.event.remove(this, types, fn, selector);
       });
     }
   });
@@ -4849,7 +4850,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   // Prefer a tbody over its parent table for containing new rows
   function manipulationTarget(elem, content) {
     if (nodeName(elem, "table") && nodeName(content.nodeType !== 11 ? content : content.firstChild, "tr")) {
-      return _jQuery2(elem).children("tbody")[0] || elem;
+      return jQuery(elem).children("tbody")[0] || elem;
     }
     return elem;
   }
@@ -4881,7 +4882,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         dataPriv.remove(dest, "handle events");
         for (type in events) {
           for (i = 0, l = events[type].length; i < l; i++) {
-            _jQuery2.event.add(dest, type, events[type][i]);
+            jQuery.event.add(dest, type, events[type][i]);
           }
         }
       }
@@ -4890,7 +4891,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     // 2. Copy user data
     if (dataUser.hasData(src)) {
       udataOld = dataUser.access(src);
-      udataCur = _jQuery2.extend({}, udataOld);
+      udataCur = jQuery.extend({}, udataOld);
       dataUser.set(dest, udataCur);
     }
   }
@@ -4942,7 +4943,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
       // Require either new content or an interest in ignored elements to invoke the callback
       if (first || ignored) {
-        scripts = _jQuery2.map(getAll(fragment, "script"), disableScript);
+        scripts = jQuery.map(getAll(fragment, "script"), disableScript);
         hasScripts = scripts.length;
 
         // Use the original fragment for the last item
@@ -4951,13 +4952,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         for (; i < l; i++) {
           node = fragment;
           if (i !== iNoClone) {
-            node = _jQuery2.clone(node, true, true);
+            node = jQuery.clone(node, true, true);
 
             // Keep references to cloned scripts for later restoration
             if (hasScripts) {
               // Support: Android <=4.0 only, PhantomJS 1 only
               // push.apply(_, arraylike) throws on ancient WebKit
-              _jQuery2.merge(scripts, getAll(node, "script"));
+              jQuery.merge(scripts, getAll(node, "script"));
             }
           }
           callback.call(collection[i], node, i);
@@ -4966,16 +4967,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           doc = scripts[scripts.length - 1].ownerDocument;
 
           // Re-enable scripts
-          _jQuery2.map(scripts, restoreScript);
+          jQuery.map(scripts, restoreScript);
 
           // Evaluate executable scripts on first document insertion
           for (i = 0; i < hasScripts; i++) {
             node = scripts[i];
-            if (rscriptType.test(node.type || "") && !dataPriv.access(node, "globalEval") && _jQuery2.contains(doc, node)) {
+            if (rscriptType.test(node.type || "") && !dataPriv.access(node, "globalEval") && jQuery.contains(doc, node)) {
               if (node.src && (node.type || "").toLowerCase() !== "module") {
                 // Optional AJAX dependency, but won't run scripts if not present
-                if (_jQuery2._evalUrl && !node.noModule) {
-                  _jQuery2._evalUrl(node.src, {
+                if (jQuery._evalUrl && !node.noModule) {
+                  jQuery._evalUrl(node.src, {
                     nonce: node.nonce || node.getAttribute("nonce")
                   }, doc);
                 }
@@ -4996,11 +4997,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   }
   function _remove(elem, selector, keepData) {
     var node,
-      nodes = selector ? _jQuery2.filter(selector, elem) : elem,
+      nodes = selector ? jQuery.filter(selector, elem) : elem,
       i = 0;
     for (; (node = nodes[i]) != null; i++) {
       if (!keepData && node.nodeType === 1) {
-        _jQuery2.cleanData(getAll(node));
+        jQuery.cleanData(getAll(node));
       }
       if (node.parentNode) {
         if (keepData && isAttached(node)) {
@@ -5011,7 +5012,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return elem;
   }
-  _jQuery2.extend({
+  jQuery.extend({
     htmlPrefilter: function htmlPrefilter(html) {
       return html;
     },
@@ -5024,7 +5025,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         inPage = isAttached(elem);
 
       // Fix IE cloning issues
-      if (!support.noCloneChecked && (elem.nodeType === 1 || elem.nodeType === 11) && !_jQuery2.isXMLDoc(elem)) {
+      if (!support.noCloneChecked && (elem.nodeType === 1 || elem.nodeType === 11) && !jQuery.isXMLDoc(elem)) {
         // We eschew jQuery#find here for performance reasons:
         // https://jsperf.com/getall-vs-sizzle/2
         destElements = getAll(clone);
@@ -5060,7 +5061,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var data,
         elem,
         type,
-        special = _jQuery2.event.special,
+        special = jQuery.event.special,
         i = 0;
       for (; (elem = elems[i]) !== undefined; i++) {
         if (acceptData(elem)) {
@@ -5068,11 +5069,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             if (data.events) {
               for (type in data.events) {
                 if (special[type]) {
-                  _jQuery2.event.remove(elem, type);
+                  jQuery.event.remove(elem, type);
 
                   // This is a shortcut to avoid jQuery.event.remove's overhead
                 } else {
-                  _jQuery2.removeEvent(elem, type, data.handle);
+                  jQuery.removeEvent(elem, type, data.handle);
                 }
               }
             }
@@ -5090,7 +5091,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
   });
-  _jQuery2.fn.extend({
+  jQuery.fn.extend({
     detach: function detach(selector) {
       return _remove(this, selector, true);
     },
@@ -5098,8 +5099,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return _remove(this, selector);
     },
     text: function text(value) {
-      return _access(this, function (value) {
-        return value === undefined ? _jQuery2.text(this) : this.empty().each(function () {
+      return access(this, function (value) {
+        return value === undefined ? jQuery.text(this) : this.empty().each(function () {
           if (this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9) {
             this.textContent = value;
           }
@@ -5142,7 +5143,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       for (; (elem = this[i]) != null; i++) {
         if (elem.nodeType === 1) {
           // Prevent memory leaks
-          _jQuery2.cleanData(getAll(elem, false));
+          jQuery.cleanData(getAll(elem, false));
 
           // Remove any remaining nodes
           elem.textContent = "";
@@ -5154,11 +5155,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       dataAndEvents = dataAndEvents == null ? false : dataAndEvents;
       deepDataAndEvents = deepDataAndEvents == null ? dataAndEvents : deepDataAndEvents;
       return this.map(function () {
-        return _jQuery2.clone(this, dataAndEvents, deepDataAndEvents);
+        return jQuery.clone(this, dataAndEvents, deepDataAndEvents);
       });
     },
     html: function html(value) {
-      return _access(this, function (value) {
+      return access(this, function (value) {
         var elem = this[0] || {},
           i = 0,
           l = this.length;
@@ -5168,14 +5169,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
         // See if we can take a shortcut and just use innerHTML
         if (typeof value === "string" && !rnoInnerhtml.test(value) && !wrapMap[(rtagName.exec(value) || ["", ""])[1].toLowerCase()]) {
-          value = _jQuery2.htmlPrefilter(value);
+          value = jQuery.htmlPrefilter(value);
           try {
             for (; i < l; i++) {
               elem = this[i] || {};
 
               // Remove element nodes and prevent memory leaks
               if (elem.nodeType === 1) {
-                _jQuery2.cleanData(getAll(elem, false));
+                jQuery.cleanData(getAll(elem, false));
                 elem.innerHTML = value;
               }
             }
@@ -5195,8 +5196,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       // Make the changes, replacing each non-ignored context element with the new content
       return domManip(this, arguments, function (elem) {
         var parent = this.parentNode;
-        if (_jQuery2.inArray(this, ignored) < 0) {
-          _jQuery2.cleanData(getAll(this));
+        if (jQuery.inArray(this, ignored) < 0) {
+          jQuery.cleanData(getAll(this));
           if (parent) {
             parent.replaceChild(elem, this);
           }
@@ -5206,22 +5207,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }, ignored);
     }
   });
-  _jQuery2.each({
+  jQuery.each({
     appendTo: "append",
     prependTo: "prepend",
     insertBefore: "before",
     insertAfter: "after",
     replaceAll: "replaceWith"
   }, function (name, original) {
-    _jQuery2.fn[name] = function (selector) {
+    jQuery.fn[name] = function (selector) {
       var elems,
         ret = [],
-        insert = _jQuery2(selector),
+        insert = jQuery(selector),
         last = insert.length - 1,
         i = 0;
       for (; i <= last; i++) {
         elems = i === last ? this : this.clone(true);
-        _jQuery2(insert[i])[original](elems);
+        jQuery(insert[i])[original](elems);
 
         // Support: Android <=4.0 only, PhantomJS 1 only
         // .get() because push.apply(_, arraylike) throws on ancient WebKit
@@ -5321,7 +5322,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     div.style.backgroundClip = "content-box";
     div.cloneNode(true).style.backgroundClip = "";
     support.clearCloneStyle = div.style.backgroundClip === "content-box";
-    _jQuery2.extend(support, {
+    jQuery.extend(support, {
       boxSizingReliable: function boxSizingReliable() {
         computeStyleTests();
         return boxSizingReliableVal;
@@ -5429,7 +5430,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         ret = ret.replace(rtrimCSS, "$1") || undefined;
       }
       if (ret === "" && !isAttached(elem)) {
-        ret = _jQuery2.style(elem, name);
+        ret = jQuery.style(elem, name);
       }
 
       // A tribute to the "awesome hack by Dean Edwards"
@@ -5493,7 +5494,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
   // Return a potentially-mapped jQuery.cssProps or vendor prefixed property
   function finalPropName(name) {
-    var _final = _jQuery2.cssProps[name] || vendorProps[name];
+    var _final = jQuery.cssProps[name] || vendorProps[name];
     if (_final) {
       return _final;
     }
@@ -5539,21 +5540,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       // Count margin delta separately to only add it after scroll gutter adjustment.
       // This is needed to make negative margins work with `outerHeight( true )` (gh-3982).
       if (box === "margin") {
-        marginDelta += _jQuery2.css(elem, box + cssExpand[i], true, styles);
+        marginDelta += jQuery.css(elem, box + cssExpand[i], true, styles);
       }
 
       // If we get here with a content-box, we're seeking "padding" or "border" or "margin"
       if (!isBorderBox) {
         // Add padding
-        delta += _jQuery2.css(elem, "padding" + cssExpand[i], true, styles);
+        delta += jQuery.css(elem, "padding" + cssExpand[i], true, styles);
 
         // For "border" or "margin", add border
         if (box !== "padding") {
-          delta += _jQuery2.css(elem, "border" + cssExpand[i] + "Width", true, styles);
+          delta += jQuery.css(elem, "border" + cssExpand[i] + "Width", true, styles);
 
           // But still keep track of it otherwise
         } else {
-          extra += _jQuery2.css(elem, "border" + cssExpand[i] + "Width", true, styles);
+          extra += jQuery.css(elem, "border" + cssExpand[i] + "Width", true, styles);
         }
 
         // If we get here with a border-box (content + padding + border), we're seeking "content" or
@@ -5561,12 +5562,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       } else {
         // For "content", subtract padding
         if (box === "content") {
-          delta -= _jQuery2.css(elem, "padding" + cssExpand[i], true, styles);
+          delta -= jQuery.css(elem, "padding" + cssExpand[i], true, styles);
         }
 
         // For "content" or "padding", subtract border
         if (box !== "margin") {
-          delta -= _jQuery2.css(elem, "border" + cssExpand[i] + "Width", true, styles);
+          delta -= jQuery.css(elem, "border" + cssExpand[i] + "Width", true, styles);
         }
       }
     }
@@ -5589,7 +5590,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       // To avoid forcing a reflow, only fetch boxSizing if we need it (gh-4322).
       // Fake content-box until we know it's needed to know the true value.
       boxSizingNeeded = !support.boxSizingReliable() || extra,
-      isBorderBox = boxSizingNeeded && _jQuery2.css(elem, "boxSizing", false, styles) === "border-box",
+      isBorderBox = boxSizingNeeded && jQuery.css(elem, "boxSizing", false, styles) === "border-box",
       valueIsBorderBox = isBorderBox,
       val = curCSS(elem, dimension, styles),
       offsetProp = "offset" + dimension[0].toUpperCase() + dimension.slice(1);
@@ -5617,10 +5618,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     val === "auto" ||
     // Support: Android <=4.1 - 4.3 only
     // Also use offsetWidth/offsetHeight for misreported inline dimensions (gh-3602)
-    !parseFloat(val) && _jQuery2.css(elem, "display", false, styles) === "inline") &&
+    !parseFloat(val) && jQuery.css(elem, "display", false, styles) === "inline") &&
     // Make sure the element is visible & connected
     elem.getClientRects().length) {
-      isBorderBox = _jQuery2.css(elem, "boxSizing", false, styles) === "border-box";
+      isBorderBox = jQuery.css(elem, "boxSizing", false, styles) === "border-box";
 
       // Where available, offsetWidth/offsetHeight approximate border box dimensions.
       // Where not available (e.g., SVG), assume unreliable box-sizing and interpret the
@@ -5639,7 +5640,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     // Provide the current computed size to request scroll gutter calculation (gh-3589)
     val) + "px";
   }
-  _jQuery2.extend({
+  jQuery.extend({
     // Add in style property hooks for overriding the default
     // behavior of getting and setting a style property
     cssHooks: {
@@ -5710,7 +5711,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
 
       // Gets hook for the prefixed version, then unprefixed version
-      hooks = _jQuery2.cssHooks[name] || _jQuery2.cssHooks[origName];
+      hooks = jQuery.cssHooks[name] || jQuery.cssHooks[origName];
 
       // Check if we're setting a value
       if (value !== undefined) {
@@ -5733,7 +5734,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         // The isCustomProp check can be removed in jQuery 4.0 when we only auto-append
         // "px" to a few hardcoded values.
         if (type === "number" && !isCustomProp) {
-          value += ret && ret[3] || (_jQuery2.cssNumber[origName] ? "" : "px");
+          value += ret && ret[3] || (jQuery.cssNumber[origName] ? "" : "px");
         }
 
         // background-* props affect original clone's values
@@ -5774,7 +5775,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
 
       // Try prefixed name followed by the unprefixed name
-      hooks = _jQuery2.cssHooks[name] || _jQuery2.cssHooks[origName];
+      hooks = jQuery.cssHooks[name] || jQuery.cssHooks[origName];
 
       // If a hook was provided get the computed value from there
       if (hooks && "get" in hooks) {
@@ -5799,13 +5800,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return val;
     }
   });
-  _jQuery2.each(["height", "width"], function (_i, dimension) {
-    _jQuery2.cssHooks[dimension] = {
+  jQuery.each(["height", "width"], function (_i, dimension) {
+    jQuery.cssHooks[dimension] = {
       get: function get(elem, computed, extra) {
         if (computed) {
           // Certain elements can have dimension info if we invisibly show them
           // but it must have a current display style that would benefit
-          return rdisplayswap.test(_jQuery2.css(elem, "display")) && (
+          return rdisplayswap.test(jQuery.css(elem, "display")) && (
           // Support: Safari 8+
           // Table columns in Safari have non-zero offsetWidth & zero
           // getBoundingClientRect().width unless display is changed.
@@ -5825,7 +5826,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           scrollboxSizeBuggy = !support.scrollboxSize() && styles.position === "absolute",
           // To avoid forcing a reflow, only fetch boxSizing if we need it (gh-3991)
           boxSizingNeeded = scrollboxSizeBuggy || extra,
-          isBorderBox = boxSizingNeeded && _jQuery2.css(elem, "boxSizing", false, styles) === "border-box",
+          isBorderBox = boxSizingNeeded && jQuery.css(elem, "boxSizing", false, styles) === "border-box",
           subtract = extra ? boxModelAdjustment(elem, dimension, extra, isBorderBox, styles) : 0;
 
         // Account for unreliable border-box dimensions by comparing offset* to computed and
@@ -5837,13 +5838,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         // Convert to pixels if value adjustment is needed
         if (subtract && (matches = rcssNum.exec(value)) && (matches[3] || "px") !== "px") {
           elem.style[dimension] = value;
-          value = _jQuery2.css(elem, dimension);
+          value = jQuery.css(elem, dimension);
         }
         return setPositiveNumber(elem, value, subtract);
       }
     };
   });
-  _jQuery2.cssHooks.marginLeft = addGetHookIf(support.reliableMarginLeft, function (elem, computed) {
+  jQuery.cssHooks.marginLeft = addGetHookIf(support.reliableMarginLeft, function (elem, computed) {
     if (computed) {
       return (parseFloat(curCSS(elem, "marginLeft")) || elem.getBoundingClientRect().left - swap(elem, {
         marginLeft: 0
@@ -5854,12 +5855,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   });
 
   // These hooks are used by animate to expand properties
-  _jQuery2.each({
+  jQuery.each({
     margin: "",
     padding: "",
     border: "Width"
   }, function (prefix, suffix) {
-    _jQuery2.cssHooks[prefix + suffix] = {
+    jQuery.cssHooks[prefix + suffix] = {
       expand: function expand(value) {
         var i = 0,
           expanded = {},
@@ -5872,12 +5873,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     };
     if (prefix !== "margin") {
-      _jQuery2.cssHooks[prefix + suffix].set = setPositiveNumber;
+      jQuery.cssHooks[prefix + suffix].set = setPositiveNumber;
     }
   });
-  _jQuery2.fn.extend({
+  jQuery.fn.extend({
     css: function css(name, value) {
-      return _access(this, function (elem, name, value) {
+      return access(this, function (elem, name, value) {
         var styles,
           len,
           map = {},
@@ -5886,28 +5887,28 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           styles = getStyles(elem);
           len = name.length;
           for (; i < len; i++) {
-            map[name[i]] = _jQuery2.css(elem, name[i], false, styles);
+            map[name[i]] = jQuery.css(elem, name[i], false, styles);
           }
           return map;
         }
-        return value !== undefined ? _jQuery2.style(elem, name, value) : _jQuery2.css(elem, name);
+        return value !== undefined ? jQuery.style(elem, name, value) : jQuery.css(elem, name);
       }, name, value, arguments.length > 1);
     }
   });
   function Tween(elem, options, prop, end, easing) {
     return new Tween.prototype.init(elem, options, prop, end, easing);
   }
-  _jQuery2.Tween = Tween;
+  jQuery.Tween = Tween;
   Tween.prototype = {
     constructor: Tween,
     init: function init(elem, options, prop, end, easing, unit) {
       this.elem = elem;
       this.prop = prop;
-      this.easing = easing || _jQuery2.easing._default;
+      this.easing = easing || jQuery.easing._default;
       this.options = options;
       this.start = this.now = this.cur();
       this.end = end;
-      this.unit = unit || (_jQuery2.cssNumber[prop] ? "" : "px");
+      this.unit = unit || (jQuery.cssNumber[prop] ? "" : "px");
     },
     cur: function cur() {
       var hooks = Tween.propHooks[this.prop];
@@ -5917,7 +5918,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var eased,
         hooks = Tween.propHooks[this.prop];
       if (this.options.duration) {
-        this.pos = eased = _jQuery2.easing[this.easing](percent, this.options.duration * percent, 0, 1, this.options.duration);
+        this.pos = eased = jQuery.easing[this.easing](percent, this.options.duration * percent, 0, 1, this.options.duration);
       } else {
         this.pos = eased = percent;
       }
@@ -5949,7 +5950,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         // attempt a parseFloat and fallback to a string if the parse fails.
         // Simple values such as "10px" are parsed to Float;
         // complex values such as "rotate(1rad)" are returned as-is.
-        result = _jQuery2.css(tween.elem, tween.prop, "");
+        result = jQuery.css(tween.elem, tween.prop, "");
 
         // Empty strings, null, undefined and "auto" are converted to 0.
         return !result || result === "auto" ? 0 : result;
@@ -5958,10 +5959,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         // Use step hook for back compat.
         // Use cssHook if its there.
         // Use .style if available and use plain properties where available.
-        if (_jQuery2.fx.step[tween.prop]) {
-          _jQuery2.fx.step[tween.prop](tween);
-        } else if (tween.elem.nodeType === 1 && (_jQuery2.cssHooks[tween.prop] || tween.elem.style[finalPropName(tween.prop)] != null)) {
-          _jQuery2.style(tween.elem, tween.prop, tween.now + tween.unit);
+        if (jQuery.fx.step[tween.prop]) {
+          jQuery.fx.step[tween.prop](tween);
+        } else if (tween.elem.nodeType === 1 && (jQuery.cssHooks[tween.prop] || tween.elem.style[finalPropName(tween.prop)] != null)) {
+          jQuery.style(tween.elem, tween.prop, tween.now + tween.unit);
         } else {
           tween.elem[tween.prop] = tween.now;
         }
@@ -5978,7 +5979,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
   };
-  _jQuery2.easing = {
+  jQuery.easing = {
     linear: function linear(p) {
       return p;
     },
@@ -5987,10 +5988,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     },
     _default: "swing"
   };
-  _jQuery2.fx = Tween.prototype.init;
+  jQuery.fx = Tween.prototype.init;
 
   // Back compat <1.8 extension point
-  _jQuery2.fx.step = {};
+  jQuery.fx.step = {};
   var fxNow,
     inProgress,
     rfxtypes = /^(?:toggle|show|hide)$/,
@@ -6000,9 +6001,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (document.hidden === false && window.requestAnimationFrame) {
         window.requestAnimationFrame(schedule);
       } else {
-        window.setTimeout(schedule, _jQuery2.fx.interval);
+        window.setTimeout(schedule, jQuery.fx.interval);
       }
-      _jQuery2.fx.tick();
+      jQuery.fx.tick();
     }
   }
 
@@ -6064,7 +6065,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
     // Queue-skipping animations hijack the fx hooks
     if (!opts.queue) {
-      hooks = _jQuery2._queueHooks(elem, "fx");
+      hooks = jQuery._queueHooks(elem, "fx");
       if (hooks.unqueued == null) {
         hooks.unqueued = 0;
         oldfire = hooks.empty.fire;
@@ -6079,7 +6080,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         // Ensure the complete handler is called before this completes
         anim.always(function () {
           hooks.unqueued--;
-          if (!_jQuery2.queue(elem, "fx").length) {
+          if (!jQuery.queue(elem, "fx").length) {
             hooks.empty.fire();
           }
         });
@@ -6103,13 +6104,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             continue;
           }
         }
-        orig[prop] = dataShow && dataShow[prop] || _jQuery2.style(elem, prop);
+        orig[prop] = dataShow && dataShow[prop] || jQuery.style(elem, prop);
       }
     }
 
     // Bail out if this is a no-op like .hide().hide()
-    propTween = !_jQuery2.isEmptyObject(props);
-    if (!propTween && _jQuery2.isEmptyObject(orig)) {
+    propTween = !jQuery.isEmptyObject(props);
+    if (!propTween && jQuery.isEmptyObject(orig)) {
       return;
     }
 
@@ -6126,7 +6127,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (restoreDisplay == null) {
         restoreDisplay = dataPriv.get(elem, "display");
       }
-      display = _jQuery2.css(elem, "display");
+      display = jQuery.css(elem, "display");
       if (display === "none") {
         if (restoreDisplay) {
           display = restoreDisplay;
@@ -6134,14 +6135,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           // Get nonempty value(s) by temporarily forcing visibility
           showHide([elem], true);
           restoreDisplay = elem.style.display || restoreDisplay;
-          display = _jQuery2.css(elem, "display");
+          display = jQuery.css(elem, "display");
           showHide([elem]);
         }
       }
 
       // Animate inline elements as inline-block
       if (display === "inline" || display === "inline-block" && restoreDisplay != null) {
-        if (_jQuery2.css(elem, "float") === "none") {
+        if (jQuery.css(elem, "float") === "none") {
           // Restore the original display value at the end of pure show/hide animations
           if (!propTween) {
             anim.done(function () {
@@ -6201,7 +6202,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
           dataPriv.remove(elem, "fxshow");
           for (prop in orig) {
-            _jQuery2.style(elem, prop, orig[prop]);
+            jQuery.style(elem, prop, orig[prop]);
           }
         });
       }
@@ -6233,7 +6234,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         props[name] = value;
         delete props[index];
       }
-      hooks = _jQuery2.cssHooks[name];
+      hooks = jQuery.cssHooks[name];
       if (hooks && "expand" in hooks) {
         value = hooks.expand(value);
         delete props[name];
@@ -6256,7 +6257,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       stopped,
       index = 0,
       length = Animation.prefilters.length,
-      deferred = _jQuery2.Deferred().always(function () {
+      deferred = jQuery.Deferred().always(function () {
         // Don't match elem in the :animated selector
         delete tick.elem;
       }),
@@ -6293,10 +6294,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       },
       animation = deferred.promise({
         elem: elem,
-        props: _jQuery2.extend({}, properties),
-        opts: _jQuery2.extend(true, {
+        props: jQuery.extend({}, properties),
+        opts: jQuery.extend(true, {
           specialEasing: {},
-          easing: _jQuery2.easing._default
+          easing: jQuery.easing._default
         }, options),
         originalProperties: properties,
         originalOptions: options,
@@ -6304,7 +6305,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         duration: options.duration,
         tweens: [],
         createTween: function createTween(prop, end) {
-          var tween = _jQuery2.Tween(elem, animation.opts, prop, end, animation.opts.specialEasing[prop] || animation.opts.easing);
+          var tween = jQuery.Tween(elem, animation.opts, prop, end, animation.opts.specialEasing[prop] || animation.opts.easing);
           animation.tweens.push(tween);
           return tween;
         },
@@ -6337,26 +6338,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       result = Animation.prefilters[index].call(animation, elem, props, animation.opts);
       if (result) {
         if (isFunction(result.stop)) {
-          _jQuery2._queueHooks(animation.elem, animation.opts.queue).stop = result.stop.bind(result);
+          jQuery._queueHooks(animation.elem, animation.opts.queue).stop = result.stop.bind(result);
         }
         return result;
       }
     }
-    _jQuery2.map(props, createTween, animation);
+    jQuery.map(props, createTween, animation);
     if (isFunction(animation.opts.start)) {
       animation.opts.start.call(elem, animation);
     }
 
     // Attach callbacks from options
     animation.progress(animation.opts.progress).done(animation.opts.done, animation.opts.complete).fail(animation.opts.fail).always(animation.opts.always);
-    _jQuery2.fx.timer(_jQuery2.extend(tick, {
+    jQuery.fx.timer(jQuery.extend(tick, {
       elem: elem,
       anim: animation,
       queue: animation.opts.queue
     }));
     return animation;
   }
-  _jQuery2.Animation = _jQuery2.extend(Animation, {
+  jQuery.Animation = jQuery.extend(Animation, {
     tweeners: {
       "*": [function (prop, value) {
         var tween = this.createTween(prop, value);
@@ -6389,22 +6390,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
   });
-  _jQuery2.speed = function (speed, easing, fn) {
-    var opt = speed && _typeof(speed) === "object" ? _jQuery2.extend({}, speed) : {
+  jQuery.speed = function (speed, easing, fn) {
+    var opt = speed && _typeof(speed) === "object" ? jQuery.extend({}, speed) : {
       complete: fn || !fn && easing || isFunction(speed) && speed,
       duration: speed,
       easing: fn && easing || easing && !isFunction(easing) && easing
     };
 
     // Go to the end state if fx are off
-    if (_jQuery2.fx.off) {
+    if (jQuery.fx.off) {
       opt.duration = 0;
     } else {
       if (typeof opt.duration !== "number") {
-        if (opt.duration in _jQuery2.fx.speeds) {
-          opt.duration = _jQuery2.fx.speeds[opt.duration];
+        if (opt.duration in jQuery.fx.speeds) {
+          opt.duration = jQuery.fx.speeds[opt.duration];
         } else {
-          opt.duration = _jQuery2.fx.speeds._default;
+          opt.duration = jQuery.fx.speeds._default;
         }
       }
     }
@@ -6421,12 +6422,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         opt.old.call(this);
       }
       if (opt.queue) {
-        _jQuery2.dequeue(this, opt.queue);
+        jQuery.dequeue(this, opt.queue);
       }
     };
     return opt;
   };
-  _jQuery2.fn.extend({
+  jQuery.fn.extend({
     fadeTo: function fadeTo(speed, to, easing, callback) {
       // Show any hidden elements after setting opacity to 0
       return this.filter(isHiddenWithinTree).css("opacity", 0).show()
@@ -6437,11 +6438,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }, speed, easing, callback);
     },
     animate: function animate(prop, speed, easing, callback) {
-      var empty = _jQuery2.isEmptyObject(prop),
-        optall = _jQuery2.speed(speed, easing, callback),
+      var empty = jQuery.isEmptyObject(prop),
+        optall = jQuery.speed(speed, easing, callback),
         doAnimation = function doAnimation() {
           // Operate on a copy of prop so per-property easing won't be lost
-          var anim = Animation(this, _jQuery2.extend({}, prop), optall);
+          var anim = Animation(this, jQuery.extend({}, prop), optall);
 
           // Empty animations, or finishing resolves immediately
           if (empty || dataPriv.get(this, "finish")) {
@@ -6468,7 +6469,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return this.each(function () {
         var dequeue = true,
           index = type != null && type + "queueHooks",
-          timers = _jQuery2.timers,
+          timers = jQuery.timers,
           data = dataPriv.get(this);
         if (index) {
           if (data[index] && data[index].stop) {
@@ -6493,7 +6494,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         // Timers currently will call their complete callbacks, which
         // will dequeue but only if they were gotoEnd.
         if (dequeue || !gotoEnd) {
-          _jQuery2.dequeue(this, type);
+          jQuery.dequeue(this, type);
         }
       });
     },
@@ -6506,14 +6507,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           data = dataPriv.get(this),
           queue = data[type + "queue"],
           hooks = data[type + "queueHooks"],
-          timers = _jQuery2.timers,
+          timers = jQuery.timers,
           length = queue ? queue.length : 0;
 
         // Enable finishing flag on private data
         data.finish = true;
 
         // Empty the queue first
-        _jQuery2.queue(this, type, []);
+        jQuery.queue(this, type, []);
         if (hooks && hooks.stop) {
           hooks.stop.call(this, true);
         }
@@ -6538,15 +6539,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       });
     }
   });
-  _jQuery2.each(["toggle", "show", "hide"], function (_i, name) {
-    var cssFn = _jQuery2.fn[name];
-    _jQuery2.fn[name] = function (speed, easing, callback) {
+  jQuery.each(["toggle", "show", "hide"], function (_i, name) {
+    var cssFn = jQuery.fn[name];
+    jQuery.fn[name] = function (speed, easing, callback) {
       return speed == null || typeof speed === "boolean" ? cssFn.apply(this, arguments) : this.animate(genFx(name, true), speed, easing, callback);
     };
   });
 
   // Generate shortcuts for custom animations
-  _jQuery2.each({
+  jQuery.each({
     slideDown: genFx("show"),
     slideUp: genFx("hide"),
     slideToggle: genFx("toggle"),
@@ -6560,15 +6561,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       opacity: "toggle"
     }
   }, function (name, props) {
-    _jQuery2.fn[name] = function (speed, easing, callback) {
+    jQuery.fn[name] = function (speed, easing, callback) {
       return this.animate(props, speed, easing, callback);
     };
   });
-  _jQuery2.timers = [];
-  _jQuery2.fx.tick = function () {
+  jQuery.timers = [];
+  jQuery.fx.tick = function () {
     var timer,
       i = 0,
-      timers = _jQuery2.timers;
+      timers = jQuery.timers;
     fxNow = Date.now();
     for (; i < timers.length; i++) {
       timer = timers[i];
@@ -6579,26 +6580,26 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
     if (!timers.length) {
-      _jQuery2.fx.stop();
+      jQuery.fx.stop();
     }
     fxNow = undefined;
   };
-  _jQuery2.fx.timer = function (timer) {
-    _jQuery2.timers.push(timer);
-    _jQuery2.fx.start();
+  jQuery.fx.timer = function (timer) {
+    jQuery.timers.push(timer);
+    jQuery.fx.start();
   };
-  _jQuery2.fx.interval = 13;
-  _jQuery2.fx.start = function () {
+  jQuery.fx.interval = 13;
+  jQuery.fx.start = function () {
     if (inProgress) {
       return;
     }
     inProgress = true;
     schedule();
   };
-  _jQuery2.fx.stop = function () {
+  jQuery.fx.stop = function () {
     inProgress = null;
   };
-  _jQuery2.fx.speeds = {
+  jQuery.fx.speeds = {
     slow: 600,
     fast: 200,
     // Default speed
@@ -6606,8 +6607,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   };
 
   // Based off of the plugin by Clint Helfers, with permission.
-  _jQuery2.fn.delay = function (time, type) {
-    time = _jQuery2.fx ? _jQuery2.fx.speeds[time] || time : time;
+  jQuery.fn.delay = function (time, type) {
+    time = jQuery.fx ? jQuery.fx.speeds[time] || time : time;
     type = type || "fx";
     return this.queue(type, function (next, hooks) {
       var timeout = window.setTimeout(next, time);
@@ -6638,18 +6639,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     support.radioValue = input.value === "t";
   })();
   var boolHook,
-    attrHandle = _jQuery2.expr.attrHandle;
-  _jQuery2.fn.extend({
+    attrHandle = jQuery.expr.attrHandle;
+  jQuery.fn.extend({
     attr: function attr(name, value) {
-      return _access(this, _jQuery2.attr, name, value, arguments.length > 1);
+      return access(this, jQuery.attr, name, value, arguments.length > 1);
     },
     removeAttr: function removeAttr(name) {
       return this.each(function () {
-        _jQuery2.removeAttr(this, name);
+        jQuery.removeAttr(this, name);
       });
     }
   });
-  _jQuery2.extend({
+  jQuery.extend({
     attr: function attr(elem, name, value) {
       var ret,
         hooks,
@@ -6662,17 +6663,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
       // Fallback to prop when attributes are not supported
       if (typeof elem.getAttribute === "undefined") {
-        return _jQuery2.prop(elem, name, value);
+        return jQuery.prop(elem, name, value);
       }
 
       // Attribute hooks are determined by the lowercase version
       // Grab necessary hook if one is defined
-      if (nType !== 1 || !_jQuery2.isXMLDoc(elem)) {
-        hooks = _jQuery2.attrHooks[name.toLowerCase()] || (_jQuery2.expr.match.bool.test(name) ? boolHook : undefined);
+      if (nType !== 1 || !jQuery.isXMLDoc(elem)) {
+        hooks = jQuery.attrHooks[name.toLowerCase()] || (jQuery.expr.match.bool.test(name) ? boolHook : undefined);
       }
       if (value !== undefined) {
         if (value === null) {
-          _jQuery2.removeAttr(elem, name);
+          jQuery.removeAttr(elem, name);
           return;
         }
         if (hooks && "set" in hooks && (ret = hooks.set(elem, value, name)) !== undefined) {
@@ -6684,7 +6685,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (hooks && "get" in hooks && (ret = hooks.get(elem, name)) !== null) {
         return ret;
       }
-      ret = _jQuery2.find.attr(elem, name);
+      ret = jQuery.find.attr(elem, name);
 
       // Non-existent attributes return null, we normalize to undefined
       return ret == null ? undefined : ret;
@@ -6722,15 +6723,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     set: function set(elem, value, name) {
       if (value === false) {
         // Remove boolean attributes when set to false
-        _jQuery2.removeAttr(elem, name);
+        jQuery.removeAttr(elem, name);
       } else {
         elem.setAttribute(name, name);
       }
       return name;
     }
   };
-  _jQuery2.each(_jQuery2.expr.match.bool.source.match(/\w+/g), function (_i, name) {
-    var getter = attrHandle[name] || _jQuery2.find.attr;
+  jQuery.each(jQuery.expr.match.bool.source.match(/\w+/g), function (_i, name) {
+    var getter = attrHandle[name] || jQuery.find.attr;
     attrHandle[name] = function (elem, name, isXML) {
       var ret,
         handle,
@@ -6747,17 +6748,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   });
   var rfocusable = /^(?:input|select|textarea|button)$/i,
     rclickable = /^(?:a|area)$/i;
-  _jQuery2.fn.extend({
+  jQuery.fn.extend({
     prop: function prop(name, value) {
-      return _access(this, _jQuery2.prop, name, value, arguments.length > 1);
+      return access(this, jQuery.prop, name, value, arguments.length > 1);
     },
     removeProp: function removeProp(name) {
       return this.each(function () {
-        delete this[_jQuery2.propFix[name] || name];
+        delete this[jQuery.propFix[name] || name];
       });
     }
   });
-  _jQuery2.extend({
+  jQuery.extend({
     prop: function prop(elem, name, value) {
       var ret,
         hooks,
@@ -6767,10 +6768,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       if (nType === 3 || nType === 8 || nType === 2) {
         return;
       }
-      if (nType !== 1 || !_jQuery2.isXMLDoc(elem)) {
+      if (nType !== 1 || !jQuery.isXMLDoc(elem)) {
         // Fix name and attach hooks
-        name = _jQuery2.propFix[name] || name;
-        hooks = _jQuery2.propHooks[name];
+        name = jQuery.propFix[name] || name;
+        hooks = jQuery.propHooks[name];
       }
       if (value !== undefined) {
         if (hooks && "set" in hooks && (ret = hooks.set(elem, value, name)) !== undefined) {
@@ -6790,7 +6791,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           // elem.tabIndex doesn't always return the
           // correct value when it hasn't been explicitly set
           // Use proper attribute retrieval (trac-12072)
-          var tabindex = _jQuery2.find.attr(elem, "tabindex");
+          var tabindex = jQuery.find.attr(elem, "tabindex");
           if (tabindex) {
             return parseInt(tabindex, 10);
           }
@@ -6816,7 +6817,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   // eslint rule "no-unused-expressions" is disabled for this code
   // since it considers such accessions noop
   if (!support.optSelected) {
-    _jQuery2.propHooks.selected = {
+    jQuery.propHooks.selected = {
       get: function get(elem) {
         /* eslint no-unused-expressions: "off" */
 
@@ -6839,8 +6840,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     };
   }
-  _jQuery2.each(["tabIndex", "readOnly", "maxLength", "cellSpacing", "cellPadding", "rowSpan", "colSpan", "useMap", "frameBorder", "contentEditable"], function () {
-    _jQuery2.propFix[this.toLowerCase()] = this;
+  jQuery.each(["tabIndex", "readOnly", "maxLength", "cellSpacing", "cellPadding", "rowSpan", "colSpan", "useMap", "frameBorder", "contentEditable"], function () {
+    jQuery.propFix[this.toLowerCase()] = this;
   });
 
   // Strip and collapse whitespace according to HTML spec
@@ -6861,12 +6862,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return [];
   }
-  _jQuery2.fn.extend({
+  jQuery.fn.extend({
     addClass: function addClass(value) {
       var classNames, cur, curValue, className, i, finalValue;
       if (isFunction(value)) {
         return this.each(function (j) {
-          _jQuery2(this).addClass(value.call(this, j, getClass(this)));
+          jQuery(this).addClass(value.call(this, j, getClass(this)));
         });
       }
       classNames = classesToArray(value);
@@ -6896,7 +6897,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       var classNames, cur, curValue, className, i, finalValue;
       if (isFunction(value)) {
         return this.each(function (j) {
-          _jQuery2(this).removeClass(value.call(this, j, getClass(this)));
+          jQuery(this).removeClass(value.call(this, j, getClass(this)));
         });
       }
       if (!arguments.length) {
@@ -6938,7 +6939,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         isValidValue = type === "string" || Array.isArray(value);
       if (isFunction(value)) {
         return this.each(function (i) {
-          _jQuery2(this).toggleClass(value.call(this, i, getClass(this), stateVal), stateVal);
+          jQuery(this).toggleClass(value.call(this, i, getClass(this), stateVal), stateVal);
         });
       }
       if (typeof stateVal === "boolean" && isValidValue) {
@@ -6948,7 +6949,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return this.each(function () {
         if (isValidValue) {
           // Toggle individual class names
-          self = _jQuery2(this);
+          self = jQuery(this);
           for (i = 0; i < classNames.length; i++) {
             className = classNames[i];
 
@@ -6992,7 +6993,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
   });
   var rreturn = /\r/g;
-  _jQuery2.fn.extend({
+  jQuery.fn.extend({
     val: function val(value) {
       var hooks,
         ret,
@@ -7000,7 +7001,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         elem = this[0];
       if (!arguments.length) {
         if (elem) {
-          hooks = _jQuery2.valHooks[elem.type] || _jQuery2.valHooks[elem.nodeName.toLowerCase()];
+          hooks = jQuery.valHooks[elem.type] || jQuery.valHooks[elem.nodeName.toLowerCase()];
           if (hooks && "get" in hooks && (ret = hooks.get(elem, "value")) !== undefined) {
             return ret;
           }
@@ -7023,7 +7024,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           return;
         }
         if (valueIsFunction) {
-          val = value.call(this, i, _jQuery2(this).val());
+          val = value.call(this, i, jQuery(this).val());
         } else {
           val = value;
         }
@@ -7034,11 +7035,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         } else if (typeof val === "number") {
           val += "";
         } else if (Array.isArray(val)) {
-          val = _jQuery2.map(val, function (value) {
+          val = jQuery.map(val, function (value) {
             return value == null ? "" : value + "";
           });
         }
-        hooks = _jQuery2.valHooks[this.type] || _jQuery2.valHooks[this.nodeName.toLowerCase()];
+        hooks = jQuery.valHooks[this.type] || jQuery.valHooks[this.nodeName.toLowerCase()];
 
         // If set returns undefined, fall back to normal setting
         if (!hooks || !("set" in hooks) || hooks.set(this, val, "value") === undefined) {
@@ -7047,17 +7048,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       });
     }
   });
-  _jQuery2.extend({
+  jQuery.extend({
     valHooks: {
       option: {
         get: function get(elem) {
-          var val = _jQuery2.find.attr(elem, "value");
+          var val = jQuery.find.attr(elem, "value");
           return val != null ? val :
           // Support: IE <=10 - 11 only
           // option.text throws exceptions (trac-14686, trac-14858)
           // Strip and collapse whitespace
           // https://html.spec.whatwg.org/#strip-and-collapse-whitespace
-          stripAndCollapse(_jQuery2.text(elem));
+          stripAndCollapse(jQuery.text(elem));
         }
       },
       select: {
@@ -7086,7 +7087,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             // Don't return options that are disabled or in a disabled optgroup
             !option.disabled && (!option.parentNode.disabled || !nodeName(option.parentNode, "optgroup"))) {
               // Get the specific value for the option
-              value = _jQuery2(option).val();
+              value = jQuery(option).val();
 
               // We don't need an array for one selects
               if (one) {
@@ -7103,14 +7104,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           var optionSet,
             option,
             options = elem.options,
-            values = _jQuery2.makeArray(value),
+            values = jQuery.makeArray(value),
             i = options.length;
           while (i--) {
             option = options[i];
 
             /* eslint-disable no-cond-assign */
 
-            if (option.selected = _jQuery2.inArray(_jQuery2.valHooks.option.get(option), values) > -1) {
+            if (option.selected = jQuery.inArray(jQuery.valHooks.option.get(option), values) > -1) {
               optionSet = true;
             }
 
@@ -7128,16 +7129,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   });
 
   // Radios and checkboxes getter/setter
-  _jQuery2.each(["radio", "checkbox"], function () {
-    _jQuery2.valHooks[this] = {
+  jQuery.each(["radio", "checkbox"], function () {
+    jQuery.valHooks[this] = {
       set: function set(elem, value) {
         if (Array.isArray(value)) {
-          return elem.checked = _jQuery2.inArray(_jQuery2(elem).val(), value) > -1;
+          return elem.checked = jQuery.inArray(jQuery(elem).val(), value) > -1;
         }
       }
     };
     if (!support.checkOn) {
-      _jQuery2.valHooks[this].get = function (elem) {
+      jQuery.valHooks[this].get = function (elem) {
         return elem.getAttribute("value") === null ? "on" : elem.value;
       };
     }
@@ -7151,7 +7152,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var rquery = /\?/;
 
   // Cross-browser xml parsing
-  _jQuery2.parseXML = function (data) {
+  jQuery.parseXML = function (data) {
     var xml, parserErrorElem;
     if (!data || typeof data !== "string") {
       return null;
@@ -7164,7 +7165,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     } catch (e) {}
     parserErrorElem = xml && xml.getElementsByTagName("parsererror")[0];
     if (!xml || parserErrorElem) {
-      _jQuery2.error("Invalid XML: " + (parserErrorElem ? _jQuery2.map(parserErrorElem.childNodes, function (el) {
+      jQuery.error("Invalid XML: " + (parserErrorElem ? jQuery.map(parserErrorElem.childNodes, function (el) {
         return el.textContent;
       }).join("\n") : data));
     }
@@ -7174,7 +7175,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     stopPropagationCallback = function stopPropagationCallback(e) {
       e.stopPropagation();
     };
-  _jQuery2.extend(_jQuery2.event, {
+  jQuery.extend(jQuery.event, {
     trigger: function trigger(event, data, elem, onlyHandlers) {
       var i,
         cur,
@@ -7195,7 +7196,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
 
       // focus/blur morphs to focusin/out; ensure we're not firing them right now
-      if (rfocusMorph.test(type + _jQuery2.event.triggered)) {
+      if (rfocusMorph.test(type + jQuery.event.triggered)) {
         return;
       }
       if (type.indexOf(".") > -1) {
@@ -7207,7 +7208,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       ontype = type.indexOf(":") < 0 && "on" + type;
 
       // Caller can pass in a jQuery.Event object, Object, or just an event type string
-      event = event[_jQuery2.expando] ? event : new _jQuery2.Event(type, _typeof(event) === "object" && event);
+      event = event[jQuery.expando] ? event : new jQuery.Event(type, _typeof(event) === "object" && event);
 
       // Trigger bitmask: & 1 for native handlers; & 2 for jQuery (always true)
       event.isTrigger = onlyHandlers ? 2 : 3;
@@ -7221,10 +7222,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
 
       // Clone any incoming data and prepend the event, creating the handler arg list
-      data = data == null ? [event] : _jQuery2.makeArray(data, [event]);
+      data = data == null ? [event] : jQuery.makeArray(data, [event]);
 
       // Allow special events to draw outside the lines
-      special = _jQuery2.event.special[type] || {};
+      special = jQuery.event.special[type] || {};
       if (!onlyHandlers && special.trigger && special.trigger.apply(elem, data) === false) {
         return;
       }
@@ -7283,7 +7284,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             }
 
             // Prevent re-triggering of the same event, since we already bubbled it above
-            _jQuery2.event.triggered = type;
+            jQuery.event.triggered = type;
             if (event.isPropagationStopped()) {
               lastElement.addEventListener(type, stopPropagationCallback);
             }
@@ -7291,7 +7292,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             if (event.isPropagationStopped()) {
               lastElement.removeEventListener(type, stopPropagationCallback);
             }
-            _jQuery2.event.triggered = undefined;
+            jQuery.event.triggered = undefined;
             if (tmp) {
               elem[ontype] = tmp;
             }
@@ -7303,23 +7304,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     // Piggyback on a donor event to simulate a different one
     // Used only for `focus(in | out)` events
     simulate: function simulate(type, elem, event) {
-      var e = _jQuery2.extend(new _jQuery2.Event(), event, {
+      var e = jQuery.extend(new jQuery.Event(), event, {
         type: type,
         isSimulated: true
       });
-      _jQuery2.event.trigger(e, null, elem);
+      jQuery.event.trigger(e, null, elem);
     }
   });
-  _jQuery2.fn.extend({
+  jQuery.fn.extend({
     trigger: function trigger(type, data) {
       return this.each(function () {
-        _jQuery2.event.trigger(type, data, this);
+        jQuery.event.trigger(type, data, this);
       });
     },
     triggerHandler: function triggerHandler(type, data) {
       var elem = this[0];
       if (elem) {
-        return _jQuery2.event.trigger(type, data, elem, true);
+        return jQuery.event.trigger(type, data, elem, true);
       }
     }
   });
@@ -7331,7 +7332,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var name;
     if (Array.isArray(obj)) {
       // Serialize array item.
-      _jQuery2.each(obj, function (i, v) {
+      jQuery.each(obj, function (i, v) {
         if (traditional || rbracket.test(prefix)) {
           // Treat each array item as a scalar.
           add(prefix, v);
@@ -7353,7 +7354,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
   // Serialize an array of form elements or a set of
   // key/values into a query string
-  _jQuery2.param = function (a, traditional) {
+  jQuery.param = function (a, traditional) {
     var prefix,
       s = [],
       add = function add(key, valueOrFunction) {
@@ -7366,9 +7367,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // If an array was passed in, assume that it is an array of form elements.
-    if (Array.isArray(a) || a.jquery && !_jQuery2.isPlainObject(a)) {
+    if (Array.isArray(a) || a.jquery && !jQuery.isPlainObject(a)) {
       // Serialize the form elements
-      _jQuery2.each(a, function () {
+      jQuery.each(a, function () {
         add(this.name, this.value);
       });
     } else {
@@ -7382,27 +7383,27 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     // Return the resulting serialization
     return s.join("&");
   };
-  _jQuery2.fn.extend({
+  jQuery.fn.extend({
     serialize: function serialize() {
-      return _jQuery2.param(this.serializeArray());
+      return jQuery.param(this.serializeArray());
     },
     serializeArray: function serializeArray() {
       return this.map(function () {
         // Can add propHook for "elements" to filter or add form elements
-        var elements = _jQuery2.prop(this, "elements");
-        return elements ? _jQuery2.makeArray(elements) : this;
+        var elements = jQuery.prop(this, "elements");
+        return elements ? jQuery.makeArray(elements) : this;
       }).filter(function () {
         var type = this.type;
 
         // Use .is( ":disabled" ) so that fieldset[disabled] works
-        return this.name && !_jQuery2(this).is(":disabled") && rsubmittable.test(this.nodeName) && !rsubmitterTypes.test(type) && (this.checked || !rcheckableType.test(type));
+        return this.name && !jQuery(this).is(":disabled") && rsubmittable.test(this.nodeName) && !rsubmitterTypes.test(type) && (this.checked || !rcheckableType.test(type));
       }).map(function (_i, elem) {
-        var val = _jQuery2(this).val();
+        var val = jQuery(this).val();
         if (val == null) {
           return null;
         }
         if (Array.isArray(val)) {
-          return _jQuery2.map(val, function (val) {
+          return jQuery.map(val, function (val) {
             return {
               name: elem.name,
               value: val.replace(rCRLF, "\r\n")
@@ -7481,7 +7482,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     function inspect(dataType) {
       var selected;
       inspected[dataType] = true;
-      _jQuery2.each(structure[dataType] || [], function (_, prefilterOrFactory) {
+      jQuery.each(structure[dataType] || [], function (_, prefilterOrFactory) {
         var dataTypeOrTransport = prefilterOrFactory(options, originalOptions, jqXHR);
         if (typeof dataTypeOrTransport === "string" && !seekingTransport && !inspected[dataTypeOrTransport]) {
           options.dataTypes.unshift(dataTypeOrTransport);
@@ -7502,14 +7503,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   function ajaxExtend(target, src) {
     var key,
       deep,
-      flatOptions = _jQuery2.ajaxSettings.flatOptions || {};
+      flatOptions = jQuery.ajaxSettings.flatOptions || {};
     for (key in src) {
       if (src[key] !== undefined) {
         (flatOptions[key] ? target : deep || (deep = {}))[key] = src[key];
       }
     }
     if (deep) {
-      _jQuery2.extend(true, target, deep);
+      jQuery.extend(true, target, deep);
     }
     return target;
   }
@@ -7665,7 +7666,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       data: response
     };
   }
-  _jQuery2.extend({
+  jQuery.extend({
     // Counter for holding the number of active queries
     active: 0,
     // Last-Modified header cache for next request
@@ -7718,7 +7719,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         // Evaluate text as a json expression
         "text json": JSON.parse,
         // Parse text as xml
-        "text xml": _jQuery2.parseXML
+        "text xml": jQuery.parseXML
       },
       // For options that shouldn't be deep extended:
       // you can add your own custom options here if
@@ -7735,9 +7736,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     ajaxSetup: function ajaxSetup(target, settings) {
       return settings ?
       // Building a settings object
-      ajaxExtend(ajaxExtend(target, _jQuery2.ajaxSettings), settings) :
+      ajaxExtend(ajaxExtend(target, jQuery.ajaxSettings), settings) :
       // Extending ajaxSettings
-      ajaxExtend(_jQuery2.ajaxSettings, target);
+      ajaxExtend(jQuery.ajaxSettings, target);
     },
     ajaxPrefilter: addToPrefiltersOrTransports(prefilters),
     ajaxTransport: addToPrefiltersOrTransports(transports),
@@ -7770,14 +7771,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         // uncached part of the url
         uncached,
         // Create the final options object
-        s = _jQuery2.ajaxSetup({}, options),
+        s = jQuery.ajaxSetup({}, options),
         // Callbacks context
         callbackContext = s.context || s,
         // Context for global events is callbackContext if it is a DOM node or jQuery collection
-        globalEventContext = s.context && (callbackContext.nodeType || callbackContext.jquery) ? _jQuery2(callbackContext) : _jQuery2.event,
+        globalEventContext = s.context && (callbackContext.nodeType || callbackContext.jquery) ? jQuery(callbackContext) : jQuery.event,
         // Deferreds
-        deferred = _jQuery2.Deferred(),
-        completeDeferred = _jQuery2.Callbacks("once memory"),
+        deferred = jQuery.Deferred(),
+        completeDeferred = jQuery.Callbacks("once memory"),
         // Status-dependent callbacks
         _statusCode = s.statusCode || {},
         // Headers (they are sent all at once)
@@ -7885,7 +7886,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
       // Convert data if not already a string
       if (s.data && s.processData && typeof s.data !== "string") {
-        s.data = _jQuery2.param(s.data, s.traditional);
+        s.data = jQuery.param(s.data, s.traditional);
       }
 
       // Apply prefilters
@@ -7898,11 +7899,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
       // We can fire global events as of now if asked to
       // Don't fire events if jQuery.event is undefined in an AMD-usage scenario (trac-15118)
-      fireGlobals = _jQuery2.event && s.global;
+      fireGlobals = jQuery.event && s.global;
 
       // Watch for a new set of requests
-      if (fireGlobals && _jQuery2.active++ === 0) {
-        _jQuery2.event.trigger("ajaxStart");
+      if (fireGlobals && jQuery.active++ === 0) {
+        jQuery.event.trigger("ajaxStart");
       }
 
       // Uppercase the type
@@ -7945,11 +7946,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
       // Set the If-Modified-Since and/or If-None-Match header, if in ifModified mode.
       if (s.ifModified) {
-        if (_jQuery2.lastModified[cacheURL]) {
-          jqXHR.setRequestHeader("If-Modified-Since", _jQuery2.lastModified[cacheURL]);
+        if (jQuery.lastModified[cacheURL]) {
+          jqXHR.setRequestHeader("If-Modified-Since", jQuery.lastModified[cacheURL]);
         }
-        if (_jQuery2.etag[cacheURL]) {
-          jqXHR.setRequestHeader("If-None-Match", _jQuery2.etag[cacheURL]);
+        if (jQuery.etag[cacheURL]) {
+          jqXHR.setRequestHeader("If-None-Match", jQuery.etag[cacheURL]);
         }
       }
 
@@ -8058,7 +8059,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
 
         // Use a noop converter for missing script but not if jsonp
-        if (!isSuccess && _jQuery2.inArray("script", s.dataTypes) > -1 && _jQuery2.inArray("json", s.dataTypes) < 0) {
+        if (!isSuccess && jQuery.inArray("script", s.dataTypes) > -1 && jQuery.inArray("json", s.dataTypes) < 0) {
           s.converters["text script"] = function () {};
         }
 
@@ -8071,11 +8072,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           if (s.ifModified) {
             modified = jqXHR.getResponseHeader("Last-Modified");
             if (modified) {
-              _jQuery2.lastModified[cacheURL] = modified;
+              jQuery.lastModified[cacheURL] = modified;
             }
             modified = jqXHR.getResponseHeader("etag");
             if (modified) {
-              _jQuery2.etag[cacheURL] = modified;
+              jQuery.etag[cacheURL] = modified;
             }
           }
 
@@ -8129,22 +8130,22 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           globalEventContext.trigger("ajaxComplete", [jqXHR, s]);
 
           // Handle the global AJAX counter
-          if (! --_jQuery2.active) {
-            _jQuery2.event.trigger("ajaxStop");
+          if (! --jQuery.active) {
+            jQuery.event.trigger("ajaxStop");
           }
         }
       }
       return jqXHR;
     },
     getJSON: function getJSON(url, data, callback) {
-      return _jQuery2.get(url, data, callback, "json");
+      return jQuery.get(url, data, callback, "json");
     },
     getScript: function getScript(url, callback) {
-      return _jQuery2.get(url, undefined, callback, "script");
+      return jQuery.get(url, undefined, callback, "script");
     }
   });
-  _jQuery2.each(["get", "post"], function (_i, method) {
-    _jQuery2[method] = function (url, data, callback, type) {
+  jQuery.each(["get", "post"], function (_i, method) {
+    jQuery[method] = function (url, data, callback, type) {
       // Shift arguments if data argument was omitted
       if (isFunction(data)) {
         type = type || callback;
@@ -8153,16 +8154,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
 
       // The url can be an options object (which then must have .url)
-      return _jQuery2.ajax(_jQuery2.extend({
+      return jQuery.ajax(jQuery.extend({
         url: url,
         type: method,
         dataType: type,
         data: data,
         success: callback
-      }, _jQuery2.isPlainObject(url) && url));
+      }, jQuery.isPlainObject(url) && url));
     };
   });
-  _jQuery2.ajaxPrefilter(function (s) {
+  jQuery.ajaxPrefilter(function (s) {
     var i;
     for (i in s.headers) {
       if (i.toLowerCase() === "content-type") {
@@ -8170,8 +8171,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
   });
-  _jQuery2._evalUrl = function (url, options, doc) {
-    return _jQuery2.ajax({
+  jQuery._evalUrl = function (url, options, doc) {
+    return jQuery.ajax({
       url: url,
       // Make this explicit, since user can override this through ajaxSetup (trac-11264)
       type: "GET",
@@ -8183,14 +8184,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       // dataFilter is not invoked for failure responses, so using it instead
       // of the default converter is kludgy but it works.
       converters: {
-        "text script": function text_script() {}
+        "text script": function textScript() {}
       },
       dataFilter: function dataFilter(response) {
-        _jQuery2.globalEval(response, options, doc);
+        jQuery.globalEval(response, options, doc);
       }
     });
   };
-  _jQuery2.fn.extend({
+  jQuery.fn.extend({
     wrapAll: function wrapAll(html) {
       var wrap;
       if (this[0]) {
@@ -8199,7 +8200,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
 
         // The elements to wrap the target around
-        wrap = _jQuery2(html, this[0].ownerDocument).eq(0).clone(true);
+        wrap = jQuery(html, this[0].ownerDocument).eq(0).clone(true);
         if (this[0].parentNode) {
           wrap.insertBefore(this[0]);
         }
@@ -8216,11 +8217,11 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     wrapInner: function wrapInner(html) {
       if (isFunction(html)) {
         return this.each(function (i) {
-          _jQuery2(this).wrapInner(html.call(this, i));
+          jQuery(this).wrapInner(html.call(this, i));
         });
       }
       return this.each(function () {
-        var self = _jQuery2(this),
+        var self = jQuery(this),
           contents = self.contents();
         if (contents.length) {
           contents.wrapAll(html);
@@ -8232,23 +8233,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     wrap: function wrap(html) {
       var htmlIsFunction = isFunction(html);
       return this.each(function (i) {
-        _jQuery2(this).wrapAll(htmlIsFunction ? html.call(this, i) : html);
+        jQuery(this).wrapAll(htmlIsFunction ? html.call(this, i) : html);
       });
     },
     unwrap: function unwrap(selector) {
       this.parent(selector).not("body").each(function () {
-        _jQuery2(this).replaceWith(this.childNodes);
+        jQuery(this).replaceWith(this.childNodes);
       });
       return this;
     }
   });
-  _jQuery2.expr.pseudos.hidden = function (elem) {
-    return !_jQuery2.expr.pseudos.visible(elem);
+  jQuery.expr.pseudos.hidden = function (elem) {
+    return !jQuery.expr.pseudos.visible(elem);
   };
-  _jQuery2.expr.pseudos.visible = function (elem) {
+  jQuery.expr.pseudos.visible = function (elem) {
     return !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length);
   };
-  _jQuery2.ajaxSettings.xhr = function () {
+  jQuery.ajaxSettings.xhr = function () {
     try {
       return new window.XMLHttpRequest();
     } catch (e) {}
@@ -8260,10 +8261,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       // trac-1450: sometimes IE returns 1223 when it should be 204
       1223: 204
     },
-    xhrSupported = _jQuery2.ajaxSettings.xhr();
+    xhrSupported = jQuery.ajaxSettings.xhr();
   support.cors = !!xhrSupported && "withCredentials" in xhrSupported;
   support.ajax = xhrSupported = !!xhrSupported;
-  _jQuery2.ajaxTransport(function (options) {
+  jQuery.ajaxTransport(function (options) {
     var _callback, errorCallback;
 
     // Cross domain only allowed if supported through XMLHttpRequest
@@ -8381,14 +8382,14 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   });
 
   // Prevent auto-execution of scripts when no explicit dataType was provided (See gh-2432)
-  _jQuery2.ajaxPrefilter(function (s) {
+  jQuery.ajaxPrefilter(function (s) {
     if (s.crossDomain) {
       s.contents.script = false;
     }
   });
 
   // Install script dataType
-  _jQuery2.ajaxSetup({
+  jQuery.ajaxSetup({
     accepts: {
       script: "text/javascript, application/javascript, " + "application/ecmascript, application/x-ecmascript"
     },
@@ -8396,15 +8397,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       script: /\b(?:java|ecma)script\b/
     },
     converters: {
-      "text script": function text_script(text) {
-        _jQuery2.globalEval(text);
+      "text script": function textScript(text) {
+        jQuery.globalEval(text);
         return text;
       }
     }
   });
 
   // Handle cache's special case and crossDomain
-  _jQuery2.ajaxPrefilter("script", function (s) {
+  jQuery.ajaxPrefilter("script", function (s) {
     if (s.cache === undefined) {
       s.cache = false;
     }
@@ -8414,13 +8415,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   });
 
   // Bind script tag hack transport
-  _jQuery2.ajaxTransport("script", function (s) {
+  jQuery.ajaxTransport("script", function (s) {
     // This transport only deals with cross domain or forced-by-attrs requests
     if (s.crossDomain || s.scriptAttrs) {
       var script, _callback2;
       return {
         send: function send(_, complete) {
-          script = _jQuery2("<script>").attr(s.scriptAttrs || {}).prop({
+          script = jQuery("<script>").attr(s.scriptAttrs || {}).prop({
             charset: s.scriptCharset,
             src: s.url
           }).on("load error", _callback2 = function callback(evt) {
@@ -8446,17 +8447,17 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     rjsonp = /(=)\?(?=&|$)|\?\?/;
 
   // Default jsonp settings
-  _jQuery2.ajaxSetup({
+  jQuery.ajaxSetup({
     jsonp: "callback",
     jsonpCallback: function jsonpCallback() {
-      var callback = oldCallbacks.pop() || _jQuery2.expando + "_" + nonce.guid++;
+      var callback = oldCallbacks.pop() || jQuery.expando + "_" + nonce.guid++;
       this[callback] = true;
       return callback;
     }
   });
 
   // Detect, normalize options and install callbacks for jsonp requests
-  _jQuery2.ajaxPrefilter("json jsonp", function (s, originalSettings, jqXHR) {
+  jQuery.ajaxPrefilter("json jsonp", function (s, originalSettings, jqXHR) {
     var callbackName,
       overwritten,
       responseContainer,
@@ -8477,7 +8478,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       // Use data converter to retrieve json after script execution
       s.converters["script json"] = function () {
         if (!responseContainer) {
-          _jQuery2.error(callbackName + " was not called");
+          jQuery.error(callbackName + " was not called");
         }
         return responseContainer[0];
       };
@@ -8495,7 +8496,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       jqXHR.always(function () {
         // If previous value didn't exist - remove it
         if (overwritten === undefined) {
-          _jQuery2(window).removeProp(callbackName);
+          jQuery(window).removeProp(callbackName);
 
           // Otherwise restore preexisting value
         } else {
@@ -8538,7 +8539,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   // context (optional): If specified, the fragment will be created in this context,
   // defaults to document
   // keepScripts (optional): If true, will include scripts passed in the html string
-  _jQuery2.parseHTML = function (data, context, keepScripts) {
+  jQuery.parseHTML = function (data, context, keepScripts) {
     if (typeof data !== "string") {
       return [];
     }
@@ -8572,15 +8573,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     parsed = buildFragment([data], context, scripts);
     if (scripts && scripts.length) {
-      _jQuery2(scripts).remove();
+      jQuery(scripts).remove();
     }
-    return _jQuery2.merge([], parsed.childNodes);
+    return jQuery.merge([], parsed.childNodes);
   };
 
   /**
    * Load a url into a page
    */
-  _jQuery2.fn.load = function (url, params, callback) {
+  jQuery.fn.load = function (url, params, callback) {
     var selector,
       type,
       response,
@@ -8604,7 +8605,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
     // If we have elements to modify, make the request
     if (self.length > 0) {
-      _jQuery2.ajax({
+      jQuery.ajax({
         url: url,
         // If "type" variable is undefined, then "GET" method will be used.
         // Make value of this field explicit since
@@ -8618,7 +8619,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         self.html(selector ?
         // If a selector was specified, locate the right elements in a dummy div
         // Exclude scripts to avoid IE 'Permission Denied' errors
-        _jQuery2("<div>").append(_jQuery2.parseHTML(responseText)).find(selector) :
+        jQuery("<div>").append(jQuery.parseHTML(responseText)).find(selector) :
         // Otherwise use the full result
         responseText);
 
@@ -8633,12 +8634,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return this;
   };
-  _jQuery2.expr.pseudos.animated = function (elem) {
-    return _jQuery2.grep(_jQuery2.timers, function (fn) {
+  jQuery.expr.pseudos.animated = function (elem) {
+    return jQuery.grep(jQuery.timers, function (fn) {
       return elem === fn.elem;
     }).length;
   };
-  _jQuery2.offset = {
+  jQuery.offset = {
     setOffset: function setOffset(elem, options, i) {
       var curPosition,
         curLeft,
@@ -8647,8 +8648,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         curOffset,
         curCSSLeft,
         calculatePosition,
-        position = _jQuery2.css(elem, "position"),
-        curElem = _jQuery2(elem),
+        position = jQuery.css(elem, "position"),
+        curElem = jQuery(elem),
         props = {};
 
       // Set position first, in-case top/left are set even on static elem
@@ -8656,8 +8657,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         elem.style.position = "relative";
       }
       curOffset = curElem.offset();
-      curCSSTop = _jQuery2.css(elem, "top");
-      curCSSLeft = _jQuery2.css(elem, "left");
+      curCSSTop = jQuery.css(elem, "top");
+      curCSSLeft = jQuery.css(elem, "left");
       calculatePosition = (position === "absolute" || position === "fixed") && (curCSSTop + curCSSLeft).indexOf("auto") > -1;
 
       // Need to be able to calculate position if either
@@ -8672,7 +8673,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
       if (isFunction(options)) {
         // Use jQuery.extend here to allow modification of coordinates argument (gh-1848)
-        options = options.call(elem, i, _jQuery2.extend({}, curOffset));
+        options = options.call(elem, i, jQuery.extend({}, curOffset));
       }
       if (options.top != null) {
         props.top = options.top - curOffset.top + curTop;
@@ -8687,13 +8688,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       }
     }
   };
-  _jQuery2.fn.extend({
+  jQuery.fn.extend({
     // offset() relates an element's border box to the document origin
     offset: function offset(options) {
       // Preserve chaining for setter
       if (arguments.length) {
         return options === undefined ? this : this.each(function (i) {
-          _jQuery2.offset.setOffset(this, options, i);
+          jQuery.offset.setOffset(this, options, i);
         });
       }
       var rect,
@@ -8738,7 +8739,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         };
 
       // position:fixed elements are offset from the viewport, which itself always has zero offset
-      if (_jQuery2.css(elem, "position") === "fixed") {
+      if (jQuery.css(elem, "position") === "fixed") {
         // Assume position:fixed implies availability of getBoundingClientRect
         offset = elem.getBoundingClientRect();
       } else {
@@ -8748,21 +8749,21 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         // when a statically positioned element is identified
         doc = elem.ownerDocument;
         offsetParent = elem.offsetParent || doc.documentElement;
-        while (offsetParent && (offsetParent === doc.body || offsetParent === doc.documentElement) && _jQuery2.css(offsetParent, "position") === "static") {
+        while (offsetParent && (offsetParent === doc.body || offsetParent === doc.documentElement) && jQuery.css(offsetParent, "position") === "static") {
           offsetParent = offsetParent.parentNode;
         }
         if (offsetParent && offsetParent !== elem && offsetParent.nodeType === 1) {
           // Incorporate borders into its offset, since they are outside its content origin
-          parentOffset = _jQuery2(offsetParent).offset();
-          parentOffset.top += _jQuery2.css(offsetParent, "borderTopWidth", true);
-          parentOffset.left += _jQuery2.css(offsetParent, "borderLeftWidth", true);
+          parentOffset = jQuery(offsetParent).offset();
+          parentOffset.top += jQuery.css(offsetParent, "borderTopWidth", true);
+          parentOffset.left += jQuery.css(offsetParent, "borderLeftWidth", true);
         }
       }
 
       // Subtract parent offsets and element margins
       return {
-        top: offset.top - parentOffset.top - _jQuery2.css(elem, "marginTop", true),
-        left: offset.left - parentOffset.left - _jQuery2.css(elem, "marginLeft", true)
+        top: offset.top - parentOffset.top - jQuery.css(elem, "marginTop", true),
+        left: offset.left - parentOffset.left - jQuery.css(elem, "marginLeft", true)
       };
     },
     // This method will return documentElement in the following cases:
@@ -8778,7 +8779,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     offsetParent: function offsetParent() {
       return this.map(function () {
         var offsetParent = this.offsetParent;
-        while (offsetParent && _jQuery2.css(offsetParent, "position") === "static") {
+        while (offsetParent && jQuery.css(offsetParent, "position") === "static") {
           offsetParent = offsetParent.offsetParent;
         }
         return offsetParent || documentElement;
@@ -8787,13 +8788,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   });
 
   // Create scrollLeft and scrollTop methods
-  _jQuery2.each({
+  jQuery.each({
     scrollLeft: "pageXOffset",
     scrollTop: "pageYOffset"
   }, function (method, prop) {
     var top = "pageYOffset" === prop;
-    _jQuery2.fn[method] = function (val) {
-      return _access(this, function (elem, method, val) {
+    jQuery.fn[method] = function (val) {
+      return access(this, function (elem, method, val) {
         // Coalesce documents and windows
         var win;
         if (isWindow(elem)) {
@@ -8819,32 +8820,32 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   // Blink bug: https://bugs.chromium.org/p/chromium/issues/detail?id=589347
   // getComputedStyle returns percent when specified for top/left/bottom/right;
   // rather than make the css module depend on the offset module, just check for it here
-  _jQuery2.each(["top", "left"], function (_i, prop) {
-    _jQuery2.cssHooks[prop] = addGetHookIf(support.pixelPosition, function (elem, computed) {
+  jQuery.each(["top", "left"], function (_i, prop) {
+    jQuery.cssHooks[prop] = addGetHookIf(support.pixelPosition, function (elem, computed) {
       if (computed) {
         computed = curCSS(elem, prop);
 
         // If curCSS returns percentage, fallback to offset
-        return rnumnonpx.test(computed) ? _jQuery2(elem).position()[prop] + "px" : computed;
+        return rnumnonpx.test(computed) ? jQuery(elem).position()[prop] + "px" : computed;
       }
     });
   });
 
   // Create innerHeight, innerWidth, height, width, outerHeight and outerWidth methods
-  _jQuery2.each({
+  jQuery.each({
     Height: "height",
     Width: "width"
   }, function (name, type) {
-    _jQuery2.each({
+    jQuery.each({
       padding: "inner" + name,
       content: type,
       "": "outer" + name
     }, function (defaultExtra, funcName) {
       // Margin is only for outerHeight, outerWidth
-      _jQuery2.fn[funcName] = function (margin, value) {
+      jQuery.fn[funcName] = function (margin, value) {
         var chainable = arguments.length && (defaultExtra || typeof margin !== "boolean"),
           extra = defaultExtra || (margin === true || value === true ? "margin" : "border");
-        return _access(this, function (elem, type, value) {
+        return access(this, function (elem, type, value) {
           var doc;
           if (isWindow(elem)) {
             // $( window ).outerWidth/Height return w/h including scrollbars (gh-1729)
@@ -8861,19 +8862,19 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           }
           return value === undefined ?
           // Get width or height on the element, requesting but not forcing parseFloat
-          _jQuery2.css(elem, type, extra) :
+          jQuery.css(elem, type, extra) :
           // Set width or height on the element
-          _jQuery2.style(elem, type, value, extra);
+          jQuery.style(elem, type, value, extra);
         }, type, chainable ? margin : undefined, chainable);
       };
     });
   });
-  _jQuery2.each(["ajaxStart", "ajaxStop", "ajaxComplete", "ajaxError", "ajaxSuccess", "ajaxSend"], function (_i, type) {
-    _jQuery2.fn[type] = function (fn) {
+  jQuery.each(["ajaxStart", "ajaxStop", "ajaxComplete", "ajaxError", "ajaxSuccess", "ajaxSend"], function (_i, type) {
+    jQuery.fn[type] = function (fn) {
       return this.on(type, fn);
     };
   });
-  _jQuery2.fn.extend({
+  jQuery.fn.extend({
     bind: function bind(types, data, fn) {
       return this.on(types, null, data, fn);
     },
@@ -8891,9 +8892,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       return this.on("mouseenter", fnOver).on("mouseleave", fnOut || fnOver);
     }
   });
-  _jQuery2.each(("blur focus focusin focusout resize scroll click dblclick " + "mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave " + "change select submit keydown keypress keyup contextmenu").split(" "), function (_i, name) {
+  jQuery.each(("blur focus focusin focusout resize scroll click dblclick " + "mousedown mouseup mousemove mouseover mouseout mouseenter mouseleave " + "change select submit keydown keypress keyup contextmenu").split(" "), function (_i, name) {
     // Handle event binding
-    _jQuery2.fn[name] = function (data, fn) {
+    jQuery.fn[name] = function (data, fn) {
       return arguments.length > 0 ? this.on(name, null, data, fn) : this.trigger(name);
     };
   });
@@ -8908,7 +8909,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   // arguments.
   // jQuery.proxy is deprecated to promote standards (specifically Function#bind)
   // However, it is not slated for removal any time soon
-  _jQuery2.proxy = function (fn, context) {
+  jQuery.proxy = function (fn, context) {
     var tmp, args, proxy;
     if (typeof context === "string") {
       tmp = fn[context];
@@ -8929,36 +8930,36 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     };
 
     // Set the guid of unique handler to the same of original handler, so it can be removed
-    proxy.guid = fn.guid = fn.guid || _jQuery2.guid++;
+    proxy.guid = fn.guid = fn.guid || jQuery.guid++;
     return proxy;
   };
-  _jQuery2.holdReady = function (hold) {
+  jQuery.holdReady = function (hold) {
     if (hold) {
-      _jQuery2.readyWait++;
+      jQuery.readyWait++;
     } else {
-      _jQuery2.ready(true);
+      jQuery.ready(true);
     }
   };
-  _jQuery2.isArray = Array.isArray;
-  _jQuery2.parseJSON = JSON.parse;
-  _jQuery2.nodeName = nodeName;
-  _jQuery2.isFunction = isFunction;
-  _jQuery2.isWindow = isWindow;
-  _jQuery2.camelCase = camelCase;
-  _jQuery2.type = toType;
-  _jQuery2.now = Date.now;
-  _jQuery2.isNumeric = function (obj) {
+  jQuery.isArray = Array.isArray;
+  jQuery.parseJSON = JSON.parse;
+  jQuery.nodeName = nodeName;
+  jQuery.isFunction = isFunction;
+  jQuery.isWindow = isWindow;
+  jQuery.camelCase = camelCase;
+  jQuery.type = toType;
+  jQuery.now = Date.now;
+  jQuery.isNumeric = function (obj) {
     // As of jQuery 3.0, isNumeric is limited to
     // strings and numbers (primitives or objects)
     // that can be coerced to finite numbers (gh-2662)
-    var type = _jQuery2.type(obj);
+    var type = jQuery.type(obj);
     return (type === "number" || type === "string") &&
     // parseFloat NaNs numeric-cast false positives ("")
     // ...but misinterprets leading-number strings, particularly hex literals ("0x...")
     // subtraction forces infinities to NaN
     !isNaN(obj - parseFloat(obj));
   };
-  _jQuery2.trim = function (text) {
+  jQuery.trim = function (text) {
     return text == null ? "" : (text + "").replace(rtrim, "$1");
   };
 
@@ -8977,7 +8978,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 
   if (typeof define === "function" && define.amd) {
     define("jquery", [], function () {
-      return _jQuery2;
+      return jQuery;
     });
   }
   var
@@ -8985,23 +8986,23 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     _jQuery = window.jQuery,
     // Map over the $ in case of overwrite
     _$ = window.$;
-  _jQuery2.noConflict = function (deep) {
-    if (window.$ === _jQuery2) {
+  jQuery.noConflict = function (deep) {
+    if (window.$ === jQuery) {
       window.$ = _$;
     }
-    if (deep && window.jQuery === _jQuery2) {
+    if (deep && window.jQuery === jQuery) {
       window.jQuery = _jQuery;
     }
-    return _jQuery2;
+    return jQuery;
   };
 
   // Expose jQuery and $ identifiers, even in AMD
   // (trac-7102#comment:10, https://github.com/jquery/jquery/pull/557)
   // and CommonJS for browser emulators (trac-13566)
   if (typeof noGlobal === "undefined") {
-    window.jQuery = window.$ = _jQuery2;
+    window.jQuery = window.$ = jQuery;
   }
-  return _jQuery2;
+  return jQuery;
 });
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 /**
@@ -9223,6 +9224,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       getDocumentElement(element) // fallback
     );
   }
+
   function getScrollParent(node) {
     if (['html', 'body', '#document'].indexOf(getNodeName(node)) >= 0) {
       // $FlowFixMe[incompatible-return]: assume body is always available
@@ -10604,35 +10606,34 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     value: true
   });
 });
-function _superPropGet(t, e, r, o) { var p = _get(_getPrototypeOf(1 & o ? t.prototype : t), e, r); return 2 & o ? function (t) { return p.apply(r, t); } : p; }
-function _get() { return _get = "undefined" != typeof Reflect && Reflect.get ? Reflect.get.bind() : function (e, t, r) { var p = _superPropBase(e, t); if (p) { var n = Object.getOwnPropertyDescriptor(p, t); return n.get ? n.get.call(arguments.length < 3 ? e : r) : n.value; } }, _get.apply(null, arguments); }
-function _superPropBase(t, o) { for (; !{}.hasOwnProperty.call(t, o) && null !== (t = _getPrototypeOf(t));); return t; }
-function _callSuper(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
-function _possibleConstructorReturn(t, e) { if (e && ("object" == _typeof(e) || "function" == typeof e)) return e; if (void 0 !== e) throw new TypeError("Derived constructors may only return object or undefined"); return _assertThisInitialized(t); }
-function _assertThisInitialized(e) { if (void 0 === e) throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); return e; }
-function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
-function _getPrototypeOf(t) { return _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function (t) { return t.__proto__ || Object.getPrototypeOf(t); }, _getPrototypeOf(t); }
-function _inherits(t, e) { if ("function" != typeof e && null !== e) throw new TypeError("Super expression must either be null or a function"); t.prototype = Object.create(e && e.prototype, { constructor: { value: t, writable: !0, configurable: !0 } }), Object.defineProperty(t, "prototype", { writable: !1 }), e && _setPrototypeOf(t, e); }
-function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf(object); if (object === null) break; } return object; }
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
-function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
-function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
-function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
-function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
-function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
-function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
-function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 /*!
   * Bootstrap v5.3.3 (https://getbootstrap.com/)
@@ -10644,6 +10645,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 })(this, function (Popper) {
   'use strict';
 
+  var _KEY_TO_DIRECTION;
   function _interopNamespaceDefault(e) {
     var n = Object.create(null, _defineProperty({}, Symbol.toStringTag, {
       value: 'Module'
@@ -10838,7 +10840,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
     return element.hasAttribute('disabled') && element.getAttribute('disabled') !== 'false';
   };
-  var _findShadowRoot = function findShadowRoot(element) {
+  var findShadowRoot = function findShadowRoot(element) {
     if (!document.documentElement.attachShadow) {
       return null;
     }
@@ -10856,7 +10858,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     if (!element.parentNode) {
       return null;
     }
-    return _findShadowRoot(element.parentNode);
+    return findShadowRoot(element.parentNode);
   };
   var noop = function noop() {};
 
@@ -10871,6 +10873,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var reflow = function reflow(element) {
     element.offsetHeight; // eslint-disable-line no-unused-expressions
   };
+
   var getjQuery = function getjQuery() {
     if (window.jQuery && !document.body.hasAttribute('data-bs-no-jquery')) {
       return window.jQuery;
@@ -10927,16 +10930,16 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     var durationPadding = 5;
     var emulatedDuration = getTransitionDurationFromElement(transitionElement) + durationPadding;
     var called = false;
-    var _handler = function handler(_ref) {
+    var handler = function handler(_ref) {
       var target = _ref.target;
       if (target !== transitionElement) {
         return;
       }
       called = true;
-      transitionElement.removeEventListener(TRANSITION_END, _handler);
+      transitionElement.removeEventListener(TRANSITION_END, handler);
       execute(callback);
     };
-    transitionElement.addEventListener(TRANSITION_END, _handler);
+    transitionElement.addEventListener(TRANSITION_END, handler);
     setTimeout(function () {
       if (!called) {
         triggerTransitionEnd(transitionElement);
@@ -11306,7 +11309,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     function Config() {
       _classCallCheck(this, Config);
     }
-    return _createClass(Config, [{
+    _createClass(Config, [{
       key: "_getConfig",
       value: function _getConfig(config) {
         config = this._mergeConfigObj(config);
@@ -11359,6 +11362,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         throw new Error('You have to implement the static method "NAME", for each component!');
       }
     }]);
+    return Config;
   }();
   /**
    * --------------------------------------------------------------------------
@@ -11375,23 +11379,24 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var BaseComponent = /*#__PURE__*/function (_Config) {
+    _inherits(BaseComponent, _Config);
+    var _super = _createSuper(BaseComponent);
     function BaseComponent(element, config) {
       var _this;
       _classCallCheck(this, BaseComponent);
-      _this = _callSuper(this, BaseComponent);
+      _this = _super.call(this);
       element = getElement(element);
       if (!element) {
         return _possibleConstructorReturn(_this);
       }
       _this._element = element;
       _this._config = _this._getConfig(config);
-      Data.set(_this._element, _this.constructor.DATA_KEY, _this);
+      Data.set(_this._element, _this.constructor.DATA_KEY, _assertThisInitialized(_this));
       return _this;
     }
 
     // Public
-    _inherits(BaseComponent, _Config);
-    return _createClass(BaseComponent, [{
+    _createClass(BaseComponent, [{
       key: "dispose",
       value: function dispose() {
         Data.remove(this._element, this.constructor.DATA_KEY);
@@ -11457,6 +11462,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return "".concat(name).concat(this.EVENT_KEY);
       }
     }]);
+    return BaseComponent;
   }(Config);
   /**
    * --------------------------------------------------------------------------
@@ -11607,12 +11613,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Alert = /*#__PURE__*/function (_BaseComponent) {
+    _inherits(Alert, _BaseComponent);
+    var _super2 = _createSuper(Alert);
     function Alert() {
       _classCallCheck(this, Alert);
-      return _callSuper(this, Alert, arguments);
+      return _super2.apply(this, arguments);
     }
-    _inherits(Alert, _BaseComponent);
-    return _createClass(Alert, [{
+    _createClass(Alert, [{
       key: "close",
       value:
       // Public
@@ -11661,6 +11668,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Alert;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -11696,12 +11704,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Button = /*#__PURE__*/function (_BaseComponent2) {
+    _inherits(Button, _BaseComponent2);
+    var _super3 = _createSuper(Button);
     function Button() {
       _classCallCheck(this, Button);
-      return _callSuper(this, Button, arguments);
+      return _super3.apply(this, arguments);
     }
-    _inherits(Button, _BaseComponent2);
-    return _createClass(Button, [{
+    _createClass(Button, [{
       key: "toggle",
       value:
       // Public
@@ -11729,6 +11738,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Button;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -11783,10 +11793,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Swipe = /*#__PURE__*/function (_Config2) {
+    _inherits(Swipe, _Config2);
+    var _super4 = _createSuper(Swipe);
     function Swipe(element, config) {
       var _this3;
       _classCallCheck(this, Swipe);
-      _this3 = _callSuper(this, Swipe);
+      _this3 = _super4.call(this);
       _this3._element = element;
       if (!element || !Swipe.isSupported()) {
         return _possibleConstructorReturn(_this3);
@@ -11799,8 +11811,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Swipe, _Config2);
-    return _createClass(Swipe, [{
+    _createClass(Swipe, [{
       key: "dispose",
       value:
       // Public
@@ -11900,6 +11911,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return 'ontouchstart' in document.documentElement || navigator.maxTouchPoints > 0;
       }
     }]);
+    return Swipe;
   }(Config);
   /**
    * --------------------------------------------------------------------------
@@ -11944,7 +11956,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   var SELECTOR_INDICATORS = '.carousel-indicators';
   var SELECTOR_DATA_SLIDE = '[data-bs-slide], [data-bs-slide-to]';
   var SELECTOR_DATA_RIDE = '[data-bs-ride="carousel"]';
-  var KEY_TO_DIRECTION = _defineProperty(_defineProperty({}, ARROW_LEFT_KEY$1, DIRECTION_RIGHT), ARROW_RIGHT_KEY$1, DIRECTION_LEFT);
+  var KEY_TO_DIRECTION = (_KEY_TO_DIRECTION = {}, _defineProperty(_KEY_TO_DIRECTION, ARROW_LEFT_KEY$1, DIRECTION_RIGHT), _defineProperty(_KEY_TO_DIRECTION, ARROW_RIGHT_KEY$1, DIRECTION_LEFT), _KEY_TO_DIRECTION);
   var Default$b = {
     interval: 5000,
     keyboard: true,
@@ -11967,10 +11979,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Carousel = /*#__PURE__*/function (_BaseComponent3) {
+    _inherits(Carousel, _BaseComponent3);
+    var _super5 = _createSuper(Carousel);
     function Carousel(element, config) {
       var _this5;
       _classCallCheck(this, Carousel);
-      _this5 = _callSuper(this, Carousel, [element, config]);
+      _this5 = _super5.call(this, element, config);
       _this5._interval = null;
       _this5._activeElement = null;
       _this5._isSliding = false;
@@ -11985,8 +11999,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Carousel, _BaseComponent3);
-    return _createClass(Carousel, [{
+    _createClass(Carousel, [{
       key: "next",
       value:
       // Public
@@ -12068,7 +12081,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (this._swipeHelper) {
           this._swipeHelper.dispose();
         }
-        _superPropGet(Carousel, "dispose", this, 3)([]);
+        _get(_getPrototypeOf(Carousel.prototype), "dispose", this).call(this);
       }
 
       // Private
@@ -12320,6 +12333,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Carousel;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -12410,10 +12424,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Collapse = /*#__PURE__*/function (_BaseComponent4) {
+    _inherits(Collapse, _BaseComponent4);
+    var _super6 = _createSuper(Collapse);
     function Collapse(element, config) {
       var _this12;
       _classCallCheck(this, Collapse);
-      _this12 = _callSuper(this, Collapse, [element, config]);
+      _this12 = _super6.call(this, element, config);
       _this12._isTransitioning = false;
       _this12._triggerArray = [];
       var toggleList = SelectorEngine.find(SELECTOR_DATA_TOGGLE$4);
@@ -12446,8 +12462,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Collapse, _BaseComponent4);
-    return _createClass(Collapse, [{
+    _createClass(Collapse, [{
       key: "toggle",
       value:
       // Public
@@ -12662,6 +12677,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Collapse;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -12762,10 +12778,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Dropdown = /*#__PURE__*/function (_BaseComponent5) {
+    _inherits(Dropdown, _BaseComponent5);
+    var _super7 = _createSuper(Dropdown);
     function Dropdown(element, config) {
       var _this15;
       _classCallCheck(this, Dropdown);
-      _this15 = _callSuper(this, Dropdown, [element, config]);
+      _this15 = _super7.call(this, element, config);
       _this15._popper = null;
       _this15._parent = _this15._element.parentNode; // dropdown wrapper
       // TODO: v6 revert #37011 & change markup https://getbootstrap.com/docs/5.3/forms/input-group/
@@ -12775,8 +12793,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Dropdown, _BaseComponent5);
-    return _createClass(Dropdown, [{
+    _createClass(Dropdown, [{
       key: "toggle",
       value:
       // Public
@@ -12840,7 +12857,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (this._popper) {
           this._popper.destroy();
         }
-        _superPropGet(Dropdown, "dispose", this, 3)([]);
+        _get(_getPrototypeOf(Dropdown.prototype), "dispose", this).call(this);
       }
     }, {
       key: "update",
@@ -12889,7 +12906,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }, {
       key: "_getConfig",
       value: function _getConfig(config) {
-        config = _superPropGet(Dropdown, "_getConfig", this, 3)([config]);
+        config = _get(_getPrototypeOf(Dropdown.prototype), "_getConfig", this).call(this, config);
         if (_typeof(config.reference) === 'object' && !isElement(config.reference) && typeof config.reference.getBoundingClientRect !== 'function') {
           // Popper virtual elements require a getBoundingClientRect method
           throw new TypeError("".concat(NAME$a.toUpperCase(), ": Option \"reference\" provided type \"object\" without a required \"getBoundingClientRect\" method."));
@@ -13113,6 +13130,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
     }]);
+    return Dropdown;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -13155,6 +13173,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     // if false, we use the backdrop helper without adding any element to the dom
     rootElement: 'body' // give the choice to place backdrop under different elements
   };
+
   var DefaultType$8 = {
     className: 'string',
     clickCallback: '(function|null)',
@@ -13167,10 +13186,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Backdrop = /*#__PURE__*/function (_Config3) {
+    _inherits(Backdrop, _Config3);
+    var _super8 = _createSuper(Backdrop);
     function Backdrop(config) {
       var _this17;
       _classCallCheck(this, Backdrop);
-      _this17 = _callSuper(this, Backdrop);
+      _this17 = _super8.call(this);
       _this17._config = _this17._getConfig(config);
       _this17._isAppended = false;
       _this17._element = null;
@@ -13178,8 +13199,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Backdrop, _Config3);
-    return _createClass(Backdrop, [{
+    _createClass(Backdrop, [{
       key: "show",
       value:
       // Public
@@ -13279,6 +13299,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return NAME$9;
       }
     }]);
+    return Backdrop;
   }(Config);
   /**
    * --------------------------------------------------------------------------
@@ -13301,6 +13322,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     autofocus: true,
     trapElement: null // The element to trap focus inside of
   };
+
   var DefaultType$7 = {
     autofocus: 'boolean',
     trapElement: 'element'
@@ -13310,10 +13332,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var FocusTrap = /*#__PURE__*/function (_Config4) {
+    _inherits(FocusTrap, _Config4);
+    var _super9 = _createSuper(FocusTrap);
     function FocusTrap(config) {
       var _this20;
       _classCallCheck(this, FocusTrap);
-      _this20 = _callSuper(this, FocusTrap);
+      _this20 = _super9.call(this);
       _this20._config = _this20._getConfig(config);
       _this20._isActive = false;
       _this20._lastTabNavDirection = null;
@@ -13321,8 +13345,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(FocusTrap, _Config4);
-    return _createClass(FocusTrap, [{
+    _createClass(FocusTrap, [{
       key: "activate",
       value:
       // Public
@@ -13394,6 +13417,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return NAME$8;
       }
     }]);
+    return FocusTrap;
   }(Config);
   /**
    * --------------------------------------------------------------------------
@@ -13419,7 +13443,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Public
-    return _createClass(ScrollBarHelper, [{
+    _createClass(ScrollBarHelper, [{
       key: "getWidth",
       value: function getWidth() {
         // https://developer.mozilla.org/en-US/docs/Web/API/Window/innerWidth#usage_notes
@@ -13523,6 +13547,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       }
     }]);
+    return ScrollBarHelper;
   }();
   /**
    * --------------------------------------------------------------------------
@@ -13571,10 +13596,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Modal = /*#__PURE__*/function (_BaseComponent6) {
+    _inherits(Modal, _BaseComponent6);
+    var _super10 = _createSuper(Modal);
     function Modal(element, config) {
       var _this23;
       _classCallCheck(this, Modal);
-      _this23 = _callSuper(this, Modal, [element, config]);
+      _this23 = _super10.call(this, element, config);
       _this23._dialog = SelectorEngine.findOne(SELECTOR_DIALOG, _this23._element);
       _this23._backdrop = _this23._initializeBackDrop();
       _this23._focustrap = _this23._initializeFocusTrap();
@@ -13586,8 +13613,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Modal, _BaseComponent6);
-    return _createClass(Modal, [{
+    _createClass(Modal, [{
       key: "toggle",
       value:
       // Public
@@ -13642,7 +13668,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         EventHandler.off(this._dialog, EVENT_KEY$4);
         this._backdrop.dispose();
         this._focustrap.deactivate();
-        _superPropGet(Modal, "dispose", this, 3)([]);
+        _get(_getPrototypeOf(Modal.prototype), "dispose", this).call(this);
       }
     }, {
       key: "handleUpdate",
@@ -13836,6 +13862,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Modal;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -13920,10 +13947,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Offcanvas = /*#__PURE__*/function (_BaseComponent7) {
+    _inherits(Offcanvas, _BaseComponent7);
+    var _super11 = _createSuper(Offcanvas);
     function Offcanvas(element, config) {
       var _this31;
       _classCallCheck(this, Offcanvas);
-      _this31 = _callSuper(this, Offcanvas, [element, config]);
+      _this31 = _super11.call(this, element, config);
       _this31._isShown = false;
       _this31._backdrop = _this31._initializeBackDrop();
       _this31._focustrap = _this31._initializeFocusTrap();
@@ -13932,8 +13961,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Offcanvas, _BaseComponent7);
-    return _createClass(Offcanvas, [{
+    _createClass(Offcanvas, [{
       key: "toggle",
       value:
       // Public
@@ -14005,7 +14033,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       value: function dispose() {
         this._backdrop.dispose();
         this._focustrap.deactivate();
-        _superPropGet(Offcanvas, "dispose", this, 3)([]);
+        _get(_getPrototypeOf(Offcanvas.prototype), "dispose", this).call(this);
       }
 
       // Private
@@ -14085,6 +14113,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Offcanvas;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -14311,17 +14340,18 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var TemplateFactory = /*#__PURE__*/function (_Config5) {
+    _inherits(TemplateFactory, _Config5);
+    var _super12 = _createSuper(TemplateFactory);
     function TemplateFactory(config) {
       var _this37;
       _classCallCheck(this, TemplateFactory);
-      _this37 = _callSuper(this, TemplateFactory);
+      _this37 = _super12.call(this);
       _this37._config = _this37._getConfig(config);
       return _this37;
     }
 
     // Getters
-    _inherits(TemplateFactory, _Config5);
-    return _createClass(TemplateFactory, [{
+    _createClass(TemplateFactory, [{
       key: "getContent",
       value:
       // Public
@@ -14367,7 +14397,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }, {
       key: "_typeCheckConfig",
       value: function _typeCheckConfig(config) {
-        _superPropGet(TemplateFactory, "_typeCheckConfig", this, 3)([config]);
+        _get(_getPrototypeOf(TemplateFactory.prototype), "_typeCheckConfig", this).call(this, config);
         this._checkContent(config.content);
       }
     }, {
@@ -14377,10 +14407,10 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           var _Object$entries6$_i = _slicedToArray(_Object$entries6[_i8], 2),
             selector = _Object$entries6$_i[0],
             content = _Object$entries6$_i[1];
-          _superPropGet(TemplateFactory, "_typeCheckConfig", this, 3)([{
+          _get(_getPrototypeOf(TemplateFactory.prototype), "_typeCheckConfig", this).call(this, {
             selector: selector,
             entry: content
-          }, DefaultContentType]);
+          }, DefaultContentType);
         }
       }
     }, {
@@ -14441,6 +14471,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         return NAME$5;
       }
     }]);
+    return TemplateFactory;
   }(Config);
   /**
    * --------------------------------------------------------------------------
@@ -14523,13 +14554,15 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Tooltip = /*#__PURE__*/function (_BaseComponent8) {
+    _inherits(Tooltip, _BaseComponent8);
+    var _super13 = _createSuper(Tooltip);
     function Tooltip(element, config) {
       var _this39;
       _classCallCheck(this, Tooltip);
       if (typeof Popper__namespace === 'undefined') {
         throw new TypeError('Bootstrap\'s tooltips require Popper (https://popper.js.org)');
       }
-      _this39 = _callSuper(this, Tooltip, [element, config]);
+      _this39 = _super13.call(this, element, config);
 
       // Private
       _this39._isEnabled = true;
@@ -14550,8 +14583,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Tooltip, _BaseComponent8);
-    return _createClass(Tooltip, [{
+    _createClass(Tooltip, [{
       key: "enable",
       value:
       // Public
@@ -14590,7 +14622,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           this._element.setAttribute('title', this._element.getAttribute('data-bs-original-title'));
         }
         this._disposePopper();
-        _superPropGet(Tooltip, "dispose", this, 3)([]);
+        _get(_getPrototypeOf(Tooltip.prototype), "dispose", this).call(this);
       }
     }, {
       key: "show",
@@ -14603,7 +14635,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
           return;
         }
         var showEvent = EventHandler.trigger(this._element, this.constructor.eventName(EVENT_SHOW$2));
-        var shadowRoot = _findShadowRoot(this._element);
+        var shadowRoot = findShadowRoot(this._element);
         var isInTheDom = (shadowRoot || this._element.ownerDocument.documentElement).contains(this._element);
         if (showEvent.defaultPrevented || !isInTheDom) {
           return;
@@ -15050,6 +15082,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Tooltip;
   }(BaseComponent);
   /**
    * jQuery
@@ -15085,12 +15118,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Popover = /*#__PURE__*/function (_Tooltip) {
+    _inherits(Popover, _Tooltip);
+    var _super14 = _createSuper(Popover);
     function Popover() {
       _classCallCheck(this, Popover);
-      return _callSuper(this, Popover, arguments);
+      return _super14.apply(this, arguments);
     }
-    _inherits(Popover, _Tooltip);
-    return _createClass(Popover, [{
+    _createClass(Popover, [{
       key: "_isWithContent",
       value:
       // Overrides
@@ -15102,7 +15136,8 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }, {
       key: "_getContentForTemplate",
       value: function _getContentForTemplate() {
-        return _defineProperty(_defineProperty({}, SELECTOR_TITLE, this._getTitle()), SELECTOR_CONTENT, this._getContent());
+        var _ref12;
+        return _ref12 = {}, _defineProperty(_ref12, SELECTOR_TITLE, this._getTitle()), _defineProperty(_ref12, SELECTOR_CONTENT, this._getContent()), _ref12;
       }
     }, {
       key: "_getContent",
@@ -15143,6 +15178,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Popover;
   }(Tooltip);
   /**
    * jQuery
@@ -15199,10 +15235,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var ScrollSpy = /*#__PURE__*/function (_BaseComponent9) {
+    _inherits(ScrollSpy, _BaseComponent9);
+    var _super15 = _createSuper(ScrollSpy);
     function ScrollSpy(element, config) {
       var _this47;
       _classCallCheck(this, ScrollSpy);
-      _this47 = _callSuper(this, ScrollSpy, [element, config]);
+      _this47 = _super15.call(this, element, config);
 
       // this._element is the observablesContainer and config.target the menu links wrapper
       _this47._targetLinks = new Map();
@@ -15219,8 +15257,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(ScrollSpy, _BaseComponent9);
-    return _createClass(ScrollSpy, [{
+    _createClass(ScrollSpy, [{
       key: "refresh",
       value:
       // Public
@@ -15249,7 +15286,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
       key: "dispose",
       value: function dispose() {
         this._observer.disconnect();
-        _superPropGet(ScrollSpy, "dispose", this, 3)([]);
+        _get(_getPrototypeOf(ScrollSpy.prototype), "dispose", this).call(this);
       }
 
       // Private
@@ -15485,6 +15522,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return ScrollSpy;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -15555,10 +15593,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Tab = /*#__PURE__*/function (_BaseComponent10) {
+    _inherits(Tab, _BaseComponent10);
+    var _super16 = _createSuper(Tab);
     function Tab(element) {
       var _this51;
       _classCallCheck(this, Tab);
-      _this51 = _callSuper(this, Tab, [element]);
+      _this51 = _super16.call(this, element);
       _this51._parent = _this51._element.closest(SELECTOR_TAB_PANEL);
       if (!_this51._parent) {
         return _possibleConstructorReturn(_this51);
@@ -15575,8 +15615,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Tab, _BaseComponent10);
-    return _createClass(Tab, [{
+    _createClass(Tab, [{
       key: "show",
       value:
       // Public
@@ -15803,6 +15842,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Tab;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -15881,10 +15921,12 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
    * Class definition
    */
   var Toast = /*#__PURE__*/function (_BaseComponent11) {
+    _inherits(Toast, _BaseComponent11);
+    var _super17 = _createSuper(Toast);
     function Toast(element, config) {
       var _this55;
       _classCallCheck(this, Toast);
-      _this55 = _callSuper(this, Toast, [element, config]);
+      _this55 = _super17.call(this, element, config);
       _this55._timeout = null;
       _this55._hasMouseInteraction = false;
       _this55._hasKeyboardInteraction = false;
@@ -15893,8 +15935,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
     }
 
     // Getters
-    _inherits(Toast, _BaseComponent11);
-    return _createClass(Toast, [{
+    _createClass(Toast, [{
       key: "show",
       value:
       // Public
@@ -15944,7 +15985,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         if (this.isShown()) {
           this._element.classList.remove(CLASS_NAME_SHOW);
         }
-        _superPropGet(Toast, "dispose", this, 3)([]);
+        _get(_getPrototypeOf(Toast.prototype), "dispose", this).call(this);
       }
     }, {
       key: "isShown",
@@ -16048,6 +16089,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         });
       }
     }]);
+    return Toast;
   }(BaseComponent);
   /**
    * Data API implementation
@@ -16172,6 +16214,7 @@ function togglePasswordVisibility(passwordCtl, togglePasswordCtl) {
       if (value == 0) {
         return ''; // grayed
       }
+
       return "bg-danger";
     }
     function checkStrength(value) {

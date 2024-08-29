@@ -429,6 +429,7 @@
       this._sort_current = this.domPosition.prev ? $(this.domPosition.prev).next().index() : 0;
       $.ui.sortable.prototype._mouseStop.apply(this, arguments); //asybnchronous execution, @see _clear for the relocate event.
     },
+
     // mjs - this function is slightly modified
     // to make it easier to hover over a collapsed element and have it expand
     _intersectsWithSides: function _intersectsWithSides(item) {
@@ -496,6 +497,7 @@
         if (data.nestedSortableItem) {
           delete data.nestedSortableItem; // Remove the nestedSortableItem object from the data
         }
+
         if (id) {
           currentItem = {
             "id": id[2]
