@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text.Json;
 
 namespace OrchardCore.Json.Extensions;
@@ -10,32 +9,37 @@ public static class JsonSerializerOptionsExtensions
     /// </summary>
     public static JsonSerializerOptions Merge(this JsonSerializerOptions destination, JsonSerializerOptions source)
     {
-        var properties = typeof(JsonSerializerOptions)
-            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(p => p.CanWrite && p.CanRead);
+        destination.DefaultIgnoreCondition = source.DefaultIgnoreCondition;
+        destination.ReferenceHandler = source.ReferenceHandler;
+        destination.ReadCommentHandling = source.ReadCommentHandling;
+        destination.PropertyNameCaseInsensitive = source.PropertyNameCaseInsensitive;
+        destination.AllowTrailingCommas = source.AllowTrailingCommas;
+        destination.WriteIndented = source.WriteIndented;
+        destination.PropertyNamingPolicy = source.PropertyNamingPolicy;
+        destination.Encoder = source.Encoder;
+        destination.TypeInfoResolver = source.TypeInfoResolver;
+        destination.PreferredObjectCreationHandling = source.PreferredObjectCreationHandling;
 
-        foreach (var property in properties)
+        foreach (var resolver in source.TypeInfoResolverChain)
         {
-            var sourceValue = property.GetValue(source);
-            property.SetValue(destination, sourceValue);
-        }
-
-        MergeCollections(destination.TypeInfoResolverChain, source.TypeInfoResolverChain);
-        MergeCollections(destination.Converters, source.Converters);
-
-        return destination;
-    }
-
-    private static void MergeCollections<T>(IList<T> destination, IList<T> source)
-    {
-        foreach (var item in source)
-        {
-            if (destination.Contains(item))
+            if (destination.TypeInfoResolverChain.Contains(resolver))
             {
                 continue;
             }
 
-            destination.Add(item);
+            destination.TypeInfoResolverChain.Add(resolver);
         }
+
+        foreach (var converter in source.Converters)
+        {
+            if (destination.Converters.Contains(converter))
+            {
+                continue;
+            }
+
+            destination.Converters.Add(converter);
+        }
+
+        return destination;
     }
 }
