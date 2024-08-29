@@ -1,67 +1,63 @@
-using System;
 using System.Globalization;
-using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Facebook
+namespace OrchardCore.Facebook;
+
+public class ScriptsMiddleware
 {
-    public class ScriptsMiddleware
+    private readonly RequestDelegate _next;
+    private readonly ISiteService _siteService;
+
+    public ScriptsMiddleware(RequestDelegate next, ISiteService siteService)
     {
-        private readonly RequestDelegate _next;
-        private readonly ISiteService _siteService;
+        _next = next;
+        _siteService = siteService;
+    }
 
-        public ScriptsMiddleware(RequestDelegate next, ISiteService siteService)
+    public async Task Invoke(HttpContext httpContext)
+    {
+        ArgumentNullException.ThrowIfNull(httpContext);
+
+        if (httpContext.Request.Path.StartsWithSegments("/OrchardCore.Facebook/sdk", StringComparison.OrdinalIgnoreCase))
         {
-            _next = next;
-            _siteService = siteService;
-        }
+            var script = default(string);
+            var settings = await _siteService.GetSettingsAsync<FacebookSettings>();
 
-        public async Task Invoke(HttpContext httpContext)
-        {
-            ArgumentNullException.ThrowIfNull(httpContext);
-
-            if (httpContext.Request.Path.StartsWithSegments("/OrchardCore.Facebook/sdk", StringComparison.OrdinalIgnoreCase))
+            if (Path.GetFileName(httpContext.Request.Path.Value) == "fbsdk.js")
             {
-                var script = default(string);
-                var settings = await _siteService.GetSettingsAsync<FacebookSettings>();
-
-                if (Path.GetFileName(httpContext.Request.Path.Value) == "fbsdk.js")
-                {
-                    var locale = CultureInfo.CurrentUICulture.Name.Replace('-', '_');
-                    script = $@"(function(d){{
+                var locale = CultureInfo.CurrentUICulture.Name.Replace('-', '_');
+                script = $@"(function(d){{
                         var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {{ return; }}
                         js = d.createElement('script'); js.id = id; js.async = true;
                         js.src = ""https://connect.facebook.net/{locale}/{settings.SdkJs}"";
                         d.getElementsByTagName('head')[0].appendChild(js);
                     }} (document));";
-                }
-                else if (Path.GetFileName(httpContext.Request.Path.Value) == "fb.js")
+            }
+            else if (Path.GetFileName(httpContext.Request.Path.Value) == "fb.js")
+            {
+                if (!string.IsNullOrWhiteSpace(settings?.AppId))
                 {
-                    if (!string.IsNullOrWhiteSpace(settings?.AppId))
-                    {
-                        var options = $"{{ appId:'{settings.AppId}',version:'{settings.Version}'";
-                        options = string.IsNullOrWhiteSpace(settings.FBInitParams)
-                            ? string.Concat(options, "}")
-                            : string.Concat(options, ",", settings.FBInitParams, "}");
+                    var options = $"{{ appId:'{settings.AppId}',version:'{settings.Version}'";
+                    options = string.IsNullOrWhiteSpace(settings.FBInitParams)
+                        ? string.Concat(options, "}")
+                        : string.Concat(options, ",", settings.FBInitParams, "}");
 
-                        script = $"window.fbAsyncInit = function(){{ FB.init({options});}};";
-                    }
-                }
-
-                if (script != null)
-                {
-                    var bytes = Encoding.UTF8.GetBytes(script);
-                    await httpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(script).AsMemory(0, bytes.Length), httpContext.RequestAborted);
-
-                    return;
+                    script = $"window.fbAsyncInit = function(){{ FB.init({options});}};";
                 }
             }
 
-            await _next.Invoke(httpContext);
+            if (script != null)
+            {
+                var bytes = Encoding.UTF8.GetBytes(script);
+                await httpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(script).AsMemory(0, bytes.Length), httpContext.RequestAborted);
+
+                return;
+            }
         }
+
+        await _next.Invoke(httpContext);
     }
 }

@@ -14,6 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ZString" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
   </ItemGroup>
 

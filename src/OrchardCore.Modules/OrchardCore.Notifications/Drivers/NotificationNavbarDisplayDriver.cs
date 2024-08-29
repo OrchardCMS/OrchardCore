@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +12,7 @@ using YesSql;
 
 namespace OrchardCore.Notifications.Drivers;
 
-public class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
+public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -32,7 +31,7 @@ public class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
         _session = session;
     }
 
-    public override IDisplayResult Display(Navbar model)
+    public override IDisplayResult Display(Navbar model, BuildDisplayContext context)
     {
         return Initialize<UserNotificationNavbarViewModel>("UserNotificationNavbar", async model =>
         {

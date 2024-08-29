@@ -1,7 +1,5 @@
-using System.Linq;
 using System.Security.Claims;
 using System.Text.Json.Settings;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -44,6 +42,11 @@ public static class CreateEndpoint
         if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi))
         {
             return httpContext.ChallengeOrForbid("Api");
+        }
+
+        if (model is null)
+        {
+            return TypedResults.BadRequest();
         }
 
         var contentItem = await contentManager.GetAsync(model.ContentItemId, VersionOptions.DraftRequired);

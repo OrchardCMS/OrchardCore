@@ -1,8 +1,5 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.AspNetCore.DataProtection;
@@ -15,116 +12,115 @@ using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.Signin.Services;
 using OrchardCore.Twitter.Signin.Settings;
 
-namespace OrchardCore.Twitter.Signin.Configuration
+namespace OrchardCore.Twitter.Signin.Configuration;
+
+public class TwitterOptionsConfiguration :
+    IConfigureOptions<AuthenticationOptions>,
+    IConfigureNamedOptions<TwitterOptions>
 {
-    public class TwitterOptionsConfiguration :
-        IConfigureOptions<AuthenticationOptions>,
-        IConfigureNamedOptions<TwitterOptions>
+    private readonly ITwitterSettingsService _twitterService;
+    private readonly ITwitterSigninService _twitterSigninService;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly ShellSettings _shellSettings;
+    private readonly string _tenantPrefix;
+    private readonly ILogger _logger;
+
+    public TwitterOptionsConfiguration(
+        ITwitterSettingsService twitterService,
+        ITwitterSigninService twitterSigninService,
+        IDataProtectionProvider dataProtectionProvider,
+        IHttpContextAccessor httpContextAccessor,
+        ShellSettings shellSettings,
+        ILogger<TwitterOptionsConfiguration> logger)
     {
-        private readonly ITwitterSettingsService _twitterService;
-        private readonly ITwitterSigninService _twitterSigninService;
-        private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ShellSettings _shellSettings;
-        private readonly string _tenantPrefix;
-        private readonly ILogger _logger;
+        _twitterService = twitterService;
+        _twitterSigninService = twitterSigninService;
+        _dataProtectionProvider = dataProtectionProvider;
+        _shellSettings = shellSettings;
 
-        public TwitterOptionsConfiguration(
-            ITwitterSettingsService twitterService,
-            ITwitterSigninService twitterSigninService,
-            IDataProtectionProvider dataProtectionProvider,
-            IHttpContextAccessor httpContextAccessor,
-            ShellSettings shellSettings,
-            ILogger<TwitterOptionsConfiguration> logger)
+        var pathBase = httpContextAccessor.HttpContext?.Request.PathBase ?? PathString.Empty;
+        if (!pathBase.HasValue)
         {
-            _twitterService = twitterService;
-            _twitterSigninService = twitterSigninService;
-            _dataProtectionProvider = dataProtectionProvider;
-            _shellSettings = shellSettings;
-
-            var pathBase = httpContextAccessor.HttpContext?.Request.PathBase ?? PathString.Empty;
-            if (!pathBase.HasValue)
-            {
-                pathBase = "/";
-            }
-
-            _tenantPrefix = pathBase;
-            _logger = logger;
+            pathBase = "/";
         }
 
-        public void Configure(AuthenticationOptions options)
+        _tenantPrefix = pathBase;
+        _logger = logger;
+    }
+
+    public void Configure(AuthenticationOptions options)
+    {
+        var settings = GetSettingsAsync().GetAwaiter().GetResult();
+        if (settings == null)
         {
-            var settings = GetSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
-            {
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(settings.Item1.ConsumerKey) ||
-                string.IsNullOrWhiteSpace(settings.Item1.ConsumerSecret))
-            {
-                _logger.LogWarning("The Twitter login provider is enabled but not configured.");
-
-                return;
-            }
-
-            options.AddScheme(TwitterDefaults.AuthenticationScheme, builder =>
-            {
-                builder.DisplayName = "Twitter";
-                builder.HandlerType = typeof(TwitterHandler);
-            });
+            return;
         }
 
-        public void Configure(string name, TwitterOptions options)
+        if (string.IsNullOrWhiteSpace(settings.Item1.ConsumerKey) ||
+            string.IsNullOrWhiteSpace(settings.Item1.ConsumerSecret))
         {
-            if (!string.Equals(name, TwitterDefaults.AuthenticationScheme, StringComparison.Ordinal))
-            {
-                return;
-            }
+            _logger.LogWarning("The X (Twitter) login provider is enabled but not configured.");
 
-            var settings = GetSettingsAsync().GetAwaiter().GetResult();
-            if (settings is null)
-            {
-                return;
-            }
-
-            options.ConsumerKey = settings.Item1.ConsumerKey;
-            try
-            {
-                options.ConsumerSecret = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter).Unprotect(settings.Item1.ConsumerSecret);
-            }
-            catch
-            {
-                _logger.LogError("The Twitter Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
-            }
-
-            if (settings.Item2.CallbackPath.HasValue)
-            {
-                options.CallbackPath = settings.Item2.CallbackPath;
-            }
-
-            options.RetrieveUserDetails = true;
-            options.SignInScheme = "Identity.External";
-            options.StateCookie.Path = _tenantPrefix;
-            options.SaveTokens = settings.Item2.SaveTokens;
+            return;
         }
 
-        public void Configure(TwitterOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
-
-        private async Task<Tuple<TwitterSettings, TwitterSigninSettings>> GetSettingsAsync()
+        options.AddScheme(TwitterDefaults.AuthenticationScheme, builder =>
         {
-            var settings = await _twitterService.GetSettingsAsync();
-            if ((_twitterService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
-            {
-                if (_shellSettings.IsRunning())
-                {
-                    _logger.LogWarning("Integration with Twitter is not correctly configured.");
-                }
+            builder.DisplayName = "X (Twitter)";
+            builder.HandlerType = typeof(TwitterHandler);
+        });
+    }
 
-                return null;
+    public void Configure(string name, TwitterOptions options)
+    {
+        if (!string.Equals(name, TwitterDefaults.AuthenticationScheme, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        var settings = GetSettingsAsync().GetAwaiter().GetResult();
+        if (settings is null)
+        {
+            return;
+        }
+
+        options.ConsumerKey = settings.Item1.ConsumerKey;
+        try
+        {
+            options.ConsumerSecret = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter).Unprotect(settings.Item1.ConsumerSecret);
+        }
+        catch
+        {
+            _logger.LogError("The X (Twitter) Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
+        }
+
+        if (settings.Item2.CallbackPath.HasValue)
+        {
+            options.CallbackPath = settings.Item2.CallbackPath;
+        }
+
+        options.RetrieveUserDetails = true;
+        options.SignInScheme = "Identity.External";
+        options.StateCookie.Path = _tenantPrefix;
+        options.SaveTokens = settings.Item2.SaveTokens;
+    }
+
+    public void Configure(TwitterOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
+
+    private async Task<Tuple<TwitterSettings, TwitterSigninSettings>> GetSettingsAsync()
+    {
+        var settings = await _twitterService.GetSettingsAsync();
+        if ((_twitterService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
+        {
+            if (_shellSettings.IsRunning())
+            {
+                _logger.LogWarning("Integration with X (Twitter) is not correctly configured.");
             }
 
-            var signInSettings = await _twitterSigninService.GetSettingsAsync();
-            return new Tuple<TwitterSettings, TwitterSigninSettings>(settings, signInSettings);
+            return null;
         }
+
+        var signInSettings = await _twitterSigninService.GetSettingsAsync();
+        return new Tuple<TwitterSettings, TwitterSigninSettings>(settings, signInSettings);
     }
 }

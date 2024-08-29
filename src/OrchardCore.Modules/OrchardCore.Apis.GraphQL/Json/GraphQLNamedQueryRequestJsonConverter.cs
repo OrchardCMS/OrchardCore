@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using GraphQL;
@@ -11,25 +10,25 @@ public class GraphQLNamedQueryRequestJsonConverter : JsonConverter<GraphQLNamedQ
 
     /// <summary>
     /// Name for the operation name parameter.
-    /// See https://github.com/graphql/graphql-over-http/blob/master/spec/GraphQLOverHTTP.md#request-parameters
+    /// See https://github.com/graphql/graphql-over-http/blob/master/spec/GraphQLOverHTTP.md#request-parameters.
     /// </summary>
     private const string _operationNameKey = "operationName";
 
     /// <summary>
     /// Name for the query parameter.
-    /// See https://github.com/graphql/graphql-over-http/blob/master/spec/GraphQLOverHTTP.md#request-parameters
+    /// See https://github.com/graphql/graphql-over-http/blob/master/spec/GraphQLOverHTTP.md#request-parameters.
     /// </summary>
     private const string _queryKey = "query";
 
     /// <summary>
     /// Name for the variables parameter.
-    /// See https://github.com/graphql/graphql-over-http/blob/master/spec/GraphQLOverHTTP.md#request-parameters
+    /// See https://github.com/graphql/graphql-over-http/blob/master/spec/GraphQLOverHTTP.md#request-parameters.
     /// </summary>
     private const string _variablesKey = "variables";
 
     /// <summary>
     /// Name for the extensions parameter.
-    /// See https://github.com/graphql/graphql-over-http/blob/master/spec/GraphQLOverHTTP.md#request-parameters
+    /// See https://github.com/graphql/graphql-over-http/blob/master/spec/GraphQLOverHTTP.md#request-parameters.
     /// </summary>
     private const string _extensionsKey = "extensions";
 
@@ -99,7 +98,9 @@ public class GraphQLNamedQueryRequestJsonConverter : JsonConverter<GraphQLNamedQ
 
             // Unexpected end of data.
             if (!reader.Read())
+            {
                 throw new JsonException();
+            }
 
             switch (key)
             {

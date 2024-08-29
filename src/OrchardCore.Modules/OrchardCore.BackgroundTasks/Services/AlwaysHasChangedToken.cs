@@ -1,39 +1,37 @@
-using System;
 using Microsoft.Extensions.Primitives;
 
-namespace OrchardCore.BackgroundTasks.Services
+namespace OrchardCore.BackgroundTasks.Services;
+
+/// <summary>
+/// An empty change token that is always in the changed state but without raising any change callbacks.
+/// </summary>
+internal sealed class AlwaysHasChangedToken : IChangeToken
 {
-    /// <summary>
-    /// An empty change token that is always in the changed state but without raising any change callbacks.
-    /// </summary>
-    internal sealed class AlwaysHasChangedToken : IChangeToken
+    public static AlwaysHasChangedToken Singleton { get; } = new AlwaysHasChangedToken();
+
+    private AlwaysHasChangedToken()
     {
-        public static AlwaysHasChangedToken Singleton { get; } = new AlwaysHasChangedToken();
-
-        private AlwaysHasChangedToken()
-        {
-        }
-
-        public bool HasChanged => true;
-
-        public bool ActiveChangeCallbacks => false;
-
-        public IDisposable RegisterChangeCallback(Action<object> callback, object state)
-        {
-            return EmptyDisposable.Instance;
-        }
     }
 
-    internal sealed class EmptyDisposable : IDisposable
+    public bool HasChanged => true;
+
+    public bool ActiveChangeCallbacks => false;
+
+    public IDisposable RegisterChangeCallback(Action<object> callback, object state)
     {
-        public static EmptyDisposable Instance { get; } = new EmptyDisposable();
+        return EmptyDisposable.Instance;
+    }
+}
 
-        private EmptyDisposable()
-        {
-        }
+internal sealed class EmptyDisposable : IDisposable
+{
+    public static EmptyDisposable Instance { get; } = new EmptyDisposable();
 
-        public void Dispose()
-        {
-        }
+    private EmptyDisposable()
+    {
+    }
+
+    public void Dispose()
+    {
     }
 }

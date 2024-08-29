@@ -1,10 +1,6 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+namespace OrchardCore.Shortcodes.Services;
 
-namespace OrchardCore.Shortcodes.Services
+public interface IShortcodeDescriptorProvider
 {
-    public interface IShortcodeDescriptorProvider
-    {
-        Task<IEnumerable<ShortcodeDescriptor>> DiscoverAsync();
-    }
+    Task<IEnumerable<ShortcodeDescriptor>> DiscoverAsync();
 }

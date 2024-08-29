@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using Elasticsearch.Net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -62,7 +60,7 @@ public sealed class ElasticConnectionOptionsConfigurations : IConfigureOptions<E
             optionsAreValid = false;
         }
 
-        if (elasticConnectionOptions.Ports?.Length == 0)
+        if (elasticConnectionOptions.Ports == null || elasticConnectionOptions.Ports.Length == 0)
         {
             _logger.LogError("Elasticsearch is enabled but not active because a port is missing in application configuration.");
             optionsAreValid = false;

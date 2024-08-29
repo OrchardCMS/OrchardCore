@@ -1,6 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -47,7 +45,7 @@ public sealed class TwitterSettingsConfiguration : IConfigureOptions<TwitterSett
         {
             if (_shellSettings.IsRunning())
             {
-                _logger.LogWarning("Twitter is not correctly configured.");
+                _logger.LogWarning("X (Twitter) is not correctly configured.");
             }
 
             return null;

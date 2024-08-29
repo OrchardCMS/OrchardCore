@@ -8,21 +8,20 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Features
-{
-    /// <summary>
-    /// These services are registered on the tenant service collection.
-    /// </summary>
-    public sealed class Startup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRecipeExecutionStep<FeatureStep>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<IModuleService, ModuleService>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
+namespace OrchardCore.Features;
 
-            services.AddDeployment<AllFeaturesDeploymentSource, AllFeaturesDeploymentStep, AllFeaturesDeploymentStepDriver>();
-        }
+/// <summary>
+/// These services are registered on the tenant service collection.
+/// </summary>
+public sealed class Startup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRecipeExecutionStep<FeatureStep>();
+        services.AddPermissionProvider<Permissions>();
+        services.AddScoped<IModuleService, ModuleService>();
+        services.AddNavigationProvider<AdminMenu>();
+
+        services.AddDeployment<AllFeaturesDeploymentSource, AllFeaturesDeploymentStep, AllFeaturesDeploymentStepDriver>();
     }
 }

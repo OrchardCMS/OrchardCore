@@ -1,10 +1,5 @@
-using Json.Path;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text.Json.Settings;
-using System.Threading;
-using System.Threading.Tasks;
+using Json.Path;
 
 #nullable enable
 
@@ -187,7 +182,7 @@ public static class JNode
         ArgumentNullException.ThrowIfNull(path);
 
         path = path.Trim();
-        if (string.IsNullOrEmpty(path)) 
+        if (string.IsNullOrEmpty(path))
         {
             return jsonNode;
         }

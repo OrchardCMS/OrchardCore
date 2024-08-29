@@ -5,19 +5,18 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Deployment
-{
-    public sealed class Startup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddHttpClient();
+namespace OrchardCore.Deployment;
 
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<RemoteInstanceService>();
-            services.AddScoped<RemoteClientService>();
-            services.AddScoped<IDeploymentTargetProvider, RemoteInstanceDeploymentTargetProvider>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-        }
+public sealed class Startup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddHttpClient();
+
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddScoped<RemoteInstanceService>();
+        services.AddScoped<RemoteClientService>();
+        services.AddScoped<IDeploymentTargetProvider, RemoteInstanceDeploymentTargetProvider>();
+        services.AddPermissionProvider<Permissions>();
     }
 }

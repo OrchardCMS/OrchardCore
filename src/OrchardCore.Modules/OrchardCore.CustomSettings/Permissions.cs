@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.Security.Permissions;

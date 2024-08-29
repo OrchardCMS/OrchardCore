@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -13,7 +10,7 @@ namespace OrchardCore.Users.Recipes;
 /// <summary>
 /// This recipe step updates the custom user settings.
 /// </summary>
-public class CustomUserSettingsStep : IRecipeStepHandler
+public sealed class CustomUserSettingsStep : IRecipeStepHandler
 {
     private readonly ISession _session;
 

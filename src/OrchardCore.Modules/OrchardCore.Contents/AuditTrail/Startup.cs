@@ -14,29 +14,27 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
-using OrchardCore.Settings;
 
-namespace OrchardCore.Contents.AuditTrail
+namespace OrchardCore.Contents.AuditTrail;
+
+[RequireFeatures("OrchardCore.AuditTrail")]
+public sealed class Startup : StartupBase
 {
-    [RequireFeatures("OrchardCore.AuditTrail")]
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDataMigration<Migrations>();
-            services.AddContentPart<AuditTrailPart>()
-                .UseDisplayDriver<AuditTrailPartDisplayDriver>();
+        services.AddDataMigration<Migrations>();
+        services.AddContentPart<AuditTrailPart>()
+            .UseDisplayDriver<AuditTrailPartDisplayDriver>();
 
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, AuditTrailPartSettingsDisplayDriver>();
-            services.AddScoped<IContentDisplayDriver, AuditTrailContentsDriver>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, AuditTrailPartSettingsDisplayDriver>();
+        services.AddScoped<IContentDisplayDriver, AuditTrailContentsDriver>();
 
-            services.AddTransient<IConfigureOptions<AuditTrailOptions>, ContentAuditTrailEventConfiguration>();
-            services.AddScoped<IAuditTrailEventHandler, ContentAuditTrailEventHandler>();
-            services.AddScoped<IDisplayDriver<ISite>, ContentAuditTrailSettingsDisplayDriver>();
+        services.AddTransient<IConfigureOptions<AuditTrailOptions>, ContentAuditTrailEventConfiguration>();
+        services.AddScoped<IAuditTrailEventHandler, ContentAuditTrailEventHandler>();
+        services.AddSiteDisplayDriver<ContentAuditTrailSettingsDisplayDriver>();
 
-            services.AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailContentEventDisplayDriver>();
+        services.AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailContentEventDisplayDriver>();
 
-            services.AddScoped<IContentHandler, AuditTrailContentHandler>();
-        }
+        services.AddScoped<IContentHandler, AuditTrailContentHandler>();
     }
 }

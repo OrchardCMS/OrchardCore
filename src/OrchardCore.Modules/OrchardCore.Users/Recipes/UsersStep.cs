@@ -1,6 +1,4 @@
-using System;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -9,7 +7,7 @@ using YesSql;
 
 namespace OrchardCore.Users.Recipes;
 
-public class UsersStep : IRecipeStepHandler
+public sealed class UsersStep : IRecipeStepHandler
 {
     private readonly UserManager<IUser> _userManager;
     private readonly ISession _session;
@@ -42,7 +40,10 @@ public class UsersStep : IRecipeStepHandler
 
             if (iUser is not User user)
             {
-                user = new User { UserId = importedUser.UserId };
+                user = new User
+                {
+                    UserId = importedUser.UserId
+                };
             }
 
             user.Email = importedUser.Email;

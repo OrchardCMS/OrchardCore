@@ -1,4 +1,3 @@
-using System.Linq;
 using Microsoft.Extensions.Options;
 using OrchardCore.Settings;
 

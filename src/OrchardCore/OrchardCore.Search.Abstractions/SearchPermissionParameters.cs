@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Search.Abstractions;
 
 public class SearchPermissionParameters

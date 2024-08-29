@@ -1,60 +1,58 @@
-using System;
 using NCrontab;
 using OrchardCore.Modules;
 
-namespace OrchardCore.BackgroundTasks
+namespace OrchardCore.BackgroundTasks;
+
+public sealed class BackgroundTaskScheduler
 {
-    public sealed class BackgroundTaskScheduler
+    private readonly IClock _clock;
+
+    public BackgroundTaskScheduler(string tenant, string name, DateTime referenceTime, IClock clock)
     {
-        private readonly IClock _clock;
+        Name = name;
+        Tenant = tenant;
+        ReferenceTime = referenceTime;
+        Settings = new BackgroundTaskSettings() { Name = name };
+        State = new BackgroundTaskState() { Name = name };
+        _clock = clock;
+    }
 
-        public BackgroundTaskScheduler(string tenant, string name, DateTime referenceTime, IClock clock)
+    public string Name { get; }
+    public string Tenant { get; }
+    public DateTime ReferenceTime { get; set; }
+    public BackgroundTaskSettings Settings { get; set; }
+    public BackgroundTaskState State { get; set; }
+    public ITimeZone TimeZone { get; set; }
+    public bool Released { get; set; }
+    public bool Updated { get; set; }
+
+    public bool CanRun()
+    {
+        var now = DateTime.UtcNow;
+        var referenceTime = ReferenceTime;
+
+        if (TimeZone != null)
         {
-            Name = name;
-            Tenant = tenant;
-            ReferenceTime = referenceTime;
-            Settings = new BackgroundTaskSettings() { Name = name };
-            State = new BackgroundTaskState() { Name = name };
-            _clock = clock;
+            now = _clock.ConvertToTimeZone(DateTime.UtcNow, TimeZone).DateTime;
+            referenceTime = _clock.ConvertToTimeZone(ReferenceTime, TimeZone).DateTime;
         }
 
-        public string Name { get; }
-        public string Tenant { get; }
-        public DateTime ReferenceTime { get; set; }
-        public BackgroundTaskSettings Settings { get; set; }
-        public BackgroundTaskState State { get; set; }
-        public ITimeZone TimeZone { get; set; }
-        public bool Released { get; set; }
-        public bool Updated { get; set; }
-
-        public bool CanRun()
+        var nextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(referenceTime);
+        if (now >= nextStartTime)
         {
-            var now = DateTime.UtcNow;
-            var referenceTime = ReferenceTime;
-
-            if (TimeZone != null)
+            if (Settings.Enable && !Released && Updated)
             {
-                now = _clock.ConvertToTimeZone(DateTime.UtcNow, TimeZone).DateTime;
-                referenceTime = _clock.ConvertToTimeZone(ReferenceTime, TimeZone).DateTime;
+                return true;
             }
 
-            var nextStartTime = CrontabSchedule.Parse(Settings.Schedule).GetNextOccurrence(referenceTime);
-            if (now >= nextStartTime)
-            {
-                if (Settings.Enable && !Released && Updated)
-                {
-                    return true;
-                }
-
-                ReferenceTime = DateTime.UtcNow;
-            }
-
-            return false;
+            ReferenceTime = DateTime.UtcNow;
         }
 
-        public void Run()
-        {
-            State.LastStartTime = ReferenceTime = DateTime.UtcNow;
-        }
+        return false;
+    }
+
+    public void Run()
+    {
+        State.LastStartTime = ReferenceTime = DateTime.UtcNow;
     }
 }

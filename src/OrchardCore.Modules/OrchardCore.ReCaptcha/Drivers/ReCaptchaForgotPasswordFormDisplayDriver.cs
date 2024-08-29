@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.ReCaptcha.Configuration;
@@ -18,9 +17,9 @@ public sealed class ReCaptchaForgotPasswordFormDisplayDriver : DisplayDriver<For
 
     public override async Task<IDisplayResult> EditAsync(ForgotPasswordForm model, BuildEditorContext context)
     {
-        var _reCaptchaSettings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
+        var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
 
-        if (!_reCaptchaSettings.IsValid())
+        if (!settings.IsValid())
         {
             return null;
         }

@@ -1,90 +1,87 @@
-using System;
-using System.Linq;
 using NodaTime;
 using NodaTime.TimeZones;
 
-namespace OrchardCore.Modules
+namespace OrchardCore.Modules;
+
+public class Clock : IClock
 {
-    public class Clock : IClock
+    private static Instant CurrentInstant => SystemClock.Instance.GetCurrentInstant();
+
+    /// <summary>
+    /// Returns a Datetime Kind.Utc that is "Now".
+    /// </summary>
+    /// <inheritdoc />
+    public DateTime UtcNow => CurrentInstant.ToDateTimeUtc();
+
+    /// <summary>
+    /// Returns a list of valid timezones as a ITimeZone[], where the key is
+    /// the timezone id(string), and the value can be used for display. The list is filtered to contain only
+    /// choices that are reasonably valid for the present and near future for real places. The list is
+    /// also sorted first by UTC Offset and then by timezone name.
+    /// </summary>
+    public ITimeZone[] GetTimeZones()
     {
-        private static Instant CurrentInstant => SystemClock.Instance.GetCurrentInstant();
+        var list =
+            from location in TzdbDateTimeZoneSource.Default.ZoneLocations
+            let zoneId = location.ZoneId
+            let tz = DateTimeZoneProviders.Tzdb[zoneId]
+            let zoneInterval = tz.GetZoneInterval(CurrentInstant)
+            orderby zoneInterval.StandardOffset, zoneId
+            select new TimeZone(zoneId, zoneInterval.StandardOffset, zoneInterval.WallOffset, tz);
 
-        /// <summary>
-        /// Returns a Datetime Kind.Utc that is "Now".
-        /// </summary>
-        /// <inheritdoc />
-        public DateTime UtcNow => CurrentInstant.ToDateTimeUtc();
+        return list.ToArray();
+    }
 
-        /// <summary>
-        /// Returns a list of valid timezones as a ITimeZone[], where the key is
-        /// the timezone id(string), and the value can be used for display. The list is filtered to contain only
-        /// choices that are reasonably valid for the present and near future for real places. The list is
-        /// also sorted first by UTC Offset and then by timezone name.
-        /// </summary>
-        public ITimeZone[] GetTimeZones()
+    public ITimeZone GetTimeZone(string timeZoneId)
+    {
+        if (string.IsNullOrEmpty(timeZoneId))
         {
-            var list =
-                from location in TzdbDateTimeZoneSource.Default.ZoneLocations
-                let zoneId = location.ZoneId
-                let tz = DateTimeZoneProviders.Tzdb[zoneId]
-                let zoneInterval = tz.GetZoneInterval(CurrentInstant)
-                orderby zoneInterval.StandardOffset, zoneId
-                select new TimeZone(zoneId, zoneInterval.StandardOffset, zoneInterval.WallOffset, tz);
-
-            return list.ToArray();
+            return GetSystemTimeZone();
         }
 
-        public ITimeZone GetTimeZone(string timeZoneId)
+        var dateTimeZone = GetDateTimeZone(timeZoneId);
+
+        return CreateTimeZone(dateTimeZone);
+    }
+
+    public ITimeZone GetSystemTimeZone()
+    {
+        var timezone = DateTimeZoneProviders.Tzdb.GetSystemDefault();
+        if (TzdbDateTimeZoneSource.Default.CanonicalIdMap.TryGetValue(timezone.Id, out var canonicalTimeZoneId))
         {
-            if (string.IsNullOrEmpty(timeZoneId))
-            {
-                return GetSystemTimeZone();
-            }
-
-            var dateTimeZone = GetDateTimeZone(timeZoneId);
-
-            return CreateTimeZone(dateTimeZone);
+            timezone = GetDateTimeZone(canonicalTimeZoneId);
         }
 
-        public ITimeZone GetSystemTimeZone()
-        {
-            var timezone = DateTimeZoneProviders.Tzdb.GetSystemDefault();
-            if (TzdbDateTimeZoneSource.Default.CanonicalIdMap.TryGetValue(timezone.Id, out var canonicalTimeZoneId))
-            {
-                timezone = GetDateTimeZone(canonicalTimeZoneId);
-            }
+        return CreateTimeZone(timezone);
+    }
 
-            return CreateTimeZone(timezone);
+    public DateTimeOffset ConvertToTimeZone(DateTimeOffset dateTimeOffSet, ITimeZone timeZone)
+    {
+        var offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet);
+        return offsetDateTime.InZone(((TimeZone)timeZone).DateTimeZone).ToDateTimeOffset();
+    }
+
+    internal static DateTimeZone GetDateTimeZone(string timeZone)
+    {
+        if (!string.IsNullOrEmpty(timeZone) && IsValidTimeZone(DateTimeZoneProviders.Tzdb, timeZone))
+        {
+            return DateTimeZoneProviders.Tzdb[timeZone];
         }
 
-        public DateTimeOffset ConvertToTimeZone(DateTimeOffset dateTimeOffSet, ITimeZone timeZone)
-        {
-            var offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet);
-            return offsetDateTime.InZone(((TimeZone)timeZone).DateTimeZone).ToDateTimeOffset();
-        }
+        return DateTimeZoneProviders.Tzdb.GetSystemDefault();
+    }
 
-        internal static DateTimeZone GetDateTimeZone(string timeZone)
-        {
-            if (!string.IsNullOrEmpty(timeZone) && IsValidTimeZone(DateTimeZoneProviders.Tzdb, timeZone))
-            {
-                return DateTimeZoneProviders.Tzdb[timeZone];
-            }
+    private static TimeZone CreateTimeZone(DateTimeZone dateTimeZone)
+    {
+        ArgumentNullException.ThrowIfNull(dateTimeZone);
 
-            return DateTimeZoneProviders.Tzdb.GetSystemDefault();
-        }
+        var zoneInterval = dateTimeZone.GetZoneInterval(CurrentInstant);
 
-        private static TimeZone CreateTimeZone(DateTimeZone dateTimeZone)
-        {
-            ArgumentNullException.ThrowIfNull(dateTimeZone);
+        return new TimeZone(dateTimeZone.Id, zoneInterval.StandardOffset, zoneInterval.WallOffset, dateTimeZone);
+    }
 
-            var zoneInterval = dateTimeZone.GetZoneInterval(CurrentInstant);
-
-            return new TimeZone(dateTimeZone.Id, zoneInterval.StandardOffset, zoneInterval.WallOffset, dateTimeZone);
-        }
-
-        private static bool IsValidTimeZone(IDateTimeZoneProvider provider, string timeZoneId)
-        {
-            return provider.GetZoneOrNull(timeZoneId) != null;
-        }
+    private static bool IsValidTimeZone(IDateTimeZoneProvider provider, string timeZoneId)
+    {
+        return provider.GetZoneOrNull(timeZoneId) != null;
     }
 }

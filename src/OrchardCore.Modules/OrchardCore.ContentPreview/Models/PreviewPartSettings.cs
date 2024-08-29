@@ -1,10 +1,9 @@
-namespace OrchardCore.ContentPreview.Models
+namespace OrchardCore.ContentPreview.Models;
+
+public class PreviewPartSettings
 {
-    public class PreviewPartSettings
-    {
-        /// <summary>
-        /// The pattern used to build the Path.
-        /// </summary>
-        public string Pattern { get; set; }
-    }
+    /// <summary>
+    /// The pattern used to build the Path.
+    /// </summary>
+    public string Pattern { get; set; }
 }

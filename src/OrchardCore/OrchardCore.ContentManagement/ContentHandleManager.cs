@@ -1,31 +1,26 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+namespace OrchardCore.ContentManagement;
 
-namespace OrchardCore.ContentManagement
+public class ContentHandleManager : IContentHandleManager
 {
-    public class ContentHandleManager : IContentHandleManager
+    private readonly IEnumerable<IContentHandleProvider> _contentHandleProviders;
+
+    public ContentHandleManager(IEnumerable<IContentHandleProvider> contentHandleProviders)
     {
-        private readonly IEnumerable<IContentHandleProvider> _contentHandleProviders;
+        _contentHandleProviders = contentHandleProviders.OrderBy(x => x.Order);
+    }
 
-        public ContentHandleManager(IEnumerable<IContentHandleProvider> contentHandleProviders)
+    public async Task<string> GetContentItemIdAsync(string handle)
+    {
+        foreach (var provider in _contentHandleProviders)
         {
-            _contentHandleProviders = contentHandleProviders.OrderBy(x => x.Order);
-        }
+            var result = await provider.GetContentItemIdAsync(handle);
 
-        public async Task<string> GetContentItemIdAsync(string handle)
-        {
-            foreach (var provider in _contentHandleProviders)
+            if (!string.IsNullOrEmpty(result))
             {
-                var result = await provider.GetContentItemIdAsync(handle);
-
-                if (!string.IsNullOrEmpty(result))
-                {
-                    return result;
-                }
+                return result;
             }
-
-            return null;
         }
+
+        return null;
     }
 }

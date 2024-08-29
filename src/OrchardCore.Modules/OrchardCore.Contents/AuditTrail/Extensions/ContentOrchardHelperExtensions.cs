@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -7,38 +6,37 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 
-namespace OrchardCore.Contents.AuditTrail.Extensions
+namespace OrchardCore.Contents.AuditTrail.Extensions;
+
+public static class ContentOrchardHelperExtensions
 {
-    public static class ContentOrchardHelperExtensions
+    public static async Task<IHtmlContent> EditForLinkAsync(this IOrchardHelper orchardHelper, string linkText, ContentItem contentItem)
     {
-        public static async Task<IHtmlContent> EditForLinkAsync(this IOrchardHelper orchardHelper, string linkText, ContentItem contentItem)
+        var viewContextAccessor = orchardHelper.HttpContext.RequestServices.GetRequiredService<ViewContextAccessor>();
+        var viewContext = viewContextAccessor.ViewContext;
+        var helper = MakeHtmlHelper(viewContext, viewContext.ViewData);
+        var contentManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<IContentManager>();
+        var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
+
+        if (string.IsNullOrEmpty(linkText))
         {
-            var viewContextAccessor = orchardHelper.HttpContext.RequestServices.GetRequiredService<ViewContextAccessor>();
-            var viewContext = viewContextAccessor.ViewContext;
-            var helper = MakeHtmlHelper(viewContext, viewContext.ViewData);
-            var contentManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<IContentManager>();
-            var metadata = await contentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem);
-
-            if (string.IsNullOrEmpty(linkText))
-            {
-                linkText = contentItem.ContentType;
-            }
-
-            return helper.ActionLink(linkText, metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues);
+            linkText = contentItem.ContentType;
         }
 
-        private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)
+        return helper.ActionLink(linkText, metadata.EditorRouteValues["action"].ToString(), metadata.EditorRouteValues);
+    }
+
+    private static IHtmlHelper MakeHtmlHelper(ViewContext viewContext, ViewDataDictionary viewData)
+    {
+        var newHelper = viewContext.HttpContext.RequestServices.GetRequiredService<IHtmlHelper>();
+
+        var contextable = newHelper as IViewContextAware;
+        if (contextable != null)
         {
-            var newHelper = viewContext.HttpContext.RequestServices.GetRequiredService<IHtmlHelper>();
-
-            var contextable = newHelper as IViewContextAware;
-            if (contextable != null)
-            {
-                var newViewContext = new ViewContext(viewContext, viewContext.View, viewData, viewContext.Writer);
-                contextable.Contextualize(newViewContext);
-            }
-
-            return newHelper;
+            var newViewContext = new ViewContext(viewContext, viewContext.View, viewData, viewContext.Writer);
+            contextable.Contextualize(newViewContext);
         }
+
+        return newHelper;
     }
 }

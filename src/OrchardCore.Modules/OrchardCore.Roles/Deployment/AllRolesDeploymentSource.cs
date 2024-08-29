@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Deployment;
 using OrchardCore.Roles.Recipes;
@@ -9,56 +6,55 @@ using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
 
-namespace OrchardCore.Roles.Deployment
+namespace OrchardCore.Roles.Deployment;
+
+public class AllRolesDeploymentSource : IDeploymentSource
 {
-    public class AllRolesDeploymentSource : IDeploymentSource
+    private readonly RoleManager<IRole> _roleManager;
+    private readonly IRoleService _roleService;
+
+    public AllRolesDeploymentSource(
+        RoleManager<IRole> roleManager,
+        IRoleService roleService)
     {
-        private readonly RoleManager<IRole> _roleManager;
-        private readonly IRoleService _roleService;
+        _roleManager = roleManager;
+        _roleService = roleService;
+    }
 
-        public AllRolesDeploymentSource(
-            RoleManager<IRole> roleManager,
-            IRoleService roleService)
+    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    {
+        var allRolesStep = step as AllRolesDeploymentStep;
+
+        if (allRolesStep == null)
         {
-            _roleManager = roleManager;
-            _roleService = roleService;
+            return;
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        // Get all roles
+        var allRoles = await _roleService.GetRolesAsync();
+        var permissions = new JsonArray();
+        var tasks = new List<Task>();
+
+        foreach (var role in allRoles)
         {
-            var allRolesStep = step as AllRolesDeploymentStep;
+            var currentRole = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(role.RoleName));
 
-            if (allRolesStep == null)
+            if (currentRole != null)
             {
-                return;
+                permissions.Add(JObject.FromObject(
+                    new RolesStepRoleModel
+                    {
+                        Name = currentRole.RoleName,
+                        Description = currentRole.RoleDescription,
+                        Permissions = currentRole.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray()
+                    }));
             }
-
-            // Get all roles
-            var allRoles = await _roleService.GetRolesAsync();
-            var permissions = new JsonArray();
-            var tasks = new List<Task>();
-
-            foreach (var role in allRoles)
-            {
-                var currentRole = (Role)await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(role.RoleName));
-
-                if (currentRole != null)
-                {
-                    permissions.Add(JObject.FromObject(
-                        new RolesStepRoleModel
-                        {
-                            Name = currentRole.RoleName,
-                            Description = currentRole.RoleDescription,
-                            Permissions = currentRole.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray()
-                        }));
-                }
-            }
-
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Roles",
-                ["Roles"] = permissions,
-            });
         }
+
+        result.Steps.Add(new JsonObject
+        {
+            ["name"] = "Roles",
+            ["Roles"] = permissions,
+        });
     }
 }

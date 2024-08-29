@@ -1,33 +1,31 @@
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 
-namespace OrchardCore.DisplayManagement.Descriptors
+namespace OrchardCore.DisplayManagement.Descriptors;
+
+public class DemoShapeProvider : ShapeTableProvider, IShapeAttributeProvider
 {
-    public class DemoShapeProvider : ShapeTableProvider, IShapeAttributeProvider
+    public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
-        public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
-        {
-            builder.Describe("Foo")
-                .OnDisplaying(displaying =>
-                    displaying.ChildContent = new HtmlString("<h1>Hi</h1>")
-                );
+        builder.Describe("Foo")
+            .OnDisplaying(displaying =>
+                displaying.ChildContent = new HtmlString("<h1>Hi</h1>")
+            );
 
-            return ValueTask.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
+    }
 
-        [Shape]
+    [Shape]
 #pragma warning disable CA1822 // Mark members as static
-        public IHtmlContent Baz(string text, int count)
+    public IHtmlContent Baz(string text, int count)
 #pragma warning restore CA1822 // Mark members as static
+    {
+        var sb = new StringBuilder();
+        for (var i = 0; i < count; i++)
         {
-            var sb = new StringBuilder();
-            for (var i = 0; i < count; i++)
-            {
-                sb.Append(text);
-            }
-
-            return new HtmlString(sb.ToString());
+            sb.Append(text);
         }
+
+        return new HtmlString(sb.ToString());
     }
 }

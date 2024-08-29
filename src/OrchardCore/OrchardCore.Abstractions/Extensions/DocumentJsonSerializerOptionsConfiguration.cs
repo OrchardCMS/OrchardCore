@@ -2,7 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Json;
-using OrchardCore.Json.Serialization;
+using OrchardCore.Json.Extensions;
 
 namespace OrchardCore.Extensions;
 
@@ -17,15 +17,7 @@ public sealed class DocumentJsonSerializerOptionsConfiguration : IConfigureOptio
 
     public void Configure(DocumentJsonSerializerOptions options)
     {
-        options.SerializerOptions.DefaultIgnoreCondition = JOptions.Base.DefaultIgnoreCondition;
-        options.SerializerOptions.ReferenceHandler = JOptions.Base.ReferenceHandler;
-        options.SerializerOptions.ReadCommentHandling = JOptions.Base.ReadCommentHandling;
-        options.SerializerOptions.PropertyNameCaseInsensitive = JOptions.Base.PropertyNameCaseInsensitive;
-        options.SerializerOptions.AllowTrailingCommas = JOptions.Base.AllowTrailingCommas;
-        options.SerializerOptions.WriteIndented = JOptions.Base.WriteIndented;
-
+        options.SerializerOptions.Merge(JOptions.Default);
         options.SerializerOptions.TypeInfoResolverChain.Add(new PolymorphicJsonTypeInfoResolver(_derivedTypesOptions));
-        options.SerializerOptions.Converters.Add(DynamicJsonConverter.Instance);
-        options.SerializerOptions.Converters.Add(PathStringJsonConverter.Instance);
     }
 }

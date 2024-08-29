@@ -1,14 +1,12 @@
-using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
 
-namespace OrchardCore.Themes.Services
+namespace OrchardCore.Themes.Services;
+
+public interface ISiteThemeService
 {
-    public interface ISiteThemeService
-    {
-        Task<IExtensionInfo> GetSiteThemeAsync();
+    Task<IExtensionInfo> GetSiteThemeAsync();
 
-        Task SetSiteThemeAsync(string themeName);
+    Task SetSiteThemeAsync(string themeName);
 
-        Task<string> GetSiteThemeNameAsync();
-    }
+    Task<string> GetSiteThemeNameAsync();
 }

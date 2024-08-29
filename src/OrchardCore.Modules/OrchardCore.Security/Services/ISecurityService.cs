@@ -1,10 +1,8 @@
-using System.Threading.Tasks;
 using OrchardCore.Security.Settings;
 
-namespace OrchardCore.Security.Services
+namespace OrchardCore.Security.Services;
+
+public interface ISecurityService
 {
-    public interface ISecurityService
-    {
-        Task<SecuritySettings> GetSettingsAsync();
-    }
+    Task<SecuritySettings> GetSettingsAsync();
 }

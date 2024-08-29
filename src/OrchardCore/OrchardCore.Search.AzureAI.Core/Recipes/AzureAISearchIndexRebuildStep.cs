@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
@@ -11,7 +8,7 @@ using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Recipes;
 
-public class AzureAISearchIndexRebuildStep : IRecipeStepHandler
+public sealed class AzureAISearchIndexRebuildStep : IRecipeStepHandler
 {
     public async Task ExecuteAsync(RecipeExecutionContext context)
     {

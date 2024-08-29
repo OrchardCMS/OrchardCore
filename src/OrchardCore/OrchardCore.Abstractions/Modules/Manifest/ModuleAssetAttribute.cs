@@ -1,21 +1,18 @@
-using System;
+namespace OrchardCore.Modules.Manifest;
 
-namespace OrchardCore.Modules.Manifest
+/// <summary>
+/// Maps a module asset to its project location while in debug mode, auto generated on building.
+/// </summary>
+[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
+public class ModuleAssetAttribute : Attribute
 {
-    /// <summary>
-    /// Maps a module asset to its project location while in debug mode, auto generated on building.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true, Inherited = false)]
-    public class ModuleAssetAttribute : Attribute
+    public ModuleAssetAttribute(string asset)
     {
-        public ModuleAssetAttribute(string asset)
-        {
-            Asset = asset ?? string.Empty;
-        }
-
-        /// <Summary>
-        /// A module asset in the form of '{ModuleAssetPath}|{ProjectAssetPath}'.
-        /// </Summary>
-        public string Asset { get; }
+        Asset = asset ?? string.Empty;
     }
+
+    /// <Summary>
+    /// A module asset in the form of '{ModuleAssetPath}|{ProjectAssetPath}'.
+    /// </Summary>
+    public string Asset { get; }
 }

@@ -1,4 +1,3 @@
-using System;
 using Azure.Core;
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
@@ -7,92 +6,91 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Configuration.KeyVault.Services;
 
-namespace OrchardCore.Configuration.KeyVault.Extensions
+namespace OrchardCore.Configuration.KeyVault.Extensions;
+
+public static class AzureKeyVaultConfigurationExtension
 {
-    public static class AzureKeyVaultConfigurationExtension
+    /// <summary>
+    /// Adds Azure Key Vault as a Configuration Source.
+    /// </summary>
+    /// <param name="builder">The host builder to configure.</param>
+    /// <param name="tokenCredential">The token credential to use for authentication.</param>
+    /// <returns>The host builder.</returns>
+    public static IHostBuilder AddOrchardCoreAzureKeyVault(this IHostBuilder builder, TokenCredential tokenCredential = null)
     {
-        /// <summary>
-        /// Adds Azure Key Vault as a Configuration Source.
-        /// </summary>
-        /// <param name="builder">The host builder to configure.</param>
-        /// <param name="tokenCredential">The token credential to use for authentication.</param>
-        /// <returns>The host builder.</returns>
-        public static IHostBuilder AddOrchardCoreAzureKeyVault(this IHostBuilder builder, TokenCredential tokenCredential = null)
+        ArgumentNullException.ThrowIfNull(builder);
+
+        builder.ConfigureAppConfiguration((context, builder) =>
         {
-            ArgumentNullException.ThrowIfNull(builder);
+            // Here 'builder' is a config manager being a builder and also an 'IConfigurationRoot'
+            // if get from the 'context', allowing to get values from the providers already added
+            // without having to build a configuration on the fly that would need to be disposed.
+            AddOrchardCoreAzureKeyVault(builder, context.Configuration, tokenCredential);
+        });
 
-            builder.ConfigureAppConfiguration((context, builder) =>
-            {
-                // Here 'builder' is a config manager being a builder and also an 'IConfigurationRoot'
-                // if get from the 'context', allowing to get values from the providers already added
-                // without having to build a configuration on the fly that would need to be disposed.
-                AddOrchardCoreAzureKeyVault(builder, context.Configuration, tokenCredential);
-            });
+        return builder;
+    }
 
-            return builder;
+    /// <summary>
+    /// Adds Azure Key Vault as a Configuration Source.
+    /// </summary>
+    public static IWebHostBuilder AddOrchardCoreAzureKeyVault(this IWebHostBuilder builder, TokenCredential tokenCredential = null)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        builder.ConfigureAppConfiguration((context, builder) =>
+        {
+            // Here 'builder' is a config manager being a builder and also an 'IConfigurationRoot'
+            // if get from the 'context', allowing to get values from the providers already added
+            // without having to build a configuration on the fly that would need to be disposed.
+            AddOrchardCoreAzureKeyVault(builder, context.Configuration, tokenCredential);
+        });
+
+        return builder;
+    }
+
+    /// <summary>
+    /// Adds Azure Key Vault as a Configuration Source.
+    /// </summary>
+    public static ConfigurationManager AddOrchardCoreAzureKeyVault(
+        this ConfigurationManager manager, TokenCredential tokenCredential = null)
+    {
+        ArgumentNullException.ThrowIfNull(manager);
+
+        // The 'ConfigurationManager' is a builder and also an 'IConfigurationRoot' allowing to
+        // get values from the providers already added without having to build a configuration.
+        AddOrchardCoreAzureKeyVault(manager, manager, tokenCredential);
+
+        return manager;
+    }
+
+    private static void AddOrchardCoreAzureKeyVault(
+        this IConfigurationBuilder builder, IConfiguration configuration, TokenCredential tokenCredential)
+    {
+        var keyVaultName = configuration["OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName"];
+
+        if (string.IsNullOrEmpty(keyVaultName))
+        {
+            throw new Exception("The 'KeyVaultName' property is no configured. Please configure it by specifying the 'OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName' settings key.");
         }
 
-        /// <summary>
-        /// Adds Azure Key Vault as a Configuration Source.
-        /// </summary>
-        public static IWebHostBuilder AddOrchardCoreAzureKeyVault(this IWebHostBuilder builder, TokenCredential tokenCredential = null)
+        if (!Uri.TryCreate($"https://{keyVaultName}.vault.azure.net", UriKind.Absolute, out var keyVaultEndpointUri))
         {
-            ArgumentNullException.ThrowIfNull(builder);
-
-            builder.ConfigureAppConfiguration((context, builder) =>
-            {
-                // Here 'builder' is a config manager being a builder and also an 'IConfigurationRoot'
-                // if get from the 'context', allowing to get values from the providers already added
-                // without having to build a configuration on the fly that would need to be disposed.
-                AddOrchardCoreAzureKeyVault(builder, context.Configuration, tokenCredential);
-            });
-
-            return builder;
+            throw new Exception("Invalid value used for 'KeyVaultName' property. Please provide a valid key-vault name using the 'OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName' settings key.");
         }
 
-        /// <summary>
-        /// Adds Azure Key Vault as a Configuration Source.
-        /// </summary>
-        public static ConfigurationManager AddOrchardCoreAzureKeyVault(
-            this ConfigurationManager manager, TokenCredential tokenCredential = null)
+        var configOptions = new AzureKeyVaultConfigurationOptions()
         {
-            ArgumentNullException.ThrowIfNull(manager);
+            Manager = new AzureKeyVaultSecretManager(),
+        };
 
-            // The 'ConfigurationManager' is a builder and also an 'IConfigurationRoot' allowing to
-            // get values from the providers already added without having to build a configuration.
-            AddOrchardCoreAzureKeyVault(manager, manager, tokenCredential);
-
-            return manager;
+        if (double.TryParse(configuration["OrchardCore:OrchardCore_KeyVault_Azure:ReloadInterval"], out var interval))
+        {
+            configOptions.ReloadInterval = TimeSpan.FromSeconds(interval);
         }
 
-        private static void AddOrchardCoreAzureKeyVault(
-            this IConfigurationBuilder builder, IConfiguration configuration, TokenCredential tokenCredential)
-        {
-            var keyVaultName = configuration["OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName"];
+        tokenCredential ??= new DefaultAzureCredential(includeInteractiveCredentials: true);
 
-            if (string.IsNullOrEmpty(keyVaultName))
-            {
-                throw new Exception("The 'KeyVaultName' property is no configured. Please configure it by specifying the 'OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName' settings key.");
-            }
-
-            if (!Uri.TryCreate($"https://{keyVaultName}.vault.azure.net", UriKind.Absolute, out var keyVaultEndpointUri))
-            {
-                throw new Exception("Invalid value used for 'KeyVaultName' property. Please provide a valid key-vault name using the 'OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName' settings key.");
-            }
-
-            var configOptions = new AzureKeyVaultConfigurationOptions()
-            {
-                Manager = new AzureKeyVaultSecretManager(),
-            };
-
-            if (double.TryParse(configuration["OrchardCore:OrchardCore_KeyVault_Azure:ReloadInterval"], out var interval))
-            {
-                configOptions.ReloadInterval = TimeSpan.FromSeconds(interval);
-            }
-
-            tokenCredential ??= new DefaultAzureCredential(includeInteractiveCredentials: true);
-
-            builder.AddAzureKeyVault(keyVaultEndpointUri, tokenCredential, configOptions);
-        }
+        builder.AddAzureKeyVault(keyVaultEndpointUri, tokenCredential, configOptions);
     }
 }

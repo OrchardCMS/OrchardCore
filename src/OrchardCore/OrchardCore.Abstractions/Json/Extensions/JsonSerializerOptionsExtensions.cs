@@ -18,6 +18,7 @@ public static class JsonSerializerOptionsExtensions
         destination.PropertyNamingPolicy = source.PropertyNamingPolicy;
         destination.Encoder = source.Encoder;
         destination.TypeInfoResolver = source.TypeInfoResolver;
+        destination.PreferredObjectCreationHandling = source.PreferredObjectCreationHandling;
 
         foreach (var resolver in source.TypeInfoResolverChain)
         {

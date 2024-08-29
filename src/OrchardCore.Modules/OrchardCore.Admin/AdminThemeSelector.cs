@@ -1,46 +1,44 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Theming;
 
-namespace OrchardCore.Admin
+namespace OrchardCore.Admin;
+
+/// <summary>
+/// Provides the theme defined in the site configuration for the current scope (request).
+/// The same <see cref="ThemeSelectorResult"/> is returned if called multiple times
+/// during the same scope.
+/// </summary>
+public class AdminThemeSelector : IThemeSelector
 {
-    /// <summary>
-    /// Provides the theme defined in the site configuration for the current scope (request).
-    /// The same <see cref="ThemeSelectorResult"/> is returned if called multiple times
-    /// during the same scope.
-    /// </summary>
-    public class AdminThemeSelector : IThemeSelector
+    private readonly IAdminThemeService _adminThemeService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public AdminThemeSelector(
+        IAdminThemeService adminThemeService,
+        IHttpContextAccessor httpContextAccessor
+        )
     {
-        private readonly IAdminThemeService _adminThemeService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        _adminThemeService = adminThemeService;
+        _httpContextAccessor = httpContextAccessor;
+    }
 
-        public AdminThemeSelector(
-            IAdminThemeService adminThemeService,
-            IHttpContextAccessor httpContextAccessor
-            )
+    public async Task<ThemeSelectorResult> GetThemeAsync()
+    {
+        if (AdminAttribute.IsApplied(_httpContextAccessor.HttpContext))
         {
-            _adminThemeService = adminThemeService;
-            _httpContextAccessor = httpContextAccessor;
-        }
-
-        public async Task<ThemeSelectorResult> GetThemeAsync()
-        {
-            if (AdminAttribute.IsApplied(_httpContextAccessor.HttpContext))
+            var adminThemeName = await _adminThemeService.GetAdminThemeNameAsync();
+            if (string.IsNullOrEmpty(adminThemeName))
             {
-                var adminThemeName = await _adminThemeService.GetAdminThemeNameAsync();
-                if (string.IsNullOrEmpty(adminThemeName))
-                {
-                    return null;
-                }
-
-                return new ThemeSelectorResult
-                {
-                    Priority = 100,
-                    ThemeName = adminThemeName
-                };
+                return null;
             }
 
-            return null;
+            return new ThemeSelectorResult
+            {
+                Priority = 100,
+                ThemeName = adminThemeName
+            };
         }
+
+        return null;
     }
 }

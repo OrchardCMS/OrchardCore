@@ -1,48 +1,45 @@
-using System;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
 
-namespace OrchardCore.Search.Lucene.QueryProviders
+namespace OrchardCore.Search.Lucene.QueryProviders;
+
+public class RegexpQueryProvider : ILuceneQueryProvider
 {
-    public class RegexpQueryProvider : ILuceneQueryProvider
+    public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonObject query)
     {
-        public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonObject query)
+        if (type != "regexp")
         {
-            if (type != "regexp")
-            {
-                return null;
-            }
+            return null;
+        }
 
-            var first = query.First();
+        var first = query.First();
 
-            switch (first.Value.GetValueKind())
-            {
-                case JsonValueKind.String:
-                    return new RegexpQuery(new Term(first.Key, first.Value.ToString()));
+        switch (first.Value.GetValueKind())
+        {
+            case JsonValueKind.String:
+                return new RegexpQuery(new Term(first.Key, first.Value.ToString()));
 
-                case JsonValueKind.Object:
-                    var obj = first.Value.AsObject();
+            case JsonValueKind.Object:
+                var obj = first.Value.AsObject();
 
-                    if (!obj.TryGetPropertyValue("value", out var value))
-                    {
-                        throw new ArgumentException("Missing value in regexp query");
-                    }
+                if (!obj.TryGetPropertyValue("value", out var value))
+                {
+                    throw new ArgumentException("Missing value in regexp query");
+                }
 
-                    // TODO: Support flags
+                // TODO: Support flags
 
-                    var regexpQuery = new RegexpQuery(new Term(first.Key, value.Value<string>()));
+                var regexpQuery = new RegexpQuery(new Term(first.Key, value.Value<string>()));
 
-                    if (obj.TryGetPropertyValue("boost", out var boost))
-                    {
-                        regexpQuery.Boost = boost.Value<float>();
-                    }
+                if (obj.TryGetPropertyValue("boost", out var boost))
+                {
+                    regexpQuery.Boost = boost.Value<float>();
+                }
 
-                    return regexpQuery;
-                default: throw new ArgumentException("Invalid regexp query");
-            }
+                return regexpQuery;
+            default: throw new ArgumentException("Invalid regexp query");
         }
     }
 }

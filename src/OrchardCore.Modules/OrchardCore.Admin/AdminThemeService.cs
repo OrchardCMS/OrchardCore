@@ -1,44 +1,42 @@
-using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Admin
+namespace OrchardCore.Admin;
+
+public class AdminThemeService : IAdminThemeService
 {
-    public class AdminThemeService : IAdminThemeService
+    private readonly ISiteService _siteService;
+    private readonly IExtensionManager _extensionManager;
+
+    public AdminThemeService(
+        ISiteService siteService,
+        IExtensionManager extensionManager)
     {
-        private readonly ISiteService _siteService;
-        private readonly IExtensionManager _extensionManager;
+        _siteService = siteService;
+        _extensionManager = extensionManager;
+    }
 
-        public AdminThemeService(
-            ISiteService siteService,
-            IExtensionManager extensionManager)
+    public async Task<IExtensionInfo> GetAdminThemeAsync()
+    {
+        var currentThemeName = await GetAdminThemeNameAsync();
+        if (string.IsNullOrEmpty(currentThemeName))
         {
-            _siteService = siteService;
-            _extensionManager = extensionManager;
+            return null;
         }
 
-        public async Task<IExtensionInfo> GetAdminThemeAsync()
-        {
-            var currentThemeName = await GetAdminThemeNameAsync();
-            if (string.IsNullOrEmpty(currentThemeName))
-            {
-                return null;
-            }
+        return _extensionManager.GetExtension(currentThemeName);
+    }
 
-            return _extensionManager.GetExtension(currentThemeName);
-        }
+    public async Task SetAdminThemeAsync(string themeName)
+    {
+        var site = await _siteService.LoadSiteSettingsAsync();
+        site.Properties["CurrentAdminThemeName"] = themeName;
+        await _siteService.UpdateSiteSettingsAsync(site);
+    }
 
-        public async Task SetAdminThemeAsync(string themeName)
-        {
-            var site = await _siteService.LoadSiteSettingsAsync();
-            site.Properties["CurrentAdminThemeName"] = themeName;
-            await _siteService.UpdateSiteSettingsAsync(site);
-        }
-
-        public async Task<string> GetAdminThemeNameAsync()
-        {
-            var site = await _siteService.GetSiteSettingsAsync();
-            return (string)site.Properties["CurrentAdminThemeName"];
-        }
+    public async Task<string> GetAdminThemeNameAsync()
+    {
+        var site = await _siteService.GetSiteSettingsAsync();
+        return (string)site.Properties["CurrentAdminThemeName"];
     }
 }

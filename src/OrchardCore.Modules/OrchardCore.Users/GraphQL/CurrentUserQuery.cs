@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;

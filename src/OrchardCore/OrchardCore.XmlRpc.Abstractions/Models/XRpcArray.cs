@@ -1,24 +1,21 @@
-using System.Collections.Generic;
+namespace OrchardCore.XmlRpc.Models;
 
-namespace OrchardCore.XmlRpc.Models
+public class XRpcArray
 {
-    public class XRpcArray
+    public XRpcArray()
     {
-        public XRpcArray()
-        {
-            Data = [];
-        }
-        public IList<XRpcData> Data { get; set; }
+        Data = [];
+    }
+    public IList<XRpcData> Data { get; set; }
 
-        public object this[int index]
-        {
-            get { return Data[index].Value; }
-        }
+    public object this[int index]
+    {
+        get { return Data[index].Value; }
+    }
 
-        public XRpcArray Add<T>(T value)
-        {
-            Data.Add(XRpcData.For(value));
-            return this;
-        }
+    public XRpcArray Add<T>(T value)
+    {
+        Data.Add(XRpcData.For(value));
+        return this;
     }
 }

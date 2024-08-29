@@ -1,22 +1,21 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Menu.Models
+namespace OrchardCore.Menu.Models;
+
+public class HtmlMenuItemPart : ContentPart
 {
-    public class HtmlMenuItemPart : ContentPart
-    {
-        /// <summary>
-        /// The url of the link to create.
-        /// </summary>
-        public string Url { get; set; }
+    /// <summary>
+    /// The url of the link to create.
+    /// </summary>
+    public string Url { get; set; }
 
-        /// <summary>
-        /// The target of the link to create.
-        /// </summary>
-        public string Target { get; set; }
+    /// <summary>
+    /// The target of the link to create.
+    /// </summary>
+    public string Target { get; set; }
 
-        /// <summary>
-        /// The raw html to display for this link.
-        /// </summary>
-        public string Html { get; set; }
-    }
+    /// <summary>
+    /// The raw html to display for this link.
+    /// </summary>
+    public string Html { get; set; }
 }

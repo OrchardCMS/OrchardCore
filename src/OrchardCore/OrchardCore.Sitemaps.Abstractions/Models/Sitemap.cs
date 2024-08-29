@@ -1,7 +1,6 @@
-namespace OrchardCore.Sitemaps.Models
+namespace OrchardCore.Sitemaps.Models;
+
+public class Sitemap : SitemapType
 {
-    public class Sitemap : SitemapType
-    {
-        public const string PathExtension = ".xml";
-    }
+    public const string PathExtension = ".xml";
 }
