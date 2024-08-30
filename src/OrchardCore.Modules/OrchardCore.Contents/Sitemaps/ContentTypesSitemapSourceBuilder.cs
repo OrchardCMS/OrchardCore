@@ -38,16 +38,12 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
             context.Response.ResponseElement.Add(sciemp.GetExtendedAttribute);
         }
 
-        var queryContext = new ContentItemsQueryContext()
-        {
-            Take = _batchSize,
-        };
-
         var maxAllowed = int.MaxValue;
+        var skip = 0;
 
         if (source.LimitedContentType != null)
         {
-            queryContext.Skip = source.LimitedContentType.Skip;
+            skip = source.LimitedContentType.Skip;
 
             if (source.LimitedContentType.Take > 0)
             {
@@ -56,33 +52,36 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
         }
 
         var total = 0;
+        var take = _batchSize;
         var isLastBatch = false;
 
         while (true)
         {
-            if ((total + queryContext.Take) > maxAllowed)
+            if ((total + take) > maxAllowed)
             {
-                queryContext.Take = total + queryContext.Take - maxAllowed;
+                take = total + take - maxAllowed;
 
                 isLastBatch = true;
             }
 
-            var result = await _contentItemsQueryProvider.GetContentItemsAsync(source, queryContext);
+            var queryContext = new ContentItemsQueryContext();
 
-            if (result.ContentItems == null || !result.ContentItems.Any())
+            await _contentItemsQueryProvider.GetContentItemsAsync(source, queryContext, skip, take);
+
+            if (queryContext.ContentItems == null || !queryContext.ContentItems.Any())
             {
                 break;
             }
 
-            var totalFound = result.ContentItems.Count();
+            var totalFound = queryContext.ContentItems.Count();
 
             total += totalFound;
 
-            foreach (var contentItem in result.ContentItems)
+            foreach (var contentItem in queryContext.ContentItems)
             {
                 var url = new XElement(_namespace + "url");
 
-                if (await BuildUrlsetMetadataAsync(source, context, result, contentItem, url))
+                if (await BuildUrlsetMetadataAsync(source, context, queryContext, contentItem, url))
                 {
                     context.Response.ResponseElement.Add(url);
                 }
@@ -93,15 +92,15 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
                 break;
             }
 
-            queryContext.Skip += queryContext.Take;
+            skip += take;
         }
     }
 
-    private async Task<bool> BuildUrlsetMetadataAsync(ContentTypesSitemapSource source, SitemapBuilderContext context, ContentItemsQueryResult queryResult, ContentItem contentItem, XElement url)
+    private async Task<bool> BuildUrlsetMetadataAsync(ContentTypesSitemapSource source, SitemapBuilderContext context, ContentItemsQueryContext queryContext, ContentItem contentItem, XElement url)
     {
         if (await BuildUrlAsync(context, contentItem, url))
         {
-            if (await BuildExtendedMetadataAsync(context, queryResult, contentItem, url))
+            if (await BuildExtendedMetadataAsync(context, queryContext, contentItem, url))
             {
                 PopulateLastMod(contentItem, url);
 
@@ -116,16 +115,18 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
         return false;
     }
 
-    private async Task<bool> BuildExtendedMetadataAsync(SitemapBuilderContext context, ContentItemsQueryResult queryResult, ContentItem contentItem, XElement url)
+    private async Task<bool> BuildExtendedMetadataAsync(SitemapBuilderContext context, ContentItemsQueryContext queryContext, ContentItem contentItem, XElement url)
     {
         var succeeded = true;
+
         foreach (var sc in _sitemapContentItemExtendedMetadataProviders)
         {
-            if (!await sc.ApplyExtendedMetadataAsync(context, queryResult, contentItem, url))
+            if (!await sc.ApplyExtendedMetadataAsync(context, queryContext, contentItem, url))
             {
                 succeeded = false;
             }
         }
+
         return succeeded;
     }
 
@@ -142,6 +143,7 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
         var loc = new XElement(_namespace + "loc");
         loc.Add(locValue);
         url.Add(loc);
+
         return true;
     }
 

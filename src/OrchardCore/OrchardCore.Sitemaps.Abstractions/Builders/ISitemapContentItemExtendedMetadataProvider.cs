@@ -16,5 +16,5 @@ public interface ISitemapContentItemExtendedMetadataProvider
     /// <summary>
     /// Apply extended metadata to the url element.
     /// </summary>
-    Task<bool> ApplyExtendedMetadataAsync(SitemapBuilderContext context, ContentItemsQueryResult queryResult, ContentItem contentItem, XElement url);
+    Task<bool> ApplyExtendedMetadataAsync(SitemapBuilderContext context, ContentItemsQueryContext queryContext, ContentItem contentItem, XElement url);
 }

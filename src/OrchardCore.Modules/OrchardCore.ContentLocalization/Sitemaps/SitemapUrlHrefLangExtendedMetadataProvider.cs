@@ -28,19 +28,19 @@ public class SitemapUrlHrefLangExtendedMetadataProvider : ISitemapContentItemExt
 
     public async Task<bool> ApplyExtendedMetadataAsync(
         SitemapBuilderContext context,
-        ContentItemsQueryResult queryResult,
+        ContentItemsQueryContext queryContext,
         ContentItem contentItem,
         XElement url)
     {
         var part = contentItem.As<LocalizationPart>();
         if (part == null ||
-            queryResult.ReferenceContentItems == null ||
-            !queryResult.ReferenceContentItems.Any())
+            queryContext.ReferenceContentItems == null ||
+            !queryContext.ReferenceContentItems.Any())
         {
             return true;
         }
 
-        var localizedContentParts = queryResult.ReferenceContentItems
+        var localizedContentParts = queryContext.ReferenceContentItems
             .Select(ci => ci.As<LocalizationPart>())
             .Where(cp => cp.LocalizationSet == part.LocalizationSet);
 

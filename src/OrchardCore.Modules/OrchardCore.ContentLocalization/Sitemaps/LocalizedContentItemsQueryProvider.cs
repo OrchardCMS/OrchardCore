@@ -28,34 +28,38 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
         _localizationService = localizationService;
     }
 
-    public async Task<ContentItemsQueryResult> GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context)
+    public async Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context, int? skip = null, int? take = null)
     {
         var routeableContentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
         var session = _store.CreateSession(withTracking: false);
+
+        IEnumerable<ContentItem> contentItems = null;
 
         if (source.IndexAll)
         {
             // Assumption here is that at least one content type will be localized.
             var ctdNames = routeableContentTypeDefinitions.Select(ctd => ctd.Name);
 
-            var results = await session.Query<ContentItem>()
-                .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(ctdNames))
-                .OrderBy(x => x.CreatedUtc)
-                .ThenBy(x => x.Id)
-                .Skip(context.Skip)
-                .Take(context.Take)
-                .ListAsync();
-
-            return new ContentItemsQueryResult
+            if (take.HasValue && take > 0)
             {
-                ContentItems = results,
-
-                // Provide all content items with localization as reference content items.
-                ReferenceContentItems = results.Where(ci => ci.Has<LocalizationPart>()),
-            };
+                contentItems = await session.Query<ContentItem>()
+                    .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(ctdNames))
+                    .OrderBy(x => x.CreatedUtc)
+                    .ThenBy(x => x.Id)
+                    .Skip(skip ?? 0)
+                    .Take(take.Value)
+                    .ListAsync();
+            }
+            else
+            {
+                contentItems = await session.Query<ContentItem>()
+                    .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(ctdNames))
+                    .OrderBy(x => x.CreatedUtc)
+                    .ThenBy(x => x.Id)
+                    .ListAsync();
+            }
         }
-
-        if (source.LimitItems)
+        else if (source.LimitItems)
         {
             // Test that content type is still valid to include in sitemap.
             var contentType = routeableContentTypeDefinitions
@@ -63,11 +67,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
 
             if (contentType == null)
             {
-                return new ContentItemsQueryResult
-                {
-                    ContentItems = [],
-                    ReferenceContentItems = [],
-                };
+                return;
             }
 
             if (contentType.Parts.Any(ctd => string.Equals(ctd.Name, nameof(LocalizationPart), StringComparison.Ordinal)))
@@ -78,55 +78,82 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
                 // Get all content items here for reference. Then reduce by default culture.
                 // We know that the content item should be localized.
                 // If it doesn't have a localization part, the content item should have been saved.
-                var contentItems = await session.Query<ContentItem>()
-                     .With<ContentItemIndex>(ci => ci.ContentType == source.LimitedContentType.ContentTypeName && ci.Published)
-                     .OrderBy(ci => ci.CreatedUtc)
-                     .ThenBy(ci => ci.Id)
-                     .With<LocalizedContentItemIndex>(x => x.Culture == defaultCulture)
-                     .Take(context.Take)
-                     .Skip(context.Skip)
-                     .ListAsync();
-
-                return new ContentItemsQueryResult
+                if (take.HasValue && take > 0)
                 {
-                    ContentItems = contentItems,
-                    ReferenceContentItems = contentItems.Where(ci => ci.Has<LocalizationPart>()),
-                };
+                    contentItems = await session.Query<ContentItem>()
+                        .With<ContentItemIndex>(ci => ci.ContentType == source.LimitedContentType.ContentTypeName && ci.Published)
+                        .OrderBy(ci => ci.CreatedUtc)
+                        .ThenBy(ci => ci.Id)
+                        .With<LocalizedContentItemIndex>(x => x.Culture == defaultCulture)
+                        .ListAsync();
+                }
+                else
+                {
+                    contentItems = await session.Query<ContentItem>()
+                        .With<ContentItemIndex>(ci => ci.ContentType == source.LimitedContentType.ContentTypeName && ci.Published)
+                        .OrderBy(ci => ci.CreatedUtc)
+                        .ThenBy(ci => ci.Id)
+                        .With<LocalizedContentItemIndex>(x => x.Culture == defaultCulture)
+                        .ListAsync();
+                }
             }
-
-            // Content type is not localized. Produce standard results.
-            var items = await session.Query<ContentItem>()
-                .With<ContentItemIndex>(x => x.ContentType == source.LimitedContentType.ContentTypeName && x.Published)
-                .OrderBy(x => x.CreatedUtc)
-                .Skip(context.Skip)
-                .Take(context.Take)
-                .ListAsync();
-
-            return new ContentItemsQueryResult
+            else
             {
-                ContentItems = items,
-                ReferenceContentItems = [],
-            };
+
+                if (take.HasValue && take > 0)
+                {
+                    // Content type is not localized. Produce standard results.
+                    contentItems = await session.Query<ContentItem>()
+                    .With<ContentItemIndex>(x => x.ContentType == source.LimitedContentType.ContentTypeName && x.Published)
+                    .OrderBy(x => x.CreatedUtc)
+                    .Skip(skip ?? 0)
+                    .Take(take.Value)
+                    .ListAsync();
+                }
+                else
+                {
+                    contentItems = await session.Query<ContentItem>()
+                        .With<ContentItemIndex>(x => x.ContentType == source.LimitedContentType.ContentTypeName && x.Published)
+                        .OrderBy(x => x.CreatedUtc)
+                        .ListAsync();
+                }
+            }
+        }
+        else
+        {
+
+            // Test that content types are still valid to include in sitemap.
+            var typesToIndex = routeableContentTypeDefinitions
+                .Where(ctd => source.ContentTypes.Any(s => string.Equals(ctd.Name, s.ContentTypeName, StringComparison.Ordinal)))
+                .Select(x => x.Name);
+
+            // No advantage here in reducing with localized index.
+            if (take.HasValue && take > 0)
+            {
+                contentItems = await session.Query<ContentItem>()
+                .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
+                .OrderBy(x => x.CreatedUtc)
+                .ThenBy(x => x.Id)
+                .Skip(skip ?? 0)
+                .Take(take.Value)
+                .ListAsync();
+            }
+            else
+            {
+                contentItems = await session.Query<ContentItem>()
+                .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
+                .OrderBy(x => x.CreatedUtc)
+                .ThenBy(x => x.Id)
+                .ListAsync();
+            }
         }
 
-        // Test that content types are still valid to include in sitemap.
-        var typesToIndex = routeableContentTypeDefinitions
-            .Where(ctd => source.ContentTypes.Any(s => string.Equals(ctd.Name, s.ContentTypeName, StringComparison.Ordinal)))
-            .Select(x => x.Name);
-
-        // No advantage here in reducing with localized index.
-        var queryResults = await session.Query<ContentItem>()
-            .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
-            .OrderBy(x => x.CreatedUtc)
-            .ThenBy(x => x.Id)
-            .Take(context.Take)
-            .Skip(context.Skip)
-            .ListAsync();
-
-        return new ContentItemsQueryResult
+        if (contentItems != null)
         {
-            ContentItems = queryResults,
-            ReferenceContentItems = queryResults.Where(ci => ci.Has<LocalizationPart>()),
-        };
+            context.ContentItems = contentItems;
+
+            // Provide all content items with localization as reference content items.
+            context.ReferenceContentItems = contentItems.Where(ci => ci.Has<LocalizationPart>());
+        }
     }
 }

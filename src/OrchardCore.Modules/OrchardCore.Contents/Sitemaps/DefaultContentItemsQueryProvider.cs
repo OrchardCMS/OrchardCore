@@ -21,7 +21,7 @@ public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
         _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
     }
 
-    public async Task<ContentItemsQueryResult> GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context)
+    public async Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context, int? skip = null, int? take = null)
     {
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(context);
@@ -46,10 +46,7 @@ public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
 
             if (!typeIsValid)
             {
-                return new ContentItemsQueryResult()
-                {
-                    ContentItems = [],
-                };
+                return;
             }
 
             query = query.Where(x => x.ContentType == source.LimitedContentType.ContentTypeName && x.Published);
@@ -64,15 +61,22 @@ public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
             query = query.Where(x => x.ContentType.IsIn(typesToIndex) && x.Published);
         }
 
-        return new ContentItemsQueryResult
+        query = query.OrderBy(x => x.CreatedUtc)
+            .ThenBy(x => x.Id);
+
+        if (take.HasValue && take > 0)
         {
-            ContentItems = await query
-                .OrderBy(x => x.CreatedUtc)
-                .ThenBy(x => x.Id)
-                .Take(context.Take)
-                .Skip(context.Skip)
-                .ListAsync(),
-            ReferenceContentItems = [],
-        };
+            context.ContentItems = await query
+                .Skip(skip ?? 0)
+                .Take(take.Value)
+                .ListAsync();
+
+            return;
+        }
+
+        context.ContentItems = await query
+            .OrderBy(x => x.CreatedUtc)
+            .ThenBy(x => x.Id)
+            .ListAsync();
     }
 }
