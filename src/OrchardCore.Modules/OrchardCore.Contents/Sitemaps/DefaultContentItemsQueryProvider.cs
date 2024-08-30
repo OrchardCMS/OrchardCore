@@ -28,7 +28,7 @@ public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
 
         var routeableContentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
 
-        var session = _store.CreateSession(withTracking: false);
+        using var session = _store.CreateSession(withTracking: false);
 
         var query = session.Query<ContentItem, ContentItemIndex>();
 
