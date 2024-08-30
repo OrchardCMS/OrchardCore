@@ -17,7 +17,12 @@ public sealed class DocumentJsonSerializerOptionsConfiguration : IConfigureOptio
 
     public void Configure(DocumentJsonSerializerOptions options)
     {
-        options.SerializerOptions.Merge(JOptions.Default);
+        options.SerializerOptions.Merge(JOptions.Base);
         options.SerializerOptions.TypeInfoResolverChain.Add(new PolymorphicJsonTypeInfoResolver(_derivedTypesOptions));
+
+        foreach (var converter in JOptions.KnownConverters)
+        {
+            options.SerializerOptions.Converters.Add(converter);
+        }
     }
 }

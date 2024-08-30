@@ -13,17 +13,17 @@ namespace OrchardCore.ContentLocalization.Sitemaps;
 
 public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
 {
-    private readonly ISession _session;
+    private readonly IStore _store;
     private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
     private readonly ILocalizationService _localizationService;
 
     public LocalizedContentItemsQueryProvider(
-        ISession session,
+        IStore store,
         IRouteableContentTypeCoordinator routeableContentTypeCoordinator,
         ILocalizationService localizationService
         )
     {
-        _session = session;
+        _store = store;
         _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
         _localizationService = localizationService;
     }
@@ -31,13 +31,14 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
     public async Task<ContentItemsQueryResult> GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context)
     {
         var routeableContentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
+        var session = _store.CreateSession(withTracking: false);
 
         if (source.IndexAll)
         {
             // Assumption here is that at least one content type will be localized.
             var ctdNames = routeableContentTypeDefinitions.Select(ctd => ctd.Name);
 
-            var results = await _session.Query<ContentItem>()
+            var results = await session.Query<ContentItem>()
                 .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(ctdNames))
                 .OrderBy(x => x.CreatedUtc)
                 .ThenBy(x => x.Id)
@@ -77,7 +78,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
                 // Get all content items here for reference. Then reduce by default culture.
                 // We know that the content item should be localized.
                 // If it doesn't have a localization part, the content item should have been saved.
-                var contentItems = await _session.Query<ContentItem>()
+                var contentItems = await session.Query<ContentItem>()
                      .With<ContentItemIndex>(ci => ci.ContentType == source.LimitedContentType.ContentTypeName && ci.Published)
                      .OrderBy(ci => ci.CreatedUtc)
                      .ThenBy(ci => ci.Id)
@@ -94,7 +95,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
             }
 
             // Content type is not localized. Produce standard results.
-            var items = await _session.Query<ContentItem>()
+            var items = await session.Query<ContentItem>()
                 .With<ContentItemIndex>(x => x.ContentType == source.LimitedContentType.ContentTypeName && x.Published)
                 .OrderBy(x => x.CreatedUtc)
                 .Skip(context.Skip)
@@ -114,7 +115,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
             .Select(x => x.Name);
 
         // No advantage here in reducing with localized index.
-        var queryResults = await _session.Query<ContentItem>()
+        var queryResults = await session.Query<ContentItem>()
             .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
             .OrderBy(x => x.CreatedUtc)
             .ThenBy(x => x.Id)

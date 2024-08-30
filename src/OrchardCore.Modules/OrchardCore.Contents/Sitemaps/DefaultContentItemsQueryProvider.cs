@@ -10,15 +10,14 @@ namespace OrchardCore.Contents.Sitemaps;
 
 public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
 {
-    private readonly ISession _session;
+    private readonly IStore _store;
     private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
 
     public DefaultContentItemsQueryProvider(
-        ISession session,
-        IRouteableContentTypeCoordinator routeableContentTypeCoordinator
-        )
+        IStore store,
+        IRouteableContentTypeCoordinator routeableContentTypeCoordinator)
     {
-        _session = session;
+        _store = store;
         _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
     }
 
@@ -29,7 +28,9 @@ public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
 
         var routeableContentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
 
-        var query = _session.Query<ContentItem, ContentItemIndex>();
+        var session = _store.CreateSession(withTracking: false);
+
+        var query = session.Query<ContentItem, ContentItemIndex>();
 
         if (source.IndexAll)
         {

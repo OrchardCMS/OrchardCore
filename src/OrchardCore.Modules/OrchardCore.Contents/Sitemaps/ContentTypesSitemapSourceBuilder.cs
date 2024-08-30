@@ -1,8 +1,6 @@
 using System.Globalization;
 using System.Xml.Linq;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
-using OrchardCore.Data.YesSql;
 using OrchardCore.Sitemaps.Aspects;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Models;
@@ -12,24 +10,23 @@ namespace OrchardCore.Contents.Sitemaps;
 
 public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<ContentTypesSitemapSource>
 {
+    private const int _batchSize = 500;
+
     private static readonly XNamespace _namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
 
     private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
     private readonly IContentManager _contentManager;
-    private readonly YesSqlOptions _yesSqlOptions;
     private readonly IContentItemsQueryProvider _contentItemsQueryProvider;
     private readonly IEnumerable<ISitemapContentItemExtendedMetadataProvider> _sitemapContentItemExtendedMetadataProviders;
 
     public ContentTypesSitemapSourceBuilder(
         IRouteableContentTypeCoordinator routeableContentTypeCoordinator,
         IContentManager contentManager,
-        IOptions<YesSqlOptions> yesSqlOptions,
         IContentItemsQueryProvider contentItemsQueryProvider,
         IEnumerable<ISitemapContentItemExtendedMetadataProvider> sitemapContentItemExtendedMetadataProviders)
     {
         _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
         _contentManager = contentManager;
-        _yesSqlOptions = yesSqlOptions.Value;
         _contentItemsQueryProvider = contentItemsQueryProvider;
         _sitemapContentItemExtendedMetadataProviders = sitemapContentItemExtendedMetadataProviders;
     }
@@ -43,7 +40,7 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
 
         var queryContext = new ContentItemsQueryContext()
         {
-            Take = _yesSqlOptions.CommandsPageSize,
+            Take = _batchSize,
         };
 
         var maxAllowed = int.MaxValue;
