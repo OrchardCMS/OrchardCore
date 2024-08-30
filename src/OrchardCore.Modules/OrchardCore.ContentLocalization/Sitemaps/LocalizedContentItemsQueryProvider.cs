@@ -28,7 +28,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
         _localizationService = localizationService;
     }
 
-    public async Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context, int skip = 0, int take = 500)
+    public async Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context, int? skip = null, int? take = null)
     {
         var routeableContentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
         using var session = _store.CreateSession(withTracking: false);
@@ -44,8 +44,8 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
                 .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(ctdNames))
                 .OrderBy(x => x.CreatedUtc)
                 .ThenBy(x => x.Id)
-                .Skip(skip)
-                .Take(take)
+                .Skip(skip ?? 0)
+                .Take(take ?? 0)
                 .ListAsync();
 
         }
@@ -73,8 +73,8 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
                     .OrderBy(ci => ci.CreatedUtc)
                     .ThenBy(ci => ci.Id)
                     .With<LocalizedContentItemIndex>(x => x.Culture == defaultCulture)
-                    .Take(take)
-                    .Skip(skip)
+                    .Take(take ?? 0)
+                    .Skip(skip ?? 0)
                     .ListAsync();
             }
             else
@@ -83,8 +83,8 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
                 contentItems = await session.Query<ContentItem>()
                     .With<ContentItemIndex>(x => x.ContentType == source.LimitedContentType.ContentTypeName && x.Published)
                     .OrderBy(x => x.CreatedUtc)
-                    .Skip(skip)
-                    .Take(take)
+                    .Skip(skip ?? 0)
+                    .Take(take ?? 0)
                     .ListAsync();
 
             }
@@ -102,8 +102,8 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
                 .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
                 .OrderBy(x => x.CreatedUtc)
                 .ThenBy(x => x.Id)
-                .Skip(skip)
-                .Take(take)
+                .Skip(skip ?? 0)
+                .Take(take ?? 0)
                 .ListAsync();
 
         }

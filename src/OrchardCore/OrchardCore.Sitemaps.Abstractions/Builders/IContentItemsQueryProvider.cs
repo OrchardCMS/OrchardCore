@@ -7,5 +7,5 @@ public interface IContentItemsQueryProvider
     /// <summary>
     /// Get content items to evaluate for inclusion in a sitemap.
     /// </summary>
-    Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context, int skip = 0, int take = 500);
+    Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context, int? skip = null, int? take = null);
 }
