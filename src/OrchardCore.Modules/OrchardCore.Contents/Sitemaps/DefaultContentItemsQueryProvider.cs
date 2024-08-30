@@ -21,7 +21,7 @@ public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
         _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
     }
 
-    public async Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context, int? skip = null, int? take = null)
+    public async Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context, int skip = 0, int take = 500)
     {
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(context);
@@ -61,22 +61,11 @@ public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
             query = query.Where(x => x.ContentType.IsIn(typesToIndex) && x.Published);
         }
 
-        query = query.OrderBy(x => x.CreatedUtc)
-            .ThenBy(x => x.Id);
-
-        if (take.HasValue && take > 0)
-        {
-            context.ContentItems = await query
-                .Skip(skip ?? 0)
-                .Take(take.Value)
-                .ListAsync();
-
-            return;
-        }
-
         context.ContentItems = await query
             .OrderBy(x => x.CreatedUtc)
             .ThenBy(x => x.Id)
+            .Take(take)
+            .Skip(skip)
             .ListAsync();
     }
 }
