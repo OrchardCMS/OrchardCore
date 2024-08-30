@@ -31,7 +31,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
     public async Task<ContentItemsQueryResult> GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context)
     {
         var routeableContentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
-        var session = _store.CreateSession(withTracking: false);
+        using var session = _store.CreateSession(withTracking: false);
 
         if (source.IndexAll)
         {
