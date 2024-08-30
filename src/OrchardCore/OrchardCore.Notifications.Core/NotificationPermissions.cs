@@ -4,5 +4,5 @@ namespace OrchardCore.Notifications;
 
 public static class NotificationPermissions
 {
-    public readonly static Permission ManageNotifications = new("ManageNotifications", "Manage notifications");
+    public static readonly Permission ManageNotifications = new("ManageNotifications", "Manage notifications");
 }
