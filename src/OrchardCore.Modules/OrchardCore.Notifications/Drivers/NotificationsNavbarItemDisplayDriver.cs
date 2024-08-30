@@ -22,7 +22,7 @@ public sealed class NotificationsNavbarItemDisplayDriver : DisplayDriver<Notific
 
     public override IDisplayResult Display(NotificationsNavbarItem navbarItem, BuildDisplayContext context)
     {
-        var result = Initialize<UserNotificationNavbarViewModel>("UserNotificationNavbar", async model =>
+        return Initialize<UserNotificationNavbarViewModel>("UserNotificationNavbar", async model =>
         {
             var query = new QueryTopUnreadNotificationsByUserId(navbarItem.UserId, _notificationOptions.TotalUnreadNotifications + 1);
             var notifications = (await _session.ExecuteQuery(query, collection: NotificationConstants.NotificationCollection).ListAsync()).ToList();
@@ -31,7 +31,5 @@ public sealed class NotificationsNavbarItemDisplayDriver : DisplayDriver<Notific
             model.MaxVisibleNotifications = _notificationOptions.TotalUnreadNotifications;
             model.TotalUnread = notifications.Count;
         }).Location("Detail", "Content:5");
-
-        return result;
     }
 }
