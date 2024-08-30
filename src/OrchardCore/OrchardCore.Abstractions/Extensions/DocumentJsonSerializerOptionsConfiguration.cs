@@ -16,7 +16,7 @@ public sealed class DocumentJsonSerializerOptionsConfiguration : IConfigureOptio
 
     public void Configure(DocumentJsonSerializerOptions options)
     {
-        // Do not use the 'Merge' extension to avoid populating unwanted properties (e.g., Encoder, NumberHandling, AllowTrailingCommas).
+        // Do not use the 'Merge' extension to avoid populating unwanted properties (e.g., Encoder, NumberHandling, TypeInfoResolver).
         options.SerializerOptions.DefaultIgnoreCondition = JOptions.Base.DefaultIgnoreCondition;
         options.SerializerOptions.ReferenceHandler = JOptions.Base.ReferenceHandler;
         options.SerializerOptions.ReadCommentHandling = JOptions.Base.ReadCommentHandling;
