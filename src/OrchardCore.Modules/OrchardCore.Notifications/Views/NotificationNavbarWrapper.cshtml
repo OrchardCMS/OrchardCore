@@ -1,10 +1,9 @@
 @inject IOptions<NotificationOptions> NotificationOptions
-@{
-    var username = User.Identity.Name;
-}
 
 @if (NotificationOptions.Value.CacheDurationInSeconds > 0)
 {
+    var username = User.Identity.Name;
+
     <shape type="UserNotificationNavbarWrapper" cache-id="@($"{NotificationConstants.TopUnreadUserNotificationCacheTag}-{username}")" cache-fixed-duration="@TimeSpan.FromSeconds(NotificationOptions.Value.CacheDurationInSeconds.Value)" cache-tag="@NotificationConstants.TopUnreadUserNotificationCacheTag,@($"{NotificationConstants.TopUnreadUserNotificationCacheTag}:{username}")" />
 }
 else
