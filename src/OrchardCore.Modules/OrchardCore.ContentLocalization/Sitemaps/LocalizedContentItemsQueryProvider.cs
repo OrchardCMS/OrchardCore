@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentManagement;
@@ -13,17 +17,17 @@ namespace OrchardCore.ContentLocalization.Sitemaps;
 
 public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
 {
-    private readonly IStore _store;
+    private readonly ISession _session;
     private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
     private readonly ILocalizationService _localizationService;
 
     public LocalizedContentItemsQueryProvider(
-        IStore store,
+        ISession session,
         IRouteableContentTypeCoordinator routeableContentTypeCoordinator,
         ILocalizationService localizationService
         )
     {
-        _store = store;
+        _session = session;
         _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
         _localizationService = localizationService;
     }
@@ -31,7 +35,6 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
     public async Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context, int? skip = null, int? take = null)
     {
         var routeableContentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
-        using var session = _store.CreateSession(withTracking: false);
 
         IEnumerable<ContentItem> contentItems = null;
 
@@ -40,7 +43,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
             // Assumption here is that at least one content type will be localized.
             var ctdNames = routeableContentTypeDefinitions.Select(ctd => ctd.Name);
 
-            contentItems = await session.Query<ContentItem>()
+            contentItems = await _session.Query<ContentItem>()
                 .With<ContentItemIndex>(x => x.Published && x.ContentType.IsIn(ctdNames))
                 .OrderBy(x => x.CreatedUtc)
                 .ThenBy(x => x.Id)
@@ -68,7 +71,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
                 // Get all content items here for reference. Then reduce by default culture.
                 // We know that the content item should be localized.
                 // If it doesn't have a localization part, the content item should have been saved.
-                contentItems = await session.Query<ContentItem>()
+                contentItems = await _session.Query<ContentItem>()
                     .With<ContentItemIndex>(ci => ci.ContentType == source.LimitedContentType.ContentTypeName && ci.Published)
                     .OrderBy(ci => ci.CreatedUtc)
                     .ThenBy(ci => ci.Id)
@@ -80,7 +83,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
             else
             {
                 // Content type is not localized. Produce standard results.
-                contentItems = await session.Query<ContentItem>()
+                contentItems = await _session.Query<ContentItem>()
                     .With<ContentItemIndex>(x => x.ContentType == source.LimitedContentType.ContentTypeName && x.Published)
                     .OrderBy(x => x.CreatedUtc)
                     .Skip(skip ?? 0)
@@ -98,7 +101,7 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
 
             // No advantage here in reducing with localized index.
 
-            contentItems = await session.Query<ContentItem>()
+            contentItems = await _session.Query<ContentItem>()
                 .With<ContentItemIndex>(x => x.ContentType.IsIn(typesToIndex) && x.Published)
                 .OrderBy(x => x.CreatedUtc)
                 .ThenBy(x => x.Id)
@@ -114,6 +117,12 @@ public class LocalizedContentItemsQueryProvider : IContentItemsQueryProvider
 
             // Provide all content items with localization as reference content items.
             context.ReferenceContentItems = contentItems.Where(ci => ci.Has<LocalizationPart>());
+
+            // Free up memeory
+            foreach (var contentItem in contentItems)
+            {
+                _session.Detach(contentItem);
+            }
         }
     }
 }

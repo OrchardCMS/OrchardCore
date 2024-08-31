@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Sitemaps.Builders;
@@ -10,14 +13,14 @@ namespace OrchardCore.Contents.Sitemaps;
 
 public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
 {
-    private readonly IStore _store;
+    private readonly ISession _session;
     private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
 
     public DefaultContentItemsQueryProvider(
-        IStore store,
+        ISession session,
         IRouteableContentTypeCoordinator routeableContentTypeCoordinator)
     {
-        _store = store;
+        _session = session;
         _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
     }
 
@@ -28,9 +31,8 @@ public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
 
         var routeableContentTypeDefinitions = await _routeableContentTypeCoordinator.ListRoutableTypeDefinitionsAsync();
 
-        using var session = _store.CreateSession(withTracking: false);
 
-        var query = session.Query<ContentItem, ContentItemIndex>();
+        var query = _session.Query<ContentItem, ContentItemIndex>();
 
         if (source.IndexAll)
         {
@@ -67,5 +69,11 @@ public class DefaultContentItemsQueryProvider : IContentItemsQueryProvider
             .Take(take ?? 0)
             .Skip(skip ?? 0)
             .ListAsync();
+
+        foreach (var contentItem in context.ContentItems)
+        {
+            // Free up memory.
+            _session.Detach(contentItem);
+        }
     }
 }
