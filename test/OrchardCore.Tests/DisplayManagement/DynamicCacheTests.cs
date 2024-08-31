@@ -138,6 +138,7 @@ public class DynamicCacheTests
     public async Task ShapeResultsAreRenderedOnceWhenCached()
     {
         var shapeType = "shapetype1";
+        var cacheTag = "mytag";
 
         var initializedCalled = 0;
         var bindCalled = 0;
@@ -168,7 +169,7 @@ public class DynamicCacheTests
             {
                 initializedCalled++;
                 return Task.CompletedTask;
-            }).Location("Content").Cache("mycontent", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(1)));
+            }).Location("Content").Cache("mycontent", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(1)).AddTag(cacheTag));
 
         var shapeResult = CreateShapeResult();
         var contentShape = await factory.CreateAsync("Content");
@@ -201,7 +202,8 @@ public class DynamicCacheTests
         }
 
         // Invalidate cache
-        await Task.Delay(1500);
+        var tagCache = _serviceProvider.GetService<ITagCache>();
+        await tagCache.RemoveTagAsync(cacheTag);
 
         // Create new ShapeResult
         shapeResult = CreateShapeResult();
