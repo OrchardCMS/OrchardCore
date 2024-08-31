@@ -22,6 +22,7 @@ public class DisplayDriverBase
         return Initialize<TModel>(shapeType, shape =>
         {
             initialize?.Invoke(shape);
+
             return ValueTask.CompletedTask;
         });
     }

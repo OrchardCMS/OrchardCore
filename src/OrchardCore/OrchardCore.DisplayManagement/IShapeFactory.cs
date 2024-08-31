@@ -68,6 +68,7 @@ public static class ShapeFactoryExtensions
         return factory.CreateAsync<TModel>(shapeType, initializeAsync: (model) =>
         {
             initialize?.Invoke(model);
+
             return ValueTask.CompletedTask;
         });
     }
@@ -152,13 +153,15 @@ public static class ShapeFactoryExtensions
     /// <param name="baseType">The type of the new shape to create.</param>
     /// <returns>
     /// A new shape instance implementing <see cref="IShape"/> and inheriting from the type <paramref name="baseType"/>.
-    /// If <paramref name="baseType"/> implements <see cref="IShape"/> then no dynamic proxy type is used.
     /// </returns>
+    /// <remarks>
+    /// If <paramref name="baseType"/> implements <see cref="IShape"/> then no dynamic proxy type is used.
+    /// </remarks>
     internal static IShape CreateStronglyTypedShape(Type baseType)
     {
         var shapeType = baseType;
 
-        // Don't generate a proxy for shape types
+        // Don't generate a proxy for shape types.
         if (typeof(IShape).IsAssignableFrom(shapeType))
         {
             return (IShape)Activator.CreateInstance(baseType);
@@ -167,6 +170,7 @@ public static class ShapeFactoryExtensions
         if (_proxyTypesCache.TryGetValue(baseType, out var proxyType))
         {
             var model = new ShapeViewModel();
+
             return (IShape)Activator.CreateInstance(proxyType, model, model, Array.Empty<IInterceptor>());
         }
 

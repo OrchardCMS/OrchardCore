@@ -175,27 +175,27 @@ public class DynamicCacheTests
         var contentShape = await factory.CreateAsync("Content");
         await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, "Detail", "", factory, null, null));
 
-        // Shape is created and initialized
+        // Shape is created and initialized.
         Assert.Equal(7, ((MyModel)shapeResult.Shape).MyProperty);
 
         var result = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
 
         Assert.Equal("Hi there!", result.ToString());
 
-        // Shape is rendered once
+        // Shape is rendered once.
         Assert.Equal(1, bindCalled);
         Assert.Equal(1, initializedCalled);
 
         for (var i = 0; i < 10; i++)
         {
-            // Create new ShapeResult
+            // Create new ShapeResult.
             shapeResult = CreateShapeResult();
             contentShape = await factory.CreateAsync("Content");
             await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, "Detail", "", factory, null, null));
 
             result = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
 
-            // Shape is not rendered twice
+            // Shape is not rendered twice.
             Assert.Equal(1, bindCalled);
             Assert.Equal(1, initializedCalled);
             Assert.Equal("Hi there!", result.ToString());
@@ -205,19 +205,18 @@ public class DynamicCacheTests
         var tagCache = _serviceProvider.GetService<ITagCache>();
         await tagCache.RemoveTagAsync(cacheTag);
 
-        // Create new ShapeResult
+        // Create new ShapeResult.
         shapeResult = CreateShapeResult();
         contentShape = await factory.CreateAsync("Content");
         await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, "Detail", "", factory, null, null));
 
         result = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
 
-        // Shape is processed and rendered again
+        // Shape is processed and rendered again.
         Assert.Equal(2, bindCalled);
         Assert.Equal(2, initializedCalled);
         Assert.Equal("Hi there!", result.ToString());
     }
-
 
     [Fact]
     public async Task DriverResultsAssignProcessing()
@@ -235,9 +234,10 @@ public class DynamicCacheTests
             var buildDisplayContext = new BuildDisplayContext(contentShape, "Detail", "", factory, null, null);
             var driverResult = new MyDisplayDriver().Display(contentItem, buildDisplayContext);
             await driverResult.ApplyAsync(buildDisplayContext);
+
             return driverResult;
         }
-
+        
         var displayResult = await CreateDisplayResultAsync();
 
         var shapeResult = displayResult as ShapeResult;
@@ -251,7 +251,7 @@ public class DynamicCacheTests
         public int MyProperty { get; set; } = 3;
     }
 
-    public class MyDisplayDriver : ContentDisplayDriver
+    public sealed class MyDisplayDriver : ContentDisplayDriver
     {
         public override IDisplayResult Display(ContentItem model, BuildDisplayContext context)
         {
