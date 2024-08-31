@@ -115,7 +115,7 @@ public class OpenIdScopeStepTests
                 It.IsAny<OpenIdScopeDescriptor>(),
                 It.IsAny<CancellationToken>()))
             .Returns(
-                new ValueTask());
+                ValueTask.CompletedTask);
 
         scopeManagerMock.Setup(m =>
             m.UpdateAsync(
@@ -125,7 +125,7 @@ public class OpenIdScopeStepTests
             .Callback<object, OpenIddictScopeDescriptor, CancellationToken>((s, desc, c) =>
                 actual = (OpenIdScopeDescriptor)desc)
             .Returns(
-                new ValueTask());
+                ValueTask.CompletedTask);
 
         var step = new OpenIdScopeStep(scopeManagerMock.Object);
         var recipe = JsonNode.Parse(GetRecipeFileContent("scope-recipe"));
