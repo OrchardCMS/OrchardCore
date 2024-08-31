@@ -6,6 +6,7 @@ namespace OrchardCore.DisplayManagement.Handlers;
 
 public abstract class BuildShapeContext : IBuildShapeContext
 {
+
     protected BuildShapeContext(IShape shape, string groupId, IShapeFactory shapeFactory, IZoneHolding layout, IUpdateModel updater)
     {
         Shape = shape;
