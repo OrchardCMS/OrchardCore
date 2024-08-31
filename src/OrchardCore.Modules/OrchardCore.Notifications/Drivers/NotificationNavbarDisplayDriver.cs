@@ -61,6 +61,7 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
                 .Cache(NotificationConstants.TopUnreadUserNotificationCacheTag, context => context
                     .AddContext("user")
                     .WithExpiryAfter(TimeSpan.FromSeconds(_notificationOptions.CacheDurationInSeconds.Value))
+                    // Allow another feature to clear all notitication cache entries if necessary.
                     .AddTag(NotificationConstants.TopUnreadUserNotificationCacheTag)
                     .AddTag($"{NotificationConstants.TopUnreadUserNotificationCacheTag}:{username}")
                 );
