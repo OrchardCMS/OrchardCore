@@ -114,7 +114,7 @@ public class OpenIdApplicationStepTests
                 It.IsAny<object>(),
                 It.IsAny<CancellationToken>()))
             .Returns(
-                new ValueTask());
+                ValueTask.CompletedTask);
 
         appManagerMock.Setup(m =>
             m.UpdateAsync(
@@ -124,7 +124,7 @@ public class OpenIdApplicationStepTests
             .Callback<object, OpenIddictApplicationDescriptor, CancellationToken>((app, desc, c) =>
                 actual = (OpenIdApplicationDescriptor)desc)
             .Returns(
-                new ValueTask());
+                ValueTask.CompletedTask);
 
         var step = new OpenIdApplicationStep(appManagerMock.Object);
         var recipe = JsonNode.Parse(GetRecipeFileContent(recipeName));

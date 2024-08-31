@@ -110,7 +110,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     {
         EditActivity(activity, model);
 
-        return new ValueTask();
+        return ValueTask.CompletedTask;
     }
 
     /// <summary>
