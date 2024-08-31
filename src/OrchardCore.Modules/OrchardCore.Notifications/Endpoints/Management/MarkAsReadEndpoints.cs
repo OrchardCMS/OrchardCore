@@ -9,6 +9,7 @@ using OrchardCore.Modules;
 using OrchardCore.Notifications.Indexes;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.ViewModels;
+using OrchardCore.Users.Models;
 using YesSql;
 
 namespace OrchardCore.Notifications.Endpoints.Management;
@@ -66,7 +67,7 @@ public static class MarkAsReadEndpoints
             updated = true;
 
             await session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
-            await tagCache.RemoveUnreadUserNotificationTagAsync(httpContextAccessor.HttpContext.User.Identity.Name);
+            await tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(httpContextAccessor.HttpContext.User.Identity.Name));
         }
 
         return TypedResults.Ok(new
