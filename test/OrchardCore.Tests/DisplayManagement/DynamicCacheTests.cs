@@ -201,7 +201,7 @@ public class DynamicCacheTests
         }
 
         // Invalidate cache
-        await Task.Delay(1000);
+        await Task.Delay(1500);
 
         // Create new ShapeResult
         shapeResult = CreateShapeResult();
