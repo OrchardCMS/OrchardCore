@@ -2,11 +2,10 @@
 
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
 
   <PropertyGroup>
-    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <!-- Special case - this property is used by a DotNetCliToolReference -->
     <DotNetXunitVersion>2.3.0</DotNetXunitVersion>
   </PropertyGroup>
@@ -117,7 +116,7 @@
                   └─ System.Drawing.Common (v4.7.0)
     -->
     <PackageVersion Include="System.Drawing.Common" Version="4.7.2" />
-    
+
     <!--
       Microsoft.AspNetCore.DataProtection.StackExchangeRedis (v8.0.8)
       └─ Microsoft.AspNetCore.DataProtection (v8.0.8)
