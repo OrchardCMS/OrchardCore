@@ -69,7 +69,6 @@ public sealed class Startup : StartupBase
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, NotificationOptionsConfiguration>();
         services.AddScoped<IDisplayDriver<User>, UserNotificationPreferencesPartDisplayDriver>();
         services.AddScoped<IDisplayDriver<Navbar>, NotificationNavbarDisplayDriver>();
-        services.AddScoped<IDisplayDriver<NotificationsNavbarItem>, NotificationsNavbarItemDisplayDriver>();
         services.AddScoped<INotificationEvents, CacheNotificationEventsHandler>();
     }
 
