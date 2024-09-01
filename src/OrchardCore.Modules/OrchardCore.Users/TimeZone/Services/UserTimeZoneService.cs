@@ -10,7 +10,7 @@ using OrchardCore.Users.TimeZone.Models;
 namespace OrchardCore.Users.TimeZone.Services;
 
 /// <summary>
-/// Represents a time zone service for currently logged-in user.
+/// Represents a time zone service for a user.
 /// </summary>
 public class UserTimeZoneService : IUserTimeZoneService
 {
