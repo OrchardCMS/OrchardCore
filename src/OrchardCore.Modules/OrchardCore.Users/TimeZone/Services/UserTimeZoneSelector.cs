@@ -34,10 +34,7 @@ public class UserTimeZoneSelector : ITimeZoneSelector
         };
     }
 
-    private async Task<IUser> GetCurrentUserAsync()
-    {
-        var userName = _httpContextAccessor.HttpContext.User.Identity.Name;
-
-        return await _userManager.FindByNameAsync(userName);
+    private Task<IUser> GetCurrentUserAsync()
+        => _userManager.FindByNameAsync(_httpContextAccessor.HttpContext.User.Identity.Name);
     }
 }
