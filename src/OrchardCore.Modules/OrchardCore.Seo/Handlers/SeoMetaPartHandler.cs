@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -179,4 +178,4 @@ public class SeoMetaPartHandler : ContentPartHandler<SeoMetaPart>
             aspect.GoogleSchema = part.GoogleSchema;
         });
     }
-    }
+}

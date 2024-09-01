@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.Security;
 
 public class Role : IRole

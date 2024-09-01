@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Documents.Options;
 
 public class DocumentSharedOptions : DocumentOptionsBase, IDocumentSharedOptions

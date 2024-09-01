@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using GraphQL.Types;
 
 namespace OrchardCore.ContentManagement.GraphQL;

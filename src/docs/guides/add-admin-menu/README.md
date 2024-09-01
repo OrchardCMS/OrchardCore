@@ -65,7 +65,7 @@ using OrchardCore.Admin;
 namespace MyModule.Controllers
 {
     [Admin]
-    public class DemoNavController : Controller
+    public sealed class DemoNavController : Controller
     {
         public ActionResult ChildOne()
         {

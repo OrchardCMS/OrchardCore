@@ -1,8 +1,6 @@
-using System;
+using OrchardCore.Modules.Manifest;
 
 namespace OrchardCore.DisplayManagement.Manifest;
-
-using Modules.Manifest;
 
 /// <summary>
 /// Defines a Theme which is a dedicated Module for theming purposes.

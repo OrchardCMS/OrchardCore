@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace OrchardCore.Environment.Extensions.Utility;
 
 public static class DependencyOrdering
@@ -39,7 +35,9 @@ public static class DependencyOrdering
     private static void Add<T>(Node<T> node, ICollection<T> list, IEnumerable<Node<T>> nodes, Func<T, T, bool> hasDependency)
     {
         if (node.Used)
+        {
             return;
+        }
 
         node.Used = true;
 

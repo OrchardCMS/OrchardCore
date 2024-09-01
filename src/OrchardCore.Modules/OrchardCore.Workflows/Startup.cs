@@ -5,6 +5,7 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -29,6 +30,13 @@ namespace OrchardCore.Workflows;
 
 public sealed class Startup : StartupBase
 {
+    private readonly IShellConfiguration _shellConfiguration;
+
+    public Startup(IShellConfiguration shellConfiguration)
+    {
+        _shellConfiguration = shellConfiguration;
+    }
+
     public override void ConfigureServices(IServiceCollection services)
     {
         services.Configure<TemplateOptions>(o =>
@@ -51,8 +59,8 @@ public sealed class Startup : StartupBase
         services.AddScoped<IWorkflowManager, WorkflowManager>();
         services.AddScoped<IActivityDisplayManager, ActivityDisplayManager>();
         services.AddDataMigration<Migrations>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<IDisplayDriver<IActivity>, MissingActivityDisplayDriver>();
         services.AddIndexProvider<WorkflowTypeIndexProvider>();
         services.AddIndexProvider<WorkflowIndexProvider>();
@@ -78,6 +86,8 @@ public sealed class Startup : StartupBase
 
         services.AddRecipeExecutionStep<WorkflowTypeStep>();
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+
+        services.AddTrimmingServices(_shellConfiguration);
     }
 }
 

@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,7 +58,7 @@ public class ShapeTag
             }
         }
 
-        var shape = await shapeFactory.CreateAsync<object>(type, customAttributes == null ? Arguments.Empty : Arguments.From(customAttributes));
+        var shape = await shapeFactory.CreateAsync(type, customAttributes == null ? Arguments.Empty : Arguments.From(customAttributes));
 
         if (!string.IsNullOrEmpty(id))
         {

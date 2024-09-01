@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +18,7 @@ using OrchardCore.Security.Services;
 namespace OrchardCore.Roles.Controllers;
 
 [Admin("Roles/{action}/{id?}", "Roles{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IDocumentStore _documentStore;
     private readonly RoleManager<IRole> _roleManager;
@@ -33,8 +29,8 @@ public class AdminController : Controller
     private readonly IRoleService _roleService;
     private readonly INotifier _notifier;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         IDocumentStore documentStore,

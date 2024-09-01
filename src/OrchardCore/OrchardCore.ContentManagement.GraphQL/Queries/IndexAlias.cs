@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.ContentManagement.GraphQL.Queries;
 
 public class IndexAlias

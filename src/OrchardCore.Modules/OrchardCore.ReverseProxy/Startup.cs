@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +10,6 @@ using OrchardCore.ReverseProxy.Drivers;
 using OrchardCore.ReverseProxy.Services;
 using OrchardCore.ReverseProxy.Settings;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.ReverseProxy;
@@ -28,9 +26,9 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<IDisplayDriver<ISite>, ReverseProxySettingsDisplayDriver>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddPermissionProvider<Permissions>();
+        services.AddSiteDisplayDriver<ReverseProxySettingsDisplayDriver>();
 
         services.AddSingleton<ReverseProxyService>();
 

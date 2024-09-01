@@ -10,7 +10,7 @@ public class MenuItemsListQueryObjectType : ObjectGraphType<MenuItemsListPart>
         Name = "MenuItemsListPart";
 
         Field<ListGraphType<MenuItemInterface>>("menuItems")
-           .Description("The menu items.")
+            .Description("The menu items.")
             .Resolve(context => context.Source.MenuItems);
 
     }

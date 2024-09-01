@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Workflows.Activities;
@@ -49,4 +47,7 @@ public class UserEventHandler : UserEventHandlerBase
             correlationId: user.UserId
         );
     }
+
+    public override Task ConfirmedAsync(UserConfirmContext context)
+        => TriggerWorkflowEventAsync(nameof(UserConfirmedEvent), (User)context.User);
 }

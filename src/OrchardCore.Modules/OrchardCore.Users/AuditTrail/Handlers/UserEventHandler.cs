@@ -1,6 +1,4 @@
-using System;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -75,6 +73,7 @@ public class UserEventHandler : ILoginFormEvent, IUserEventHandler
     public Task CreatingAsync(UserCreateContext context) => Task.CompletedTask;
     public Task UpdatingAsync(UserUpdateContext context) => Task.CompletedTask;
     public Task DeletingAsync(UserDeleteContext context) => Task.CompletedTask;
+    public Task ConfirmedAsync(UserConfirmContext context) => Task.CompletedTask;
 
     #endregion
 

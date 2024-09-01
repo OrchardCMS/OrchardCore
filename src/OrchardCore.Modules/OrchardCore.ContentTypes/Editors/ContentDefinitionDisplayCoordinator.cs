@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
@@ -35,7 +33,9 @@ public class ContentDefinitionDisplayCoordinator : IContentDefinitionDisplayHand
         {
             var result = await contentDisplay.BuildEditorAsync(model, context);
             if (result != null)
+            {
                 await result.ApplyAsync(context);
+            }
         }, model, context, _logger);
     }
 
@@ -45,7 +45,9 @@ public class ContentDefinitionDisplayCoordinator : IContentDefinitionDisplayHand
         {
             var result = await contentDisplay.UpdateEditorAsync(model, context);
             if (result != null)
+            {
                 await result.ApplyAsync(context);
+            }
         }, model, context, _logger);
     }
 
@@ -55,7 +57,9 @@ public class ContentDefinitionDisplayCoordinator : IContentDefinitionDisplayHand
         {
             var result = await contentDisplay.BuildEditorAsync(model, context);
             if (result != null)
+            {
                 await result.ApplyAsync(context);
+            }
         }, model, context, _logger);
     }
 
@@ -65,7 +69,9 @@ public class ContentDefinitionDisplayCoordinator : IContentDefinitionDisplayHand
         {
             var result = await contentDisplay.UpdateEditorAsync(model, context);
             if (result != null)
+            {
                 await result.ApplyAsync(context);
+            }
         }, model, context, _logger);
     }
 
@@ -75,7 +81,9 @@ public class ContentDefinitionDisplayCoordinator : IContentDefinitionDisplayHand
         {
             var result = await contentDisplay.BuildEditorAsync(model, context);
             if (result != null)
+            {
                 await result.ApplyAsync(context);
+            }
         }, model, context, _logger);
     }
 
@@ -85,7 +93,9 @@ public class ContentDefinitionDisplayCoordinator : IContentDefinitionDisplayHand
         {
             var result = await contentDisplay.UpdateEditorAsync(model, context);
             if (result != null)
+            {
                 await result.ApplyAsync(context);
+            }
         }, model, context, _logger);
     }
 
@@ -95,7 +105,9 @@ public class ContentDefinitionDisplayCoordinator : IContentDefinitionDisplayHand
         {
             var result = await contentDisplay.BuildEditorAsync(model, context);
             if (result != null)
+            {
                 await result.ApplyAsync(context);
+            }
         }, model, context, _logger);
     }
 
@@ -105,7 +117,9 @@ public class ContentDefinitionDisplayCoordinator : IContentDefinitionDisplayHand
         {
             var result = await contentDisplay.UpdateEditorAsync(model, context);
             if (result != null)
+            {
                 await result.ApplyAsync(context);
+            }
         }, model, context, _logger);
     }
 }

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.IO;
 using Microsoft.AspNetCore.Html;
 
 namespace OrchardCore.ResourceManagement;

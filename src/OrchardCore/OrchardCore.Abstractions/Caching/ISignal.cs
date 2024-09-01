@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;

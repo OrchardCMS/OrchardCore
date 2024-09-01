@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Queries.Sql;
 
 public class SqlParserException : Exception

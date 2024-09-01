@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Workflows.Activities;
@@ -56,7 +55,7 @@ public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : Activit
     {
         EditActivity(activity, model);
 
-        return new ValueTask();
+        return ValueTask.CompletedTask;
     }
 
     /// <summary>

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Models;
 

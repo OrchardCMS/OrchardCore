@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +7,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
-using OrchardCore.Settings;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Endpoints.EmailAuthenticator;
@@ -36,7 +34,7 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
 
         services.AddScoped<IUserClaimsProvider, TwoFactorAuthenticationClaimsProvider>();
         services.AddScoped<IDisplayDriver<UserMenu>, TwoFactorUserMenuDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ISite>, TwoFactorLoginSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<TwoFactorLoginSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodDisplayDriver>();
     }
 
@@ -117,7 +115,7 @@ public sealed class RoleTwoFactorAuthenticationStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<ISite>, RoleLoginSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<RoleLoginSettingsDisplayDriver>();
         services.AddScoped<ITwoFactorAuthenticationHandler, RoleTwoFactorAuthenticationHandler>();
     }
 }
@@ -138,7 +136,7 @@ public sealed class AuthenticatorAppStartup : StartupBase
         });
 
         services.AddTransient<IConfigureOptions<TwoFactorOptions>, AuthenticatorAppProviderTwoFactorOptionsConfiguration>();
-        services.AddScoped<IDisplayDriver<ISite>, AuthenticatorAppLoginSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<AuthenticatorAppLoginSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginAuthenticationAppDisplayDriver>();
     }
 
@@ -184,7 +182,7 @@ public sealed class EmailAuthenticatorStartup : StartupBase
             });
 
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginEmailDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ISite>, EmailAuthenticatorLoginSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<EmailAuthenticatorLoginSettingsDisplayDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -208,7 +206,7 @@ public sealed class SmsAuthenticatorStartup : StartupBase
 
         services.AddTransient<IConfigureOptions<TwoFactorOptions>, PhoneProviderTwoFactorOptionsConfiguration>();
         services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginSmsDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ISite>, SmsAuthenticatorLoginSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<SmsAuthenticatorLoginSettingsDisplayDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

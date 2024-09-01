@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using GraphQL.Types;
 using OrchardCore.Apis.GraphQL.Queries.Types;
 

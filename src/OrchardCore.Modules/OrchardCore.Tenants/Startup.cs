@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,8 +31,8 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<ITenantValidator, TenantValidator>();
         services.AddScoped<IShapeTableProvider, TenantShapeTableProvider>();
         services.AddSetup();
@@ -112,7 +110,7 @@ public sealed class FeatureProfilesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INavigationProvider, FeatureProfilesAdminMenu>();
+        services.AddNavigationProvider<FeatureProfilesAdminMenu>();
         services.AddScoped<FeatureProfilesManager>();
         services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
         services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();

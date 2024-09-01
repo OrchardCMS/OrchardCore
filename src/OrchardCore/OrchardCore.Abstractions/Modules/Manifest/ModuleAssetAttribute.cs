@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Modules.Manifest;
 
 /// <summary>

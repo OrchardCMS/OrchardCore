@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
@@ -141,11 +139,11 @@ public sealed class Startup : StartupBase
 
         services.AddContentManagement();
         services.AddContentManagementDisplay();
-        services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<IPermissionProvider, ContentTypePermissions>();
+        services.AddPermissionProvider<Permissions>();
+        services.AddPermissionProvider<ContentTypePermissions>();
         services.AddScoped<IAuthorizationHandler, ContentTypeAuthorizationHandler>();
         services.AddScoped<IShapeTableProvider, Shapes>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentDisplayDriver, ContentsDriver>();
         services.AddScoped<IContentHandler, ContentsHandler>();
         services.AddRecipeExecutionStep<ContentStep>();

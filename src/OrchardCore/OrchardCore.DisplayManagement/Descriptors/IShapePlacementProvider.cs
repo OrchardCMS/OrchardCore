@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 
 namespace OrchardCore.DisplayManagement.Descriptors;

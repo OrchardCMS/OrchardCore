@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Notify;
@@ -39,10 +35,16 @@ public class ThemeService : IThemeService
         while (themeName != null)
         {
             if (themes.Contains(themeName))
+            {
                 throw new InvalidOperationException(H["The theme \"{0}\" is already in the stack of themes that need features disabled.", themeName].ToString());
+            }
+
             var theme = _extensionManager.GetExtension(themeName);
             if (theme == null)
+            {
                 break;
+            }
+
             themes.Enqueue(themeName);
 
             themeName = !string.IsNullOrWhiteSpace(theme.Manifest.Name)
@@ -70,7 +72,10 @@ public class ThemeService : IThemeService
         while (themeName != null)
         {
             if (themes.Contains(themeName))
+            {
                 throw new InvalidOperationException(H["The theme \"{0}\" is already in the stack of themes that need features enabled.", themeName].ToString());
+            }
+
             themes.Push(themeName);
 
             // TODO: MWP: probably follow on issue: should this be recursive? maybe with a depth limit? i.e. base3->base2->base1 ...

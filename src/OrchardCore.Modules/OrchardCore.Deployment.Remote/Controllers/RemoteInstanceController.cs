@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -20,7 +16,7 @@ using OrchardCore.Routing;
 namespace OrchardCore.Deployment.Remote.Controllers;
 
 [Admin("Deployment/RemoteInstance/{action}/{id?}", "DeploymentRemoteInstancesCreate{action}")]
-public class RemoteInstanceController : Controller
+public sealed class RemoteInstanceController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
@@ -30,8 +26,8 @@ public class RemoteInstanceController : Controller
     private readonly INotifier _notifier;
     private readonly RemoteInstanceService _service;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public RemoteInstanceController(
         RemoteInstanceService service,

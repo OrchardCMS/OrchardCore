@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Options;
@@ -126,7 +122,9 @@ public sealed class UserTaskEventContentDriver : ContentDisplayDriver
             var activity = _activityLibrary.InstantiateActivity<UserTaskEvent>(nameof(UserTaskEvent), activityState);
 
             if (activity.Roles.Count > 0 && !userRoles.Any(activity.Roles.Contains))
+            {
                 yield break;
+            }
 
             foreach (var action in activity.Actions)
             {

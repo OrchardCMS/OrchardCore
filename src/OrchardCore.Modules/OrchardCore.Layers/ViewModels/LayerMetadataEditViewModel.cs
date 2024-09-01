@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using OrchardCore.Layers.Models;
 
 namespace OrchardCore.Layers.ViewModels;

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Cysharp.Text;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Logging;
@@ -10,16 +7,13 @@ namespace OrchardCore.ResourceManagement.TagHelpers;
 [HtmlTargetElement("resources", Attributes = nameof(Type))]
 public class ResourcesTagHelper : TagHelper
 {
-    private readonly IResourceManager _resourceManager;
     private readonly ILogger _logger;
     private readonly IEnumerable<IResourcesTagHelperProcessor> _processors;
 
     public ResourcesTagHelper(
-        IResourceManager resourceManager,
         ILogger<ResourcesTagHelper> logger,
         IEnumerable<IResourcesTagHelperProcessor> processors)
     {
-        _resourceManager = resourceManager;
         _logger = logger;
         _processors = processors;
     }

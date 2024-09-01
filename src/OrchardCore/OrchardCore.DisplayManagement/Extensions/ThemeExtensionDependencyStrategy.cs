@@ -10,7 +10,9 @@ public class ThemeExtensionDependencyStrategy : IExtensionDependencyStrategy
         if (observer.IsTheme())
         {
             if (!subject.IsTheme())
+            {
                 return true;
+            }
         }
 
         return false;

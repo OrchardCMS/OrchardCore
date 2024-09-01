@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;

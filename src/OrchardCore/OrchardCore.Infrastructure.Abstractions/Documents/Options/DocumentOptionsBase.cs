@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace OrchardCore.Documents.Options;

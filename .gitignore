@@ -195,6 +195,7 @@ node_modules/
 
 wwwroot
 **/Localization/**/*.po
+!test/OrchardCore.Tests/Localization/**/*.po
 !src/OrchardCore.Modules/**/wwwroot
 !src/OrchardCore.Themes/**/wwwroot
 !src/OrchardCore.Modules/**/Localization/**/*.po

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Feeds.Models;
 using OrchardCore.Lists.Models;

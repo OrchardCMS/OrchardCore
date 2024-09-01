@@ -1,4 +1,3 @@
-using System;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Execution;
@@ -46,8 +45,8 @@ public sealed class Startup : StartupBase
             return new ErrorInfoProvider(new ErrorInfoProviderOptions { ExposeExceptionDetails = settings.Value.ExposeExceptions });
         });
 
-        services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddTransient<INavigationProvider, AdminMenu>();
+        services.AddPermissionProvider<Permissions>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<GraphQLMiddleware>();
 
         services.AddGraphQL(builder => builder.AddSystemTextJson((options, sp) =>

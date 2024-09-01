@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
@@ -35,7 +33,9 @@ public class SitemapUrlHrefLangExtendedMetadataProvider : ISitemapContentItemExt
         XElement url)
     {
         var part = contentItem.As<LocalizationPart>();
-        if (part == null)
+        if (part == null ||
+            queryContext.ReferenceContentItems == null ||
+            !queryContext.ReferenceContentItems.Any())
         {
             return true;
         }

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Rules.Models;
 
 namespace OrchardCore.Rules.Services;

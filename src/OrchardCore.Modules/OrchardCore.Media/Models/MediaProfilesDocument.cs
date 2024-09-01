@@ -1,13 +1,12 @@
-using System;
-using System.Collections.Generic;
 using OrchardCore.Data.Documents;
-using OrchardCore.Media.Processing;
+using Format = OrchardCore.Media.Processing.Format;
+using ResizeMode = OrchardCore.Media.Processing.ResizeMode;
 
 namespace OrchardCore.Media.Models;
 
 public class MediaProfilesDocument : Document
 {
-    public Dictionary<string, MediaProfile> MediaProfiles { get; init; } = new Dictionary<string, MediaProfile>(StringComparer.OrdinalIgnoreCase);
+    public Dictionary<string, MediaProfile> MediaProfiles { get; init; } = new(StringComparer.OrdinalIgnoreCase);
 }
 
 public class MediaProfile

@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
 
   <PropertyGroup>
-    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <!-- Special case - this property is used by a DotNetCliToolReference -->
     <DotNetXunitVersion>2.3.0</DotNetXunitVersion>
   </PropertyGroup>
@@ -91,6 +91,40 @@
     <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.1.1" />
     <PackageVersion Include="YesSql.Filters.Query" Version="5.1.1" />
     <PackageVersion Include="ZString" Version="2.6.0" />
+  </ItemGroup>
+
+  <!-- These versions are used for tansitive dependency forced upgrades only. For instance when a package reference a vulnerable version. -->
+  <!-- To list all vulnerable direct references run 'dotnet list package -vulnerable' -->
+  <!-- To list all vulnerable transitive references run 'dotnet list package -vulnerable -include-transitive' -->
+  <!-- The dependency graphs are generated using 'dotnet nuget why <.sln> <package id>' -->
+  <ItemGroup>
+    <!--
+      MiniProfiler.AspNetCore.Mvc (v4.3.8)
+        └─ MiniProfiler.AspNetCore (v4.3.8)
+           └─ MiniProfiler.Shared (v4.3.8)
+              └─ System.Data.Common (v4.3.0)
+                 └─ System.Text.RegularExpressions (v4.3.0)
+    -->
+    <PackageVersion Include="System.Text.RegularExpressions" Version="4.3.1" />
+
+    <!--
+      Azure.Extensions.AspNetCore.DataProtection.Blobs (v1.3.4)
+      └─ Microsoft.AspNetCore.DataProtection (v3.1.32)
+         └─ System.Security.Cryptography.Xml (v4.7.1)
+            └─ System.Security.Permissions (v4.7.0)
+               └─ System.Windows.Extensions (v4.7.0)
+                  └─ System.Drawing.Common (v4.7.0)
+    -->
+    <PackageVersion Include="System.Drawing.Common" Version="4.7.2" />
+
+    <!--
+      Microsoft.AspNetCore.DataProtection.StackExchangeRedis (v8.0.8)
+      └─ Microsoft.AspNetCore.DataProtection (v8.0.8)
+         └─ System.Security.Cryptography.Xml (v8.0.1)
+            └─ System.Security.Cryptography.Pkcs (v8.0.0)
+               └─ System.Formats.Asn1 (v8.0.0)
+    -->
+    <PackageVersion Include="System.Formats.Asn1" Version="8.0.1" />
   </ItemGroup>
 
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->

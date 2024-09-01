@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
@@ -47,7 +43,9 @@ public class ElasticQueryFieldTypeProvider : ISchemaBuilder
         foreach (var query in queries)
         {
             if (string.IsNullOrWhiteSpace(query.Schema))
+            {
                 continue;
+            }
 
             var name = query.Name;
 

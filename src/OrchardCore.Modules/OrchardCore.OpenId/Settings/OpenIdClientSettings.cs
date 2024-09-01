@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace OrchardCore.OpenId.Settings;
 
 public class OpenIdClientSettings

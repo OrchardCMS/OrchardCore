@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Json;
 using OrchardCore.Recipes.Models;
@@ -20,19 +15,16 @@ public sealed class QueryStep : IRecipeStepHandler
 {
     private readonly IQueryManager _queryManager;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
-    private readonly ILogger _logger;
 
     internal readonly IStringLocalizer S;
 
     public QueryStep(
         IQueryManager queryManager,
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
-        ILogger<QueryStep> logger,
         IStringLocalizer<QueryStep> stringLocalizer)
     {
         _queryManager = queryManager;
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
-        _logger = logger;
         S = stringLocalizer;
     }
 

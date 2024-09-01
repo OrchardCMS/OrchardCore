@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.Users.Handlers;
 
 public abstract class UserEventHandlerBase : IUserEventHandler
@@ -27,4 +25,7 @@ public abstract class UserEventHandlerBase : IUserEventHandler
 
     /// <inheritdocs />
     public virtual Task EnabledAsync(UserContext context) => Task.CompletedTask;
+
+    /// <inheritdocs />
+    public virtual Task ConfirmedAsync(UserConfirmContext context) => Task.CompletedTask;
 }

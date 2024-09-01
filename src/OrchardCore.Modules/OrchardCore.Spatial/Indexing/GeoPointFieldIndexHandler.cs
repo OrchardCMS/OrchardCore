@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Indexing;
 using OrchardCore.Spatial.Fields;
 

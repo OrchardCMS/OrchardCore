@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -34,7 +30,7 @@ using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 namespace OrchardCore.Users.Controllers;
 
 [Authorize]
-public class AccountController : AccountBaseController
+public sealed class AccountController : AccountBaseController
 {
     public const string DefaultExternalLoginProtector = "DefaultExternalLogin";
 
@@ -60,8 +56,8 @@ public class AccountController : AccountBaseController
         MergeNullValueHandling = MergeNullValueHandling.Merge
     };
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public AccountController(
         IUserService userService,
