@@ -24,9 +24,6 @@ public sealed class ScopeController : Controller
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
-    private readonly ShellDescriptor _shellDescriptor;
-    private readonly ShellSettings _shellSettings;
-    private readonly IShellHost _shellHost;
 
     internal readonly IStringLocalizer S;
 
@@ -36,10 +33,7 @@ public sealed class ScopeController : Controller
         IOptions<PagerOptions> pagerOptions,
         IStringLocalizer<ScopeController> stringLocalizer,
         IAuthorizationService authorizationService,
-        INotifier notifier,
-        ShellDescriptor shellDescriptor,
-        ShellSettings shellSettings,
-        IShellHost shellHost)
+        INotifier notifier)
     {
         _scopeManager = scopeManager;
         _shapeFactory = shapeFactory;
@@ -47,9 +41,6 @@ public sealed class ScopeController : Controller
         S = stringLocalizer;
         _authorizationService = authorizationService;
         _notifier = notifier;
-        _shellDescriptor = shellDescriptor;
-        _shellSettings = shellSettings;
-        _shellHost = shellHost;
     }
 
     [Admin("OpenId/Scope", "OpenIdScope")]
