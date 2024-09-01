@@ -30,11 +30,10 @@ public class UserTimeZoneSelector : ITimeZoneSelector
         return new TimeZoneSelectorResult
         {
             Priority = 100,
-            TimeZoneId = async () => (await _userTimeZoneService.GetAsync(currentUser))?.TimeZoneId
+            TimeZoneId = async () => (await _userTimeZoneService.GetAsync(currentUser)).TimeZoneId
         };
     }
 
     private Task<IUser> GetCurrentUserAsync()
         => _userManager.FindByNameAsync(_httpContextAccessor.HttpContext.User.Identity.Name);
-    }
 }

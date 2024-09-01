@@ -7,7 +7,7 @@ using OrchardCore.Users.TimeZone.Models;
 namespace OrchardCore.Users.TimeZone.Services;
 
 /// <summary>
-/// Represents a time zone service for a user.
+/// Represents a service that responsible for managing the user's time zone settings.
 /// </summary>
 public class UserTimeZoneService : IUserTimeZoneService
 {
@@ -19,7 +19,9 @@ public class UserTimeZoneService : IUserTimeZoneService
     private readonly IClock _clock;
     private readonly IDistributedCache _distributedCache;
 
-    public UserTimeZoneService(IClock clock, IDistributedCache distributedCache)
+    public UserTimeZoneService(
+        IClock clock,
+        IDistributedCache distributedCache)
     {
         _clock = clock;
         _distributedCache = distributedCache;
@@ -45,11 +47,9 @@ public class UserTimeZoneService : IUserTimeZoneService
     {
         ArgumentNullException.ThrowIfNull(user);
 
-        var userName = user.UserName;
-
-        if (!string.IsNullOrEmpty(userName))
+        if (!string.IsNullOrEmpty(user.UserName))
         {
-            await _distributedCache.RemoveAsync(GetCacheKey(userName));
+            await _distributedCache.RemoveAsync(GetCacheKey(user.UserName));
         }
 
         return;
@@ -58,13 +58,12 @@ public class UserTimeZoneService : IUserTimeZoneService
     /// <inheritdoc/>
     private async ValueTask<string> GetTimeZoneIdAsync(IUser user)
     {
-        var userName = user.UserName;
-        if (string.IsNullOrEmpty(userName))
+        if (string.IsNullOrEmpty(user.UserName))
         {
             return null;
         }
 
-        var key = GetCacheKey(userName);
+        var key = GetCacheKey(user.UserName);
 
         var timeZoneId = await _distributedCache.GetStringAsync(key);
 
