@@ -9,14 +9,14 @@ namespace OrchardCore.Users.TimeZone.Services;
 public interface IUserTimeZoneService
 {
     /// <summary>
-    /// Gets the time zone for the specified user.
+    /// Gets the time zone for the given user.
     /// </summary>
     /// <param name="user">The <see cref="IUser"/>.</param>
-    public ValueTask<ITimeZone> GetAsync(IUser user);
+    ValueTask<ITimeZone> GetAsync(IUser user);
 
     /// <summary>
-    /// Updates the time zone for the specified user.
+    /// Updates the time zone for the given user.
     /// </summary>
     /// <param name="user">The <see cref="IUser"/>.</param>
-    public ValueTask UpdateAsync(IUser user);
+    ValueTask UpdateAsync(IUser user);
 }
