@@ -13,7 +13,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<ITimeZoneSelector, UserTimeZoneSelector>();
-        services.AddSingleton<IUserTimeZoneService, UserTimeZoneService>();
+        services.AddScoped<IUserTimeZoneService, UserTimeZoneService>();
         services.AddScoped<IDisplayDriver<User>, UserTimeZoneDisplayDriver>();
     }
 }
