@@ -24,8 +24,10 @@ public sealed class MediaCacheAdminMenu : INavigationProvider
                 .Add(S["Media Cache"], S["Media Cache"].PrefixPosition(), cache => cache
                     .Action("Index", "MediaCache", "OrchardCore.Media")
                     .Permission(MediaCachePermissions.ManageAssetCache)
-                    .LocalNav())
-        ));
+                    .LocalNav()
+                )
+            )
+        );
 
         return ValueTask.CompletedTask;
     }
