@@ -53,9 +53,11 @@
             {
                 <li class="text-center">@T["You have no unread notifications."]</li>
             }
+
             <li>
                 <hr class="dropdown-divider">
             </li>
+
             @if (await AuthorizationService.AuthorizeAsync(ViewContext.HttpContext.User, AdminPermissions.AccessAdminPanel))
             {
                 <li>

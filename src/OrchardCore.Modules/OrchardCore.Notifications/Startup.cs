@@ -69,6 +69,7 @@ public sealed class Startup : StartupBase
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, NotificationOptionsConfiguration>();
         services.AddScoped<IDisplayDriver<User>, UserNotificationPreferencesPartDisplayDriver>();
         services.AddScoped<IDisplayDriver<Navbar>, NotificationNavbarDisplayDriver>();
+        services.AddScoped<INotificationEvents, CacheNotificationEventsHandler>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
