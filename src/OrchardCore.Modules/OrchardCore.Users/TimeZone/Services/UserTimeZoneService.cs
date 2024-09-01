@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Users.Models;
@@ -21,22 +18,19 @@ public class UserTimeZoneService : IUserTimeZoneService
 
     private readonly IClock _clock;
     private readonly IDistributedCache _distributedCache;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public UserTimeZoneService(
-        IClock clock,
-        IDistributedCache distributedCache,
-        IHttpContextAccessor httpContextAccessor)
+    public UserTimeZoneService(IClock clock, IDistributedCache distributedCache)
     {
         _clock = clock;
         _distributedCache = distributedCache;
-        _httpContextAccessor = httpContextAccessor;
     }
 
     /// <inheritdoc/>
     public async ValueTask<ITimeZone> GetAsync(IUser user)
     {
-        var currentTimeZoneId = await GetTimeZoneIdAsync();
+        ArgumentNullException.ThrowIfNull(user);
+
+        var currentTimeZoneId = await GetTimeZoneIdAsync(user);
 
         if (string.IsNullOrEmpty(currentTimeZoneId))
         {
@@ -49,7 +43,9 @@ public class UserTimeZoneService : IUserTimeZoneService
     /// <inheritdoc/>
     public async ValueTask UpdateAsync(IUser user)
     {
-        var userName = user?.UserName;
+        ArgumentNullException.ThrowIfNull(user);
+
+        var userName = user.UserName;
 
         if (!string.IsNullOrEmpty(userName))
         {
@@ -60,10 +56,9 @@ public class UserTimeZoneService : IUserTimeZoneService
     }
 
     /// <inheritdoc/>
-    private async ValueTask<string> GetTimeZoneIdAsync()
+    private async ValueTask<string> GetTimeZoneIdAsync(IUser user)
     {
-        var userName = _httpContextAccessor.HttpContext.User?.Identity?.Name;
-
+        var userName = user.UserName;
         if (string.IsNullOrEmpty(userName))
         {
             return null;
@@ -76,10 +71,7 @@ public class UserTimeZoneService : IUserTimeZoneService
         // The timezone is not cached yet, resolve it and store the value
         if (string.IsNullOrEmpty(timeZoneId))
         {
-            // Delay-loading UserManager since it is registered as scoped
-            var userManager = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<UserManager<IUser>>();
-            var user = await userManager.FindByNameAsync(userName) as User;
-            timeZoneId = user.As<UserTimeZone>()?.TimeZoneId;
+            timeZoneId = (user as User).As<UserTimeZone>()?.TimeZoneId;
 
             // We store a special string to remember there is no specific value for this user.
             // And actual distributed cache implementation might not be able to store null values.
