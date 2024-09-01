@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -11,12 +13,28 @@ namespace OrchardCore.OpenId.Drivers;
 public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenIdValidationSettings>
 {
     private readonly IShellHost _shellHost;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
 
-    public OpenIdValidationSettingsDisplayDriver(IShellHost shellHost)
-        => _shellHost = shellHost;
-
-    public override IDisplayResult Edit(OpenIdValidationSettings settings, BuildEditorContext context)
+    public OpenIdValidationSettingsDisplayDriver(
+        IShellHost shellHost,
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService)
     {
+        _shellHost = shellHost;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+    }
+
+    public override async Task<IDisplayResult> EditAsync(OpenIdValidationSettings settings, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageValidationSettings))
+        {
+            return null;
+        }
+
         context.AddTenantReloadWarningWrapper();
 
         return Initialize<OpenIdValidationSettingsViewModel>("OpenIdValidationSettings_Edit", async model =>
@@ -50,6 +68,13 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
 
     public override async Task<IDisplayResult> UpdateAsync(OpenIdValidationSettings settings, UpdateEditorContext context)
     {
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageValidationSettings))
+        {
+            return null;
+        }
+
         var model = new OpenIdValidationSettingsViewModel();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);

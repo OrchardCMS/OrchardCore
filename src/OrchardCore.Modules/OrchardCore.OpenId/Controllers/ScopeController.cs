@@ -92,16 +92,8 @@ public sealed class ScopeController : Controller
 
         var model = new CreateOpenIdScopeViewModel();
 
-        foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.IsRunning()))
-        {
-            model.Tenants.Add(new CreateOpenIdScopeViewModel.TenantEntry
-            {
-                Current = string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal),
-                Name = tenant.Name
-            });
-        }
-
         ViewData["ReturnUrl"] = returnUrl;
+
         return View(model);
     }
 
@@ -116,11 +108,9 @@ public sealed class ScopeController : Controller
         if (await _scopeManager.FindByNameAsync(model.Name) != null)
         {
             ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
-        }
 
-        if (!ModelState.IsValid)
-        {
             ViewData["ReturnUrl"] = returnUrl;
+
             return View(model);
         }
 
@@ -135,11 +125,6 @@ public sealed class ScopeController : Controller
         {
             descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
         }
-
-        descriptor.Resources.UnionWith(model.Tenants
-            .Where(tenant => tenant.Selected)
-            .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal))
-            .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
 
         await _scopeManager.CreateAsync(descriptor);
 
@@ -159,6 +144,7 @@ public sealed class ScopeController : Controller
         }
 
         var scope = await _scopeManager.FindByPhysicalIdAsync(id);
+
         if (scope == null)
         {
             return NotFound();
@@ -172,24 +158,13 @@ public sealed class ScopeController : Controller
             Name = await _scopeManager.GetNameAsync(scope)
         };
 
-        var resources = await _scopeManager.GetResourcesAsync(scope);
+        var resources = (await _scopeManager.GetResourcesAsync(scope))
+            .Where(resource => !string.IsNullOrEmpty(resource));
 
-        model.Resources = string.Join(" ",
-            from resource in resources
-            where !string.IsNullOrEmpty(resource) && !resource.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.Ordinal)
-            select resource);
-
-        foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.IsRunning()))
-        {
-            model.Tenants.Add(new EditOpenIdScopeViewModel.TenantEntry
-            {
-                Current = string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal),
-                Name = tenant.Name,
-                Selected = resources.Contains(OpenIdConstants.Prefixes.Tenant + tenant.Name)
-            });
-        }
+        model.Resources = string.Join(' ', resources);
 
         ViewData["ReturnUrl"] = returnUrl;
+
         return View(model);
     }
 
@@ -202,6 +177,7 @@ public sealed class ScopeController : Controller
         }
 
         var scope = await _scopeManager.FindByPhysicalIdAsync(model.Id);
+
         if (scope == null)
         {
             return NotFound();
@@ -210,6 +186,7 @@ public sealed class ScopeController : Controller
         if (ModelState.IsValid)
         {
             var other = await _scopeManager.FindByNameAsync(model.Name);
+
             if (other != null && !string.Equals(await _scopeManager.GetIdAsync(other), await _scopeManager.GetIdAsync(scope), StringComparison.Ordinal))
             {
                 ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
@@ -219,6 +196,7 @@ public sealed class ScopeController : Controller
         if (!ModelState.IsValid)
         {
             ViewData["ReturnUrl"] = returnUrl;
+
             return View(model);
         }
 
@@ -233,19 +211,14 @@ public sealed class ScopeController : Controller
 
         if (!string.IsNullOrEmpty(model.Resources))
         {
-            descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+            descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
         }
-
-        descriptor.Resources.UnionWith(model.Tenants
-            .Where(tenant => tenant.Selected)
-            .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal))
-            .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
 
         await _scopeManager.UpdateAsync(scope, descriptor);
 
         if (string.IsNullOrEmpty(returnUrl))
         {
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         return this.LocalRedirect(returnUrl, true);
@@ -260,6 +233,7 @@ public sealed class ScopeController : Controller
         }
 
         var scope = await _scopeManager.FindByPhysicalIdAsync(id);
+
         if (scope == null)
         {
             return NotFound();
