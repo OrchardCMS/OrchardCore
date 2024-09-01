@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Users.TimeZone.Services;
@@ -8,21 +10,34 @@ namespace OrchardCore.Users.TimeZone.Services;
 public class UserTimeZoneSelector : ITimeZoneSelector
 {
     private readonly IUserTimeZoneService _userTimeZoneService;
+    private readonly UserManager<IUser> _userManager;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public UserTimeZoneSelector(IUserTimeZoneService userTimeZoneService)
+    public UserTimeZoneSelector(
+        IUserTimeZoneService userTimeZoneService,
+        UserManager<IUser> userManager,
+        IHttpContextAccessor httpContextAccessor)
     {
         _userTimeZoneService = userTimeZoneService;
+        _userManager = userManager;
+        _httpContextAccessor = httpContextAccessor;
     }
 
-    public Task<TimeZoneSelectorResult> GetTimeZoneAsync()
+    public async Task<TimeZoneSelectorResult> GetTimeZoneAsync()
     {
-        return Task.FromResult(
-            new TimeZoneSelectorResult
-            {
-                Priority = 100,
-                TimeZoneId = async () =>
-                    (await _userTimeZoneService.GetAsync())?.TimeZoneId
-            }
-        );
+        var currentUser = await GetCurrentUserAsync();
+
+        return new TimeZoneSelectorResult
+        {
+            Priority = 100,
+            TimeZoneId = async () => (await _userTimeZoneService.GetAsync(currentUser))?.TimeZoneId
+        };
+    }
+
+    private async Task<IUser> GetCurrentUserAsync()
+    {
+        var userName = _httpContextAccessor.HttpContext.User.Identity.Name;
+
+        return await _userManager.FindByNameAsync(userName);
     }
 }
