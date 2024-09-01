@@ -31,9 +31,14 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
         _session = session;
     }
 
-    public override IDisplayResult Display(Navbar model, BuildDisplayContext context)
+    public override async Task<IDisplayResult> DisplayAsync(Navbar model, BuildDisplayContext context)
     {
-        return Initialize<UserNotificationNavbarViewModel>("UserNotificationNavbar", async model =>
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, NotificationPermissions.ManageNotifications))
+        {
+            return null;
+        }
+
+        var result = Initialize<UserNotificationNavbarViewModel>("UserNotificationNavbar", async model =>
         {
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var notifications = (await _session.Query<Notification, NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection)
@@ -46,7 +51,20 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
             model.TotalUnread = notifications.Count;
 
         }).Location("Detail", "Content:9")
-        .Location("DetailAdmin", "Content:9")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, NotificationPermissions.ManageNotifications));
+        .Location("DetailAdmin", "Content:9");
+
+        if (_notificationOptions.CacheDurationInSeconds > 0)
+        {
+            return result
+                .Cache(NotificationConstants.TopUnreadUserNotificationCacheTag, context => context
+                    .AddContext("user")
+                    .WithExpiryAfter(TimeSpan.FromSeconds(_notificationOptions.CacheDurationInSeconds))
+                    // Allow another feature to clear all notification cache entries if necessary.
+                    .AddTag(NotificationConstants.TopUnreadUserNotificationCacheTag)
+                    .AddTag(NotificationsHelper.GetUnreadUserNotificationTagKey(_httpContextAccessor.HttpContext.User.Identity.Name))
+                );
+        }
+
+        return result;
     }
 }

@@ -55,7 +55,7 @@ public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : Activit
     {
         EditActivity(activity, model);
 
-        return new ValueTask();
+        return ValueTask.CompletedTask;
     }
 
     /// <summary>
