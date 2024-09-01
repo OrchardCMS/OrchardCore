@@ -17,7 +17,7 @@ public sealed class AdminMenu : INavigationProvider
         S = localizer;
     }
 
-    public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    public async ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
     {
         if (!NavigationHelper.IsAdminMenu(name))
         {

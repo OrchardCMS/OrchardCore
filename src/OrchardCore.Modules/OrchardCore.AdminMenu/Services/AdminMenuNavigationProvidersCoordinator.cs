@@ -31,7 +31,7 @@ public sealed class AdminMenuNavigationProvidersCoordinator : INavigationProvide
         _logger = logger;
     }
 
-    public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    public async ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
     {
         // We only add them if the caller uses the string "adminMenu".
         if (name != NavigationConstants.AdminMenuId)

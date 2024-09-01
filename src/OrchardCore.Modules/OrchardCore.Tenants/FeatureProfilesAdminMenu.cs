@@ -10,23 +10,25 @@ public sealed class FeatureProfilesAdminMenu : INavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public FeatureProfilesAdminMenu(IStringLocalizer<FeatureProfilesAdminMenu> localizer, ShellSettings shellSettings)
+    public FeatureProfilesAdminMenu(
+        IStringLocalizer<FeatureProfilesAdminMenu> localizer,
+        ShellSettings shellSettings)
     {
         _shellSettings = shellSettings;
         S = localizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
     {
         if (!NavigationHelper.IsAdminMenu(name))
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
-        // Don't add the menu item on non-default tenants
+        // Don't add the menu item on non-default tenants.
         if (!_shellSettings.IsDefaultShell())
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         builder
@@ -39,6 +41,6 @@ public sealed class FeatureProfilesAdminMenu : INavigationProvider
                 )
             );
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

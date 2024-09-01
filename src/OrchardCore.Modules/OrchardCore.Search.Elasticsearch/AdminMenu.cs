@@ -7,11 +7,11 @@ public sealed class AdminMenu(IStringLocalizer<AdminMenu> localizer) : INavigati
 {
     internal readonly IStringLocalizer S = localizer;
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
     {
         if (!NavigationHelper.IsAdminMenu(name))
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         builder
@@ -38,6 +38,6 @@ public sealed class AdminMenu(IStringLocalizer<AdminMenu> localizer) : INavigati
                 )
             );
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

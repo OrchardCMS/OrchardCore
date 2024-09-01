@@ -1,23 +1,20 @@
-using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.GitHub;
+namespace OrchardCore.Microsoft.Authentication;
 
-public sealed class AdminMenuGitHubLogin : INavigationProvider
+public sealed class AdminMenuAAD : INavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
-        { "groupId", GitHubConstants.Features.GitHubAuthentication },
+        { "groupId", MicrosoftAuthenticationConstants.Features.AAD },
     };
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenuGitHubLogin(IStringLocalizer<AdminMenuGitHubLogin> localizer)
-    {
-        S = localizer;
-    }
+    public AdminMenuAAD(IStringLocalizer<AdminMenuAAD> localizer) => S = localizer;
 
     public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
     {
@@ -29,15 +26,12 @@ public sealed class AdminMenuGitHubLogin : INavigationProvider
         builder
             .Add(S["Security"], security => security
                 .Add(S["Authentication"], authentication => authentication
-                    .Add(S["GitHub"], S["GitHub"].PrefixPosition(), settings => settings
-                        .AddClass("github")
-                        .Id("github")
+                    .Add(S["Microsoft Entra ID"], S["Microsoft Entra ID"].PrefixPosition(), client => client
+                        .AddClass("microsoft-entra-id").Id("microsoft-entra-id")
                         .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageGitHubAuthentication)
-                        .LocalNav()
-                    )
-                )
-            );
+                        .Permission(Permissions.ManageMicrosoftAuthentication)
+                        .LocalNav())
+            ));
 
         return ValueTask.CompletedTask;
     }
