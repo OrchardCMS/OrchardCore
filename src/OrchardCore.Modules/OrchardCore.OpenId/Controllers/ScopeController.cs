@@ -6,7 +6,6 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.Abstractions.Descriptors;
@@ -20,6 +19,7 @@ namespace OrchardCore.OpenId.Controllers;
 public sealed class ScopeController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
+    private readonly ShellSettings _shellSettings;
     private readonly IOpenIdScopeManager _scopeManager;
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
@@ -33,6 +33,7 @@ public sealed class ScopeController : Controller
         IOptions<PagerOptions> pagerOptions,
         IStringLocalizer<ScopeController> stringLocalizer,
         IAuthorizationService authorizationService,
+        ShellSettings shellSettings,
         INotifier notifier)
     {
         _scopeManager = scopeManager;
@@ -40,6 +41,7 @@ public sealed class ScopeController : Controller
         _pagerOptions = pagerOptions.Value;
         S = stringLocalizer;
         _authorizationService = authorizationService;
+        _shellSettings = shellSettings;
         _notifier = notifier;
     }
 
@@ -99,7 +101,10 @@ public sealed class ScopeController : Controller
         if (await _scopeManager.FindByNameAsync(model.Name) != null)
         {
             ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
+        }
 
+        if (!ModelState.IsValid)
+        {
             ViewData["ReturnUrl"] = returnUrl;
 
             return View(model);
@@ -114,6 +119,15 @@ public sealed class ScopeController : Controller
 
         if (!string.IsNullOrEmpty(model.Resources))
         {
+            if (model.Resources.Contains(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError(nameof(model.Resources), S["The resources field cannot contain the value: {0}.", OpenIdConstants.Prefixes.Tenant + _shellSettings.Name]);
+
+                ViewData["ReturnUrl"] = returnUrl;
+
+                return View(model);
+            }
+
             descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
         }
 
@@ -202,6 +216,15 @@ public sealed class ScopeController : Controller
 
         if (!string.IsNullOrEmpty(model.Resources))
         {
+            if (model.Resources.Contains(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError(nameof(model.Resources), S["The resources field cannot contain the value: {0}.", OpenIdConstants.Prefixes.Tenant + _shellSettings.Name]);
+
+                ViewData["ReturnUrl"] = returnUrl;
+
+                return View(model);
+            }
+
             descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
         }
 
