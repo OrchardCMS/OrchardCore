@@ -4,7 +4,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Users.TimeZone.Services;
 
 /// <summary>
-/// Contract for user time zone service.
+/// Represents a service that responsible for managing the user's time zone settings.
 /// </summary>
 public interface IUserTimeZoneService
 {

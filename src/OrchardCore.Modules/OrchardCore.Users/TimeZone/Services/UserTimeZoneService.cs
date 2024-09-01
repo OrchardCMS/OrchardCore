@@ -6,9 +6,6 @@ using OrchardCore.Users.TimeZone.Models;
 
 namespace OrchardCore.Users.TimeZone.Services;
 
-/// <summary>
-/// Represents a service that responsible for managing the user's time zone settings.
-/// </summary>
 public class UserTimeZoneService : IUserTimeZoneService
 {
     private const string CacheKey = "UserTimeZone/";
@@ -47,12 +44,12 @@ public class UserTimeZoneService : IUserTimeZoneService
     {
         ArgumentNullException.ThrowIfNull(user);
 
-        if (!string.IsNullOrEmpty(user.UserName))
+        if (string.IsNullOrEmpty(user.UserName))
         {
-            await _distributedCache.RemoveAsync(GetCacheKey(user.UserName));
+            return;
         }
 
-        return;
+        await _distributedCache.RemoveAsync(GetCacheKey(user.UserName));
     }
 
     /// <inheritdoc/>
@@ -70,7 +67,10 @@ public class UserTimeZoneService : IUserTimeZoneService
         // The timezone is not cached yet, resolve it and store the value
         if (string.IsNullOrEmpty(timeZoneId))
         {
-            timeZoneId = (user as User).As<UserTimeZone>()?.TimeZoneId;
+            if(user is User u) 
+            {
+                timeZoneId = u.As<UserTimeZone>()?.TimeZoneId;
+            }
 
             // We store a special string to remember there is no specific value for this user.
             // And actual distributed cache implementation might not be able to store null values.
