@@ -22,14 +22,3 @@ public class FeatureBuildingContext
     public bool IsAlwaysEnabled { get; set; }
     public bool EnabledByDependencyOnly { get; set; }
 }
-
-public abstract class FeatureBuilderEvents : IFeatureBuilderEvents
-{
-    public virtual void Building(FeatureBuildingContext context)
-    {
-    }
-
-    public virtual void Built(IFeatureInfo featureInfo)
-    {
-    }
-}
