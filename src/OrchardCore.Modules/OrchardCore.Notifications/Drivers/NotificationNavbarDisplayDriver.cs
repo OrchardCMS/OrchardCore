@@ -53,16 +53,26 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
         }).Location("Detail", "Content:9")
         .Location("DetailAdmin", "Content:9");
 
-        if (_notificationOptions.CacheDurationInSeconds > 0)
+        if (_notificationOptions.CacheDurationSeconds > 0 || _notificationOptions.CacheDurationSlidingSeconds > 0)
         {
             return result
-                .Cache(NotificationConstants.TopUnreadUserNotificationCacheTag, context => context
-                    .AddContext("user")
-                    .WithExpirySliding(TimeSpan.FromSeconds(_notificationOptions.CacheDurationInSeconds))
-                    // Allow another feature to clear all notification cache entries if necessary.
-                    .AddTag(NotificationConstants.TopUnreadUserNotificationCacheTag)
-                    .AddTag(NotificationsHelper.GetUnreadUserNotificationTagKey(_httpContextAccessor.HttpContext.User.Identity.Name))
-                );
+                .Cache(NotificationConstants.TopUnreadUserNotificationCacheTag, context =>
+                {
+                    context.AddContext("user")
+                        // Allow another feature to clear all notification cache entries if necessary.
+                        .AddTag(NotificationConstants.TopUnreadUserNotificationCacheTag)
+                        .AddTag(NotificationsHelper.GetUnreadUserNotificationTagKey(_httpContextAccessor.HttpContext.User.Identity.Name));
+
+                    if (_notificationOptions.CacheDurationSeconds > 0)
+                    {
+                        context.WithExpiryAfter(TimeSpan.FromSeconds(_notificationOptions.CacheDurationSeconds));
+                    }
+
+                    if (_notificationOptions.CacheDurationSlidingSeconds > 0)
+                    {
+                        context.WithExpirySliding(TimeSpan.FromSeconds(_notificationOptions.CacheDurationSlidingSeconds));
+                    }
+                });
         }
 
         return result;
