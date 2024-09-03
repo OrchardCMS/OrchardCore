@@ -16,5 +16,5 @@ public class NotificationOptions
     /// How may seconds should the top-unread notification be cache for.
     /// 0 value will indicate no cache.
     /// </summary>
-    public int CacheDurationInSeconds { get; set; } = 3600;
+    public int CacheDurationInSeconds { get; set; } = 1800;
 }

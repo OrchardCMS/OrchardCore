@@ -58,7 +58,7 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
             return result
                 .Cache(NotificationConstants.TopUnreadUserNotificationCacheTag, context => context
                     .AddContext("user")
-                    .WithExpiryAfter(TimeSpan.FromSeconds(_notificationOptions.CacheDurationInSeconds))
+                    .WithExpirySliding(TimeSpan.FromSeconds(_notificationOptions.CacheDurationInSeconds))
                     // Allow another feature to clear all notification cache entries if necessary.
                     .AddTag(NotificationConstants.TopUnreadUserNotificationCacheTag)
                     .AddTag(NotificationsHelper.GetUnreadUserNotificationTagKey(_httpContextAccessor.HttpContext.User.Identity.Name))
