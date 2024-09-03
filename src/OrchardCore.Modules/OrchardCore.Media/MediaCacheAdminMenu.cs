@@ -1,13 +1,13 @@
-using Microsoft.Extensions.Localization;
+﻿using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Media.AmazonS3;
+namespace OrchardCore.Media;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class MediaCacheAdminMenu : INavigationProvider
 {
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public MediaCacheAdminMenu(IStringLocalizer<AdminMenu> localizer)
     {
         S = localizer;
     }
@@ -21,9 +21,9 @@ public sealed class AdminMenu : INavigationProvider
 
         builder.Add(S["Configuration"], configuration => configuration
             .Add(S["Media"], S["Media"].PrefixPosition(), media => media
-                .Add(S["Amazon S3 Options"], S["Amazon S3 Options"].PrefixPosition(), options => options
-                    .Action("Options", "Admin", "OrchardCore.Media.AmazonS3")
-                    .Permission(Permissions.ViewAmazonS3MediaOptions)
+                .Add(S["Media Cache"], S["Media Cache"].PrefixPosition(), cache => cache
+                    .Action("Index", "MediaCache", "OrchardCore.Media")
+                    .Permission(MediaCachePermissions.ManageAssetCache)
                     .LocalNav()
                 )
             )

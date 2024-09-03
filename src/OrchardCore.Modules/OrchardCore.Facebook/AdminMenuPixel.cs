@@ -1,24 +1,23 @@
-using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.Security.Drivers;
 
-namespace OrchardCore.Security;
+namespace OrchardCore.Facebook;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class AdminMenuPixel : INavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
-        { "groupId", SecuritySettingsDisplayDriver.GroupId },
-
+        { "groupId", FacebookConstants.PixelSettingsGroupId },
     };
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public AdminMenuPixel(
+        IStringLocalizer<AdminMenuLogin> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
     public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
@@ -29,13 +28,13 @@ public sealed class AdminMenu : INavigationProvider
         }
 
         builder
-            .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
-                .AddClass("security")
-                .Id("security")
+            .Add(S["Configuration"], configuration => configuration
                 .Add(S["Settings"], settings => settings
-                    .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
-                        .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
+                    .Add(S["Meta Pixel"], S["Meta Pixel"].PrefixPosition(), pixel => pixel
+                        .AddClass("facebookPixel")
+                        .Id("facebookPixel")
                         .Action("Index", "Admin", _routeValues)
+                        .Permission(FacebookConstants.ManageFacebookPixelPermission)
                         .LocalNav()
                     )
                 )

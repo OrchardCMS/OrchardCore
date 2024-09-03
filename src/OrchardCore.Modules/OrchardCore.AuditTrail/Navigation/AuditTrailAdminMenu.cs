@@ -20,11 +20,11 @@ public sealed class AuditTrailAdminMenu : INavigationProvider
         S = stringLocalizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
     {
         if (!NavigationHelper.IsAdminMenu(name))
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         builder
@@ -36,6 +36,6 @@ public sealed class AuditTrailAdminMenu : INavigationProvider
                 .LocalNav()
             );
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

@@ -1,17 +1,15 @@
-using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.Security.Drivers;
 
-namespace OrchardCore.Security;
+namespace OrchardCore.Twitter;
 
 public sealed class AdminMenu : INavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
-        { "groupId", SecuritySettingsDisplayDriver.GroupId },
-
+        { "groupId", TwitterConstants.Features.Twitter },
     };
 
     internal readonly IStringLocalizer S;
@@ -29,13 +27,12 @@ public sealed class AdminMenu : INavigationProvider
         }
 
         builder
-            .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
-                .AddClass("security")
-                .Id("security")
+            .Add(S["Configuration"], configuration => configuration
                 .Add(S["Settings"], settings => settings
-                    .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
-                        .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
+                    .Add(S["X (Twitter)"], S["X (Twitter)"].PrefixPosition(), twitter => twitter
+                        .AddClass("twitter").Id("twitter")
                         .Action("Index", "Admin", _routeValues)
+                        .Permission(Permissions.ManageTwitter)
                         .LocalNav()
                     )
                 )

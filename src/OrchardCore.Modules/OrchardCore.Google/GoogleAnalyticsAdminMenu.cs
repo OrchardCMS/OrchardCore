@@ -1,22 +1,20 @@
-using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.Security.Drivers;
 
-namespace OrchardCore.Security;
+namespace OrchardCore.Google;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class GoogleAnalyticsAdminMenu : INavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
-        { "groupId", SecuritySettingsDisplayDriver.GroupId },
-
+        { "groupId", GoogleConstants.Features.GoogleAnalytics },
     };
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public GoogleAnalyticsAdminMenu(IStringLocalizer<GoogleAnalyticsAdminMenu> localizer)
     {
         S = localizer;
     }
@@ -29,13 +27,12 @@ public sealed class AdminMenu : INavigationProvider
         }
 
         builder
-            .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
-                .AddClass("security")
-                .Id("security")
+            .Add(S["Configuration"], configuration => configuration
                 .Add(S["Settings"], settings => settings
-                    .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
-                        .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
+                    .Add(S["Google Analytics"], S["Google Analytics"].PrefixPosition(), google => google
+                        .AddClass("googleAnalytics").Id("googleAnalytics")
                         .Action("Index", "Admin", _routeValues)
+                        .Permission(Permissions.ManageGoogleAnalytics)
                         .LocalNav()
                     )
                 )
