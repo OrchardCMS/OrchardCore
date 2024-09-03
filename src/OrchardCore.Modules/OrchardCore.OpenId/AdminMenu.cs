@@ -26,11 +26,11 @@ public sealed class AdminMenu : INavigationProvider
         _shellDescriptor = shellDescriptor;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
     {
         if (!NavigationHelper.IsAdminMenu(name))
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         builder.Add(S["Security"], security => security
@@ -88,6 +88,6 @@ public sealed class AdminMenu : INavigationProvider
             }
         }));
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

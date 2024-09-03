@@ -19,6 +19,6 @@ public class SanitizeHtmlFilter : ILiquidFilter
 
         html = _htmlSanitizerService.Sanitize(html);
 
-        return new ValueTask<FluidValue>(new StringValue(html));
+        return ValueTask.FromResult<FluidValue>(new StringValue(html));
     }
 }

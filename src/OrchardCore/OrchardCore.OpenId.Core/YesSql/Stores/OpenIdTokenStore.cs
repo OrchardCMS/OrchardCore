@@ -172,7 +172,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
     {
         ArgumentNullException.ThrowIfNull(token);
 
-        return new ValueTask<string>(token.ApplicationId?.ToString(CultureInfo.InvariantCulture));
+        return ValueTask.FromResult(token.ApplicationId?.ToString(CultureInfo.InvariantCulture));
     }
 
     /// <inheritdoc/>
@@ -180,7 +180,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
     {
         ArgumentNullException.ThrowIfNull(token);
 
-        return new ValueTask<string>(token.AuthorizationId);
+        return ValueTask.FromResult(token.AuthorizationId);
     }
 
     /// <inheritdoc/>
@@ -190,10 +190,10 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         if (token.CreationDate is null)
         {
-            return new ValueTask<DateTimeOffset?>(result: null);
+            return ValueTask.FromResult<DateTimeOffset?>(result: null);
         }
 
-        return new ValueTask<DateTimeOffset?>(DateTime.SpecifyKind(token.CreationDate.Value, DateTimeKind.Utc));
+        return ValueTask.FromResult<DateTimeOffset?>(DateTime.SpecifyKind(token.CreationDate.Value, DateTimeKind.Utc));
     }
 
     /// <inheritdoc/>
@@ -203,10 +203,10 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         if (token.ExpirationDate is null)
         {
-            return new ValueTask<DateTimeOffset?>(result: null);
+            return ValueTask.FromResult<DateTimeOffset?>(result: null);
         }
 
-        return new ValueTask<DateTimeOffset?>(DateTime.SpecifyKind(token.ExpirationDate.Value, DateTimeKind.Utc));
+        return ValueTask.FromResult<DateTimeOffset?>(DateTime.SpecifyKind(token.ExpirationDate.Value, DateTimeKind.Utc));
     }
 
     /// <inheritdoc/>
@@ -214,7 +214,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
     {
         ArgumentNullException.ThrowIfNull(token);
 
-        return new ValueTask<string>(token.TokenId);
+        return ValueTask.FromResult(token.TokenId);
     }
 
     /// <inheritdoc/>
@@ -222,7 +222,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
     {
         ArgumentNullException.ThrowIfNull(token);
 
-        return new ValueTask<string>(token.Payload);
+        return ValueTask.FromResult(token.Payload);
     }
 
     /// <inheritdoc/>
@@ -230,7 +230,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
     {
         ArgumentNullException.ThrowIfNull(token);
 
-        return new ValueTask<string>(token.Id.ToString(CultureInfo.InvariantCulture));
+        return ValueTask.FromResult(token.Id.ToString(CultureInfo.InvariantCulture));
     }
 
     /// <inheritdoc/>
@@ -240,11 +240,10 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         if (token.Properties == null)
         {
-            return new ValueTask<ImmutableDictionary<string, JsonElement>>(ImmutableDictionary.Create<string, JsonElement>());
+            return ValueTask.FromResult(ImmutableDictionary.Create<string, JsonElement>());
         }
 
-        return new ValueTask<ImmutableDictionary<string, JsonElement>>(
-            JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(token.Properties.ToString()));
+        return ValueTask.FromResult(JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(token.Properties.ToString()));
     }
 
     /// <inheritdoc/>
@@ -254,10 +253,10 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         if (token.RedemptionDate is null)
         {
-            return new ValueTask<DateTimeOffset?>(result: null);
+            return ValueTask.FromResult<DateTimeOffset?>(result: null);
         }
 
-        return new ValueTask<DateTimeOffset?>(DateTime.SpecifyKind(token.RedemptionDate.Value, DateTimeKind.Utc));
+        return ValueTask.FromResult<DateTimeOffset?>(DateTime.SpecifyKind(token.RedemptionDate.Value, DateTimeKind.Utc));
     }
 
     /// <inheritdoc/>
@@ -265,7 +264,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
     {
         ArgumentNullException.ThrowIfNull(token);
 
-        return new ValueTask<string>(token.ReferenceId);
+        return ValueTask.FromResult(token.ReferenceId);
     }
 
     /// <inheritdoc/>
@@ -273,7 +272,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
     {
         ArgumentNullException.ThrowIfNull(token);
 
-        return new ValueTask<string>(token.Status);
+        return ValueTask.FromResult(token.Status);
     }
 
     /// <inheritdoc/>
@@ -281,7 +280,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
     {
         ArgumentNullException.ThrowIfNull(token);
 
-        return new ValueTask<string>(token.Subject);
+        return ValueTask.FromResult(token.Subject);
     }
 
     /// <inheritdoc/>
@@ -289,7 +288,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
     {
         ArgumentNullException.ThrowIfNull(token);
 
-        return new ValueTask<string>(token.Type);
+        return ValueTask.FromResult(token.Type);
     }
 
     /// <inheritdoc/>

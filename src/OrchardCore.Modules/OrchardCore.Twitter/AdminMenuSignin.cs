@@ -19,11 +19,11 @@ public sealed class AdminMenuSignin : INavigationProvider
         S = localizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
     {
         if (!NavigationHelper.IsAdminMenu(name))
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         builder
@@ -38,44 +38,6 @@ public sealed class AdminMenuSignin : INavigationProvider
                 )
             );
 
-        return Task.CompletedTask;
-    }
-}
-
-public sealed class AdminMenu : INavigationProvider
-{
-    private static readonly RouteValueDictionary _routeValues = new()
-    {
-        { "area", "OrchardCore.Settings" },
-        { "groupId", TwitterConstants.Features.Twitter },
-    };
-
-    internal readonly IStringLocalizer S;
-
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-    {
-        S = localizer;
-    }
-
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-    {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return Task.CompletedTask;
-        }
-
-        builder
-            .Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], settings => settings
-                    .Add(S["X (Twitter)"], S["X (Twitter)"].PrefixPosition(), twitter => twitter
-                        .AddClass("twitter").Id("twitter")
-                        .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageTwitter)
-                        .LocalNav()
-                    )
-                )
-            );
-
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

@@ -12,11 +12,11 @@ public sealed class AdminMenu : INavigationProvider
         S = localizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
     {
         if (!NavigationHelper.IsAdminMenu(name))
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         builder
@@ -25,15 +25,15 @@ public sealed class AdminMenu : INavigationProvider
                 .Id("search")
                 .Add(S["Queries"], S["Queries"].PrefixPosition(), queries => queries
                     .Add(S["All queries"], "1", allQueries => allQueries
-                    .Action("Index", "Admin", "OrchardCore.Queries")
-                    .AddClass("searchallqueries")
-                    .Id("searchallqueries")
-                    .Permission(Permissions.ManageQueries)
-                    .LocalNav()
+                        .Action("Index", "Admin", "OrchardCore.Queries")
+                        .AddClass("searchallqueries")
+                        .Id("searchallqueries")
+                        .Permission(Permissions.ManageQueries)
+                        .LocalNav()
                 )
             )
         );
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }
