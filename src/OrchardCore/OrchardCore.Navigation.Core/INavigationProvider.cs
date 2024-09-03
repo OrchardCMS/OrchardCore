@@ -3,5 +3,5 @@ namespace OrchardCore.Navigation;
 
 public interface INavigationProvider
 {
-    Task BuildNavigationAsync(string name, NavigationBuilder builder);
+    ValueTask BuildNavigationAsync(string name, NavigationBuilder builder);
 }

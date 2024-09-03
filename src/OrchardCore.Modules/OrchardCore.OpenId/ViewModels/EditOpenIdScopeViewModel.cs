@@ -16,13 +16,4 @@ public class EditOpenIdScopeViewModel
     public string Name { get; set; }
 
     public string Resources { get; set; }
-
-    public List<TenantEntry> Tenants { get; } = [];
-
-    public class TenantEntry
-    {
-        public bool Current { get; set; }
-        public string Name { get; set; }
-        public bool Selected { get; set; }
-    }
 }

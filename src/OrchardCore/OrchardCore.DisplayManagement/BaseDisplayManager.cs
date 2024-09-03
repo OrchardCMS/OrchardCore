@@ -59,6 +59,6 @@ public abstract class BaseDisplayManager
     protected ValueTask<IShape> CreateContentShapeAsync(string actualShapeType)
     {
         return _shapeFactory.CreateAsync(actualShapeType, () =>
-            new ValueTask<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("ContentZone"))));
+            ValueTask.FromResult<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("ContentZone"))));
     }
 }
