@@ -137,7 +137,7 @@ public static class ShapeFactoryExtensions
                 }
             }
 
-            return new ValueTask<IShape>(shape);
+            return ValueTask.FromResult(shape);
         }
 
         static async ValueTask<IShape> Awaited(ValueTask task, IShape shape)

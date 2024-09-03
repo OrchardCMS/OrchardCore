@@ -23,12 +23,12 @@ public static class UserFilters
 
                 if (user.HasClaim(claimType, claimName))
                 {
-                    return new ValueTask<FluidValue>(BooleanValue.True);
+                    return ValueTask.FromResult<FluidValue>(BooleanValue.True);
                 }
             }
         }
 
-        return new ValueTask<FluidValue>(BooleanValue.False);
+        return ValueTask.FromResult<FluidValue>(BooleanValue.False);
     }
 
     public static ValueTask<FluidValue> UserId(FluidValue input, FilterArguments _, TemplateContext ctx)
@@ -43,11 +43,11 @@ public static class UserFilters
                 var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (userId != null)
                 {
-                    return new ValueTask<FluidValue>(FluidValue.Create(userId, ctx.Options));
+                    return ValueTask.FromResult(FluidValue.Create(userId, ctx.Options));
                 }
             }
         }
 
-        return new ValueTask<FluidValue>(NilValue.Instance);
+        return ValueTask.FromResult<FluidValue>(NilValue.Instance);
     }
 }
