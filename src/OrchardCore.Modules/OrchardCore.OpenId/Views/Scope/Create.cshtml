@@ -1,4 +1,5 @@
 @model CreateOpenIdScopeViewModel
+@using OrchardCore.OpenId
 @using OrchardCore.OpenId.ViewModels
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Create a new scope"])</h1></zone>
@@ -27,7 +28,7 @@
     <div class="mb-3" asp-validation-class-for="Resources">
         <label asp-for="Resources" class="form-label">@T["Additional resources (API audiences)"]</label>
         <input asp-for="Resources" class="form-control" />
-        <span class="hint">@T["A space separated list of values."]</span>
+        <span class="hint">@T["A space-separated list of values is required. To utilize another active tenant as a resource, specify it using the format <code>{0}{{tenant_name}}</code>.", OpenIdConstants.Prefixes.Tenant]</span>
         <span asp-validation-for="Resources" class="text-danger"></span>
     </div>
 
