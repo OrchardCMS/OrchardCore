@@ -16,17 +16,17 @@ public sealed class AdminMenu : INavigationProvider
         S = localizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
     {
         if (!NavigationHelper.IsAdminMenu(name))
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         // Don't add the menu item on non-default tenants
         if (!_shellSettings.IsDefaultShell())
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         builder
@@ -40,6 +40,6 @@ public sealed class AdminMenu : INavigationProvider
                 ),
                 priority: 1);
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

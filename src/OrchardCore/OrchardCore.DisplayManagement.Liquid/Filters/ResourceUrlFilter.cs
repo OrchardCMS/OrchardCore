@@ -41,6 +41,6 @@ public class ResourceUrlFilter : ILiquidFilter
             resourcePath = _options.CdnBaseUrl + resourcePath;
         }
 
-        return new ValueTask<FluidValue>(new StringValue(resourcePath));
+        return ValueTask.FromResult<FluidValue>(new StringValue(resourcePath));
     }
 }

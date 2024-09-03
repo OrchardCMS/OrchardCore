@@ -185,8 +185,8 @@ public class ZoneOnDemandTests
         Assert.True((string)zoneOnDemand == null);
     }
 
-    private static ZoneHolding CreateZoneHolding() => new(() => new ValueTask<IShape>(new Shape()));
+    private static ZoneHolding CreateZoneHolding() => new(() => ValueTask.FromResult<IShape>(new Shape()));
 
     private static ZoneOnDemand CreateZoneOnDemand(string name, ZoneHolding zoneHolding = null) =>
-        new(() => new ValueTask<IShape>(new Shape()), zoneHolding ?? CreateZoneHolding(), name);
+        new(() => ValueTask.FromResult<IShape>(new Shape()), zoneHolding ?? CreateZoneHolding(), name);
 }

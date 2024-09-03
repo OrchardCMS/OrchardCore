@@ -17,7 +17,7 @@ public class ShapeCreatingContext
 
     public Func<IShape> Create
     {
-        set => CreateAsync = () => new ValueTask<IShape>(value());
+        set => CreateAsync = () => ValueTask.FromResult(value());
     }
 }
 

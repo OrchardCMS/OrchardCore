@@ -17,6 +17,7 @@ public class AssetUrlFilter : ILiquidFilter
     {
         var url = input.ToStringValue();
         var imageUrl = _mediaFileStore.MapPathToPublicUrl(url);
-        return new ValueTask<FluidValue>(new StringValue(imageUrl ?? url));
+
+        return ValueTask.FromResult<FluidValue>(StringValue.Create(imageUrl ?? url));
     }
 }
