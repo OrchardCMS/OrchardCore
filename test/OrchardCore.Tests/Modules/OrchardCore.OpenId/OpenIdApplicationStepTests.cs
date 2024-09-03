@@ -22,8 +22,7 @@ public class OpenIdApplicationStepTests
             m.FindByClientIdAsync(
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(
-                await ValueTask.FromResult(actual));
+            .ReturnsAsync(actual);
 
         appManagerMock.Setup(m =>
             m.CreateAsync(
@@ -31,8 +30,7 @@ public class OpenIdApplicationStepTests
                 It.IsAny<CancellationToken>()))
             .Callback<object, CancellationToken>((app, c) =>
                 actual = (OpenIdApplicationDescriptor)app)
-            .ReturnsAsync(
-                await ValueTask.FromResult<object>(actual));
+            .ReturnsAsync(actual);
 
 
         var step = new OpenIdApplicationStep(appManagerMock.Object);
@@ -105,8 +103,7 @@ public class OpenIdApplicationStepTests
             m.FindByClientIdAsync(
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>()))
-            .ReturnsAsync(
-                await ValueTask.FromResult<object>(actualDb));
+            .ReturnsAsync(actualDb);
 
         appManagerMock.Setup(m =>
             m.PopulateAsync(
