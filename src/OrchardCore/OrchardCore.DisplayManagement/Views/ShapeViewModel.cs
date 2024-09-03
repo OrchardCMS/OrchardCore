@@ -69,7 +69,7 @@ public class ShapeViewModel : IShape, IPositioned
     {
         if (item == null)
         {
-            return new ValueTask<IShape>(this);
+            return ValueTask.FromResult<IShape>(this);
         }
 
         position ??= string.Empty;
@@ -82,6 +82,6 @@ public class ShapeViewModel : IShape, IPositioned
             _items.Add(wrapped);
         }
 
-        return new ValueTask<IShape>(this);
+        return ValueTask.FromResult<IShape>(this);
     }
 }

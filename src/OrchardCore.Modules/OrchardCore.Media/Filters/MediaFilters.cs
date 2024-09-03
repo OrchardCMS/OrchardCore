@@ -18,6 +18,6 @@ public static class MediaFilters
 
         imgTag += " />";
 
-        return new ValueTask<FluidValue>(new StringValue(imgTag) { Encode = false });
+        return ValueTask.FromResult<FluidValue>(new StringValue(imgTag) { Encode = false });
     }
 }
