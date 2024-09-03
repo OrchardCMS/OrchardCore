@@ -15,6 +15,6 @@ public static class DisplayTextFilter
             return ValueTask.FromResult<FluidValue>(NilValue.Instance);
         }
 
-        return ValueTask.FromResult<FluidValue>(new StringValue(contentItem.DisplayText ?? ""));
+        return ValueTask.FromResult<FluidValue>(new StringValue(contentItem.DisplayText ?? string.Empty));
     }
 }

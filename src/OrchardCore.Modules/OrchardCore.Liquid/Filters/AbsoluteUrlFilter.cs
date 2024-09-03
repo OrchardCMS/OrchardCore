@@ -24,7 +24,7 @@ public class AbsoluteUrlFilter : ILiquidFilter
 
         var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
 
-        var result = new StringValue(urlHelper.ToAbsoluteUrl(relativePath));
+        var result = StringValue.Create(urlHelper.ToAbsoluteUrl(relativePath));
 
         return ValueTask.FromResult<FluidValue>(result);
     }
