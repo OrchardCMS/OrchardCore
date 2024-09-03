@@ -51,7 +51,7 @@ public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
     {
         if (item == null)
         {
-            return new ValueTask<IShape>(this);
+            return ValueTask.FromResult<IShape>(this);
         }
 
         position ??= "";
@@ -66,7 +66,7 @@ public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
             _items.Add(wrapped);
         }
 
-        return new ValueTask<IShape>(this);
+        return ValueTask.FromResult<IShape>(this);
     }
 
     public void Remove(string shapeName)

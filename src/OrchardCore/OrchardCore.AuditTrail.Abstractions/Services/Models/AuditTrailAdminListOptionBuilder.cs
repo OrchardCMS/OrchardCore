@@ -24,7 +24,7 @@ public class AuditTrailAdminListOptionBuilder
     /// </summary>
     public AuditTrailAdminListOptionBuilder WithQuery(Func<string, IQuery<AuditTrailEvent>, IQuery<AuditTrailEvent>> query)
     {
-        _query = (q, val, ctx) => new ValueTask<IQuery<AuditTrailEvent>>(query(q, val));
+        _query = (q, val, ctx) => ValueTask.FromResult(query(q, val));
 
         return this;
     }

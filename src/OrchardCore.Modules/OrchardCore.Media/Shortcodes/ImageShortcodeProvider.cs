@@ -134,6 +134,6 @@ public class ImageShortcodeProvider : IShortcodeProvider
         content = "<img " + altText + className + "src=\"" + content + "\">";
         content = _htmlSanitizerService.Sanitize(content);
 
-        return new ValueTask<string>(content);
+        return ValueTask.FromResult(content);
     }
 }
