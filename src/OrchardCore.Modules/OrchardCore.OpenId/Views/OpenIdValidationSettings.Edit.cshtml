@@ -9,13 +9,7 @@
 
 <div class="mb-3" asp-validation-class-for="Tenant">
     <label asp-for="Tenant" class="form-label">@T["Authorization server tenant"]</label>
-    <select asp-for="Tenant" class="form-select">
-        <option value="" selected="@(Model.Tenant == null)">(none)</option>
-        @foreach (var tenant in Model.AvailableTenants)
-        {
-            <option value="@tenant" selected="@(Model.Tenant == tenant)">@tenant</option>
-        }
-    </select>
+    <input asp-for="Tenant" class="form-control" />
     <span asp-validation-for="Tenant"></span>
 </div>
 

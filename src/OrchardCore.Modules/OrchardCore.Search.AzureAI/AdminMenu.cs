@@ -13,11 +13,11 @@ public sealed class AdminMenu(
     internal readonly IStringLocalizer S = stringLocalizer;
     private readonly AzureAISearchDefaultOptions _azureAISearchSettings = azureAISearchSettings.Value;
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
     {
         if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         builder
@@ -51,6 +51,6 @@ public sealed class AdminMenu(
                 );
         }
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

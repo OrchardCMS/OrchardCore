@@ -44,8 +44,7 @@ public class OpenIdScopeStepTests
             m.FindByNameAsync(
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>()))
-            .Returns(
-                new ValueTask<object>(actual));
+            .ReturnsAsync(actual);
 
         scopeManagerMock.Setup(m =>
             m.CreateAsync(
@@ -53,8 +52,7 @@ public class OpenIdScopeStepTests
                 It.IsAny<CancellationToken>()))
             .Callback<OpenIddictScopeDescriptor, CancellationToken>((s, c) =>
                 actual = (OpenIdScopeDescriptor)s)
-            .Returns(
-                new ValueTask<object>());
+            .ReturnsAsync(Task.CompletedTask);
 
         var step = new OpenIdScopeStep(scopeManagerMock.Object);
         var recipe = JsonNode.Parse(GetRecipeFileContent("scope-recipe"));
@@ -106,8 +104,7 @@ public class OpenIdScopeStepTests
             m.FindByNameAsync(
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>()))
-            .Returns(
-                new ValueTask<object>(dbActual));
+            .ReturnsAsync(Task.FromResult<object>(dbActual));
 
         scopeManagerMock.Setup(m =>
             m.PopulateAsync(

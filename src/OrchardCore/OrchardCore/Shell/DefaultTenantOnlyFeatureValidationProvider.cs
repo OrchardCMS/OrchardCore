@@ -21,14 +21,14 @@ public class DefaultTenantOnlyFeatureValidationProvider : IFeatureValidationProv
         var features = _extensionManager.GetFeatures([id]);
         if (!features.Any())
         {
-            return new ValueTask<bool>(false);
+            return ValueTask.FromResult(false);
         }
 
         if (_shellSettings.IsDefaultShell())
         {
-            return new ValueTask<bool>(true);
+            return ValueTask.FromResult(true);
         }
 
-        return new ValueTask<bool>(!features.Any(f => f.DefaultTenantOnly));
+        return ValueTask.FromResult(!features.Any(f => f.DefaultTenantOnly));
     }
 }
