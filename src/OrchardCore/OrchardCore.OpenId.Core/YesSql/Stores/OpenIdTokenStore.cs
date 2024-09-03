@@ -214,7 +214,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
     {
         ArgumentNullException.ThrowIfNull(token);
 
-        return ValueTask.FromResult<string>(token.TokenId);
+        return ValueTask.FromResult(token.TokenId);
     }
 
     /// <inheritdoc/>
@@ -222,7 +222,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
     {
         ArgumentNullException.ThrowIfNull(token);
 
-        return ValueTask.FromResult<string>(token.Payload);
+        return ValueTask.FromResult(token.Payload);
     }
 
     /// <inheritdoc/>
@@ -264,7 +264,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
     {
         ArgumentNullException.ThrowIfNull(token);
 
-        return ValueTask.FromResult<string>(token.ReferenceId);
+        return ValueTask.FromResult(token.ReferenceId);
     }
 
     /// <inheritdoc/>

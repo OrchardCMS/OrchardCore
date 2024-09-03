@@ -136,7 +136,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        return ValueTask.FromResult<string>(application.ClientId);
+        return ValueTask.FromResult(application.ClientId);
     }
 
     /// <inheritdoc/>

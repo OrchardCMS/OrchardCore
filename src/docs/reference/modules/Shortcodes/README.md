@@ -83,7 +83,7 @@ services.AddShortcode("bold", (args, content, ctx) => {
         content = text;
     }
 
-    return ValueTask.FromResult<string>($"<b>{content}</b>");
+    return ValueTask.FromResult($"<b>{content}</b>");
 }, describe => {
     describe.DefaultValue = "[bold text-here]";
     describe.Hint = "Add bold formatting with a shortcode.";
