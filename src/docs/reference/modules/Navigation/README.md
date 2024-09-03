@@ -155,19 +155,21 @@ public sealed class MainMenu : INavigationProvider
         S = localizer;
     }
 
-    public async Task BuildNavigation(string name, NavigationBuilder builder)
+    public ValueTask BuildNavigation(string name, NavigationBuilder builder)
     {
         //Only interact with the "main" navigation menu here.
         if (!String.Equals(name, "main", StringComparison.OrdinalIgnoreCase))
         {
-            return;
+            return ValueTask.CompletedTask;
         }
 
         builder
-            .Add(S["Notifications"], S["Notifications"], layers => layers
-                .Action("Index", "Template", new { area = "CRT.Client.OrchardModules.CommunicationTemplates", groupId = 1 })
+            .Add(S["Notifications"], S["Notifications"], notifications => notifications
+                .Action("Index", "Template", new { area = "CRT.Client.OrchardModules.CommunicationTemplates", groupId = "1" })
                 .LocalNav()
             );
+
+        return ValueTask.CompletedTask;
     }
 }
 ```  

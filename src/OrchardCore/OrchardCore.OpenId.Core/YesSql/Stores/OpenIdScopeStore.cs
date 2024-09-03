@@ -124,7 +124,7 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
     {
         ArgumentNullException.ThrowIfNull(scope);
 
-        return new ValueTask<string>(scope.Description);
+        return ValueTask.FromResult(scope.Description);
     }
 
     /// <inheritdoc/>
@@ -135,10 +135,10 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
 
         if (scope.Descriptions == null)
         {
-            return new ValueTask<ImmutableDictionary<CultureInfo, string>>(ImmutableDictionary.Create<CultureInfo, string>());
+            return ValueTask.FromResult(ImmutableDictionary.Create<CultureInfo, string>());
         }
 
-        return new ValueTask<ImmutableDictionary<CultureInfo, string>>(scope.Descriptions);
+        return ValueTask.FromResult(scope.Descriptions);
     }
 
     /// <inheritdoc/>
@@ -146,7 +146,7 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
     {
         ArgumentNullException.ThrowIfNull(scope);
 
-        return new ValueTask<string>(scope.DisplayName);
+        return ValueTask.FromResult(scope.DisplayName);
     }
 
     /// <inheritdoc/>
@@ -157,10 +157,10 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
 
         if (scope.DisplayNames == null)
         {
-            return new ValueTask<ImmutableDictionary<CultureInfo, string>>(ImmutableDictionary.Create<CultureInfo, string>());
+            return ValueTask.FromResult(ImmutableDictionary.Create<CultureInfo, string>());
         }
 
-        return new ValueTask<ImmutableDictionary<CultureInfo, string>>(scope.DisplayNames);
+        return ValueTask.FromResult(scope.DisplayNames);
     }
 
     /// <inheritdoc/>
@@ -168,7 +168,7 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
     {
         ArgumentNullException.ThrowIfNull(scope);
 
-        return new ValueTask<string>(scope.ScopeId);
+        return ValueTask.FromResult(scope.ScopeId);
     }
 
     /// <inheritdoc/>
@@ -176,7 +176,7 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
     {
         ArgumentNullException.ThrowIfNull(scope);
 
-        return new ValueTask<string>(scope.Name);
+        return ValueTask.FromResult(scope.Name);
     }
 
     /// <inheritdoc/>
@@ -184,7 +184,7 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
     {
         ArgumentNullException.ThrowIfNull(scope);
 
-        return new ValueTask<string>(scope.Id.ToString(CultureInfo.InvariantCulture));
+        return ValueTask.FromResult(scope.Id.ToString(CultureInfo.InvariantCulture));
     }
 
     /// <inheritdoc/>
@@ -194,11 +194,10 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
 
         if (scope.Properties == null)
         {
-            return new ValueTask<ImmutableDictionary<string, JsonElement>>(ImmutableDictionary.Create<string, JsonElement>());
+            return ValueTask.FromResult<ImmutableDictionary<string, JsonElement>>(ImmutableDictionary.Create<string, JsonElement>());
         }
 
-        return new ValueTask<ImmutableDictionary<string, JsonElement>>(
-            JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(scope.Properties.ToString()));
+        return ValueTask.FromResult(JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(scope.Properties.ToString()));
     }
 
     /// <inheritdoc/>
@@ -206,7 +205,7 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
     {
         ArgumentNullException.ThrowIfNull(scope);
 
-        return new ValueTask<ImmutableArray<string>>(scope.Resources);
+        return ValueTask.FromResult(scope.Resources);
     }
 
     /// <inheritdoc/>

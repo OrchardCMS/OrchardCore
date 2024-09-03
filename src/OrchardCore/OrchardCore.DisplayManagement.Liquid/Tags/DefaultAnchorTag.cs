@@ -21,6 +21,6 @@ public class DefaultAnchorTag
             }
         }
 
-        return new ValueTask<Completion>(Completion.Normal);
+        return ValueTask.FromResult(Completion.Normal);
     }
 }

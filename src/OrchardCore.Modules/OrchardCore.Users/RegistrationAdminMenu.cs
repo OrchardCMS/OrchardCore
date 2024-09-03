@@ -1,22 +1,21 @@
-using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.Security.Drivers;
+using OrchardCore.Users.Drivers;
 
-namespace OrchardCore.Security;
+namespace OrchardCore.Users;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class RegistrationAdminMenu : INavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
-        { "groupId", SecuritySettingsDisplayDriver.GroupId },
-
+        { "groupId", RegistrationSettingsDisplayDriver.GroupId },
     };
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public RegistrationAdminMenu(IStringLocalizer<RegistrationAdminMenu> localizer)
     {
         S = localizer;
     }
@@ -29,12 +28,10 @@ public sealed class AdminMenu : INavigationProvider
         }
 
         builder
-            .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
-                .AddClass("security")
-                .Id("security")
+            .Add(S["Security"], security => security
                 .Add(S["Settings"], settings => settings
-                    .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
-                        .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
+                    .Add(S["User Registration"], S["User Registration"].PrefixPosition(), registration => registration
+                        .Permission(CommonPermissions.ManageUsers)
                         .Action("Index", "Admin", _routeValues)
                         .LocalNav()
                     )

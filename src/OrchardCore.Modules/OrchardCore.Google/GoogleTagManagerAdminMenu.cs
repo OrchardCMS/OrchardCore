@@ -1,22 +1,20 @@
-using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.Security.Drivers;
 
-namespace OrchardCore.Security;
+namespace OrchardCore.Google;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class GoogleTagManagerAdminMenu : INavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
-        { "groupId", SecuritySettingsDisplayDriver.GroupId },
-
+        { "groupId", GoogleConstants.Features.GoogleTagManager },
     };
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public GoogleTagManagerAdminMenu(IStringLocalizer<GoogleTagManagerAdminMenu> localizer)
     {
         S = localizer;
     }
@@ -29,13 +27,13 @@ public sealed class AdminMenu : INavigationProvider
         }
 
         builder
-            .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
-                .AddClass("security")
-                .Id("security")
+            .Add(S["Configuration"], configuration => configuration
                 .Add(S["Settings"], settings => settings
-                    .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
-                        .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
+                    .Add(S["Google Tag Manager"], S["Google Tag Manager"].PrefixPosition(), google => google
+                        .AddClass("googleTagManager")
+                        .Id("googleTagManager")
                         .Action("Index", "Admin", _routeValues)
+                        .Permission(Permissions.ManageGoogleTagManager)
                         .LocalNav()
                     )
                 )

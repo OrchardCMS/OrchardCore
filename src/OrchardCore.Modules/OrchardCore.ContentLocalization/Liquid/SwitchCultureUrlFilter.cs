@@ -35,6 +35,6 @@ public class SwitchCultureUrlFilter : ILiquidFilter
                 contentItemUrl = request.Path.Value,
                 queryStringValue = request.QueryString.Value,
             });
-        return new ValueTask<FluidValue>(FluidValue.Create(url, context.Options));
+        return ValueTask.FromResult(FluidValue.Create(url, context.Options));
     }
 }
