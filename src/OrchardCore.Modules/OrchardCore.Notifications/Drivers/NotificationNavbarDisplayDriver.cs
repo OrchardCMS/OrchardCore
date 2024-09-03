@@ -67,8 +67,7 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
                     {
                         context.WithExpiryAfter(TimeSpan.FromSeconds(_notificationOptions.CacheDurationSeconds));
                     }
-
-                    if (_notificationOptions.CacheDurationSlidingSeconds > 0)
+                    else if (_notificationOptions.CacheDurationSlidingSeconds > 0)
                     {
                         context.WithExpirySliding(TimeSpan.FromSeconds(_notificationOptions.CacheDurationSlidingSeconds));
                     }

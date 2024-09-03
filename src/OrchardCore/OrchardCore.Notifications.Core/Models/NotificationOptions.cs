@@ -14,14 +14,14 @@ public class NotificationOptions
 
     /// <summary>
     /// Specifies the cache duration in seconds for the top-unread notification.
-    /// A value of 0 disables the cache expiration.
+    /// A value of 0 disables the max-cache expiration.
     /// If both this property and <see cref="CacheDurationSlidingSeconds"/> are set to 0, caching will be disabled.
     /// </summary>
     public int CacheDurationSeconds { get; set; }
 
     /// <summary>
     /// Specifies the sliding cache duration in seconds for the top-unread notification.
-    /// A value of 0 disables sliding caching.
+    /// A value of 0 disables sliding-caching expiration.
     /// If both this property and <see cref="CacheDurationSeconds"/> are set to 0, caching will be disabled.
     /// </summary>
     public int CacheDurationSlidingSeconds { get; set; } = 1800;
