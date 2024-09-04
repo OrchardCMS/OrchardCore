@@ -53,16 +53,25 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
         }).Location("Detail", "Content:9")
         .Location("DetailAdmin", "Content:9");
 
-        if (_notificationOptions.CacheDurationInSeconds > 0)
+        if (_notificationOptions.AbsoluteCacheExpirationSeconds > 0 || _notificationOptions.SlidingCacheExpirationSeconds > 0)
         {
             return result
-                .Cache(NotificationConstants.TopUnreadUserNotificationCacheTag, context => context
-                    .AddContext("user")
-                    .WithExpiryAfter(TimeSpan.FromSeconds(_notificationOptions.CacheDurationInSeconds))
-                    // Allow another feature to clear all notification cache entries if necessary.
-                    .AddTag(NotificationConstants.TopUnreadUserNotificationCacheTag)
-                    .AddTag(NotificationsHelper.GetUnreadUserNotificationTagKey(_httpContextAccessor.HttpContext.User.Identity.Name))
-                );
+                .Cache(NotificationConstants.TopUnreadUserNotificationCacheTag, context =>
+                {
+                    context.AddContext("user")
+                        // Allow another feature to clear all notification cache entries if necessary.
+                        .AddTag(NotificationConstants.TopUnreadUserNotificationCacheTag)
+                        .AddTag(NotificationsHelper.GetUnreadUserNotificationTagKey(_httpContextAccessor.HttpContext.User.Identity.Name));
+
+                    if (_notificationOptions.AbsoluteCacheExpirationSeconds > 0)
+                    {
+                        context.WithExpiryAfter(TimeSpan.FromSeconds(_notificationOptions.AbsoluteCacheExpirationSeconds));
+                    }
+                    else if (_notificationOptions.SlidingCacheExpirationSeconds > 0)
+                    {
+                        context.WithExpirySliding(TimeSpan.FromSeconds(_notificationOptions.SlidingCacheExpirationSeconds));
+                    }
+                });
         }
 
         return result;

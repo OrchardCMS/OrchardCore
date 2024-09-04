@@ -11,8 +11,16 @@
     </div>
 </div>
 
-@using (Html.BeginForm())
+@if (Model.Applications == null || Model.Applications.Count == 0)
 {
+    <div class="alert alert-info text-center" role="alert">
+        @T["There are no applications at the moment."]
+    </div>
+
+    return;
+}
+
+<form>
     <ul class="list-group">
         @foreach (var entry in Model.Applications)
         {
@@ -27,7 +35,7 @@
             </li>
         }
     </ul>
-}
+</form>
 
 <div id="footer-pager" class="fade-in-pager">
     @await DisplayAsync(Model.Pager)

@@ -14,6 +14,7 @@ using OpenIddict.Validation;
 using OpenIddict.Validation.AspNetCore;
 using OpenIddict.Validation.DataProtection;
 using OrchardCore.BackgroundTasks;
+using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell.Builders;
@@ -22,6 +23,7 @@ using OrchardCore.Navigation;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Deployment;
 using OrchardCore.OpenId.Drivers;
+using OrchardCore.OpenId.Migrations;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Services.Handlers;
@@ -99,6 +101,7 @@ public sealed class ServerStartup : StartupBase
 
         services.TryAddSingleton<IOpenIdServerService, OpenIdServerService>();
 
+        services.AddDataMigration<DefaultScopesMigration>();
         // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
         services.TryAddEnumerable(new[]
         {
