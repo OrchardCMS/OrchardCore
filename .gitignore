@@ -203,7 +203,6 @@ wwwroot
 !src/Templates/**/content/**
 src/Templates/**/content/**/[Bb]in/
 src/Templates/**/content/**/[Oo]bj/
-
 /OrchardCore.sln.GhostDoc.xml
 
 # Rider
