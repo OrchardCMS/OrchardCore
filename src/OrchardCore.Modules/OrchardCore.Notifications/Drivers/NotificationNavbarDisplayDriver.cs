@@ -53,7 +53,7 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
         }).Location("Detail", "Content:9")
         .Location("DetailAdmin", "Content:9");
 
-        if (_notificationOptions.CacheDurationSeconds > 0 || _notificationOptions.CacheDurationSlidingSeconds > 0)
+        if (_notificationOptions.AbsoluteCacheExpirationSeconds > 0 || _notificationOptions.SlidingCacheExpirationSeconds > 0)
         {
             return result
                 .Cache(NotificationConstants.TopUnreadUserNotificationCacheTag, context =>
@@ -63,13 +63,13 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
                         .AddTag(NotificationConstants.TopUnreadUserNotificationCacheTag)
                         .AddTag(NotificationsHelper.GetUnreadUserNotificationTagKey(_httpContextAccessor.HttpContext.User.Identity.Name));
 
-                    if (_notificationOptions.CacheDurationSeconds > 0)
+                    if (_notificationOptions.AbsoluteCacheExpirationSeconds > 0)
                     {
-                        context.WithExpiryAfter(TimeSpan.FromSeconds(_notificationOptions.CacheDurationSeconds));
+                        context.WithExpiryAfter(TimeSpan.FromSeconds(_notificationOptions.AbsoluteCacheExpirationSeconds));
                     }
-                    else if (_notificationOptions.CacheDurationSlidingSeconds > 0)
+                    else if (_notificationOptions.SlidingCacheExpirationSeconds > 0)
                     {
-                        context.WithExpirySliding(TimeSpan.FromSeconds(_notificationOptions.CacheDurationSlidingSeconds));
+                        context.WithExpirySliding(TimeSpan.FromSeconds(_notificationOptions.SlidingCacheExpirationSeconds));
                     }
                 });
         }
