@@ -13,8 +13,16 @@ public class NotificationOptions
     public bool DisableNotificationHtmlBodySanitizer { get; set; }
 
     /// <summary>
-    /// How may seconds should the top-unread notification be cache for.
-    /// 0 value will indicate no cache.
+    /// Specifies the cache duration in seconds for the top-unread notification.
+    /// A value of 0 disables the max-cache expiration.
+    /// If both this property and <see cref="SlidingCacheExpirationSeconds"/> are set to 0, caching will be disabled.
     /// </summary>
-    public int CacheDurationInSeconds { get; set; } = 3600;
+    public int AbsoluteCacheExpirationSeconds { get; set; }
+
+    /// <summary>
+    /// Specifies the sliding cache duration in seconds for the top-unread notification.
+    /// A value of 0 disables sliding-caching expiration.
+    /// If both this property and <see cref="AbsoluteCacheExpirationSeconds"/> are set to 0, caching will be disabled.
+    /// </summary>
+    public int SlidingCacheExpirationSeconds { get; set; } = 1800;
 }
