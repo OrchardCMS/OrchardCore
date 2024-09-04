@@ -1,35 +1,33 @@
-using System.Linq;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using OrchardCore.Security;
 using OrchardCore.Security.AuthorizationHandlers;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static partial class OrchardCoreBuilderExtensions
 {
-    public static partial class OrchardCoreBuilderExtensions
+    /// <summary>
+    /// Adds tenant level services.
+    /// </summary>
+    public static OrchardCoreBuilder AddSecurity(this OrchardCoreBuilder builder)
     {
-        /// <summary>
-        /// Adds tenant level services.
-        /// </summary>
-        public static OrchardCoreBuilder AddSecurity(this OrchardCoreBuilder builder)
+        builder.ConfigureServices(services =>
         {
-            builder.ConfigureServices(services =>
+            services.AddAuthorization();
+
+            services.Configure<AuthenticationOptions>((options) =>
             {
-                services.AddAuthorization();
-
-                services.Configure<AuthenticationOptions>((options) =>
+                if (!options.Schemes.Any(x => x.Name == "Api"))
                 {
-                    if (!options.Schemes.Any(x => x.Name == "Api"))
-                    {
-                        options.AddScheme<ApiAuthenticationHandler>("Api", null);
-                    }
-                });
-
-                services.AddScoped<IPermissionGrantingService, DefaultPermissionGrantingService>();
-                services.AddScoped<IAuthorizationHandler, PermissionHandler>();
+                    options.AddScheme<ApiAuthenticationHandler>("Api", null);
+                }
             });
 
-            return builder;
-        }
+            services.AddScoped<IPermissionGrantingService, DefaultPermissionGrantingService>();
+            services.AddScoped<IAuthorizationHandler, PermissionHandler>();
+        });
+
+        return builder;
     }
 }

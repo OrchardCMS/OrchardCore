@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Search.Abstractions;
@@ -61,8 +59,7 @@ public class LuceneAuthorizationHandler(IServiceProvider serviceProvider) : Auth
         }
 
         _siteService ??= _serviceProvider.GetRequiredService<ISiteService>();
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-        return siteSettings.As<LuceneSettings>().SearchIndex;
+        return (await _siteService.GetSettingsAsync<LuceneSettings>()).SearchIndex;
     }
 }

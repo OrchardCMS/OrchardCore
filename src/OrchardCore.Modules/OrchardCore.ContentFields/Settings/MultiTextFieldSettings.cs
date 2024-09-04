@@ -1,24 +1,22 @@
-using System;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
-namespace OrchardCore.ContentFields.Settings
+namespace OrchardCore.ContentFields.Settings;
+
+public class MultiTextFieldSettings
 {
-    public class MultiTextFieldSettings
-    {
-        public string Hint { get; set; }
-        public bool Required { get; set; }
-        public MultiTextFieldValueOption[] Options { get; set; } = Array.Empty<MultiTextFieldValueOption>();
-    }
+    public string Hint { get; set; }
+    public bool Required { get; set; }
+    public MultiTextFieldValueOption[] Options { get; set; } = [];
+}
 
-    public class MultiTextFieldValueOption
-    {
-        [JsonProperty("name")]
-        public string Name { get; set; }
+public class MultiTextFieldValueOption
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
 
-        [JsonProperty("value")]
-        public string Value { get; set; }
+    [JsonPropertyName("value")]
+    public string Value { get; set; }
 
-        [JsonProperty("default")]
-        public bool Default { get; set; }
-    }
+    [JsonPropertyName("default")]
+    public bool Default { get; set; }
 }

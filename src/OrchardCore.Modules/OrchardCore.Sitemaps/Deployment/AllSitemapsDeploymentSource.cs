@@ -1,40 +1,39 @@
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
+using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
+using OrchardCore.Json;
 using OrchardCore.Sitemaps.Services;
 
-namespace OrchardCore.Sitemaps.Deployment
+namespace OrchardCore.Sitemaps.Deployment;
+
+public sealed class AllSitemapsDeploymentSource : IDeploymentSource
 {
-    public class AllSitemapsDeploymentSource : IDeploymentSource
+    private readonly ISitemapManager _sitemapManager;
+    private readonly DocumentJsonSerializerOptions _documentJsonSerializerOptions;
+
+    public AllSitemapsDeploymentSource(
+        ISitemapManager sitemapManager,
+        IOptions<DocumentJsonSerializerOptions> documentJsonSerializerOptions)
     {
-        private static readonly JsonSerializer _serializer = new()
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-        };
+        _sitemapManager = sitemapManager;
+        _documentJsonSerializerOptions = documentJsonSerializerOptions.Value;
+    }
 
-        private readonly ISitemapManager _sitemapManager;
-
-        public AllSitemapsDeploymentSource(ISitemapManager sitemapManager)
+    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    {
+        if (step is not AllSitemapsDeploymentStep)
         {
-            _sitemapManager = sitemapManager;
+            return;
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        var sitemaps = await _sitemapManager.GetSitemapsAsync();
+
+        var jArray = JArray.FromObject(sitemaps, _documentJsonSerializerOptions.SerializerOptions);
+
+        result.Steps.Add(new JsonObject
         {
-            if (step is not AllSitemapsDeploymentStep)
-            {
-                return;
-            }
-
-            var sitemaps = await _sitemapManager.GetSitemapsAsync();
-
-            var jArray = JArray.FromObject(sitemaps, _serializer);
-
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Sitemaps"),
-                new JProperty("data", jArray)
-            ));
-        }
+            ["name"] = "Sitemaps",
+            ["data"] = jArray,
+        });
     }
 }

@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -11,21 +8,18 @@ namespace OrchardCore.Sms.Activities;
 
 public class SmsTask : TaskActivity<SmsTask>
 {
-    private readonly ISmsProvider _smsProvider;
+    private readonly ISmsService _smsService;
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-    private readonly HtmlEncoder _htmlEncoder;
     protected readonly IStringLocalizer S;
 
     public SmsTask(
-        ISmsProvider smsProvider,
+        ISmsService smsService,
         IWorkflowExpressionEvaluator expressionEvaluator,
-        HtmlEncoder htmlEncoder,
         IStringLocalizer<SmsTask> stringLocalizer
     )
     {
-        _smsProvider = smsProvider;
+        _smsService = smsService;
         _expressionEvaluator = expressionEvaluator;
-        _htmlEncoder = htmlEncoder;
         S = stringLocalizer;
     }
 
@@ -58,7 +52,7 @@ public class SmsTask : TaskActivity<SmsTask>
             Body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, null),
         };
 
-        var result = await _smsProvider.SendAsync(message);
+        var result = await _smsService.SendAsync(message);
 
         workflowContext.LastResult = result;
 

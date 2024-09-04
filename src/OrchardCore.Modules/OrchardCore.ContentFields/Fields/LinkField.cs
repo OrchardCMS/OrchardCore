@@ -1,11 +1,12 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.ContentFields.Fields
-{
-    public class LinkField : ContentField
-    {
-        public string Url { get; set; }
+namespace OrchardCore.ContentFields.Fields;
 
-        public string Text { get; set; }
-    }
+public class LinkField : ContentField
+{
+    public string Url { get; set; }
+
+    public string Text { get; set; }
+
+    public string Target { get; set; }
 }

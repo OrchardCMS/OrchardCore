@@ -1,7 +1,6 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
+using OrchardCore.Autoroute;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Routing;
 
@@ -14,7 +13,7 @@ public static class AutoroutePartRazorHelperExtensions
     /// </summary>
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="slug">The slug.</param>
-    /// <example>GetContentItemIdBySlugAsync("myblog/my-blog-post")</example>
+    /// <example>GetContentItemIdBySlugAsync("myblog/my-blog-post").</example>
     /// <returns>A content item id or <c>null</c> if it was not found.</returns>
     public static async Task<string> GetContentItemIdBySlugAsync(this IOrchardHelper orchardHelper, string slug)
     {
@@ -24,7 +23,7 @@ public static class AutoroutePartRazorHelperExtensions
         }
 
         // Provided for backwards compatability and avoiding confusion.
-        if (slug.StartsWith("slug:", StringComparison.OrdinalIgnoreCase))
+        if (slug.StartsWith(AutorouteConstants.SlugPrefix, StringComparison.OrdinalIgnoreCase))
         {
             slug = slug[5..];
         }
@@ -52,7 +51,7 @@ public static class AutoroutePartRazorHelperExtensions
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="slug">The slug to load.</param>
     /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
-    /// <example>GetContentItemBySlugAsync("myblog/my-blog-post")</example>
+    /// <example>GetContentItemBySlugAsync("myblog/my-blog-post").</example>
     /// <returns>A content item with the specific name, or <c>null</c> if it doesn't exist.</returns>
     public static async Task<ContentItem> GetContentItemBySlugAsync(this IOrchardHelper orchardHelper, string slug, bool latest = false)
     {

@@ -36,6 +36,7 @@ OrchardCore uses the `YesSql` library to interact with the configured database p
 | `IdentifierAccessorFactory` | You can provide your own value accessor factory. |
 | `VersionAccessorFactory` | You can provide your own version accessor factory. |
 | `ContentSerializer` | You can provide your own content serializer. |
+| `EnableThreadSafetyChecks` | Gets or sets the `EnableThreadSafetyChecks` option in YesSql, which aids in diagnosing concurrency or race condition issues. |
 
 For example, you can change the default command-page-size from `500` to `1000` by adding the following code to your startup code.
 
@@ -45,6 +46,15 @@ services.Configure<YesSqlOptions>(options =>
     options.CommandsPageSize = 1000;
 });
 ```
+
+You may configure `CommandsPageSize`, `QueryGatingEnabled`, and `EnableThreadSafetyChecks` options using a configuration provider like `appsettings.json` using the following
+
+```json
+"OrchardCore_YesSql": {
+    "CommandsPageSize": 500,
+    "QueryGatingEnabled": true,
+    "EnableThreadSafetyChecks": false
+},
 
 ## Database table
 
@@ -56,10 +66,10 @@ The following database table settings, only used as presets before a given tenan
 | `DefaultTableNameSeparator` | Table name separator, one or multiple '_', "NULL" means no separator, defaults to '_'. |
 | `DefaultIdentityColumnSize` | Identity column size, 'Int32' or 'Int64', defaults to 'Int64'. |
 
-##### `appsettings.json`
+#### Configuration Source (ex., `appsettings.json`)
 
 ```json
-  "OrchardCore_Data_TableOptions": {
+"OrchardCore_Data_TableOptions": {
     "DefaultDocumentTable": "Document",
     "DefaultTableNameSeparator": "_",
     "DefaultIdentityColumnSize": "Int64"
@@ -92,7 +102,7 @@ using Dapper;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell
 
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IDbConnectionAccessor _dbAccessor;
     private readonly IStore _store;

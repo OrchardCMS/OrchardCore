@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -13,7 +11,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class EmailAuthenticatorLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailAuthenticatorLoginSettings>
+public sealed class EmailAuthenticatorLoginSettingsDisplayDriver : SiteDisplayDriver<EmailAuthenticatorLoginSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
@@ -29,7 +27,10 @@ public class EmailAuthenticatorLoginSettingsDisplayDriver : SectionDisplayDriver
         _liquidTemplateManager = liquidTemplateManager;
     }
 
-    public override IDisplayResult Edit(EmailAuthenticatorLoginSettings settings)
+    protected override string SettingsGroupId
+        => LoginSettingsDisplayDriver.GroupId;
+
+    public override IDisplayResult Edit(ISite site, EmailAuthenticatorLoginSettings settings, BuildEditorContext context)
     {
         return Initialize<EmailAuthenticatorLoginSettings>("EmailAuthenticatorLoginSettings_Edit", model =>
         {
@@ -37,13 +38,12 @@ public class EmailAuthenticatorLoginSettingsDisplayDriver : SectionDisplayDriver
             model.Body = string.IsNullOrWhiteSpace(settings.Body) ? EmailAuthenticatorLoginSettings.DefaultBody : settings.Body;
         }).Location("Content:10#Two-Factor Authentication")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
-        .OnGroup(LoginSettingsDisplayDriver.GroupId);
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(EmailAuthenticatorLoginSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, EmailAuthenticatorLoginSettings settings, UpdateEditorContext context)
     {
-        if (!context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
         {
             return null;
         }
@@ -60,6 +60,6 @@ public class EmailAuthenticatorLoginSettingsDisplayDriver : SectionDisplayDriver
             context.Updater.ModelState.AddModelError(Prefix, nameof(settings.Body), string.Join(' ', bodyErrors));
         }
 
-        return Edit(settings);
+        return Edit(site, settings, context);
     }
 }

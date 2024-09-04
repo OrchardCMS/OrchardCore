@@ -1,5 +1,9 @@
 @model ResetAuthenticatorViewModel
 
+@{
+    ViewLayout = "Layout__TwoFactor";
+}
+
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a asp-action="Index" asp-controller="TwoFactorAuthentication">@T["Two-Factor Authentication"]</a></li>

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ArchiveLater.Models;
 using OrchardCore.ContentManagement;
@@ -15,7 +11,7 @@ namespace OrchardCore.ArchiveLater.Indexes;
 public class ArchiveLaterPartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly HashSet<string> _partRemoved = new();
+    private readonly HashSet<string> _partRemoved = [];
     private IContentDefinitionManager _contentDefinitionManager;
 
     public ArchiveLaterPartIndexProvider(IServiceProvider serviceProvider)

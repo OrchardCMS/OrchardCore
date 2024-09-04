@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
+namespace OrchardCore.Security.Services;
 
-namespace OrchardCore.Security.Services
+public static class RoleHelper
 {
-    public class RoleHelper
+    public static readonly HashSet<string> SystemRoleNames = new(StringComparer.OrdinalIgnoreCase)
     {
-        public static readonly HashSet<string> SystemRoleNames = new(StringComparer.OrdinalIgnoreCase)
-        {
-            "Anonymous",
-            "Authenticated",
-        };
-    }
+        OrchardCoreConstants.Roles.Anonymous,
+        OrchardCoreConstants.Roles.Authenticated,
+    };
 }

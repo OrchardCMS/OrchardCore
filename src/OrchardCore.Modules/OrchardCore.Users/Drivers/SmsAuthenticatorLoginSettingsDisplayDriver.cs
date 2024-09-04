@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -13,7 +11,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class SmsAuthenticatorLoginSettingsDisplayDriver : SectionDisplayDriver<ISite, SmsAuthenticatorLoginSettings>
+public sealed class SmsAuthenticatorLoginSettingsDisplayDriver : SiteDisplayDriver<SmsAuthenticatorLoginSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
@@ -29,7 +27,10 @@ public class SmsAuthenticatorLoginSettingsDisplayDriver : SectionDisplayDriver<I
         _liquidTemplateManager = liquidTemplateManager;
     }
 
-    public override IDisplayResult Edit(SmsAuthenticatorLoginSettings settings)
+    protected override string SettingsGroupId
+        => LoginSettingsDisplayDriver.GroupId;
+
+    public override IDisplayResult Edit(ISite site, SmsAuthenticatorLoginSettings settings, BuildEditorContext c)
     {
         return Initialize<SmsAuthenticatorLoginSettings>("SmsAuthenticatorLoginSettings_Edit", model =>
         {
@@ -38,13 +39,12 @@ public class SmsAuthenticatorLoginSettingsDisplayDriver : SectionDisplayDriver<I
             : settings.Body;
         }).Location("Content:15#Two-Factor Authentication")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
-        .OnGroup(LoginSettingsDisplayDriver.GroupId);
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(SmsAuthenticatorLoginSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, SmsAuthenticatorLoginSettings settings, UpdateEditorContext context)
     {
-        if (!context.GroupId.Equals(LoginSettingsDisplayDriver.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
         {
             return null;
         }
@@ -56,6 +56,6 @@ public class SmsAuthenticatorLoginSettingsDisplayDriver : SectionDisplayDriver<I
             context.Updater.ModelState.AddModelError(Prefix, nameof(settings.Body), string.Join(' ', bodyErrors));
         }
 
-        return Edit(settings);
+        return Edit(site, settings, context);
     }
 }

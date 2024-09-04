@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Environment.Shell.Builders;
 
 namespace OrchardCore.Abstractions.Shell;

@@ -1,12 +1,11 @@
 using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Entities;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Themes.Drivers;
 
-public class ToggleThemeNavbarDisplayDriver : DisplayDriver<Navbar>
+public sealed class ToggleThemeNavbarDisplayDriver : DisplayDriver<Navbar>
 {
     private readonly ISiteService _siteService;
 
@@ -15,10 +14,10 @@ public class ToggleThemeNavbarDisplayDriver : DisplayDriver<Navbar>
         _siteService = siteService;
     }
 
-    public override IDisplayResult Display(Navbar model)
+    public override IDisplayResult Display(Navbar model, BuildDisplayContext context)
     {
         return View("ToggleTheme", model)
-            .RenderWhen(async () => (await _siteService.GetSiteSettingsAsync()).As<AdminSettings>().DisplayThemeToggler)
+            .RenderWhen(async () => (await _siteService.GetSettingsAsync<AdminSettings>()).DisplayThemeToggler)
             .Location("Detail", "Content:10")
             .Location("DetailAdmin", "Content:10");
     }

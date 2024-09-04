@@ -1,120 +1,117 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System;
 using System.Diagnostics;
-using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Internal;
 
-namespace Microsoft.Extensions.Http
+namespace Microsoft.Extensions.Http;
+
+// Thread-safety: We treat this class as immutable except for the timer. Creating a new object
+// for the 'expiry' pool simplifies the threading requirements significantly.
+internal sealed class ActiveHandlerTrackingEntry : IDisposable
 {
-    // Thread-safety: We treat this class as immutable except for the timer. Creating a new object
-    // for the 'expiry' pool simplifies the threading requirements significantly.
-    internal sealed class ActiveHandlerTrackingEntry : IDisposable
+    private static readonly TimerCallback _timerCallback = (s) => ((ActiveHandlerTrackingEntry)s!).Timer_Tick();
+    private readonly object _lock;
+    private bool _timerInitialized;
+    private Timer _timer;
+    private TimerCallback _callback;
+
+    // OC: Implement IDisposable.
+    private bool _disposed;
+
+    public ActiveHandlerTrackingEntry(
+        string name,
+        LifetimeTrackingHttpMessageHandler handler,
+        IServiceScope scope,
+        TimeSpan lifetime)
     {
-        private static readonly TimerCallback _timerCallback = (s) => ((ActiveHandlerTrackingEntry)s!).Timer_Tick();
-        private readonly object _lock;
-        private bool _timerInitialized;
-        private Timer _timer;
-        private TimerCallback _callback;
+        Name = name;
+        Handler = handler;
+        Scope = scope;
+        Lifetime = lifetime;
 
-        // OC: Implement IDisposable.
-        private bool _disposed;
+        _lock = new object();
+    }
 
-        public ActiveHandlerTrackingEntry(
-            string name,
-            LifetimeTrackingHttpMessageHandler handler,
-            IServiceScope scope,
-            TimeSpan lifetime)
+    public LifetimeTrackingHttpMessageHandler Handler { get; private set; }
+
+    public TimeSpan Lifetime { get; }
+
+    public string Name { get; }
+
+    public IServiceScope Scope { get; set; }
+
+    public void StartExpiryTimer(TimerCallback callback)
+    {
+        if (Lifetime == Timeout.InfiniteTimeSpan)
         {
-            Name = name;
-            Handler = handler;
-            Scope = scope;
-            Lifetime = lifetime;
-
-            _lock = new object();
+            return; // never expires.
         }
 
-        public LifetimeTrackingHttpMessageHandler Handler { get; private set; }
-
-        public TimeSpan Lifetime { get; }
-
-        public string Name { get; }
-
-        public IServiceScope Scope { get; set; }
-
-        public void StartExpiryTimer(TimerCallback callback)
+        if (Volatile.Read(ref _timerInitialized))
         {
-            if (Lifetime == Timeout.InfiniteTimeSpan)
-            {
-                return; // never expires.
-            }
+            return;
+        }
 
+        StartExpiryTimerSlow(callback);
+    }
+
+    private void StartExpiryTimerSlow(TimerCallback callback)
+    {
+        Debug.Assert(Lifetime != Timeout.InfiniteTimeSpan);
+
+        lock (_lock)
+        {
             if (Volatile.Read(ref _timerInitialized))
             {
                 return;
             }
 
-            StartExpiryTimerSlow(callback);
+            _callback = callback;
+            _timer = NonCapturingTimer.Create(_timerCallback, this, Lifetime, Timeout.InfiniteTimeSpan);
+            _timerInitialized = true;
         }
+    }
 
-        private void StartExpiryTimerSlow(TimerCallback callback)
+    private void Timer_Tick()
+    {
+        // OC: Check if disposed.
+        if (_disposed)
         {
-            Debug.Assert(Lifetime != Timeout.InfiniteTimeSpan);
-
-            lock (_lock)
-            {
-                if (Volatile.Read(ref _timerInitialized))
-                {
-                    return;
-                }
-
-                _callback = callback;
-                _timer = NonCapturingTimer.Create(_timerCallback, this, Lifetime, Timeout.InfiniteTimeSpan);
-                _timerInitialized = true;
-            }
+            return;
         }
 
-        private void Timer_Tick()
+        Debug.Assert(_callback != null);
+        Debug.Assert(_timer != null);
+
+        lock (_lock)
         {
-            // OC: Check if disposed.
-            if (_disposed)
+            if (_timer != null)
             {
-                return;
-            }
+                _timer.Dispose();
+                _timer = null;
 
-            Debug.Assert(_callback != null);
-            Debug.Assert(_timer != null);
-
-            lock (_lock)
-            {
-                if (_timer != null)
-                {
-                    _timer.Dispose();
-                    _timer = null;
-
-                    _callback(this);
-                }
+                _callback(this);
             }
         }
+    }
 
-        // OC: Implement IDisposable.
-        public void Dispose()
+    // OC: Implement IDisposable.
+    public void Dispose()
+    {
+        if (_disposed)
         {
-            if (_disposed)
-            {
-                return;
-            }
-
-            _disposed = true;
-
-            _timer?.Dispose();
-            _timer = null;
-            Handler?.Dispose();
-            Handler = null;
-            Scope?.Dispose();
-            Scope = null;
+            return;
         }
+
+        _disposed = true;
+
+        _timer?.Dispose();
+        _timer = null;
+        Handler?.Dispose();
+        Handler = null;
+        Scope?.Dispose();
+        Scope = null;
     }
 }

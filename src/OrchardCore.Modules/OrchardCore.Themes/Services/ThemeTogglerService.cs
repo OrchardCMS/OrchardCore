@@ -1,7 +1,5 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Admin.Models;
-using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 
@@ -26,7 +24,7 @@ public class ThemeTogglerService
 
     public async Task<string> CurrentTheme()
     {
-        var adminSettings = (await _siteService.GetSiteSettingsAsync()).As<AdminSettings>();
+        var adminSettings = await _siteService.GetSettingsAsync<AdminSettings>();
 
         if (adminSettings.DisplayThemeToggler)
         {

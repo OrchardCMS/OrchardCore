@@ -481,7 +481,7 @@ In your module or theme project, create a class that inherits from `OrchardCore.
 Here is an example of how initial and subsequent migrations can be authored. Use the `CreateAsync()` method to provide the very first migration that runs and ensure that this method always returns 1. Use the `UpdateFrom<version>Async()` to provide subsequent migrations; in this example, we have a migration that updates from version 1 to 2. The method names are case-sensitive and the naming convention must be followed for the migrations to be discovered and executed.
 
 ```csharp
-public class Migrations : DataMigration
+public sealed class Migrations : DataMigration
 {
     private readonly IRecipeMigrator _recipeMigrator;
 
@@ -563,3 +563,5 @@ And here are the migration recipes referenced in the code above:
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qPCBgHQYz1g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/A13Li0CblK8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/2c5pbXuJJb0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

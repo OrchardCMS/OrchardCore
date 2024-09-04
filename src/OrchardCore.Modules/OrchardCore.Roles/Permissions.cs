@@ -1,53 +1,58 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
 
-namespace OrchardCore.Roles
+namespace OrchardCore.Roles;
+
+public sealed class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Roles.CommonPermissions.ManageRoles'.")]
+    public static readonly Permission ManageRoles = CommonPermissions.ManageRoles;
+
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Roles.CommonPermissions.AssignRoles'.")]
+    public static readonly Permission AssignRoles = CommonPermissions.AssignRoles;
+
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Security.StandardPermissions.SiteOwner'.")]
+    public static readonly Permission SiteOwner = StandardPermissions.SiteOwner;
+
+    private readonly IRoleService _roleService;
+
+    public Permissions(IRoleService roleService)
     {
-        public static readonly Permission ManageRoles = CommonPermissions.ManageRoles;
-        public static readonly Permission AssignRoles = CommonPermissions.AssignRoles;
-
-        private readonly IRoleService _roleService;
-
-        public Permissions(IRoleService roleService)
-        {
-            _roleService = roleService;
-        }
-
-        public async Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            var list = new List<Permission>
-            {
-                ManageRoles,
-                AssignRoles,
-                StandardPermissions.SiteOwner,
-            };
-
-            var roles = (await _roleService.GetRoleNamesAsync())
-                .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
-
-            foreach (var role in roles)
-            {
-                list.Add(CommonPermissions.CreatePermissionForAssignRole(role));
-            }
-
-            return list;
-        }
-
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[] {
-                new PermissionStereotype {
-                    Name = "Administrator",
-                    Permissions = new[] { ManageRoles, StandardPermissions.SiteOwner },
-                },
-            };
-        }
+        _roleService = roleService;
     }
+
+    public async Task<IEnumerable<Permission>> GetPermissionsAsync()
+    {
+        var roleNames = (await _roleService.GetRoleNamesAsync())
+            .Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName))
+            .ToList();
+
+        var list = new List<Permission>(roleNames.Count + 3)
+        {
+            CommonPermissions.ManageRoles,
+            CommonPermissions.AssignRoles,
+            StandardPermissions.SiteOwner,
+        };
+
+        foreach (var roleName in roleNames)
+        {
+            list.Add(CommonPermissions.CreatePermissionForAssignRole(roleName));
+        }
+
+        return list;
+    }
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Administrator,
+            Permissions =
+            [
+                CommonPermissions.ManageRoles,
+                StandardPermissions.SiteOwner,
+            ],
+        },
+    ];
 }

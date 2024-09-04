@@ -1,7 +1,6 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System;
 using System.Diagnostics;
 
 namespace Microsoft.Extensions.Internal;
@@ -17,7 +16,7 @@ internal readonly struct ValueStopwatch
         _startTimestamp = startTimestamp;
     }
 
-    public static ValueStopwatch StartNew() => new ValueStopwatch(Stopwatch.GetTimestamp());
+    public static ValueStopwatch StartNew() => new(Stopwatch.GetTimestamp());
 
     public TimeSpan GetElapsedTime()
     {

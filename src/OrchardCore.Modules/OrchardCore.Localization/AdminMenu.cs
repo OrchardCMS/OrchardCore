@@ -1,49 +1,57 @@
-using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Localization.Drivers;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Localization
+namespace OrchardCore.Localization;
+
+/// <summary>
+/// Represents a localization menu in the admin site.
+/// </summary>
+public sealed class AdminMenu : INavigationProvider
 {
-    /// <summary>
-    /// Represents a localization menu in the admin site.
-    /// </summary>
-    public class AdminMenu : INavigationProvider
+    private static readonly RouteValueDictionary _routeValues = new()
     {
-        protected readonly IStringLocalizer S;
+        { "area", "OrchardCore.Settings" },
+        { "groupId", LocalizationSettingsDisplayDriver.GroupId },
+    };
 
-        /// <summary>
-        /// Creates a new instance of the <see cref="AdminMenu"/>.
-        /// </summary>
-        /// <param name="localizer">The <see cref="IStringLocalizer"/>.</param>
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    internal readonly IStringLocalizer S;
+
+    /// <summary>
+    /// Creates a new instance of the <see cref="AdminMenu"/>.
+    /// </summary>
+    /// <param name="localizer">The <see cref="IStringLocalizer"/>.</param>
+    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    {
+        S = localizer;
+    }
+
+    /// <inheritdocs />
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    {
+        if (!NavigationHelper.IsAdminMenu(name))
         {
-            S = localizer;
+            return ValueTask.CompletedTask;
         }
 
-        /// <inheritdocs />
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                builder
-                    .Add(S["Configuration"], configuration => configuration
-                        .Add(S["Settings"], settings => settings
-                            .Add(S["Localization"], localization => localization
-                                .AddClass("localization").Id("localization")
-                                .Add(S["Cultures"], S["Cultures"].PrefixPosition(), entry => entry
-                                    .AddClass("cultures").Id("cultures")
-                                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LocalizationSettingsDisplayDriver.GroupId })
-                                    .Permission(Permissions.ManageCultures)
-                                    .LocalNav()
-                                )
-                            )
+        builder
+            .Add(S["Configuration"], configuration => configuration
+                .Add(S["Settings"], settings => settings
+                    .Add(S["Localization"], localization => localization
+                        .AddClass("localization")
+                        .Id("localization")
+                        .Add(S["Cultures"], S["Cultures"].PrefixPosition(), cultures => cultures
+                            .AddClass("cultures")
+                            .Id("cultures")
+                            .Action("Index", "Admin", _routeValues)
+                            .Permission(Permissions.ManageCultures)
+                            .LocalNav()
                         )
-                    );
-            }
+                    )
+                )
+            );
 
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

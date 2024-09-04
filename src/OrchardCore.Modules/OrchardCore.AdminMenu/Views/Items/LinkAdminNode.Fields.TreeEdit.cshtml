@@ -1,6 +1,6 @@
 @model LinkAdminNodeViewModel
-@using Newtonsoft.Json
-@using Newtonsoft.Json.Serialization
+@using System.Text.Json
+@using System.Text.Json.Nodes
 
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="admin"></style>
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head" depends-on="admin"></style>
@@ -22,6 +22,18 @@
     <label asp-for="LinkUrl" class="form-label">@T["Link Url"]</label>
     <input asp-for="LinkUrl" class="form-control" />
     <span class="hint">@T["The url of the link. A link will be shown only if it or one of their children have a url. The url will be relative to the root of the admin site"]</span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Target" class="form-label">@T["Target"]</label>
+    <input asp-for="Target" list="targetOptions" class="form-control" />
+    <datalist id="targetOptions">
+        <option value="_self">@T["Opens the linked document in the same frame as it was clicked (this is default)."]</option>
+        <option value="_blank">@T["Opens the linked document in a new window or tab."]</option>
+        <option value="_parent">@T["Opens the linked document in the parent frame."]</option>
+        <option value="_top">@T["Opens the linked document in the full body of the window."]</option>
+    </datalist>
+    <span class="hint">@T["The target attribute of the A tag, see more:"] <a class="seedoc" target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#target">target</a></span>
 </div>
 
 <div class="mb-3">
@@ -73,8 +85,8 @@
 
 <div class="mb-3">
     @{
-        var selectedItems = JsonConvert.SerializeObject(Model.SelectedItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
-        var allItems = JsonConvert.SerializeObject(Model.AllItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+        var selectedItems = JConvert.SerializeObject(Model.SelectedItems, JOptions.CamelCase);
+        var allItems = JConvert.SerializeObject(Model.AllItems, JOptions.CamelCase);
     }
 
     <script asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>

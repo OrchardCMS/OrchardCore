@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +29,8 @@ public static class HttpBackgroundJob
         {
             return Task.CompletedTask;
         }
+        // Record the current logged in user.
+        var userPrincipal = httpContextAccessor.HttpContext.User.Clone();
 
         // Fire and forget in an isolated child scope.
         _ = ShellScope.UsingChildScopeAsync(async scope =>
@@ -59,6 +59,8 @@ public static class HttpBackgroundJob
 
             // Create a new 'HttpContext' to be used in the background.
             httpContextAccessor.HttpContext = shellContext.CreateHttpContext();
+            // Restore the current user.
+            httpContextAccessor.HttpContext.User = userPrincipal;
 
             // Here the 'IActionContextAccessor.ActionContext' need to be cleared, this 'AsyncLocal'
             // field is not cleared by 'AspnetCore' and still references the previous 'HttpContext'.

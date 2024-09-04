@@ -1,9 +1,6 @@
-using System;
+namespace OrchardCore.Contents.AuditTrail.ViewModels;
 
-namespace OrchardCore.Contents.AuditTrail.ViewModels
+public class ContentAuditTrailSettingsViewModel
 {
-    public class ContentAuditTrailSettingsViewModel
-    {
-        public string[] AllowedContentTypes { get; set; } = Array.Empty<string>();
-    }
+    public string[] AllowedContentTypes { get; set; } = [];
 }

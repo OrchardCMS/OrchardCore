@@ -1,35 +1,41 @@
-using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Controllers;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.AuditTrail.Navigation
+namespace OrchardCore.AuditTrail.Navigation;
+
+public sealed class AuditTrailAdminMenu : INavigationProvider
 {
-    public class AuditTrailAdminMenu : INavigationProvider
+    private static readonly RouteValueDictionary _routeValues = new()
     {
-        protected readonly IStringLocalizer S;
+        { "area", "OrchardCore.AuditTrail" },
+        { "correlationId", string.Empty },
+    };
 
-        public AuditTrailAdminMenu(IStringLocalizer<AuditTrailAdminMenu> stringLocalizer)
+    internal readonly IStringLocalizer S;
+
+    public AuditTrailAdminMenu(IStringLocalizer<AuditTrailAdminMenu> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    {
+        if (!NavigationHelper.IsAdminMenu(name))
         {
-            S = stringLocalizer;
+            return ValueTask.CompletedTask;
         }
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
+        builder
+            .Add(S["Audit Trail"], NavigationConstants.AdminMenuAuditTrailPosition, configuration => configuration
+                .AddClass("audittrail")
+                .Id("audittrail")
+                .Action(nameof(AdminController.Index), "Admin", _routeValues)
+                .Permission(AuditTrailPermissions.ViewAuditTrail)
+                .LocalNav()
+            );
 
-            builder
-                .Add(S["Audit Trail"], NavigationConstants.AdminMenuAuditTrailPosition, configuration => configuration
-                    .AddClass("audittrail").Id("audittrail")
-                    .Action(nameof(AdminController.Index), "Admin", new { area = "OrchardCore.AuditTrail", correlationId = "" })
-                    .Permission(AuditTrailPermissions.ViewAuditTrail)
-                    .LocalNav());
-
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

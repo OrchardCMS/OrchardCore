@@ -1,36 +1,33 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Shortcodes
+namespace OrchardCore.Shortcodes;
+
+public sealed class AdminMenu : INavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
     {
-        protected readonly IStringLocalizer S;
+        S = localizer;
+    }
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    {
+        if (!NavigationHelper.IsAdminMenu(name))
         {
-            S = localizer;
+            return ValueTask.CompletedTask;
         }
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
+        builder
+            .Add(S["Design"], design => design
+                .Add(S["Shortcodes"], S["Shortcodes"].PrefixPosition(), import => import
+                    .Action("Index", "Admin", "OrchardCore.Shortcodes")
+                    .Permission(Permissions.ManageShortcodeTemplates)
+                    .LocalNav()
+                )
+            );
 
-            builder
-                .Add(S["Design"], design => design
-                    .Add(S["Shortcodes"], S["Shortcodes"].PrefixPosition(), import => import
-                        .Action("Index", "Admin", new { area = "OrchardCore.Shortcodes" })
-                        .Permission(Permissions.ManageShortcodeTemplates)
-                        .LocalNav()
-                    )
-                );
-
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

@@ -1,65 +1,63 @@
-using System;
-using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
-using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.Search.Lucene.QueryProviders.Filters
+namespace OrchardCore.Search.Lucene.QueryProviders.Filters;
+
+public class PrefixFilterProvider : ILuceneBooleanFilterProvider
 {
-    public class PrefixFilterProvider : ILuceneBooleanFilterProvider
+    public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonNode filter, Query toFilter)
     {
-        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JToken filter, Query toFilter)
+        if (type != "prefix")
         {
-            if (type != "prefix")
-            {
-                return null;
-            }
-
-            if (toFilter is not BooleanQuery booleanQuery)
-            {
-                return null;
-            }
-
-            var queryObj = filter as JObject;
-            var first = queryObj.Properties().First();
-
-            // A prefix query has only one member, which can either be a string or an object
-            PrefixQuery prefixQuery;
-
-            switch (first.Value.Type)
-            {
-                case JTokenType.String:
-                    prefixQuery = new PrefixQuery(new Term(first.Name, first.Value.ToString()));
-                    break;
-                case JTokenType.Object:
-                    var obj = (JObject)first.Value;
-
-                    if (obj.TryGetValue("value", out var value))
-                    {
-                        prefixQuery = new PrefixQuery(new Term(first.Name, value.Value<string>()));
-                    }
-                    else if (obj.TryGetValue("prefix", out var prefix))
-                    {
-                        prefixQuery = new PrefixQuery(new Term(first.Name, prefix.Value<string>()));
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Prefix query misses prefix value");
-                    }
-
-                    if (obj.TryGetValue("boost", out var boost))
-                    {
-                        prefixQuery.Boost = boost.Value<float>();
-                    }
-
-                    break;
-                default: throw new ArgumentException("Invalid prefix query");
-            }
-
-            booleanQuery.Add(prefixQuery, Occur.MUST);
-            var queryFilter = new QueryWrapperFilter(prefixQuery);
-
-            return new FilteredQuery(booleanQuery, queryFilter);
+            return null;
         }
+
+        if (toFilter is not BooleanQuery booleanQuery)
+        {
+            return null;
+        }
+
+        var queryObj = filter.AsObject();
+        var first = queryObj.First();
+
+        // A prefix query has only one member, which can either be a string or an object
+        PrefixQuery prefixQuery;
+
+        switch (first.Value.GetValueKind())
+        {
+            case JsonValueKind.String:
+                prefixQuery = new PrefixQuery(new Term(first.Key, first.Value.ToString()));
+                break;
+            case JsonValueKind.Object:
+                var obj = first.Value.AsObject();
+
+                if (obj.TryGetPropertyValue("value", out var value))
+                {
+                    prefixQuery = new PrefixQuery(new Term(first.Key, value.Value<string>()));
+                }
+                else if (obj.TryGetPropertyValue("prefix", out var prefix))
+                {
+                    prefixQuery = new PrefixQuery(new Term(first.Key, prefix.Value<string>()));
+                }
+                else
+                {
+                    throw new ArgumentException("Prefix query misses prefix value");
+                }
+
+                if (obj.TryGetPropertyValue("boost", out var boost))
+                {
+                    prefixQuery.Boost = boost.Value<float>();
+                }
+
+                break;
+            default: throw new ArgumentException("Invalid prefix query");
+        }
+
+        booleanQuery.Add(prefixQuery, Occur.MUST);
+        var queryFilter = new QueryWrapperFilter(prefixQuery);
+
+        return new FilteredQuery(booleanQuery, queryFilter);
     }
 }

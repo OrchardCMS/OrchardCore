@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
 using YesSql;
@@ -66,6 +64,7 @@ public class NotificationService : INotificationService
         {
             NotificationId = IdGenerator.GenerateId(),
             CreatedUtc = _clock.UtcNow,
+            Subject = context.NotificationMessage.Subject,
             Summary = context.NotificationMessage.Summary,
         };
 

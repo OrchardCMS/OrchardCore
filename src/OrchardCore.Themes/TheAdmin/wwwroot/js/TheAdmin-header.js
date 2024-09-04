@@ -3,31 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-var darkThemeName = 'dark';
-var lightThemeName = 'light';
-var getTenantName = function getTenantName() {
-  return document.documentElement.getAttribute('data-tenant') || '';
-};
-var getStoredTheme = function getStoredTheme() {
-  return localStorage.getItem(getTenantName() + '-admintheme');
-};
-var setStoredTheme = function setStoredTheme(theme) {
-  return localStorage.setItem(getTenantName() + '-admintheme', theme);
-};
-var getPreferredTheme = function getPreferredTheme() {
-  var storedTheme = getStoredTheme();
-  if (storedTheme) {
-    return storedTheme;
-  }
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? darkThemeName : lightThemeName;
-};
-var setTheme = function setTheme(theme) {
-  if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    document.documentElement.setAttribute('data-bs-theme', darkThemeName);
-  } else {
-    document.documentElement.setAttribute('data-bs-theme', theme);
-  }
-};
+themeStoreKeySuffix = 'admintheme';
 var getAdminPreferenceKey = function getAdminPreferenceKey() {
   return getTenantName() + '-adminPreferences';
 };

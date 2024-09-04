@@ -1,36 +1,33 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Apis.GraphQL
+namespace OrchardCore.Apis.GraphQL;
+
+public sealed class AdminMenu : INavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
     {
-        protected readonly IStringLocalizer S;
+        S = localizer;
+    }
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    {
+        if (!NavigationHelper.IsAdminMenu(name))
         {
-            S = localizer;
+            return ValueTask.CompletedTask;
         }
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
+        builder
+            .Add(S["Configuration"], configuration => configuration
+                .Add(S["GraphiQL"], S["GraphiQL"].PrefixPosition(), graphiQL => graphiQL
+                    .Action("Index", "Admin", "OrchardCore.Apis.GraphQL")
+                    .Permission(CommonPermissions.ExecuteGraphQL)
+                    .LocalNav()
+                )
+            );
 
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["GraphiQL"], S["GraphiQL"].PrefixPosition(), deployment => deployment
-                        .Action("Index", "Admin", new { area = "OrchardCore.Apis.GraphQL" })
-                        .Permission(Permissions.ExecuteGraphQL)
-                        .LocalNav()
-                    )
-                );
-
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

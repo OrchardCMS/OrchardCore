@@ -1,27 +1,25 @@
-using System;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
-namespace OrchardCore.Media.Fields
+namespace OrchardCore.Media.Fields;
+
+public static class MediaFieldAnchorExtensions
 {
-    public static class MediaFieldAnchorExtensions
+    /// <summary>
+    /// Anchors are a less well known property of a media field.
+    /// </summary>
+    public static Anchor[] GetAnchors(this MediaField mediaField)
     {
-        /// <summary>
-        /// Anchors are a less well known property of a media field.
-        /// </summary>
-        public static Anchor[] GetAnchors(this MediaField mediaField)
-        {
-            var anchors = mediaField.Content["Anchors"] as JArray;
+        var anchors = (JsonArray)mediaField.Content["Anchors"];
 
-            return anchors != null ? anchors.ToObject<Anchor[]>() : Array.Empty<Anchor>();
-        }
-
-        /// <summary>
-        /// Tags names are a less well known property of a media field.
-        /// </summary>
-        public static void SetAnchors(this MediaField mediaField, Anchor[] anchors)
-        {
-            mediaField.Content["Anchors"] = JArray.FromObject(anchors);
-        }
-
+        return anchors is not null ? anchors.ToObject<Anchor[]>() : [];
     }
+
+    /// <summary>
+    /// Tags names are a less well known property of a media field.
+    /// </summary>
+    public static void SetAnchors(this MediaField mediaField, Anchor[] anchors)
+    {
+        mediaField.Content["Anchors"] = JArray.FromObject(anchors);
+    }
+
 }

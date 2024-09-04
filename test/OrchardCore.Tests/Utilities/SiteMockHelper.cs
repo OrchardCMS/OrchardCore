@@ -1,12 +1,13 @@
+using System.Text.Json.Nodes;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Tests.Utilities;
 
-public class SiteMockHelper
+public static class SiteMockHelper
 {
     public static Mock<ISite> GetSite<T>(T obj) where T : new()
     {
-        var properties = new JObject
+        var properties = new JsonObject
         {
             [obj.GetType().Name] = JObject.FromObject(obj)
         };

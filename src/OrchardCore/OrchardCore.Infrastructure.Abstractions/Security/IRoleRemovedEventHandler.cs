@@ -1,9 +1,6 @@
-using System.Threading.Tasks;
+namespace OrchardCore.Security;
 
-namespace OrchardCore.Security
+public interface IRoleRemovedEventHandler
 {
-    public interface IRoleRemovedEventHandler
-    {
-        Task RoleRemovedAsync(string roleName);
-    }
+    Task RoleRemovedAsync(string roleName);
 }

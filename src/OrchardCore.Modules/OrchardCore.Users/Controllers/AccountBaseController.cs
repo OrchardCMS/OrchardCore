@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +6,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Controllers;
 
-public class AccountBaseController : Controller
+public abstract class AccountBaseController : Controller
 {
     protected async Task<IActionResult> LoggedInActionResultAsync(IUser user, string returnUrl = null, ExternalLoginInfo info = null)
     {
@@ -20,7 +16,7 @@ public class AccountBaseController : Controller
             var input = new Dictionary<string, object>
             {
                 ["UserName"] = user.UserName,
-                ["ExternalClaims"] = info?.Principal?.GetSerializableClaims() ?? Enumerable.Empty<SerializableClaim>(),
+                ["ExternalClaims"] = info?.Principal?.GetSerializableClaims() ?? [],
                 ["Roles"] = u.RoleNames,
                 ["Provider"] = info?.LoginProvider
             };

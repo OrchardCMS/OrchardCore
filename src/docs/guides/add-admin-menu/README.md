@@ -62,20 +62,19 @@ using System.Text;
 using System.Threading.Tasks;
 using OrchardCore.Admin;
 
-namespace MyModule.Controllers
-{
-    [Admin]
-    public class DemoNavController : Controller
-    {
-        public ActionResult ChildOne()
-        {
-            return View();
-        }
+namespace MyModule.Controllers;
 
-        public ActionResult ChildTwo()
-        {
-            return View();
-        }
+[Admin]
+public sealed class DemoNavController : Controller
+{
+    public ActionResult ChildOne()
+    {
+        return View();
+    }
+
+    public ActionResult ChildTwo()
+    {
+        return View();
     }
 }
 ```
@@ -113,36 +112,35 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace MyModule
+namespace MyModule;
+
+public sealed class AdminMenu : INavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
     {
-        private readonly IStringLocalizer S;
+        S = localizer;
+    }
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    {
+        // We want to add our menus to the "admin" menu only.
+        if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
         {
-            S = localizer;
+            return ValueTask.CompletedTask;
         }
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            // We want to add our menus to the "admin" menu only.
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
+        // Adding our menu items to the builder.
+        // The builder represents the full admin menu tree.
+        builder
+            .Add(S["My Root View"], S["My Root View"].PrefixPosition(),  rootView => rootView               
+                .Add(S["Child One"], S["Child One"].PrefixPosition(), childOne => childOne
+                    .Action("ChildOne", "DemoNav", new { area = "MyModule"}))
+                .Add(S["Child Two"], S["Child Two"].PrefixPosition(), childTwo => childTwo
+                    .Action("ChildTwo", "DemoNav", new { area = "MyModule"})));
 
-            // Adding our menu items to the builder.
-            // The builder represents the full admin menu tree.
-            builder
-                .Add(S["My Root View"], S["My Root View"].PrefixPosition(),  rootView => rootView               
-                    .Add(S["Child One"], S["Child One"].PrefixPosition(), childOne => childOne
-                        .Action("ChildOne", "DemoNav", new { area = "MyModule"}))
-                    .Add(S["Child Two"], S["Child Two"].PrefixPosition(), childTwo => childTwo
-                        .Action("ChildTwo", "DemoNav", new { area = "MyModule"})));
-
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }
 ```
@@ -161,7 +159,7 @@ using OrchardCore.Navigation;
 Add this line to the `ConfigureServices()` method:
 
 ```csharp
-services.AddScoped<INavigationProvider, AdminMenu>();
+services.AddNavigationProvider<AdminMenu>();
 ```
 
 ## Testing the resulting application

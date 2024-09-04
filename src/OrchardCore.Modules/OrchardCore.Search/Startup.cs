@@ -1,4 +1,4 @@
-using System;
+using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,48 +16,59 @@ using OrchardCore.Search.Deployment;
 using OrchardCore.Search.Drivers;
 using OrchardCore.Search.Migrations;
 using OrchardCore.Search.Models;
+using OrchardCore.Search.ViewModels;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 
-namespace OrchardCore.Search
+namespace OrchardCore.Search;
+
+/// <summary>
+/// These services are registered on the tenant service collection.
+/// </summary>
+public sealed class Startup : StartupBase
 {
-    /// <summary>
-    /// These services are registered on the tenant service collection.
-    /// </summary>
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTransient<IConfigureOptions<SearchSettings>, SearchSettingsConfiguration>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<IDisplayDriver<ISite>, SearchSettingsDisplayDriver>();
+        services.AddTransient<IConfigureOptions<SearchSettings>, SearchSettingsConfiguration>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddPermissionProvider<Permissions>();
+        services.AddSiteDisplayDriver<SearchSettingsDisplayDriver>();
 
-            services.AddContentPart<SearchFormPart>()
-                    .UseDisplayDriver<SearchFormPartDisplayDriver>();
+        services.AddContentPart<SearchFormPart>()
+                .UseDisplayDriver<SearchFormPartDisplayDriver>();
 
-            services.AddDataMigration<SearchMigrations>();
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "Search",
-                areaName: "OrchardCore.Search",
-                pattern: "search/{index?}",
-                defaults: new { controller = typeof(SearchController).ControllerName(), action = nameof(SearchController.Search) }
-            );
-        }
+        services.AddDataMigration<SearchMigrations>();
     }
 
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        routes.MapAreaControllerRoute(
+            name: "Search",
+            areaName: "OrchardCore.Search",
+            pattern: "search/{index?}",
+            defaults: new { controller = typeof(SearchController).ControllerName(), action = nameof(SearchController.Search) }
+        );
+    }
+}
+
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDeployment<SearchSettingsDeploymentSource, SearchSettingsDeploymentStep, SearchSettingsDeploymentStepDriver>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Liquid")]
+public sealed class LiquidStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<TemplateOptions>(o =>
         {
-            services.AddTransient<IDeploymentSource, SearchSettingsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SearchSettingsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, SearchSettingsDeploymentStepDriver>();
-        }
+            o.MemberAccessStrategy.Register<SearchIndexViewModel>();
+            o.MemberAccessStrategy.Register<SearchFormViewModel>();
+            o.MemberAccessStrategy.Register<SearchResultsViewModel>();
+        });
     }
 }

@@ -1,9 +1,8 @@
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
-namespace OrchardCore.Shells.Database.Models
+namespace OrchardCore.Shells.Database.Models;
+
+public class DatabaseShellConfigurations
 {
-    public class DatabaseShellConfigurations
-    {
-        public JObject ShellConfigurations { get; set; }
-    }
+    public JsonObject ShellConfigurations { get; set; }
 }

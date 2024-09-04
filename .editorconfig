@@ -1,7 +1,14 @@
-﻿root = true
+# Define rule severity for each diagnostic rule ID which should be displayed or hidden in the Error List window
+# dotnet_diagnostic.<rule ID>.severity = <severity>
+
+# Severity levels: (https://learn.microsoft.com/visualstudio/code-quality/use-roslyn-analyzers?view=vs-2019#rule-severity)
+# suggestion, error, and warning show up in the editor and Error List.
+# silent shows up only in the editor as a light bulb code-refactoring action.
+# none shows up in neither.
+
+root = true
 
 [*]
-end_of_line = crlf
 charset = utf-8
 indent_style = space
 indent_size = 4
@@ -11,27 +18,88 @@ indent_size = 2
 
 [*.cs]
 # Prefer "var" everywhere
-csharp_style_var_for_built_in_types                   = true : suggestion
-csharp_style_var_when_type_is_apparent                = true : suggestion
-csharp_style_var_elsewhere                            = true : suggestion
+csharp_style_var_for_built_in_types                        = true : suggestion
+csharp_style_var_when_type_is_apparent                     = true : suggestion
+csharp_style_var_elsewhere                                 = true : suggestion
 
 # Newline settings
-csharp_new_line_before_open_brace                     = all
-csharp_new_line_before_else                           = true
-csharp_new_line_before_catch                          = true
-csharp_new_line_before_finally                        = true
-csharp_new_line_before_members_in_object_initializers = true
-csharp_new_line_before_members_in_anonymous_types     = true
+csharp_new_line_before_open_brace                          = all
+csharp_new_line_before_else                                = true
+csharp_new_line_before_catch                               = true
+csharp_new_line_before_finally                             = true
+csharp_new_line_before_members_in_object_initializers      = true
+csharp_new_line_before_members_in_anonymous_types          = true
+
+dotnet_diagnostic.IDE0290.severity                         = none           # Use primary constructor
+csharp_style_prefer_primary_constructors                   = false
+
+dotnet_diagnostic.IDE0305.severity                         = none           # Use collection expression for fluent
+dotnet_style_prefer_collection_expression                  = when_types_exactly_match
+
+# Block bodies
+dotnet_diagnostic.IDE0021.severity                         = none           # Use block body for constructor
+csharp_style_expression_bodied_constructors                = false
+dotnet_diagnostic.IDE0022.severity                         = none           # Use block body for method
+dotnet_diagnostic.IDE0023.severity                         = none           # Use block body for conversion operator
+csharp_style_expression_bodied_operators                   = when_on_single_line
+dotnet_diagnostic.IDE0025.severity                         = silent         # Use expression body for property
+csharp_style_expression_bodied_properties                  = when_on_single_line
+dotnet_diagnostic.IDE0026.severity                         = none           # Use expression body for indexers
+csharp_style_expression_bodied_indexers                    = when_on_single_line
+dotnet_diagnostic.IDE0027.severity                         = none           # Use block body for accessors
+csharp_style_expression_bodied_accessors                   = when_on_single_line
+dotnet_diagnostic.IDE0028.severity                         = silent          # Collection initialization can be simplified
+dotnet_diagnostic.IDE0061.severity                         = silent         # Use body for local function
+
+dotnet_diagnostic.IDE0032.severity                         = silent         # Use auto property
+dotnet_diagnostic.IDE0040.severity                         = warning        # Accessibility modifiers required
+dotnet_diagnostic.IDE0041.severity                         = silent         # Null check can be simplified
+dotnet_diagnostic.IDE0051.severity                         = warning        # Make field readonly
+dotnet_diagnostic.IDE0074.severity                         = silent         # Use compound assignment
+dotnet_diagnostic.IDE0090.severity                         = silent         # New expression can be simplified
+dotnet_diagnostic.IDE1006.severity                         = silent         # Name rule violation: missing prefix
+
+dotnet_diagnostic.IDE0011.severity                         = warning        # If statement can be simplified
+dotnet_diagnostic.IDE0045.severity                         = silent         # If statement can be simplified
+dotnet_diagnostic.IDE0046.severity                         = silent         # If statement can be simplified
+dotnet_diagnostic.IDE0047.severity                         = silent         # Parentheses can be removed
+dotnet_diagnostic.IDE0060.severity                         = warning        # Use Remove unused parameter if not part of a shipped public API
+dotnet_diagnostic.IDE0051.severity                         = warning        # Private member is unused
+dotnet_diagnostic.IDE0052.severity                         = warning        # Private member can be removed as the value assigned to it is never read
+dotnet_diagnostic.IDE0065.severity                         = warning        # Using directives must be placed outside of a namespace declaration
+csharp_using_directive_placement             4              = outside_namespace
+
+dotnet_diagnostic.IDE0100.severity                         = silent         # Use block body for constructor
+dotnet_diagnostic.IDE0200.severity                         = silent         # Lambda expression can be removed
+dotnet_diagnostic.IDE0300.severity                         = silent         # Collection expression can be simplified
+dotnet_diagnostic.IDE0301.severity                         = silent         # Collection initialization can be simplified
+dotnet_diagnostic.IDE0302.severity                         = silent         # Collection initialization can be simplified
+dotnet_diagnostic.IDE0303.severity                         = silent         # Collection initialization can be simplified
+
+dotnet_diagnostic.IDE0078.severity                         = silent         # Use pattern matching
+
+dotnet_style_prefer_conditional_expression_over_assignment = silent   # Remove redundant equality, e.g. Disabled == false
+
+dotnet_diagnostic.CA2263.severity                         = warning         # Prefer generic overload when type is known
 
 # Sort using and Import directives with System.* appearing first
 dotnet_sort_system_directives_first                        = true
 
 # Code-block preferences
-csharp_prefer_braces = true
-csharp_prefer_simple_using_statement = true
-csharp_style_namespace_declarations = file_scoped
+csharp_prefer_braces                                       = true
+csharp_prefer_simple_using_statement                       = true
+csharp_style_namespace_declarations                        = file_scoped:warning
+# Note that currently both IDE* rules and csharp_style_* rules are necessary, because only IDE rules will be enforced
+# during build, see: https://github.com/dotnet/roslyn/issues/44201.
+dotnet_diagnostic.IDE0161.severity                         = warning
 
-# Avoid "this." if not necessary
+# Range operator
+csharp_style_prefer_range_operator                         = false:warning
+csharp_style_prefer_index_operator                         = false:warning
+dotnet_diagnostic.IDE0057.severity                         = warning
+dotnet_diagnostic.IDE0056.severity                         = warning
+
+# Avoid "this." if not necessary 
 dotnet_style_qualification_for_field                       = false : suggestion
 dotnet_style_qualification_for_property                    = false : suggestion
 dotnet_style_qualification_for_method                      = false : suggestion
@@ -42,11 +110,11 @@ dotnet_style_predefined_type_for_locals_parameters_members = true : suggestion
 dotnet_style_predefined_type_for_member_access             = true : suggestion
 
 # Suggest more modern language features when available
-csharp_style_pattern_matching_over_is_with_cast_check = true : none
-csharp_style_pattern_matching_over_as_with_null_check = true : none
-csharp_style_inlined_variable_declaration             = true : none
-csharp_style_throw_expression                         = true : none
-csharp_style_conditional_delegate_call                = true : none
+csharp_style_pattern_matching_over_is_with_cast_check      = true : none
+csharp_style_pattern_matching_over_as_with_null_check      = true : none
+csharp_style_inlined_variable_declaration                  = true : none
+csharp_style_throw_expression                              = true : none
+csharp_style_conditional_delegate_call                     = true : none
 
 dotnet_style_object_initializer                            = true : suggestion
 dotnet_style_collection_initializer                        = true : suggestion
@@ -194,7 +262,7 @@ dotnet_diagnostic.SA1314.severity = none            # Type parameter names shoul
 
 # StyleCop: Maintainability Rules
 dotnet_diagnostic.SA1400.severity = none            # Access modifier should be declared.
-dotnet_diagnostic.SA1401.severity = none            # Fields should be privat.
+dotnet_diagnostic.SA1401.severity = none            # Fields should be private.
 dotnet_diagnostic.SA1402.severity = none            # File may only contain a single type.
 dotnet_diagnostic.SA1403.severity = none            # File may only contain a single namespace.
 dotnet_diagnostic.SA1404.severity = none            # Code analysis suppression should have justification.

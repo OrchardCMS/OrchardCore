@@ -1,4 +1,3 @@
-using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using NLog;
@@ -19,6 +18,8 @@ public static class WebHostBuilderExtensions
             .ConfigureAppConfiguration((context, _) =>
             {
                 var environment = context.HostingEnvironment;
+                var appData = System.Environment.GetEnvironmentVariable(ShellOptionConstants.OrchardAppData);
+                var configDir = string.IsNullOrWhiteSpace(appData) ? $"{environment.ContentRootPath}/{ShellOptionConstants.DefaultAppDataPath}" : appData;
                 LogManager.Configuration.Variables["configDir"] = environment.ContentRootPath;
             });
     }

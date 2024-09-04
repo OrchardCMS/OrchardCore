@@ -146,30 +146,32 @@ Navigation can be extended, through code, by implementing `INavigationProvider` 
 Below is a sample implementation of an `INavigationProvider` used to extend the "main" navigation section of the site.
 
 ```csharp
-public class MainMenu : INavigationProvider
+public sealed class MainMenu : INavigationProvider
+{
+    internal readonly IStringLocalizer S;
+
+    public MainMenu(IStringLocalizer<MainMenu> localizer)
     {
-        private readonly IStringLocalizer S;
-
-        public MainMenu(IStringLocalizer<MainMenu> localizer)
-        {
-            S = localizer;
-        }
-
-        public async Task BuildNavigation(string name, NavigationBuilder builder)
-        {
-            //Only interact with the "main" navigation menu here.
-            if (!String.Equals(name, "main", StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
-            builder
-                .Add(S["Notifications"], S["Notifications"], layers => layers
-                    .Action("Index", "Template", new { area = "CRT.Client.OrchardModules.CommunicationTemplates", groupId = 1 })
-                    .LocalNav()
-                );
-        }
+        S = localizer;
     }
+
+    public ValueTask BuildNavigation(string name, NavigationBuilder builder)
+    {
+        //Only interact with the "main" navigation menu here.
+        if (!String.Equals(name, "main", StringComparison.OrdinalIgnoreCase))
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        builder
+            .Add(S["Notifications"], S["Notifications"], notifications => notifications
+                .Action("Index", "Template", new { area = "CRT.Client.OrchardModules.CommunicationTemplates", groupId = "1" })
+                .LocalNav()
+            );
+
+        return ValueTask.CompletedTask;
+    }
+}
 ```  
 
 This provider will be called as long as the site is using a theme that includes a line similar to the following, which causes the navigation menu to be rendered by your theme at the location specified:
@@ -224,3 +226,7 @@ At this time, the Admin Menu is the only navigation with code dynamically adding
         return View(viewModel);
     }
     ```
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/3w68lDwUzFQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Users.ViewModels
+namespace OrchardCore.Users.ViewModels;
+
+public class ForgotPasswordViewModel
 {
-    public class ForgotPasswordViewModel
-    {
-        [Required(ErrorMessage = "Email is required.")]
-        [Email.EmailAddress(ErrorMessage = "Invalid Email.")]
-        public string Email { get; set; }
-    }
+    [Obsolete("Email property is no longer used and will be removed in future releases. Instead use UsernameOrEmail.")]
+    [Email.EmailAddress(ErrorMessage = "Invalid Email.")]
+    public string Email { get; set; }
+
+    [Required(ErrorMessage = "Username or email address is required.")]
+    public string UsernameOrEmail { get; set; }
 }

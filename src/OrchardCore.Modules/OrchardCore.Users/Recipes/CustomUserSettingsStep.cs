@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -13,7 +10,7 @@ namespace OrchardCore.Users.Recipes;
 /// <summary>
 /// This recipe step updates the custom user settings.
 /// </summary>
-public class CustomUserSettingsStep : IRecipeStepHandler
+public sealed class CustomUserSettingsStep : IRecipeStepHandler
 {
     private readonly ISession _session;
 
@@ -31,34 +28,36 @@ public class CustomUserSettingsStep : IRecipeStepHandler
 
         var model = context.Step;
 
-        var customUserSettingsList = (JArray)model
-            .Properties()
-            .Where(p => p.Name != "name")
-            .FirstOrDefault()
-            ?.Value;
+        var customUserSettingsList = (JsonArray)model
+            .AsEnumerable()
+            .Where(p => p.Key != "name")
+            .Select(p => p.Value)
+            .FirstOrDefault();
 
         var allUsers = await _session.Query<User>().ListAsync();
 
-        foreach (JObject userCustomUserSettings in customUserSettingsList.Cast<JObject>())
+        foreach (var userCustomUserSettings in customUserSettingsList.Cast<JsonObject>())
         {
-            var userId = userCustomUserSettings
-                .Properties()
-                .FirstOrDefault(p => p.Name == "userId")?
-                .Value
-                ?.ToString();
-
-            var user = allUsers.FirstOrDefault(u => u.UserId == userId);
-            if (user is not User _)
+            if (!userCustomUserSettings.TryGetPropertyValue("userId", out var jsonNode))
             {
                 continue;
             }
 
-            var userSettings = (JArray)userCustomUserSettings
-                .Properties()
-                .FirstOrDefault(p => p.Name == "user-custom-user-settings")
-                ?.Value;
+            var userId = jsonNode.Value<string>();
 
-            foreach (JObject userSetting in userSettings.Cast<JObject>())
+            var user = allUsers.FirstOrDefault(u => u.UserId == userId);
+            if (user is null)
+            {
+                continue;
+            }
+
+            if (!userCustomUserSettings.TryGetPropertyValue("user-custom-user-settings", out jsonNode) ||
+                jsonNode is not JsonArray userSettings)
+            {
+                continue;
+            }
+
+            foreach (var userSetting in userSettings.Cast<JsonObject>())
             {
                 var contentItem = userSetting.ToObject<ContentItem>();
                 user.Properties[contentItem.ContentType] = userSetting;

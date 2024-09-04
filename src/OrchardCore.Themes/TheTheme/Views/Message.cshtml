@@ -1,0 +1,14 @@
+@{
+    string type = Model.Type.ToString().ToLowerInvariant();
+    var bsClassName = type switch
+    {
+        "information" => "alert-info",
+        "error" => "alert-danger",
+        _ => $"alert-{type}",
+    };
+}
+
+<div class="alert alert-dismissible @bsClassName fade show message-@type" role="alert">
+    @Model.Message
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>

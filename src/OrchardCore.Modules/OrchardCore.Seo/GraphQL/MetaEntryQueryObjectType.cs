@@ -1,4 +1,3 @@
-using System.IO;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Localization;
@@ -23,8 +22,7 @@ public class MetaEntryQueryObjectType : ObjectGraphType<MetaEntry>
             .Description("HttpEquiv of the meta entry");
         Field(x => x.Charset)
             .Description("Charset of the meta entry");
-        Field<StringGraphType>()
-            .Name("Tag")
+        Field<StringGraphType>("Tag")
             .Description("The generated tag of the meta entry")
             .Resolve(ctx =>
             {

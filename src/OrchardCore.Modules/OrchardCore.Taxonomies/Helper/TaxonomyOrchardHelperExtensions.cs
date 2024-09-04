@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore;
 using OrchardCore.ContentManagement;
 using OrchardCore.Taxonomies.Indexing;
@@ -30,7 +26,7 @@ public static class TaxonomyOrchardHelperExtensions
             return null;
         }
 
-        return FindTerm(taxonomy.Content.TaxonomyPart.Terms as JArray, termContentItemId);
+        return FindTerm((JsonArray)taxonomy.Content.TaxonomyPart.Terms, termContentItemId);
     }
 
     /// <summary>
@@ -52,7 +48,7 @@ public static class TaxonomyOrchardHelperExtensions
 
         var terms = new List<ContentItem>();
 
-        FindTermHierarchy(taxonomy.Content.TaxonomyPart.Terms as JArray, termContentItemId, terms);
+        FindTermHierarchy((JsonArray)taxonomy.Content.TaxonomyPart.Terms, termContentItemId, terms);
 
         return terms;
     }
@@ -70,18 +66,18 @@ public static class TaxonomyOrchardHelperExtensions
         return await contentManager.LoadAsync(contentItems);
     }
 
-    internal static ContentItem FindTerm(JArray termsArray, string termContentItemId)
+    internal static ContentItem FindTerm(JsonArray termsArray, string termContentItemId)
     {
-        foreach (var term in termsArray.Cast<JObject>())
+        foreach (var term in termsArray.Cast<JsonObject>())
         {
-            var contentItemId = term.GetValue("ContentItemId").ToString();
+            var contentItemId = term["ContentItemId"]?.ToString();
 
             if (contentItemId == termContentItemId)
             {
                 return term.ToObject<ContentItem>();
             }
 
-            if (term.GetValue("Terms") is JArray children)
+            if (term["Terms"] is JsonArray children)
             {
                 var found = FindTerm(children, termContentItemId);
 
@@ -95,11 +91,11 @@ public static class TaxonomyOrchardHelperExtensions
         return null;
     }
 
-    internal static bool FindTermHierarchy(JArray termsArray, string termContentItemId, List<ContentItem> terms)
+    internal static bool FindTermHierarchy(JsonArray termsArray, string termContentItemId, List<ContentItem> terms)
     {
-        foreach (var term in termsArray.Cast<JObject>())
+        foreach (var term in termsArray.Cast<JsonObject>())
         {
-            var contentItemId = term.GetValue("ContentItemId").ToString();
+            var contentItemId = term["ContentItemId"]?.ToString();
 
             if (contentItemId == termContentItemId)
             {
@@ -108,7 +104,7 @@ public static class TaxonomyOrchardHelperExtensions
                 return true;
             }
 
-            if (term.GetValue("Terms") is JArray children)
+            if (term["Terms"] is JsonArray children)
             {
                 var found = FindTermHierarchy(children, termContentItemId, terms);
 

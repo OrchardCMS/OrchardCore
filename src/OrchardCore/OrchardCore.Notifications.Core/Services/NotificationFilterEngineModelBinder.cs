@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Notifications.Services;
@@ -15,10 +13,7 @@ public class NotificationFilterEngineModelBinder : IModelBinder
 
     public Task BindModelAsync(ModelBindingContext bindingContext)
     {
-        if (bindingContext == null)
-        {
-            throw new ArgumentNullException(nameof(bindingContext));
-        }
+        ArgumentNullException.ThrowIfNull(bindingContext);
 
         var modelName = bindingContext.ModelName;
 

@@ -1,6 +1,4 @@
-using System;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Navigation.Core;
@@ -35,7 +33,7 @@ public class DefaultNotificationsAdminListFilterProvider : INotificationAdminLis
                         }
                     }
 
-                    return new ValueTask<IQuery<Notification>>(query);
+                    return ValueTask.FromResult(query);
                 })
                 .MapTo<ListNotificationOptions>((val, model) =>
                 {
@@ -60,10 +58,10 @@ public class DefaultNotificationsAdminListFilterProvider : INotificationAdminLis
                 {
                     if (Enum.TryParse<NotificationOrder>(val, true, out var sort) && sort == NotificationOrder.Oldest)
                     {
-                        return new ValueTask<IQuery<Notification>>(query.With<NotificationIndex>().OrderBy(x => x.CreatedAtUtc));
+                        return ValueTask.FromResult<IQuery<Notification>>(query.With<NotificationIndex>().OrderBy(x => x.CreatedAtUtc));
                     }
 
-                    return new ValueTask<IQuery<Notification>>(query.With<NotificationIndex>().OrderByDescending(x => x.CreatedAtUtc));
+                    return ValueTask.FromResult<IQuery<Notification>>(query.With<NotificationIndex>().OrderByDescending(x => x.CreatedAtUtc));
                 })
                 .MapTo<ListNotificationOptions>((val, model) =>
                 {
@@ -98,7 +96,7 @@ public class DefaultNotificationsAdminListFilterProvider : INotificationAdminLis
 
                     var userId = httpAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                    return new ValueTask<IQuery<Notification>>(query.With<NotificationIndex>(t => t.UserId == userId));
+                    return ValueTask.FromResult<IQuery<Notification>>(query.With<NotificationIndex>(t => t.UserId == userId));
                 })
                 .AlwaysRun()
             );

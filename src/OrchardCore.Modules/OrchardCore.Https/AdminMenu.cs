@@ -1,37 +1,43 @@
-using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Https.Drivers;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Https
+namespace OrchardCore.Https;
+
+public sealed class AdminMenu : INavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    private static readonly RouteValueDictionary _routeValues = new()
     {
-        protected readonly IStringLocalizer S;
+        { "area", "OrchardCore.Settings" },
+        { "groupId", HttpsSettingsDisplayDriver.GroupId },
+    };
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    {
+        S = localizer;
+    }
+
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    {
+        if (!NavigationHelper.IsAdminMenu(name))
         {
-            S = localizer;
+            return ValueTask.CompletedTask;
         }
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
+        builder
+            .Add(S["Security"], security => security
+                .Add(S["Settings"], settings => settings
+                    .Add(S["HTTPS"], S["HTTPS"].PrefixPosition(), https => https
+                        .Action("Index", "Admin", _routeValues)
+                        .Permission(Permissions.ManageHttps)
+                        .LocalNav()
+                    )
+                )
+            );
 
-            builder
-                .Add(S["Security"], security => security
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["HTTPS"], S["HTTPS"].PrefixPosition(), entry => entry
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "Https" })
-                            .Permission(Permissions.ManageHttps)
-                            .LocalNav()
-                        ))
-                );
-
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
@@ -15,7 +11,7 @@ namespace OrchardCore.PublishLater.Indexes;
 public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly HashSet<string> _partRemoved = new();
+    private readonly HashSet<string> _partRemoved = [];
     private IContentDefinitionManager _contentDefinitionManager;
 
     public PublishLaterPartIndexProvider(IServiceProvider serviceProvider)

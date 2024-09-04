@@ -1,45 +1,41 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
 
-namespace OrchardCore.CustomSettings.Recipes
+namespace OrchardCore.CustomSettings.Recipes;
+
+/// <summary>
+/// This recipe step updates the site settings.
+/// </summary>
+public sealed class CustomSettingsStep : IRecipeStepHandler
 {
-    /// <summary>
-    /// This recipe step updates the site settings.
-    /// </summary>
-    public class CustomSettingsStep : IRecipeStepHandler
+    private readonly ISiteService _siteService;
+
+    public CustomSettingsStep(ISiteService siteService)
     {
-        private readonly ISiteService _siteService;
+        _siteService = siteService;
+    }
 
-        public CustomSettingsStep(ISiteService siteService)
+    public async Task ExecuteAsync(RecipeExecutionContext context)
+    {
+        if (!string.Equals(context.Name, "custom-settings", StringComparison.OrdinalIgnoreCase))
         {
-            _siteService = siteService;
+            return;
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        var siteSettings = await _siteService.LoadSiteSettingsAsync();
+
+        var model = context.Step;
+        foreach (var customSettings in model)
         {
-            if (!string.Equals(context.Name, "custom-settings", StringComparison.OrdinalIgnoreCase))
+            if (customSettings.Key == "name")
             {
-                return;
+                continue;
             }
 
-            var model = context.Step;
-
-            var customSettingsList = (from property in model.Properties()
-                                      where property.Name != "name"
-                                      select property).ToArray();
-
-            var siteSettings = await _siteService.LoadSiteSettingsAsync();
-
-            foreach (var customSettings in customSettingsList)
-            {
-                siteSettings.Properties[customSettings.Name] = customSettings.Value;
-            }
-
-            await _siteService.UpdateSiteSettingsAsync(siteSettings);
+            siteSettings.Properties[customSettings.Key] = customSettings.Value.DeepClone();
         }
+
+        await _siteService.UpdateSiteSettingsAsync(siteSettings);
     }
 }

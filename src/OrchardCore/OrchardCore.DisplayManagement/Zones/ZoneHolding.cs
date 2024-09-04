@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.Zones;
@@ -14,7 +12,7 @@ namespace OrchardCore.DisplayManagement.Zones;
 /// *
 /// Foo.Zones.Alpha :
 /// Foo.Zones["Alpha"]
-/// Foo.Alpha :same
+/// Foo.Alpha :same.
 ///
 /// </summary>
 public class ZoneHolding : Shape, IZoneHolding

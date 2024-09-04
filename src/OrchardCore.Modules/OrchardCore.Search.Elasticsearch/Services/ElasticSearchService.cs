@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Fluid.Values;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Nest;
 using OrchardCore.Liquid;
 using OrchardCore.Search.Abstractions;
@@ -25,6 +22,7 @@ public class ElasticsearchService : ISearchService
     private readonly IElasticSearchQueryService _elasticsearchQueryService;
     private readonly IElasticClient _elasticClient;
     private readonly JavaScriptEncoder _javaScriptEncoder;
+    private readonly ElasticConnectionOptions _elasticConnectionOptions;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly ILogger _logger;
 
@@ -35,6 +33,7 @@ public class ElasticsearchService : ISearchService
         IElasticSearchQueryService elasticsearchQueryService,
         IElasticClient elasticClient,
         JavaScriptEncoder javaScriptEncoder,
+        IOptions<ElasticConnectionOptions> elasticConnectionOptions,
         ILiquidTemplateManager liquidTemplateManager,
         ILogger<ElasticsearchService> logger
         )
@@ -45,6 +44,7 @@ public class ElasticsearchService : ISearchService
         _elasticsearchQueryService = elasticsearchQueryService;
         _elasticClient = elasticClient;
         _javaScriptEncoder = javaScriptEncoder;
+        _elasticConnectionOptions = elasticConnectionOptions.Value;
         _liquidTemplateManager = liquidTemplateManager;
         _logger = logger;
     }
@@ -53,12 +53,18 @@ public class ElasticsearchService : ISearchService
 
     public async Task<SearchResult> SearchAsync(string indexName, string term, int start, int pageSize)
     {
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-        var searchSettings = siteSettings.As<ElasticSettings>();
+        var result = new SearchResult();
+
+        if (!_elasticConnectionOptions.FileConfigurationExists())
+        {
+            _logger.LogWarning("Elasticsearch: Couldn't execute search. Elasticsearch has not been configured yet.");
+
+            return result;
+        }
+
+        var searchSettings = await _siteService.GetSettingsAsync<ElasticSettings>();
 
         var index = !string.IsNullOrWhiteSpace(indexName) ? indexName.Trim() : searchSettings.SearchIndex;
-
-        var result = new SearchResult();
 
         if (index == null || !await _elasticIndexManager.ExistsAsync(index))
         {

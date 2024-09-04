@@ -1,6 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -9,7 +7,7 @@ using OrchardCore.GitHub.Settings;
 
 namespace OrchardCore.GitHub.Configuration;
 
-public class GitHubAuthenticationSettingsConfiguration : IConfigureOptions<GitHubAuthenticationSettings>
+public sealed class GitHubAuthenticationSettingsConfiguration : IConfigureOptions<GitHubAuthenticationSettings>
 {
     private readonly IGitHubAuthenticationService _gitHubAuthenticationService;
     private readonly ShellSettings _shellSettings;

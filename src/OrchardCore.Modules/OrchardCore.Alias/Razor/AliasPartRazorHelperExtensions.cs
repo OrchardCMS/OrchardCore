@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
 using OrchardCore.Alias.Services;
@@ -15,7 +13,7 @@ public static class AliasPartRazorHelperExtensions
     /// </summary>
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="alias">The alias.</param>
-    /// <example>GetContentItemIdByAliasAsync("carousel")</example>
+    /// <example>GetContentItemIdByAliasAsync("carousel").</example>
     /// <returns>A content item id or <c>null</c> if it was not found.</returns>
     public static async Task<string> GetContentItemIdByAliasAsync(this IOrchardHelper orchardHelper, string alias)
     {
@@ -42,7 +40,7 @@ public static class AliasPartRazorHelperExtensions
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="alias">The alias to load.</param>
     /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
-    /// <example>GetContentItemIdByAliasAsync("carousel")</example>
+    /// <example>GetContentItemIdByAliasAsync("carousel").</example>
     /// <returns>A content item with the specific name, or <c>null</c> if it doesn't exist.</returns>
     public static async Task<ContentItem> GetContentItemByAliasAsync(this IOrchardHelper orchardHelper, string alias, bool latest = false)
     {

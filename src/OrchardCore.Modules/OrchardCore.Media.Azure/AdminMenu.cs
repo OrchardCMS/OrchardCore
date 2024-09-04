@@ -1,35 +1,34 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Media.Azure
+namespace OrchardCore.Media.Azure;
+
+public sealed class AdminMenu : INavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
     {
-        protected readonly IStringLocalizer S;
+        S = localizer;
+    }
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    {
+        if (!NavigationHelper.IsAdminMenu(name))
         {
-            S = localizer;
+            return ValueTask.CompletedTask;
         }
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
+        builder.Add(S["Configuration"], configuration => configuration
+            .Add(S["Media"], S["Media"].PrefixPosition(), media => media
+                .Add(S["Azure Blob Options"], S["Azure Blob Options"].PrefixPosition(), options => options
+                    .Action("Options", "Admin", "OrchardCore.Media.Azure")
+                    .Permission(Permissions.ViewAzureMediaOptions)
+                    .LocalNav()
+                )
+            )
+        );
 
-            builder.Add(S["Configuration"], configuration => configuration
-                .Add(S["Media"], S["Media"].PrefixPosition(), media => media
-                    .Add(S["Azure Blob Options"], S["Azure Blob Options"].PrefixPosition(), options => options
-                        .Action("Options", "Admin", new { area = "OrchardCore.Media.Azure" })
-                        .Permission(Permissions.ViewAzureMediaOptions)
-                        .LocalNav())
-            ));
-
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

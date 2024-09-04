@@ -1,35 +1,35 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Queries.Sql
+namespace OrchardCore.Queries.Sql;
+
+public sealed class AdminMenu : INavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
     {
-        protected readonly IStringLocalizer S;
+        S = localizer;
+    }
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    {
+        if (!NavigationHelper.IsAdminMenu(name))
         {
-            S = localizer;
+            return ValueTask.CompletedTask;
         }
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
+        builder
+            .Add(S["Search"], search => search
+                .Add(S["Queries"], S["Queries"].PrefixPosition(), queries => queries
+                    .Add(S["Run SQL Query"], S["Run SQL Query"].PrefixPosition(), sql => sql
+                         .Action("Query", "Admin", "OrchardCore.Queries")
+                         .Permission(Permissions.ManageSqlQueries)
+                         .LocalNav()
+                    )
+                )
+            );
 
-            builder
-                .Add(S["Search"], search => search
-                    .Add(S["Queries"], S["Queries"].PrefixPosition(), queries => queries
-                        .Add(S["Run SQL Query"], S["Run SQL Query"].PrefixPosition(), sql => sql
-                             .Action("Query", "Admin", new { area = "OrchardCore.Queries" })
-                             .Permission(Permissions.ManageSqlQueries)
-                             .LocalNav())));
-
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

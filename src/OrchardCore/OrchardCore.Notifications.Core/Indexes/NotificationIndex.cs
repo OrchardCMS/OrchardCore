@@ -1,4 +1,3 @@
-using System;
 using System.Text.RegularExpressions;
 using OrchardCore.Entities;
 using OrchardCore.Notifications.Models;
@@ -6,7 +5,7 @@ using YesSql.Indexes;
 
 namespace OrchardCore.Notifications.Indexes;
 
-public class NotificationIndex : MapIndex
+public partial class NotificationIndex : MapIndex
 {
     public string NotificationId { get; set; }
 
@@ -24,7 +23,7 @@ public class NotificationIndex : MapIndex
     public string Content { get; set; }
 }
 
-public class NotificationIndexProvider : IndexProvider<Notification>
+public partial class NotificationIndexProvider : IndexProvider<Notification>
 {
     public NotificationIndexProvider()
     {
@@ -66,10 +65,13 @@ public class NotificationIndexProvider : IndexProvider<Notification>
             });
     }
 
-    private static readonly Regex _htmlRegex = new("<.*?>", RegexOptions.Compiled);
+    private static readonly Regex _htmlRegex = GetHtmlBlockRegex();
 
     public static string StripHTML(string html)
     {
         return _htmlRegex.Replace(html, string.Empty);
     }
+
+    [GeneratedRegex("<.*?>", RegexOptions.Compiled)]
+    private static partial Regex GetHtmlBlockRegex();
 }

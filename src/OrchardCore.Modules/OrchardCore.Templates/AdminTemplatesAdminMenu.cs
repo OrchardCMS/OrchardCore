@@ -1,36 +1,33 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Templates
+namespace OrchardCore.Templates;
+
+public sealed class AdminTemplatesAdminMenu : INavigationProvider
 {
-    public class AdminTemplatesAdminMenu : INavigationProvider
+    internal readonly IStringLocalizer S;
+
+    public AdminTemplatesAdminMenu(IStringLocalizer<AdminTemplatesAdminMenu> localizer)
     {
-        protected readonly IStringLocalizer S;
+        S = localizer;
+    }
 
-        public AdminTemplatesAdminMenu(IStringLocalizer<AdminTemplatesAdminMenu> localizer)
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    {
+        if (!NavigationHelper.IsAdminMenu(name))
         {
-            S = localizer;
+            return ValueTask.CompletedTask;
         }
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
+        builder
+            .Add(S["Design"], design => design
+                .Add(S["Admin Templates"], S["Admin Templates"].PrefixPosition(), import => import
+                    .Action("Admin", "Template", "OrchardCore.Templates")
+                    .Permission(AdminTemplatesPermissions.ManageAdminTemplates)
+                    .LocalNav()
+                )
+            );
 
-            builder
-                .Add(S["Design"], design => design
-                    .Add(S["Admin Templates"], S["Admin Templates"].PrefixPosition(), import => import
-                        .Action("Admin", "Template", new { area = "OrchardCore.Templates" })
-                        .Permission(AdminTemplatesPermissions.ManageAdminTemplates)
-                        .LocalNav()
-                    )
-                );
-
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

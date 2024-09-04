@@ -1,8 +1,6 @@
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.Deployment;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.Recipes;
 using YesSql;
 
 namespace OrchardCore.Users.Deployment;
@@ -18,13 +16,13 @@ public class AllUsersDeploymentSource : IDeploymentSource
 
     public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not AllUsersDeploymentStep allRolesStep)
+        if (step is not AllUsersDeploymentStep)
         {
             return;
         }
 
         var allUsers = await _session.Query<User>().ListAsync();
-        var users = new JArray();
+        var users = new JsonArray();
 
         foreach (var user in allUsers)
         {
@@ -51,8 +49,10 @@ public class AllUsersDeploymentSource : IDeploymentSource
                 }));
         }
 
-        result.Steps.Add(new JObject(
-            new JProperty("name", "Users"),
-            new JProperty("Users", users)));
+        result.Steps.Add(new JsonObject
+        {
+            ["name"] = "Users",
+            ["Users"] = users,
+        });
     }
 }

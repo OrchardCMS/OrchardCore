@@ -1,50 +1,51 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Notifications;
 
-public class NotificationPermissionsProvider : IPermissionProvider
+public sealed class NotificationPermissionsProvider : IPermissionProvider
 {
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-    {
-        return Task.FromResult(new[]
-        {
-                NotificationPermissions.ManageNotifications,
-            }
-        .AsEnumerable());
-    }
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Notifications.NotificationPermissions.ManageNotifications'.")]
+    public static readonly Permission ManageNotifications = NotificationPermissions.ManageNotifications;
 
-    public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-    {
-        return new[]
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        NotificationPermissions.ManageNotifications,
+    ];
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
         {
-            new PermissionStereotype
-            {
-                Name = "Administrator",
-                Permissions = new[] { NotificationPermissions.ManageNotifications }
-            },
-            new PermissionStereotype {
-                Name = "Editor",
-                Permissions = new[] { NotificationPermissions.ManageNotifications }
-            },
-            new PermissionStereotype {
-                Name = "Moderator",
-                Permissions = new[] { NotificationPermissions.ManageNotifications }
-            },
-            new PermissionStereotype {
-                Name = "Author",
-                Permissions = new[] { NotificationPermissions.ManageNotifications }
-            },
-            new PermissionStereotype {
-                Name = "Contributor",
-                Permissions = new[] { NotificationPermissions.ManageNotifications }
-            },
-            new PermissionStereotype {
-                Name = "Authenticated",
-                Permissions = new[] { NotificationPermissions.ManageNotifications }
-            }
-        };
-    }
+            Name = OrchardCoreConstants.Roles.Administrator,
+            Permissions = _allPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Editor,
+            Permissions = _allPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Moderator,
+            Permissions = _allPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Author,
+            Permissions = _allPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Contributor,
+            Permissions = _allPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Authenticated,
+            Permissions = _allPermissions,
+        },
+    ];
 }

@@ -1177,7 +1177,7 @@
         {
           "Source": "Sql",
           "Name": "RecentBlogPosts",
-          "Template": "SELECT * FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC LIMIT 3",
+          "Template": "SELECT DocumentId FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC LIMIT 3",
           "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
           "ReturnContentItems": true
         }
@@ -1256,7 +1256,7 @@
                   "Id": null,
                   "Href": null,
                   "Url": null,
-                  "Position": 0,
+                  "Position": "0",
                   "LinkToFirstChild": true,
                   "LocalNav": false,
                   "Culture": null,
@@ -1274,7 +1274,7 @@
                   "Id": null,
                   "Href": null,
                   "Url": null,
-                  "Position": 1,
+                  "Position": "1",
                   "Priority": 50,
                   "LinkToFirstChild": true,
                   "LocalNav": false,

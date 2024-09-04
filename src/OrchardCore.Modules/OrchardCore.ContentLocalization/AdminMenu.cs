@@ -1,50 +1,60 @@
-using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentLocalization.Drivers;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.ContentLocalization
-{
-    [Feature("OrchardCore.ContentLocalization.ContentCulturePicker")]
-    public class AdminMenu : INavigationProvider
-    {
-        protected readonly IStringLocalizer S;
+namespace OrchardCore.ContentLocalization;
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+public sealed class AdminMenu : INavigationProvider
+{
+    private static readonly RouteValueDictionary _providersRouteValues = new()
+    {
+        { "area", "OrchardCore.Settings" },
+        { "groupId", ContentRequestCultureProviderSettingsDriver.GroupId },
+    };
+
+    private static readonly RouteValueDictionary _pickerRouteValues = new()
+    {
+        { "area", "OrchardCore.Settings" },
+        { "groupId", ContentCulturePickerSettingsDriver.GroupId },
+    };
+
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    {
+        S = localizer;
+    }
+
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    {
+        if (!NavigationHelper.IsAdminMenu(name))
         {
-            S = localizer;
+            return ValueTask.CompletedTask;
         }
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
-
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Localization"], localization => localization
-                            .Add(S["Content Request Culture Provider"], S["Content Request Culture Provider"].PrefixPosition(), registration => registration
-                                .AddClass("contentrequestcultureprovider").Id("contentrequestcultureprovider")
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ContentRequestCultureProviderSettingsDriver.GroupId })
-                                .Permission(Permissions.ManageContentCulturePicker)
-                                .LocalNav()
-                            )
-                            .Add(S["Content Culture Picker"], S["Content Culture Picker"].PrefixPosition(), registration => registration
-                                .AddClass("contentculturepicker").Id("contentculturepicker")
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ContentCulturePickerSettingsDriver.GroupId })
-                                .Permission(Permissions.ManageContentCulturePicker)
-                                .LocalNav()
-                            )
+        builder
+            .Add(S["Configuration"], configuration => configuration
+                .Add(S["Settings"], settings => settings
+                    .Add(S["Localization"], localization => localization
+                        .Add(S["Content Request Culture Provider"], S["Content Request Culture Provider"].PrefixPosition(), provider => provider
+                            .AddClass("contentrequestcultureprovider")
+                            .Id("contentrequestcultureprovider")
+                            .Action("Index", "Admin", _providersRouteValues)
+                            .Permission(Permissions.ManageContentCulturePicker)
+                            .LocalNav()
+                        )
+                        .Add(S["Content Culture Picker"], S["Content Culture Picker"].PrefixPosition(), picker => picker
+                            .AddClass("contentculturepicker")
+                            .Id("contentculturepicker")
+                            .Action("Index", "Admin", _pickerRouteValues)
+                            .Permission(Permissions.ManageContentCulturePicker)
+                            .LocalNav()
                         )
                     )
-                );
+                )
+            );
 
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

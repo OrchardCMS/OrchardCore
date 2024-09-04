@@ -24,9 +24,6 @@ dotnet new install OrchardCore.ProjectTemplates::1.8.4-* --nuget-source https://
 
 #### Generate an Orchard Cms Web Application
 
-!!! warning
-    Due to a bug in the current published version, the following `dotnet new` commands will require the extra argument `--orchard-version 1.8.4`. For instance, instead of typing `dotnet new occms` use `dotnet new occms --orchard-version 1.8.4`
-
 ```CMD
 dotnet new occms
 ```
@@ -73,12 +70,14 @@ Fire up Visual Studio, create a new solution file (`.sln`) by creating a new ASP
 ![image](../assets/images/templates/orchard-screencast-1.gif)
 
 Now that we created a new Web Application we need to add proper dependencies so that this new Web Application be targeted as an Orchard Core application.
+Orchard Core can be added through two distinct NuGet meta packages: `OrchardCore.Application.Cms.Core.Targets` and `OrchardCore.Application.Cms.Targets`. For additional information regarding these packages, please refer to [this link](../starter-recipes.md). You must add one of these NuGet packages in your Web Application.
 
 !!! note
     If you want to use the `preview` packages, [configure the OrchardCore Preview url in your Package sources](../preview-package-source.md)
 
 ![image](../assets/images/templates/orchard-screencast-2.gif)
 
+Visual Studio may automatically include Models, Views, and Controllers folders with boilerplate code, depending on the template used to create the web application. To prevent potential conflicts with OrchardCore services, it is advisable to delete these folders.
 Finally, we will need to register Orchard CMS service in our `Program.cs` file like this:
 
 ```csharp

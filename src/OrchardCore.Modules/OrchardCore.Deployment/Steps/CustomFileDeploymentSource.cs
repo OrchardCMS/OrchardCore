@@ -1,20 +1,16 @@
 using System.Text;
-using System.Threading.Tasks;
 
-namespace OrchardCore.Deployment.Steps
+namespace OrchardCore.Deployment.Steps;
+
+public class CustomFileDeploymentSource : IDeploymentSource
 {
-    public class CustomFileDeploymentSource : IDeploymentSource
+    public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
-        public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        if (step is not CustomFileDeploymentStep customFile)
         {
-            var customFile = step as CustomFileDeploymentStep;
-
-            if (customFile == null)
-            {
-                return Task.CompletedTask;
-            }
-
-            return result.FileBuilder.SetFileAsync(customFile.FileName, Encoding.UTF8.GetBytes(customFile.FileContent));
+            return Task.CompletedTask;
         }
+
+        return result.FileBuilder.SetFileAsync(customFile.FileName, Encoding.UTF8.GetBytes(customFile.FileContent));
     }
 }

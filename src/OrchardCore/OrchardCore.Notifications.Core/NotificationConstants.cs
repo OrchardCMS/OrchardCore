@@ -1,8 +1,10 @@
 namespace OrchardCore.Notifications;
 
-public class NotificationConstants
+public static class NotificationConstants
 {
     public const string NotificationCollection = "Notification";
+
+    public const string TopUnreadUserNotificationCacheTag = "top-unread-user-notifications";
 
     // Maximum length that MySql can support in an inner index under utf8mb4 collation is 768,
     // minus 2 for the 'DocumentId' integer (bigint size = 8 bytes = 2 character size),
@@ -11,4 +13,9 @@ public class NotificationConstants
     // minus 4 to allow a new integer column, for example the 'Id' column,
     // minus 2 to allow a new date time, for example 'ReadAtUtc'.
     public const int NotificationIndexContentLength = 705;
+
+    public static class Features
+    {
+        public const string Notifications = "OrchardCore.Notifications";
+    }
 }

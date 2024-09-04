@@ -1,5 +1,10 @@
 @using OrchardCore.Users.Services
+
 @model EnableAuthenticatorViewModel
+
+@{
+    ViewLayout = "Layout__TwoFactor";
+}
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -13,14 +18,14 @@
     <ol class="list">
         <li>
             <p>
-                @T["Download a two-factor authenticator app like Microsoft Authenticator for <a href=\"{0}\">Android</a> and <a href=\"{1}\">iOS</a>.","https://go.microsoft.com/fwlink/?Linkid=825072","https://go.microsoft.com/fwlink/?Linkid=825073"]
+                @T["Download a two-factor authenticator app like Microsoft Authenticator for <a href=\"{0}\">Android</a> and <a href=\"{1}\">iOS</a>.", "https://go.microsoft.com/fwlink/?Linkid=825072", "https://go.microsoft.com/fwlink/?Linkid=825073"]
 
-                @T["Or, Google Authenticator for <a href=\"{0}\">Android</a> and <a href=\"{1}\">iOS</a>.","https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en", "https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8"]
+                @T["Or, Google Authenticator for <a href=\"{0}\">Android</a> and <a href=\"{1}\">iOS</a>.", "https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&amp;hl=en", "https://itunes.apple.com/us/app/google-authenticator/id388497605?mt=8"]
             </p>
         </li>
         <li>
             <p>
-                @T["Scan the QR Code below, or enter this key {0} into your two-factor authenticator app. You may ignore spaces and casing.", $"<kbd>{Model.SharedKey}</kbd>"]
+                @T["Scan the QR Code below, or enter the key <kbd>{0}</kbd> into your two-factor authenticator app. You may ignore spaces and casing.", Model.SharedKey]
             </p>
             <div id="qrCode" class="mb-3"></div>
             <div id="qrCodeData" data-url="@Model.AuthenticatorUri"></div>

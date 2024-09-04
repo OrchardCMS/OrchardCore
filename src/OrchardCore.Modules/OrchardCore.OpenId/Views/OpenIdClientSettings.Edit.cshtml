@@ -2,9 +2,6 @@
 @using Microsoft.IdentityModel.Protocols.OpenIdConnect
 @model OpenIdClientSettingsViewModel
 
-<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
-
-
 <script asp-src="~/OrchardCore.OpenId/Scripts/parametersEditor.min.js" debug-src="~/OrchardCore.OpenId/Scripts/parametersEditor.js" asp-name="parametersEditor" at="Foot" depends-on="vuejs, vuedraggable"></script>
 <style asp-src="~/OrchardCore.OpenId/Styles/parametersEditor.min.css" debug-src="~/OrchardCore.OpenId/Styles/parametersEditor.css"></style>
 
@@ -57,7 +54,7 @@
 
 <div class="mb-3" asp-validation-class-for="Scopes">
     <label asp-for="Scopes" class="form-label">@T["Scopes"]</label>
-    <input asp-for="Scopes" class="form-control" />
+    <input asp-for="Scopes" class="form-control" autocomplete="new-password" />
     <span asp-validation-for="Scopes"></span>
     <span class="hint">@T["extra scopes except openid and profile"]</span>
 </div>
@@ -109,6 +106,13 @@
     </div>
 </div>
 
+<div class="mb-3 collapse" asp-validation-class-for="ClientSecret">
+    <label asp-for="ClientSecret" class="form-label">@T["Client Secret"]</label>
+    <input asp-for="ClientSecret" class="form-control" type="password" autocomplete="new-password" />
+    <span asp-validation-for="ClientSecret"></span>
+    <span class="hint">@T["set client secret."]</span>
+</div>
+
 <h3>@T["Implicit Authentication Flow"]</h3>
 <h5 class="mb-3">
     <a class="hint" href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthRequest" target="_blank">@T["see: "]http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthRequest</a>
@@ -143,13 +147,6 @@
     </select>
     <span asp-validation-for="ResponseMode"></span>
     <span class="hint">@T["Configure Response Mode see: http://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthResponse"]</span>
-</div>
-
-<div class="mb-3 collapse" asp-validation-class-for="ClientSecret">
-    <label asp-for="ClientSecret" class="form-label">@T["Client Secret"]</label>
-    <input asp-for="ClientSecret" class="form-control" type="password" autocomplete="off" />
-    <span asp-validation-for="ClientSecret"></span>
-    <span class="hint">@T["set client secret."]</span>
 </div>
 
 <script type="text/x-template" id="parameters-table">
@@ -224,7 +221,7 @@
 </div>
 
 <script at="Foot">
-////<![CDATA[
+    ////<![CDATA[
     window.onload = function () {
         refreshFlows();
 
@@ -267,5 +264,5 @@
 
         }
     };
-//]]>
+    //]]>
 </script>

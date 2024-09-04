@@ -41,11 +41,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DocumentFormat.OpenXml" />
-    <PackageReference Include="PdfPig" />
     <PackageReference Include="Shortcodes" />
     <PackageReference Include="SixLabors.ImageSharp.Web" />
     <PackageReference Include="System.Linq.Async" />
+    <PackageReference Include="System.IO.Hashing" />
   </ItemGroup>
 
 </Project>

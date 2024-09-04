@@ -1,95 +1,101 @@
-using System;
-using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Lucene.Net.Search;
-using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.Search.Lucene.QueryProviders
+namespace OrchardCore.Search.Lucene.QueryProviders;
+
+public class RangeQueryProvider : ILuceneQueryProvider
 {
-    public class RangeQueryProvider : ILuceneQueryProvider
+    public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonObject query)
     {
-        public Query CreateQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JObject query)
+        if (type != "range")
         {
-            if (type != "range")
-            {
-                return null;
-            }
+            return null;
+        }
 
-            var range = query.Properties().First();
-            Query rangeQuery;
+        var range = query.First();
+        Query rangeQuery;
 
-            switch (range.Value.Type)
-            {
-                case JTokenType.Object:
-                    var field = range.Name;
+        switch (range.Value.GetValueKind())
+        {
+            case JsonValueKind.Object:
+                var field = range.Key;
 
-                    JToken gt = null;
-                    JToken lt = null;
-                    var tokenType = JTokenType.None;
-                    float? boost = null;
+                JsonNode gt = null;
+                JsonNode lt = null;
+                var nodeKind = JsonValueKind.Undefined;
+                float? boost = null;
 
-                    bool includeLower = false, includeUpper = false;
+                bool includeLower = false, includeUpper = false;
 
-                    foreach (var element in ((JObject)range.Value).Properties())
+                foreach (var element in range.Value.AsObject())
+                {
+                    switch (element.Key.ToLowerInvariant())
                     {
-                        switch (element.Name.ToLowerInvariant())
+                        case "gt":
+                            gt = element.Value;
+                            nodeKind = gt.GetValueKind();
+                            break;
+                        case "gte":
+                            gt = element.Value;
+                            nodeKind = gt.GetValueKind();
+                            includeLower = true;
+                            break;
+                        case "lt":
+                            lt = element.Value;
+                            nodeKind = gt.GetValueKind();
+                            break;
+                        case "lte":
+                            lt = element.Value;
+                            nodeKind = gt.GetValueKind();
+                            includeUpper = true;
+                            break;
+                        case "boost":
+                            boost = element.Value.Value<float>();
+                            break;
+                    }
+                }
+
+                if (gt != null && lt != null && gt.GetValueKind() != lt.GetValueKind())
+                {
+                    throw new ArgumentException("Lower and upper bound range types don't match");
+                }
+
+                switch (nodeKind)
+                {
+                    case JsonValueKind.Number:
+                        if (gt.AsValue().TryGetValue<long>(out var minInt) &&
+                            lt.AsValue().TryGetValue<long>(out var maxInt))
                         {
-                            case "gt":
-                                gt = element.Value;
-                                tokenType = gt.Type;
-                                break;
-                            case "gte":
-                                gt = element.Value;
-                                tokenType = gt.Type;
-                                includeLower = true;
-                                break;
-                            case "lt":
-                                lt = element.Value;
-                                tokenType = lt.Type;
-                                break;
-                            case "lte":
-                                lt = element.Value;
-                                tokenType = lt.Type;
-                                includeUpper = true;
-                                break;
-                            case "boost":
-                                boost = element.Value.Value<float>();
-                                break;
-                        }
-                    }
-
-                    if (gt != null && lt != null && gt.Type != lt.Type)
-                    {
-                        throw new ArgumentException("Lower and upper bound range types don't match");
-                    }
-
-                    switch (tokenType)
-                    {
-                        case JTokenType.Integer:
-                            var minInt = gt?.Value<long>();
-                            var maxInt = lt?.Value<long>();
                             rangeQuery = NumericRangeQuery.NewInt64Range(field, minInt, maxInt, includeLower, includeUpper);
-                            break;
-                        case JTokenType.Float:
-                            var minFloat = gt?.Value<double>();
-                            var maxFloat = lt?.Value<double>();
+                        }
+                        else if (gt.AsValue().TryGetValue<double>(out var minFloat) &&
+                            lt.AsValue().TryGetValue<double>(out var maxFloat))
+                        {
                             rangeQuery = NumericRangeQuery.NewDoubleRange(field, minFloat, maxFloat, includeLower, includeUpper);
-                            break;
-                        case JTokenType.String:
-                            var minString = gt?.Value<string>();
-                            var maxString = lt?.Value<string>();
-                            rangeQuery = TermRangeQuery.NewStringRange(field, minString, maxString, includeLower, includeUpper);
-                            break;
-                        default: throw new ArgumentException($"Unsupported range value type: {type}");
-                    }
+                        }
+                        else
+                        {
+                            throw new ArgumentException($"Unsupported range value type: {type}");
+                        }
 
-                    if (boost != null)
-                    {
-                        rangeQuery.Boost = boost.Value;
-                    }
+                        break;
 
-                    return rangeQuery;
-                default: throw new ArgumentException("Invalid range query");
-            }
+                    case JsonValueKind.String:
+                        var minString = gt?.Value<string>();
+                        var maxString = lt?.Value<string>();
+                        rangeQuery = TermRangeQuery.NewStringRange(field, minString, maxString, includeLower, includeUpper);
+                        break;
+                    default: throw new ArgumentException($"Unsupported range value type: {type}");
+                }
+
+                if (boost != null)
+                {
+                    rangeQuery.Boost = boost.Value;
+                }
+
+                return rangeQuery;
+            default: throw new ArgumentException("Invalid range query");
         }
     }
 }

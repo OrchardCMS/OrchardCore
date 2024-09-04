@@ -1,55 +1,55 @@
-using System;
-using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
-using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.Search.Lucene.QueryProviders.Filters
+namespace OrchardCore.Search.Lucene.QueryProviders.Filters;
+
+public class TermsFilterProvider : ILuceneBooleanFilterProvider
 {
-    public class TermsFilterProvider : ILuceneBooleanFilterProvider
+    public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JsonNode filter, Query toFilter)
     {
-        public FilteredQuery CreateFilteredQuery(ILuceneQueryService builder, LuceneQueryContext context, string type, JToken filter, Query toFilter)
+        if (type != "terms")
         {
-            if (type != "terms")
-            {
-                return null;
-            }
+            return null;
+        }
 
-            if (toFilter is not BooleanQuery booleanQuery)
-            {
-                return null;
-            }
+        if (toFilter is not BooleanQuery booleanQuery)
+        {
+            return null;
+        }
 
-            var queryObj = filter as JObject;
-            var first = queryObj.Properties().First();
+        var queryObj = filter.AsObject();
+        var first = queryObj.First();
 
-            var field = first.Name;
-            var boolQuery = new BooleanQuery();
+        var field = first.Key;
+        var boolQuery = new BooleanQuery();
 
-            switch (first.Value.Type)
-            {
-                case JTokenType.Array:
+        switch (first.Value.GetValueKind())
+        {
+            case JsonValueKind.Array:
 
-                    foreach (var item in ((JArray)first.Value))
+                foreach (var item in first.Value.AsArray())
+                {
+                    if (item.GetValueKind() != JsonValueKind.String)
                     {
-                        if (item.Type != JTokenType.String)
-                        {
-                            throw new ArgumentException($"Invalid term in terms query");
-                        }
-
-                        boolQuery.Add(new TermQuery(new Term(field, item.Value<string>())), Occur.SHOULD);
+                        throw new ArgumentException($"Invalid term in terms query");
                     }
 
-                    break;
-                case JTokenType.Object:
-                    throw new ArgumentException("The terms lookup query is not supported");
-                default: throw new ArgumentException("Invalid terms query");
-            }
+                    boolQuery.Add(new TermQuery(new Term(field, item.Value<string>())), Occur.SHOULD);
+                }
 
-            booleanQuery.Add(boolQuery, Occur.MUST);
-            var queryFilter = new QueryWrapperFilter(boolQuery);
+                break;
 
-            return new FilteredQuery(booleanQuery, queryFilter);
+            case JsonValueKind.Object:
+                throw new ArgumentException("The terms lookup query is not supported");
+
+            default: throw new ArgumentException("Invalid terms query");
         }
+
+        booleanQuery.Add(boolQuery, Occur.MUST);
+        var queryFilter = new QueryWrapperFilter(boolQuery);
+
+        return new FilteredQuery(booleanQuery, queryFilter);
     }
 }

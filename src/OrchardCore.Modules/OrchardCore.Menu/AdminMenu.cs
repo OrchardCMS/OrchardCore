@@ -1,43 +1,42 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Menu
+namespace OrchardCore.Menu;
+
+public sealed class AdminMenu : INavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    private static readonly RouteValueDictionary _routeValues = new()
     {
-        protected readonly IStringLocalizer S;
+        { "contentTypeId", "Menu" },
+        { "Area", "OrchardCore.Contents" },
+        { "Options.SelectedContentType", "Menu" },
+        { "Options.CanCreateSelectedContentType", true }
+    };
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    {
+        S = localizer;
+    }
+
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    {
+        if (!NavigationHelper.IsAdminMenu(name))
         {
-            S = localizer;
+            return ValueTask.CompletedTask;
         }
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
+        builder
+            .Add(S["Content"], design => design
+                .Add(S["Menus"], S["Menus"].PrefixPosition(), menus => menus
+                    .Permission(Permissions.ManageMenu)
+                    .Action("List", "Admin", _routeValues)
+                    .LocalNav()
+                )
+            );
 
-            var rvd = new RouteValueDictionary
-            {
-                { "contentTypeId", "Menu" },
-                { "Area", "OrchardCore.Contents" },
-                { "Options.SelectedContentType", "Menu" },
-                { "Options.CanCreateSelectedContentType", true }
-            };
-
-            builder.Add(S["Content"], design => design
-                    .Add(S["Menus"], S["Menus"].PrefixPosition(), menus => menus
-                        .Permission(Permissions.ManageMenu)
-                        .Action("List", "Admin", rvd)
-                        .LocalNav()
-                        ));
-
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

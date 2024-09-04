@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
-using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -13,11 +9,11 @@ using YesSql.Sql.Schema;
 
 namespace OrchardCore.Environment.Shell.Removing;
 
-internal class ShellDbTablesInfo : ISchemaBuilder
+internal sealed class ShellDbTablesInfo : ISchemaBuilder
 {
     private ICommandInterpreter _commandInterpreter;
     public string TablePrefix { get; set; }
-    public IEnumerable<string> TableNames { get; set; } = Enumerable.Empty<string>();
+    public IEnumerable<string> TableNames { get; set; } = [];
     public ISqlDialect Dialect { get; private set; }
     public ITableNameConvention TableNameConvention { get; private set; }
     public DbConnection Connection { get; set; }
@@ -26,14 +22,14 @@ internal class ShellDbTablesInfo : ISchemaBuilder
     public ILogger _logger { get; set; } = NullLogger.Instance;
 
     public HashSet<(string Name, Type Type, string Collection)> MapIndexTables { get; private set; } =
-        new HashSet<(string Name, Type Type, string Collection)>();
+        [];
 
     public HashSet<(string Name, Type Type, string Collection)> ReduceIndexTables { get; private set; } =
-        new HashSet<(string Name, Type Type, string Collection)>();
+        [];
 
-    public HashSet<string> BridgeTables { get; private set; } = new HashSet<string>();
-    public HashSet<string> DocumentTables { get; private set; } = new HashSet<string>();
-    public HashSet<string> Tables { get; private set; } = new HashSet<string>();
+    public HashSet<string> BridgeTables { get; private set; } = [];
+    public HashSet<string> DocumentTables { get; private set; } = [];
+    public HashSet<string> Tables { get; private set; } = [];
 
     public ShellDbTablesInfo Configure(IConfiguration configuration)
     {

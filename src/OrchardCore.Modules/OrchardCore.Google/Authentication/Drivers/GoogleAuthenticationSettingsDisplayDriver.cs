@@ -1,5 +1,4 @@
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -12,95 +11,95 @@ using OrchardCore.Google.Authentication.Settings;
 using OrchardCore.Google.Authentication.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Google.Authentication.Drivers
+namespace OrchardCore.Google.Authentication.Drivers;
+
+public sealed class GoogleAuthenticationSettingsDisplayDriver : SiteDisplayDriver<GoogleAuthenticationSettings>
 {
-    public class GoogleAuthenticationSettingsDisplayDriver : SectionDisplayDriver<ISite, GoogleAuthenticationSettings>
+    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ILogger _logger;
+
+    public GoogleAuthenticationSettingsDisplayDriver(
+        IShellReleaseManager shellReleaseManager,
+        IAuthorizationService authorizationService,
+        IDataProtectionProvider dataProtectionProvider,
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<GoogleAuthenticationSettingsDisplayDriver> logger)
     {
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
-        private readonly ILogger _logger;
+        _shellReleaseManager = shellReleaseManager;
+        _authorizationService = authorizationService;
+        _dataProtectionProvider = dataProtectionProvider;
+        _httpContextAccessor = httpContextAccessor;
+        _logger = logger;
+    }
 
-        public GoogleAuthenticationSettingsDisplayDriver(
-            IAuthorizationService authorizationService,
-            IDataProtectionProvider dataProtectionProvider,
-            IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings,
-            ILogger<GoogleAuthenticationSettingsDisplayDriver> logger)
+    protected override string SettingsGroupId
+        => GoogleConstants.Features.GoogleAuthentication;
+
+    public override async Task<IDisplayResult> EditAsync(ISite site, GoogleAuthenticationSettings settings, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
         {
-            _authorizationService = authorizationService;
-            _dataProtectionProvider = dataProtectionProvider;
-            _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
-            _logger = logger;
+            return null;
         }
 
-        public override async Task<IDisplayResult> EditAsync(GoogleAuthenticationSettings settings, BuildEditorContext context)
+        return Initialize<GoogleAuthenticationSettingsViewModel>("GoogleAuthenticationSettings_Edit", model =>
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
+            model.ClientID = settings.ClientID;
+            if (!string.IsNullOrWhiteSpace(settings.ClientSecret))
             {
-                return null;
-            }
-
-            return Initialize<GoogleAuthenticationSettingsViewModel>("GoogleAuthenticationSettings_Edit", model =>
-            {
-                model.ClientID = settings.ClientID;
-                if (!string.IsNullOrWhiteSpace(settings.ClientSecret))
-                {
-                    try
-                    {
-                        var protector = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication);
-                        model.ClientSecret = protector.Unprotect(settings.ClientSecret);
-                    }
-                    catch (CryptographicException)
-                    {
-                        _logger.LogError("The client secret could not be decrypted. It may have been encrypted using a different key.");
-                        model.ClientSecret = string.Empty;
-                        model.HasDecryptionError = true;
-                    }
-                }
-                else
-                {
-                    model.ClientSecret = string.Empty;
-                }
-                if (settings.CallbackPath.HasValue)
-                {
-                    model.CallbackPath = settings.CallbackPath.Value;
-                }
-                model.SaveTokens = settings.SaveTokens;
-            }).Location("Content:5").OnGroup(GoogleConstants.Features.GoogleAuthentication);
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(GoogleAuthenticationSettings settings, BuildEditorContext context)
-        {
-            if (context.GroupId == GoogleConstants.Features.GoogleAuthentication)
-            {
-                var user = _httpContextAccessor.HttpContext?.User;
-                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
-                {
-                    return null;
-                }
-
-                var model = new GoogleAuthenticationSettingsViewModel();
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                if (context.Updater.ModelState.IsValid)
+                try
                 {
                     var protector = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication);
-
-                    settings.ClientID = model.ClientID;
-                    settings.ClientSecret = protector.Protect(model.ClientSecret);
-                    settings.CallbackPath = model.CallbackPath;
-                    settings.SaveTokens = model.SaveTokens;
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                    model.ClientSecret = protector.Unprotect(settings.ClientSecret);
+                }
+                catch (CryptographicException)
+                {
+                    _logger.LogError("The client secret could not be decrypted. It may have been encrypted using a different key.");
+                    model.ClientSecret = string.Empty;
+                    model.HasDecryptionError = true;
                 }
             }
-            return await EditAsync(settings, context);
+            else
+            {
+                model.ClientSecret = string.Empty;
+            }
+            if (settings.CallbackPath.HasValue)
+            {
+                model.CallbackPath = settings.CallbackPath.Value;
+            }
+            model.SaveTokens = settings.SaveTokens;
+        }).Location("Content:5")
+        .OnGroup(SettingsGroupId);
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, GoogleAuthenticationSettings settings, UpdateEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
+        {
+            return null;
         }
+
+        var model = new GoogleAuthenticationSettingsViewModel();
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        settings.ClientID = model.ClientID;
+        settings.CallbackPath = model.CallbackPath;
+        settings.SaveTokens = model.SaveTokens;
+
+        if (context.Updater.ModelState.IsValid)
+        {
+            var protector = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication);
+
+            settings.ClientSecret = protector.Protect(model.ClientSecret);
+        }
+
+        _shellReleaseManager.RequestRelease();
+
+        return await EditAsync(site, settings, context);
     }
 }

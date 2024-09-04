@@ -1,23 +1,22 @@
-using System;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Roles
+namespace OrchardCore.Roles;
+
+public static class CommonPermissions
 {
-    public class CommonPermissions
-    {
-        public static readonly Permission ManageRoles = new("ManageRoles", "Managing Roles", isSecurityCritical: true);
-        public static readonly Permission AssignRoles = new("AssignRoles", "Assign Roles", new[] { ManageRoles }, isSecurityCritical: true);
+    public static readonly Permission ManageRoles = new("ManageRoles", "Managing Roles", isSecurityCritical: true);
 
-        /// <summary>
-        /// Dynamic permission template for assign role.
-        /// </summary>
-        private static readonly Permission _assignRole = new("AssignRole_{0}", "Assign Role - {0}", new[] { AssignRoles, ManageRoles });
+    public static readonly Permission AssignRoles = new("AssignRoles", "Assign Roles", [ManageRoles], isSecurityCritical: true);
 
-        public static Permission CreatePermissionForAssignRole(string name) =>
-            new(
-                string.Format(_assignRole.Name, name),
-                string.Format(_assignRole.Description, name),
-                _assignRole.ImpliedBy
-            );
-    }
+    /// <summary>
+    /// Dynamic permission template for assign role.
+    /// </summary>
+    private static readonly Permission _assignRole = new("AssignRole_{0}", "Assign Role - {0}", [AssignRoles, ManageRoles]);
+
+    public static Permission CreatePermissionForAssignRole(string name) =>
+        new(
+            string.Format(_assignRole.Name, name),
+            string.Format(_assignRole.Description, name),
+            _assignRole.ImpliedBy
+        );
 }

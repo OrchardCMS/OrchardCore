@@ -1,8 +1,3 @@
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,7 +9,7 @@ using SixLabors.ImageSharp.Web.Middleware;
 namespace OrchardCore.Media.Services;
 
 [BackgroundTask(Schedule = "0 0 * * *", Description = "Resized media cache cleanup.")]
-public class ResizedMediaCacheBackgroundTask : IBackgroundTask
+public sealed class ResizedMediaCacheBackgroundTask : IBackgroundTask
 {
     private static readonly EnumerationOptions _enumerationOptions = new() { RecurseSubdirectories = true };
 

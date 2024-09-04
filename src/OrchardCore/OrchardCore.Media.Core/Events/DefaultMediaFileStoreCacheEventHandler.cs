@@ -1,36 +1,34 @@
-using System.Threading.Tasks;
 using OrchardCore.Media.Events;
 
-namespace OrchardCore.Media.Core.Events
+namespace OrchardCore.Media.Core.Events;
+
+public class DefaultMediaFileStoreCacheEventHandler : MediaEventHandlerBase
 {
-    public class DefaultMediaFileStoreCacheEventHandler : MediaEventHandlerBase
+    private readonly IMediaFileStoreCacheFileProvider _mediaFileStoreCacheFileProvider;
+
+    public DefaultMediaFileStoreCacheEventHandler(IMediaFileStoreCacheFileProvider mediaFileStoreCacheFileProvider)
     {
-        private readonly IMediaFileStoreCacheFileProvider _mediaFileStoreCacheFileProvider;
+        _mediaFileStoreCacheFileProvider = mediaFileStoreCacheFileProvider;
+    }
 
-        public DefaultMediaFileStoreCacheEventHandler(IMediaFileStoreCacheFileProvider mediaFileStoreCacheFileProvider)
-        {
-            _mediaFileStoreCacheFileProvider = mediaFileStoreCacheFileProvider;
-        }
+    public override Task MediaDeletedDirectoryAsync(MediaDeletedContext context)
+    {
+        _mediaFileStoreCacheFileProvider.TryDeleteDirectoryAsync(context.Path);
 
-        public override Task MediaDeletedDirectoryAsync(MediaDeletedContext context)
-        {
-            _mediaFileStoreCacheFileProvider.TryDeleteDirectoryAsync(context.Path);
+        return Task.CompletedTask;
+    }
 
-            return Task.CompletedTask;
-        }
+    public override Task MediaDeletedFileAsync(MediaDeletedContext context)
+    {
+        _mediaFileStoreCacheFileProvider.TryDeleteFileAsync(context.Path);
 
-        public override Task MediaDeletedFileAsync(MediaDeletedContext context)
-        {
-            _mediaFileStoreCacheFileProvider.TryDeleteFileAsync(context.Path);
+        return Task.CompletedTask;
+    }
 
-            return Task.CompletedTask;
-        }
+    public override Task MediaMovedAsync(MediaMoveContext context)
+    {
+        _mediaFileStoreCacheFileProvider.TryDeleteFileAsync(context.OldPath);
 
-        public override Task MediaMovedAsync(MediaMoveContext context)
-        {
-            _mediaFileStoreCacheFileProvider.TryDeleteFileAsync(context.OldPath);
-
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

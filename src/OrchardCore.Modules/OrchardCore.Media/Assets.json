@@ -1,6 +1,5 @@
 [
   {
-    "generateSourceMaps": false,
     "generateRTL": true,
     "inputs": [
       "Assets/scss/media.scss"
@@ -11,11 +10,9 @@
     "inputs": [
       "./node_modules/blueimp-file-upload/js/jquery.fileupload.js",
       "./node_modules/blueimp-file-upload/js/jquery.iframe-transport.js",
-      "Assets/js/helpers.js",
       "Assets/js/app/**/*.js"
     ],
     "watch": [
-      "Assets/js/helpers.js",
       "Assets/js/app/**/*.js"
     ],
     "output": "wwwroot/Scripts/media.js"

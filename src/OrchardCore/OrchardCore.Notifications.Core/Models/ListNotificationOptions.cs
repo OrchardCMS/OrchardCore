@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -44,5 +43,5 @@ public class ListNotificationOptions
     public List<SelectListItem> Sorts { get; set; }
 
     [BindNever]
-    public RouteValueDictionary RouteValues { get; set; } = new RouteValueDictionary();
+    public RouteValueDictionary RouteValues { get; set; } = [];
 }

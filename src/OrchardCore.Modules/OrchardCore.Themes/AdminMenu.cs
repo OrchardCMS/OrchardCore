@@ -1,37 +1,34 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Themes
+namespace OrchardCore.Themes;
+
+public sealed class AdminMenu : INavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
     {
-        protected readonly IStringLocalizer S;
+        S = localizer;
+    }
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    {
+        if (!NavigationHelper.IsAdminMenu(name))
         {
-            S = localizer;
+            return ValueTask.CompletedTask;
         }
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
+        builder
+            .Add(S["Design"], NavigationConstants.AdminMenuDesignPosition, design => design
+                .AddClass("themes").Id("themes")
+                .Add(S["Themes"], S["Themes"].PrefixPosition(), themes => themes
+                    .Action("Index", "Admin", "OrchardCore.Themes")
+                    .Permission(Permissions.ApplyTheme)
+                    .LocalNav()
+                )
+            );
 
-            builder
-                .Add(S["Design"], NavigationConstants.AdminMenuDesignPosition, design => design
-                    .AddClass("themes").Id("themes")
-                    .Add(S["Themes"], S["Themes"].PrefixPosition(), installed => installed
-                        .Action("Index", "Admin", new { area = "OrchardCore.Themes" })
-                        .Permission(Permissions.ApplyTheme)
-                        .LocalNav()
-                    )
-                );
-
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }
