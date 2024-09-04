@@ -203,7 +203,6 @@ wwwroot
 !src/Templates/**/content/**
 src/Templates/**/content/**/[Bb]in/
 src/Templates/**/content/**/[Oo]bj/
-.template.config/
 /OrchardCore.sln.GhostDoc.xml
 
 # Rider
@@ -211,4 +210,3 @@ src/Templates/**/content/**/[Oo]bj/
 
 # BenchmarkDotNet artifacts
 BenchmarkDotNet.Artifacts
-
