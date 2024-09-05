@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
@@ -14,8 +14,7 @@ public sealed class AdminMenuLogin : AdminNavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenuLogin(
-        IStringLocalizer<AdminMenuLogin> stringLocalizer)
+    public AdminMenuLogin(IStringLocalizer<AdminMenuLogin> stringLocalizer)
     {
         S = stringLocalizer;
     }
