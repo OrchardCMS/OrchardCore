@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Google;
 
-public sealed class GoogleTagManagerAdminMenu : INavigationProvider
+public sealed class GoogleTagManagerAdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -14,18 +14,13 @@ public sealed class GoogleTagManagerAdminMenu : INavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public GoogleTagManagerAdminMenu(IStringLocalizer<GoogleTagManagerAdminMenu> localizer)
+    public GoogleTagManagerAdminMenu(IStringLocalizer<GoogleTagManagerAdminMenu> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override void Build(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Settings"], settings => settings
@@ -38,7 +33,5 @@ public sealed class GoogleTagManagerAdminMenu : INavigationProvider
                     )
                 )
             );
-
-        return ValueTask.CompletedTask;
     }
 }

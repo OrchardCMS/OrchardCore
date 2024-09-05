@@ -3,22 +3,17 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Media.AmazonS3;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override void Build(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return ValueTask.CompletedTask;
-        }
-
         builder.Add(S["Configuration"], configuration => configuration
             .Add(S["Media"], S["Media"].PrefixPosition(), media => media
                 .Add(S["Amazon S3 Options"], S["Amazon S3 Options"].PrefixPosition(), options => options
@@ -28,7 +23,5 @@ public sealed class AdminMenu : INavigationProvider
                 )
             )
         );
-
-        return ValueTask.CompletedTask;
     }
 }

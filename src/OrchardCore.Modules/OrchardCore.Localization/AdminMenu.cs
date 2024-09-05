@@ -8,7 +8,7 @@ namespace OrchardCore.Localization;
 /// <summary>
 /// Represents a localization menu in the admin site.
 /// </summary>
-public sealed class AdminMenu : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -21,20 +21,15 @@ public sealed class AdminMenu : INavigationProvider
     /// <summary>
     /// Creates a new instance of the <see cref="AdminMenu"/>.
     /// </summary>
-    /// <param name="localizer">The <see cref="IStringLocalizer"/>.</param>
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    /// <param name="stringLocalizer">The <see cref="IStringLocalizer"/>.</param>
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
     /// <inheritdocs />
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override void Build(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Settings"], settings => settings
@@ -51,7 +46,5 @@ public sealed class AdminMenu : INavigationProvider
                     )
                 )
             );
-
-        return ValueTask.CompletedTask;
     }
 }

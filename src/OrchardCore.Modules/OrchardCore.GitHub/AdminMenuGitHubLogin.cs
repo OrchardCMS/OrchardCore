@@ -4,7 +4,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.GitHub;
 
-public sealed class AdminMenuGitHubLogin : INavigationProvider
+public sealed class AdminMenuGitHubLogin : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -14,18 +14,13 @@ public sealed class AdminMenuGitHubLogin : INavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenuGitHubLogin(IStringLocalizer<AdminMenuGitHubLogin> localizer)
+    public AdminMenuGitHubLogin(IStringLocalizer<AdminMenuGitHubLogin> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override void Build(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Security"], security => security
                 .Add(S["Authentication"], authentication => authentication
@@ -38,7 +33,5 @@ public sealed class AdminMenuGitHubLogin : INavigationProvider
                     )
                 )
             );
-
-        return ValueTask.CompletedTask;
     }
 }

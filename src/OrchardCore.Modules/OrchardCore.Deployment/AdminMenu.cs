@@ -3,22 +3,17 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Deployment;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override void Build(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import
@@ -39,7 +34,5 @@ public sealed class AdminMenu : INavigationProvider
                     )
                 )
             );
-
-        return ValueTask.CompletedTask;
     }
 }

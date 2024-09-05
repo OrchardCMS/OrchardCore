@@ -3,7 +3,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Cors;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     internal readonly IStringLocalizer S;
 
@@ -12,13 +12,8 @@ public sealed class AdminMenu : INavigationProvider
         S = localizer;
     }
 
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override void Build(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Settings"], settings => settings
@@ -31,7 +26,5 @@ public sealed class AdminMenu : INavigationProvider
                     )
                 )
             );
-
-        return ValueTask.CompletedTask;
     }
 }

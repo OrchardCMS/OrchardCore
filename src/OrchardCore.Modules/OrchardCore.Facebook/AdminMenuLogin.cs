@@ -1,21 +1,21 @@
-using Microsoft.AspNetCore.Routing;
+﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Https.Drivers;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Https;
+namespace OrchardCore.Facebook;
 
-public sealed class AdminMenu : AdminNavigationProvider
+public sealed class AdminMenuLogin : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
-        { "groupId", HttpsSettingsDisplayDriver.GroupId },
+        { "groupId", FacebookConstants.Features.Login },
     };
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    public AdminMenuLogin(
+        IStringLocalizer<AdminMenuLogin> stringLocalizer)
     {
         S = stringLocalizer;
     }
@@ -24,10 +24,12 @@ public sealed class AdminMenu : AdminNavigationProvider
     {
         builder
             .Add(S["Security"], security => security
-                .Add(S["Settings"], settings => settings
-                    .Add(S["HTTPS"], S["HTTPS"].PrefixPosition(), https => https
+                .Add(S["Authentication"], authentication => authentication
+                    .Add(S["Meta"], S["Meta"].PrefixPosition(), meta => meta
+                        .AddClass("facebook")
+                        .Id("facebook")
                         .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageHttps)
+                        .Permission(Permissions.ManageFacebookApp)
                         .LocalNav()
                     )
                 )

@@ -3,22 +3,17 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Demo;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override void Build(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Demo"], "10", demo => demo
                 .AddClass("demo").Id("demo")
@@ -49,7 +44,5 @@ public sealed class AdminMenu : INavigationProvider
                     .Action("Index", "Todo", "OrchardCore.Demo")
                 )
             );
-
-        return ValueTask.CompletedTask;
     }
 }

@@ -4,7 +4,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Microsoft.Authentication;
 
-public sealed class AdminMenuMicrosoftAccount : INavigationProvider
+public sealed class AdminMenuMicrosoftAccount : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -14,18 +14,13 @@ public sealed class AdminMenuMicrosoftAccount : INavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenuMicrosoftAccount(IStringLocalizer<AdminMenuMicrosoftAccount> localizer)
+    public AdminMenuMicrosoftAccount(IStringLocalizer<AdminMenuMicrosoftAccount> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override void Build(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Security"], security => security
                 .Add(S["Authentication"], authentication => authentication
@@ -38,7 +33,5 @@ public sealed class AdminMenuMicrosoftAccount : INavigationProvider
                     )
                 )
            );
-
-        return ValueTask.CompletedTask;
     }
 }

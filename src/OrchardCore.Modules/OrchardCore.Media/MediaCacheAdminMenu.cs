@@ -1,24 +1,19 @@
-﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Media;
 
-public sealed class MediaCacheAdminMenu : INavigationProvider
+public sealed class MediaCacheAdminMenu : AdminNavigationProvider
 {
     internal readonly IStringLocalizer S;
 
-    public MediaCacheAdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public MediaCacheAdminMenu(IStringLocalizer<MediaCacheAdminMenu> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override void Build(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return ValueTask.CompletedTask;
-        }
-
         builder.Add(S["Configuration"], configuration => configuration
             .Add(S["Media"], S["Media"].PrefixPosition(), media => media
                 .Add(S["Media Cache"], S["Media Cache"].PrefixPosition(), cache => cache
@@ -28,7 +23,5 @@ public sealed class MediaCacheAdminMenu : INavigationProvider
                 )
             )
         );
-
-        return ValueTask.CompletedTask;
     }
 }

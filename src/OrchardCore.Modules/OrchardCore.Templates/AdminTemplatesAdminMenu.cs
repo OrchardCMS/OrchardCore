@@ -3,22 +3,17 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Templates;
 
-public sealed class AdminTemplatesAdminMenu : INavigationProvider
+public sealed class AdminTemplatesAdminMenu : AdminNavigationProvider
 {
     internal readonly IStringLocalizer S;
 
-    public AdminTemplatesAdminMenu(IStringLocalizer<AdminTemplatesAdminMenu> localizer)
+    public AdminTemplatesAdminMenu(IStringLocalizer<AdminTemplatesAdminMenu> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override void Build(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Design"], design => design
                 .Add(S["Admin Templates"], S["Admin Templates"].PrefixPosition(), import => import
@@ -27,7 +22,5 @@ public sealed class AdminTemplatesAdminMenu : INavigationProvider
                     .LocalNav()
                 )
             );
-
-        return ValueTask.CompletedTask;
     }
 }
