@@ -141,6 +141,7 @@ public class DynamicCacheTests
         var cacheTag = "mytag";
 
         var initializedCalled = 0;
+        var processedCalled = 0;
         var bindCalled = 0;
 
         var displayManager = _serviceProvider.GetService<IHtmlDisplay>();
@@ -165,11 +166,16 @@ public class DynamicCacheTests
         ShapeResult CreateShapeResult() => new ShapeResult(
             shapeType,
             shapeBuilder: ctx => factory.CreateAsync<MyModel>(shapeType, model => model.MyProperty = 7),
-            processing: shape =>
+            initializing: shape =>
             {
                 initializedCalled++;
                 return Task.CompletedTask;
-            }).Location("Content").Cache("mycontent", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(1)).AddTag(cacheTag));
+            }).Location("Content").Cache("mycontent", ctx => ctx.WithExpiryAfter(TimeSpan.FromSeconds(1)).AddTag(cacheTag))
+            .Processing(shape =>
+            {
+                processedCalled++;
+                return Task.CompletedTask;
+            });
 
         var shapeResult = CreateShapeResult();
         var contentShape = await factory.CreateAsync("Content");
@@ -186,7 +192,7 @@ public class DynamicCacheTests
         Assert.Equal(1, bindCalled);
         Assert.Equal(1, initializedCalled);
 
-        for (var i = 0; i < 10; i++)
+        for (var i = 1; i <= 10; i++)
         {
             // Create new ShapeResult.
             shapeResult = CreateShapeResult();
@@ -197,7 +203,8 @@ public class DynamicCacheTests
 
             // Shape is not rendered twice.
             Assert.Equal(1, bindCalled);
-            Assert.Equal(1, initializedCalled);
+            Assert.Equal(1, processedCalled);
+            Assert.Equal(i + 1, initializedCalled);
             Assert.Equal("Hi there!", result.ToString());
         }
 
@@ -214,7 +221,8 @@ public class DynamicCacheTests
 
         // Shape is processed and rendered again.
         Assert.Equal(2, bindCalled);
-        Assert.Equal(2, initializedCalled);
+        Assert.Equal(2, processedCalled);
+        Assert.Equal(12, initializedCalled);
         Assert.Equal("Hi there!", result.ToString());
     }
 

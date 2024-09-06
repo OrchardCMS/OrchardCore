@@ -17,25 +17,37 @@ public class ShapeResult : IDisplayResult
     private string _cacheId;
     private readonly string _shapeType;
     private readonly Func<IBuildShapeContext, ValueTask<IShape>> _shapeBuilder;
-    private readonly Func<IShape, Task> _processing;
+    private readonly Func<IShape, Task> _initializing;
     private Action<CacheContext> _cache;
     private string _groupId;
     private Action<ShapeDisplayContext> _displaying;
+    private Func<IShape, Task> _processing;
     private Func<Task<bool>> _renderPredicateAsync;
 
+    /// <summary>
+    /// Creates a new instance of <see cref="ShapeResult"/>.
+    /// </summary>
+    /// <param name="shapeType">The Shape type used for the created Shape.</param>
+    /// <param name="shapeBuilder">A delegate that creates the shape instance.</param>
     public ShapeResult(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder)
         : this(shapeType, shapeBuilder, null)
     {
     }
 
-    public ShapeResult(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, Task> processing)
+    /// <summary>
+    /// Creates a new instance of <see cref="ShapeResult"/>.
+    /// </summary>
+    /// <param name="shapeType">The Shape type used for the created Shape.</param>
+    /// <param name="shapeBuilder">A delegate that creates the shape instance.</param>
+    /// <param name="initializing">A delegate that is executed after the shape is created.</param>
+    public ShapeResult(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, Task> initializing)
     {
         // The shape type is necessary before the shape is created as it will drive the placement
         // resolution which itself can prevent the shape from being created.
 
         _shapeType = shapeType;
         _shapeBuilder = shapeBuilder;
-        _processing = processing;
+        _initializing = initializing;
     }
 
     public Task ApplyAsync(BuildDisplayContext context)
@@ -118,13 +130,17 @@ public class ShapeResult : IDisplayResult
         newShapeMetadata.Column = placement.GetColumn();
         newShapeMetadata.Type = _shapeType;
 
+        // Invoke the initialization code first when all Displaying events are invoked.
+        // These Displaying methods are used to create alternates for instance, so the
+        // Shape needs to have required properties available first.
+
+        _initializing?.Invoke(Shape);
+
         if (_displaying != null)
         {
             newShapeMetadata.OnDisplaying(_displaying);
         }
 
-        // The _processing callback is used to delay execution of costly initialization
-        // that can be prevented by caching.
         if (_processing != null)
         {
             newShapeMetadata.OnProcessing(_processing);
@@ -226,11 +242,31 @@ public class ShapeResult : IDisplayResult
     }
 
     /// <summary>
-    /// Sets the location to use for a matching display type.
+    /// Sets the delegate to be executed when the shape is being displayed.
     /// </summary>
     public ShapeResult Displaying(Action<ShapeDisplayContext> displaying)
     {
         _displaying = displaying;
+
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the delegate to be executed when the shape is rendered (not cached).
+    /// </summary>
+    public ShapeResult Processing(Func<IShape, Task> processing)
+    {
+        _processing = processing;
+
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the delegate to be executed when the shape is rendered (not cached).
+    /// </summary>
+    public ShapeResult Processing<T>(Func<T, Task> processing)
+    {
+        _processing = shape => processing?.Invoke((T)shape);
 
         return this;
     }
