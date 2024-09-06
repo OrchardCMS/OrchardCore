@@ -6,7 +6,7 @@ using OrchardCore.Sms.Controllers;
 
 namespace OrchardCore.Sms;
 
-public sealed class AdminMenu : AdminMenuNavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {

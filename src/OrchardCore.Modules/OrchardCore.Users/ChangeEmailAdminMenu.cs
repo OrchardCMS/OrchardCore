@@ -5,7 +5,7 @@ using OrchardCore.Users.Drivers;
 
 namespace OrchardCore.Users;
 
-public sealed class ChangeEmailAdminMenu : AdminMenuNavigationProvider
+public sealed class ChangeEmailAdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {

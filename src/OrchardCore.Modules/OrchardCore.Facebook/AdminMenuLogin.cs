@@ -4,7 +4,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Facebook;
 
-public sealed class AdminMenuLogin : AdminMenuNavigationProvider
+public sealed class AdminMenuLogin : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {

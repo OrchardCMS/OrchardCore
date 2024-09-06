@@ -4,7 +4,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
 
-public sealed class ExportContentToDeploymentTargetAdminMenu : AdminMenuNavigationProvider
+public sealed class ExportContentToDeploymentTargetAdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {

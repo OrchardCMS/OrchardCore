@@ -8,7 +8,7 @@ namespace OrchardCore.Localization;
 /// <summary>
 /// Represents a localization menu in the admin site.
 /// </summary>
-public sealed class AdminMenu : AdminMenuNavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {

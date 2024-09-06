@@ -4,7 +4,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Google;
 
-public sealed class GoogleAuthenticationAdminMenu : AdminMenuNavigationProvider
+public sealed class GoogleAuthenticationAdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {

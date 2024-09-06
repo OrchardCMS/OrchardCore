@@ -4,7 +4,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.GitHub;
 
-public sealed class AdminMenuGitHubLogin : AdminMenuNavigationProvider
+public sealed class AdminMenuGitHubLogin : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {

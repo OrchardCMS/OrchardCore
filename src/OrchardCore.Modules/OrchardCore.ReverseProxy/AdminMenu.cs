@@ -5,7 +5,7 @@ using OrchardCore.ReverseProxy.Drivers;
 
 namespace OrchardCore.ReverseProxy;
 
-public sealed class AdminMenu : AdminMenuNavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {

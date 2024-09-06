@@ -4,7 +4,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu;
 
-public sealed class AdminMenu : AdminMenuNavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     private readonly AdminMenuNavigationProvidersCoordinator _adminMenuNavigationProviderCoordinator;
 

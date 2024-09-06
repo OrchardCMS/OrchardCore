@@ -4,7 +4,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Microsoft.Authentication;
 
-public sealed class AdminMenuMicrosoftAccount : AdminMenuNavigationProvider
+public sealed class AdminMenuMicrosoftAccount : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {

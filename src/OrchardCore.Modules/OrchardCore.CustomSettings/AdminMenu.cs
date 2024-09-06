@@ -7,7 +7,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.CustomSettings;
 
-public sealed class AdminMenu : AdminMenuNavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     private static readonly ConcurrentDictionary<string, RouteValueDictionary> _routeValues = [];
 

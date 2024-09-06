@@ -5,7 +5,7 @@ using OrchardCore.Users.Drivers;
 
 namespace OrchardCore.Users;
 
-public sealed class ResetPasswordAdminMenu : AdminMenuNavigationProvider
+public sealed class ResetPasswordAdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {

@@ -6,7 +6,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users;
 
-public sealed class AdminMenu : AdminMenuNavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {

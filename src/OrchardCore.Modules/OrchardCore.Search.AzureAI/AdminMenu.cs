@@ -6,7 +6,7 @@ using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI;
 
-public sealed class AdminMenu : AdminMenuNavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     private readonly AzureAISearchDefaultOptions _azureAISearchSettings;
 

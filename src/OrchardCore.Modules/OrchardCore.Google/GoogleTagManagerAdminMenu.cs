@@ -4,7 +4,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Google;
 
-public sealed class GoogleTagManagerAdminMenu : AdminMenuNavigationProvider
+public sealed class GoogleTagManagerAdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {

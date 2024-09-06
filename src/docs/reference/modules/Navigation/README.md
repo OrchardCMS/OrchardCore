@@ -181,7 +181,7 @@ As mentioned about, you can implement the `INavigationProvider` interface to add
 | **Class Name**                | **Description**                                                                  |
 | ----------------------------- | -------------------------------------------------------------------------------- |
 | `NamedNavigationProvider`      | Inherit from this class to add menu items to a menu with a specific name.         |
-| `AdminMenuNavigationProvider`  | Inherit from this class to add menu items that will only appear in the admin menu. |
+| `AdminNavigationProvider`  | Inherit from this class to add menu items that will only appear in the admin menu. |
 
 
 

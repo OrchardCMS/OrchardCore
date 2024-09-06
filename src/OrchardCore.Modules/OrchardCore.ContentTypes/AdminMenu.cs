@@ -5,7 +5,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.ContentTypes;
 
-public sealed class AdminMenu : AdminMenuNavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     private static readonly string _adminControllerName = typeof(AdminController).ControllerName();
 

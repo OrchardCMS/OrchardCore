@@ -4,7 +4,7 @@ using OrchardCore.Security;
 
 namespace OrchardCore.Recipes;
 
-public sealed class AdminMenu : AdminMenuNavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     internal readonly IStringLocalizer S;
 
