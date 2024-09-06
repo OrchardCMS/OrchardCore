@@ -76,7 +76,7 @@ For instance, when a content item is displayed in a list, the `Summary` display 
 
 This template is called when displaying a content item with a specific Id.
 
-Note: This template was supported on Orcard Core version 1.X and will probably be removed from future versions. It is strongly recommended to use the corresponding template that utilises the ContentItemId.
+Note: This template was supported on Orchard version 1.X and will probably be removed from future versions. It is strongly recommended to use the corresponding template that utilizes the ContentItemId.
 
 #### Content with specific Id Examples
 
@@ -88,8 +88,6 @@ Note: This template was supported on Orcard Core version 1.X and will probably b
 
 This template is called when displaying a content item with a specific display type and Id.
 For instance, when a content item is displayed in a list, the `Summary` display type is commonly used.
-
-Note: This template was supported on Orcard Core version 1.X and will probably be removed from future versions. It is strongly recommended to use the corresponding template that utilises the ContentItemId.
 
 #### Content with specific Display Type and Id Examples
 
