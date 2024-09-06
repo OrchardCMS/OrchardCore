@@ -38,20 +38,22 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
             return null;
         }
 
-        var result = Initialize<UserNotificationNavbarViewModel>("UserNotificationNavbar", async model =>
-        {
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var notifications = (await _session.Query<Notification, NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection)
-                .OrderByDescending(x => x.CreatedAtUtc)
-                .Take(_notificationOptions.TotalUnreadNotifications + 1)
-                .ListAsync()).ToList();
+        var result = Initialize<UserNotificationNavbarViewModel>("UserNotificationNavbar")
+            .Processing<UserNotificationNavbarViewModel>(async model =>
+            {
+                var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var notifications = (await _session.Query<Notification, NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection)
+                    .OrderByDescending(x => x.CreatedAtUtc)
+                    .Take(_notificationOptions.TotalUnreadNotifications + 1)
+                    .ListAsync()).ToList();
 
-            model.Notifications = notifications;
-            model.MaxVisibleNotifications = _notificationOptions.TotalUnreadNotifications;
-            model.TotalUnread = notifications.Count;
+                model.Notifications = notifications;
+                model.MaxVisibleNotifications = _notificationOptions.TotalUnreadNotifications;
+                model.TotalUnread = notifications.Count;
 
-        }).Location("Detail", "Content:9")
-        .Location("DetailAdmin", "Content:9");
+            })
+            .Location("Detail", "Content:9")
+            .Location("DetailAdmin", "Content:9");
 
         if (_notificationOptions.AbsoluteCacheExpirationSeconds > 0 || _notificationOptions.SlidingCacheExpirationSeconds > 0)
         {

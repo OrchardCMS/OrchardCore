@@ -7,7 +7,23 @@ public class DisplayDriverBase
     protected string Prefix { get; set; } = string.Empty;
 
     /// <summary>
-    /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
+    /// Creates a new strongly typed shape.
+    /// </summary>
+    public ShapeResult Initialize<TModel>() where TModel : class
+    {
+        return Initialize<TModel>(shape => { });
+    }
+
+    /// <summary>
+    /// Creates a new strongly typed shape.
+    /// </summary>
+    public ShapeResult Initialize<TModel>(string shapeType) where TModel : class
+    {
+        return Initialize<TModel>(shapeType, shape => { });
+    }
+
+    /// <summary>
+    /// Creates a new strongly typed shape and initializes it before it is displayed.
     /// </summary>
     public ShapeResult Initialize<TModel>(Action<TModel> initialize) where TModel : class
     {
@@ -15,7 +31,7 @@ public class DisplayDriverBase
     }
 
     /// <summary>
-    /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
+    /// Creates a new strongly typed shape and initializes it before it is displayed.
     /// </summary>
     public ShapeResult Initialize<TModel>(string shapeType, Action<TModel> initialize) where TModel : class
     {
@@ -28,7 +44,7 @@ public class DisplayDriverBase
     }
 
     /// <summary>
-    /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
+    /// Creates a new strongly typed shape and initializes it before it is displayed.
     /// </summary>
     public ShapeResult Initialize<TModel>(Func<TModel, ValueTask> initializeAsync) where TModel : class
     {
@@ -39,7 +55,7 @@ public class DisplayDriverBase
     }
 
     /// <summary>
-    /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
+    /// Creates a new strongly typed shape and initializes it before it is displayed.
     /// </summary>
     public ShapeResult Initialize<TModel>(string shapeType, Func<TModel, ValueTask> initializeAsync) where TModel : class
     {
@@ -59,7 +75,7 @@ public class DisplayDriverBase
     }
 
     /// <summary>
-    /// Creates a new loosely typed shape and initializes it if it needs to be rendered.
+    /// Creates a new loosely typed shape and initializes it before it is displayed.
     /// </summary>
     public ShapeResult Dynamic(string shapeType, Func<dynamic, Task> initializeAsync)
     {
@@ -71,7 +87,7 @@ public class DisplayDriverBase
     }
 
     /// <summary>
-    /// Creates a new loosely typed shape and initializes it if it needs to be rendered.
+    /// Creates a new loosely typed shape and initializes it before it is displayed.
     /// </summary>
     public ShapeResult Dynamic(string shapeType, Action<dynamic> initialize)
     {
@@ -86,7 +102,7 @@ public class DisplayDriverBase
     }
 
     /// <summary>
-    /// If the shape needs to be rendered, it is created automatically from its type name.
+    /// When the shape is displayed, it is created automatically from its type name.
     /// </summary>
     public ShapeResult Dynamic(string shapeType)
     {
@@ -126,7 +142,7 @@ public class DisplayDriverBase
     }
 
     /// <summary>
-    /// If the shape needs to be rendered, it is created by the delegate.
+    /// If the shape needs to be displayed, it is created by the delegate.
     /// </summary>
     /// <remarks>
     /// This method is ultimately called by all drivers to create a shape. It's made virtual
