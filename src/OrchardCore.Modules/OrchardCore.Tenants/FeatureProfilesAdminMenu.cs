@@ -19,12 +19,12 @@ public sealed class FeatureProfilesAdminMenu : AdminMenuNavigationProvider
     }
 
 
-    protected override void Build(NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         // Don't add the menu item on non-default tenants.
         if (!_shellSettings.IsDefaultShell())
         {
-            return;
+            return ValueTask.CompletedTask;
         }
 
         builder
@@ -36,5 +36,7 @@ public sealed class FeatureProfilesAdminMenu : AdminMenuNavigationProvider
                     .LocalNav()
                 )
             );
+
+        return ValueTask.CompletedTask;
     }
 }

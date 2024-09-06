@@ -12,16 +12,19 @@ public sealed class MediaCacheAdminMenu : AdminMenuNavigationProvider
         S = stringLocalizer;
     }
 
-    protected override void Build(NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        builder.Add(S["Configuration"], configuration => configuration
-            .Add(S["Media"], S["Media"].PrefixPosition(), media => media
-                .Add(S["Media Cache"], S["Media Cache"].PrefixPosition(), cache => cache
-                    .Action("Index", "MediaCache", "OrchardCore.Media")
-                    .Permission(MediaCachePermissions.ManageAssetCache)
-                    .LocalNav()
+        builder
+            .Add(S["Configuration"], configuration => configuration
+                .Add(S["Media"], S["Media"].PrefixPosition(), media => media
+                    .Add(S["Media Cache"], S["Media Cache"].PrefixPosition(), cache => cache
+                        .Action("Index", "MediaCache", "OrchardCore.Media")
+                        .Permission(MediaCachePermissions.ManageAssetCache)
+                        .LocalNav()
+                    )
                 )
-            )
-        );
+            );
+
+        return ValueTask.CompletedTask;
     }
 }

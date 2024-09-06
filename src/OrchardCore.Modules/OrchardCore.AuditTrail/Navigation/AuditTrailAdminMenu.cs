@@ -20,7 +20,7 @@ public sealed class AuditTrailAdminMenu : AdminMenuNavigationProvider
         S = stringLocalizer;
     }
 
-    protected override void Build(NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
             .Add(S["Audit Trail"], NavigationConstants.AdminMenuAuditTrailPosition, configuration => configuration
@@ -30,5 +30,7 @@ public sealed class AuditTrailAdminMenu : AdminMenuNavigationProvider
                 .Permission(AuditTrailPermissions.ViewAuditTrail)
                 .LocalNav()
             );
+
+        return ValueTask.CompletedTask;
     }
 }

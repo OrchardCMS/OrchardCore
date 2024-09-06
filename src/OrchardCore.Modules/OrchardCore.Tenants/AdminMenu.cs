@@ -18,12 +18,12 @@ public sealed class AdminMenu : AdminMenuNavigationProvider
         S = stringLocalizer;
     }
 
-    protected override void Build(NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         // Don't add the menu item on non-default tenants.
         if (!_shellSettings.IsDefaultShell())
         {
-            return;
+            return ValueTask.CompletedTask;
         }
 
         builder
@@ -36,5 +36,7 @@ public sealed class AdminMenu : AdminMenuNavigationProvider
                     .LocalNav()
                 ),
                 priority: 1);
+
+        return ValueTask.CompletedTask;
     }
 }

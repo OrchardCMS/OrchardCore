@@ -14,12 +14,12 @@ public sealed class AdminMenu : AdminMenuNavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> sttringLocalizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        S = sttringLocalizer;
+        S = stringLocalizer;
     }
 
-    protected override void Build(NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
             .Add(S["Configuration"], configuration => configuration
@@ -33,5 +33,7 @@ public sealed class AdminMenu : AdminMenuNavigationProvider
                     )
                 )
             );
+
+        return ValueTask.CompletedTask;
     }
 }

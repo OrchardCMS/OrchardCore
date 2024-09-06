@@ -19,7 +19,7 @@ public sealed class GoogleAnalyticsAdminMenu : AdminMenuNavigationProvider
         S = stringLocalizer;
     }
 
-    protected override void Build(NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
             .Add(S["Configuration"], configuration => configuration
@@ -32,5 +32,7 @@ public sealed class GoogleAnalyticsAdminMenu : AdminMenuNavigationProvider
                     )
                 )
             );
+
+        return ValueTask.CompletedTask;
     }
 }

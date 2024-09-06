@@ -20,7 +20,7 @@ public sealed class AdminMenu : AdminMenuNavigationProvider
         S = stringLocalizer;
     }
 
-    protected override void Build(NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
             .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, configuration => configuration
@@ -36,5 +36,7 @@ public sealed class AdminMenu : AdminMenuNavigationProvider
                     ),
                 priority: 1)
             );
+
+        return ValueTask.CompletedTask;
     }
 }

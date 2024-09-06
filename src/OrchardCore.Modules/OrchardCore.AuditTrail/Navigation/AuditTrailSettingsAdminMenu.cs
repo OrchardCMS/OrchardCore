@@ -20,7 +20,7 @@ public sealed class AuditTrailSettingsAdminMenu : AdminMenuNavigationProvider
         S = stringLocalizer;
     }
 
-    protected override void Build(NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
              .Add(S["Configuration"], configuration => configuration
@@ -34,5 +34,7 @@ public sealed class AuditTrailSettingsAdminMenu : AdminMenuNavigationProvider
                     )
                 )
             );
+
+        return ValueTask.CompletedTask;
     }
 }

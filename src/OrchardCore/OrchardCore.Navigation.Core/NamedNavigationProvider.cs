@@ -26,18 +26,5 @@ public abstract class NamedNavigationProvider : INavigationProvider
     /// Asynchronously builds the navigations menu.
     /// </summary>
     /// <param name="builder"></param>
-    protected virtual ValueTask BuildAsync(NavigationBuilder builder)
-    {
-        Build(builder);
-
-        return ValueTask.CompletedTask;
-    }
-
-    /// <summary>
-    /// Synchronously builds the navigations menu.
-    /// </summary>
-    /// <param name="builder"></param>
-    protected virtual void Build(NavigationBuilder builder)
-    {
-    }
+    protected abstract ValueTask BuildAsync(NavigationBuilder builder);
 }

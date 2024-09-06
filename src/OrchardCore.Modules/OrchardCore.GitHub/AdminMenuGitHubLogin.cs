@@ -19,7 +19,7 @@ public sealed class AdminMenuGitHubLogin : AdminMenuNavigationProvider
         S = stringLocalizer;
     }
 
-    protected override void Build(NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
             .Add(S["Security"], security => security
@@ -33,5 +33,7 @@ public sealed class AdminMenuGitHubLogin : AdminMenuNavigationProvider
                     )
                 )
             );
+
+        return ValueTask.CompletedTask;
     }
 }

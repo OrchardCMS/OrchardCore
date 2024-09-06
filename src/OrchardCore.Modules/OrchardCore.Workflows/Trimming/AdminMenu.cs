@@ -20,16 +20,19 @@ public sealed class AdminMenu : AdminMenuNavigationProvider
         S = stringLocalizer;
     }
 
-    protected override void Build(NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        builder.Add(S["Configuration"], configuration => configuration
-            .Add(S["Settings"], settings => settings
-                .Add(S["Workflow Trimming"], S["Workflow Trimming"], trimming => trimming
-                    .Action("Index", "Admin", _routeValues)
-                    .Permission(Permissions.ManageWorkflowSettings)
-                    .LocalNav()
+        builder
+            .Add(S["Configuration"], configuration => configuration
+                .Add(S["Settings"], settings => settings
+                    .Add(S["Workflow Trimming"], S["Workflow Trimming"], trimming => trimming
+                        .Action("Index", "Admin", _routeValues)
+                        .Permission(Permissions.ManageWorkflowSettings)
+                        .LocalNav()
+                    )
                 )
-            )
-        );
+            );
+
+        return ValueTask.CompletedTask;
     }
 }

@@ -26,7 +26,7 @@ public sealed class AdminMenu : AdminMenuNavigationProvider
         _shellDescriptor = shellDescriptor;
     }
 
-    protected override void Build(NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
             .Add(S["Security"], security => security
@@ -84,5 +84,7 @@ public sealed class AdminMenu : AdminMenuNavigationProvider
                     }
                 })
             );
+
+        return ValueTask.CompletedTask;
     }
 }

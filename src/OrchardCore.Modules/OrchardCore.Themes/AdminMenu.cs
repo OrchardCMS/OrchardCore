@@ -12,7 +12,7 @@ public sealed class AdminMenu : AdminMenuNavigationProvider
         S = stringLocalizer;
     }
 
-    protected override void Build(NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
             .Add(S["Design"], NavigationConstants.AdminMenuDesignPosition, design => design
@@ -23,5 +23,7 @@ public sealed class AdminMenu : AdminMenuNavigationProvider
                     .LocalNav()
                 )
             );
+
+        return ValueTask.CompletedTask;
     }
 }

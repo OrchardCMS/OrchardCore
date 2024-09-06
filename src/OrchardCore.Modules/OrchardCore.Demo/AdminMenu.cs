@@ -12,7 +12,7 @@ public sealed class AdminMenu : AdminMenuNavigationProvider
         S = stringLocalizer;
     }
 
-    protected override void Build(NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
             .Add(S["Demo"], "10", demo => demo
@@ -44,5 +44,7 @@ public sealed class AdminMenu : AdminMenuNavigationProvider
                     .Action("Index", "Todo", "OrchardCore.Demo")
                 )
             );
+
+        return ValueTask.CompletedTask;
     }
 }
