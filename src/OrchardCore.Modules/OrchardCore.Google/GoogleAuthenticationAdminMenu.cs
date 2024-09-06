@@ -4,7 +4,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Google;
 
-public sealed class GoogleAuthenticationAdminMenu : INavigationProvider
+public sealed class GoogleAuthenticationAdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -14,18 +14,13 @@ public sealed class GoogleAuthenticationAdminMenu : INavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public GoogleAuthenticationAdminMenu(IStringLocalizer<GoogleAuthenticationAdminMenu> localizer)
+    public GoogleAuthenticationAdminMenu(IStringLocalizer<GoogleAuthenticationAdminMenu> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Security"], security => security
                 .Add(S["Authentication"], authentication => authentication

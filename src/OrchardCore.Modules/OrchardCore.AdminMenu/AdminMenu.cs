@@ -4,27 +4,23 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     private readonly AdminMenuNavigationProvidersCoordinator _adminMenuNavigationProviderCoordinator;
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(AdminMenuNavigationProvidersCoordinator adminMenuNavigationProviderCoordinator,
-        IStringLocalizer<AdminMenu> localizer)
+    public AdminMenu(
+        AdminMenuNavigationProvidersCoordinator adminMenuNavigationProviderCoordinator,
+        IStringLocalizer<AdminMenu> stringLocalizer)
     {
         _adminMenuNavigationProviderCoordinator = adminMenuNavigationProviderCoordinator;
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return ValueTask.CompletedTask;
-        }
-
-        // Configuration and settings menus for the AdminMenu module
+        // Configuration and settings menus for the AdminMenu module.
         builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Admin Menus"], S["Admin Menus"].PrefixPosition(), adminMenu => adminMenu
@@ -34,7 +30,7 @@ public sealed class AdminMenu : INavigationProvider
                 )
             );
 
-        // This is the entry point for the adminMenu: dynamically generated custom admin menus
+        // This is the entry point for the adminMenu: dynamically generated custom admin menus.
         return _adminMenuNavigationProviderCoordinator.BuildNavigationAsync(NavigationConstants.AdminMenuId, builder);
     }
 }

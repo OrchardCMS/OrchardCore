@@ -3,17 +3,17 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Search.Lucene;
 
-public sealed class AdminMenu(IStringLocalizer<AdminMenu> localizer) : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    internal readonly IStringLocalizer S = localizer;
+    internal readonly IStringLocalizer S;
 
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return ValueTask.CompletedTask;
-        }
+        S = stringLocalizer;
+    }
 
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
         builder
             .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
                 .AddClass("search")

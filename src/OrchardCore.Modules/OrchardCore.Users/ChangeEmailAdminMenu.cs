@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Users.Drivers;
 
 namespace OrchardCore.Users;
 
-public sealed class ChangeEmailAdminMenu : INavigationProvider
+public sealed class ChangeEmailAdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -15,18 +15,13 @@ public sealed class ChangeEmailAdminMenu : INavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public ChangeEmailAdminMenu(IStringLocalizer<ChangeEmailAdminMenu> localizer)
+    public ChangeEmailAdminMenu(IStringLocalizer<ChangeEmailAdminMenu> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Security"], security => security
                 .Add(S["Settings"], settings => settings
