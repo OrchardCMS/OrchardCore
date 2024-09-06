@@ -4,7 +4,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
 
-public sealed class ExportContentToDeploymentTargetAdminMenu : INavigationProvider
+public sealed class ExportContentToDeploymentTargetAdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -14,18 +14,13 @@ public sealed class ExportContentToDeploymentTargetAdminMenu : INavigationProvid
 
     internal readonly IStringLocalizer S;
 
-    public ExportContentToDeploymentTargetAdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public ExportContentToDeploymentTargetAdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return ValueTask.CompletedTask;
-        }
-
         builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import

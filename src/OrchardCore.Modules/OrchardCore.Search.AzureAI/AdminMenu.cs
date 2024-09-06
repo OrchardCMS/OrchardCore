@@ -6,20 +6,22 @@ using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI;
 
-public sealed class AdminMenu(
-    IStringLocalizer<AdminMenu> stringLocalizer,
-    IOptions<AzureAISearchDefaultOptions> azureAISearchSettings) : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    internal readonly IStringLocalizer S = stringLocalizer;
-    private readonly AzureAISearchDefaultOptions _azureAISearchSettings = azureAISearchSettings.Value;
+    private readonly AzureAISearchDefaultOptions _azureAISearchSettings;
 
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(
+        IOptions<AzureAISearchDefaultOptions> azureAISearchSettings,
+        IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-        {
-            return ValueTask.CompletedTask;
-        }
+        _azureAISearchSettings = azureAISearchSettings.Value;
+        S = stringLocalizer;
+    }
 
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
         builder
             .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
                 .AddClass("search")

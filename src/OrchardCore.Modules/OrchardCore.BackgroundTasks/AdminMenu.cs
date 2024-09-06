@@ -3,19 +3,17 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.BackgroundTasks;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer) => S = localizer;
-
-    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return ValueTask.CompletedTask;
-        }
+        S = stringLocalizer;
+    }
 
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
         builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Tasks"], S["Tasks"].PrefixPosition(), tasks => tasks

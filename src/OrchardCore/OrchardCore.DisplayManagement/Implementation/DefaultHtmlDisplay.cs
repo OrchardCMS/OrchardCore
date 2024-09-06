@@ -123,8 +123,12 @@ public class DefaultHtmlDisplay : IHtmlDisplay
                 }
 
                 // Now find the actual binding to render, taking alternates into account.
-                var actualBinding = await GetShapeBindingAsync(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable)
-                    ?? throw new Exception($"The shape type '{shapeMetadata.Type}' is not found");
+                var actualBinding = await GetShapeBindingAsync(shapeMetadata.Type, shapeMetadata.Alternates, shapeTable);
+
+                if (actualBinding == null)
+                {
+                    throw new InvalidOperationException($"The shape type '{shapeMetadata.Type}' is not found for the theme '{theme?.Id}'");
+                }
 
                 await shapeMetadata.ProcessingAsync.InvokeAsync((action, displayContext) => action(displayContext.Shape), displayContext, _logger);
 
