@@ -51,7 +51,7 @@ For instance, when a content item is displayed in a list, the `Summary` display 
 | `Content_Summary__BlogPost` | `Content-BlogPost.Summary.cshtml` |
 | `Content_Summary__Article` | `Content-Article.Summary.cshtml` |
 
-### `Content_[ContentItemId]`
+### `Content__[ContentItemId]`
 
 This template is called when displaying a content item with a specific ContentItemId.
 
@@ -72,7 +72,7 @@ For instance, when a content item is displayed in a list, the `Summary` display 
 | --------- | ------------ |
 | `Content_Summary__42n8364bk2azcy1yd71gnrntwf` | `Content-42n8364bk2azcy1yd71gnrntwf.Summary.cshtml` 
 
-### `Content_[Id]`
+### `Content__[Id]`
 
 This template is called when displaying a content item with a specific Id.
 
