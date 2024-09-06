@@ -3,7 +3,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Apis.GraphQL;
 
-public sealed class AdminMenu : AdminNavigationProvider
+public sealed class AdminMenu : AdminMenuNavigationProvider
 {
     internal readonly IStringLocalizer S;
 

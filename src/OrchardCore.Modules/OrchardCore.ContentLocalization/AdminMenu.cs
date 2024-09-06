@@ -5,7 +5,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.ContentLocalization;
 
-public sealed class AdminMenu : AdminNavigationProvider
+public sealed class AdminMenu : AdminMenuNavigationProvider
 {
     private static readonly RouteValueDictionary _providersRouteValues = new()
     {

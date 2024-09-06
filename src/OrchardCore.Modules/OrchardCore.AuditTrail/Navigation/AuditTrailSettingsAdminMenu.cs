@@ -5,7 +5,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.AuditTrail.Navigation;
 
-public sealed class AuditTrailSettingsAdminMenu : AdminNavigationProvider
+public sealed class AuditTrailSettingsAdminMenu : AdminMenuNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {

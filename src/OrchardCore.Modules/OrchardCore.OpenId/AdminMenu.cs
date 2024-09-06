@@ -6,7 +6,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.OpenId;
 
-public sealed class AdminMenu : AdminNavigationProvider
+public sealed class AdminMenu : AdminMenuNavigationProvider
 {
     private static readonly RouteValueDictionary _clientRouteValues = new()
     {

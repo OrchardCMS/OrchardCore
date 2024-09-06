@@ -3,7 +3,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Media;
 
-public sealed class MediaCacheAdminMenu : AdminNavigationProvider
+public sealed class MediaCacheAdminMenu : AdminMenuNavigationProvider
 {
     internal readonly IStringLocalizer S;
 

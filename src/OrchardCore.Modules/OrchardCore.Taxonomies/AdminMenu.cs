@@ -5,7 +5,7 @@ using OrchardCore.Taxonomies.Settings;
 
 namespace OrchardCore.Taxonomies;
 
-public sealed class AdminMenu : AdminNavigationProvider
+public sealed class AdminMenu : AdminMenuNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {

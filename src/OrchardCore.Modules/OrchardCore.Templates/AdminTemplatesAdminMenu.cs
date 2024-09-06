@@ -3,7 +3,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Templates;
 
-public sealed class AdminTemplatesAdminMenu : AdminNavigationProvider
+public sealed class AdminTemplatesAdminMenu : AdminMenuNavigationProvider
 {
     internal readonly IStringLocalizer S;
 

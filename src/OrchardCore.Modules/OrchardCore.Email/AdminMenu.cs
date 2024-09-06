@@ -7,7 +7,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Email;
 
-public sealed class AdminMenu : AdminNavigationProvider
+public sealed class AdminMenu : AdminMenuNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {

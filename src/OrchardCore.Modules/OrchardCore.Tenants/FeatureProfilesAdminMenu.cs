@@ -4,7 +4,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Tenants;
 
-public sealed class FeatureProfilesAdminMenu : AdminNavigationProvider
+public sealed class FeatureProfilesAdminMenu : AdminMenuNavigationProvider
 {
     private readonly ShellSettings _shellSettings;
 

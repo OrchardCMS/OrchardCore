@@ -5,7 +5,7 @@ using OrchardCore.ReCaptcha.Drivers;
 
 namespace OrchardCore.ReCaptcha;
 
-public sealed class AdminMenu : AdminNavigationProvider
+public sealed class AdminMenu : AdminMenuNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {

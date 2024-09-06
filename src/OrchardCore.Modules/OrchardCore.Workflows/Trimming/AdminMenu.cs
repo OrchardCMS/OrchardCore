@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Trimming.Drivers;
 
 namespace OrchardCore.Workflows.Trimming;
 
-public sealed class AdminMenu : AdminNavigationProvider
+public sealed class AdminMenu : AdminMenuNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {

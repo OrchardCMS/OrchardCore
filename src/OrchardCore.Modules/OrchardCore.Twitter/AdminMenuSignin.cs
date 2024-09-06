@@ -4,7 +4,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Twitter;
 
-public sealed class AdminMenuSignin : AdminNavigationProvider
+public sealed class AdminMenuSignin : AdminMenuNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
