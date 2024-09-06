@@ -134,7 +134,7 @@ public class ShapeResult : IDisplayResult
         // These Displaying methods are used to create alternates for instance, so the
         // Shape needs to have required properties available first.
 
-        _initializing?.Invoke(Shape);
+        await _initializing?.Invoke(Shape);
 
         if (_displaying != null)
         {
