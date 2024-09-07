@@ -1,65 +1,66 @@
-using System;
-using System.Threading.Tasks;
+using System.Text.Json.Nodes;
+using Cysharp.Text;
 using Fluid;
+using Fluid.Filters;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.ContentManagement.Display.Liquid
+namespace OrchardCore.ContentManagement.Display.Liquid;
+
+public class ConsoleLogFilter : ILiquidFilter
 {
-    public class ConsoleLogFilter : ILiquidFilter
+    private readonly IHostEnvironment _hostEnvironment;
+
+    public ConsoleLogFilter(IHostEnvironment hostEnvironment)
     {
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
+        _hostEnvironment = hostEnvironment;
+    }
+
+    public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
+    {
+        var content = input.ToObjectValue();
+
+        if (content == null || _hostEnvironment.IsProduction())
         {
-            if (!context.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'console_log'");
-            }
-
-            var env = ((IServiceProvider)services).GetRequiredService<IHostEnvironment>();
-
-            var content = input.ToObjectValue();
-
-            if (content == null || env.IsProduction())
-            {
-                return new ValueTask<FluidValue>(NilValue.Instance);
-            }
-
-            using (var sb = StringBuilderPool.GetInstance())
-            {
-                sb.Builder.Append("<script>console.log(");
-
-                if (content is string stringContent)
-                {
-                    sb.Builder.Append("\"").Append(stringContent).Append("\"");
-                }
-                else if (content is JToken jTokenContent)
-                {
-                    sb.Builder.Append(jTokenContent.ToString());
-                }
-                else if (content is ContentItem contentItem)
-                {
-                    sb.Builder.Append(OrchardRazorHelperExtensions.ConvertContentItem(contentItem).ToString());
-                }
-                else if (content is IShape shape)
-                {
-                    sb.Builder.Append(shape.ShapeToJson().ToString());
-                }
-                else
-                {
-                    sb.Builder.Append(JsonConvert.SerializeObject(content));
-                }
-
-                sb.Builder.Append(")</script>");
-
-                var result = new StringValue(sb.Builder.ToString(), false);
-
-                return new ValueTask<FluidValue>(result);
-            }
+            return NilValue.Instance;
         }
+
+        using var sb = ZString.CreateStringBuilder();
+        sb.Append("<script>console.log(");
+
+        if (content is string stringContent)
+        {
+            sb.Append("\"");
+            sb.Append(stringContent);
+            sb.Append("\"");
+        }
+        else if (content is JsonNode jTokenContent)
+        {
+            sb.Append(jTokenContent.ToString());
+        }
+        else if (content is ContentItem contentItem)
+        {
+            sb.Append(OrchardRazorHelperExtensions.ConvertContentItem(contentItem).ToString());
+        }
+        else if (content is ContentPart contentPart)
+        {
+            sb.Append(OrchardRazorHelperExtensions.ConvertContentPart(contentPart).ToString());
+        }
+        else if (content is IShape shape)
+        {
+            sb.Append(shape.ShapeToJson().ToString());
+        }
+        else
+        {
+            sb.Append((await MiscFilters.Json(input, arguments, context)).ToStringValue());
+        }
+
+        sb.Append(")</script>");
+
+        var result = new StringValue(sb.ToString(), false);
+
+        return result;
     }
 }

@@ -19,7 +19,7 @@
                     <td>
                         @if (Model.ShowRemoveButton)
                         {
-                            <form asp-action="RemoveLogin" method="post">
+                            <form asp-action="RemoveLogin" method="post" class="no-multisubmit">
                                 <div>
                                     <input asp-for="@login.LoginProvider" name="LoginProvider" type="hidden" />
                                     <input asp-for="@login.ProviderKey" name="ProviderKey" type="hidden" />
@@ -41,7 +41,7 @@
 {
     <h4>Add another service to log in.</h4>
     <hr />
-    <form asp-action="LinkLogin" method="post" class="form-horizontal">
+    <form asp-action="LinkLogin" method="post" class="form-horizontal no-multisubmit">
         <div id="socialLoginList">
             <p>
                 @foreach (var provider in Model.OtherLogins)

@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Workflows</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore Workflows Abstractions</Title>
     <Description>$(OCCMSDescription)
-    
+
     Abstractions for the Workflows module.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
   </PropertyGroup>

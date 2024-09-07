@@ -1,0 +1,14 @@
+[
+  {
+    "inputs": [
+      "Assets/scss/customMetaTagsEditor.scss"
+    ],
+    "output": "wwwroot/Styles/customMetaTagsEditor.css"
+  },
+  {
+    "inputs": [
+      "Assets/js/customMetaTagsEditor.js"
+    ],
+    "output": "wwwroot/Scripts/customMetaTagsEditor.js"
+  }
+]

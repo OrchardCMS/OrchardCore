@@ -1,0 +1,63 @@
+@model OrchardCore.ContentFields.ViewModels.EditMultiTextFieldViewModel
+@using System.Text.Json
+@using OrchardCore.Mvc.Utilities
+@{
+    var settings = Model.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
+    var selectedValues = new List<object>();
+
+    foreach (var option in settings.Options)
+    {
+        if (Model.Values?.Contains(option.Value) == true)
+        {
+            selectedValues.Add(new { value = option.Value, name = option.Name });
+        }
+    }
+
+    var jSelectedValues = JConvert.SerializeObject(selectedValues);
+    var jOptions = JConvert.SerializeObject(settings.Options.Select(o => new { value = o.Value, name = o.Name }));
+
+    var partName = Model.PartFieldDefinition.PartDefinition.Name;
+    var fieldName = Model.PartFieldDefinition.Name;
+
+    var vueElementId = $"MultiTextField-Picker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
+
+    var valuesKey = Html.NameFor(x => x.Values);
+}
+
+<script asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-multitextfieldpicker.js" asp-name="multitextfieldpicker" at="Foot" depends-on="vuejs, vue-multiselect"></script>
+<style asp-name="vue-multiselect" at="Foot"></style>
+
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Values)_FieldWrapper">
+    <label class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
+        <div id="@vueElementId" class="multitextfieldpicker" data-selectedvalues="@jSelectedValues" data-options="@jOptions" data-valueskey="@valuesKey">
+            <div class="w-xl-50">
+                <input v-for="v in value" v-bind:name="valuesKey" v-bind:value="v.value" type="hidden" />
+                <vue-multiselect v-model="value"
+                                 placeholder="@T["Type to search"]"
+                                 select-label="@T["Select"]"
+                                 deselect-label="@T["Remove"]"
+                                 track-by="value"
+                                 label="name"
+                                 :options="options"
+                                 :multiple="true"
+                                 :show-labels="false"
+                                 :close-on-select="false"
+                                 :taggable="true"
+                                 tag-position="bottom">
+                    <template slot="noOptions">
+                        @T["No values found"]
+                    </template>
+                </vue-multiselect>
+            </div>
+            @if (!string.IsNullOrEmpty(settings.Hint))
+            {
+                <span class="hint">@settings.Hint</span>
+            }
+        </div>
+    </div>
+</div>
+
+<script depends-on="multitextfieldpicker" at="Foot">
+    initMultiTextFieldPicker(document.querySelector("#@vueElementId"));
+</script>

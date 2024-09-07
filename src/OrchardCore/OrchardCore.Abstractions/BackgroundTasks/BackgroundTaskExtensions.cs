@@ -1,39 +1,38 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
-namespace OrchardCore.BackgroundTasks
+namespace OrchardCore.BackgroundTasks;
+
+public static class BackgroundTaskExtensions
 {
-    public static class BackgroundTaskExtensions
+    public static BackgroundTaskSettings GetDefaultSettings(this IBackgroundTask task)
     {
-        public static BackgroundTaskSettings GetDefaultSettings(this IBackgroundTask task)
+        var technicalName = task.GetTaskName();
+
+        var attribute = task.GetType().GetCustomAttribute<BackgroundTaskAttribute>();
+        if (attribute != null)
         {
-            var type = task.GetType();
-
-            var attribute = type.GetCustomAttribute<BackgroundTaskAttribute>();
-
-            if (attribute != null)
+            return new BackgroundTaskSettings
             {
-                return new BackgroundTaskSettings
-                {
-                    Name = type.FullName,
-                    Enable = attribute.Enable,
-                    Schedule = attribute.Schedule,
-                    Description = attribute.Description
-                };
-            }
-
-            return new BackgroundTaskSettings() { Name = type.FullName };
+                Name = technicalName,
+                Title = !string.IsNullOrWhiteSpace(attribute.Title) ? attribute.Title : technicalName,
+                Enable = attribute.Enable,
+                Schedule = attribute.Schedule,
+                Description = attribute.Description,
+                LockTimeout = attribute.LockTimeout,
+                LockExpiration = attribute.LockExpiration,
+                UsePipeline = attribute.UsePipeline,
+            };
         }
 
-        public static IBackgroundTask GetTaskByName(this IEnumerable<IBackgroundTask> tasks, string name)
+        return new BackgroundTaskSettings()
         {
-            return tasks.LastOrDefault(t => t.GetTaskName() == name);
-        }
-
-        public static string GetTaskName(this IBackgroundTask task)
-        {
-            return task.GetType().FullName;
-        }
+            Name = technicalName,
+            Title = technicalName,
+        };
     }
+
+    public static IBackgroundTask GetTaskByName(this IEnumerable<IBackgroundTask> tasks, string name)
+        => tasks.LastOrDefault(task => task.GetTaskName() == name);
+
+    public static string GetTaskName(this IBackgroundTask task) => task.GetType().FullName;
 }

@@ -1,38 +1,50 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Modules;
 
-namespace OrchardCore.Mvc.RazorPages
+namespace OrchardCore.Mvc.RazorPages;
+
+public class ModularPageApplicationModelProvider : IPageApplicationModelProvider
 {
-    public class ModularPageApplicationModelProvider : IPageApplicationModelProvider
+    private readonly ILookup<string, string> _featureIdsByArea;
+
+    public ModularPageApplicationModelProvider(
+        IExtensionManager extensionManager,
+        ShellDescriptor shellDescriptor)
     {
-        private IEnumerable<string> _paths;
+        // Available features by area in the current shell.            
+        _featureIdsByArea = extensionManager.GetFeatures()
+            .Where(f => shellDescriptor.Features.Any(sf => sf.Id == f.Id))
+            .ToLookup(f => f.Extension.Id, f => f.Id);
+    }
 
-        public ModularPageApplicationModelProvider(
-            IExtensionManager extensionManager,
-            ShellDescriptor shellDescriptor)
+    public int Order => -1000 + 10;
+
+    public void OnProvidersExecuting(PageApplicationModelProviderContext context)
+    {
+    }
+
+    // Called the 1st time a page is requested or if any page has been updated.
+    public void OnProvidersExecuted(PageApplicationModelProviderContext context)
+    {
+        // Check if the page belongs to an enabled feature.
+        var found = false;
+
+        var area = context.PageApplicationModel.AreaName;
+        if (_featureIdsByArea.Contains(area))
         {
-            // Pages paths of all available modules which are enabled in the current shell.
-            _paths = extensionManager.GetFeatures().Where(f => shellDescriptor.Features.Any(sf =>
-                sf.Id == f.Id)).Select(f => '/' + f.Extension.SubPath + "/Pages/").Distinct();
+            found = true;
+
+            var pageModelType = context.PageApplicationModel.ModelType.AsType();
+            var attribute = pageModelType.GetCustomAttributes<FeatureAttribute>(false).FirstOrDefault();
+            if (attribute != null)
+            {
+                found = _featureIdsByArea[area].Contains(attribute.FeatureName);
+            }
         }
 
-        public int Order => -1000 + 10;
-
-        public void OnProvidersExecuting(PageApplicationModelProviderContext context)
-        {
-        }
-
-        // Called the 1st time a page is requested or if any page has been updated.
-        public void OnProvidersExecuted(PageApplicationModelProviderContext context)
-        {
-            // Check if the page belongs to an enabled module.
-            var relativePath = context.ActionDescriptor.RelativePath;
-            var found = _paths.Any(p => relativePath.StartsWith(p, StringComparison.Ordinal)) ? true : false;
-            context.PageApplicationModel.Filters.Add(new ModularPageViewEnginePathFilter(found));
-        }
+        context.PageApplicationModel.Filters.Add(new ModularPageViewEnginePathFilter(found));
     }
 }

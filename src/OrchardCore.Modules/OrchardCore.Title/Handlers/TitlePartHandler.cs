@@ -1,7 +1,6 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Fluid;
+using Fluid.Values;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -9,55 +8,99 @@ using OrchardCore.Liquid;
 using OrchardCore.Title.Models;
 using OrchardCore.Title.ViewModels;
 
-namespace OrchardCore.Title.Handlers
+namespace OrchardCore.Title.Handlers;
+
+public class TitlePartHandler : ContentPartHandler<TitlePart>
 {
-    public class TitlePartHandler : ContentPartHandler<TitlePart>
+    private readonly ILiquidTemplateManager _liquidTemplateManager;
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+    protected readonly IStringLocalizer S;
+    private readonly HashSet<ContentItem> _contentItems = [];
+
+    public TitlePartHandler(
+        ILiquidTemplateManager liquidTemplateManager,
+        IContentDefinitionManager contentDefinitionManager,
+        IStringLocalizer<TitlePartHandler> stringLocalizer)
     {
-        private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        _liquidTemplateManager = liquidTemplateManager;
+        _contentDefinitionManager = contentDefinitionManager;
+        S = stringLocalizer;
+    }
 
-        public TitlePartHandler(
-            ILiquidTemplateManager liquidTemplateManager,
-            IContentDefinitionManager contentDefinitionManager)
+    public override Task UpdatedAsync(UpdateContentContext context, TitlePart part)
+    {
+        return SetTitleAsync(part);
+    }
+
+    public override Task CreatedAsync(CreateContentContext context, TitlePart part)
+    {
+        return SetTitleAsync(part);
+    }
+
+    protected override Task ValidatingAsync(ValidateContentPartContext context, TitlePart part)
+    {
+        var settings = context.ContentTypePartDefinition.GetSettings<TitlePartSettings>();
+
+        if (settings.Options == TitlePartOptions.EditableRequired && string.IsNullOrEmpty(part.Title))
         {
-            _liquidTemplateManager = liquidTemplateManager;
-            _contentDefinitionManager = contentDefinitionManager;
+            context.Fail(S["A value is required for Title."], nameof(part.Title));
         }
 
-        public override async Task UpdatedAsync(UpdateContentContext context, TitlePart part)
+        return Task.CompletedTask;
+    }
+
+    private async Task SetTitleAsync(TitlePart part)
+    {
+        if (!_contentItems.Add(part.ContentItem))
         {
-            var settings = GetSettings(part);
-            // Do not compute the title if the user can modify it and the text is already set.
-            if (settings.Options == TitlePartOptions.Editable && !String.IsNullOrWhiteSpace(part.ContentItem.DisplayText))
+            // At this point we know that the contentItem was already processed. No need to process it again.
+
+            return;
+        }
+
+        var settings = await GetSettingsAsync(part);
+
+        // Do not compute the title if the user can modify it.
+        if (settings.Options == TitlePartOptions.Editable || settings.Options == TitlePartOptions.EditableRequired)
+        {
+            if (string.IsNullOrWhiteSpace(part.ContentItem.DisplayText))
             {
-                return;
+                // UpdatedAsync event is called from non-UI request like API, we update the DisplayText if it is not already set.
+                // When the displayText is not set, we set it to the value of title.
+                part.ContentItem.DisplayText = part.Title;
             }
 
-            if (!String.IsNullOrEmpty(settings.Pattern))
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(settings.Pattern))
+        {
+            var model = new TitlePartViewModel()
             {
-                var model = new TitlePartViewModel()
+                Title = part.Title,
+                TitlePart = part,
+                ContentItem = part.ContentItem,
+            };
+
+            var title = await _liquidTemplateManager.RenderStringAsync(settings.Pattern, NullEncoder.Default, model,
+                new Dictionary<string, FluidValue>()
                 {
-                    Title = part.Title,
-                    TitlePart = part,
-                    ContentItem = part.ContentItem
-                };
+                    ["ContentItem"] = new ObjectValue(model.ContentItem)
+                });
 
-                var title = await _liquidTemplateManager.RenderAsync(settings.Pattern, NullEncoder.Default, model,
-                    scope => scope.SetValue("ContentItem", model.ContentItem));
+            title = title.Replace("\r", string.Empty).Replace("\n", string.Empty);
 
-                title = title.Replace("\r", String.Empty).Replace("\n", String.Empty);
-
-                part.Title = title;
-                part.ContentItem.DisplayText = title;
-                part.Apply();
-            }
+            part.Title = title;
+            part.ContentItem.DisplayText = title;
+            part.Apply();
         }
+    }
 
-        private TitlePartSettings GetSettings(TitlePart part)
-        {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(TitlePart)));
-            return contentTypePartDefinition.GetSettings<TitlePartSettings>();
-        }
+    private async Task<TitlePartSettings> GetSettingsAsync(TitlePart part)
+    {
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+        var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(TitlePart), StringComparison.Ordinal));
+
+        return contentTypePartDefinition.GetSettings<TitlePartSettings>();
     }
 }

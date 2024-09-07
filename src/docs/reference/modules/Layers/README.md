@@ -1,36 +1,58 @@
 # Layers (`OrchardCore.Layers`)
 
-The layers can be managed from the `Design > Widgets` page in the admin.
+The Layers can be managed from the `Design > Widgets` page in the admin.
 
-A layer has a name, a description and a rule in which you specify a condition to render the widgets that will be associated to this layer.
+A Layer has a name, a description and a rule in which you specify a condition to render the widgets that will be associated to this Layer.
 
-When you add a widget into a zone, you must also select a Layer to associate the widget with. The widget is displayed if the layer's corresponding display rule evaluates to true.
+![Create Layer.](./assets/create-layer.png)
 
-You can select the checkbox next to each layer in order to highlight the associated Widgets on the left.
+_The Layer needs to be saved first to reveal the Rule option._
 
-In the rule, you can use a javascript function that will return a boolean, or you could just use a boolean.  
-Ex: The `Always` layer has the rule set to `true`, so widgets on this layer will always be shown.
+When you add a widget into a zone, you must also select a Layer to associate the widget with. The widget is displayed if the Layer's corresponding display rule evaluates to true.
 
-## Rules
+![Add widget.](./assets/add-widget.png)
 
-Here are some available functions:
+You can select the checkbox next to each Layer in order to highlight the associated Widgets on the left.
 
-| Function | Description |
+In the rule you may specify multiple conditions which must evaluate to true, or you can use condition groups, `All` or `Any`, to vary the rule.
+
+![Rules](./assets/rules.png)
+
+_There can be multiple Rules in place for one Layer._
+
+!!! note
+    Layer rules have been upgraded from a single JavaScript rule to conditions during RC2, so this document may differ depending on your version.
+    A migration converts existing JavaScript rules into either matching conditions or JavaScript conditions.
+
+## Conditions
+
+Here are some available conditions:
+
+| Condition | Description |
 | -------- | ----------- |
-| `isHomepage(): Boolean` | Returns true if the current request Url is the current homepage |
-| `isAnonymous(): Boolean` | Returns true if there is no authenticated user on the current request |
-| `isAuthenticated(): Boolean` | Returns true if there is an authenticated user on the current request |
-| `isInRole(role: String): Boolean` | Returns true if the user is in the provided role |
-| `url(url: String): Boolean` | Returns true if the current url matches the provided url. Add a `*` to the end of the url parameter to match any url that start with  |
-| `culture(name: String): Boolean` | Returns true if the current culture name or the current culture's parent name matches the `name` argument |
+| `Homepage` | Whether the current page is the site homepage |
+| `Is anonymous` | Whether the current user is anonymous, i.e. not authenticated. |
+| `Is authenticated` | Whether the current user is authenticated. |
+| `Role` | A role condition evaluates the current users roles against a value. |
+| `Url` | A url condition evaluates the current url against a value. |
+| `Culture` | A culture condition evaluates the current ui culture against a value. |
+| `Content Type` | A content type condition evaluates the currently displayed content types against a value. |
+| `Javascript` | A script condition written in JavaScript. |
+| `All` | An all condition group contains other conditions which are all required to be true. |
+| `Any` | An any condition group contains other conditions but only requires any condition to be true. |
+| `Boolean` | A boolean condition evaluating to `true` or `false`. |
 
-You can add new functions by implementing an `IGlobalMethodProvider`. See [Scripting](../Scripting/README.md#layers-orchardcorelayers)
+Ex: The `Always` Layer has a `Boolean Condition` set to `true`, so widgets on this Layer will always be shown.
+
+Refer to [Rules](../Rules/README.md) for more information about creating custom conditions.
+
+Refer to [Scripting](../Scripting/README.md#layers-orchardcorelayers) for more information about the available JavaScript methods.
 
 ## Zones
 
 The zones that are listed can be set in the `Design > Settings > Zones` admin page.
 
-You must have declared the corresponding zones as sections in your theme :
+You must have declared the corresponding zones as sections in your theme:
 
 === "Liquid"
 
@@ -40,6 +62,10 @@ You must have declared the corresponding zones as sections in your theme :
 
 === "Razor"
 
-``` html
-@await RenderSectionAsync("Header", required: false)
-```
+    ``` html
+    @await RenderSectionAsync("Header", required: false)
+    ```
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NCvytsdED_o" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

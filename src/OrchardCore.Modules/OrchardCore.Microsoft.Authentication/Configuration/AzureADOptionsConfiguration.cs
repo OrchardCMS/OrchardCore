@@ -1,98 +1,93 @@
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Microsoft.Authentication.Services;
+using Microsoft.Identity.Web;
 using OrchardCore.Microsoft.Authentication.Settings;
+using MicrosoftIdentityDefaults = Microsoft.Identity.Web.Constants;
 
-namespace OrchardCore.Microsoft.Authentication.Configuration
+
+namespace OrchardCore.Microsoft.Authentication.Configuration;
+
+public class AzureADOptionsConfiguration :
+    IConfigureOptions<AuthenticationOptions>,
+    IConfigureNamedOptions<PolicySchemeOptions>,
+    IConfigureNamedOptions<MicrosoftIdentityOptions>
 {
-    public class AzureADOptionsConfiguration :
-        IConfigureOptions<AuthenticationOptions>,
-        IConfigureNamedOptions<PolicySchemeOptions>,
-        IConfigureNamedOptions<AzureADOptions>
+    public const string AzureAdOpenIdConnectScheme = MicrosoftIdentityDefaults.AzureAd + OpenIdConnectDefaults.AuthenticationScheme;
+
+    private readonly AzureADSettings _azureADSettings;
+    private readonly ILogger _logger;
+
+    public AzureADOptionsConfiguration(IOptions<AzureADSettings> azureADSettings, ILogger<AzureADOptionsConfiguration> logger)
     {
-        private readonly IAzureADService _azureADService;
-        private readonly ILogger _logger;
+        _azureADSettings = azureADSettings.Value;
+        _logger = logger;
+    }
 
-        public AzureADOptionsConfiguration(
-            IAzureADService loginService,
-            ILogger<AzureADOptionsConfiguration> logger)
+    public void Configure(AuthenticationOptions options)
+    {
+        var settings = _azureADSettings;
+        if (settings == null)
         {
-            _azureADService = loginService;
-            _logger = logger;
+            return;
         }
 
-        public void Configure(AuthenticationOptions options)
+        if (string.IsNullOrWhiteSpace(settings.AppId) || string.IsNullOrWhiteSpace(settings.TenantId))
         {
-            var settings = GetAzureADSettingsAsync().GetAwaiter().GetResult();
-            if (settings == null)
-            {
-                return;
-            }
+            _logger.LogWarning("The AzureAD login provider is enabled but not configured.");
 
-            // Register the OpenID Connect client handler in the authentication handlers collection.
-            options.AddScheme(AzureADDefaults.AuthenticationScheme, builder =>
-            {
-                builder.DisplayName = settings.DisplayName;
-                builder.HandlerType = typeof(PolicySchemeHandler);
-            });
-
-            options.AddScheme(AzureADDefaults.OpenIdScheme, builder =>
-            {
-                builder.DisplayName = "";
-                builder.HandlerType = typeof(OpenIdConnectHandler);
-            });
+            return;
         }
 
-        public void Configure(string name, AzureADOptions options)
+        // Register the OpenID Connect client handler in the authentication handlers collection.
+        options.AddScheme(Constants.AzureAd, builder =>
         {
-            if (!string.Equals(name, AzureADDefaults.AuthenticationScheme))
-            {
-                return;
-            }
+            builder.DisplayName = settings.DisplayName;
+            builder.HandlerType = typeof(PolicySchemeHandler);
+        });
 
-            var loginSettings = GetAzureADSettingsAsync().GetAwaiter().GetResult();
-            if (loginSettings == null)
-            {
-                return;
-            }
-            options.ClientId = loginSettings.AppId;
-            options.TenantId = loginSettings.TenantId;
-            options.Instance = "https://login.microsoftonline.com/";
-            if (loginSettings.CallbackPath.HasValue)
-            {
-                options.CallbackPath = loginSettings.CallbackPath;
-            }
+        options.AddScheme(AzureAdOpenIdConnectScheme, builder =>
+        {
+            builder.HandlerType = typeof(OpenIdConnectHandler);
+        });
+    }
+
+    public void Configure(string name, MicrosoftIdentityOptions options)
+    {
+        if (!string.Equals(name, MicrosoftIdentityDefaults.AzureAd, StringComparison.Ordinal))
+        {
+            return;
         }
 
-        public void Configure(AzureADOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
-
-        public void Configure(string name, PolicySchemeOptions options)
+        var loginSettings = _azureADSettings;
+        if (loginSettings == null)
         {
-            if (!string.Equals(name, AzureADDefaults.AuthenticationScheme))
-            {
-                return;
-            }
-            options.ForwardDefault = "Identity.External";
-            options.ForwardChallenge = AzureADDefaults.OpenIdScheme;
+            return;
         }
-        public void Configure(PolicySchemeOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
-        private async Task<AzureADSettings> GetAzureADSettingsAsync()
+        options.ClientId = loginSettings.AppId;
+        options.TenantId = loginSettings.TenantId;
+        options.Instance = "https://login.microsoftonline.com/";
+
+        if (loginSettings.CallbackPath.HasValue)
         {
-            var settings = await _azureADService.GetSettingsAsync();
-            if (_azureADService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
-            {
-                _logger.LogWarning("The AzureAD Authentication is not correctly configured.");
-                return null;
-            }
-            return settings;
+            options.CallbackPath = loginSettings.CallbackPath;
         }
     }
+
+    public void Configure(MicrosoftIdentityOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
+
+    public void Configure(string name, PolicySchemeOptions options)
+    {
+        if (!string.Equals(name, MicrosoftIdentityDefaults.AzureAd, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        options.ForwardDefault = "Identity.External";
+        options.ForwardChallenge = AzureAdOpenIdConnectScheme;
+    }
+    public void Configure(PolicySchemeOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 }

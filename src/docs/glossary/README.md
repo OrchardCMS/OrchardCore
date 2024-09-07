@@ -48,7 +48,7 @@ A collection of content items of a certain type in a parent content item. The co
 ### List
 
 A list of content items to a parent container (Ex: A blog contains a list of blog posts). The content items are referenced.
-See [List](../reference/modules/List/README.md)
+See [Lists](../reference/modules/Lists/README.md)
 
 ### Taxonomy
 

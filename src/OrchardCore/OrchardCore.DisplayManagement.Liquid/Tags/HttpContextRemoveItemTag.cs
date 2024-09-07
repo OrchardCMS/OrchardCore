@@ -1,40 +1,30 @@
-using System;
-using System.IO;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Fluid.Tags;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Liquid.Ast;
+using OrchardCore.Liquid;
 
-namespace OrchardCore.DisplayManagement.Liquid.Tags
+namespace OrchardCore.DisplayManagement.Liquid.Tags;
+
+public class HttpContextRemoveItemTag
 {
-    public class HttpContextRemoveItemTag : ArgumentsTag
+    public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter _1, TextEncoder _2, TemplateContext context)
     {
-        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] args)
+        var services = ((LiquidTemplateContext)context).Services;
+
+        var httpContext = services.GetRequiredService<IHttpContextAccessor>()?.HttpContext;
+
+        if (httpContext != null)
         {
-            if (!context.AmbientValues.TryGetValue("Services", out var servicesValue))
+            var itemKey = (await argument.EvaluateAsync(context)).ToStringValue();
+
+            if (!string.IsNullOrEmpty(itemKey))
             {
-                throw new ArgumentException("Services missing while invoking 'helper'");
+                httpContext.Items.Remove(itemKey);
             }
 
-            var services = servicesValue as IServiceProvider;
-
-            var httpContext = services.GetRequiredService<IHttpContextAccessor>()?.HttpContext;
-
-            if (httpContext != null)
-            {
-                var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
-                var itemKey = arguments["item"].Or(arguments.At(0)).ToStringValue();
-                if (!string.IsNullOrEmpty(itemKey))
-                {
-                    httpContext.Items.Remove(itemKey);
-                }
-
-            }
-            return Completion.Normal;
         }
+        return Completion.Normal;
     }
 }

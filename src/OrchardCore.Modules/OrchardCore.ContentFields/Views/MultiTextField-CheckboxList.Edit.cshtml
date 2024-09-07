@@ -1,0 +1,32 @@
+@model OrchardCore.ContentFields.ViewModels.EditMultiTextFieldViewModel
+@using OrchardCore
+@using OrchardCore.Mvc.Utilities
+@{
+    var settings = Model.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
+    var options = settings.Options.Select(option =>
+        new SelectListItem
+                {
+                    Text = option.Name,
+                    Value = option.Value,
+                    Selected = Model.Values.Contains(option.Value)
+                }).ToList();
+}
+
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Values)_FieldWrapper">
+    <label class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
+        @for (int i = 0; i < options.Count; i++)
+        {
+            var option = options[i];
+            <div class="form-check">
+                <input type="checkbox" id="@(Html.IdFor(m => m.Values) + "_" + i)" name="@(Html.NameFor(m => m.Values))" class="form-check-input" value="@option.Value" @(option.Selected ? "checked='checked'" : string.Empty) />
+                <label class="form-check-label" for="@(Html.IdFor(m => m.Values) + "_" + i)">@option.Text</label>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
+    </div>
+</div>

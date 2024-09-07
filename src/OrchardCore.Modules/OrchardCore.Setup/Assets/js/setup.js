@@ -10,7 +10,6 @@ $(function () {
     $("#recipes div a").on('click', function () {
         refreshDescription($(this));
     });
-
 });
 
 // Show or hide the connection string or table prefix section when the database provider is selected
@@ -40,6 +39,7 @@ function refreshDescription(target) {
     $("#recipeButton").text(recipeDisplayName);
     $("#RecipeName").val(recipeName);
     $("#recipeButton").attr("title", recipeDescription);
+    $("#recipeButton").focus();
 }
 
 function setLocalizationUrl() {

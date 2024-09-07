@@ -11,10 +11,11 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Layers",
     Name = "Layers",
     Description = "Enables users to render Widgets across pages of the site based on conditions.",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Widgets",
-        "OrchardCore.Scripting"
-    },
+        "OrchardCore.Scripting",
+        "OrchardCore.Rules"
+    ],
     Category = "Content"
 )]

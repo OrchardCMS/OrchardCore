@@ -1,76 +1,75 @@
-using System;
-using System.Threading.Tasks;
+using System.Text.Json.Nodes;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.Contents.Liquid
+namespace OrchardCore.Contents.Liquid;
+
+public class BuildDisplayFilter : ILiquidFilter
 {
-    public class BuildDisplayFilter : ILiquidFilter
+    private const int DefaultMaxContentItemRecursions = 20;
+
+    private readonly IContentItemRecursionHelper<BuildDisplayFilter> _buildDisplayRecursionHelper;
+    private readonly IContentItemDisplayManager _contentItemDisplayManager;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
+
+    public BuildDisplayFilter(
+        IContentItemRecursionHelper<BuildDisplayFilter> buildDisplayRecursionHelper,
+        IContentItemDisplayManager contentItemDisplayManager,
+        IUpdateModelAccessor updateModelAccessor)
     {
-        private const int DefaultMaxContentItemRecursions = 20;
+        _buildDisplayRecursionHelper = buildDisplayRecursionHelper;
+        _contentItemDisplayManager = contentItemDisplayManager;
+        _updateModelAccessor = updateModelAccessor;
+    }
 
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+    public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+    {
+        static async ValueTask<FluidValue> Awaited(Task<IShape> task, TemplateOptions options)
         {
-            static async ValueTask<FluidValue> Awaited(Task<IShape> task)
-            {
-                return FluidValue.Create(await task);
-            }
-
-            var obj = input.ToObjectValue();
-
-            if (!(obj is ContentItem contentItem))
-            {
-                contentItem = null;
-
-                if (obj is JObject jObject)
-                {
-                    contentItem = jObject.ToObject<ContentItem>();
-                }
-            }
-
-            // If input is a 'JObject' but which not represents a 'ContentItem',
-            // a 'ContentItem' is still created but with some null properties.
-            if (contentItem?.ContentItemId == null)
-            {
-                return new ValueTask<FluidValue>(NilValue.Instance);
-            }
-
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'shape_build_display'");
-            }
-
-            var serviceProvider = (IServiceProvider)services;
-
-            var buildDisplayRecursionHelper = serviceProvider.GetRequiredService<IContentItemRecursionHelper<BuildDisplayFilter>>();
-
-            // When {{ Model.ContentItem | shape_build_display | shape_render }} is called prevent unlimited recursions.
-            // max_recursions is an optional argument to override the default limit of 20.
-            var maxRecursions = arguments["max_recursions"];
-            var recursionLimit = maxRecursions.Type == FluidValues.Number ? Convert.ToInt32(maxRecursions.ToNumberValue()) : DefaultMaxContentItemRecursions;
-            if (buildDisplayRecursionHelper.IsRecursive(contentItem, recursionLimit))
-            {
-                return new ValueTask<FluidValue>(NilValue.Instance);
-            }
-
-            var displayType = arguments["type"].Or(arguments.At(0)).ToStringValue();
-            var displayManager = serviceProvider.GetRequiredService<IContentItemDisplayManager>();
-            var updateModelAccessor = serviceProvider.GetRequiredService<IUpdateModelAccessor>();
-
-            var task = displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType);
-            if (task.IsCompletedSuccessfully)
-            {
-                return new ValueTask<FluidValue>(FluidValue.Create(task.Result));
-            }
-
-            return Awaited(task);
+            return FluidValue.Create(await task, options);
         }
+
+        var obj = input.ToObjectValue();
+
+        if (obj is not ContentItem contentItem)
+        {
+            contentItem = null;
+
+            if (obj is JsonObject jObject)
+            {
+                contentItem = jObject.ToObject<ContentItem>();
+            }
+        }
+
+        // If input is a 'JObject' but which not represents a 'ContentItem',
+        // a 'ContentItem' is still created but with some null properties.
+        if (contentItem?.ContentItemId == null)
+        {
+            return ValueTask.FromResult<FluidValue>(NilValue.Instance);
+        }
+
+        // When {{ Model.ContentItem | shape_build_display | shape_render }} is called prevent unlimited recursions.
+        // max_recursions is an optional argument to override the default limit of 20.
+        var maxRecursions = arguments["max_recursions"];
+        var recursionLimit = maxRecursions.Type == FluidValues.Number ? Convert.ToInt32(maxRecursions.ToNumberValue()) : DefaultMaxContentItemRecursions;
+        if (_buildDisplayRecursionHelper.IsRecursive(contentItem, recursionLimit))
+        {
+            return ValueTask.FromResult<FluidValue>(NilValue.Instance);
+        }
+
+        var displayType = arguments["type"].Or(arguments.At(0)).ToStringValue();
+
+        var task = _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, displayType);
+        if (task.IsCompletedSuccessfully)
+        {
+            return ValueTask.FromResult(FluidValue.Create(task.Result, ctx.Options));
+        }
+
+        return Awaited(task, ctx.Options);
     }
 }

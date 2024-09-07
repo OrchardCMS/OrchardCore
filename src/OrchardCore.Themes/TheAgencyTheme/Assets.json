@@ -1,20 +1,27 @@
- [
+[
   {
+    "copy": true,
     "inputs": [
-      "wwwroot/dist/css/styles.css"
+      "Assets/dist/assets/*"
     ],
-    "output": "wwwroot/Styles/styles.css"
+    "output": "wwwroot/assets/@"
   },
   {
     "inputs": [
-      "wwwroot/scss/bootstrap-oc.scss"
+      "Assets/dist/css/styles.css"
     ],
-    "output": "wwwroot/Styles/bootstrap-oc.css"
+    "output": "wwwroot/css/styles.css"
   },
   {
     "inputs": [
-      "wwwroot/dist/js/scripts.js"
+      "Assets/src/scss/bootstrap-oc.scss"
     ],
-    "output": "wwwroot/Scripts/scripts.js"
+    "output": "wwwroot/css/bootstrap-oc.css"
+  },
+  {
+    "inputs": [
+      "Assets/dist/js/scripts.js"
+    ],
+    "output": "wwwroot/js/scripts.js"
   }
 ]

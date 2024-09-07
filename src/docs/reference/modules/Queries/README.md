@@ -100,6 +100,45 @@ For Lucene queries with custom object schema, you are limited to elements stored
 
 For SQL queries, you can expose any column where property name is a column alias from the query.
 
+!!! note
+    When returning documents from a SQL query, make sure your query returns a list of document IDs. This is commonly available in the `DocumentId` column, but check the tables you're querying.
+
+Here is an example of a custom Query from a manually added table in a database :
+
+```sql
+-- On the Query don't check the "return content items" checkbox
+SELECT Name FROM Test
+```
+
+Here is how you would define a Schema for this Query to add it to the GraphQL endpoint.
+
+```json
+{
+    "type": "object",
+    "properties": {  
+        "Name" : {
+            "type" : "string",
+            "description" : "This is your custom table 'Name' column."
+        }
+    }
+}
+```
+
+If your Query has the same name as a content type name it could lead into having them colliding in the GraphQL endpoint.
+For SQL and Lucene queries you can then define a custom field type name in their schema.
+
+```json
+{
+    "type": "object",
+    "fieldTypeName": "customGraphQLFieldTypeName",
+    "properties": {  
+        "Name" : {
+            "type" : "string",
+            "description" : "This is your custom table 'Name' column."
+        }
+    }
+}
+```
 
 ## SQL Queries (`OrchardCore.Queries.Sql`)
 
@@ -114,7 +153,7 @@ Here is an example for creating a SQL query from a Queries recipe step:
     "Source": "Sql",
     "Name": "ContentItems",
     "Template": "select * from ContentItemIndex", // json encoded query template
-    "ReturnDocuments": false
+    "ReturnContentItems": false
 }
 ```
 
@@ -190,7 +229,7 @@ select
     day(CreatedUtc) as [Day],
     count(*) as [Count]
 from ContentItemIndex 
-where Published = true and ContentType = 'BlogPost'
+where Published = true and ContentType = 'BlogPost' and PublishedUtc > now()
 group by day(CreatedUtc), month(CreatedUtc), year(CreatedUtc)
 ```
 
@@ -248,6 +287,7 @@ The SQL parser is also able to convert some specific functions to the intended d
 | `day(_date_)`    | Returns the days part of a date.    |
 | `month(_date_)`  | Returns the months part of a date.  |
 | `year(_date_)`   | Returns the years part of a date.   |
+| `now()`          | Returns current date time (utc).    |
 
 ## Scripting
 
@@ -257,6 +297,31 @@ The following JavaScript functions are available with this module.
 | -------- | ----------- | --------- |
 | `executeQuery` | Returns the result of the query. | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
 
-## Tutorial
+## Videos
 
-<https://www.youtube.com/watch?v=6ZaqWmq8Pog&t=2891s>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6ZaqWmq8Pog" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/JYES1i6BdWs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IYKEeYxeNck" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Breaking changes
+
+1.0 -> 1.1
+
+The Query API now returns an IQueryResults which now will also contain a count for the Lucene results. The JSON data structure has changed from :
+
+```json
+[
+    {...}
+]
+```
+
+To :
+
+```json
+{
+  items:[...],
+  count:1231
+}
+```

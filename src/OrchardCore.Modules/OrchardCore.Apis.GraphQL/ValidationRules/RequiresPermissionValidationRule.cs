@@ -1,67 +1,124 @@
-using System.Linq;
-using GraphQL.Language.AST;
+using GraphQL;
 using GraphQL.Types;
 using GraphQL.Validation;
+using GraphQLParser.AST;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
-namespace OrchardCore.Apis.GraphQL.ValidationRules
+namespace OrchardCore.Apis.GraphQL.ValidationRules;
+
+public class RequiresPermissionValidationRule : IValidationRule
 {
-    public class RequiresPermissionValidationRule : IValidationRule
+    public const string ErrorCode = "Unauthorized";
+
+    private readonly IAuthorizationService _authorizationService;
+
+    protected readonly IStringLocalizer S;
+
+    public RequiresPermissionValidationRule(
+        IAuthorizationService authorizationService,
+        IStringLocalizer<RequiresPermissionValidationRule> localizer)
     {
-        public static readonly string ErrorCode = "Unauthorized";
+        _authorizationService = authorizationService;
+        S = localizer;
+    }
 
-        public INodeVisitor Validate(ValidationContext validationContext)
-        {
-            var context = (GraphQLContext)validationContext.UserContext;
+    public async ValueTask<INodeVisitor> ValidateAsync(ValidationContext validationContext)
+    {
+        // shouldn't we access UserContext from validation-context inside MatchingNodeVisitor actions?
+        var userContext = (GraphQLUserContext)validationContext.UserContext;
 
-            return new EnterLeaveListener(_ =>
+        return await Task.FromResult(new NodeVisitors(
+            new MatchingNodeVisitor<GraphQLOperationDefinition>(async (operationDefinition, validationContext) =>
             {
-                _.Match<Operation>(op =>
+                await AuthorizeOperationAsync(operationDefinition, validationContext, userContext, operationDefinition.Operation, operationDefinition?.Name?.StringValue);
+            }),
+            new MatchingNodeVisitor<GraphQLObjectField>(async (objectFieldAst, validationContext) =>
+            {
+                if (validationContext.TypeInfo.GetArgument()?.ResolvedType.GetNamedType() is IComplexGraphType argumentType)
                 {
-                    if (op.OperationType == OperationType.Mutation)
-                    {
-                        var authorizationManager = context.ServiceProvider.GetService<IAuthorizationService>();
+                    var fieldType = argumentType.GetField(objectFieldAst.Name);
+                    await AuthorizeNodePermissionAsync(objectFieldAst, fieldType, validationContext, userContext);
+                }
+            }),
+            new MatchingNodeVisitor<GraphQLField>(async (fieldAst, validationContext) =>
+            {
+                var fieldDef = validationContext.TypeInfo.GetFieldDef();
 
-                        if (!authorizationManager.AuthorizeAsync(context.User, Permissions.ExecuteGraphQLMutations).GetAwaiter().GetResult())
-                        {
-                            var localizer = context.ServiceProvider.GetService<IStringLocalizer<RequiresPermissionValidationRule>>();
-
-                            validationContext.ReportError(new ValidationError(
-                                validationContext.OriginalQuery,
-                                ErrorCode,
-                                localizer["Authorization is required to access {0}.", op.Name],
-                                op));
-                        }
-                    }
-                });
-
-                _.Match<Field>(fieldAst =>
+                if (fieldDef == null)
                 {
-                    var fieldDef = validationContext.TypeInfo.GetFieldDef();
+                    return;
+                }
 
-                    if (fieldDef.HasPermissions() && !Authorize(fieldDef, context))
-                    {
-                        var localizer = context.ServiceProvider.GetService<IStringLocalizer<RequiresPermissionValidationRule>>();
+                // check target field
+                await AuthorizeNodePermissionAsync(fieldAst, fieldDef, validationContext, userContext);
+                // check returned graph type
+                //   AuthorizeNodePermissionAsync(fieldAst, fieldDef.ResolvedType.GetNamedType(), validationContext, userContext).GetAwaiter().GetResult(); // TODO: need to think of something to avoid this
+            })
+        ));
+    }
 
-                        validationContext.ReportError(new ValidationError(
-                            validationContext.OriginalQuery,
-                            ErrorCode,
-                            localizer["Authorization is required to access the field. {0}", fieldAst.Name],
-                            fieldAst));
-                    }
-                });
-            });
-        }
-
-        private static bool Authorize(IProvideMetadata type, GraphQLContext context)
+    private async Task AuthorizeOperationAsync(ASTNode node, ValidationContext validationContext, GraphQLUserContext userContext, OperationType? operationType, string operationName)
+    {
+        if (operationType == OperationType.Mutation && !(await _authorizationService.AuthorizeAsync(userContext.User, CommonPermissions.ExecuteGraphQLMutations)))
         {
-            var authorizationManager = context.ServiceProvider.GetService<IAuthorizationService>();
-
-            // awaitable IValidationRule in graphql dotnet is coming soon:
-            // https://github.com/graphql-dotnet/graphql-dotnet/issues/1140
-            return type.GetPermissions().All(x => authorizationManager.AuthorizeAsync(context.User, x.Permission, x.Resource).GetAwaiter().GetResult());
+            validationContext.ReportError(new ValidationError(
+                validationContext.Document.Source,
+                ErrorCode,
+                S["Authorization is required to access {0}.", operationName],
+                node));
         }
+    }
+
+    private async Task AuthorizeNodePermissionAsync(ASTNode node, FieldType fieldType, ValidationContext validationContext, GraphQLUserContext userContext)
+    {
+        var permissions = fieldType?.GetPermissions();
+
+        if (permissions == null)
+        {
+            return;
+        }
+
+        var totalPermissions = permissions.Count();
+
+        if (totalPermissions == 0)
+        {
+            return;
+        }
+
+        if (totalPermissions == 1)
+        {
+            var permission = permissions.First();
+            // small optimization for the single policy - no 'new List<>()', no 'await Task.WhenAll()'
+            if (!await _authorizationService.AuthorizeAsync(userContext.User, permission.Permission, permission.Resource))
+            {
+                AddPermissionValidationError(validationContext, node, fieldType.Name);
+            }
+        }
+        else
+        {
+            var tasks = new List<Task<bool>>();
+
+            foreach (var permission in permissions)
+            {
+                tasks.Add(_authorizationService.AuthorizeAsync(userContext.User, permission.Permission, permission.Resource));
+            }
+
+            var authorizationResults = await Task.WhenAll(tasks);
+
+            if (authorizationResults.Any(isAuthorized => !isAuthorized))
+            {
+                AddPermissionValidationError(validationContext, node, fieldType.Name);
+            }
+        }
+    }
+
+    private void AddPermissionValidationError(ValidationContext validationContext, ASTNode node, string nodeName)
+    {
+        validationContext.ReportError(new ValidationError(
+                   validationContext.Document.Source,
+                   ErrorCode,
+                   S["Authorization is required to access the node. {0}", nodeName],
+                   node));
     }
 }

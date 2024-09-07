@@ -1,21 +1,17 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions.Features;
-using OrchardCore.Environment.Extensions.Loaders;
 
-namespace OrchardCore.Environment.Extensions
+namespace OrchardCore.Environment.Extensions;
+
+public interface IExtensionManager
 {
-    public interface IExtensionManager
-    {
-        IExtensionInfo GetExtension(string extensionId);
-        IEnumerable<IExtensionInfo> GetExtensions();
-        Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo);
+    IExtensionInfo GetExtension(string extensionId);
+    IEnumerable<IExtensionInfo> GetExtensions();
+    Task<ExtensionEntry> LoadExtensionAsync(IExtensionInfo extensionInfo);
 
-        IEnumerable<IFeatureInfo> GetFeatures();
-        IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad);
-        IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId);
-        IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId);
-        Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync();
-        Task<IEnumerable<FeatureEntry>> LoadFeaturesAsync(string[] featureIdsToLoad);
-    }
+    IEnumerable<IFeatureInfo> GetFeatures();
+    IEnumerable<IFeatureInfo> GetFeatures(string[] featureIdsToLoad);
+    IEnumerable<IFeatureInfo> GetFeatureDependencies(string featureId);
+    IEnumerable<IFeatureInfo> GetDependentFeatures(string featureId);
+    Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync();
+    Task<IEnumerable<IFeatureInfo>> LoadFeaturesAsync(string[] featureIdsToLoad);
 }

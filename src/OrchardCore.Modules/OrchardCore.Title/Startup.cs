@@ -13,27 +13,26 @@ using OrchardCore.Title.Models;
 using OrchardCore.Title.Settings;
 using OrchardCore.Title.ViewModels;
 
-namespace OrchardCore.Title
+namespace OrchardCore.Title;
+
+public sealed class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        static Startup()
+        services.Configure<TemplateOptions>(o =>
         {
-            TemplateContext.GlobalMemberAccessStrategy.Register<TitlePartViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<TitlePartSettingsViewModel>();
-        }
+            o.MemberAccessStrategy.Register<TitlePartViewModel>();
+            o.MemberAccessStrategy.Register<TitlePartSettingsViewModel>();
+        });
 
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            // Title Part
-            services.AddContentPart<TitlePart>()
-                .UseDisplayDriver<TitlePartDisplayDriver>()
-                .AddHandler<TitlePartHandler>();
+        // Title Part
+        services.AddContentPart<TitlePart>()
+            .UseDisplayDriver<TitlePartDisplayDriver>()
+            .AddHandler<TitlePartHandler>();
 
-            services.AddScoped<IContentPartIndexHandler, TitlePartIndexHandler>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, TitlePartSettingsDisplayDriver>();
+        services.AddScoped<IContentPartIndexHandler, TitlePartIndexHandler>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, TitlePartSettingsDisplayDriver>();
 
-            services.AddScoped<IDataMigration, Migrations>();
-        }
+        services.AddDataMigration<Migrations>();
     }
 }

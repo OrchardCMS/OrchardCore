@@ -1,89 +1,90 @@
-using System;
 using System.Collections.Immutable;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.OpenId
+namespace OrchardCore.OpenId;
+
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    private static readonly RouteValueDictionary _clientRouteValues = new()
     {
-        private readonly ShellDescriptor _shellDescriptor;
-        private readonly IStringLocalizer S;
+        { "area", "OrchardCore.Settings" },
+        { "groupId", "OrchardCore.OpenId.Client" },
+    };
 
-        public AdminMenu(
-            IStringLocalizer<AdminMenu> localizer,
-            ShellDescriptor shellDescriptor)
-        {
-            S = localizer;
-            _shellDescriptor = shellDescriptor;
-        }
+    private readonly ShellDescriptor _shellDescriptor;
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
+    internal readonly IStringLocalizer S;
 
-            builder.Add(S["Security"], security => security
-            .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), category =>
-            {
-                category.AddClass("openid").Id("openid");
+    public AdminMenu(
+        IStringLocalizer<AdminMenu> stringLocalizer,
+        ShellDescriptor shellDescriptor)
+    {
+        S = stringLocalizer;
+        _shellDescriptor = shellDescriptor;
+    }
 
-                var features = _shellDescriptor.Features.Select(feature => feature.Id).ToImmutableArray();
-                if (features.Contains(OpenIdConstants.Features.Client) ||
-                    features.Contains(OpenIdConstants.Features.Server) ||
-                    features.Contains(OpenIdConstants.Features.Validation))
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        builder
+            .Add(S["Security"], security => security
+                .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), category =>
                 {
-                    category.Add(S["Settings"], "1", settings =>
+                    category.AddClass("openid").Id("openid");
+
+                    var features = _shellDescriptor.Features.Select(feature => feature.Id).ToImmutableArray();
+                    if (features.Contains(OpenIdConstants.Features.Client) ||
+                        features.Contains(OpenIdConstants.Features.Server) ||
+                        features.Contains(OpenIdConstants.Features.Validation))
                     {
-                        if (features.Contains(OpenIdConstants.Features.Client))
+                        category.Add(S["Settings"], "1", settings =>
                         {
-                            settings.Add(S["Authentication client"], "1", client => client
-                                    .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "OrchardCore.OpenId.Client" })
-                                    .Permission(Permissions.ManageClientSettings)
-                                    .LocalNav());
-                        }
+                            if (features.Contains(OpenIdConstants.Features.Client))
+                            {
+                                settings.Add(S["Authentication client"], "1", client => client
+                                        .Action("Index", "Admin", _clientRouteValues)
+                                        .Permission(Permissions.ManageClientSettings)
+                                        .LocalNav());
+                            }
 
-                        if (features.Contains(OpenIdConstants.Features.Server))
-                        {
-                            settings.Add(S["Authorization server"], "2", server => server
-                                    .Action("Index", "ServerConfiguration", "OrchardCore.OpenId")
-                                    .Permission(Permissions.ManageServerSettings)
-                                    .LocalNav());
-                        }
+                            if (features.Contains(OpenIdConstants.Features.Server))
+                            {
+                                settings.Add(S["Authorization server"], "2", server => server
+                                        .Action("Index", "ServerConfiguration", "OrchardCore.OpenId")
+                                        .Permission(Permissions.ManageServerSettings)
+                                        .LocalNav());
+                            }
 
-                        if (features.Contains(OpenIdConstants.Features.Validation))
-                        {
-                            settings.Add(S["Token validation"], "3", validation => validation
-                                    .Action("Index", "ValidationConfiguration", "OrchardCore.OpenId")
-                                    .Permission(Permissions.ManageValidationSettings)
-                                    .LocalNav());
-                        }
-                    });
-                }
+                            if (features.Contains(OpenIdConstants.Features.Validation))
+                            {
+                                settings.Add(S["Token validation"], "3", validation => validation
+                                        .Action("Index", "ValidationConfiguration", "OrchardCore.OpenId")
+                                        .Permission(Permissions.ManageValidationSettings)
+                                        .LocalNav());
+                            }
+                        });
+                    }
 
-                if (features.Contains(OpenIdConstants.Features.Management))
-                {
-                    category.Add(S["Management"], "2", management =>
+                    if (features.Contains(OpenIdConstants.Features.Management))
                     {
-                        management.Add(S["Applications"], "1", applications => applications
-                                  .Action("Index", "Application", "OrchardCore.OpenId")
-                                  .Permission(Permissions.ManageApplications)
-                                  .LocalNav());
+                        category.Add(S["Management"], "2", management =>
+                        {
+                            management.Add(S["Applications"], "1", applications => applications
+                                      .Action("Index", "Application", "OrchardCore.OpenId")
+                                      .Permission(Permissions.ManageApplications)
+                                      .LocalNav());
 
-                        management.Add(S["Scopes"], "2", applications => applications
-                                  .Action("Index", "Scope", "OrchardCore.OpenId")
-                                  .Permission(Permissions.ManageScopes)
-                                  .LocalNav());
-                    });
-                }
-            }));
+                            management.Add(S["Scopes"], "2", applications => applications
+                                      .Action("Index", "Scope", "OrchardCore.OpenId")
+                                      .Permission(Permissions.ManageScopes)
+                                      .LocalNav());
+                        });
+                    }
+                })
+            );
 
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

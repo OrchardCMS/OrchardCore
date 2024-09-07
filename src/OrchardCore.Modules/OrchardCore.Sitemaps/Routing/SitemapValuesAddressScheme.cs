@@ -1,92 +1,88 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.Extensions.Options;
 using OrchardCore.Routing;
 
-namespace OrchardCore.Sitemaps.Routing
-{
-    internal sealed class SitemapValuesAddressScheme : IShellRouteValuesAddressScheme
-    {
-        private readonly SitemapEntries _entries;
-        private readonly SitemapsOptions _options;
+namespace OrchardCore.Sitemaps.Routing;
 
-        public SitemapValuesAddressScheme(SitemapEntries entries, IOptions<SitemapsOptions> options)
+internal sealed class SitemapValuesAddressScheme : IShellRouteValuesAddressScheme
+{
+    private readonly SitemapEntries _entries;
+    private readonly SitemapsOptions _options;
+
+    public SitemapValuesAddressScheme(SitemapEntries entries, IOptions<SitemapsOptions> options)
+    {
+        _entries = entries;
+        _options = options.Value;
+    }
+
+    public IEnumerable<Endpoint> FindEndpoints(RouteValuesAddress address)
+    {
+        if (address.AmbientValues == null || address.ExplicitValues == null)
         {
-            _entries = entries;
-            _options = options.Value;
+            return [];
         }
 
-        public IEnumerable<Endpoint> FindEndpoints(RouteValuesAddress address)
+        var sitemapId = address.ExplicitValues[_options.SitemapIdKey]?.ToString();
+
+        if (string.IsNullOrEmpty(sitemapId))
         {
-            if (address.AmbientValues == null || address.ExplicitValues == null)
+            return [];
+        }
+
+        (var found, var path) = _entries.TryGetPathBySitemapIdAsync(sitemapId).GetAwaiter().GetResult();
+
+        if (!found)
+        {
+            return [];
+        }
+
+        if (Match(address.ExplicitValues))
+        {
+            var routeValues = new RouteValueDictionary(address.ExplicitValues);
+
+            if (address.ExplicitValues.Count > _options.GlobalRouteValues.Count + 1)
             {
-                return Enumerable.Empty<Endpoint>();
-            }
-
-            string sitemapId = address.ExplicitValues[_options.SitemapIdKey]?.ToString();
-
-            if (string.IsNullOrEmpty(sitemapId))
-            {
-                return Enumerable.Empty<Endpoint>();
-            }
-
-            (var found, var path) = _entries.TryGetPathBySitemapIdAsync(sitemapId).GetAwaiter().GetResult();
-
-            if (!found)
-            {
-                return Enumerable.Empty<Endpoint>();
-            }
-
-            if (Match(address.ExplicitValues))
-            {
-                var routeValues = new RouteValueDictionary(address.ExplicitValues);
-
-                if (address.ExplicitValues.Count > _options.GlobalRouteValues.Count + 1)
+                foreach (var entry in address.ExplicitValues)
                 {
-                    foreach (var entry in address.ExplicitValues)
+                    if (string.Equals(entry.Key, _options.SitemapIdKey, StringComparison.OrdinalIgnoreCase))
                     {
-                        if (String.Equals(entry.Key, _options.SitemapIdKey, StringComparison.OrdinalIgnoreCase))
-                        {
-                            continue;
-                        }
+                        continue;
+                    }
 
-                        if (!_options.GlobalRouteValues.ContainsKey(entry.Key))
-                        {
-                            routeValues.Remove(entry.Key);
-                        }
+                    if (!_options.GlobalRouteValues.ContainsKey(entry.Key))
+                    {
+                        routeValues.Remove(entry.Key);
                     }
                 }
-
-                var endpoint = new RouteEndpoint
-                (
-                    c => null,
-                    RoutePatternFactory.Parse(path, routeValues, null),
-                    0,
-                    null,
-                    null
-                );
-
-                return new[] { endpoint };
             }
 
-            return Enumerable.Empty<Endpoint>();
+            var endpoint = new RouteEndpoint
+            (
+                c => null,
+                RoutePatternFactory.Parse(path, routeValues, null),
+                0,
+                null,
+                null
+            );
+
+            return [endpoint];
         }
 
-        private bool Match(RouteValueDictionary explicitValues)
+        return [];
+    }
+
+    private bool Match(RouteValueDictionary explicitValues)
+    {
+        foreach (var entry in _options.GlobalRouteValues)
         {
-            foreach (var entry in _options.GlobalRouteValues)
+            if (!string.Equals(explicitValues[entry.Key]?.ToString(), entry.Value?.ToString(), StringComparison.OrdinalIgnoreCase))
             {
-                if (!String.Equals(explicitValues[entry.Key]?.ToString(), entry.Value?.ToString(), StringComparison.OrdinalIgnoreCase))
-                {
-                    return false;
-                }
+                return false;
             }
-
-            return true;
         }
+
+        return true;
     }
 }

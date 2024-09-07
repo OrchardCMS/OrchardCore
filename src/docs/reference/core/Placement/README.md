@@ -11,7 +11,7 @@ Any module or theme can contain an optional `placement.json` file providing cust
 
 ### Format
 
-A `placement.json` file contains an object whose properties are shape names. Each of these properties is an array of placement rules.
+A `placement.json` file contains an object whose properties are shape types. Each of these properties is an array of placement rules.
 
 In the following example, we describe the placement for the `TextField` and `Parts_Contents_Publish` shapes.
 
@@ -29,9 +29,22 @@ A placement rule contains two sets of data:
 
 Currently you can filter shapes by:
 
-- Their original type, which is the property name of the placement rule, like `TextField`.
+- Their original type, which is the property name of the placement rule, like `TextField` or `ContentPart`.
 - `displayType` (Optional): The display type, like `Summary` and `Detail` for the most common ones.
 - `differentiator` (Optional): The differentiator which is used to distinguish shape types that are reused for multiple elements, like field names.
+
+!!! note
+    Shape type (placement.json property name) DOES NOT necessarily align with with your part type. For instance, if you created a Content Part `GalleryPart` without a part driver, your shape type will be `ContentPart` with differentiator `GalleryPart`. So your placement.json would look like
+
+```json
+{
+  "ContentPart": [{
+  "place":"SomeZone"
+  "differentiator":"GalleryPart"
+  }],
+  "GalleryPart": [{...}], //this wont work unless you registered a driver for the part
+}
+```
 
 Additional custom filter providers can be added by implementing `IPlacementNodeFilterProvider`.
 
@@ -123,7 +136,7 @@ You can use the `<shape>` tag helper to render any shape, even pass properties.
     ```
 
 For rendering content items, you could also use the following tag helper.
-Note: you need to add `@addTagHelper *, OrchardCore.Contents` to your `_ViewImports.cshtml` file to load this tag helper.
+Note: you need to add `@addTagHelper *, OrchardCore.Contents.TagHelpers` to your `_ViewImports.cshtml` file to load this tag helper. Ensure your project file also has a reference to OrchardCore.Contents.TagHelpers.
 
 === "Razor"
 
@@ -134,7 +147,7 @@ Note: you need to add `@addTagHelper *, OrchardCore.Contents` to your `_ViewImpo
 === "Liquid"
 
     ``` liquid
-    {% contentitem alias:"alias:main-menu" display_type="Detail" %}
+    {% contentitem alias: "alias:main-menu", display_type: "Detail" %}
     ```
 
 #### Manipulating shape metadata
@@ -161,6 +174,26 @@ Metadata tag helper example:
     </metadata>
 </menu>
 ```
+
+#### Adding properties with additional tag helpers
+
+Properties can be passed to a shape by adding attributes to the shape tag helper, as mentioned above. But you can also use the `<add-property>` tag helper inside `<shape>`. This even lets you pass Razor code as properties with the `IHtmlContent` value, if you omit the `value` attribute. Something that can't be easily done otherwise.
+
+```xml
+<shape type="MyShape">
+    <add-property name="foo" value="1" />
+    <add-property name="bar" value="a" />
+    <add-property name="content">
+        <h2>Some complicated HTML</h2>
+        <div>
+            You can even include shapes:
+            <shape type="AnotherShape" prop-count="10" />
+        </div>
+    </add-property>
+</shape>
+```
+
+This is the same as `<shape type="MyShape" pro-foo="1" prop-bar="a" prop-content="@someHtmlContentVariable" />` where you'd have to construct `someHtmlContentVariable` separately. Of course, you can mix and match the different formats, for example, to only use `<add-property>` when you want to pass HTML content as property.
 
 ### Date Time shapes
 
@@ -308,6 +341,58 @@ We also specify that the `Content` column will take 9 columns, of the default 12
     By default the columns will break responsively at the `md` breakpoint, and a modifier will be parsed to `col-md-9`.
     If you want to change the breakpoint, you could also specifiy `Content_lg-9`, which is parsed to `col-lg-9`.
 
-## Video
+### Dynamic part placement
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/h0lZMQkUApo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+In the following example we place a dynamic part (part without driver, i.e. created in json) `GalleryPart` in a zone called `MyGalleryZone`. When displaying that part inside Content template we would execute:
+
+=== Content-Product.Detail.html
+
+``` html
+@await DisplayAsync(Model.MyGalleryZone)
+```
+
+Dynamic parts use `ContentPart` shape for detail display with differentiator of Part name, so the placement file would look like this:
+
+``` json
+{
+  "ContentPart": [
+    {
+      "place": "MyGalleryZone",
+      "differentiator": "GalleryPart"
+    }
+  ]
+}
+```
+
+This setup would then show your template (e.g. `GalleryPart.cshtml` or `GalleryPart.Detail.cshtml`) where `DisplayAsync` was called.
+
+If we would like to show the same part in a summary display content template (or any other that isn't `Detail` display type):
+
+=== Content-Product.Summary.html
+
+``` html
+@await DisplayAsync(Model.MyGalleryZone)
+```
+
+Our placement would look like this (note the `_Summary` suffix to ContentPart name; change your suffix accordingly):
+
+``` json
+{
+  "ContentPart_Summary": [
+    {
+      "place": "MyGalleryZone",
+      "differentiator": "GalleryPart"
+    }
+  ]
+}
+```
+
+This setup would then show your template  (e.g. `GalleryPart.cshtml` or `GalleryPart.Summary.cshtml`) where `DisplayAsync` was called.
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/h0lZMQkUApo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/YR8QzyAEgo4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pGLggL_T9jc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

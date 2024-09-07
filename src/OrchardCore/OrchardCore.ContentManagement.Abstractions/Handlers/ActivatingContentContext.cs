@@ -1,11 +1,13 @@
 using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace OrchardCore.ContentManagement.Handlers
+namespace OrchardCore.ContentManagement.Handlers;
+
+public class ActivatingContentContext : ContentContextBase
 {
-    public class ActivatingContentContext
+    public ActivatingContentContext(ContentItem contentItem) : base(contentItem)
     {
-        public string ContentType { get; set; }
-        public ContentTypeDefinition Definition { get; set; }
-        public ContentItemBuilder Builder { get; set; }
     }
+
+    public string ContentType { get; set; }
+    public ContentTypeDefinition Definition { get; set; }
 }

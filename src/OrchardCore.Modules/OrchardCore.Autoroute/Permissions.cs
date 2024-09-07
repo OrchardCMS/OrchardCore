@@ -1,33 +1,25 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Autoroute
+namespace OrchardCore.Autoroute;
+
+public sealed class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission SetHomepage = new Permission("SetHomepage", "Set homepage.");
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(GetPermissions());
-        }
+    public static readonly Permission SetHomepage = new("SetHomepage", "Set homepage.");
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[] {
-                new PermissionStereotype {
-                    Name = "Administrator",
-                    Permissions = GetPermissions()
-                }
-            };
-        }
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        SetHomepage,
+    ];
 
-        private IEnumerable<Permission> GetPermissions()
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
         {
-            return new[]
-            {
-                SetHomepage
-            };
-        }
-    }
+            Name = OrchardCoreConstants.Roles.Administrator,
+            Permissions = _allPermissions,
+        },
+    ];
 }

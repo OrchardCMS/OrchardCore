@@ -1,0 +1,8 @@
+@model AuditTrailListViewModel
+@using Microsoft.Extensions.Localization
+
+<zone name="Title"><h1 class="mb-4">@RenderTitleSegments(T["Audit Trail"])</h1></zone>
+
+<form asp-action="Index" method="post">
+    @await DisplayAsync(Model)
+</form>

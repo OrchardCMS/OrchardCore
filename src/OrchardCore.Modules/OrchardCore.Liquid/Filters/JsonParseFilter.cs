@@ -1,20 +1,20 @@
-using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Fluid;
 using Fluid.Values;
-using Newtonsoft.Json.Linq;
 
-namespace OrchardCore.Liquid.Filters
+namespace OrchardCore.Liquid.Filters;
+
+public static class JsonParseFilter
 {
-    public class JsonParseFilter : ILiquidFilter
+    public static ValueTask<FluidValue> JsonParse(FluidValue input, FilterArguments _, TemplateContext context)
     {
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
+        var parsedValue = JNode.Parse(input.ToStringValue());
+        if (parsedValue.GetValueKind() == JsonValueKind.Array)
         {
-            var parsedValue = JToken.Parse(input.ToStringValue());
-            if (parsedValue.Type == JTokenType.Array)
-            {
-                return new ValueTask<FluidValue>(FluidValue.Create(parsedValue));
-            }
-            return new ValueTask<FluidValue>(new ObjectValue(parsedValue));
+            return ValueTask.FromResult(FluidValue.Create(parsedValue, context.Options));
         }
+
+        return ValueTask.FromResult<FluidValue>(new ObjectValue(parsedValue));
     }
 }

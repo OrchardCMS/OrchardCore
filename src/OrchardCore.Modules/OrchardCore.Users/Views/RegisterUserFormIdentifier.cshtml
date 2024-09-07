@@ -1,0 +1,25 @@
+@model RegisterViewModel
+
+<div class="mb-3">
+    <label asp-for="UserName" class="form-label">@T["Username"]</label>
+    <input asp-for="UserName" class="form-control" autofocus />
+    <span asp-validation-for="UserName" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Email" class="form-label">@T["Email address"]</label>
+    <input asp-for="Email" class="form-control" />
+    <span asp-validation-for="Email" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Password" class="form-label">@T["Password"]</label>
+    <input asp-for="Password" class="form-control" autocomplete="new-password" />
+    <span asp-validation-for="Password" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="ConfirmPassword" class="form-label">@T["Confirm password"]</label>
+    <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
+    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+</div>

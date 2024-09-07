@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentPreview.Drivers;
@@ -11,23 +12,22 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.ContentPreview
+namespace OrchardCore.ContentPreview;
+
+public sealed class Startup : Modules.StartupBase
 {
-    public class Startup : Modules.StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IResourceManifestProvider, ResourceManifest>();
+        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
 
-            services.AddScoped<IContentDisplayDriver, ContentPreviewDriver>();
+        services.AddScoped<IContentDisplayDriver, ContentPreviewDriver>();
 
-            // Preview Part
-            services.AddContentPart<PreviewPart>()
-                .AddHandler<PreviewPartHandler>();
+        // Preview Part
+        services.AddContentPart<PreviewPart>()
+            .AddHandler<PreviewPartHandler>();
 
-            services.AddScoped<IDataMigration, Migrations>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, PreviewPartSettingsDisplayDriver>();
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, PreviewStartupFilter>());
-        }
+        services.AddDataMigration<Migrations>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, PreviewPartSettingsDisplayDriver>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, PreviewStartupFilter>());
     }
 }

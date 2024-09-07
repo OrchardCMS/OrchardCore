@@ -1,22 +1,20 @@
-using System;
+using Fluid;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
-using OrchardCore.DisplayManagement.Liquid.Internal;
 
-namespace OrchardCore.DisplayManagement.Liquid
+namespace OrchardCore.DisplayManagement.Liquid;
+
+public sealed class LiquidShapeTemplateOptionsSetup : IConfigureOptions<ShapeTemplateOptions>
 {
-    public class LiquidShapeTemplateOptionsSetup : IConfigureOptions<ShapeTemplateOptions>
+    private readonly TemplateOptions _templateOptions;
+
+    public LiquidShapeTemplateOptionsSetup(IOptions<TemplateOptions> templateOptions)
     {
-        private readonly ILiquidViewFileProviderAccessor _fileProviderAccessor;
+        _templateOptions = templateOptions.Value;
+    }
 
-        public LiquidShapeTemplateOptionsSetup(ILiquidViewFileProviderAccessor fileProviderAccessor)
-        {
-            _fileProviderAccessor = fileProviderAccessor ?? throw new ArgumentNullException(nameof(fileProviderAccessor));
-        }
-
-        public void Configure(ShapeTemplateOptions options)
-        {
-            options.FileProviders.Insert(0, _fileProviderAccessor.FileProvider);
-        }
+    public void Configure(ShapeTemplateOptions options)
+    {
+        options.FileProviders.Insert(0, _templateOptions.FileProvider);
     }
 }

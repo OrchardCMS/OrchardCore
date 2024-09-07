@@ -1,36 +1,26 @@
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Users.Services;
 using OrchardCore.Users.Workflows.Activities;
 using OrchardCore.Users.Workflows.ViewModels;
 using OrchardCore.Workflows.Display;
 
-namespace OrchardCore.Users.Workflows.Drivers
+namespace OrchardCore.Users.Workflows.Drivers;
+
+public sealed class UserLoggedInEventDisplayDriver : ActivityDisplayDriver<UserLoggedInEvent, UserLoggedInEventViewModel>
 {
-    public class UserLoggedInEventDisplayDriver : ActivityDisplayDriver<UserLoggedInEvent, UserLoggedInEventViewModel>
+    public override Task<IDisplayResult> DisplayAsync(UserLoggedInEvent activity, BuildDisplayContext context)
     {
-        public UserLoggedInEventDisplayDriver(IUserService userService)
-        {
-            UserService = userService;
-        }
-
-        protected IUserService UserService { get; }
-
-        protected override void EditActivity(UserLoggedInEvent source, UserLoggedInEventViewModel target)
-        {
-        }
-
-        public override IDisplayResult Display(UserLoggedInEvent activity)
-        {
-            return Combine(
-                Shape("UserLoggedInEvent_Fields_Thumbnail", new UserLoggedInEventViewModel(activity)).Location("Thumbnail", "Content"),
-                Factory("UserLoggedInEvent_Fields_Design", ctx =>
+        return CombineAsync(
+            Shape("UserLoggedInEvent_Fields_Thumbnail", new UserLoggedInEventViewModel(activity)).Location("Thumbnail", "Content"),
+            Factory("UserLoggedInEvent_Fields_Design", ctx =>
+            {
+                var shape = new UserLoggedInEventViewModel
                 {
-                    var shape = new UserLoggedInEventViewModel();
-                    shape.Activity = activity;
+                    Activity = activity,
+                };
 
-                    return shape;
-                }).Location("Design", "Content")
-            );
-        }
+                return shape;
+            }).Location("Design", "Content")
+        );
     }
 }

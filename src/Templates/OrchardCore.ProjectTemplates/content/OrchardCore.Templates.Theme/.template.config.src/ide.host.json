@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json.schemastore.org/vs-2017.3.host",
+  "icon": "icon.png",
+  "symbolInfo": [
+    {
+      "id": "AddLiquid",
+      "name": {
+        "text": "Add .liquid files in Views"
+      },
+      "isVisible": "true"
+    },
+    {
+      "id": "OrchardVersion",
+      "name": {
+        "text": "Orchard Version"
+      },
+      "isVisible": "true"
+    }
+  ]
+}

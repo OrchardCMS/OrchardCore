@@ -1,114 +1,226 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Documents;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Roles.Models;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Roles.Services
+namespace OrchardCore.Roles.Services;
+
+public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleRemovedEventHandler
 {
-    public class RoleUpdater : IFeatureEventHandler
+    private readonly ShellDescriptor _shellDescriptor;
+    private readonly IExtensionManager _extensionManager;
+    private readonly IDocumentManager<RolesDocument> _documentManager;
+    private readonly IEnumerable<IPermissionProvider> _permissionProviders;
+    private readonly ITypeFeatureProvider _typeFeatureProvider;
+    private readonly ILogger _logger;
+
+    private readonly HashSet<string> _installedFeatures = [];
+
+    public RoleUpdater(
+        ShellDescriptor shellDescriptor,
+        IExtensionManager extensionManager,
+        IDocumentManager<RolesDocument> documentManager,
+        IEnumerable<IPermissionProvider> permissionProviders,
+        ITypeFeatureProvider typeFeatureProvider,
+        ILogger<RoleUpdater> logger)
     {
-        private readonly RoleManager<IRole> _roleManager;
-        private readonly IEnumerable<IPermissionProvider> _permissionProviders;
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
-        private readonly ILogger _logger;
+        _shellDescriptor = shellDescriptor;
+        _extensionManager = extensionManager;
+        _documentManager = documentManager;
+        _permissionProviders = permissionProviders;
+        _typeFeatureProvider = typeFeatureProvider;
+        _logger = logger;
+    }
 
-        public RoleUpdater(
-            RoleManager<IRole> roleManager,
-            IEnumerable<IPermissionProvider> permissionProviders,
-            ITypeFeatureProvider typeFeatureProvider,
-            ILogger<RoleUpdater> logger)
+    public override Task InstalledAsync(IFeatureInfo feature) => UpdateRolesForInstalledFeatureAsync(feature);
+
+    public override Task EnabledAsync(IFeatureInfo feature) => UpdateRolesForEnabledFeatureAsync(feature);
+
+    public Task RoleCreatedAsync(string roleName) => UpdateRoleForInstalledFeaturesAsync(roleName);
+
+    public Task RoleRemovedAsync(string roleName) => RemoveRoleForMissingFeaturesAsync(roleName);
+
+    private async Task UpdateRolesForInstalledFeatureAsync(IFeatureInfo feature)
+    {
+        _installedFeatures.Add(feature.Id);
+
+        var providers = _permissionProviders
+            .Where(provider => _typeFeatureProvider.GetFeaturesForDependency(provider.GetType()).Any(p => p.Id == feature.Id));
+
+        if (!providers.Any())
         {
-            _typeFeatureProvider = typeFeatureProvider;
-            _roleManager = roleManager;
-            _permissionProviders = permissionProviders;
-            _logger = logger;
+            return;
         }
 
-        Task IFeatureEventHandler.InstallingAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        Task IFeatureEventHandler.InstalledAsync(IFeatureInfo feature) => AddDefaultRolesForFeatureAsync(feature);
-
-        Task IFeatureEventHandler.EnablingAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        Task IFeatureEventHandler.EnabledAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        Task IFeatureEventHandler.DisablingAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        Task IFeatureEventHandler.DisabledAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        Task IFeatureEventHandler.UninstallingAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        Task IFeatureEventHandler.UninstalledAsync(IFeatureInfo feature) => Task.CompletedTask;
-
-        public async Task AddDefaultRolesForFeatureAsync(IFeatureInfo feature)
+        var updated = false;
+        var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
+        foreach (var provider in providers)
         {
-            // when another module is being enabled, locate matching permission providers
-            var providersForEnabledModule = _permissionProviders
-                .Where(x => _typeFeatureProvider.GetFeatureForDependency(x.GetType()).Id == feature.Id);
-
-            if (_logger.IsEnabled(LogLevel.Debug))
+            var stereotypes = provider.GetDefaultStereotypes();
+            foreach (var stereotype in stereotypes)
             {
-                if (providersForEnabledModule.Any())
+                var role = rolesDocument.Roles.FirstOrDefault(role => string.Equals(role.RoleName, stereotype.Name, StringComparison.OrdinalIgnoreCase));
+                if (role == null)
                 {
-                    _logger.LogDebug("Configuring default roles for feature '{FeatureName}'", feature.Id);
+                    continue;
                 }
-                else
+
+                var permissions = (stereotype.Permissions ?? [])
+                    .Select(stereotype => stereotype.Name);
+
+                if (UpdateRole(role, permissions, _logger))
                 {
-                    _logger.LogDebug("No default roles for feature '{FeatureName}'", feature.Id);
-                }
-            }
-
-            foreach (var permissionProvider in providersForEnabledModule)
-            {
-                // get and iterate stereotypical groups of permissions
-                var stereotypes = permissionProvider.GetDefaultStereotypes();
-                foreach (var stereotype in stereotypes)
-                {
-                    // turn those stereotypes into roles
-                    var role = await _roleManager.FindByNameAsync(stereotype.Name);
-                    if (role == null)
-                    {
-                        if (_logger.IsEnabled(LogLevel.Information))
-                        {
-                            _logger.LogInformation("Defining new role '{RoleName}' for permission stereotype", stereotype.Name);
-                        }
-
-                        role = new Role { RoleName = stereotype.Name, RoleDescription = stereotype.Name + " role" };
-                        await _roleManager.CreateAsync(role);
-                    }
-
-                    // and merge the stereotypical permissions into that role
-                    var stereotypePermissionNames = (stereotype.Permissions ?? Enumerable.Empty<Permission>()).Select(x => x.Name);
-                    var currentPermissionNames = ((Role)role).RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue);
-
-                    var distinctPermissionNames = currentPermissionNames
-                        .Union(stereotypePermissionNames)
-                        .Distinct();
-
-                    // update role if set of permissions has increased
-                    var additionalPermissionNames = distinctPermissionNames.Except(currentPermissionNames);
-
-                    if (additionalPermissionNames.Any())
-                    {
-                        foreach (var permissionName in additionalPermissionNames)
-                        {
-                            if (_logger.IsEnabled(LogLevel.Debug))
-                            {
-                                _logger.LogDebug("Default role '{Role}' granted permission '{Permission}'", stereotype.Name, permissionName);
-                            }
-
-                            await _roleManager.AddClaimAsync(role, new Claim(Permission.ClaimType, permissionName));
-                        }
-                    }
+                    updated = true;
                 }
             }
         }
+
+        if (updated)
+        {
+            await _documentManager.UpdateAsync(rolesDocument);
+        }
+    }
+
+    private async Task UpdateRolesForEnabledFeatureAsync(IFeatureInfo feature)
+    {
+        if (_installedFeatures.Contains(feature.Id))
+        {
+            return;
+        }
+
+        var providers = _permissionProviders
+            .Where(provider => _typeFeatureProvider.GetFeaturesForDependency(provider.GetType()).Any(p => p.Id == feature.Id));
+
+        if (!providers.Any())
+        {
+            return;
+        }
+
+        var updated = false;
+        var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
+        foreach (var role in rolesDocument.Roles)
+        {
+            if (!rolesDocument.MissingFeaturesByRole.TryGetValue(role.RoleName, out var missingFeatures) ||
+                !missingFeatures.Contains(feature.Id))
+            {
+                continue;
+            }
+
+            updated = true;
+
+            missingFeatures.Remove(feature.Id);
+            UpdateRolesForEnabledFeature(role, providers, _logger);
+        }
+
+        if (updated)
+        {
+            await _documentManager.UpdateAsync(rolesDocument);
+        }
+    }
+
+    private async Task UpdateRoleForInstalledFeaturesAsync(string roleName)
+    {
+        var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
+        var role = rolesDocument.Roles.FirstOrDefault(role => string.Equals(role.RoleName, roleName, StringComparison.OrdinalIgnoreCase));
+        if (role == null)
+        {
+            return;
+        }
+
+        // Get installed features that are no more enabled.
+        var missingFeatures = _shellDescriptor.Installed
+            .Except(_shellDescriptor.Features)
+            .Select(feature => feature.Id)
+            .ToArray();
+
+        // And defining at least one 'IPermissionProvider'.
+        rolesDocument.MissingFeaturesByRole[roleName] = (await _extensionManager.LoadFeaturesAsync(missingFeatures))
+            .Where(entry => _typeFeatureProvider.GetTypesForFeature(entry).Any(type => type.IsAssignableTo(typeof(IPermissionProvider))))
+            .Select(entry => entry.Id)
+            .ToList();
+
+        await _documentManager.UpdateAsync(rolesDocument);
+
+        var stereotypes = _permissionProviders
+            .SelectMany(provider => provider.GetDefaultStereotypes())
+            .Where(stereotype => string.Equals(stereotype.Name, roleName, StringComparison.OrdinalIgnoreCase));
+
+        if (!stereotypes.Any())
+        {
+            return;
+        }
+
+        var permissions = stereotypes
+            .SelectMany(stereotype => stereotype.Permissions ?? [])
+            .Select(stereotype => stereotype.Name);
+
+        UpdateRole(role, permissions, _logger);
+    }
+
+    private async Task RemoveRoleForMissingFeaturesAsync(string roleName)
+    {
+        var rolesDocument = await _documentManager.GetOrCreateMutableAsync();
+        if (rolesDocument.MissingFeaturesByRole.TryGetValue(roleName, out _))
+        {
+            rolesDocument.MissingFeaturesByRole.Remove(roleName);
+            await _documentManager.UpdateAsync(rolesDocument);
+        }
+    }
+
+    private static bool UpdateRolesForEnabledFeature(Role role, IEnumerable<IPermissionProvider> providers, ILogger logger)
+    {
+        var stereotypes = providers
+            .SelectMany(provider => provider.GetDefaultStereotypes())
+            .Where(stereotype => string.Equals(stereotype.Name, role.RoleName, StringComparison.OrdinalIgnoreCase));
+
+        if (!stereotypes.Any())
+        {
+            return false;
+        }
+
+        var permissions = stereotypes
+            .SelectMany(stereotype => stereotype.Permissions ?? [])
+            .Select(stereotype => stereotype.Name);
+
+        if (!permissions.Any())
+        {
+            return false;
+        }
+
+        return UpdateRole(role, permissions, logger);
+    }
+
+    private static bool UpdateRole(Role role, IEnumerable<string> permissions, ILogger logger)
+    {
+        var currentPermissions = role.RoleClaims
+            .Where(roleClaim => roleClaim.ClaimType == Permission.ClaimType)
+            .Select(roleClaim => roleClaim.ClaimValue);
+
+        var distinctPermissions = currentPermissions
+            .Union(permissions)
+            .Distinct();
+
+        var additionalPermissions = distinctPermissions.Except(currentPermissions);
+        if (!additionalPermissions.Any())
+        {
+            return false;
+        }
+
+        foreach (var permission in additionalPermissions)
+        {
+            if (logger.IsEnabled(LogLevel.Debug))
+            {
+                logger.LogDebug("Default role '{RoleName}' granted permission '{PermissionName}'.", role.RoleName, permission);
+            }
+
+            role.RoleClaims.Add(new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = permission });
+        }
+
+        return true;
     }
 }

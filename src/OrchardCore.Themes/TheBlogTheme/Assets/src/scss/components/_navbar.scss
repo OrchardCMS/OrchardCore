@@ -1,0 +1,126 @@
+// 
+// Navbar
+// 
+
+// Global styling for the navbar
+
+#mainNav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: $zindex-fixed;
+    border-bottom: $border-width solid $border-color;
+    background-color: $white;
+    font-family: $headings-font-family;
+
+    .navbar-brand {
+        font-weight: $headings-font-weight;
+    }
+
+    .navbar-toggler {
+        font-size: 0.75rem;
+        font-weight: $headings-font-weight;
+        padding: 0.75rem;
+        text-transform: uppercase;
+    }
+
+    .navbar-nav {
+        >li.nav-item {
+            >a.nav-link {
+                font-size: 0.75rem;
+                font-weight: $headings-font-weight;
+                letter-spacing: 0.0625em;
+                text-transform: uppercase;
+            }
+        }
+    }
+
+    // Desktop only styling for the navbar
+    // Set to large breakpoint and up (this should always match the .navbar-expand-* class
+
+    @include media-breakpoint-up(lg) {
+        border-bottom: $border-width solid transparent;
+        background: transparent;
+
+        .navbar-brand {
+            color: $white;
+
+            &:focus,
+            &:hover {
+                color: fade-out($white, .2);
+            }
+        }
+
+        .navbar-nav {
+            >li.nav-item {
+                >a.nav-link {
+                    color: $white;
+
+                    &:focus,
+                    &:hover {
+                        color: fade-out($white, .2);
+                    }
+                }
+            }
+        }
+    }
+
+    // Styling for the JS behavior of the navbar
+
+    @include media-breakpoint-up(lg) {
+        -webkit-transition: background-color 0.2s;
+        -moz-transition: background-color 0.2s;
+        transition: background-color 0.2s;
+        /* Force Hardware Acceleration in WebKit */
+        -webkit-transform: translate3d(0, 0, 0);
+        -moz-transform: translate3d(0, 0, 0);
+        -ms-transform: translate3d(0, 0, 0);
+        -o-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+
+        &.is-fixed {
+            /* when the user scrolls down, we hide the header right above the viewport */
+            position: fixed;
+            top: -83px;
+            -webkit-transition: -webkit-transform 0.2s;
+            -moz-transition: -moz-transform 0.2s;
+            transition: transform 0.2s;
+            border-bottom: 1px solid darken($white, .05);
+            background-color: fade-out($white, .1);
+
+            .navbar-brand {
+                color: $body-color;
+
+                &:focus,
+                &:hover {
+                    color: $primary;
+                }
+            }
+
+            .navbar-nav {
+                >li.nav-item {
+                    >a {
+                        color: $body-color;
+
+                        &:focus,
+                        &:hover {
+                            color: $primary;
+                        }
+                    }
+                }
+            }
+        }
+
+        &.is-visible {
+            /* if the user changes the scrolling direction, we show the header */
+            -webkit-transform: translate3d(0, 100%, 0);
+            -moz-transform: translate3d(0, 100%, 0);
+            -ms-transform: translate3d(0, 100%, 0);
+            -o-transform: translate3d(0, 100%, 0);
+            transform: translate3d(0, 100%, 0);
+        }
+    }
+}

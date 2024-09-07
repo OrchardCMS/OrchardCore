@@ -1,52 +1,44 @@
-using System;
-using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace OrchardCore.ResourceManagement
+namespace OrchardCore.ResourceManagement;
+
+public class ResourceRequiredContext
 {
-    public class ResourceRequiredContext
+    private const string NotIE = "!IE";
+
+    public ResourceDefinition Resource { get; set; }
+    public RequireSettings Settings { get; set; }
+    public IFileVersionProvider FileVersionProvider { get; set; }
+
+    public void WriteTo(TextWriter writer, string appPath)
     {
-        private const string NotIE = "!IE";
+        var tagBuilder = Resource.GetTagBuilder(Settings, appPath, FileVersionProvider);
 
-        public ResourceDefinition Resource { get; set; }
-        public RequireSettings Settings { get; set; }
-        public IFileVersionProvider FileVersionProvider { get; set; }
-
-        public IHtmlContent GetHtmlContent(string appPath)
+        if (string.IsNullOrEmpty(Settings.Condition))
         {
-            var tagBuilder = Resource.GetTagBuilder(Settings, appPath, FileVersionProvider);
+            tagBuilder.WriteTo(writer, NullHtmlEncoder.Default);
+            return;
+        }
 
-            if (String.IsNullOrEmpty(Settings.Condition))
-            {
-                return tagBuilder;
-            }
+        if (Settings.Condition == NotIE)
+        {
+            writer.Write("<!--[if " + Settings.Condition + "]>-->");
+        }
+        else
+        {
+            writer.Write("<!--[if " + Settings.Condition + "]>");
+        }
 
-            var builder = new HtmlContentBuilder();
+        tagBuilder.WriteTo(writer, NullHtmlEncoder.Default);
 
-            if (Settings.Condition == NotIE)
-            {
-                builder.AppendHtml("<!--[if " + Settings.Condition + "]>-->");
-            }
-            else
-            {
-                builder.AppendHtml("<!--[if " + Settings.Condition + "]>");
-            }
-
-            builder.AppendHtml(tagBuilder);
-
-            if (!string.IsNullOrEmpty(Settings.Condition))
-            {
-                if (Settings.Condition == NotIE)
-                {
-                    builder.AppendHtml("<!--<![endif]-->");
-                }
-                else
-                {
-                    builder.AppendHtml("<![endif]-->");
-                }
-            }
-
-            return builder;
+        if (Settings.Condition == NotIE)
+        {
+            writer.Write("<!--<![endif]-->");
+        }
+        else
+        {
+            writer.Write("<![endif]-->");
         }
     }
 }

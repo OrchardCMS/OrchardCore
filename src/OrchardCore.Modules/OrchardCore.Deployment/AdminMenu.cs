@@ -1,48 +1,40 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Deployment
+namespace OrchardCore.Deployment;
+
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        private readonly IStringLocalizer S;
+        S = stringLocalizer;
+    }
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            S = localizer;
-        }
-
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
-
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import
-                        .Add(S["Deployment Plans"], S["Deployment Plans"].PrefixPosition(), deployment => deployment
-                            .Action("Index", "DeploymentPlan", new { area = "OrchardCore.Deployment" })
-                            .Permission(Permissions.Export)
-                            .LocalNav()
-                        )
-                        .Add(S["Package Import"], S["Package Import"].PrefixPosition(), deployment => deployment
-                            .Action("Index", "Import", new { area = "OrchardCore.Deployment" })
-                            .Permission(Permissions.Import)
-                            .LocalNav()
-                        )
-                        .Add(S["JSON Import"], S["JSON Import"].PrefixPosition(), deployment => deployment
-                            .Action("Json", "Import", new { area = "OrchardCore.Deployment" })
-                            .Permission(Permissions.Import)
-                            .LocalNav()
-                        )
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        builder
+            .Add(S["Configuration"], configuration => configuration
+                .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import
+                    .Add(S["Deployment Plans"], S["Deployment Plans"].PrefixPosition(), deployment => deployment
+                        .Action("Index", "DeploymentPlan", "OrchardCore.Deployment")
+                        .Permission(CommonPermissions.Export)
+                        .LocalNav()
                     )
-                );
+                    .Add(S["Package Import"], S["Package Import"].PrefixPosition(), deployment => deployment
+                        .Action("Index", "Import", "OrchardCore.Deployment")
+                        .Permission(CommonPermissions.Import)
+                        .LocalNav()
+                    )
+                    .Add(S["JSON Import"], S["JSON Import"].PrefixPosition(), deployment => deployment
+                        .Action("Json", "Import", "OrchardCore.Deployment")
+                        .Permission(CommonPermissions.Import)
+                        .LocalNav()
+                    )
+                )
+            );
 
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

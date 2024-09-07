@@ -1,34 +1,39 @@
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
+using OrchardCore.Json;
 
-namespace OrchardCore.Queries.Deployment
+namespace OrchardCore.Queries.Deployment;
+
+public class AllQueriesDeploymentSource : IDeploymentSource
 {
-    public class AllQueriesDeploymentSource : IDeploymentSource
+    private readonly IQueryManager _queryManager;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+    public AllQueriesDeploymentSource(
+        IQueryManager queryManager,
+        IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
     {
-        private readonly IQueryManager _queryManager;
+        _queryManager = queryManager;
+        _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
+    }
 
-        public AllQueriesDeploymentSource(IQueryManager queryManager)
+    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    {
+        var allQueriesStep = step as AllQueriesDeploymentStep;
+
+        if (allQueriesStep == null)
         {
-            _queryManager = queryManager;
+            return;
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        var queries = await _queryManager.ListQueriesAsync();
+
+        result.Steps.Add(new JsonObject
         {
-            var allQueriesStep = step as AllQueriesDeploymentStep;
-
-            if (allQueriesStep == null)
-            {
-                return;
-            }
-
-            var queries = await _queryManager.ListQueriesAsync();
-
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Queries"),
-                new JProperty("Queries", queries.Select(JObject.FromObject))
-            ));
-        }
+            ["name"] = "Queries",
+            ["Queries"] = JArray.FromObject(queries, _jsonSerializerOptions),
+        });
     }
 }

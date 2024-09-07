@@ -1,12 +1,10 @@
 name: PR - CI
 on: 
   pull_request:
-    paths-ignore:	
-      - '**/*.md'	
-      - 'mkdocs.yml'	
-      - 'src/docs/**/*'
-    branches:
-      - dev
+    branches: [ main, release/** ]
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
@@ -19,33 +17,34 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     name: Build & Test
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core 3.1 on ${{ matrix.os }}
-      uses: actions/setup-dotnet@v1
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
       with:
-        dotnet-version: 3.1.404
-    - name: Setup .NET Core 5.0 on ${{ matrix.os }}
-      uses: actions/setup-dotnet@v1
+        node-version: "15"
+    - uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 5.0.101
+        dotnet-version: '8.0.x'
     - name: Build
+      # We disable NuGet audit warnings, see https://learn.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu1901-nu1904.
+      # Security issues being discovered in NuGet packages we use can happen at any time, and thus all our CI builds that
+      # treat warnings as errors could break anytime, without us changing the code. This prevents that. Treating them as
+      # warnings and other better approaches don't work, see https://github.com/OrchardCMS/OrchardCore/pull/16317.
       run: |
-        dotnet build --configuration Release
+        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
     - name: Unit Tests
       run: |
-        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
+        dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
     - name: Functional Tests
       if: matrix.os == 'ubuntu-latest'
       run: |
-        cd test/Functional
+        cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
         npm run mvc:test
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       if: matrix.os == 'ubuntu-latest' && failure()
       with:
         name: functional-test-failure
         path: |
-          test/Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data_Tests/logs
-  
+          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
+          src/OrchardCore.Cms.Web/App_Data/logs

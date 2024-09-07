@@ -25,10 +25,8 @@ $(function () {
   previewContentItemId = $(document.getElementById('previewContentItemId')).data('value');
   previewContentItemVersionId = $(document.getElementById('previewContentItemVersionId')).data('value');
   form = $(previewButton).closest('form');
-
   sendFormData = function sendFormData() {
     formData = form.serializeArray(); // convert form to array
-
     formData.push({
       name: "ContentItemType",
       value: contentItemType
@@ -44,24 +42,24 @@ $(function () {
     formData.push({
       name: "PreviewContentItemVersionId",
       value: previewContentItemVersionId
-    }); // store the form data to pass it in the event handler
+    });
 
+    // store the form data to pass it in the event handler
     localStorage.setItem('contentpreview:' + previewId, JSON.stringify($.param(formData)));
   };
-
   $(document).on('contentpreview:render', function () {
     sendFormData();
   });
   $(window).on('storage', function (ev) {
     if (ev.originalEvent.key != 'contentpreview:ready:' + previewId) return; // ignore other keys
+
     // triggered by the preview window the first time it is loaded in order
     // to pre-render the view even if no contentpreview:render is already sent
-
     sendFormData();
   });
   $(window).on('unload', function () {
-    localStorage.removeItem('contentpreview:' + previewId); // this will raise an event in the preview window to notify that the live preview is no longer active.
-
+    localStorage.removeItem('contentpreview:' + previewId);
+    // this will raise an event in the preview window to notify that the live preview is no longer active.
     localStorage.setItem('contentpreview:not-connected:' + previewId, '');
     localStorage.removeItem('contentpreview:not-connected:' + previewId);
   });

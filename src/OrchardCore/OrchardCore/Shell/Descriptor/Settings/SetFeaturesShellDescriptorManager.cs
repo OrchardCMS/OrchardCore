@@ -1,40 +1,49 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 
-namespace OrchardCore.Environment.Shell.Descriptor.Settings
+namespace OrchardCore.Environment.Shell.Descriptor.Settings;
+
+/// <summary>
+/// Implements <see cref="IShellDescriptorManager"/> by returning a single tenant with a specified set
+/// of features. This class can be registered as a singleton as its state never changes.
+/// </summary>
+public class SetFeaturesShellDescriptorManager : IShellDescriptorManager
 {
-    /// <summary>
-    /// Implements <see cref="IShellDescriptorManager"/> by returning a single tenant with a specified set
-    /// of features. This class can be registered as a singleton as its state never changes.
-    /// </summary>
-    public class SetFeaturesShellDescriptorManager : IShellDescriptorManager
+    private readonly IEnumerable<ShellFeature> _shellFeatures;
+    private readonly IExtensionManager _extensionManager;
+
+    private ShellDescriptor _shellDescriptor;
+
+    public SetFeaturesShellDescriptorManager(IEnumerable<ShellFeature> shellFeatures, IExtensionManager extensionManager)
     {
-        private readonly IEnumerable<ShellFeature> _shellFeatures;
-        private ShellDescriptor _shellDescriptor;
+        _shellFeatures = shellFeatures;
+        _extensionManager = extensionManager;
+    }
 
-        public SetFeaturesShellDescriptorManager(IEnumerable<ShellFeature> shellFeatures)
+    public async Task<ShellDescriptor> GetShellDescriptorAsync()
+    {
+        if (_shellDescriptor == null)
         {
-            _shellFeatures = shellFeatures;
-        }
+            var featureIds = _shellFeatures.Distinct().Select(sf => sf.Id).ToArray();
 
-        public Task<ShellDescriptor> GetShellDescriptorAsync()
-        {
-            if (_shellDescriptor == null)
+            var missingDependencies = (await _extensionManager.LoadFeaturesAsync(featureIds))
+                .Select(entry => entry.Id)
+                .Except(featureIds)
+                .Select(id => new ShellFeature(id));
+
+            _shellDescriptor = new ShellDescriptor
             {
-                _shellDescriptor = new ShellDescriptor
-                {
-                    Features = _shellFeatures.Distinct().ToList()
-                };
-            }
-
-            return Task.FromResult(_shellDescriptor);
+                Features = _shellFeatures
+                    .Concat(missingDependencies)
+                    .ToList()
+            };
         }
 
-        public Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures, IEnumerable<ShellParameter> parameters)
-        {
-            return Task.CompletedTask;
-        }
+        return _shellDescriptor;
+    }
+
+    public Task UpdateShellDescriptorAsync(int priorSerialNumber, IEnumerable<ShellFeature> enabledFeatures)
+    {
+        return Task.CompletedTask;
     }
 }

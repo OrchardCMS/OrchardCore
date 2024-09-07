@@ -1,0 +1,25 @@
+@model OrchardCore.ContentFields.ViewModels.EditMultiTextFieldViewModel
+@using OrchardCore.Mvc.Utilities
+@{
+    var settings = Model.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
+    var options = new List<SelectListItem>();
+
+    foreach (var option in settings.Options)
+    {
+        bool isSelected = Model.Values.Contains(option.Value) ? true : false;
+
+        options.Add(new SelectListItem { Text = option.Name, Value = option.Value, Selected = isSelected });
+    }
+}
+
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Values)_FieldWrapper">
+    <label asp-for="Values" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
+        <select class="form-select content-preview-select" asp-for="Values" asp-items="options" multiple></select>
+        <span asp-validation-for="Values"></span>
+        @if (!string.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
+    </div>
+</div>

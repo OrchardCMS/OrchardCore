@@ -3,11 +3,9 @@
 // restore the sidebar to the previous state.
 function persistAdminPreferences() {
     setTimeout(function () {
-        var adminPreferences = {};        
-        adminPreferences.leftSidebarCompact = $('body').hasClass('left-sidebar-compact') ? true : false;
+        var adminPreferences = {};
+        adminPreferences.leftSidebarCompact = document.body.classList.contains('left-sidebar-compact') ? true : false;
         adminPreferences.isCompactExplicit = isCompactExplicit;
-        adminPreferences.darkMode = $('html').attr('data-theme') === 'darkmode' ? true : false;
-        localStorage.setItem('adminPreferences', JSON.stringify(adminPreferences));
-        Cookies.set('adminPreferences', JSON.stringify(adminPreferences), { expires: 360 });
+        setAdminPreferences(adminPreferences);
     }, 200);
 }

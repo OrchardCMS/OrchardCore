@@ -3,15 +3,14 @@
     <!-- Set your background image for this header on the line below. -->
     {% assign imagePath = Model.ContentItem.Content.Blog.Image.Paths.first %}
     {% if imagePath == nil %}
-        <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/img/home-bg.jpg" | href }}')">
+        <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/assets/img/home-bg.jpg" | href }}')">
     {% else %}
         {% assign anchor = Model.ContentItem.Content.Blog.Image.Anchors.first %}
         <header class="masthead" style="background-image: url('{{ imagePath | asset_url | resize_url: profile: 'banner', anchor: anchor }}')">
     {% endif %}
-        <div class="overlay"></div>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-md-10 mx-auto">
+        <div class="container position-relative px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
                     <div class="site-heading">
                         <h1>{{ Model.ContentItem.DisplayText }}</h1>
                         <span class="subheading">{{ Model.Content.HtmlBodyPart | shape_render }}</span>

@@ -1,32 +1,34 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Workflows
+namespace OrchardCore.Workflows;
+
+public sealed class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission ManageWorkflows = new Permission("ManageWorkflows", "Manage workflows", isSecurityCritical: true);
-        public static readonly Permission ExecuteWorkflows = new Permission("ExecuteWorkflows", "Execute workflows", isSecurityCritical: true);
+    public static readonly Permission ManageWorkflows = new("ManageWorkflows", "Manage workflows", isSecurityCritical: true);
+    public static readonly Permission ExecuteWorkflows = new("ExecuteWorkflows", "Execute workflows", isSecurityCritical: true);
+    public static readonly Permission ManageWorkflowSettings = new("ManageWorkflowSettings", "Manage workflow settings", [ManageWorkflows]);
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(new[] { ManageWorkflows, ExecuteWorkflows }.AsEnumerable());
-        }
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        ManageWorkflows,
+        ExecuteWorkflows,
+        ManageWorkflowSettings,
+    ];
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
         {
-            return new[] {
-                new PermissionStereotype {
-                    Name = "Administrator",
-                    Permissions = new[] { ManageWorkflows, ExecuteWorkflows }
-                },
-                new PermissionStereotype {
-                    Name = "Editor",
-                    Permissions = new[] { ManageWorkflows, ExecuteWorkflows }
-                }
-            };
+            Name = OrchardCoreConstants.Roles.Administrator,
+            Permissions = _allPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Editor,
+            Permissions = _allPermissions,
         }
-    }
+    ];
 }

@@ -1,0 +1,17 @@
+@model LayerRuleCreateViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Create Rule"])</h1></zone>
+
+<div asp-validation-summary="ModelOnly"></div>
+<form asp-action="Create" method="post" class="no-multisubmit">
+    @await DisplayAsync(Model.Editor)
+    
+    <input type="hidden" asp-for="ConditionType" />
+    <input type="hidden" asp-for="Name" />
+    <input type="hidden" asp-for="ConditionGroupId" />
+
+    <div class="mb-3 mt-3">
+        <button class="btn btn-primary create" type="submit">@T["Create"]</button>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-controller="Admin" asp-route-name="@Model.Name">@T["Cancel"]</a>
+    </div>
+</form>

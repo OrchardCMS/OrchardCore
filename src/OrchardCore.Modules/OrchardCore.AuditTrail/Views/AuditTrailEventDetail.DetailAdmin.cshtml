@@ -1,0 +1,30 @@
+@model AuditTrailEventViewModel
+
+<table class="table table-sm table-hover mb-0">
+    <tbody>
+        <tr>
+            <th class="border-top-0 w-25">@T["Category"]</th>
+            <td class="border-top-0">@Model.Descriptor.LocalizedCategory(Context.RequestServices)</td>
+        </tr>
+        <tr>
+            <th>@T["Event"]</th>
+            <td>@Model.Descriptor.LocalizedName(Context.RequestServices)</td>
+        </tr>
+        <tr>
+            <th>@T["User Name"]</th>
+            <td>@Model.AuditTrailEvent.UserName</td>
+        </tr>
+        <tr>
+            <th>@T["User ID"]</th>
+            <td>@Model.AuditTrailEvent.UserId</td>
+        </tr>
+        <tr>
+            <th>@T["Timestamp"]</th>
+            <td>@await DisplayAsync(await New.DateTime(Utc: Model.AuditTrailEvent.CreatedUtc, Format: "g"))</td>
+        </tr>
+        <tr class="border-bottom">
+            <th>@T["Client IP Address"]</th>
+            <td>@Model.AuditTrailEvent.ClientIpAddress</td>
+        </tr>
+    </tbody>
+</table>

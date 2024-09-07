@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <!-- NuGet properties-->
     <Title>OrchardCore OpenId</Title>
     <Description>$(OCCMSDescription)
-    
+
     Provides OpenId Connect client, server and management features.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS OpenId</PackageTags>
   </PropertyGroup>
@@ -31,7 +30,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
-    <PackageReference Include="OpenIddict.AspNetCore" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" />
+    <PackageReference Include="OpenIddict.Server.AspNetCore" />
+    <PackageReference Include="OpenIddict.Server.DataProtection" />
+    <PackageReference Include="OpenIddict.Validation.AspNetCore" />
+    <PackageReference Include="OpenIddict.Validation.DataProtection" />
+    <PackageReference Include="OpenIddict.Validation.SystemNetHttp" />
   </ItemGroup>
 
 </Project>

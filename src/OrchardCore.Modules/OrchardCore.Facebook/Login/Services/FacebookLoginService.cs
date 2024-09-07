@@ -1,53 +1,44 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
-using OrchardCore.Entities;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Facebook.Login.Services
+namespace OrchardCore.Facebook.Login.Services;
+
+public class FacebookLoginService : IFacebookLoginService
 {
-    public class FacebookLoginService : IFacebookLoginService
+    private readonly ISiteService _siteService;
+
+    public FacebookLoginService(ISiteService siteService)
     {
-        private readonly ISiteService _siteService;
+        _siteService = siteService;
+    }
 
-        public FacebookLoginService(
-            ISiteService siteService,
-            IStringLocalizer<FacebookLoginService> stringLocalizer)
-        {
-            _siteService = siteService;
-        }
+    public Task<FacebookLoginSettings> GetSettingsAsync()
+        => _siteService.GetSettingsAsync<FacebookLoginSettings>();
 
-        public async Task<FacebookLoginSettings> GetSettingsAsync()
-        {
-            var container = await _siteService.GetSiteSettingsAsync();
-            return container.As<FacebookLoginSettings>();
-        }
+    public async Task<FacebookLoginSettings> LoadSettingsAsync()
+    {
+        var container = await _siteService.LoadSiteSettingsAsync();
+        return container.As<FacebookLoginSettings>();
+    }
 
-        public async Task UpdateSettingsAsync(FacebookLoginSettings settings)
-        {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-            var container = await _siteService.LoadSiteSettingsAsync();
-            container.Properties[nameof(FacebookLoginSettings)] = JObject.FromObject(settings);
-            await _siteService.UpdateSiteSettingsAsync(container);
-        }
+    public async Task UpdateSettingsAsync(FacebookLoginSettings settings)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
 
-        public Task<IEnumerable<ValidationResult>> ValidateSettingsAsync(FacebookLoginSettings settings)
-        {
-            if (settings == null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
+        var container = await _siteService.LoadSiteSettingsAsync();
+        container.Properties[nameof(FacebookLoginSettings)] = JObject.FromObject(settings, JOptions.Default);
+        await _siteService.UpdateSiteSettingsAsync(container);
+    }
 
-            var results = ImmutableArray.CreateBuilder<ValidationResult>();
-            return Task.FromResult<IEnumerable<ValidationResult>>(results);
-        }
+    public Task<IEnumerable<ValidationResult>> ValidateSettingsAsync(FacebookLoginSettings settings)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+
+        var results = ImmutableArray.CreateBuilder<ValidationResult>();
+        return Task.FromResult<IEnumerable<ValidationResult>>(results);
     }
 }

@@ -1,24 +1,22 @@
-using System;
 using OrchardCore.Data.Migration;
 
-namespace OrchardCore.Indexing
+namespace OrchardCore.Indexing;
+
+public sealed class Migrations : DataMigration
 {
-    public class Migrations : DataMigration
+    public async Task<int> CreateAsync()
     {
-        public int Create()
-        {
-            SchemaBuilder.CreateTable(nameof(IndexingTask), table => table
-                .Column<int>(nameof(IndexingTask.Id), col => col.PrimaryKey().Identity())
-                .Column<string>(nameof(IndexingTask.ContentItemId), c => c.WithLength(26))
-                .Column<DateTime>(nameof(IndexingTask.CreatedUtc), col => col.NotNull())
-                .Column<int>(nameof(IndexingTask.Type))
-            );
+        await SchemaBuilder.CreateTableAsync(nameof(IndexingTask), table => table
+            .Column<int>("Id", col => col.PrimaryKey().Identity())
+            .Column<string>("ContentItemId", c => c.WithLength(26))
+            .Column<DateTime>("CreatedUtc", col => col.NotNull())
+            .Column<int>("Type")
+        );
 
-            SchemaBuilder.AlterTable(nameof(IndexingTask), table => table
-                .CreateIndex("IDX_IndexingTask_ContentItemId", "ContentItemId")
-            );
+        await SchemaBuilder.AlterTableAsync(nameof(IndexingTask), table => table
+            .CreateIndex("IDX_IndexingTask_ContentItemId", "ContentItemId")
+        );
 
-            return 1;
-        }
+        return 1;
     }
 }

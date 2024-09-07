@@ -1,134 +1,139 @@
-using System;
-using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
-using OrchardCore.Admin;
+using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Setup;
-using OrchardCore.Tenants.Controllers;
+using OrchardCore.Tenants.Deployment;
+using OrchardCore.Tenants.Recipes;
 using OrchardCore.Tenants.Services;
 
-namespace OrchardCore.Tenants
+namespace OrchardCore.Tenants;
+
+public sealed class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    private readonly IShellConfiguration _shellConfiguration;
+
+    public Startup(IShellConfiguration shellConfiguration)
     {
-        private readonly AdminOptions _adminOptions;
-
-        public Startup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTransient<INavigationProvider, AdminMenu>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddSetup();
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var adminControllerName = typeof(AdminController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "Tenants",
-                areaName: "OrchardCore.Tenants",
-                pattern: _adminOptions.AdminUrlPrefix + "/Tenants",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "TenantsCreate",
-                areaName: "OrchardCore.Tenants",
-                pattern: _adminOptions.AdminUrlPrefix + "/Tenants/Create",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Create) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "TenantsEdit",
-                areaName: "OrchardCore.Tenants",
-                pattern: _adminOptions.AdminUrlPrefix + "/Tenants/Edit/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "TenantsReload",
-                areaName: "OrchardCore.Tenants",
-                pattern: _adminOptions.AdminUrlPrefix + "/Tenants/Reload/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Reload) }
-            );
-        }
+        _shellConfiguration = shellConfiguration;
     }
 
-    [Feature("OrchardCore.Tenants.FileProvider")]
-    public class FileProviderStartup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        /// <summary>
-        /// The path in the tenant's App_Data folder containing the files
-        /// </summary>
-        private const string AssetsPath = "wwwroot";
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddPermissionProvider<Permissions>();
+        services.AddScoped<ITenantValidator, TenantValidator>();
+        services.AddScoped<IShapeTableProvider, TenantShapeTableProvider>();
+        services.AddSetup();
 
-        // Run after other middlewares
-        public override int Order => 10;
+        services.Configure<TenantsOptions>(_shellConfiguration.GetSection("OrchardCore_Tenants"));
+    }
+}
 
-        public override void ConfigureServices(IServiceCollection services)
+[Feature("OrchardCore.Tenants.FileProvider")]
+public sealed class FileProviderStartup : StartupBase
+{
+    /// <summary>
+    /// The path in the tenant's App_Data folder containing the files.
+    /// </summary>
+    private const string AssetsPath = "wwwroot";
+
+    // Run after other middlewares.
+    public override int Order => 10;
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSingleton<ITenantFileProvider>(serviceProvider =>
         {
-            services.AddSingleton<ITenantFileProvider>(serviceProvider =>
+            var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
+            var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+
+            var contentRoot = GetContentRoot(shellOptions.Value, shellSettings);
+
+            if (!Directory.Exists(contentRoot))
             {
-                var shellOptions = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
-                var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
+                Directory.CreateDirectory(contentRoot);
+            }
+            return new TenantFileProvider(contentRoot);
+        });
 
-                string contentRoot = GetContentRoot(shellOptions.Value, shellSettings);
-
-                if (!Directory.Exists(contentRoot))
-                {
-                    Directory.CreateDirectory(contentRoot);
-                }
-                return new TenantFileProvider(contentRoot);
-            });
-
-            services.AddSingleton<IStaticFileProvider>(serviceProvider =>
-            {
-                return serviceProvider.GetRequiredService<ITenantFileProvider>();
-            });
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        services.AddSingleton<IStaticFileProvider>(serviceProvider =>
         {
-            var tenantFileProvider = serviceProvider.GetRequiredService<ITenantFileProvider>();
-
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = tenantFileProvider,
-                DefaultContentType = "application/octet-stream",
-                ServeUnknownFileTypes = true,
-
-                // Cache the tenant static files for 7 days
-                OnPrepareResponse = ctx =>
-                {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = "public, max-age=2592000, s-max-age=31557600";
-                }
-            });
-        }
-
-        private string GetContentRoot(ShellOptions shellOptions, ShellSettings shellSettings)
-        {
-            return Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, AssetsPath);
-        }
+            return serviceProvider.GetRequiredService<ITenantFileProvider>();
+        });
     }
 
-    [Feature("OrchardCore.Tenants.Distributed")]
-    public class DistributedStartup : StartupBase
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        var tenantFileProvider = serviceProvider.GetRequiredService<ITenantFileProvider>();
+
+        app.UseStaticFiles(new StaticFileOptions
         {
-            services.AddSingleton<DistributedShellMarkerService>();
-        }
+            FileProvider = tenantFileProvider,
+            DefaultContentType = "application/octet-stream",
+            ServeUnknownFileTypes = true,
+
+            // Cache the tenant static files for 30 days.
+            OnPrepareResponse = ctx =>
+            {
+                ctx.Context.Response.Headers[HeaderNames.CacheControl] = $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}, s-max-age={TimeSpan.FromDays(365.25).TotalSeconds}";
+            }
+        });
+    }
+
+    private static string GetContentRoot(ShellOptions shellOptions, ShellSettings shellSettings) =>
+        Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, AssetsPath);
+}
+
+[Feature("OrchardCore.Tenants.Distributed")]
+public sealed class DistributedStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSingleton<DistributedShellMarkerService>();
+    }
+}
+
+[Feature("OrchardCore.Tenants.FeatureProfiles")]
+public sealed class FeatureProfilesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddNavigationProvider<FeatureProfilesAdminMenu>();
+        services.AddScoped<FeatureProfilesManager>();
+        services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
+        services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
+        services.AddScoped<IShapeTableProvider, TenantFeatureProfileShapeTableProvider>();
+
+        services.AddRecipeExecutionStep<FeatureProfilesStep>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Deployment", "OrchardCore.Tenants.FeatureProfiles")]
+public sealed class FeatureProfilesDeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDeployment<AllFeatureProfilesDeploymentSource, AllFeatureProfilesDeploymentStep, AllFeatureProfilesDeploymentStepDriver>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Features")]
+public sealed class TenantFeatureProfilesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IShapeTableProvider, TenantFeatureShapeTableProvider>();
     }
 }

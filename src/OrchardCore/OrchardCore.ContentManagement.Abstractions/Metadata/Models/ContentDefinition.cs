@@ -1,49 +1,49 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
-namespace OrchardCore.ContentManagement.Metadata.Models
+namespace OrchardCore.ContentManagement.Metadata.Models;
+
+public abstract class ContentDefinition
 {
-    public abstract class ContentDefinition
+    public string Name { get; protected set; }
+
+    private Dictionary<Type, object> _namedSettings = [];
+
+    /// <summary>
+    /// Do not access this property directly. Migrate to use GetSettings and PopulateSettings.
+    /// </summary>
+    public JsonObject Settings { get; protected set; }
+
+    public T GetSettings<T>() where T : new()
     {
-        public string Name { get; protected set; }
-
-        /// <summary>
-        /// Do not access this property directly. Migrate to use GetSettings and PopulateSettings.
-        /// </summary>
-        public JObject Settings { get; protected set; }
-
-        public T GetSettings<T>() where T : new()
+        if (Settings == null)
         {
-            var typeName = typeof(T).Name;
-
-            if (Settings == null)
-            {
-                return new T();
-            }
-
-            JToken value;
-            if (Settings.TryGetValue(typeName, out value))
-            {
-                return value.ToObject<T>();
-            }
-
             return new T();
         }
 
-        public void PopulateSettings<T>(T target)
+        var namedSettings = _namedSettings;
+
+        if (!namedSettings.TryGetValue(typeof(T), out var result))
         {
             var typeName = typeof(T).Name;
 
-            if (Settings == null)
+            JsonNode value;
+            if (Settings.TryGetPropertyValue(typeName, out value))
             {
-                return;
+                result = value.ToObject<T>();
+            }
+            else
+            {
+                result = new T();
             }
 
-            JToken value;
-            if (Settings.TryGetValue(typeName, out value))
+            namedSettings = new Dictionary<Type, object>(_namedSettings)
             {
-                JsonConvert.PopulateObject(value.ToString(), target);
-            }
+                [typeof(T)] = result,
+            };
+
+            _namedSettings = namedSettings;
         }
+
+        return (T)result;
     }
 }

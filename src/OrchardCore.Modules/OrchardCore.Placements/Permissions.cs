@@ -1,34 +1,30 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Placements
+namespace OrchardCore.Placements;
+
+public sealed class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission ManagePlacements = new Permission("ManagePlacements", "Manage placements");
+    public static readonly Permission ManagePlacements = new("ManagePlacements", "Manage placements");
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(new[] { ManagePlacements }.AsEnumerable());
-        }
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        ManagePlacements,
+    ];
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
         {
-            return new[]
-            {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = new[] { ManagePlacements }
-                },
-                new PermissionStereotype
-                {
-                    Name = "Editor",
-                    Permissions = new[] { ManagePlacements }
-                }
-            };
-        }
-    }
+            Name = OrchardCoreConstants.Roles.Administrator,
+            Permissions = _allPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Editor,
+            Permissions = _allPermissions,
+        },
+    ];
 }

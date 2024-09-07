@@ -1,45 +1,48 @@
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Dynamic;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
-namespace OrchardCore.ContentManagement
+namespace OrchardCore.ContentManagement;
+
+/// <summary>
+/// Common traits of <see cref="ContentItem"/>, <see cref="ContentPart"/>
+/// and <see cref="ContentField"/>.
+/// </summary>
+public class ContentElement : IContent
 {
-    /// <summary>
-    /// Common traits of <see cref="ContentItem"/>, <see cref="ContentPart"/>
-    /// and <see cref="ContentField"/>
-    /// </summary>
-    public class ContentElement : IContent
+    private Dictionary<string, ContentElement> _elements;
+    private JsonDynamicObject _dynamicObject;
+    private JsonObject _data;
+
+    protected ContentElement() : this([])
     {
-        private Dictionary<string, ContentElement> _elements;
+    }
 
-        protected ContentElement() : this(new JObject())
+    protected ContentElement(JsonObject data) => Data = data;
+
+    [JsonIgnore]
+    protected internal Dictionary<string, ContentElement> Elements => _elements ??= [];
+
+    [JsonIgnore]
+    public dynamic Content => _dynamicObject ??= Data;
+
+    [JsonIgnore]
+    internal JsonObject Data
+    {
+        get => _data;
+        set
         {
-        }
-
-        protected ContentElement(JObject data)
-        {
-            Data = data;
-        }
-
-        [JsonIgnore]
-        protected internal Dictionary<string, ContentElement> Elements => _elements = _elements ?? new Dictionary<string, ContentElement>();
-
-        [JsonIgnore]
-        public dynamic Content { get { return Data; } }
-
-        [JsonIgnore]
-        internal JObject Data { get; set; }
-
-        [JsonIgnore]
-        public ContentItem ContentItem { get; set; }
-
-        /// <summary>
-        /// Whether the content has a named property or not.
-        /// </summary>
-        /// <param name="name">The name of the property to look for.</param>
-        public bool Has(string name)
-        {
-            return Data.ContainsKey(name);
+            _dynamicObject = null;
+            _data = value;
         }
     }
+
+    [JsonIgnore]
+    public ContentItem ContentItem { get; set; }
+
+    /// <summary>
+    /// Whether the content has a named property or not.
+    /// </summary>
+    /// <param name="name">The name of the property to look for.</param>
+    public bool Has(string name) => Data.ContainsKey(name);
 }

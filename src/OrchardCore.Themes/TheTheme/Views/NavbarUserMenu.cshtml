@@ -1,0 +1,8 @@
+@using OrchardCore.DisplayManagement
+@using OrchardCore.DisplayManagement.ModelBinding
+@using OrchardCore.Users.Models
+
+@inject IDisplayManager<UserMenu> DisplayManager
+@inject IUpdateModelAccessor UpdateModelAccessor
+
+@await DisplayAsync(await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater, (string)Model.Metadata.DisplayType))

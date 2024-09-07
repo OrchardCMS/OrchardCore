@@ -1,19 +1,17 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using OrchardCore.BackgroundTasks;
 
-namespace OrchardCore.Demo.Services
+namespace OrchardCore.Demo.Services;
+
+public sealed class TestBackgroundTask : IBackgroundTask
 {
-    public class TestBackgroundTask : IBackgroundTask
+#pragma warning disable IDE0052 // Remove unread private members
+    private int _count;
+#pragma warning restore IDE0052 // Remove unread private members
+
+    public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        private int _count;
+        _count++;
 
-        public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
-        {
-            _count++;
-
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

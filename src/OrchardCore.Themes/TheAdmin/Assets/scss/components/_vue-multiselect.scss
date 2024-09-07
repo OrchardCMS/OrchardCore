@@ -1,0 +1,26 @@
+.vue-multiselect {
+    color: var(--bs-body-color) !important;
+    background-color: var(--bs-body-bg) !important;
+}
+
+.multiselect__tags, .multiselect__content-wrapper {
+    border: var(--bs-border-width) solid var(--bs-border-color) !important;
+}
+
+.multiselect__tags {
+    border-radius: var(--bs-border-radius) !important;
+}
+
+.multiselect__tags, .multiselect__content-wrapper, .multiselect__input {
+    background-color: var(--bs-body-bg) !important;
+}
+
+.multiselect--active {
+    z-index: var(--oc-zindex-dropdown, 1000) !important;
+    color: var(--bs-body-color) !important;
+    background-color: var(--bs-body-bg) !important;
+}
+
+.multiselect__spinner {
+    background-color: var(--bs-body-bg) !important;
+}

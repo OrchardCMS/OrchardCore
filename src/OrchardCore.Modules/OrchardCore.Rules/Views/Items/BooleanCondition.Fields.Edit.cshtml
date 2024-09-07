@@ -1,0 +1,18 @@
+@model BooleanConditionViewModel
+
+<h5>@T["Boolean"]</h5>
+
+<div class="mb-3">
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="@Html.NameFor(m => m.Value)" id="@Html.IdFor(m => m.Value)True" @(Model.Value == true ? "checked='checked'" : "") value="@true.ToString()">
+    <label class="form-check-label" for="@Html.IdFor(m => m.Value)True">
+      @T["True"]
+    </label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="@Html.NameFor(m => m.Value)" id="@Html.IdFor(m => m.Value)False" @(Model.Value == false? "checked='checked'" : "") value="@false.ToString()">
+    <label class="form-check-label" for="@Html.IdFor(m => m.Value)False">
+      @T["False"]
+    </label>
+  </div>
+</div>

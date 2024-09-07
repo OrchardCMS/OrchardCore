@@ -1,0 +1,15 @@
+@model dynamic
+
+<script asp-src="~/OrchardCore.Rules/Scripts/rules.min.js" debug-src="~/OrchardCore.Rules/Scripts/rules.js" depends-on="sortable, jQuery" at="Foot"></script>
+<style asp-src="~/OrchardCore.Rules/Styles/rules.min.css" debug-src="~/OrchardCore.Rules/Styles/rules.css"></style>
+
+<div class="w-100">
+    <div class="float-end">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalConditions" data-condition-group-id="@Model.ConditionId">
+            @T["Add"]
+        </button>            
+    </div>
+    
+    @await DisplayAsync(Model.Content)
+</div>

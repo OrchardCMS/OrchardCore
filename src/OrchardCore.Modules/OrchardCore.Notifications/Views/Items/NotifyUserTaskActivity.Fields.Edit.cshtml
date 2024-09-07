@@ -1,0 +1,67 @@
+@model NotifyUserTaskActivityViewModel
+
+<div class="mb-3" asp-validation-class-for="Subject">
+    <label asp-for="Subject" class="form-label">@T["Subject"]</label>
+    <input type="text" asp-for="Subject" class="form-control" />
+    <span asp-validation-for="Subject"></span>
+    <span class="hint">@T["You may use Liquid syntax."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="Summary">
+    <label asp-for="Summary" class="form-label">@T["Summary"]</label>
+    <textarea asp-for="Summary" rows="3" class="form-control"></textarea>
+    <span asp-validation-for="Summary"></span>
+    <span class="hint">@T["You may use Liquid syntax. Html is supported."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="TextBody">
+    <label asp-for="TextBody" class="form-label">@T["Text Body"]</label>
+    <textarea asp-for="TextBody" rows="5" class="form-control"></textarea>
+    <span asp-validation-for="TextBody"></span>
+    <span class="hint">@T["This optional text body does not support HTML. You may use Liquid syntax."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="HtmlBody">
+    <label asp-for="HtmlBody" class="form-label">@T["HTML Body"]</label>
+    <textarea asp-for="HtmlBody" rows="10" class="form-control"></textarea>
+    <span asp-validation-for="HtmlBody"></span>
+    <span class="hint">@T["HTML message will only be sent if the notification provider supports it. You may use Liquid syntax."]</span>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input asp-for="IsHtmlPreferred" type="checkbox" class="form-check-input" />
+        <label class="form-check-label" asp-for="IsHtmlPreferred">@T["Use HTML Body when possible"]</label>
+    </div>
+    <span class="hint">@T["When checked, the notification provider will use the HTML body if it supports HTML."]</span>
+</div>
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-edit-closetag" at="Foot"></script>
+<script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
+<script asp-name="codemirror-mode-css" at="Foot"></script>
+<script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script at="Foot" depends-on="codemirror">
+
+    const initializeEditor = (textArea) => {
+        textArea.CoreMirrorEditor = CodeMirror.fromTextArea(textArea, {
+            autoCloseTags: true,
+            autoRefresh: true,
+            lineNumbers: true,
+            lineWrapping: true,
+            matchBrackets: true,
+            styleActiveLine: true,
+            mode: { name: "htmlmixed" }
+        });
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeEditor(document.getElementById('@Html.IdFor(x => x.Summary)'));
+        initializeEditor(document.getElementById('@Html.IdFor(x => x.HtmlBody)'));
+    });
+
+</script>

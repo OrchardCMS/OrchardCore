@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,462 +6,557 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
-using OrchardCore.Settings;
+using OrchardCore.Security.Services;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 using YesSql;
+using YesSql.Filters.Query;
 using YesSql.Services;
 
-namespace OrchardCore.Users.Controllers
+namespace OrchardCore.Users.Controllers;
+
+[Admin("Users/{action}/{id?}", "Users{action}")]
+public sealed class AdminController : Controller
 {
-    public class AdminController : Controller
+    private readonly UserManager<IUser> _userManager;
+    private readonly IDisplayManager<UserIndexOptions> _userOptionsDisplayManager;
+    private readonly SignInManager<IUser> _signInManager;
+    private readonly ISession _session;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly PagerOptions _pagerOptions;
+    private readonly IDisplayManager<User> _userDisplayManager;
+    private readonly INotifier _notifier;
+    private readonly IUserService _userService;
+    private readonly IRoleService _roleService;
+    private readonly IUsersAdminListQueryService _usersAdminListQueryService;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IShapeFactory _shapeFactory;
+    private readonly ILogger _logger;
+
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+
+    public AdminController(
+        IDisplayManager<User> userDisplayManager,
+        IDisplayManager<UserIndexOptions> userOptionsDisplayManager,
+        SignInManager<IUser> signInManager,
+        IAuthorizationService authorizationService,
+        ISession session,
+        UserManager<IUser> userManager,
+        IUserService userService,
+        IRoleService roleService,
+        IUsersAdminListQueryService usersAdminListQueryService,
+        INotifier notifier,
+        IOptions<PagerOptions> pagerOptions,
+        IShapeFactory shapeFactory,
+        ILogger<AdminController> logger,
+        IHtmlLocalizer<AdminController> htmlLocalizer,
+        IStringLocalizer<AdminController> stringLocalizer,
+        IUpdateModelAccessor updateModelAccessor)
     {
-        private readonly UserManager<IUser> _userManager;
-        private readonly SignInManager<IUser> _signInManager;
-        private readonly ISession _session;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly ISiteService _siteService;
-        private readonly IDisplayManager<User> _userDisplayManager;
-        private readonly INotifier _notifier;
-        private readonly IUserService _userService;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
+        _userDisplayManager = userDisplayManager;
+        _userOptionsDisplayManager = userOptionsDisplayManager;
+        _signInManager = signInManager;
+        _authorizationService = authorizationService;
+        _session = session;
+        _userManager = userManager;
+        _notifier = notifier;
+        _pagerOptions = pagerOptions.Value;
+        _userService = userService;
+        _roleService = roleService;
+        _usersAdminListQueryService = usersAdminListQueryService;
+        _updateModelAccessor = updateModelAccessor;
+        _shapeFactory = shapeFactory;
+        _logger = logger;
+        H = htmlLocalizer;
+        S = stringLocalizer;
+    }
 
-        private readonly dynamic New;
-        private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
-
-        public AdminController(
-            IDisplayManager<User> userDisplayManager,
-            SignInManager<IUser> signInManager,
-            IAuthorizationService authorizationService,
-            ISession session,
-            UserManager<IUser> userManager,
-            IUserService userService,
-            INotifier notifier,
-            ISiteService siteService,
-            IShapeFactory shapeFactory,
-            IHtmlLocalizer<AdminController> htmlLocalizer,
-            IStringLocalizer<AdminController> stringLocalizer,
-            IUpdateModelAccessor updateModelAccessor)
+    public async Task<ActionResult> Index([ModelBinder(BinderType = typeof(UserFilterEngineModelBinder), Name = "q")] QueryFilterResult<User> queryFilterResult, PagerParameters pagerParameters)
+    {
+        // Check a dummy user account to see if the current user has permission to view users.
+        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ListUsers, new User()))
         {
-            _userDisplayManager = userDisplayManager;
-            _signInManager = signInManager;
-            _authorizationService = authorizationService;
-            _session = session;
-            _userManager = userManager;
-            _notifier = notifier;
-            _siteService = siteService;
-            _userService = userService;
-            _updateModelAccessor = updateModelAccessor;
-
-            New = shapeFactory;
-            H = htmlLocalizer;
-            S = stringLocalizer;
+            return Forbid();
         }
 
-        public async Task<ActionResult> Index(UserIndexOptions options, PagerParameters pagerParameters)
+        var options = new UserIndexOptions
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            {
-                return Forbid();
-            }
+            // Populate route values to maintain previous route data when generating page links
+            // await _userOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
+            FilterResult = queryFilterResult
+        };
+        options.FilterResult.MapTo(options);
 
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-            var pager = new Pager(pagerParameters, siteSettings.PageSize);
+        // With the options populated we filter the query, allowing the filters to alter the options.
+        var users = await _usersAdminListQueryService.QueryAsync(options, _updateModelAccessor.ModelUpdater);
 
-            var users = _session.Query<User, UserIndex>();
+        // The search text is provided back to the UI.
+        options.SearchText = options.FilterResult.ToString();
+        options.OriginalSearchText = options.SearchText;
 
-            switch (options.Filter)
-            {
-                case UsersFilter.Approved:
-                    //users = users.Where(u => u.RegistrationStatus == UserStatus.Approved);
-                    break;
-                case UsersFilter.Pending:
-                    //users = users.Where(u => u.RegistrationStatus == UserStatus.Pending);
-                    break;
-                case UsersFilter.EmailPending:
-                    //users = users.Where(u => u.EmailStatus == UserStatus.Pending);
-                    break;
-            }
+        // Populate route values to maintain previous route data when generating page links.
+        options.RouteValues.TryAdd("q", options.FilterResult.ToString());
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
-            {
-                var normalizedSearchUserName = _userManager.NormalizeName(options.Search);
-                var normalizedSearchEMail = _userManager.NormalizeEmail(options.Search);
+        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
 
-                users = users.Where(u => u.NormalizedUserName.Contains(normalizedSearchUserName) || u.NormalizedEmail.Contains(normalizedSearchEMail));
-            }
+        var count = await users.CountAsync();
 
-            switch (options.Order)
-            {
-                case UsersOrder.Name:
-                    users = users.OrderBy(u => u.NormalizedUserName);
-                    break;
-                case UsersOrder.Email:
-                    users = users.OrderBy(u => u.NormalizedEmail);
-                    break;
-                case UsersOrder.CreatedUtc:
-                    //users = users.OrderBy(u => u.CreatedUtc);
-                    break;
-                case UsersOrder.LastLoginUtc:
-                    //users = users.OrderBy(u => u.LastLoginUtc);
-                    break;
-            }
+        var results = await users
+            .Skip(pager.GetStartIndex())
+            .Take(pager.PageSize)
+            .ListAsync();
 
-            var count = await users.CountAsync();
+        var pagerShape = await _shapeFactory.PagerAsync(pager, count, options.RouteValues);
 
-            var results = await users
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize)
-                .ListAsync();
+        var userEntries = new List<UserEntry>();
 
-            // Maintain previous route data when generating page links
-            var routeData = new RouteData();
-            routeData.Values.Add("Options.Filter", options.Filter);
-            routeData.Values.Add("Options.Search", options.Search);
-            routeData.Values.Add("Options.Order", options.Order);
-
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
-
-            var userEntries = new List<UserEntry>();
-
-            foreach (var user in results)
-            {
-                userEntries.Add(new UserEntry
-                {
-                    UserId = user.UserId,
-                    Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin")
-                }
-                );
-            }
-
-            var model = new UsersIndexViewModel
-            {
-                Users = userEntries,
-                Options = options,
-                Pager = pagerShape
-            };
-
-            model.Options.UserFilters = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["All"], Value = nameof(UsersFilter.All) },
-                //new SelectListItem() { Text = S["Approved"], Value = nameof(UsersFilter.Approved) },
-                //new SelectListItem() { Text = S["Email pending"], Value = nameof(UsersFilter.EmailPending) },
-                //new SelectListItem() { Text = S["Pending"], Value = nameof(UsersFilter.Pending) }
-            };
-
-            model.Options.UserSorts = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Name"], Value = nameof(UsersOrder.Name) },
-                new SelectListItem() { Text = S["Email"], Value = nameof(UsersOrder.Email) },
-                //new SelectListItem() { Text = S["Created date"], Value = nameof(UsersOrder.CreatedUtc) },
-                //new SelectListItem() { Text = S["Last Login date"], Value = nameof(UsersOrder.LastLoginUtc) }
-            };
-
-            model.Options.UsersBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Approve"], Value = nameof(UsersBulkAction.Approve) },
-                new SelectListItem() { Text = S["Enable"], Value = nameof(UsersBulkAction.Enable) },
-                new SelectListItem() { Text = S["Disable"], Value = nameof(UsersBulkAction.Disable) },
-                new SelectListItem() { Text = S["Delete"], Value = nameof(UsersBulkAction.Delete) }
-            };
-
-            return View(model);
-        }
-
-        [HttpPost, ActionName("Index")]
-        [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(UsersIndexViewModel model)
+        foreach (var user in results)
         {
-            return RedirectToAction("Index", new RouteValueDictionary {
-                { "Options.Filter", model.Options.Filter },
-                { "Options.Order", model.Options.Order },
-                { "Options.Search", model.Options.Search }
+            userEntries.Add(new UserEntry
+            {
+                UserId = user.UserId,
+                Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin")
             });
         }
 
-        [HttpPost, ActionName("Index")]
-        [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexPOST(UserIndexOptions options, IEnumerable<string> itemIds)
+        options.UserFilters =
+        [
+            new SelectListItem() { Text = S["All Users"], Value = nameof(UsersFilter.All), Selected = (options.Filter == UsersFilter.All) },
+            new SelectListItem() { Text = S["Enabled Users"], Value = nameof(UsersFilter.Enabled), Selected = (options.Filter == UsersFilter.Enabled) },
+            new SelectListItem() { Text = S["Disabled Users"], Value = nameof(UsersFilter.Disabled), Selected = (options.Filter == UsersFilter.Disabled) }
+            // new SelectListItem() { Text = S["Approved"], Value = nameof(UsersFilter.Approved) },
+            // new SelectListItem() { Text = S["Email pending"], Value = nameof(UsersFilter.EmailPending) },
+            // new SelectListItem() { Text = S["Pending"], Value = nameof(UsersFilter.Pending) }
+        ];
+
+        options.UserSorts =
+        [
+            new SelectListItem() { Text = S["Name"], Value = nameof(UsersOrder.Name), Selected = (options.Order == UsersOrder.Name) },
+            new SelectListItem() { Text = S["Email"], Value = nameof(UsersOrder.Email), Selected = (options.Order == UsersOrder.Email) },
+            // new SelectListItem() { Text = S["Created date"], Value = nameof(UsersOrder.CreatedUtc) },
+            // new SelectListItem() { Text = S["Last Login date"], Value = nameof(UsersOrder.LastLoginUtc) }
+        ];
+
+        options.UsersBulkAction =
+        [
+            new SelectListItem() { Text = S["Approve"], Value = nameof(UsersBulkAction.Approve) },
+            new SelectListItem() { Text = S["Enable"], Value = nameof(UsersBulkAction.Enable) },
+            new SelectListItem() { Text = S["Disable"], Value = nameof(UsersBulkAction.Disable) },
+            new SelectListItem() { Text = S["Delete"], Value = nameof(UsersBulkAction.Delete) }
+        ];
+
+        var roleNames = new List<string>();
+
+        foreach (var roleName in await _roleService.GetRoleNamesAsync())
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            var permission = CommonPermissions.CreateListUsersInRolePermission(roleName);
+
+            if (!await _authorizationService.AuthorizeAsync(User, permission))
             {
-                return Forbid();
+                continue;
             }
 
-            if (itemIds?.Count() > 0)
+            roleNames.Add(roleName);
+        }
+
+        options.UserRoleFilters =
+        [
+            new SelectListItem() { Text = S["Any role"], Value = string.Empty, Selected = options.SelectedRole == string.Empty },
+            new SelectListItem() { Text = S["Authenticated (no roles)"], Value = OrchardCoreConstants.Roles.Authenticated, Selected = string.Equals(options.SelectedRole, OrchardCoreConstants.Roles.Authenticated, StringComparison.OrdinalIgnoreCase) },
+            // TODO Candidate for dynamic localization.
+            .. roleNames.Select(roleName =>
+                new SelectListItem
+                {
+                    Text = roleName,
+                    Value = roleName.Contains(' ') ? $"\"{roleName}\"" : roleName,
+                    Selected = string.Equals(options.SelectedRole?.Trim('"'), roleName, StringComparison.OrdinalIgnoreCase)
+                }),
+        ];
+
+        // Populate options pager summary values.
+        var startIndex = (pager.Page - 1) * pager.PageSize + 1;
+        options.StartIndex = startIndex;
+        options.EndIndex = startIndex + userEntries.Count - 1;
+        options.UsersCount = userEntries.Count;
+        options.TotalItemCount = count;
+
+        var header = await _userOptionsDisplayManager.BuildEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+
+        var shapeViewModel = await _shapeFactory.CreateAsync<UsersIndexViewModel>("UsersAdminList", viewModel =>
+        {
+            viewModel.Users = userEntries;
+            viewModel.Pager = pagerShape;
+            viewModel.Options = options;
+            viewModel.Header = header;
+        });
+
+        return View(shapeViewModel);
+    }
+
+    [HttpPost, ActionName(nameof(Index))]
+    [FormValueRequired("submit.Filter")]
+    public async Task<ActionResult> IndexFilterPOST(UserIndexOptions options)
+    {
+        // When the user has typed something into the search input no further evaluation of the form post is required.
+        if (!string.Equals(options.SearchText, options.OriginalSearchText, StringComparison.OrdinalIgnoreCase))
+        {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary { { "q", options.SearchText } });
+        }
+
+        // Evaluate the values provided in the form post and map them to the filter result and route values.
+        await _userOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+
+        // The route value must always be added after the editors have updated the models.
+        options.RouteValues.TryAdd("q", options.FilterResult.ToString());
+
+        return RedirectToAction(nameof(Index), options.RouteValues);
+    }
+
+    [HttpPost, ActionName(nameof(Index))]
+    [FormValueRequired("submit.BulkAction")]
+    public async Task<ActionResult> IndexPOST(UserIndexOptions options, IEnumerable<string> itemIds)
+    {
+        // Check a dummy user account to see if the current user has permission to manage it.
+        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ListUsers, new User()))
+        {
+            return Forbid();
+        }
+
+        if (itemIds != null && itemIds.Any())
+        {
+            var checkedUsers = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(itemIds)).ListAsync();
+
+            // Bulk actions require the ManageUsers permission on all the checked users.
+            // To prevent html injection we authorize each user before performing any operations.
+            foreach (var user in checkedUsers)
             {
-                var checkedContentItems = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(itemIds)).ListAsync();
+                var canEditUser = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user);
+                var isSameUser = user.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier);
+
                 switch (options.BulkAction)
                 {
-                    case UsersBulkAction.None:
-                        break;
+                    case UsersBulkAction.None: break;
                     case UsersBulkAction.Approve:
-                        foreach (var item in checkedContentItems)
+                        if (canEditUser && !await _userManager.IsEmailConfirmedAsync(user))
                         {
-                            var token = await _userManager.GenerateEmailConfirmationTokenAsync(item);
-                            await _userManager.ConfirmEmailAsync(item, token);
-                            _notifier.Success(H["User {0} successfully approved.", item.UserName]);
+                            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                            await _userManager.ConfirmEmailAsync(user, token);
+                            await _notifier.SuccessAsync(H["User {0} successfully approved.", user.UserName]);
                         }
                         break;
                     case UsersBulkAction.Delete:
-                        foreach (var item in checkedContentItems)
+                        if (!isSameUser && await _authorizationService.AuthorizeAsync(User, CommonPermissions.DeleteUsers, user))
                         {
-                            await _userManager.DeleteAsync(item);
-                            _notifier.Success(H["User {0} successfully deleted.", item.UserName]);
+                            await _userManager.DeleteAsync(user);
+                            await _notifier.SuccessAsync(H["User {0} successfully deleted.", user.UserName]);
                         }
                         break;
                     case UsersBulkAction.Disable:
-                        foreach (var item in checkedContentItems)
+                        if (!isSameUser && canEditUser)
                         {
-                            item.IsEnabled = false;
-                            await _userManager.UpdateAsync(item);
-                            _notifier.Success(H["User {0} successfully disabled.", item.UserName]);
+                            user.IsEnabled = false;
+                            await _userManager.UpdateAsync(user);
+                            await _notifier.SuccessAsync(H["User {0} successfully disabled.", user.UserName]);
                         }
                         break;
                     case UsersBulkAction.Enable:
-                        foreach (var item in checkedContentItems)
+                        if (!isSameUser && canEditUser)
                         {
-                            item.IsEnabled = true;
-                            await _userManager.UpdateAsync(item);
-                            _notifier.Success(H["User {0} successfully enabled.", item.UserName]);
+                            user.IsEnabled = true;
+                            await _userManager.UpdateAsync(user);
+                            await _notifier.SuccessAsync(H["User {0} successfully enabled.", user.UserName]);
                         }
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(options.BulkAction.ToString(), "Invalid bulk options.");
                 }
             }
-
-            return RedirectToAction("Index");
         }
-        public async Task<IActionResult> Create()
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> Create()
+    {
+        var user = new User();
+
+        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            {
-                return Forbid();
-            }
+            return Forbid();
+        }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(new User(), updater: _updateModelAccessor.ModelUpdater, isNew: true);
+        var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty);
 
+        return View(shape);
+    }
+
+    [HttpPost]
+    [ActionName(nameof(Create))]
+    public async Task<IActionResult> CreatePost([Bind(Prefix = "User.Password")] string password)
+    {
+        var user = new User();
+
+        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        {
+            return Forbid();
+        }
+
+        var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty);
+
+        if (!ModelState.IsValid)
+        {
             return View(shape);
         }
 
-        [HttpPost]
-        [ActionName(nameof(Create))]
-        public async Task<IActionResult> CreatePost()
+        await _userService.CreateUserAsync(user, password, ModelState.AddModelError);
+
+        if (!ModelState.IsValid)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            {
-                return Forbid();
-            }
-
-            var user = new User();
-
-            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true);
-
-            if (!ModelState.IsValid)
-            {
-                return View(shape);
-            }
-
-            await _userService.CreateUserAsync(user, null, ModelState.AddModelError);
-
-            if (!ModelState.IsValid)
-            {
-                return View(shape);
-            }
-
-            _notifier.Success(H["User created successfully."]);
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        public async Task<IActionResult> Edit(string id, string returnUrl)
-        {
-            // When no id is provided we assume the user is trying to edit their own profile.
-            if (String.IsNullOrEmpty(id))
-            {
-                id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnUserInformation))
-                {
-                    return Forbid();
-                }
-            }
-            else
-            {
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-                {
-                    return Forbid();
-                }
-            }
-
-            var user = await _userManager.FindByIdAsync(id) as User;
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
-
-            ViewData["ReturnUrl"] = returnUrl;
-
             return View(shape);
         }
 
-        [HttpPost]
-        [ActionName(nameof(Edit))]
-        public async Task<IActionResult> EditPost(string id, string returnUrl)
+        await _notifier.SuccessAsync(H["User created successfully."]);
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> Edit(string id, string returnUrl)
+    {
+        // When no id is provided we assume the user is trying to edit their own profile.
+        var editingOwnUser = false;
+        if (string.IsNullOrEmpty(id))
         {
-            // When no id is provided we assume the user is trying to edit their own profile.
-            var editingOwnUser = false;
-            if (String.IsNullOrEmpty(id))
-            {
-                editingOwnUser = true;
-                id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnUserInformation))
-                {
-                    return Forbid();
-                }
-            }
-            else if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditOwnUser))
             {
                 return Forbid();
             }
+            editingOwnUser = true;
+        }
 
-            var user = await _userManager.FindByIdAsync(id) as User;
-            if (user == null)
+        if (await _userManager.FindByIdAsync(id) is not User user)
+        {
+            return NotFound();
+        }
+
+        if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        {
+            return Forbid();
+        }
+
+        var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false, string.Empty, string.Empty);
+
+        ViewData["ReturnUrl"] = returnUrl;
+
+        return View(shape);
+    }
+
+    [HttpPost]
+    [ActionName(nameof(Edit))]
+    public async Task<IActionResult> EditPost(string id, string returnUrl)
+    {
+        // When no id is provided we assume the user is trying to edit their own profile.
+        var editingOwnUser = false;
+        if (string.IsNullOrEmpty(id))
+        {
+            editingOwnUser = true;
+            id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditOwnUser))
             {
-                return NotFound();
+                return Forbid();
             }
+        }
 
-            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+        if (await _userManager.FindByIdAsync(id) is not User user)
+        {
+            return NotFound();
+        }
 
-            if (!ModelState.IsValid)
-            {
-                return View(shape);
-            }
+        if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        {
+            return Forbid();
+        }
 
-            var result = await _userManager.UpdateAsync(user);
+        var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false, string.Empty, string.Empty);
+
+        if (!ModelState.IsValid)
+        {
+            return View(shape);
+        }
+
+        var result = await _userManager.UpdateAsync(user);
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(shape);
+        }
+
+        if (User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId)
+        {
+            await _signInManager.RefreshSignInAsync(user);
+        }
+
+        await _notifier.SuccessAsync(H["User updated successfully."]);
+
+        if (!string.IsNullOrEmpty(returnUrl))
+        {
+            return this.LocalRedirect(returnUrl, true);
+        }
+
+        if (editingOwnUser)
+        {
+            return RedirectToAction(nameof(Edit));
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> Display(string id)
+    {
+        if (await _userManager.FindByIdAsync(id) is not User user)
+        {
+            return NotFound();
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewUsers, user))
+        {
+            return Forbid();
+        }
+
+        var model = await _userDisplayManager.BuildDisplayAsync(user, _updateModelAccessor.ModelUpdater, "DetailAdmin");
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete(string id)
+    {
+        if (await _userManager.FindByIdAsync(id) is not User user)
+        {
+            return NotFound();
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.DeleteUsers, user))
+        {
+            return Forbid();
+        }
+
+        var result = await _userManager.DeleteAsync(user);
+
+        if (result.Succeeded)
+        {
+            await _notifier.SuccessAsync(H["User deleted successfully."]);
+        }
+        else
+        {
+            await _session.CancelAsync();
+
+            await _notifier.ErrorAsync(H["Could not delete the user."]);
 
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError(string.Empty, error.Description);
+                await _notifier.ErrorAsync(H[error.Description]);
             }
+        }
 
-            if (!ModelState.IsValid)
+        return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> EditPassword(string id)
+    {
+        if (await _userManager.FindByIdAsync(id) is not User user)
+        {
+            return NotFound();
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        {
+            return Forbid();
+        }
+
+        var model = new ResetPasswordViewModel { UsernameOrEmail = user.UserName };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> EditPassword(ResetPasswordViewModel model)
+    {
+        if (await _userService.GetUserAsync(model.UsernameOrEmail) is not User user)
+        {
+            return NotFound();
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        {
+            return Forbid();
+        }
+
+        if (ModelState.IsValid)
+        {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            if (await _userService.ResetPasswordAsync(model.UsernameOrEmail, token, model.NewPassword, ModelState.AddModelError))
             {
-                return View(shape);
-            }
+                await _notifier.SuccessAsync(H["Password updated correctly."]);
 
-            if (String.Equals(User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase))
-            {
-                await _signInManager.RefreshSignInAsync(user);
-            }
-
-            _notifier.Success(H["User updated successfully."]);
-
-            if (editingOwnUser)
-            {
-                if (!String.IsNullOrEmpty(returnUrl))
-                {
-                    return LocalRedirect(returnUrl);
-                }
-
-                return RedirectToAction(nameof(Edit));
-            }
-            else
-            {
                 return RedirectToAction(nameof(Index));
             }
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(string id)
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Unlock(string id)
+    {
+        if (await _userManager.FindByIdAsync(id) is not User user)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            {
-                return Forbid();
-            }
-
-            var user = await _userManager.FindByIdAsync(id) as User;
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var result = await _userManager.DeleteAsync(user);
-
-            if (result.Succeeded)
-            {
-                _notifier.Success(H["User deleted successfully."]);
-            }
-            else
-            {
-                _session.Cancel();
-
-                _notifier.Error(H["Could not delete the user."]);
-
-                foreach (var error in result.Errors)
-                {
-                    _notifier.Error(H[error.Description]);
-                }
-            }
-
-            return RedirectToAction(nameof(Index));
+            return NotFound();
         }
 
-        public async Task<IActionResult> EditPassword(string id)
+        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            {
-                return Forbid();
-            }
-
-            var user = await _userManager.FindByIdAsync(id) as User;
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var model = new ResetPasswordViewModel { Email = user.Email };
-
-            return View(model);
+            return Forbid();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> EditPassword(ResetPasswordViewModel model)
+        await _userManager.ResetAccessFailedCountAsync(user);
+        var result = await _userManager.SetLockoutEndDateAsync(user, null);
+
+        if (result.Succeeded)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            {
-                return Forbid();
-            }
-
-            var user = await _userManager.FindByEmailAsync(model.Email) as User;
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-                if (await _userService.ResetPasswordAsync(model.Email, token, model.NewPassword, ModelState.AddModelError))
-                {
-                    _notifier.Success(H["Password updated correctly."]);
-
-                    return RedirectToAction(nameof(Index));
-                }
-            }
-
-            return View(model);
+            await _notifier.SuccessAsync(H["User unlocked successfully."]);
         }
+        else
+        {
+            await _session.CancelAsync();
+
+            await _notifier.ErrorAsync(H["Could not unlock the user."]);
+
+            foreach (var error in result.Errors)
+            {
+#pragma warning disable CA2254 // Template should be a static expression
+                _logger.LogWarning(error.Description);
+#pragma warning restore CA2254 // Template should be a static expression
+            }
+        }
+
+        return RedirectToAction(nameof(Index));
     }
 }

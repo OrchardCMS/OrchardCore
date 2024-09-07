@@ -1,0 +1,14 @@
+[ 
+  {
+    "inputs": [
+      "Assets/scss/parametersEditor/parametersEditor.scss"
+    ],
+    "output": "wwwroot/Styles/parametersEditor.css"
+  },
+  {
+    "inputs": [
+      "Assets/js/parametersEditor/*.js"
+    ],
+    "output": "wwwroot/Scripts/parametersEditor.js"
+  }
+]

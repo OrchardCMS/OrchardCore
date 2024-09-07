@@ -1,48 +1,61 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Users
-{
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission ManageUsers = CommonPermissions.ManageUsers;
-        public static readonly Permission ManageOwnUserInformation = new Permission("ManageOwnUserInformation", "Manage own user information", new Permission[] { ManageUsers });
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(new[]
-            {
-                ManageUsers,
-                ManageOwnUserInformation
-            }
-            .AsEnumerable());
-        }
+namespace OrchardCore.Users;
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+public sealed class Permissions : IPermissionProvider
+{
+    public static readonly Permission ManageUsers = CommonPermissions.ManageUsers;
+    public static readonly Permission ViewUsers = CommonPermissions.ViewUsers;
+    public static readonly Permission ManageOwnUserInformation = CommonPermissions.EditOwnUser;
+    public static readonly Permission EditOwnUser = CommonPermissions.EditOwnUser;
+    public static readonly Permission ListUsers = CommonPermissions.ListUsers;
+    public static readonly Permission EditUsers = CommonPermissions.EditUsers;
+    public static readonly Permission DeleteUsers = CommonPermissions.DeleteUsers;
+
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        ManageUsers,
+        ViewUsers,
+        EditOwnUser,
+        ListUsers,
+        EditUsers,
+        DeleteUsers,
+    ];
+
+    private readonly IEnumerable<Permission> _generalPermissions =
+    [
+        EditOwnUser,
+    ];
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+         new PermissionStereotype
+         {
+             Name = OrchardCoreConstants.Roles.Administrator,
+             Permissions = _allPermissions,
+         },
+        new PermissionStereotype
         {
-            return new[] {
-                new PermissionStereotype {
-                    Name = "Administrator",
-                    Permissions = new[] { ManageUsers }
-                },
-                new PermissionStereotype {
-                    Name = "Editor",
-                    Permissions = new[] { ManageOwnUserInformation }
-                },
-                new PermissionStereotype {
-                    Name = "Moderator",
-                    Permissions = new[] { ManageOwnUserInformation }
-                },
-                new PermissionStereotype {
-                    Name = "Contributor",
-                    Permissions = new[] { ManageOwnUserInformation }
-                },
-                new PermissionStereotype {
-                    Name = "Author",
-                    Permissions = new[] { ManageOwnUserInformation }
-                }
-            };
+            Name = OrchardCoreConstants.Roles.Editor,
+            Permissions = _generalPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Moderator,
+            Permissions = _generalPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Contributor,
+            Permissions = _generalPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Author,
+            Permissions = _generalPermissions,
         }
-    }
+    ];
 }

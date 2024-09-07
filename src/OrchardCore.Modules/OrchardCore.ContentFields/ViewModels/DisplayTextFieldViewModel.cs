@@ -1,14 +1,13 @@
-﻿using OrchardCore.ContentFields.Fields;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 
-namespace OrchardCore.ContentFields.ViewModels
+namespace OrchardCore.ContentFields.ViewModels;
+
+public class DisplayTextFieldViewModel
 {
-    public class DisplayTextFieldViewModel
-    {
-        public string Text => Field.Text;
-        public TextField Field { get; set; }
-        public ContentPart Part { get; set; }
-        public ContentPartFieldDefinition PartFieldDefinition { get; set; }
-    }
+    public string Text => Field.Text;
+    public TextField Field { get; set; }
+    public ContentPart Part { get; set; }
+    public ContentPartFieldDefinition PartFieldDefinition { get; set; }
 }

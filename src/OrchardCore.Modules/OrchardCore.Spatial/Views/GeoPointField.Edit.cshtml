@@ -1,0 +1,33 @@
+@using System.Text.Json.Nodes
+@using OrchardCore
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.Spatial.Settings
+@using OrchardCore.Spatial.ViewModels
+@model EditGeoPointFieldViewModel
+@{
+    var settings = Model.PartFieldDefinition.Settings.ToObject<GeoPointFieldSettings>();
+}
+
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x)_FieldWrapper">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="row">
+            <div class="col-md-6">
+                <label asp-for="Latitude" class="form-label">@T["Latitude"]</label>
+                <input asp-for="Latitude" type="number" min="-90.000000" max="90.000000" step=".000001" placeholder="00.000000" class="form-control content-preview-text" required="@settings.Required" />
+                @if (!string.IsNullOrEmpty(settings.Hint))
+                {
+                    <span class="hint">@settings.Hint</span>
+                }
+            </div>
+            <div class="col-md-6">
+                <label asp-for="Longitude" class="form-label">@T["Longitude"]</label>
+                <input asp-for="Longitude" type="number" min="-180.000000" max="180.000000" step=".000001" placeholder="00.000000" class="form-control content-preview-text" required="@settings.Required" />
+                @if (!string.IsNullOrEmpty(settings.Hint))
+                {
+                    <span class="hint">@settings.Hint</span>
+                }
+            </div>
+        </div>
+    </div>
+</div>

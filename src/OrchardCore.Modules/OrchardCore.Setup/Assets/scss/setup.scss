@@ -23,8 +23,11 @@
     outline: none;
 }
 
+.form-text {
+    display: block;
+}
+
 input[type=password]::-ms-reveal,
-input[type=password]::-ms-clear
-{
+input[type=password]::-ms-clear {
     display: none;
 }

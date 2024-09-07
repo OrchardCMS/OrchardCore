@@ -1,18 +1,17 @@
-﻿using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Flows.Models
+namespace OrchardCore.Flows.Models;
+
+public enum FlowAlignment
 {
-    public enum FlowAlignment
-    {
-        Left,
-        Center,
-        Right,
-        Justify
-    }
+    Left,
+    Center,
+    Right,
+    Justify
+}
 
-    public class FlowMetadata : ContentPart
-    {
-        public FlowAlignment Alignment { get; set; } = FlowAlignment.Justify;
-        public int Size { get; set; } = 100;
-    }
+public class FlowMetadata : ContentPart
+{
+    public FlowAlignment Alignment { get; set; } = FlowAlignment.Justify;
+    public int Size { get; set; } = 100;
 }

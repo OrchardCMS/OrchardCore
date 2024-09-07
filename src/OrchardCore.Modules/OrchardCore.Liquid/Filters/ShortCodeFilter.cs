@@ -1,27 +1,35 @@
-using System;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Shortcodes.Services;
+using Shortcodes;
 
-namespace OrchardCore.Liquid.Filters
+namespace OrchardCore.Liquid.Filters;
+
+public class ShortcodeFilter : ILiquidFilter
 {
-    public class ShortcodeFilter : ILiquidFilter
+    private readonly IShortcodeService _shortcodeService;
+
+    public ShortcodeFilter(IShortcodeService shortcodeService)
     {
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        _shortcodeService = shortcodeService;
+    }
+
+    public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext context)
+    {
+        var shortcodeContext = new Context();
+
+        // Retrieve the 'ContentItem' from the ambient liquid scope.
+        var model = context.GetValue("Model").ToObjectValue();
+        if (model is Shape shape && shape.Properties.TryGetValue("ContentItem", out var contentItem))
         {
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'shortcode'");
-            }
-
-            var shortcodeService = ((IServiceProvider)services).GetRequiredService<IShortcodeService>();
-
-            // TODO This provides no context to the shortcode service.
-            // It could take a content item as an argument to provide some context.
-
-            return new StringValue(await shortcodeService.ProcessAsync(input.ToStringValue()));
+            shortcodeContext["ContentItem"] = contentItem;
         }
+        else
+        {
+            shortcodeContext["ContentItem"] = null;
+        }
+
+        return new StringValue(await _shortcodeService.ProcessAsync(input.ToStringValue(), shortcodeContext));
     }
 }

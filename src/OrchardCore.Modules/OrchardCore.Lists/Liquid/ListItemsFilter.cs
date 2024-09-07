@@ -1,40 +1,36 @@
-using System;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
 using OrchardCore.Lists.Helpers;
 using YesSql;
 
-namespace OrchardCore.Lists.Liquid
+namespace OrchardCore.Lists.Liquid;
+
+public class ListItemsFilter : ILiquidFilter
 {
-    public class ListItemsFilter : ILiquidFilter
+    private readonly ISession _session;
+
+    public ListItemsFilter(ISession session)
     {
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        _session = session;
+    }
+
+    public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+    {
+        string listContentItemId;
+
+        if (input.Type == FluidValues.Object && input.ToObjectValue() is ContentItem contentItem)
         {
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'list_items'");
-            }
-
-            string listContentItemId = null;
-
-            if (input.Type == FluidValues.Object && input.ToObjectValue() is ContentItem contentItem)
-            {
-                listContentItemId = contentItem.ContentItemId;
-            }
-            else
-            {
-                listContentItemId = input.ToStringValue();
-            }
-
-            var session = ((IServiceProvider)services).GetRequiredService<ISession>();
-
-            var listItems = await ListQueryHelpers.QueryListItemsAsync(session, listContentItemId);
-
-            return FluidValue.Create(listItems);
+            listContentItemId = contentItem.ContentItemId;
         }
+        else
+        {
+            listContentItemId = input.ToStringValue();
+        }
+
+        var listItems = await ListQueryHelpers.QueryListItemsAsync(_session, listContentItemId);
+
+        return FluidValue.Create(listItems, ctx.Options);
     }
 }

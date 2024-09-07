@@ -1,9 +1,9 @@
-namespace OrchardCore.ResourceManagement
+namespace OrchardCore.ResourceManagement;
+
+public enum ResourceLocation
 {
-    public enum ResourceLocation
-    {
-        Unspecified,
-        Foot,
-        Head,
-    }
+    Unspecified,
+    Foot,
+    Head,
+    Inline
 }

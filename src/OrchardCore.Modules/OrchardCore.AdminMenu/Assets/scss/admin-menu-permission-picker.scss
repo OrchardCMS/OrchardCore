@@ -1,5 +1,5 @@
 .vue-multiselect .multiselect--active {
-    z-index: 1000; // bootstrap's default for dropdowns
+    z-index: var(--bs-dropdown-zindex, 1000);
 }
 
 [v-cloak] {

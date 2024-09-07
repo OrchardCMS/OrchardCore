@@ -34,7 +34,7 @@ interface jsPlumbInstance {
     getInstance(): jsPlumbInstance;
     getInstance(defaults: Defaults): jsPlumbInstance;
     getInstanceIndex(): number;
-    registerConnectionType(name: string, type: ConnectionType): jsPlumbInstance;
+    registerConnectionType(name: string, type: JSPConnectionType): jsPlumbInstance;
     batch(func: Function): jsPlumbInstance;
     getSelector(sel: string): any;
     getEndpoint(uuid: string): Endpoint;
@@ -57,7 +57,7 @@ interface Defaults {
     DragOptions?: DragOptions;
 }
 
-interface ConnectionType {
+interface JSPConnectionType {
     connector: string,
     paintStyle: PaintStyle,
     hoverPaintStyle: PaintStyle,

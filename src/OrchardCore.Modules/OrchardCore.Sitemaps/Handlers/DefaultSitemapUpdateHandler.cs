@@ -1,18 +1,34 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using OrchardCore.Locking.Distributed;
 
-namespace OrchardCore.Sitemaps.Handlers
+namespace OrchardCore.Sitemaps.Handlers;
+
+public class DefaultSitemapUpdateHandler : ISitemapUpdateHandler
 {
-    public class DefaultSitemapUpdateHandler : ISitemapUpdateHandler
-    {
-        private readonly IEnumerable<ISitemapTypeUpdateHandler> _sitemapTypeUpdateHandlers;
+    private readonly IEnumerable<ISitemapTypeUpdateHandler> _sitemapTypeUpdateHandlers;
+    private readonly IDistributedLock _distributedLock;
 
-        public DefaultSitemapUpdateHandler(IEnumerable<ISitemapTypeUpdateHandler> sitemapTypeUpdateHandlers)
+    public DefaultSitemapUpdateHandler(
+        IEnumerable<ISitemapTypeUpdateHandler> sitemapTypeUpdateHandlers,
+        IDistributedLock distributedLock)
+    {
+        _sitemapTypeUpdateHandlers = sitemapTypeUpdateHandlers;
+        _distributedLock = distributedLock;
+    }
+
+    public async Task UpdateSitemapAsync(SitemapUpdateContext context)
+    {
+        // Doing the update in a synchronized way makes sure that two simultaneous content item updates don't cause
+        // a ConcurrencyException due to the same sitemap document being updated.
+
+        var timeout = TimeSpan.FromMilliseconds(20_000);
+        (var locker, var locked) = await _distributedLock.TryAcquireLockAsync("SITEMAPS_UPDATE_LOCK", timeout, timeout);
+
+        if (!locked)
         {
-            _sitemapTypeUpdateHandlers = sitemapTypeUpdateHandlers;
+            throw new TimeoutException($"Couldn't acquire a lock to update the sitemap within {timeout.Seconds} seconds.");
         }
 
-        public async Task UpdateSitemapAsync(SitemapUpdateContext context)
+        using (locker)
         {
             foreach (var sitemapTypeUpdateHandler in _sitemapTypeUpdateHandlers)
             {

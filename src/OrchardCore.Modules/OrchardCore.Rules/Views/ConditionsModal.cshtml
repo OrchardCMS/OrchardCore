@@ -1,0 +1,81 @@
+@model dynamic
+@{
+    var thumbnails = (Dictionary<string, dynamic>)Model.Thumbnails;
+}
+
+<div class="modal fade" id="modalConditions" tabindex="-1" role="dialog" aria-labelledby="available-rules-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="available-rules-title">@T["Available Rules"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
+                </div>
+                <div id="cards" class="row">
+                    <div class="row row-cols-1 row-cols-md-2 g-2">
+                        @foreach (var thumbnail in thumbnails.OrderBy(t => t.Key))
+                        {
+                            <div class="col item">
+                                @await DisplayAsync(thumbnail.Value)
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script At="Foot" depends-on="jQuery">
+    $(function () {
+        $('#modalConditions').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var conditionGroupId = button.data('condition-group-id');
+
+            $('.condition-thumbnail').one('click', function () {
+                var url = $(this).data("target-url") + "&conditionGroupId=" + conditionGroupId;
+                $(location).attr('href',url);
+            });
+        });
+    });
+    $(function() {
+      $('#modalConditions').on('shown.bs.modal', function() {
+        $('#search-box').trigger('focus');
+      });
+    });
+
+    function replaceDiacritics(str) {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    $(function () {
+        var searchBox = $('#search-box');
+
+        // On each keypress filter the list of cards
+        searchBox.keyup(function (e) {
+            var search = replaceDiacritics($(this).val().toLowerCase());
+            if (search == '') {
+                searchBox.val('');
+                $('.item').show();
+            }
+            else {
+                $('.item').each(function () {
+                    var filter = replaceDiacritics($(this).children().children().first().html().toLowerCase());
+                    var found = filter.indexOf(search) > -1;
+                    if (found) {
+                        $(this).show();
+                    }
+                    else {
+                        $(this).hide();
+                    }
+                });
+            }
+        });
+    })
+</script>

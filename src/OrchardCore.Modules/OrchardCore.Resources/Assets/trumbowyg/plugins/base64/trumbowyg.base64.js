@@ -26,6 +26,18 @@
                 errFileReaderNotSupported: 'FileReader is not supported by your browser.',
                 errInvalidImage: 'Invalid image file.'
             },
+            az: {
+                base64: 'base64 olaraq şəkil',
+                file: 'Fayl',
+                errFileReaderNotSupported: 'FileReader brauzeriniz tərəfindən dəstəklənmir.',
+                errInvalidImage: 'Yanlış şəkil faylı.'
+            },
+            by: {
+                base64: 'Выява (фармат base64)',
+                file: 'Файл',
+                errFileReaderNotSupported: 'FileReader не падтрымліваецца вашым браўзэрам.',
+                errInvalidImage: 'Несапраўдны файл выявы.'
+            },
             cs: {
                 base64: 'Vložit obrázek',
                 file: 'Soubor'
@@ -36,9 +48,17 @@
                 errFileReaderNotSupported: 'FileReader er ikke understøttet af din browser.',
                 errInvalidImage: 'Ugyldig billedfil.'
             },
+            et: {
+                base64: 'Pilt base64 formaadis',
+                file: 'Fail',
+                errFileReaderNotSupported: 'Teie veebilehitseja ei toeta FileReader funktsiooni.',
+                errInvalidImage: 'Vigane pildifail.'
+            },
             fr: {
                 base64: 'Image en base64',
-                file: 'Fichier'
+                file: 'Fichier',
+                errFileReaderNotSupported: 'FileReader n\'est pas supporté par votre navigateur.',
+                errInvalidImage: 'Fichier image invalide.'
             },
             hu: {
                 base64: 'Kép beszúrás inline',
@@ -75,6 +95,12 @@
                 file: 'Файл',
                 errFileReaderNotSupported: 'FileReader не поддерживается вашим браузером.',
                 errInvalidImage: 'Недопустимый файл изображения.'
+            },
+            sl: {
+                base64: 'Slika kot base64',
+                file: 'Datoteka',
+                errFileReaderNotSupported: 'FileReader ni podprt v tem brskalniku.',
+                errInvalidImage: 'Neveljavna datoteka s sliko.'
             },
             tr: {
                 base64: 'Base64 olarak resim',

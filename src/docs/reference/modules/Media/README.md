@@ -118,7 +118,7 @@ The quality used when compressing the image.
 
 #### `format` (or fifth argument)
 
-The image format to use when processing the ouput of an image.
+The image format to use when processing the output of an image.
 
 Supported formats include `bmp`, `gif`, `jpg`, `png`, `tga`.
 
@@ -151,13 +151,13 @@ The anchor of the new image.
 
 The background color of the new image when `mode` is `pad` or `boxpad`. Examples of valid values: `white`, `ffff00`, `ffff0080`, `128,64,32` and `128,64,32,16`.
 
-#### bgcolor Input
+#### `bgcolor` Input
 
 ```
 {{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'pad', bgcolor:'white' }}
 ```
 
-#### bgcolor Output
+#### `bgcolor` Output
 
 `<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=pad&bgcolor=white" />`
 
@@ -294,6 +294,10 @@ The following configuration values are used by default and can be customized:
       // NB: To control cache headers for module static assets, refer to the Orchard Core Modules Section.
       "MaxBrowserCacheDays": 30,
 
+      // The number of days to store secure media files in the browser cache.
+      // Set to 0 (default) to disable caching secure files.
+      "MaxSecureFilesBrowserCacheDays": 0,
+
       // The number of days a cached resized media item will be valid for, before being rebuilt on request.
       "MaxCacheDays": 365,
 
@@ -307,7 +311,7 @@ The following configuration values are used by default and can be customized:
       // The path used when serving media assets.
       "AssetsRequestPath": "/media",
 
-      // The path used to store media assets. The path can be relative to the tenant's App_Data folder, or absolute.
+      // The name of the folder used to store media assets inside the App_Data folder.
       "AssetsPath": "Media",
 
       // Whether to use a token in the query string to prevent disc filling.
@@ -355,7 +359,13 @@ The following configuration values are used by default and can be customized:
         ],
 
       // The Content Security Policy to apply to assets served from the media library.
-      "ContentSecurityPolicy" : "default-src 'self'; style-src 'unsafe-inline'"
+      "ContentSecurityPolicy" : "default-src 'self'; style-src 'unsafe-inline'",
+
+      // The maximum chunk size when uploading files in bytes. If 0, no chunked upload is used. This is useful to work around request size limitations of a hosting environment.
+      "MaxUploadChunkSize": 104857600,
+
+      // The lifetime of temporary files created during upload. Defaults to 1 hour.
+      "TemporaryFileLifetime": "01:00:00"
     }
 ```
 
@@ -409,9 +419,6 @@ When specifying a media profile with either the liquid, razor helper, or tag hel
     <img asset-src="Model.Paths[0]" img-profile="medium" img-resize-mode="Crop"/>
     ```
 
-!!! note
-    Media Profiles are only available from the [Preview Feed](../../../getting-started/preview-package-source)
-
 ## Media Text
 
 Media text is an optional setting, on by default, on the `MediaField`.
@@ -422,7 +429,7 @@ This can be used for the `alt` tag of an image.
 
 When the setting is enabled the template must read and provide the value to the `img` tag.
 
-The `MediaText[]` is kept in sync with the `Paths[]` array and the index for a given path represents the index of a `MediaText` value.
+The `MediaTexts[]` is kept in sync with the `Paths[]` array and the index for a given path represents the index of a `MediaText` value.
 
 ## Image Anchors
 
@@ -451,14 +458,11 @@ The `Anchors[]` is a less well known property of a `MediaField` and can be acces
 
 The `Anchors[]` is kept in sync with the `Paths[]` array and the index for a given path represents the index of a `Anchor` value.
 
-!!! note
-    Anchors are only available from the [Preview Feed](../../../getting-started/preview-package-source)
-
 ## Query string tokens
 
 When resizing images, the query string command values are, by default, signed with an HMAC signature that is unique to the tenant.
 
-This prevents prevent malicious clients from creating too many variations of the same image. 
+This prevents prevent malicious clients from creating too many variations of the same image.
 
 If the `UseTokenizedQueryString` is set to `false` the following features will be removed.
 
@@ -472,19 +476,67 @@ When the query string is signed with a token any width, height value may be used
 `<img src="/media/kittens.jpg?width=101&height=241&token=0J3hyv6jIPEsSdlvTCrf30fIdygkpmrF6mphqgYQyas%3D">`
 
 !!! note
-    Tokens are only available from the [Preview Feed](../../../getting-started/preview-package-source)
-    Prior to this the width or height values are limited to `16`, `32`, `50`, `100`, `160`, `240`, `480`, `600`, `1024`, `2048`.
+    Prior to tokens the width or height values are limited to `16`, `32`, `50`, `100`, `160`, `240`, `480`, `600`, `1024`, `2048`.
+
+## Media Content Search
+
+Media can be optionally indexed for search as well if files are referenced via Media Fields. The following data can be indexed for each file referenced from a Media Field:
+
+- Media Text
+- Textual content of PDF files
+
+!!! note
+    Standalone files, i.e. files that are just uploaded to the Media Library but never referenced from a content item via a Media Field, can't be indexed.
+
+!!! note
+    You need an indexing implementation enabled for Media Indexing and search to work. The below guide assumes you're using [Lucene](../Lucene/README.md).
+
+To set up indexing for Media do the following:
+
+1. For each Media Field open the field's editor from under the given content type's or content part's editor, and tick "Include this element in the index", and tick both "Stored" and "Analyzed".
+2. When a content item of that type is published next time, Media content will be indexed as well. Check the name of the new Lucene field. You can do this by running a Lucene query for the given content type (can be done from the admin from under Search, Run Lucene Query): You should be able to see two new fields named with the pattern "ContentPart.FieldTechnicalName.MediaText" and "ContentPart.FieldTechnicalName.FileText", e.g. "BlogPost.File.MediaText" and "BlogPost.File.FileText".
+3. Configure the new field to be used for search. You can do this from the admin under Search, Settings, Search, and adding the name of the new field under "Default search fields" (arriving at something like "Content.ContentItem.FullText, BlogPost.File.MediaText, BlogPost.File.FileText").
+4. Try searching for content only available in the Media Text of selected media files, or referenced PDF files. You should see corresponding results.
+
+## Secure Media
+
+The Secure Media feature enhances security and control over media files within the Media module. 
+
+When enabled, administrators can set view permissions for the root media folder and each first-level folder within the media root. This allows for restricting access to media folders based on user roles, ensuring that only authorized users can view or manage media files within specific folders.
+
+New permissions to allow users to view their own media files, view media files uploaded by others, or both are created too. You can manage these among the other permissions with the [Roles module](../Roles/README.md).
+
+Media files attached to content items will also adhere to the `ViewContent` permission of the respective content item automatically.
+
+### Handling Unauthorized Access
+
+A middleware component returns a 404 NotFound response for unauthenticated access attempts to secured media files. This not only restricts access but also conceals the existence of the file, enhancing privacy and security.
+
+### Configurable Cache-Control for Secured Files
+
+The `Cache-Control` header for secured files is set to `no-store` by default, preventing their caching. This can be changed with the `MaxSecureFilesBrowserCacheDays` configuration, [see above](#configuration).
 
 ## Videos
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/BQHUlvPFRR4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/H0jBMH8tj3A" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/K0_i4vj00yM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/monQap7FuiU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-## CREDITS
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/LVsdTvurGEY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-### ImageSharp
+## Media Indexing
 
-<https://sixlabors.com/products/imagesharpweb/>  
-Copyright 2012 James South  
-Licensed under the Apache License, Version 2.0, or with a commercial support license <https://sixlabors.com/pricing>
+The `Media Indexing` feature extends the media indexing capability to also encompass searching within files with the following extensions `.txt`, `.md`, `.docx`, and `.pptx`.
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/BQHUlvPFRR4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/K0_i4vj00yM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bDxL2LPJPzk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Nb5GUqM7ZzI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Credits
+
+To index PDF files the [PdfPig library](https://github.com/UglyToad/PdfPig/) is used.
+To index Microsoft Office files (i.e., .docx, .ppts) the [Open-XML-SDK](https://github.com/dotnet/Open-XML-SDK) is used.

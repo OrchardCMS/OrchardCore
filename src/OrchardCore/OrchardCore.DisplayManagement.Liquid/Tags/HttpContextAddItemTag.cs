@@ -1,39 +1,27 @@
-using System;
-using System.IO;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Fluid.Tags;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Liquid.Ast;
+using OrchardCore.Liquid;
 
-namespace OrchardCore.DisplayManagement.Liquid.Tags
+namespace OrchardCore.DisplayManagement.Liquid.Tags;
+
+public class HttpContextAddItemTag
 {
-    public class HttpContextAddItemTag : ArgumentsTag
+    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> expressions, TextWriter _1, TextEncoder _2, TemplateContext context)
     {
-        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] args)
+        var services = ((LiquidTemplateContext)context).Services;
+
+        var httpContext = services.GetRequiredService<IHttpContextAccessor>()?.HttpContext;
+
+        if (httpContext != null)
         {
-            if (!context.AmbientValues.TryGetValue("Services", out var servicesValue))
+            foreach (var argument in expressions)
             {
-                throw new ArgumentException("Services missing while invoking 'helper'");
+                httpContext.Items[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToObjectValue();
             }
-
-            var services = servicesValue as IServiceProvider;
-
-            var httpContext = services.GetRequiredService<IHttpContextAccessor>()?.HttpContext;
-
-            if (httpContext != null)
-            {
-                var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
-
-                foreach (var name in arguments.Names)
-                {
-                    httpContext.Items[name] = arguments[name].ToObjectValue();
-                }
-            }
-            return Completion.Normal;
         }
+        return Completion.Normal;
     }
 }

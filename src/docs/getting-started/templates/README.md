@@ -9,13 +9,13 @@ More information about `dotnet new` can be found at <https://docs.microsoft.com/
 Once the .NET Core SDK has been installed, type the following command to install the templates for creating Orchard Core web applications:
 
 ```CMD
-dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc2-*
+dotnet new install OrchardCore.ProjectTemplates::1.8.4
 ```
 
-This will use the most stable release of Orchard Core. In order to use the latest `dev` branch of Orchard Core, the following command can be used:
+This will use the most stable release of Orchard Core. In order to use the latest `main` branch of Orchard Core, the following command can be used:
 
 ```CMD
-dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc2-* --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
+dotnet new install OrchardCore.ProjectTemplates::1.8.4-* --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
 ```
 
 ## Create a new website
@@ -25,7 +25,7 @@ dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc2-* --nuget-source https://n
 #### Generate an Orchard Cms Web Application
 
 ```CMD
-dotnet new occms  
+dotnet new occms
 ```
 
 The above command will use the default options.
@@ -44,7 +44,7 @@ Options:
 
   -ov|--orchard-version  Specifies which version of Orchard Core packages to use.
                          string - Optional
-                         Default: 1.0.0-rc2
+                         Default: 1.8.4
 ```
 
 Logging can be ignored with this command:
@@ -59,6 +59,10 @@ dotnet new occms --logger none
 dotnet new ocmvc  
 ```
 
+### From Visual Studio (New Project dialog)
+
+The templates can also be used from the New Project dialog in Visual Studio.
+
 ### From Visual Studio (manual way)
 
 Fire up Visual Studio, create a new solution file (`.sln`) by creating a new ASP.NET Core Web Application:
@@ -66,43 +70,39 @@ Fire up Visual Studio, create a new solution file (`.sln`) by creating a new ASP
 ![image](../assets/images/templates/orchard-screencast-1.gif)
 
 Now that we created a new Web Application we need to add proper dependencies so that this new Web Application be targeted as an Orchard Core application.
+Orchard Core can be added through two distinct NuGet meta packages: `OrchardCore.Application.Cms.Core.Targets` and `OrchardCore.Application.Cms.Targets`. For additional information regarding these packages, please refer to [this link](../starter-recipes.md). You must add one of these NuGet packages in your Web Application.
 
 !!! note
     If you want to use the `preview` packages, [configure the OrchardCore Preview url in your Package sources](../preview-package-source.md)
 
 ![image](../assets/images/templates/orchard-screencast-2.gif)
 
-Finally, we will need to register Orchard CMS service in our `Startup.cs` file like this:
+Visual Studio may automatically include Models, Views, and Controllers folders with boilerplate code, depending on the template used to create the web application. To prevent potential conflicts with OrchardCore services, it is advisable to delete these folders.
+Finally, we will need to register Orchard CMS service in our `Program.cs` file like this:
 
-```C#
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+```csharp
+using OrchardCore.Logging;
 
-namespace MyNewWebsite
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseNLogHost();
+
+builder.Services
+    .AddOrchardCms()
+    .AddSetupFeatures("OrchardCore.AutoSetup");
+
+var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
 {
-    public class Startup
-    {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddOrchardCms();
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseStaticFiles();
-            app.UseOrchardCore();
-        }
-    }
+    app.UseExceptionHandler("/Error");
 }
+
+app.UseStaticFiles();
+
+app.UseOrchardCore();
+
+app.Run();
 ```
 
 ## Create a new CMS module
@@ -123,7 +123,7 @@ You can pass the following CLI parameters to setup options:
 Orchard Core Module (C#)
 Author: Orchard Project
 Options:
-  -A|--AddPart           Add dependency injection for part in Startup.cs. If PartName is not provided, default name will be used
+  -A|--AddPart           Add dependency injection for part in Program.cs. If PartName is not provided, default name will be used
                          bool - Optional
                          Default: false / (*) true
 
@@ -133,7 +133,7 @@ Options:
 
   -ov|--orchard-version  Specifies which version of Orchard Core packages to use.
                          string - Optional
-                         Default: 1.0.0-rc2
+                         Default: 1.8.4
 ```
 
 ```CMD
@@ -173,7 +173,7 @@ Once done, your new module will look like this:
 
 For Orchard Core to identify this module it will now require a `Manifest.cs` file. Here is an example of that file:
 
-```C#
+```csharp
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
@@ -205,7 +205,7 @@ dotnet new octheme -n "ThemeName.OrchardCore"
 
 Should be the same procedure as with modules but instead, we need to reference `OrchardCore.Theme.Targets` and the `Manifest.cs` file differs slightly:
 
-```C#
+```csharp
 using OrchardCore.DisplayManagement.Manifest;
 
 [assembly: Theme(

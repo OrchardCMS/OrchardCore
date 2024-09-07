@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <!-- NuGet properties-->
     <Title>OrchardCore Media Azure</Title>
     <Description>$(OCCMSDescription)
-    
+
     Enables support for storing media files in Microsoft Azure Blob Storage</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS ContentManagement</PackageTags>
   </PropertyGroup>
@@ -24,6 +23,11 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Media.Core\OrchardCore.Media.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Navigation.Core\OrchardCore.Navigation.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+    <ProjectReference Include="..\OrchardCore.Media\OrchardCore.Media.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp.Web.Providers.Azure" />
   </ItemGroup>
 
 </Project>

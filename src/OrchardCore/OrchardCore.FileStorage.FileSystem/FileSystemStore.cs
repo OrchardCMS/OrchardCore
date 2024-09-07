@@ -1,22 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders.Physical;
 
-namespace OrchardCore.FileStorage.FileSystem
+namespace OrchardCore.FileStorage.FileSystem;
+
+public class FileSystemStore : IFileStore
 {
-    public class FileSystemStore : IFileStore
+    private readonly string _fileSystemPath;
+
+    public FileSystemStore(string fileSystemPath)
     {
-        private readonly string _fileSystemPath;
+        _fileSystemPath = Path.GetFullPath(fileSystemPath);
+    }
 
-        public FileSystemStore(string fileSystemPath)
-        {
-            _fileSystemPath = Path.GetFullPath(fileSystemPath);
-        }
-
-        public Task<IFileStoreEntry> GetFileInfoAsync(string path)
+    public Task<IFileStoreEntry> GetFileInfoAsync(string path)
+    {
+        try
         {
             var physicalPath = GetPhysicalPath(path);
 
@@ -29,8 +26,15 @@ namespace OrchardCore.FileStorage.FileSystem
 
             return Task.FromResult<IFileStoreEntry>(null);
         }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot get file info with path '{path}'.", ex);
+        }
+    }
 
-        public Task<IFileStoreEntry> GetDirectoryInfoAsync(string path)
+    public Task<IFileStoreEntry> GetDirectoryInfoAsync(string path)
+    {
+        try
         {
             var physicalPath = GetPhysicalPath(path);
 
@@ -43,15 +47,22 @@ namespace OrchardCore.FileStorage.FileSystem
 
             return Task.FromResult<IFileStoreEntry>(null);
         }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot get directory info with path '{path}'.", ex);
+        }
+    }
 
-        public Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
+    public IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
+    {
+        try
         {
             var physicalPath = GetPhysicalPath(path);
             var results = new List<IFileStoreEntry>();
 
             if (!Directory.Exists(physicalPath))
             {
-                return Task.FromResult((IEnumerable<IFileStoreEntry>)results);
+                return results.ToAsyncEnumerable();
             }
 
             // Add directories.
@@ -61,7 +72,7 @@ namespace OrchardCore.FileStorage.FileSystem
                     .Select(f =>
                     {
                         var fileSystemInfo = new PhysicalDirectoryInfo(new DirectoryInfo(f));
-                        var fileRelativePath = f.Substring(_fileSystemPath.Length);
+                        var fileRelativePath = f[_fileSystemPath.Length..];
                         var filePath = this.NormalizePath(fileRelativePath);
                         return new FileSystemStoreEntry(filePath, fileSystemInfo);
                     }));
@@ -73,15 +84,22 @@ namespace OrchardCore.FileStorage.FileSystem
                     .Select(f =>
                     {
                         var fileSystemInfo = new PhysicalFileInfo(new FileInfo(f));
-                        var fileRelativePath = f.Substring(_fileSystemPath.Length);
+                        var fileRelativePath = f[_fileSystemPath.Length..];
                         var filePath = this.NormalizePath(fileRelativePath);
                         return new FileSystemStoreEntry(filePath, fileSystemInfo);
                     }));
 
-            return Task.FromResult((IEnumerable<IFileStoreEntry>)results);
+            return results.ToAsyncEnumerable();
         }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot get directory content with path '{path}'.", ex);
+        }
+    }
 
-        public Task<bool> TryCreateDirectoryAsync(string path)
+    public Task<bool> TryCreateDirectoryAsync(string path)
+    {
+        try
         {
             var physicalPath = GetPhysicalPath(path);
 
@@ -99,8 +117,19 @@ namespace OrchardCore.FileStorage.FileSystem
 
             return Task.FromResult(true);
         }
+        catch (FileStoreException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot create directory '{path}'.", ex);
+        }
+    }
 
-        public Task<bool> TryDeleteFileAsync(string path)
+    public Task<bool> TryDeleteFileAsync(string path)
+    {
+        try
         {
             var physicalPath = GetPhysicalPath(path);
 
@@ -113,8 +142,15 @@ namespace OrchardCore.FileStorage.FileSystem
 
             return Task.FromResult(true);
         }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot delete file '{path}'.", ex);
+        }
+    }
 
-        public Task<bool> TryDeleteDirectoryAsync(string path)
+    public Task<bool> TryDeleteDirectoryAsync(string path)
+    {
+        try
         {
             var physicalPath = GetPhysicalPath(path);
 
@@ -127,8 +163,15 @@ namespace OrchardCore.FileStorage.FileSystem
 
             return Task.FromResult(true);
         }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot delete directory '{path}'.", ex);
+        }
+    }
 
-        public Task MoveFileAsync(string oldPath, string newPath)
+    public Task MoveFileAsync(string oldPath, string newPath)
+    {
+        try
         {
             var physicalOldPath = GetPhysicalPath(oldPath);
 
@@ -148,8 +191,19 @@ namespace OrchardCore.FileStorage.FileSystem
 
             return Task.CompletedTask;
         }
+        catch (FileStoreException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot move file '{oldPath}' to '{newPath}'.", ex);
+        }
+    }
 
-        public Task CopyFileAsync(string srcPath, string dstPath)
+    public Task CopyFileAsync(string srcPath, string dstPath)
+    {
+        try
         {
             var physicalSrcPath = GetPhysicalPath(srcPath);
 
@@ -169,8 +223,19 @@ namespace OrchardCore.FileStorage.FileSystem
 
             return Task.CompletedTask;
         }
+        catch (FileStoreException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot copy file '{srcPath}' to '{dstPath}'.", ex);
+        }
+    }
 
-        public Task<Stream> GetFileStreamAsync(string path)
+    public Task<Stream> GetFileStreamAsync(string path)
+    {
+        try
         {
             var physicalPath = GetPhysicalPath(path);
 
@@ -183,8 +248,19 @@ namespace OrchardCore.FileStorage.FileSystem
 
             return Task.FromResult<Stream>(stream);
         }
+        catch (FileStoreException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot get file stream of the file '{path}'.", ex);
+        }
+    }
 
-        public Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
+    public Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
+    {
+        try
         {
             var physicalPath = GetPhysicalPath(fileStoreEntry.Path);
             if (!File.Exists(physicalPath))
@@ -196,8 +272,19 @@ namespace OrchardCore.FileStorage.FileSystem
 
             return Task.FromResult<Stream>(stream);
         }
+        catch (FileStoreException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot get file stream of the file '{fileStoreEntry.Path}'.", ex);
+        }
+    }
 
-        public async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
+    public async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
+    {
+        try
         {
             var physicalPath = GetPhysicalPath(path);
 
@@ -223,18 +310,29 @@ namespace OrchardCore.FileStorage.FileSystem
 
             return path;
         }
+        catch (FileStoreException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot create file '{path}'.", ex);
+        }
+    }
 
-        /// <summary>
-        /// Translates a relative path in the virtual file store to a physical path in the underlying file system.
-        /// </summary>
-        /// <param name="path">The relative path within the file store.</param>
-        /// <returns></returns>
-        /// <remarks>The resulting physical path is verified to be inside designated root file system path.</remarks>
-        private string GetPhysicalPath(string path)
+    /// <summary>
+    /// Translates a relative path in the virtual file store to a physical path in the underlying file system.
+    /// </summary>
+    /// <param name="path">The relative path within the file store.</param>
+    /// <returns></returns>
+    /// <remarks>The resulting physical path is verified to be inside designated root file system path.</remarks>
+    private string GetPhysicalPath(string path)
+    {
+        try
         {
             path = this.NormalizePath(path);
 
-            var physicalPath = String.IsNullOrEmpty(path) ? _fileSystemPath : Path.Combine(_fileSystemPath, path);
+            var physicalPath = string.IsNullOrEmpty(path) ? _fileSystemPath : Path.Combine(_fileSystemPath, path);
 
             // Verify that the resulting path is inside the root file system path.
             var pathIsAllowed = Path.GetFullPath(physicalPath).StartsWith(_fileSystemPath, StringComparison.OrdinalIgnoreCase);
@@ -244,6 +342,14 @@ namespace OrchardCore.FileStorage.FileSystem
             }
 
             return physicalPath;
+        }
+        catch (FileStoreException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new FileStoreException($"Cannot resolve physical path with the path '{path}'.", ex);
         }
     }
 }

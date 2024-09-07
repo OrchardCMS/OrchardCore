@@ -1,85 +1,47 @@
-using System;
+using Cysharp.Text;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Logging;
 
-namespace OrchardCore.ResourceManagement.TagHelpers
+namespace OrchardCore.ResourceManagement.TagHelpers;
+
+[HtmlTargetElement("resources", Attributes = nameof(Type))]
+public class ResourcesTagHelper : TagHelper
 {
-    public enum ResourceType
+    private readonly ILogger _logger;
+    private readonly IEnumerable<IResourcesTagHelperProcessor> _processors;
+
+    public ResourcesTagHelper(
+        ILogger<ResourcesTagHelper> logger,
+        IEnumerable<IResourcesTagHelperProcessor> processors)
     {
-        Meta,
-        HeadLink,
-        Stylesheet,
-        HeadScript,
-        FootScript,
-        Header,
-        Footer
+        _logger = logger;
+        _processors = processors;
     }
 
-    [HtmlTargetElement("resources", Attributes = nameof(Type))]
-    public class ResourcesTagHelper : TagHelper
+    public ResourceTagType Type { get; set; }
+
+    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
-        public ResourceType Type { get; set; }
-
-        private readonly IResourceManager _resourceManager;
-        private readonly ILogger _logger;
-
-        public ResourcesTagHelper(
-            IResourceManager resourceManager,
-            ILogger<ResourcesTagHelper> logger)
+        try
         {
-            _resourceManager = resourceManager;
-            _logger = logger;
+            await using var writer = new ZStringWriter();
+
+            var processorContext = new ResourcesTagHelperProcessorContext(Type, writer);
+
+            foreach (var processor in _processors)
+            {
+                await processor.ProcessAsync(processorContext);
+            }
+
+            output.Content.AppendHtml(writer.ToString());
         }
-
-        public override void Process(TagHelperContext tagHelperContext, TagHelperOutput output)
+        catch (Exception ex)
         {
-            try
-            {
-                switch (Type)
-                {
-                    case ResourceType.Meta:
-                        _resourceManager.RenderMeta(output.Content);
-                        break;
-
-                    case ResourceType.HeadLink:
-                        _resourceManager.RenderHeadLink(output.Content);
-                        break;
-
-                    case ResourceType.Stylesheet:
-                        _resourceManager.RenderStylesheet(output.Content);
-                        break;
-
-                    case ResourceType.HeadScript:
-                        _resourceManager.RenderHeadScript(output.Content);
-                        break;
-
-                    case ResourceType.FootScript:
-                        _resourceManager.RenderFootScript(output.Content);
-                        break;
-
-                    case ResourceType.Header:
-                        _resourceManager.RenderMeta(output.Content);
-                        _resourceManager.RenderHeadLink(output.Content);
-                        _resourceManager.RenderStylesheet(output.Content);
-                        _resourceManager.RenderHeadScript(output.Content);
-                        break;
-
-                    case ResourceType.Footer:
-                        _resourceManager.RenderFootScript(output.Content);
-                        break;
-
-                    default:
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while rendering {Type} resource.", Type);
-            }
-            finally
-            {
-                output.TagName = null;
-            }
+            _logger.LogError(ex, "An error occurred while rendering {Type} resource.", Type);
+        }
+        finally
+        {
+            output.TagName = null;
         }
     }
 }

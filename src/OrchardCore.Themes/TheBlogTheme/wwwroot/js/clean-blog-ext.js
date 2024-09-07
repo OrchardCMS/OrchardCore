@@ -1,3 +1,0 @@
-(function ($) {
-    $('#mainNav').activateLinks();
-})(jQuery);

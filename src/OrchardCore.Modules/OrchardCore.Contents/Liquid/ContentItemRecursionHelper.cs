@@ -1,48 +1,40 @@
-using System;
-using System.Collections.Generic;
 using OrchardCore.ContentManagement;
-using OrchardCore.Liquid;
 
-namespace OrchardCore.Contents.Liquid
+namespace OrchardCore.Contents.Liquid;
+
+public interface IContentItemRecursionHelper<T>
 {
     /// <summary>
-    /// Prevents a content item being called by an implementation of a <see cref="ILiquidFilter"/> recursivly.
+    /// Returns <see langword="True"/> when the <see cref="ContentItem"/> has already been evaluated during this request by the particular filter./>.
     /// </summary>
-    public interface IContentItemRecursionHelper<T> where T : ILiquidFilter
-    {
-        /// <summary>
-        /// Returns <see langword="True"/> when the <see cref="ContentItem"/> has already been evaluated during this request by the particular filter./>
-        /// </summary>
-        bool IsRecursive(ContentItem contentItem, int maxRecursions = 1);
-    }
+    bool IsRecursive(ContentItem contentItem, int maxRecursions = 1);
+}
+
+/// <inheritdocs />
+public class ContentItemRecursionHelper<T> : IContentItemRecursionHelper<T>
+{
+    private readonly Dictionary<ContentItem, int> _recursions = [];
 
     /// <inheritdocs />
-    public class ContentItemRecursionHelper<T> : IContentItemRecursionHelper<T> where T : ILiquidFilter
+    public bool IsRecursive(ContentItem contentItem, int maxRecursions = 1)
     {
-        private Dictionary<ContentItem, int> _recursions = new Dictionary<ContentItem, int>();
-
-        /// <inheritdocs />
-        public bool IsRecursive(ContentItem contentItem, int maxRecursions = 1)
+        if (_recursions.TryGetValue(contentItem, out var counter))
         {
-            if (_recursions.ContainsKey(contentItem))
+            if (maxRecursions < 1)
             {
-                var counter = _recursions[contentItem];
-                if (maxRecursions < 1)
-                {
-                    maxRecursions = 1;
-                }
-                
-                if (counter > maxRecursions)
-                {
-                    return true;
-                }
-
-                _recursions[contentItem] = counter + 1;
-                return false;
+                maxRecursions = 1;
             }
 
-            _recursions[contentItem] = 1;
+            if (counter > maxRecursions)
+            {
+                return true;
+            }
+
+            _recursions[contentItem] = counter + 1;
             return false;
         }
+
+        _recursions[contentItem] = 1;
+        return false;
     }
 }

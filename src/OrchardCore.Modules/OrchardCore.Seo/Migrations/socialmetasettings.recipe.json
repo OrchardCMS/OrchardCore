@@ -1,0 +1,242 @@
+{
+  "name": "",
+  "displayName": "",
+  "description": "",
+  "author": "",
+  "website": "",
+  "version": "",
+  "issetuprecipe": false,
+  "categories": [],
+  "tags": [],
+  "steps": [
+    {
+      "name": "ReplaceContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "SocialMetaSettings",
+          "DisplayName": "Social Meta Settings",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Stereotype": "CustomSettings"
+            },
+            "FullTextAspectSettings": {}
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "SocialMetaSettings",
+              "Name": "SocialMetaSettings",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        }
+      ],   
+      "ContentParts": [
+        {
+          "Name": "SocialMetaSettings",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "MediaField",
+              "Name": "DefaultSocialImage",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Default social image",
+                  "Position": "1"
+                },
+                "MediaFieldSettings": {
+                  "Multiple": false
+                }
+              }
+            },
+            {
+              "FieldName": "MediaField",
+              "Name": "OpenGraphImage",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Open graph image",
+                  "Position": "2"
+                },
+                "MediaFieldSettings": {
+                  "Multiple": false
+                }
+              }
+            },
+            {
+              "FieldName": "MediaField",
+              "Name": "TwitterImage",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Twitter Image",
+                  "Position": "3"
+                },
+                "MediaFieldSettings": {
+                  "Multiple": false
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "OpenGraphType",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Open Graph Type",
+                  "Position": "4"
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "TwitterCard",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Twitter Card",
+                  "Position": "8"
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "TwitterCreator",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Twitter Creator",
+                  "Position": "10"
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "TwitterSite",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Twitter Site",
+                  "Position": "11"
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "GoogleSchema",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Google Schema",
+                  "Editor": "CodeMirror",
+                  "Position": "12"
+                },
+                "TextFieldSettings": {}
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "OpenGraphSiteName",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Open Graph Site Name",
+                  "Position": "6"
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "OpenGraphAppId",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Open Graph App Id",
+                  "Position": "7"
+                }
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "DefaultMetaDescription",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Default Meta Description",
+                  "Editor": "CodeMirror",
+                  "Position": "0"
+                },
+                "TextFieldSettings": {}
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "DefaultTwitterDescription",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Default Twitter Description",
+                  "Editor": "CodeMirror",
+                  "Position": "9"
+                },
+                "TextFieldSettings": {}
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "DefaultOpenGraphDescription",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Default Open Graph Description",
+                  "Editor": "CodeMirror",
+                  "Position": "5"
+                },
+                "TextFieldSettings": {}
+              }
+            }
+          ]
+        }
+      ]         
+    },
+    {
+      "name": "custom-settings",
+      "SocialMetaSettings": {
+        "ContentItemId": "[js:uuid()]",
+        "ContentType": "SocialMetaSettings",
+        "SocialMetaSettings": {
+          "DefaultSocialImage": {
+            "Paths": [
+            ],
+            "MediaTexts": [
+            ]
+          },
+          "OpenGraphImage": {
+            "Paths": [
+            ],
+            "MediaTexts": [
+            ]
+          },
+          "TwitterImage": {
+            "Paths": [
+            ],
+            "MediaTexts": [
+            ]
+          },
+          "OpenGraphType": {
+            "Text": null
+          },
+          "TwitterCard": {
+            "Text": null
+          },
+          "TwitterCreator": {
+            "Text": null
+          },
+          "TwitterSite": {
+            "Text": null
+          },
+          "GoogleSchema": {
+            "Text": null
+          },
+          "OpenGraphSiteName": {
+            "Text": null
+          },
+          "OpenGraphAppId": {
+            "Text": null
+          }
+        }
+      }
+    }
+  ]
+}

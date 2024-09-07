@@ -1,45 +1,40 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.ContentLocalization.Liquid
+namespace OrchardCore.ContentLocalization.Liquid;
+
+public class ContentLocalizationFilter : ILiquidFilter
 {
-    public class ContentLocalizationFilter : ILiquidFilter
+    private readonly IContentLocalizationManager _contentLocalizationManager;
+
+    public ContentLocalizationFilter(IContentLocalizationManager contentLocalizationManager)
     {
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        _contentLocalizationManager = contentLocalizationManager;
+    }
+
+    public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+    {
+        var locale = arguments.At(0).ToStringValue();
+
+        if (arguments.At(0).IsNil())
         {
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'localization_set'");
-            }
+            locale = ctx.CultureInfo.Name;
+        }
 
-            var innoFieldsService = ((IServiceProvider)services).GetRequiredService<IContentLocalizationManager>();
+        if (input.Type == FluidValues.Array)
+        {
+            // List of content item ids
 
-            var locale = arguments.At(0).ToStringValue();
+            var localizationSets = input.Enumerate(ctx).Select(x => x.ToStringValue()).ToArray();
 
-            if (arguments.At(0).IsNil())
-            {
-                locale = ctx.CultureInfo.Name;
-            }
+            return FluidValue.Create(await _contentLocalizationManager.GetItemsForSetsAsync(localizationSets, locale), ctx.Options);
+        }
+        else
+        {
+            var localizationSet = input.ToStringValue();
 
-            if (input.Type == FluidValues.Array)
-            {
-                // List of content item ids
-
-                var localizationSets = input.Enumerate().Select(x => x.ToStringValue()).ToArray();
-
-                return FluidValue.Create(await innoFieldsService.GetItemsForSetsAsync(localizationSets, locale));
-            }
-            else
-            {
-                var localizationSet = input.ToStringValue();
-
-                return FluidValue.Create(await innoFieldsService.GetContentItemAsync(localizationSet, locale));
-            }
+            return FluidValue.Create(await _contentLocalizationManager.GetContentItemAsync(localizationSet, locale), ctx.Options);
         }
     }
 }

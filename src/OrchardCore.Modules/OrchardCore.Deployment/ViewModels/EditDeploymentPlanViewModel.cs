@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Deployment.ViewModels
+namespace OrchardCore.Deployment.ViewModels;
+
+public class EditDeploymentPlanViewModel
 {
-    public class EditDeploymentPlanViewModel
-    {
-        public int Id { get; set; }
+    public long Id { get; set; }
 
-        [Required]
-        public string Name { get; set; }
-    }
+    [Required]
+    public string Name { get; set; }
 }

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Auto Setup</Title>
+    <Description>$(OCFrameworkDescription)
+
+    The auto setup module is installing the application on first start automatically</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Setup.Abstractions\OrchardCore.Setup.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

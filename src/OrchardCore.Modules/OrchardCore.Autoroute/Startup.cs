@@ -1,15 +1,15 @@
-using System;
 using Fluid;
+using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Autoroute.Core.Indexes;
+using OrchardCore.Autoroute.Core.Services;
 using OrchardCore.Autoroute.Drivers;
 using OrchardCore.Autoroute.Handlers;
 using OrchardCore.Autoroute.Indexing;
-using OrchardCore.Autoroute.Liquid;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.Routing;
-using OrchardCore.Autoroute.Services;
 using OrchardCore.Autoroute.Settings;
 using OrchardCore.Autoroute.Sitemaps;
 using OrchardCore.Autoroute.ViewModels;
@@ -17,7 +17,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
@@ -29,66 +28,88 @@ using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Sitemaps.Services;
 
-namespace OrchardCore.Autoroute
+namespace OrchardCore.Autoroute;
+
+public sealed class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    public override int ConfigureOrder
+        => OrchardCoreConstants.ConfigureOrder.Autoroute;
+
+    public override void ConfigureServices(IServiceCollection services)
     {
-
-        public override int ConfigureOrder => -100;
-
-        static Startup()
+        services.Configure<TemplateOptions>(o =>
         {
-            TemplateContext.GlobalMemberAccessStrategy.Register<AutoroutePartViewModel>();
-        }
+            o.MemberAccessStrategy.Register<AutoroutePartViewModel>();
 
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            // Autoroute Part
-            services.AddContentPart<AutoroutePart>()
-                .UseDisplayDriver<AutoroutePartDisplayDriver>()
-                .AddHandler<AutoroutePartHandler>();
-
-            services.AddScoped<IContentHandler, DefaultRouteContentHandler>();
-            services.AddScoped<IContentHandler, AutorouteContentHandler>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, AutoroutePartSettingsDisplayDriver>();
-            services.AddScoped<IContentPartIndexHandler, AutoroutePartIndexHandler>();
-
-            services.AddScoped<AutoroutePartIndexProvider>();
-            services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<AutoroutePartIndexProvider>());
-            services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<AutoroutePartIndexProvider>());
-
-            services.AddScoped<IDataMigration, Migrations>();
-            services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
-            services.AddScoped<IContentHandleProvider, AutorouteHandleProvider>();
-
-            services.AddScoped<ILiquidTemplateEventHandler, ContentAutorouteLiquidTemplateEventHandler>();
-
-            services.Configure<GraphQLContentOptions>(options =>
+            o.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Slug", (obj, context) =>
             {
-                options.ConfigurePart<AutoroutePart>(partOptions =>
+                var liquidTemplateContext = (LiquidTemplateContext)context;
+
+                return new LiquidPropertyAccessor(liquidTemplateContext, async (slug, context) =>
                 {
-                    partOptions.Collapse = true;
+                    var autorouteEntries = context.Services.GetRequiredService<IAutorouteEntries>();
+                    var contentManager = context.Services.GetRequiredService<IContentManager>();
+
+                    if (!slug.StartsWith('/'))
+                    {
+                        slug = "/" + slug;
+                    }
+
+                    (var found, var entry) = await autorouteEntries.TryGetEntryByPathAsync(slug);
+
+                    if (found)
+                    {
+                        return FluidValue.Create(await contentManager.GetAsync(entry.ContentItemId, entry.JsonPath), context.Options);
+                    }
+
+                    return NilValue.Instance;
                 });
             });
+        });
 
-            services.AddSingleton<AutoRouteTransformer>();
-            services.AddSingleton<IShellRouteValuesAddressScheme, AutoRouteValuesAddressScheme>();
-        }
+        // Autoroute Part
+        services.AddContentPart<AutoroutePart>()
+            .UseDisplayDriver<AutoroutePartDisplayDriver>()
+            .AddHandler<AutoroutePartHandler>();
 
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        services.AddScoped<IContentHandler, DefaultRouteContentHandler>();
+        services.AddScoped<IContentHandler, AutorouteContentHandler>();
+        services.AddPermissionProvider<Permissions>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, AutoroutePartSettingsDisplayDriver>();
+        services.AddScoped<IContentPartIndexHandler, AutoroutePartIndexHandler>();
+
+        services.AddScoped<AutoroutePartIndexProvider>();
+        services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<AutoroutePartIndexProvider>());
+        services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<AutoroutePartIndexProvider>());
+
+        services.AddDataMigration<Migrations>();
+        services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
+        services.AddScoped<IContentHandleProvider, AutorouteHandleProvider>();
+
+        services.Configure<GraphQLContentOptions>(options =>
         {
-            // The 1st segment prevents the transformer to be executed for the home.
-            routes.MapDynamicControllerRoute<AutoRouteTransformer>("/{any}/{**slug}");
-        }
+            options.ConfigurePart<AutoroutePart>(partOptions =>
+            {
+                partOptions.Collapse = true;
+            });
+        });
+
+        services.AddSingleton<AutorouteTransformer>();
+        services.AddSingleton<IShellRouteValuesAddressScheme, AutorouteValuesAddressScheme>();
     }
 
-    [RequireFeatures("OrchardCore.Sitemaps")]
-    public class SitemapStartup : StartupBase
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IRouteableContentTypeProvider, AutorouteContentTypeProvider>();
-        }
+        // The 1st segment prevents the transformer to be executed for the home.
+        routes.MapDynamicControllerRoute<AutorouteTransformer>("/{any}/{**slug}");
+    }
+}
+
+[RequireFeatures("OrchardCore.Sitemaps")]
+public class SitemapStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IRouteableContentTypeProvider, AutorouteContentTypeProvider>();
     }
 }

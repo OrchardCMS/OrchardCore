@@ -1,10 +1,8 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 
-namespace OrchardCore.DisplayManagement
+namespace OrchardCore.DisplayManagement;
+
+public interface IDisplayHelper
 {
-    public interface IDisplayHelper
-    {
-        Task<IHtmlContent> ShapeExecuteAsync(object shape);
-    }
+    Task<IHtmlContent> ShapeExecuteAsync(IShape shape);
 }

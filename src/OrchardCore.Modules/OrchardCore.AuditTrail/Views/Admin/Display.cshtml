@@ -1,0 +1,5 @@
+@model AuditTrailItemViewModel
+
+<zone name="Title"><h1>@RenderTitleSegments(T["Audit Trail Event"])</h1></zone>
+
+@await DisplayAsync(Model.Shape)

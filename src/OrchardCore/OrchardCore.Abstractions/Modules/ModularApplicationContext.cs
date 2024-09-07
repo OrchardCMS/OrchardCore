@@ -1,68 +1,58 @@
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 
-namespace OrchardCore.Modules
+namespace OrchardCore.Modules;
+
+public class ModularApplicationContext : IApplicationContext
 {
-    public interface IApplicationContext
+    private readonly IHostEnvironment _environment;
+    private readonly IEnumerable<IModuleNamesProvider> _moduleNamesProviders;
+    private Application _application;
+    private static readonly object _initLock = new();
+
+    public ModularApplicationContext(IHostEnvironment environment, IEnumerable<IModuleNamesProvider> moduleNamesProviders)
     {
-        Application Application { get; }
+        _environment = environment;
+        _moduleNamesProviders = moduleNamesProviders;
     }
 
-    public class ModularApplicationContext : IApplicationContext
+    public Application Application
     {
-        private readonly IHostEnvironment _environment;
-        private readonly IEnumerable<IModuleNamesProvider> _moduleNamesProviders;
-        private Application _application;
-        private static readonly object _initLock = new object();
-
-        public ModularApplicationContext(IHostEnvironment environment, IEnumerable<IModuleNamesProvider> moduleNamesProviders)
+        get
         {
-            _environment = environment;
-            _moduleNamesProviders = moduleNamesProviders;
+            EnsureInitialized();
+            return _application;
         }
+    }
 
-        public Application Application
+    private void EnsureInitialized()
+    {
+        if (_application == null)
         {
-            get
+            lock (_initLock)
             {
-                EnsureInitialized();
-                return _application;
+                _application ??= new Application(_environment, GetModules());
             }
         }
+    }
 
-        private void EnsureInitialized()
+    private ConcurrentBag<Module> GetModules()
+    {
+        var modules = new ConcurrentBag<Module>
         {
-            if (_application == null)
-            {
-                lock (_initLock)
-                {
-                    if (_application == null)
-                    {
-                        _application = new Application(_environment, GetModules());
-                    }
-                }
-            }
-        }
+            new(_environment.ApplicationName, true),
+        };
 
-        private IEnumerable<Module> GetModules()
+        var names = _moduleNamesProviders
+            .SelectMany(p => p.GetModuleNames())
+            .Where(n => n != _environment.ApplicationName)
+            .Distinct();
+
+        Parallel.ForEach(names, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (name) =>
         {
-            var modules = new ConcurrentBag<Module>();
-            modules.Add(new Module(_environment.ApplicationName, true));
+            modules.Add(new Module(name, false));
+        });
 
-            var names = _moduleNamesProviders
-                .SelectMany(p => p.GetModuleNames())
-                .Where(n => n != _environment.ApplicationName)
-                .Distinct();
-
-            Parallel.ForEach(names, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (name) =>
-            {
-                modules.Add(new Module(name, false));
-            });
-
-            return modules;
-        }
+        return modules;
     }
 }

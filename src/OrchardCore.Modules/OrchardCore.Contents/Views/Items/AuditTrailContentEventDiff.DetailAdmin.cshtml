@@ -1,0 +1,27 @@
+@model AuditTrailContentEventDetailViewModel
+
+@{
+    var contentEvent = Model.ContentEvent;
+    var contentItem = contentEvent.ContentItem;
+    var versionNumber = contentEvent.VersionNumber;
+    var latestVersionId = Model.LatestVersionId;
+    var newTime = await DisplayAsync(await New.Timespan(Utc: Model.AuditTrailEvent.CreatedUtc, Format: "g"));
+    var newText = contentItem.DisplayText;
+    var oldTime = await DisplayAsync(await New.Timespan(Utc: Model.PreviousContentItem?.ModifiedUtc, Format: "g"));
+    var oldText = Model.PreviousContentItem?.DisplayText;
+}
+
+<style asp-name="audittrailui" asp-src="~/OrchardCore.AuditTrail/Styles/audittrailui.min.css" debug-src="~/OrchardCore.AuditTrail/Styles/audittrailui.css" at="Head" depends-on="admin"></style>
+
+@if (Model.PreviousContentItem != null)
+{
+    <script asp-name="jsdiff" depends-on="jQuery" asp-src="~/OrchardCore.AuditTrail/Scripts/diff.min.js" debug-src="~/OrchardCore.AuditTrail/Scripts/diff.js" cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/4.0.2/diff.min.js" debug-cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/4.0.2/diff.js" version="4.0.2" at="Foot"></script>
+    <script at="Foot" asp-name="prism" depends-on="jsdiff" asp-src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/prism.min.js"></script>
+    <script at="Foot" asp-name="prismjson" depends-on="prism" asp-src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.15.0/components/prism-json.min.js"></script>
+    <script at="Foot" asp-name="diffviewer" depends-on="prismjson" asp-src="~/OrchardCore.AuditTrail/Scripts/diffviewer.js"></script>
+    <div id="diffapp" data-split="@T["Split"]" data-unified="@T["Unified"]" data-old="@Model.Previous" data-new="@Model.Current" data-old-time="@oldTime" data-old-text="@oldText" data-new-time="@newTime" data-new-text="@newText"></div>
+}
+else
+{
+    <p class="alert alert-info">@T["No previous content item available to diff against"]</p>
+}

@@ -1,27 +1,22 @@
-using System.Collections.Generic;
-using System.Linq;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Extensions.Manifests;
+using OrchardCore.Modules;
 
-namespace OrchardCore.Environment.Extensions
+namespace OrchardCore.Environment.Extensions;
+
+public class NotFoundExtensionInfo : IExtensionInfo
 {
-    public class NotFoundExtensionInfo : IExtensionInfo
+    public NotFoundExtensionInfo(string extensionId)
     {
-        public NotFoundExtensionInfo(string extensionId)
-        {
-            Features = Enumerable.Empty<IFeatureInfo>();
-            Id = extensionId;
-            Manifest = new NotFoundManifestInfo();
-        }
-
-        public bool Exists => false;
-
-        public IEnumerable<IFeatureInfo> Features { get; }
-
-        public string Id { get; }
-
-        public IManifestInfo Manifest { get; }
-
-        public string SubPath => Id;
+        Id = extensionId;
+        SubPath = Application.ModulesRoot + extensionId;
+        Manifest = new NotFoundManifestInfo();
+        Features = [];
     }
+
+    public string Id { get; }
+    public string SubPath { get; }
+    public IManifestInfo Manifest { get; }
+    public IEnumerable<IFeatureInfo> Features { get; }
+    public bool Exists => false;
 }

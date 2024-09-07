@@ -1,10 +1,8 @@
-using System;
 using OrchardCore.Environment.Shell.Builders.Models;
 
-namespace OrchardCore.Environment.Shell.Builders
+namespace OrchardCore.Environment.Shell.Builders;
+
+public interface IShellContainerFactory
 {
-    public interface IShellContainerFactory
-    {
-        IServiceProvider CreateContainer(ShellSettings settings, ShellBlueprint blueprint);
-    }
+    Task<IServiceProvider> CreateContainerAsync(ShellSettings settings, ShellBlueprint blueprint);
 }

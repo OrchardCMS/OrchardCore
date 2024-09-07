@@ -1,6 +1,5 @@
-namespace OrchardCore.Workflows.ViewModels
+namespace OrchardCore.Workflows.ViewModels;
+
+public class CommitTransactionTaskViewModel
 {
-    public class CommitTransactionTaskViewModel
-    {
-    }
 }

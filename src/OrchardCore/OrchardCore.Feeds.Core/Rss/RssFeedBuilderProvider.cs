@@ -1,21 +1,20 @@
-﻿using OrchardCore.Feeds.Models;
+using OrchardCore.Feeds.Models;
 
-namespace OrchardCore.Feeds.Rss
+namespace OrchardCore.Feeds.Rss;
+
+public class RssFeedBuilderProvider : IFeedBuilderProvider
 {
-    public class RssFeedBuilderProvider : IFeedBuilderProvider
+    public FeedBuilderMatch Match(FeedContext context)
     {
-        public FeedBuilderMatch Match(FeedContext context)
+        if (context.Format == "rss")
         {
-            if (context.Format == "rss")
+            return new FeedBuilderMatch
             {
-                return new FeedBuilderMatch
-                {
-                    FeedBuilder = new RssFeedBuilder(),
-                    Priority = -5
-                };
-            }
-
-            return null;
+                FeedBuilder = new RssFeedBuilder(),
+                Priority = -5
+            };
         }
+
+        return null;
     }
 }

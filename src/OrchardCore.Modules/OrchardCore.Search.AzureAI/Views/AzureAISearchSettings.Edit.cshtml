@@ -1,0 +1,54 @@
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Options
+@using OrchardCore.Search.AzureAI
+@using OrchardCore.Search.AzureAI.Drivers
+
+@model AzureAISearchSettingsViewModel
+@inject IOptions<AzureAISearchDefaultOptions> AzureAIOptions
+@inject IAuthorizationService AuthorizationService
+
+@if (!AzureAIOptions.Value.ConfigurationExists() && !AzureAIOptions.Value.FileConfigurationExists())
+{
+    <div class="alert alert-danger" role="alert">
+        @if (!AzureAIOptions.Value.DisableUIConfiguration)
+        {
+            @T["Azure AI Search is not configured."]
+
+            if (await AuthorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
+            {
+                <text>&nbsp;</text> @T["<a href=\"{0}\">Click here</a> to configure Azure AI Search service.", Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AzureAISearchDefaultSettingsDisplayDriver.GroupId })]
+            }
+        }
+        else
+        {
+            @T["Azure AI Search is not configured. Update the appsettings file with Azure Search AI service information."]
+        }
+    </div>
+
+    return;
+}
+
+@if (Model.SearchIndexes == null || Model.SearchIndexes.Count == 0)
+{
+    <div class="alert alert-warning" role="alert">
+        @T["No indices exist! Please create at least one index to configure Azure AI Search service."]
+    </div>
+
+    return;
+}
+
+<div class="mb-3" asp-validation-class-for="SearchIndex">
+    <label asp-for="SearchIndex" class="form-label">@T["Default search index"]</label>
+    <select asp-for="SearchIndex" class="form-select" asp-items="Model.SearchIndexes">
+        <option value="">@T["Select an index"]</option>
+    </select>
+    <span asp-validation-for="SearchIndex"></span>
+    <span class="hint">@T["The default index to use for the search page."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="SearchFields">
+    <label asp-for="SearchFields" class="form-label">@T["Default searched fields"]</label>
+    <input asp-for="SearchFields" class="form-control" />
+    <span asp-validation-for="SearchFields"></span>
+    <span class="hint">@T["A comma separated list of fields to use during search. Leave blank to search all fields."]</span>
+</div>

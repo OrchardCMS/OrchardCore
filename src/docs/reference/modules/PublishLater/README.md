@@ -4,4 +4,4 @@ Adds the ability to schedule content items to be published at a given future dat
 
 ## Video
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/E7UH8R14EUA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/E7UH8R14EUA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

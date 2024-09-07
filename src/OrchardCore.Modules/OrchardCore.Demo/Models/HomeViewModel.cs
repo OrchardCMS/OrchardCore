@@ -1,8 +1,7 @@
-namespace OrchardCore.Demo.Models
+namespace OrchardCore.Demo.Models;
+
+public class HomeViewModel
 {
-    public class HomeViewModel
-    {
-        public string Text { get; set; }
-        public dynamic Foo { get; set; }
-    }
+    public string Text { get; set; }
+    public dynamic Foo { get; set; }
 }

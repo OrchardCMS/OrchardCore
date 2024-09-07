@@ -1,0 +1,31 @@
+/* Import variables first */
+@import 'variables';
+
+/* Import the files from main folder before importing any component */
+@import 'main/helpers';
+@import 'main/overrides';
+
+/* Import the components files */
+@import 'components/action-bar';
+@import 'components/badge';
+@import 'components/bootstrap-select';
+@import 'components/codemirror';
+@import 'components/dropdown';
+@import 'components/forms';
+@import 'components/grid';
+@import 'components/icon-picker';
+@import 'components/list-group';
+@import 'components/markdown';
+@import 'components/monaco';
+@import 'components/navbar';
+@import 'components/nouislider';
+@import 'components/pager';
+@import 'components/sortable';
+@import 'components/tabs';
+@import 'components/trumbowyg';
+@import 'components/validations';
+@import 'components/vue-multiselect';
+
+/* Import themes */
+@import 'themes/light/index';
+@import 'themes/dark/index';

@@ -1,36 +1,49 @@
-using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Email.Drivers;
+using OrchardCore.Email.Controllers;
+using OrchardCore.Email.Core;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Email
+namespace OrchardCore.Email;
+
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    private static readonly RouteValueDictionary _routeValues = new()
     {
-        private readonly IStringLocalizer S;
+        { "area", "OrchardCore.Settings" },
+        { "groupId", EmailSettings.GroupId },
+    };
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            S = localizer;
-        }
+    internal readonly IStringLocalizer S;
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-                return Task.CompletedTask;
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
 
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], settings => settings
-                       .Add(S["Email"], S["Email"].PrefixPosition(), entry => entry
-                       .AddClass("email").Id("email")
-                          .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId })
-                          .Permission(Permissions.ManageEmailSettings)
-                          .LocalNav()
-                )));
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        builder
+            .Add(S["Configuration"], configuration => configuration
+                .Add(S["Settings"], settings => settings
+                   .Add(S["Email"], S["Email"].PrefixPosition(), entry => entry
+                      .AddClass("email")
+                      .Id("email")
+                      .Action("Index", "Admin", _routeValues)
+                      .Permission(Permissions.ManageEmailSettings)
+                      .LocalNav()
+                    )
+                   .Add(S["Email Test"], S["Email Test"].PrefixPosition(), entry => entry
+                      .AddClass("emailtest")
+                      .Id("emailtest")
+                      .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Email")
+                      .Permission(Permissions.ManageEmailSettings)
+                      .LocalNav()
+                    )
+                )
+            );
 
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

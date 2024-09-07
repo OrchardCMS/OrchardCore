@@ -1,0 +1,81 @@
+name: Preview - CI
+on:
+  workflow_dispatch:
+  schedule:
+    # 4:19 AM UTC every day. A random time to avoid peak times of GitHub Actions.
+    - cron: '19 4 * * *'
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Build, Test, Deploy
+    steps:
+    - uses: actions/checkout@v4
+    - name: Check if should publish
+      id: check-publish
+      shell: pwsh
+      run: |
+        $hasCommitFromLastDay = ![string]::IsNullOrEmpty((git log --oneline --since '24 hours ago'))
+        Write-Output "Commits found in the last 24 hours: $hasCommitFromLastDay."
+        $shouldPublish = ($hasCommitFromLastDay -and '${{ github.event_name }}' -eq 'schedule') -or ('${{ github.event_name }}' -eq 'workflow_dispatch')
+        "should-publish=$($shouldPublish ? 'true' : 'false')" >> $Env:GITHUB_OUTPUT
+    - uses: actions/setup-node@v4
+      if: steps.check-publish.outputs.should-publish == 'true'
+      with:
+        node-version: "15"
+    - uses: actions/setup-dotnet@v4
+      if: steps.check-publish.outputs.should-publish == 'true'
+      with:
+        dotnet-version: '8.0.x'
+    - name: Set build number
+      if: steps.check-publish.outputs.should-publish == 'true'
+      run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 16368 ))" >> $GITHUB_ENV
+    - name: Build
+      if: steps.check-publish.outputs.should-publish == 'true'
+      # See pr_ci.yml for the reason why we disable NuGet audit warnings.
+      run: |
+        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
+    - name: Unit Tests
+      if: steps.check-publish.outputs.should-publish == 'true'
+      run: |
+        dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
+    - name: Functional Tests
+      if: steps.check-publish.outputs.should-publish == 'true'
+      run: |
+        cd test/OrchardCore.Tests.Functional
+        npm install
+        npm run cms:test
+        npm run mvc:test
+    - uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: Functional Test failure
+        path: |
+          test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
+    - name: Deploy preview NuGet packages
+      if: steps.check-publish.outputs.should-publish == 'true'
+      run: |
+        dotnet pack -c Release --no-build
+        dotnet nuget push './src/**/*.nupkg' -t 600 -k ${{secrets.CLOUDSMITH_API_KEY}} -n -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
+    - name: Set up Docker Buildx
+      if: steps.check-publish.outputs.should-publish == 'true'
+      uses: docker/setup-buildx-action@v3
+    - name: Login to DockerHub
+      if: steps.check-publish.outputs.should-publish == 'true'
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+    - name: Deploy preview Docker images
+      if: steps.check-publish.outputs.should-publish == 'true'
+      shell: pwsh
+      run: |
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item -Recurse -Confirm:$false
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item -Recurse -Confirm:$false
+        $output = [System.IO.Path]::GetFullPath("./.build/release")
+        dotnet publish -c Release --property:PublishDir=$output --no-build --framework net8.0
+        docker buildx build -f Dockerfile-CI --platform=linux/amd64 -t orchardproject/orchardcore-cms-linux:dev --push .
+        docker buildx build -f Dockerfile-CI --platform=windows/amd64 -t orchardproject/orchardcore-cms-windows:dev --push .

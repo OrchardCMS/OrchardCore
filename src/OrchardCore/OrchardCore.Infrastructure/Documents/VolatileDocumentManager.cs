@@ -1,87 +1,118 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents.Options;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Locking.Distributed;
 
-namespace OrchardCore.Documents
+namespace OrchardCore.Documents;
+
+/// <summary>
+/// A <see cref="DocumentManager{TDocument}"/> using a multi level cache but without any persistent storage.
+/// </summary>
+public class VolatileDocumentManager<TDocument> : DocumentManager<TDocument>, IVolatileDocumentManager<TDocument>
+    where TDocument : class, IDocument, new()
 {
-    /// <summary>
-    /// A <see cref="DocumentManager{TDocument}"/> using a multi level cache but without any persistent storage.
-    /// </summary>
-    public class VolatileDocumentManager<TDocument> : DocumentManager<TDocument>, IVolatileDocumentManager<TDocument> where TDocument : class, IDocument, new()
+    private readonly IDistributedLock _distributedLock;
+    private readonly ILogger _logger;
+
+    private delegate Task<TDocument> UpdateDelegate();
+    private delegate Task AfterUpdateDelegate(TDocument document);
+
+    public VolatileDocumentManager(
+        IDistributedCache distributedCache,
+        IDistributedLock distributedLock,
+        IMemoryCache memoryCache,
+        IOptionsMonitor<DocumentOptions> options,
+        ILogger<DocumentManager<TDocument>> logger)
+        : base(distributedCache, memoryCache, options, logger)
     {
-        private readonly IDistributedLock _distributedLock;
+        _isVolatile = true;
+        _distributedLock = distributedLock;
+        _logger = logger;
+    }
 
-        private delegate Task<TDocument> UpdateDelegate();
-        private UpdateDelegate _updateDelegateAsync;
-
-        private delegate Task AfterUpdateDelegate(TDocument document);
-        private AfterUpdateDelegate _afterUpdateDelegateAsync;
-
-        public VolatileDocumentManager(
-            IDocumentStore documentStore,
-            IDistributedCache distributedCache,
-            IDistributedLock distributedLock,
-            IMemoryCache memoryCache,
-            IOptionsSnapshot<DocumentOptions> options)
-            : base(documentStore, distributedCache, memoryCache, options)
+    public async Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null)
+    {
+        if (_isDistributed)
         {
-            _isVolatile = true;
-            _distributedLock = distributedLock;
+            try
+            {
+                _ = await _distributedCache.GetStringAsync(_options.CacheIdKey);
+            }
+            catch
+            {
+                await DocumentStore.CancelAsync();
+
+                _logger.LogError("Can't update the '{DocumentName}' if not able to access the distributed cache", typeof(TDocument).Name);
+
+                throw;
+            }
         }
 
-        public Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null)
+        var delegates = ShellScope.GetOrCreateFeature<UpdateDelegates>();
+
+        var updateDelegate = new UpdateDelegate(updateAsync);
+        if (delegates.Targets.Add(updateDelegate.Target))
         {
-            if (updateAsync == null)
-            {
-                return Task.CompletedTask;
-            }
-
-            _updateDelegateAsync += () => updateAsync();
-
-            if (afterUpdateAsync != null)
-            {
-                _afterUpdateDelegateAsync += document => afterUpdateAsync(document);
-            }
-
-            _documentStore.AfterCommitSuccess<TDocument>(async () =>
-            {
-                (var locker, var locked) = await _distributedLock.TryAcquireLockAsync(
-                    _options.CacheKey + "_LOCK",
-                    TimeSpan.FromMilliseconds(_options.LockTimeout),
-                    TimeSpan.FromMilliseconds(_options.LockExpiration));
-
-                if (!locked)
-                {
-                    return;
-                }
-
-                await using var acquiredLock = locker;
-
-                TDocument document = null;
-                foreach (var d in _updateDelegateAsync.GetInvocationList())
-                {
-                    document = await ((UpdateDelegate)d)();
-                }
-
-                document.Identifier ??= IdGenerator.GenerateId();
-
-                await SetInternalAsync(document);
-
-                if (_afterUpdateDelegateAsync != null)
-                {
-                    foreach (var d in _afterUpdateDelegateAsync.GetInvocationList())
-                    {
-                        await ((AfterUpdateDelegate)d)(document);
-                    }
-                }
-            });
-
-            return Task.CompletedTask;
+            delegates.UpdateDelegateAsync += updateDelegate;
         }
+
+        if (afterUpdateAsync is not null)
+        {
+            var afterUpdateDelegate = new AfterUpdateDelegate(afterUpdateAsync);
+            if (delegates.Targets.Add(afterUpdateDelegate.Target))
+            {
+                delegates.AfterUpdateDelegateAsync += afterUpdateDelegate;
+            }
+        }
+
+        DocumentStore.AfterCommitSuccess<TDocument>(async () =>
+        {
+            (var locker, var locked) = await _distributedLock.TryAcquireLockAsync(
+                _options.CacheKey + "_LOCK",
+                TimeSpan.FromMilliseconds(_options.LockTimeout),
+                TimeSpan.FromMilliseconds(_options.LockExpiration));
+
+            if (!locked)
+            {
+                return;
+            }
+
+            await using var acquiredLock = locker;
+
+            TDocument document = null;
+            foreach (var d in delegates.UpdateDelegateAsync.GetInvocationList())
+            {
+                document = await ((UpdateDelegate)d)();
+            }
+
+            if (document is null)
+            {
+                return;
+            }
+
+            document.Identifier ??= IdGenerator.GenerateId();
+
+            // A volatile document can't be invalidated.
+            await SetInternalAsync(document);
+
+            if (delegates.AfterUpdateDelegateAsync is not null)
+            {
+                foreach (var d in delegates.AfterUpdateDelegateAsync.GetInvocationList())
+                {
+                    await ((AfterUpdateDelegate)d)(document);
+                }
+            }
+        });
+    }
+
+    private sealed class UpdateDelegates
+    {
+        public UpdateDelegate UpdateDelegateAsync;
+        public AfterUpdateDelegate AfterUpdateDelegateAsync;
+        public HashSet<object> Targets { get; set; } = [];
     }
 }

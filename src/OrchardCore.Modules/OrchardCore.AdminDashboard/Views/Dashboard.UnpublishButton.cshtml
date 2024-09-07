@@ -1,0 +1,4 @@
+<a class="dropdown-item" asp-action="Unpublish" asp-controller="Admin" asp-route-area="OrchardCore.Contents"
+   asp-route-contentItemId="@Model.ContentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath"
+   data-url-af="UnsafeUrl RemoveUrl" data-title=@T["Unpublish"] data-message=@T["Are you sure you want to unpublish this item?"]
+   data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary">@T["Unpublish"]</a>

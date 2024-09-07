@@ -1,7 +1,7 @@
 @model OrchardCore.Facebook.Widgets.Settings.FacebookPluginPartSettingsViewModel
 
 <style asp-name="codemirror"></style>
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
@@ -9,8 +9,8 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
-<div class="form-group">
-    <label asp-for="Liquid">@T["Body"]</label>
+<div class="mb-3">
+    <label asp-for="Liquid" class="form-label">@T["Body"]</label>
     <textarea asp-for="Liquid" rows="5" class="form-control content-preview-text"></textarea>
     <span class="hint">@T["The default template of the plugin, in Liquid format."]</span>
 </div>
@@ -31,8 +31,8 @@ $(function () {
         mode: { name: "liquid" },
     });
 
-    editor.on('change', function (cm) {
-        document.getElementById('@Html.IdFor(x => x.Liquid)').value = cm.getValue();
+    editor.on('change', function(cmEditor){
+        cmEditor.save();
         $(document).trigger('contentpreview:render');
     });
 });

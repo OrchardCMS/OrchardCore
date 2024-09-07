@@ -1,31 +1,41 @@
 @model OpenIdScopeIndexViewModel
-@using OrchardCore.OpenId.ViewModels;
+@using OrchardCore.OpenId.ViewModels
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Scopes"])</h1></zone>
 
-<div class="card mb-3">
-    <div class="card-body bg-primary p-3">
-        <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add a scope"]</a>
+<div class="card text-bg-theme mb-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-end">
+            <a asp-route-action="Create" class="btn btn-secondary" role="button">@T["New scope"]</a>
+        </div>
     </div>
 </div>
 
-@using (Html.BeginForm())
+@if (Model.Scopes == null || Model.Scopes.Count == 0)
 {
+    <div class="alert alert-info text-center" role="alert">
+        @T["There are no scopes at the moment."]
+    </div>
+
+    return;
+}
+
+<form>
     <ul class="list-group">
         @foreach (var entry in Model.Scopes)
         {
             <li class="list-group-item">
-                <div class="properties">
-                    <div class="related float-xs-right">
+                <div class="w-100">
+                    <div class="float-end float-sm-end">
                         <a asp-action="Edit" asp-route-id="@entry.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                        <a class="delete btn btn-danger btn-sm" asp-route-id="@entry.Id" role="button" asp-action="Delete" itemprop="UnsafeUrl RemoveUrl">@T["Delete"]</a>
+                        <a class="delete btn btn-danger btn-sm" asp-route-id="@entry.Id" role="button" asp-action="Delete" data-url-af="UnsafeUrl RemoveUrl">@T["Delete"]</a>
                     </div>
                     @entry.DisplayName (@entry.Name)
                 </div>
             </li>
         }
     </ul>
-}
+</form>
 
 <div id="footer-pager" class="fade-in-pager">
     @await DisplayAsync(Model.Pager)

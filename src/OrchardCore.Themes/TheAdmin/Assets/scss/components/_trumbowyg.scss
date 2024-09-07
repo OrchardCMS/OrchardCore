@@ -1,0 +1,52 @@
+.trumbowyg {
+    font-size: 16px;
+}
+
+[dir] .trumbowyg-box,
+[dir] .trumbowyg-dark .trumbowyg-box {
+    border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+[dir] .trumbowyg-editor-box,
+[dir] .trumbowyg-dark .trumbowyg-editor-box {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+[dir] .trumbowyg-button-pane,
+[dir] .trumbowyg-dark .trumbowyg-button-pane {
+    border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+}
+
+[dir] .trumbowyg-button-pane .trumbowyg-button-group:not(:empty),
+[dir] .trumbowyg-dark .trumbowyg-button-pane .trumbowyg-button-group:not(:empty) {
+    &::after {
+        background: var(--bs-border-color);
+    }
+}
+
+[dir] .trumbowyg-dropdown,
+[dir] .trumbowyg-dark .trumbowyg-dropdown {
+    border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
+}
+
+.trumbowyg-fullscreen {
+    z-index: var(--oc-editor-fullscreen);
+}
+
+[dir] .trumbowyg-textarea,
+[dir] .trumbowyg-dark .trumbowyg-textarea {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+}
+
+[dir] .trumbowyg-box .trumbowyg-editor th,
+[dir] .trumbowyg-box .trumbowyg-editor td {
+    border-width: var(--bs-border-width, 1px);
+    border-style: var(--bs-border-style, solid);
+    border-color: var(--bs-border-color, #dee2e6);
+    padding: 0.5rem;
+}

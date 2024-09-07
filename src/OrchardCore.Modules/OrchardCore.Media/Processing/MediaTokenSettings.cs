@@ -1,9 +1,6 @@
-using System;
+namespace OrchardCore.Media.Processing;
 
-namespace OrchardCore.Media.Processing
+public class MediaTokenSettings
 {
-    public class MediaTokenSettings
-    {
-        public byte[] HashKey { get; set; }
-    }
+    public byte[] HashKey { get; set; }
 }

@@ -1,0 +1,18 @@
+@using OrchardCore.Users.Models
+@using System.Security.Claims
+
+@model TwoFactorMethod
+
+@if (!Model.IsEnabled)
+{
+    <div class="text-end py-2" style="max-width: 20rem;">
+        <form method="post" asp-action="SendVerificationEmail" asp-controller="EmailConfirmation" asp-area="@UserConstants.Features.Users" asp-route-id="@ViewContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)" asp-route-returnUrl="@FullRequestPath">
+            <p class="text-start mb-1">@T["Your email is not yet verified. To use email for two-factor authentication, you must first verify it."]</p>
+            <button type="submit" class="btn btn-sm btn-primary">@T["Verify Email"]</button>
+        </form>
+    </div>
+
+    return;
+}
+
+<div class="btn btn-sm btn-success disabled">@T["Verified"]</div>

@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -14,655 +9,942 @@ using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using YesSql;
 
-namespace OrchardCore.Users.Services
+namespace OrchardCore.Users.Services;
+
+public class UserStore :
+    IUserClaimStore<IUser>,
+    IUserRoleStore<IUser>,
+    IUserPasswordStore<IUser>,
+    IUserEmailStore<IUser>,
+    IUserSecurityStampStore<IUser>,
+    IUserLoginStore<IUser>,
+    IUserLockoutStore<IUser>,
+    IUserAuthenticationTokenStore<IUser>,
+    IUserTwoFactorRecoveryCodeStore<IUser>,
+    IUserTwoFactorStore<IUser>,
+    IUserAuthenticatorKeyStore<IUser>,
+    IUserPhoneNumberStore<IUser>
 {
-    public class UserStore :
-        IUserClaimStore<IUser>,
-        IUserRoleStore<IUser>,
-        IUserPasswordStore<IUser>,
-        IUserEmailStore<IUser>,
-        IUserSecurityStampStore<IUser>,
-        IUserLoginStore<IUser>,
-        IUserAuthenticationTokenStore<IUser>
+    private const string TokenProtector = "OrchardCore.UserStore.Token";
+    private const string InternalLoginProvider = "[OrchardCoreUserStore]";
+    private const string RecoveryCodeTokenName = "RecoveryCodes";
+    private const string AuthenticatorKeyTokenName = "AuthenticatorKey";
+
+    private readonly ISession _session;
+    private readonly ILookupNormalizer _keyNormalizer;
+    private readonly IUserIdGenerator _userIdGenerator;
+    private readonly ILogger _logger;
+    private readonly IRoleService _roleService;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+
+    public UserStore(ISession session,
+        ILookupNormalizer keyNormalizer,
+        IUserIdGenerator userIdGenerator,
+        ILogger<UserStore> logger,
+        IEnumerable<IUserEventHandler> handlers,
+        IRoleService roleService,
+        IDataProtectionProvider dataProtectionProvider)
     {
-        private const string TokenProtector = "OrchardCore.UserStore.Token";
+        _session = session;
+        _keyNormalizer = keyNormalizer;
+        _userIdGenerator = userIdGenerator;
+        _logger = logger;
+        _dataProtectionProvider = dataProtectionProvider;
+        Handlers = handlers;
+        _roleService = roleService;
+    }
 
-        private readonly ISession _session;
-        private readonly IRoleService _roleService;
-        private readonly ILookupNormalizer _keyNormalizer;
-        private readonly IUserIdGenerator _userIdGenerator;
-        private readonly ILogger _logger;
-        private readonly IDataProtectionProvider _dataProtectionProvider;
+    public IEnumerable<IUserEventHandler> Handlers { get; private set; }
 
-        public UserStore(ISession session,
-            IRoleService roleService,
-            ILookupNormalizer keyNormalizer,
-            IUserIdGenerator userIdGenerator,
-            ILogger<UserStore> logger,
-            IEnumerable<IUserEventHandler> handlers,
-            IDataProtectionProvider dataProtectionProvider)
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+    }
+
+    public string NormalizeKey(string key)
+    {
+        return _keyNormalizer == null ? key : _keyNormalizer.NormalizeName(key);
+    }
+
+    #region IUserStore<IUser>
+
+    public async Task<IdentityResult> CreateAsync(IUser user, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is not User newUser)
         {
-            _session = session;
-            _roleService = roleService;
-            _keyNormalizer = keyNormalizer;
-            _userIdGenerator = userIdGenerator;
-            _logger = logger;
-            _dataProtectionProvider = dataProtectionProvider;
-            Handlers = handlers;
-        }
-        public IEnumerable<IUserEventHandler> Handlers { get; private set; }
-
-        public void Dispose()
-        {
-        }
-
-        public string NormalizeKey(string key)
-        {
-            return _keyNormalizer == null ? key : _keyNormalizer.NormalizeName(key);
+            throw new ArgumentException("Expected a User instance.", nameof(user));
         }
 
-        #region IUserStore<IUser>
+        var newUserId = newUser.UserId;
 
-        public async Task<IdentityResult> CreateAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
+        if (string.IsNullOrEmpty(newUserId))
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+            // Due to database collation we normalize the userId to lower invariant.
+            newUserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
+        }
 
-            if (!(user is User newUser))
-            {
-                throw new ArgumentException("Expected a User instance.", nameof(user));
-            }
+        try
+        {
+            var attempts = 10;
 
-            var newUserId = newUser.UserId;
-
-            if (String.IsNullOrEmpty(newUserId))
+            while (await _session.QueryIndex<UserIndex>(x => x.UserId == newUserId).CountAsync() != 0)
             {
-                // Due to database collation we normalize the userId to lower invariant.
+                if (attempts-- == 0)
+                {
+                    throw new ApplicationException("Couldn't generate a unique user id. Too many attempts.");
+                }
+
                 newUserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
             }
 
-            try
+            newUser.UserId = newUserId;
+
+            var context = new UserCreateContext(user);
+
+            await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
+
+            if (context.Cancel)
             {
-                var attempts = 10;
-
-                while (await _session.QueryIndex<UserIndex>(x => x.UserId == newUserId).CountAsync() != 0)
-                {
-                    if (attempts-- == 0)
-                    {
-                        throw new ApplicationException("Couldn't generate a unique user id. Too many attempts.");
-                    }
-
-                    newUserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
-                }
-
-                newUser.UserId = newUserId;
-
-                _session.Save(user);
-
-                await _session.CommitAsync();
-
-                var context = new UserContext(user);
-                await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Unexpected error while creating a new user.");
-
                 return IdentityResult.Failed();
             }
 
-            return IdentityResult.Success;
+            await _session.SaveAsync(user);
+            await _session.SaveChangesAsync();
+            await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Unexpected error while creating a new user.");
+
+            return IdentityResult.Failed();
         }
 
-        public async Task<IdentityResult> DeleteAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
+        return IdentityResult.Success;
+    }
+
+    public async Task<IdentityResult> DeleteAsync(IUser user, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        try
         {
-            if (user == null)
+            var context = new UserDeleteContext(user);
+            await Handlers.InvokeAsync((handler, context) => handler.DeletingAsync(context), context, _logger);
+
+            if (context.Cancel)
             {
-                throw new ArgumentNullException(nameof(user));
+                return IdentityResult.Failed();
             }
 
             _session.Delete(user);
+            await _session.SaveChangesAsync();
+            await Handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Unexpected error while deleting a user.");
 
-            try
-            {
-                await _session.CommitAsync();
+            return IdentityResult.Failed();
+        }
 
-                var context = new UserContext(user);
-                await Handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
-            }
-            catch
+        return IdentityResult.Success;
+    }
+
+    public async Task<IUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default)
+    {
+        return await _session.Query<User, UserIndex>(u => u.UserId == userId).FirstOrDefaultAsync();
+    }
+
+    public async Task<IUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default)
+    {
+        return await _session.Query<User, UserIndex>(u => u.NormalizedUserName == normalizedUserName).FirstOrDefaultAsync();
+    }
+
+    public Task<string> GetNormalizedUserNameAsync(IUser user, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            return Task.FromResult(u.NormalizedUserName);
+        }
+
+        return Task.FromResult<string>(null);
+    }
+
+    public Task<string> GetUserIdAsync(IUser user, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            return Task.FromResult(u.UserId);
+        }
+
+        return Task.FromResult<string>(null);
+    }
+
+    public Task<string> GetUserNameAsync(IUser user, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        return Task.FromResult(user.UserName);
+    }
+
+    public Task SetNormalizedUserNameAsync(IUser user, string normalizedName, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            u.NormalizedUserName = normalizedName;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task SetUserNameAsync(IUser user, string userName, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            u.UserName = userName;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public async Task<IdentityResult> UpdateAsync(IUser user, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        try
+        {
+            var context = new UserUpdateContext(user);
+            await Handlers.InvokeAsync((handler, context) => handler.UpdatingAsync(context), context, _logger);
+
+            if (context.Cancel)
             {
                 return IdentityResult.Failed();
             }
 
-            return IdentityResult.Success;
-        }
-
-        public async Task<IUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return await _session.Query<User, UserIndex>(u => u.UserId == userId).FirstOrDefaultAsync();
-        }
-
-        public async Task<IUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            return await _session.Query<User, UserIndex>(u => u.NormalizedUserName == normalizedUserName).FirstOrDefaultAsync();
-        }
-
-        public Task<string> GetNormalizedUserNameAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            return Task.FromResult(((User)user).NormalizedUserName);
-        }
-
-        public Task<string> GetUserIdAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            return Task.FromResult(((User)user).UserId);
-        }
-
-        public Task<string> GetUserNameAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            return Task.FromResult(((User)user).UserName);
-        }
-
-        public Task SetNormalizedUserNameAsync(IUser user, string normalizedName, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            ((User)user).NormalizedUserName = normalizedName;
-
-            return Task.CompletedTask;
-        }
-
-        public Task SetUserNameAsync(IUser user, string userName, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            ((User)user).UserName = userName;
-
-            return Task.CompletedTask;
-        }
-
-        public async Task<IdentityResult> UpdateAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            _session.Save(user);
-
-            var context = new UserContext(user);
+            await _session.SaveAsync(user);
+            await _session.SaveChangesAsync();
             await Handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Unexpected error while updating a user.");
 
-            return IdentityResult.Success;
+            return IdentityResult.Failed();
         }
 
-        #endregion IUserStore<IUser>
+        return IdentityResult.Success;
+    }
 
-        #region IUserPasswordStore<IUser>
+    #endregion IUserStore<IUser>
 
-        public Task<string> GetPasswordHashAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
+    #region IUserPasswordStore<IUser>
+
+    public Task<string> GetPasswordHashAsync(IUser user, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            return Task.FromResult(((User)user).PasswordHash);
+            return Task.FromResult(u.PasswordHash);
         }
 
-        public Task SetPasswordHashAsync(IUser user, string passwordHash, CancellationToken cancellationToken = default(CancellationToken))
+        return Task.FromResult<string>(null);
+    }
+
+    public Task SetPasswordHashAsync(IUser user, string passwordHash, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            ((User)user).PasswordHash = passwordHash;
-
-            return Task.CompletedTask;
+            u.PasswordHash = passwordHash;
         }
 
-        public Task<bool> HasPasswordAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+        return Task.CompletedTask;
+    }
 
-            return Task.FromResult(((User)user).PasswordHash != null);
+    public Task<bool> HasPasswordAsync(IUser user, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            return Task.FromResult(u.PasswordHash != null);
         }
 
-        #endregion IUserPasswordStore<IUser>
+        return Task.FromResult(false);
+    }
 
-        #region ISecurityStampValidator<IUser>
+    #endregion IUserPasswordStore<IUser>
 
-        public Task SetSecurityStampAsync(IUser user, string stamp, CancellationToken cancellationToken = default(CancellationToken))
+    #region ISecurityStampValidator<IUser>
+
+    public Task SetSecurityStampAsync(IUser user, string stamp, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            ((User)user).SecurityStamp = stamp;
-
-            return Task.CompletedTask;
+            u.SecurityStamp = stamp;
         }
 
-        public Task<string> GetSecurityStampAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+        return Task.CompletedTask;
+    }
 
-            return Task.FromResult(((User)user).SecurityStamp);
+    public Task<string> GetSecurityStampAsync(IUser user, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            return Task.FromResult(u.SecurityStamp);
         }
 
-        #endregion ISecurityStampValidator<IUser>
+        return Task.FromResult<string>(null);
+    }
 
-        #region IUserEmailStore<IUser>
+    #endregion ISecurityStampValidator<IUser>
 
-        public Task SetEmailAsync(IUser user, string email, CancellationToken cancellationToken)
+    #region IUserEmailStore<IUser>
+
+    public Task SetEmailAsync(IUser user, string email, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            ((User)user).Email = email;
-
-            return Task.CompletedTask;
+            u.Email = email;
         }
 
-        public Task<string> GetEmailAsync(IUser user, CancellationToken cancellationToken)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+        return Task.CompletedTask;
+    }
 
-            return Task.FromResult(((User)user).Email);
+    public Task<string> GetEmailAsync(IUser user, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            return Task.FromResult(u.Email);
         }
 
-        public Task<bool> GetEmailConfirmedAsync(IUser user, CancellationToken cancellationToken)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+        return Task.FromResult<string>(null);
+    }
 
-            return Task.FromResult(((User)user).EmailConfirmed);
+    public Task<bool> GetEmailConfirmedAsync(IUser user, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            return Task.FromResult(u.EmailConfirmed);
         }
 
-        public Task SetEmailConfirmedAsync(IUser user, bool confirmed, CancellationToken cancellationToken)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+        return Task.FromResult(false);
+    }
 
-            ((User)user).EmailConfirmed = confirmed;
-            return Task.CompletedTask;
+    public Task SetEmailConfirmedAsync(IUser user, bool confirmed, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            u.EmailConfirmed = confirmed;
         }
 
-        public async Task<IUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
+        return Task.CompletedTask;
+    }
+
+    public async Task<IUser> FindByEmailAsync(string normalizedEmail, CancellationToken cancellationToken)
+    {
+        return await _session.Query<User, UserIndex>(u => u.NormalizedEmail == normalizedEmail).FirstOrDefaultAsync();
+    }
+
+    public Task<string> GetNormalizedEmailAsync(IUser user, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
         {
-            return await _session.Query<User, UserIndex>(u => u.NormalizedEmail == normalizedEmail).FirstOrDefaultAsync();
+            return Task.FromResult(u.NormalizedEmail);
         }
 
-        public Task<string> GetNormalizedEmailAsync(IUser user, CancellationToken cancellationToken)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+        return Task.FromResult<string>(null);
+    }
 
-            return Task.FromResult(((User)user).NormalizedEmail);
+    public Task SetNormalizedEmailAsync(IUser user, string normalizedEmail, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            u.NormalizedEmail = normalizedEmail;
         }
 
-        public Task SetNormalizedEmailAsync(IUser user, string normalizedEmail, CancellationToken cancellationToken)
+        return Task.CompletedTask;
+    }
+
+    #endregion IUserEmailStore<IUser>
+
+    #region IUserRoleStore<IUser>
+
+    public async Task AddToRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            ((User)user).NormalizedEmail = normalizedEmail;
-
-            return Task.CompletedTask;
-        }
-
-        #endregion IUserEmailStore<IUser>
-
-        #region IUserRoleStore<IUser>
-
-        public async Task AddToRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
             var roleNames = await _roleService.GetRoleNamesAsync();
-            var roleName = roleNames?.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
 
-            if (string.IsNullOrWhiteSpace(roleName))
+            var roleName = roleNames.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
+            if (string.IsNullOrEmpty(roleName))
             {
                 throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
             }
 
-            ((User)user).RoleNames.Add(roleName);
+            u.RoleNames.Add(roleName);
         }
+    }
 
-        public async Task RemoveFromRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
+    public async Task RemoveFromRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
             var roleNames = await _roleService.GetRoleNamesAsync();
-            var roleName = roleNames?.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
 
-            if (string.IsNullOrWhiteSpace(roleName))
+            var roleName = roleNames.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
+            if (string.IsNullOrEmpty(roleName))
             {
                 throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
             }
 
-            ((User)user).RoleNames.Remove(roleName);
+            u.RoleNames.Remove(roleName);
+        }
+    }
+
+    public Task<IList<string>> GetRolesAsync(IUser user, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            return Task.FromResult(u.RoleNames);
         }
 
-        public Task<IList<string>> GetRolesAsync(IUser user, CancellationToken cancellationToken)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+        return Task.FromResult<IList<string>>([]);
+    }
 
-            return Task.FromResult<IList<string>>(((User)user).RoleNames);
+    public Task<bool> IsInRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (string.IsNullOrWhiteSpace(normalizedRoleName))
+        {
+            throw new ArgumentException("Value cannot be null or empty.", nameof(normalizedRoleName));
         }
 
-        public Task<bool> IsInRoleAsync(IUser user, string normalizedRoleName, CancellationToken cancellationToken)
+        if (user is User u)
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            if (string.IsNullOrWhiteSpace(normalizedRoleName))
-            {
-                throw new ArgumentException("Value cannot be null or empty.", nameof(normalizedRoleName));
-            }
-
-            return Task.FromResult(((User)user).RoleNames.Contains(normalizedRoleName, StringComparer.OrdinalIgnoreCase));
+            return Task.FromResult(u.RoleNames.Contains(normalizedRoleName, StringComparer.OrdinalIgnoreCase));
         }
 
-        public async Task<IList<IUser>> GetUsersInRoleAsync(string normalizedRoleName, CancellationToken cancellationToken)
+        return Task.FromResult(false);
+    }
+
+    public async Task<IList<IUser>> GetUsersInRoleAsync(string normalizedRoleName, CancellationToken cancellationToken)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(normalizedRoleName);
+
+        var users = await _session.Query<User, UserByRoleNameIndex>(u => u.RoleName == normalizedRoleName).ListAsync();
+        return users == null ? [] : users.ToList<IUser>();
+    }
+
+    #endregion IUserRoleStore<IUser>
+
+    #region IUserLoginStore<IUser>
+
+    public Task AddLoginAsync(IUser user, UserLoginInfo login, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        ArgumentNullException.ThrowIfNull(login);
+
+        if (user is User u)
         {
-            if (string.IsNullOrEmpty(normalizedRoleName))
+            if (u.LoginInfos.Any(i => i.LoginProvider == login.LoginProvider))
             {
-                throw new ArgumentNullException(nameof(normalizedRoleName));
-            }
-
-            var users = await _session.Query<User, UserByRoleNameIndex>(u => u.RoleName == normalizedRoleName).ListAsync();
-            return users == null ? new List<IUser>() : users.ToList<IUser>();
-        }
-
-        #endregion IUserRoleStore<IUser>
-
-        #region IUserLoginStore<IUser>
-
-        public Task AddLoginAsync(IUser user, UserLoginInfo login, CancellationToken cancellationToken)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            if (login == null)
-            {
-                throw new ArgumentNullException(nameof(login));
-            }
-
-            if (((User)user).LoginInfos.Any(i => i.LoginProvider == login.LoginProvider))
                 throw new InvalidOperationException($"Provider {login.LoginProvider} is already linked for {user.UserName}");
-
-            ((User)user).LoginInfos.Add(login);
-
-            return Task.CompletedTask;
-        }
-
-        public async Task<IUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
-        {
-            return await _session.Query<User, UserByLoginInfoIndex>(u => u.LoginProvider == loginProvider && u.ProviderKey == providerKey).FirstOrDefaultAsync();
-        }
-
-        public Task<IList<UserLoginInfo>> GetLoginsAsync(IUser user, CancellationToken cancellationToken)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult<IList<UserLoginInfo>>(((User)user).LoginInfos);
+            u.LoginInfos.Add(login);
         }
 
-        public Task RemoveLoginAsync(IUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
+        return Task.CompletedTask;
+    }
 
-            var externalLogins = ((User)user).LoginInfos;
-            if (externalLogins != null)
-            {
-                var item = externalLogins.FirstOrDefault(c => c.LoginProvider == loginProvider && c.ProviderKey == providerKey);
-                if (item != null)
-                {
-                    externalLogins.Remove(item);
-                }
-            }
-            return Task.CompletedTask;
+    public async Task<IUser> FindByLoginAsync(string loginProvider, string providerKey, CancellationToken cancellationToken)
+    {
+        return await _session.Query<User, UserByLoginInfoIndex>(u => u.LoginProvider == loginProvider && u.ProviderKey == providerKey).FirstOrDefaultAsync();
+    }
+
+    public Task<IList<UserLoginInfo>> GetLoginsAsync(IUser user, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            return Task.FromResult(u.LoginInfos);
         }
 
-        #endregion IUserLoginStore<IUser>
+        return Task.FromResult<IList<UserLoginInfo>>([]);
+    }
 
-        #region IUserClaimStore<IUser>
+    public Task RemoveLoginAsync(IUser user, string loginProvider, string providerKey, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
 
-        public Task<IList<Claim>> GetClaimsAsync(IUser user, CancellationToken cancellationToken)
+        if (user is User u && u.LoginInfos != null)
         {
-            if (user == null)
+            var item = u.LoginInfos.FirstOrDefault(c => c.LoginProvider == loginProvider && c.ProviderKey == providerKey);
+            if (item != null)
             {
-                throw new ArgumentNullException(nameof(user));
+                u.LoginInfos.Remove(item);
             }
-
-            return Task.FromResult<IList<Claim>>(((User)user).UserClaims.Select(x => x.ToClaim()).ToList());
         }
 
-        public Task AddClaimsAsync(IUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
-        {
-            if (user == null)
-                throw new ArgumentNullException(nameof(user));
-            if (claims == null)
-                throw new ArgumentNullException(nameof(claims));
+        return Task.CompletedTask;
+    }
 
+    #endregion IUserLoginStore<IUser>
+
+    #region IUserClaimStore<IUser>
+
+    public Task<IList<Claim>> GetClaimsAsync(IUser user, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is not User u)
+        {
+            return Task.FromResult<IList<Claim>>([]);
+        }
+
+        return Task.FromResult<IList<Claim>>(u.UserClaims.Select(x => x.ToClaim()).ToList());
+    }
+
+    public Task AddClaimsAsync(IUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        ArgumentNullException.ThrowIfNull(claims);
+
+        if (user is User u)
+        {
             foreach (var claim in claims)
             {
-                ((User)user).UserClaims.Add(new UserClaim { ClaimType = claim.Type, ClaimValue = claim.Value });
+                u.UserClaims.Add(new UserClaim { ClaimType = claim.Type, ClaimValue = claim.Value });
             }
-
-            return Task.CompletedTask;
         }
 
-        public Task ReplaceClaimAsync(IUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken)
-        {
-            if (user == null)
-                throw new ArgumentNullException(nameof(user));
-            if (claim == null)
-                throw new ArgumentNullException(nameof(claim));
-            if (newClaim == null)
-                throw new ArgumentNullException(nameof(newClaim));
+        return Task.CompletedTask;
+    }
 
-            foreach (var userClaim in ((User)user).UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type))
+    public Task ReplaceClaimAsync(IUser user, Claim claim, Claim newClaim, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        ArgumentNullException.ThrowIfNull(claim);
+
+        ArgumentNullException.ThrowIfNull(newClaim);
+
+        if (user is User u)
+        {
+            foreach (var userClaim in u.UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type))
             {
                 userClaim.ClaimValue = newClaim.Value;
                 userClaim.ClaimType = newClaim.Type;
             }
-
-            return Task.CompletedTask;
         }
 
-        public Task RemoveClaimsAsync(IUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
-        {
-            if (user == null)
-                throw new ArgumentNullException(nameof(user));
-            if (claims == null)
-                throw new ArgumentNullException(nameof(claims));
+        return Task.CompletedTask;
+    }
 
+    public Task RemoveClaimsAsync(IUser user, IEnumerable<Claim> claims, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        ArgumentNullException.ThrowIfNull(claims);
+
+        if (user is User u)
+        {
             foreach (var claim in claims)
             {
-                foreach (var userClaim in ((User)user).UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type).ToList())
-                    ((User)user).UserClaims.Remove(userClaim);
-            }
-
-            return Task.CompletedTask;
-        }
-
-        public async Task<IList<IUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken)
-        {
-            if (claim == null)
-                throw new ArgumentNullException(nameof(claim));
-
-            var users = await _session.Query<User, UserByClaimIndex>(uc => uc.ClaimType == claim.Type && uc.ClaimValue == claim.Value).ListAsync();
-
-            return users.Cast<IUser>().ToList();
-        }
-
-        #endregion IUserClaimStore<IUser>
-
-        #region IUserAuthenticationTokenStore
-        public Task<string> GetTokenAsync(IUser user, string loginProvider, string name, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            if (string.IsNullOrEmpty(loginProvider))
-            {
-                throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
-            }
-
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("The name cannot be null or empty.", nameof(name));
-            }
-
-            string tokenValue = null;
-            var userToken = GetUserToken(user, loginProvider, name);
-            if (userToken != null)
-            {
-                tokenValue = _dataProtectionProvider.CreateProtector(TokenProtector).Unprotect(userToken.Value);
-            }
-
-            return Task.FromResult(tokenValue);
-        }
-
-        public Task RemoveTokenAsync(IUser user, string loginProvider, string name, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            if (string.IsNullOrEmpty(loginProvider))
-            {
-                throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
-            }
-
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("The name cannot be null or empty.", nameof(name));
-            }
-
-            var userToken = GetUserToken(user, loginProvider, name);
-            if (userToken != null)
-            {
-                ((User)user).UserTokens.Remove(userToken);
-            }
-
-            return Task.CompletedTask;
-        }
-
-        public Task SetTokenAsync(IUser user, string loginProvider, string name, string value, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user));
-            }
-
-            if (string.IsNullOrEmpty(loginProvider))
-            {
-                throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
-            }
-
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentException("The name cannot be null or empty.", nameof(name));
-            }
-
-            if (string.IsNullOrEmpty(value))
-            {
-                throw new ArgumentException("The value cannot be null or empty.", nameof(value));
-            }
-
-            var userToken = GetUserToken(user, loginProvider, name);
-
-            if (userToken == null)
-            {
-                userToken = new UserToken
+                foreach (var userClaim in u.UserClaims.Where(uc => uc.ClaimValue == claim.Value && uc.ClaimType == claim.Type).ToList())
                 {
-                    LoginProvider = loginProvider,
-                    Name = name
-                };
-                ((User)user).UserTokens.Add(userToken);
+                    u.UserClaims.Remove(userClaim);
+                }
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public async Task<IList<IUser>> GetUsersForClaimAsync(Claim claim, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(claim);
+
+        var users = await _session.Query<User, UserByClaimIndex>(uc => uc.ClaimType == claim.Type && uc.ClaimValue == claim.Value).ListAsync();
+
+        return users.Cast<IUser>().ToList();
+    }
+
+    #endregion IUserClaimStore<IUser>
+
+    #region IUserAuthenticationTokenStore
+    public Task<string> GetTokenAsync(IUser user, string loginProvider, string name, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (string.IsNullOrEmpty(loginProvider))
+        {
+            throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
+        }
+
+        if (string.IsNullOrEmpty(name))
+        {
+            throw new ArgumentException("The name cannot be null or empty.", nameof(name));
+        }
+
+        var userToken = GetUserToken(user, loginProvider, name);
+        if (userToken != null)
+        {
+            var value = _dataProtectionProvider.CreateProtector(TokenProtector).Unprotect(userToken.Value);
+
+            return Task.FromResult(value);
+        }
+
+        return Task.FromResult<string>(null);
+    }
+
+    public Task RemoveTokenAsync(IUser user, string loginProvider, string name, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (string.IsNullOrEmpty(loginProvider))
+        {
+            throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
+        }
+
+        if (string.IsNullOrEmpty(name))
+        {
+            throw new ArgumentException("The name cannot be null or empty.", nameof(name));
+        }
+
+        var userToken = GetUserToken(user, loginProvider, name);
+        if (userToken != null && user is User u)
+        {
+            u.UserTokens.Remove(userToken);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task SetTokenAsync(IUser user, string loginProvider, string name, string value, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (string.IsNullOrEmpty(loginProvider))
+        {
+            throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
+        }
+
+        if (string.IsNullOrEmpty(name))
+        {
+            throw new ArgumentException("The name cannot be null or empty.", nameof(name));
+        }
+
+        if (string.IsNullOrEmpty(value))
+        {
+            throw new ArgumentException("The value cannot be null or empty.", nameof(value));
+        }
+
+        var userToken = GetUserToken(user, loginProvider, name);
+
+        if (userToken == null && user is User u)
+        {
+            userToken = new UserToken
+            {
+                LoginProvider = loginProvider,
+                Name = name
+            };
+
+            u.UserTokens.Add(userToken);
+        }
+
+        // Encrypt the token.
+        if (userToken != null)
+        {
+            userToken.Value = _dataProtectionProvider.CreateProtector(TokenProtector).Protect(value);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private static UserToken GetUserToken(IUser user, string loginProvider, string name)
+    {
+        if (user is User u)
+        {
+            return u.UserTokens.FirstOrDefault(ut => ut.LoginProvider == loginProvider && ut.Name == name);
+        }
+
+        return null;
+    }
+    #endregion
+
+    #region IUserLockoutStore<IUser>
+    public Task<int> GetAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            return Task.FromResult(u.AccessFailedCount);
+        }
+
+        return Task.FromResult(0);
+    }
+
+    public Task<bool> GetLockoutEnabledAsync(IUser user, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            return Task.FromResult(u.IsLockoutEnabled);
+        }
+
+        return Task.FromResult(false);
+    }
+
+    public Task<DateTimeOffset?> GetLockoutEndDateAsync(IUser user, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u && u.LockoutEndUtc.HasValue)
+        {
+            return Task.FromResult<DateTimeOffset?>(u.LockoutEndUtc.Value.ToUniversalTime());
+        }
+
+        return Task.FromResult<DateTimeOffset?>(null);
+    }
+
+    public Task<int> IncrementAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            return Task.FromResult(u.AccessFailedCount++);
+        }
+
+        return Task.FromResult(0);
+    }
+
+    public Task ResetAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            u.AccessFailedCount = 0;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task SetLockoutEnabledAsync(IUser user, bool enabled, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            u.IsLockoutEnabled = enabled;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task SetLockoutEndDateAsync(IUser user, DateTimeOffset? lockoutEnd, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            if (lockoutEnd.HasValue)
+            {
+                u.LockoutEndUtc = lockoutEnd.Value.UtcDateTime;
+            }
+            else
+            {
+                u.LockoutEndUtc = null;
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+    #endregion IUserLockoutStore<IUser>
+
+    #region IUserTwoFactorStore<IUser>
+    public Task SetTwoFactorEnabledAsync(IUser user, bool enabled, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            u.TwoFactorEnabled = enabled;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task<bool> GetTwoFactorEnabledAsync(IUser user, CancellationToken cancellationToken)
+    {
+        if (user is User u)
+        {
+            return Task.FromResult(u.TwoFactorEnabled);
+        }
+
+        return Task.FromResult(false);
+    }
+    #endregion
+
+    #region IUserTwoFactorRecoveryCodeStore
+    public Task ReplaceCodesAsync(IUser user, IEnumerable<string> recoveryCodes, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        ArgumentNullException.ThrowIfNull(recoveryCodes);
+
+        var mergedCodes = string.Join(";", recoveryCodes);
+
+        return SetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, mergedCodes, cancellationToken);
+    }
+
+    public async Task<bool> RedeemCodeAsync(IUser user, string code, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            throw new ArgumentException($"{nameof(code)} cannot be null or empty.");
+        }
+
+        var mergedCodes = (await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken)) ?? string.Empty;
+        var splitCodes = mergedCodes.Split(';');
+        if (splitCodes.Contains(code))
+        {
+            var updatedCodes = new List<string>(splitCodes.Where(s => s != code));
+            await ReplaceCodesAsync(user, updatedCodes, cancellationToken);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public async Task<int> CountCodesAsync(IUser user, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        var mergedCodes = (await GetTokenAsync(user, InternalLoginProvider, RecoveryCodeTokenName, cancellationToken)) ?? "";
+        if (mergedCodes.Length > 0)
+        {
+            // non-allocating version of mergedCodes.Split(';').Length
+            var count = 1;
+            var index = 0;
+            while (index < mergedCodes.Length)
+            {
+                var semiColonIndex = mergedCodes.IndexOf(';', index);
+                if (semiColonIndex < 0)
+                {
+                    break;
+                }
+                count++;
+                index = semiColonIndex + 1;
             }
 
-            // Encrypt the token
-            userToken.Value = _dataProtectionProvider.CreateProtector(TokenProtector).Protect(value);
-
-            return Task.CompletedTask;
+            return count;
         }
 
-        private static UserToken GetUserToken(IUser user, string loginProvider, string name)
-        {
-            return ((User)user).UserTokens.FirstOrDefault(ut => ut.LoginProvider == loginProvider &&
-                                                                ut.Name == name);
-        }
-        #endregion
+        return 0;
     }
+    #endregion
+
+    #region IUserAuthenticatorKeyStore<IUser>
+    public virtual Task SetAuthenticatorKeyAsync(IUser user, string key, CancellationToken cancellationToken)
+        => SetTokenAsync(user, InternalLoginProvider, AuthenticatorKeyTokenName, key, cancellationToken);
+
+    public virtual Task<string> GetAuthenticatorKeyAsync(IUser user, CancellationToken cancellationToken)
+        => GetTokenAsync(user, InternalLoginProvider, AuthenticatorKeyTokenName, cancellationToken);
+    #endregion
+
+    #region IUserPhoneNumberStore<IUser>
+    public Task SetPhoneNumberAsync(IUser user, string phoneNumber, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            u.PhoneNumber = phoneNumber;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task SetPhoneNumberConfirmedAsync(IUser user, bool confirmed, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            u.PhoneNumberConfirmed = confirmed;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task<string> GetPhoneNumberAsync(IUser user, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            return Task.FromResult(u.PhoneNumber);
+        }
+
+        return Task.FromResult<string>(null);
+    }
+
+    public Task<bool> GetPhoneNumberConfirmedAsync(IUser user, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+
+        if (user is User u)
+        {
+            return Task.FromResult(u.PhoneNumberConfirmed);
+        }
+
+        return Task.FromResult<bool>(false);
+    }
+    #endregion
 }

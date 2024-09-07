@@ -1,24 +1,25 @@
-using System;
-using System.Threading.Tasks;
+using OrchardCore.Setup.Services;
 
-namespace OrchardCore.Setup.Events
+namespace OrchardCore.Setup.Events;
+
+public interface ISetupEventHandler
 {
     /// <summary>
-    /// Contract that is called when a tenant is set up.
+    /// Called during the process of setting up a new tenant.
     /// </summary>
-    public interface ISetupEventHandler
-    {
-        Task Setup(
-            string siteName,
-            string userName,
-            string userId,
-            string email,
-            string password,
-            string dbProvider,
-            string dbConnectionString,
-            string dbTablePrefix,
-            string siteTimeZone,
-            Action<string, string> reportError
-            );
-    }
+    /// <param name="context"></param>
+    /// <returns></returns>
+    Task SetupAsync(SetupContext context) => Task.CompletedTask;
+
+    /// <summary>
+    /// Called when a tenant fails to setup.
+    /// </summary>
+    /// <returns></returns>
+    Task FailedAsync(SetupContext context) => Task.CompletedTask;
+
+    /// <summary>
+    /// Called when a new tenant is successfully setup.
+    /// </summary>
+    /// <returns></returns>
+    Task SucceededAsync() => Task.CompletedTask;
 }

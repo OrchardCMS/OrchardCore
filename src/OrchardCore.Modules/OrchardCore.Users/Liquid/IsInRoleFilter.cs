@@ -1,36 +1,40 @@
-using System;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.Users.Liquid
+namespace OrchardCore.Users.Liquid;
+
+public class IsInRoleFilter : ILiquidFilter
 {
-    public class IsInRoleFilter : ILiquidFilter
+    private readonly IdentityOptions _identityOptions;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public IsInRoleFilter(IOptions<IdentityOptions> identityOptions, IHttpContextAccessor httpContextAccessor)
     {
-        private readonly string _roleClaimType;
+        _identityOptions = identityOptions.Value;
+        _httpContextAccessor = httpContextAccessor;
+    }
 
-        public IsInRoleFilter(IOptions<IdentityOptions> optionsAccessor)
+    public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+    {
+        if (input.ToObjectValue() is LiquidUserAccessor)
         {
-            _roleClaimType = optionsAccessor.Value.ClaimsIdentity.RoleClaimType;
-        }
-
-        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
-        {
-            var ret = false;
-
-            var claimName = arguments["name"].Or(arguments.At(0)).ToStringValue();
-
-            if (input.ToObjectValue() is ClaimsPrincipal principal)
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (user != null)
             {
-                ret = principal.Claims.Any(claim => claim.Type == _roleClaimType && claim.Value.Equals(claimName, StringComparison.OrdinalIgnoreCase)) == true;
-            }
+                var claimName = arguments["name"].Or(arguments.At(0)).ToStringValue();
+                var roleClaimType = _identityOptions.ClaimsIdentity.RoleClaimType;
 
-            return new ValueTask<FluidValue>(ret ? BooleanValue.True : BooleanValue.False);
+                if (user.Claims.Any(claim => claim.Type == roleClaimType && claim.Value.Equals(claimName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return ValueTask.FromResult<FluidValue>(BooleanValue.True);
+                }
+            }
         }
+
+        return ValueTask.FromResult<FluidValue>(BooleanValue.False);
     }
 }

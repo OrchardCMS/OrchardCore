@@ -1,4 +1,5 @@
 @model OrchardCore.ContentFields.ViewModels.DisplayContentPickerFieldViewModel
+@using OrchardCore.ContentManagement
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.ContentManagement.Metadata.Models
 
@@ -10,7 +11,7 @@
 }
 
 <div class="field field-type-contentpickerfield field-name-@name">
-    <span class="name">@Model.PartFieldDefinition.DisplayName():</span>
+    <span class="name">@Model.PartFieldDefinition.DisplayName()</span>
     @if (contentItems.Any())
     {
         foreach (var contentItem in contentItems)

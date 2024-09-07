@@ -1,38 +1,31 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.Contents.Liquid
+namespace OrchardCore.Contents.Liquid;
+
+public class ContentItemFilter : ILiquidFilter
 {
-    public class ContentItemFilter : ILiquidFilter
+    private readonly IContentManager _contentManager;
+
+    public ContentItemFilter(IContentManager contentManager)
     {
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        _contentManager = contentManager;
+    }
+
+    public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+    {
+        if (input.Type == FluidValues.Array)
         {
-            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-            {
-                throw new ArgumentException("Services missing while invoking 'content_item_id'");
-            }
+            // List of content item ids to return.
+            var contentItemIds = input.Enumerate(ctx).Select(x => x.ToStringValue());
 
-            var contentManager = ((IServiceProvider)services).GetRequiredService<IContentManager>();
-
-            if (input.Type == FluidValues.Array)
-            {
-                // List of content item ids
-                var contentItemIds = input.Enumerate().Select(x => x.ToStringValue()).ToArray();
-
-                return FluidValue.Create(await contentManager.GetAsync(contentItemIds));
-            }
-            else
-            {
-                var contentItemId = input.ToStringValue();
-
-                return FluidValue.Create(await contentManager.GetAsync(contentItemId));
-            }
+            return FluidValue.Create(await _contentManager.GetAsync(contentItemIds), ctx.Options);
         }
+
+        var contentItemId = input.ToStringValue();
+
+        return FluidValue.Create(await _contentManager.GetAsync(contentItemId), ctx.Options);
     }
 }

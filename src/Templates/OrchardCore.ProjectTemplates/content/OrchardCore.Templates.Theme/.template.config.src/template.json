@@ -1,13 +1,31 @@
 {
   "$schema": "http://json.schemastore.org/template",
   "author": "Orchard Project",
-  "classifications": [ "Web", "Orchard Core", "CMS" ],
+  "classifications": [
+    "Web",
+    "Orchard Core",
+    "CMS"
+  ],
   "name": "Orchard Core Theme",
   "identity": "OrchardCore.Templates.Theme",
   "shortName": "octheme",
   "sourceName": "OrchardCore.Templates.Theme",
+  "defaultName": "OrchardCore.Theme",
   "preferNameDirectory": true,
   "symbols": {
+    "Framework": {
+      "type": "parameter",
+      "description": "The target framework for the project.",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "net8.0",
+          "description": "Target net8.0"
+        }
+      ],
+      "replaces": "$(TemplateTargetPackageFramework)",
+      "defaultValue": "${TemplateTargetFramework}"
+    },
     "AddLiquid": {
       "type": "parameter",
       "dataType": "bool",

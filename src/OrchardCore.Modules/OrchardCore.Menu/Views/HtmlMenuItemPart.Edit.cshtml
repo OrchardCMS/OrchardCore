@@ -1,0 +1,38 @@
+@using OrchardCore
+@model HtmlMenuItemPartEditViewModel
+
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Name" class="@Orchard.GetLabelClasses()">@T["Name"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="Name" class="form-control" autofocus />
+    </div>
+</div>
+
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Url" class="@Orchard.GetLabelClasses()">@T["Url"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="Url" class="form-control" />
+    </div>
+</div>
+
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Target" class="@Orchard.GetLabelClasses()">@T["Target"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="Target" list="targetOptions" class="form-control" />
+        <datalist id="targetOptions">
+            <option value="_self">@T["Opens the linked document in the same frame as it was clicked (this is default)."]</option>
+            <option value="_blank">@T["Opens the linked document in a new window or tab."]</option>
+            <option value="_parent">@T["Opens the linked document in the parent frame."]</option>
+            <option value="_top">@T["Opens the linked document in the full body of the window."]</option>
+        </datalist>
+        <span class="hint">@T["The target attribute of the A tag, see more:"] <a class="seedoc" target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#target">target</a></span>
+    </div>
+</div>
+
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Html" class="@Orchard.GetLabelClasses()">@T["Html"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="Html" class="form-control" />
+        <span class="hint">This field will be rendered raw in place of the name; it will be enclosed in the anchor tag.</span>
+    </div>
+</div>

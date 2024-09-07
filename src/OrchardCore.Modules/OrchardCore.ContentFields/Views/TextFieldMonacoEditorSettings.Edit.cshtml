@@ -1,0 +1,62 @@
+@using OrchardCore.Mvc.Core.Utilities
+@model OrchardCore.ContentFields.ViewModels.MonacoSettingsViewModel
+
+@{
+    // Use Url.ToAbsoluteUrl() because Url.Content() leads to a js error: 'Not allowed to load local resource'.
+    var IStandaloneEditorConstructionOptionsSchemaPath = Url.ToAbsoluteUrl("~/OrchardCore.Resources/Scripts/monaco/IStandaloneEditorConstructionOptions.json");
+}
+
+<div id="@Html.IdFor(m => m)" class="field-editor field-editor-monaco">
+    <div class="mb-3">
+        <label asp-for="Options" class="form-label">@T["Enter the editor options."]</label>
+        <div id="@Html.IdFor(m => m)_editor" style="min-height: 200px;" class="form-control"></div>
+        <span class="hint"><a href="https://microsoft.github.io/monaco-editor/typedoc/interfaces/editor.IStandaloneEditorConstructionOptions.html" target="_blank">@T["Documentation for options"]</a></span>
+        <textarea asp-for="Options" hidden>@Html.Raw(Model.Options)</textarea>
+    </div>
+</div>
+<script asp-name="monaco" at="Foot"></script>
+<script at="Foot" depends-on="monaco">
+    document.addEventListener('DOMContentLoaded', function() {
+        require(['vs/editor/editor.main'], function () {
+
+            const html = document.documentElement;
+            const mutationObserver = new MutationObserver(setTheme);
+            mutationObserver.observe(html, { attributes: true });
+
+            function setTheme() {
+                var theme = html.dataset.bsTheme;
+                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    monaco.editor.setTheme('vs-dark');
+                } else {
+                    monaco.editor.setTheme('vs');
+                }
+            }
+
+            setTheme();
+
+            // configure the JSON language support with schemas and schema associations
+            monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+                validate: true,
+                enableSchemaRequest: true,
+                allowComments: true,
+                schemas: [{
+                    uri: "@IStandaloneEditorConstructionOptionsSchemaPath",
+                    fileMatch: ['*']
+                }]
+            });
+
+            var editor = monaco.editor.create(document.getElementById('@Html.IdFor(m => m)_editor'), {
+                automaticLayout: true,
+                language: "json",
+                lineNumbers: false,
+                minimap: { enabled: false }
+            });
+
+            var textArea = document.getElementById('@Html.IdFor(m => m.Options)');
+            editor.getModel().setValue(textArea.value);
+            window.addEventListener("submit", function () {
+                textArea.value = editor.getValue();
+            });
+        });
+    });
+</script>

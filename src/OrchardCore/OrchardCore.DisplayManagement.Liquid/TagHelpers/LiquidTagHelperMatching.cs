@@ -1,78 +1,87 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Razor.Language;
 
-namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
+namespace OrchardCore.DisplayManagement.Liquid.TagHelpers;
+
+public class LiquidTagHelperMatching
 {
-    public class LiquidTagHelperMatching
+    private const string AspPrefix = "asp-";
+    public static readonly LiquidTagHelperMatching None = new();
+    public readonly TagMatchingRuleDescriptor[] _rules = [];
+
+    public LiquidTagHelperMatching()
     {
-        private const string AspPrefix = "asp-";
-        public readonly static LiquidTagHelperMatching None = new LiquidTagHelperMatching();
-        public readonly IEnumerable<TagMatchingRuleDescriptor> _rules = Enumerable.Empty<TagMatchingRuleDescriptor>();
+    }
 
-        public LiquidTagHelperMatching()
+    public LiquidTagHelperMatching(string name, string assemblyName, IEnumerable<TagMatchingRuleDescriptor> tagMatchingRules)
+    {
+        Name = name;
+        AssemblyName = assemblyName;
+        _rules = tagMatchingRules.ToArray();
+    }
+
+    public string Name { get; } = string.Empty;
+    public string AssemblyName { get; } = string.Empty;
+
+    private static bool Predicate(TagMatchingRuleDescriptor rule, string helper, IEnumerable<string> arguments)
+    {
+        // Does it match the required tag name
+        if (rule.TagName != "*" && !string.Equals(rule.TagName, helper, StringComparison.OrdinalIgnoreCase))
         {
+            return false;
         }
 
-        public LiquidTagHelperMatching(string name, string assemblyName, IEnumerable<TagMatchingRuleDescriptor> tagMatchingRules)
+        // Does it expect any specific attribute?
+        if (!rule.Attributes.Any())
         {
-            Name = name;
-            AssemblyName = assemblyName;
-            _rules = tagMatchingRules.ToArray();
+            return true;
         }
 
-        public string Name { get; } = String.Empty;
-        public string AssemblyName { get; } = String.Empty;
-
-        public bool Match(string helper, IEnumerable<string> arguments)
+        // Are all required attributes present?
+        var allRequired = rule.Attributes.All(attr => arguments.Any(name =>
         {
-            return _rules.Any(rule =>
+            // Exact match
+            if (string.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
             {
-                // Does it match the required tag name
-                if (rule.TagName != "*" && !String.Equals(rule.TagName, helper, StringComparison.OrdinalIgnoreCase))
-                {
-                    return false;
-                }
+                return true;
+            }
 
-                // Does it expect any specific attribute?
-                if (!rule.Attributes.Any())
-                {
-                    return true;
-                }
+            // Check by replacing all '_' with '-', e.g. asp_src will map to asp-src
+            name = name.Replace('_', '-');
 
-                // Are all required attributes present?
-                var allRequired = rule.Attributes.All(attr => arguments.Any(name =>
-                {
-                    // Exact match
-                    if (String.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return true;
-                    }
+            if (string.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
 
-                    // Check by replacing all '_' with '-', e.g. asp_src will map to asp-src
-                    name = name.Replace('_', '-');
-
-                    if (attr.Name.StartsWith(AspPrefix, StringComparison.Ordinal) && String.Equals(name, attr.Name.Substring(AspPrefix.Length), StringComparison.OrdinalIgnoreCase))
-                    {
-                        return true;
-                    }
-
-                    if (String.Equals(name, attr.Name, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return true;
-                    }
-
-                    return false;
-                }));
-
-                if (allRequired)
+            if (attr.Name.StartsWith(AspPrefix, StringComparison.Ordinal))
+            {
+                if (name.AsSpan().Equals(attr.Name.AsSpan(AspPrefix.Length), StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
+            }
 
-                return false;
-            });
+            return false;
+        }));
+
+        if (allRequired)
+        {
+            return true;
         }
+
+        return false;
+    }
+
+    public bool Match(string helper, IEnumerable<string> arguments)
+    {
+        foreach (var rule in _rules)
+        {
+            if (Predicate(rule, helper, arguments))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
