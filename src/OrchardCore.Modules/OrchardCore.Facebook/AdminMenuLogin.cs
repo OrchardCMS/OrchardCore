@@ -2,19 +2,19 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.GitHub;
+namespace OrchardCore.Facebook;
 
-public sealed class AdminMenuGitHubLogin : AdminNavigationProvider
+public sealed class AdminMenuLogin : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
-        { "groupId", GitHubConstants.Features.GitHubAuthentication },
+        { "groupId", FacebookConstants.Features.Login },
     };
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenuGitHubLogin(IStringLocalizer<AdminMenuGitHubLogin> stringLocalizer)
+    public AdminMenuLogin(IStringLocalizer<AdminMenuLogin> stringLocalizer)
     {
         S = stringLocalizer;
     }
@@ -24,11 +24,11 @@ public sealed class AdminMenuGitHubLogin : AdminNavigationProvider
         builder
             .Add(S["Security"], security => security
                 .Add(S["Authentication"], authentication => authentication
-                    .Add(S["GitHub"], S["GitHub"].PrefixPosition(), settings => settings
-                        .AddClass("github")
-                        .Id("github")
+                    .Add(S["Meta"], S["Meta"].PrefixPosition(), meta => meta
+                        .AddClass("facebook")
+                        .Id("facebook")
                         .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageGitHubAuthentication)
+                        .Permission(Permissions.ManageFacebookApp)
                         .LocalNav()
                     )
                 )
