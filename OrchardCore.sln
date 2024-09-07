@@ -525,6 +525,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Rules.Core", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Queries.Core", "src\OrchardCore\OrchardCore.Queries.Core\OrchardCore.Queries.Core.csproj", "{61B358F2-702C-40AA-9DF7-7121248FE6DE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Rewrite", "src\OrchardCore.Modules\OrchardCore.Rewrite\OrchardCore.Rewrite.csproj", "{D0F8B342-BDA8-44CB-AA43-7A65C79636A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1389,6 +1391,10 @@ Global
 		{61B358F2-702C-40AA-9DF7-7121248FE6DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61B358F2-702C-40AA-9DF7-7121248FE6DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61B358F2-702C-40AA-9DF7-7121248FE6DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0F8B342-BDA8-44CB-AA43-7A65C79636A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0F8B342-BDA8-44CB-AA43-7A65C79636A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0F8B342-BDA8-44CB-AA43-7A65C79636A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0F8B342-BDA8-44CB-AA43-7A65C79636A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1629,6 +1635,7 @@ Global
 		{E8A1097D-A65A-4B17-A3A2-F50D79552732} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{4BAA08A2-878C-4B96-86BF-5B3DB2B6C2C7} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{61B358F2-702C-40AA-9DF7-7121248FE6DE} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{D0F8B342-BDA8-44CB-AA43-7A65C79636A2} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

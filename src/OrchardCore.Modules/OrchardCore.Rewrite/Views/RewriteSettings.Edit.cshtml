@@ -1,0 +1,9 @@
+@model OrchardCore.Rewrite.ViewModels.RewriteSettingsViewModel
+
+<div class="form-group">
+    <label asp-for="ApacheModRewrite" class="form-label">@T["Apache Mod Rewrite"]</label>
+    <textarea asp-for="ApacheModRewrite" type="text" class="form-control"></textarea>
+    <span asp-validation-for="ApacheModRewrite" class="text-danger"></span>
+</div>
+
+<hr />

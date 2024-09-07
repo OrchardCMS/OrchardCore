@@ -99,6 +99,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Redis\OrchardCore.Redis.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Resources\OrchardCore.Resources.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ResponseCompression\OrchardCore.ResponseCompression.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Rewrite\OrchardCore.Rewrite.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ReverseProxy\OrchardCore.ReverseProxy.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Rules\OrchardCore.Rules.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Roles\OrchardCore.Roles.csproj" PrivateAssets="none" />
