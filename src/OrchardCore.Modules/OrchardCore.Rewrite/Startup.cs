@@ -41,7 +41,9 @@ public sealed class Startup : StartupBase
 
         var rewriteSettings = modRewriteSettings?.ApacheModRewrite;
         if (rewriteSettings == null)
+        {
             return;
+        }
 
         using var apacheModRewrite = new StringReader(rewriteSettings);
 

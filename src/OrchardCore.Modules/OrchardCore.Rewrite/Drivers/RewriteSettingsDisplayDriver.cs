@@ -13,7 +13,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Rewrite.Drivers;
 
-internal class RewriteSettingsDisplayDriver : SiteDisplayDriver<RewriteSettings>
+internal sealed class RewriteSettingsDisplayDriver : SiteDisplayDriver<RewriteSettings>
 {
     public const string GroupId = "Rewrite";
 
@@ -89,11 +89,11 @@ internal class RewriteSettingsDisplayDriver : SiteDisplayDriver<RewriteSettings>
         }
         catch (FormatException ex)
         {
-            updater.ModelState.AddModelError(nameof(settings.ApacheModRewrite), "Parsing error: " + ex.Message);
+            updater.ModelState.AddModelError(nameof(settings.ApacheModRewrite), S["Parsing error: {0}", ex.Message]);
         }
         catch (NotImplementedException ex)
         {
-            updater.ModelState.AddModelError(nameof(settings.ApacheModRewrite), "Parsing error: " + ex.Message);
+            updater.ModelState.AddModelError(nameof(settings.ApacheModRewrite), S["Parsing error: {0}", ex.Message]);
         }
     }
 }

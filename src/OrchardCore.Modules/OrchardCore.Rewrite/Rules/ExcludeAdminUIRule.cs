@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Rewrite;
 
 namespace OrchardCore.Rewrite.Rules;
 
-internal class ExcludeAdminUIRule : IRule
+internal sealed class ExcludeAdminUIRule : IRule
 {
     private readonly PathString _adminUrlPrefix;
 
