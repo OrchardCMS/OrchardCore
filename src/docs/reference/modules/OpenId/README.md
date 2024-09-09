@@ -25,7 +25,7 @@ Allows Orchard Core to function as an OpenID Connect Authorization Server, also 
 Key points:
 - Orchard Core can serve as a centralized identity provider, allowing external applications to authenticate users and manage access control.
 - Powered by the [`OpenIddict`](https://github.com/openiddict/openiddict-core) library, this feature supports token-based authentication without requiring an external identity provider.
-- The Authorization Server maintains a private JWT/validation handler for the `userinfo` API endpoint, so you don’t need to enable the Token Validation feature for the current tenant.
+- The Authorization Server maintains a private JWT/validation handler for the `/connect/userinfo` API endpoint, so you don't need to enable the Token Validation feature for the current tenant.
 - To validate issued tokens, ensure the 'OpenID Connect Token Validation' feature is activated.
 
 Supported flows include:
@@ -37,7 +37,7 @@ Supported flows include:
 
 ## OpenID Connect Token Validation
 
-This feature is responsible for validating tokens issued either by Orchard Core’s own OpenID Connect Authorization Server or by other trusted servers. It supports JSON Web Tokens (JWT) and OpenID Connect discovery, ensuring secure and reliable token validation across distributed applications.
+This feature is responsible for validating tokens issued either by Orchard Core's own OpenID Connect Authorization Server or by other trusted servers. It supports JSON Web Tokens (JWT) and OpenID Connect discovery, ensuring secure and reliable token validation across distributed applications.
 
 ### Configuration
 
