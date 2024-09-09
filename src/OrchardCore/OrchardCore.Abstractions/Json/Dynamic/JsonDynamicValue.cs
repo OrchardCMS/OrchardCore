@@ -133,9 +133,10 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
             {
                 if (_jsonValue is null || _jsonValue.GetValueKind() == JsonValueKind.Null)
                 {
-                    if (binder.Type.IsValueType && (!binder.Type.IsGenericType || binder.Type.GetGenericTypeDefinition() != typeof(Nullable<>)))
+                    if (binder.Type.IsValueType && 
+                        (!binder.Type.IsGenericType || binder.Type.GetGenericTypeDefinition() != typeof(Nullable<>)))
                     {
-                        // Create default instance of the value type
+                        // Create default instance of the value type.
                         result = Activator.CreateInstance(binder.Type);
                     }
                     else
