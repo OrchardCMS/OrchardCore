@@ -78,6 +78,7 @@ public sealed class AzureADStartup : StartupBase
 }
 
 [RequireFeatures("OrchardCore.Deployment")]
+[Feature(MicrosoftAuthenticationConstants.Features.AAD)]
 public sealed class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
