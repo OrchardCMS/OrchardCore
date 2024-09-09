@@ -5,10 +5,10 @@
 `OrchardCore.OpenId` provides robust OpenID Connect functionality, enabling Orchard Core to act as an OpenID Connect Server and Client. The following features are available:
 
 - **Core OpenID Connect Services**
-- **Authorization Server**
-- **Management Interface**
-- **Token Validation**
-- **OIDC Client Integration**
+- **OpenID Connect Authorization Server**
+- **OpenID Connect Management UI**
+- **OpenID Connect Authorization Server**
+- **OpenID Connect Client Integration**
 
 ## Core OpenID Connect Services
 
