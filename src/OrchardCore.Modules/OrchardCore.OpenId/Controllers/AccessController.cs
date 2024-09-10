@@ -606,9 +606,15 @@ public sealed class AccessController : Controller
         {
             identity.AddClaim(new Claim(Claims.Subject, principal.GetUserIdentifier()));
         }
+
         if (string.IsNullOrEmpty(principal.FindFirst(Claims.Name)?.Value))
         {
             identity.AddClaim(new Claim(Claims.Name, principal.GetUserName()));
+        }
+
+        if (string.IsNullOrEmpty(principal.FindFirst(Claims.Role)?.Value))
+        {
+            identity.AddClaim(new Claim(Claims.Role, principal.GetRoles()));
         }
 
         identity.SetDestinations(GetDestinations);
