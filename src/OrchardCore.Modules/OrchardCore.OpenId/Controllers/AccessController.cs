@@ -614,7 +614,10 @@ public sealed class AccessController : Controller
 
         if (string.IsNullOrEmpty(principal.FindFirst(Claims.Role)?.Value))
         {
-            identity.AddClaim(new Claim(Claims.Role, principal.GetRoles()));
+            foreach (var role in principal.GetRoles())
+            {
+                identity.AddClaim(new Claim(Claims.Role, role));
+            }
         }
 
         identity.SetDestinations(GetDestinations);

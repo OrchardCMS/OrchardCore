@@ -22,10 +22,11 @@ internal static class OpenIdExtensions
            principal.FindFirst(ClaimTypes.Name)?.Value ??
            throw new InvalidOperationException("No suitable user name can be found in the principal.");
 
-    internal static string GetRoles(this ClaimsPrincipal principal)
-        => principal.FindFirst(Claims.Role)?.Value ??
-           principal.FindFirst(ClaimTypes.Role)?.Value ??
-           throw new InvalidOperationException("No suitable role can be found in the principal.");
+    internal static string[] GetRoles(this ClaimsPrincipal principal)
+        => principal.FindAll(c => c.Type == Claims.Role || c.Type == ClaimTypes.Role)
+        .Select(x => x.ValueType)
+        .Distinct()
+        .ToArray();
 
     internal static async Task<bool> AnyAsync<T>(this IAsyncEnumerable<T> source)
     {
