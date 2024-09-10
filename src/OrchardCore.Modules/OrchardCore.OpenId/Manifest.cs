@@ -19,7 +19,7 @@ using OrchardCore.OpenId;
 [assembly: Feature(
     Id = OpenIdConstants.Features.Client,
     Name = "OpenID Connect Client Integration",
-    Description = "Allows authentication of users through external OpenID Connect Server (also known as an Identity Provider).",
+    Description = "Allows authentication of users through an external OpenID Connect authorization server (also known as an identity provider).",
     Category = "OpenID Connect",
     Dependencies =
     [
