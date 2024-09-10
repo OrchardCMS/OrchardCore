@@ -10,6 +10,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Rewrite.Models;
 using OrchardCore.Rewrite.ViewModels;
 using OrchardCore.Settings;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Rewrite.Drivers;
 
@@ -20,7 +21,7 @@ internal sealed class RewriteSettingsDisplayDriver : SiteDisplayDriver<RewriteSe
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IShellReleaseManager _shellReleaseManager;
-    private readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public RewriteSettingsDisplayDriver(
         IAuthorizationService authorizationService,
@@ -63,11 +64,11 @@ internal sealed class RewriteSettingsDisplayDriver : SiteDisplayDriver<RewriteSe
             return null;
         }
 
-        var viewModel = new RewriteSettingsViewModel();
+        var model = new RewriteSettingsViewModel();
 
-        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        settings.ApacheModRewrite = viewModel.ApacheModRewrite;
+        settings.ApacheModRewrite = model.ApacheModRewrite;
 
         ValidateUrls(settings, context.Updater);
 
@@ -89,11 +90,11 @@ internal sealed class RewriteSettingsDisplayDriver : SiteDisplayDriver<RewriteSe
         }
         catch (FormatException ex)
         {
-            updater.ModelState.AddModelError(nameof(settings.ApacheModRewrite), S["Parsing error: {0}", ex.Message]);
+            updater.ModelState.AddModelError(Prefix, nameof(RewriteSettingsViewModel.ApacheModRewrite), S["Parsing error: {0}", ex.Message]);
         }
         catch (NotImplementedException ex)
         {
-            updater.ModelState.AddModelError(nameof(settings.ApacheModRewrite), S["Parsing error: {0}", ex.Message]);
+            updater.ModelState.AddModelError(Prefix, nameof(RewriteSettingsViewModel.ApacheModRewrite), S["Parsing error: {0}", ex.Message]);
         }
     }
 }

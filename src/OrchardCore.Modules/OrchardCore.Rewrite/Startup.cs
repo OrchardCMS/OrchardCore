@@ -29,9 +29,9 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddSiteDisplayDriver<RewriteSettingsDisplayDriver>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
     }
 
     public override async ValueTask ConfigureAsync(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -39,13 +39,7 @@ public sealed class Startup : StartupBase
         var siteService = app.ApplicationServices.GetRequiredService<ISiteService>();
         var modRewriteSettings = await siteService.GetSettingsAsync<RewriteSettings>();
 
-        var rewriteSettings = modRewriteSettings?.ApacheModRewrite;
-        if (rewriteSettings == null)
-        {
-            return;
-        }
-
-        using var apacheModRewrite = new StringReader(rewriteSettings);
+        using var apacheModRewrite = new StringReader(modRewriteSettings.ApacheModRewrite ?? string.Empty);
 
         var options = new RewriteOptions()
             .AddApacheModRewrite(apacheModRewrite);
