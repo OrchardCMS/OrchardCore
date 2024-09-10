@@ -10,7 +10,7 @@ using OrchardCore.OpenId;
 
 [assembly: Feature(
     Id = OpenIdConstants.Features.Core,
-    Name = "Core OpenID Connect Services",
+    Name = "OpenID Connect Core Services",
     Description = "Provides the foundational services for all OpenID Connect features.",
     Category = "OpenID Connect",
     EnabledByDependencyOnly = true
