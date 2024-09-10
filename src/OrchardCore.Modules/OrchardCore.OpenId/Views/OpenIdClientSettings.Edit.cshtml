@@ -44,7 +44,7 @@
     <span asp-validation-for="SignedOutCallbackPath"></span>
     <span class="hint">@T["The request path within the application's base path where the user-agent will be redirected after signing out from the identity provider."]</span>
     <span class="hint">
-        @T["To see 'post_logout_redirect_uri' from, visit: <a href=\"{0}\" target=\"_blank\">", "http://openid.net/specs/openid-connect-session-1_0.html#RedirectionAfterLogout"]</a>
+        @T["For more information about 'post_logout_redirect_uri', visit: <a href=\"{0}\" target=\"_blank\">", "https://openid.net/specs/openid-connect-rpinitiated-1_0.html#RedirectionAfterLogout"]</a>
     </span>
 </div>
 
@@ -143,7 +143,6 @@
         <label asp-for="ResponseMode" class="form-label">@T["Response Mode"]</label>
         <select asp-for="ResponseMode" class="form-select">
             <option id="@OpenIdConnectResponseMode.FormPost" value="@OpenIdConnectResponseMode.FormPost">@T[OpenIdConnectResponseMode.FormPost]</option>
-            @*<option id="@OpenIdConnectResponseMode.Fragment" value="@OpenIdConnectResponseMode.Fragment">@T[OpenIdConnectResponseMode.Fragment]</option>*@
             <option id="@OpenIdConnectResponseMode.Query" value="@OpenIdConnectResponseMode.Query">@T[OpenIdConnectResponseMode.Query]</option>
         </select>
         <span asp-validation-for="ResponseMode"></span>
