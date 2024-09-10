@@ -20,7 +20,7 @@ Adds a management interface to the Orchard Core admin dashboard, enabling users 
 
 ## OpenID Connect Authorization Server
 
-Allows Orchard Core to function as an OpenID Connect Authorization Server, also referred to as an Identity Provider (IdP). This feature enables authentication and the issuance of tokens, conforming to OpenID Connect and OAuth 2.0 standards.
+Allows Orchard Core to function as an OpenID Connect authorization server, also referred to as an identity provider (IdP). This feature enables authentication and the issuance of tokens, conforming to OpenID Connect and OAuth 2.0 standards.
 
 Key points:
 - Orchard Core can serve as a centralized identity provider, allowing external applications to authenticate users and manage access control.
