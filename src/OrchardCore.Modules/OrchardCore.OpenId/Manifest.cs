@@ -41,7 +41,7 @@ using OrchardCore.OpenId;
 [assembly: Feature(
     Id = OpenIdConstants.Features.Server,
     Name = "OpenID Connect Authorization Server",
-    Description = "Enables Orchard Core to function as an OpenID Connect Authorization Server/Identity Provider, supporting authentication and token issuance using OpenID Connect and OAuth 2.0 standards. To enable token validation, activate the 'OpenID Connect Token Validation' feature.",
+    Description = "Enables Orchard Core to function as an OpenID Connect authorization server/identity provider, supporting authentication and token issuance using OpenID Connect and OAuth 2.0 standards. To enable token validation, activate the 'OpenID Connect Token Validation' feature.",
     Category = "OpenID Connect",
     Dependencies =
     [
