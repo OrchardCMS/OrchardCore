@@ -53,7 +53,7 @@ using OrchardCore.OpenId;
 [assembly: Feature(
     Id = OpenIdConstants.Features.Validation,
     Name = "OpenID Connect Token Validation",
-    Description = "Validates tokens issued by the OpenID Connect Authorization Server or other trusted servers using JWT and OpenID Connect discovery.",
+    Description = "Validates tokens issued by the local OpenID Connect authorization server or other trusted servers supporting JWT and OpenID Connect discovery.",
     Category = "OpenID Connect",
     Dependencies =
     [
