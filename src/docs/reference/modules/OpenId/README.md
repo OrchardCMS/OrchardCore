@@ -2,7 +2,7 @@
 
 ## OpenID Connect Module
 
-`OrchardCore.OpenId` provides robust OpenID Connect functionality, enabling Orchard Core to act as an OpenID Connect Server and Client. The following features are available:
+`OrchardCore.OpenId` provides robust OpenID Connect functionality, enabling Orchard Core to act as an OpenID Connect server and client. The following features are available:
 
 - **Core OpenID Connect Services**
 - **OpenID Connect Authorization Server**
