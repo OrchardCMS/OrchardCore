@@ -54,8 +54,45 @@ public sealed class DefaultScopesMigration : DataMigration
 
                 await scopeManager.CreateAsync(descriptor);
             }
+
+            if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.Roles) == null)
+            {
+                var descriptor = new OpenIdScopeDescriptor
+                {
+                    DisplayName = S["Roles"],
+                    Name = OpenIddictConstants.Scopes.Roles,
+                    Description = S["Requests access to the user's roles."]
+                };
+
+                await scopeManager.CreateAsync(descriptor);
+            }
         });
 
-        return 1;
+        return 2;
+    }
+
+#pragma warning disable CA1822 // Mark members as static
+    public int UpdateFrom1()
+#pragma warning restore CA1822 // Mark members as static
+    {
+        ShellScope.AddDeferredTask(async shellScope =>
+        {
+            var S = shellScope.ServiceProvider.GetService<IStringLocalizer<DefaultScopesMigration>>();
+            var scopeManager = shellScope.ServiceProvider.GetRequiredService<IOpenIdScopeManager>();
+
+            if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.Roles) == null)
+            {
+                var descriptor = new OpenIdScopeDescriptor
+                {
+                    DisplayName = S["Roles"],
+                    Name = OpenIddictConstants.Scopes.Roles,
+                    Description = S["Requests access to the user's roles."]
+                };
+
+                await scopeManager.CreateAsync(descriptor);
+            }
+        });
+
+        return 2;
     }
 }

@@ -9,7 +9,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="EnableTokenEndpoint">
         <label class="form-check-label" asp-for="EnableTokenEndpoint">@T["Enable Token Endpoint"]</label>
-        <span class="hint dashed">@T["Enables action"] /connect/token</span>
+        <span class="hint dashed">@T["Enables the endpoint:"] <code>/connect/token</code></span>
     </div>
 </div>
 
@@ -17,7 +17,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="EnableAuthorizationEndpoint">
         <label class="form-check-label" asp-for="EnableAuthorizationEndpoint">@T["Enable Authorization Endpoint"]</label>
-        <span class="hint dashed">@T["Enables action"] /connect/authorize</span>
+        <span class="hint dashed">@T["Enables the endpoint:"] <code>/connect/authorize</code></span>
     </div>
 </div>
 
@@ -25,7 +25,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="EnableLogoutEndpoint">
         <label class="form-check-label" asp-for="EnableLogoutEndpoint">@T["Enable Logout Endpoint"]</label>
-        <span class="hint dashed">@T["Enables action"] /connect/logout</span>
+        <span class="hint dashed">@T["Enables the endpoint:"] <code>/connect/logout</code></span>
     </div>
 </div>
 
@@ -33,7 +33,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="EnableUserInfoEndpoint">
         <label class="form-check-label" asp-for="EnableUserInfoEndpoint">@T["Enable User Info Endpoint"]</label>
-        <span class="hint dashed">@T["Enables action"] /connect/userinfo</span>
+        <span class="hint dashed">@T["Enables the endpoint:"] <code>/connect/userinfo</code></span>
     </div>
 </div>
 
@@ -41,7 +41,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="EnableIntrospectionEndpoint">
         <label class="form-check-label" asp-for="EnableIntrospectionEndpoint">@T["Enable Introspection Endpoint"]</label>
-        <span class="hint dashed">@T["Enables action"] /connect/introspect</span>
+        <span class="hint dashed">@T["Enables the endpoint:"] <code>/connect/introspect</code></span>
     </div>
 </div>
 
@@ -49,7 +49,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="EnableRevocationEndpoint">
         <label class="form-check-label" asp-for="EnableRevocationEndpoint">@T["Enable Revocation Endpoint"]</label>
-        <span class="hint dashed">@T["Enables action"] /connect/revoke</span>
+        <span class="hint dashed">@T["Enables the endpoint:"] <code>/connect/revoke</code></span>
     </div>
 </div>
 
@@ -67,7 +67,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="AllowImplicitFlow">
         <label class="form-check-label" asp-for="AllowImplicitFlow">@T["Allow Implicit Flow"]</label>
-        <span class="hint dashed">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth</a></span>
+        <span class="hint dashed">@T["For more information about the Implicit Flow, visit:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth</a></span>
     </div>
 </div>
 
@@ -75,7 +75,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="AllowHybridFlow">
         <label class="form-check-label" asp-for="AllowHybridFlow">@T["Allow Hybrid Flow"]</label>
-        <span class="hint dashed">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth</a></span>
+        <span class="hint dashed">@T["For more information about the Hybrid Flow, visit:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth</a></span>
     </div>
 </div>
 
@@ -83,7 +83,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="AllowPasswordFlow">
         <label class="form-check-label" asp-for="AllowPasswordFlow">@T["Allow Password Flow"]</label>
-        <span class="hint dashed">@T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.3">https://tools.ietf.org/html/rfc6749#section-1.3.3</a></span>
+        <span class="hint dashed">@T["For more information about the Password Flow, visit:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.3">https://tools.ietf.org/html/rfc6749#section-1.3.3</a></span>
     </div>
 </div>
 
@@ -91,7 +91,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="AllowRefreshTokenFlow">
         <label class="form-check-label" asp-for="AllowRefreshTokenFlow">@T["Allow Refresh Token Flow"]</label>
-        <span class="hint dashed">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens">http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens</a></span>
+        <span class="hint dashed">@T["For more information about the Refresh Token Flow, visit:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens">http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens</a></span>
     </div>
 </div>
 
@@ -99,7 +99,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="AllowClientCredentialsFlow">
         <label class="form-check-label" asp-for="AllowClientCredentialsFlow">@T["Allow Client Credentials Flow"]</label>
-        <span class="hint dashed">@T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.4">https://tools.ietf.org/html/rfc6749#section-1.3.4</a></span>
+        <span class="hint dashed">@T["For more information about the Client Credentials Flow, visit:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.4">https://tools.ietf.org/html/rfc6749#section-1.3.4</a></span>
     </div>
 </div>
 
@@ -110,19 +110,19 @@
         <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>
     </div>
     <div class="hint">
-        @T["Global setting that applies PKCE to all registered clients whether or not the 'Require PKCE' option is set on the individual client application."]
+        @T["A global setting that enforces PKCE for all registered clients, regardless of whether the 'Require PKCE' option is enabled for individual client applications."]
     </div>
 </div>
 
 <h3>@T["Advanced options"]</h3>
 
-<p class="alert alert-info">@T["These options are all optional and are for advanced users only."]</p>
+<p class="alert alert-info">@T["These options are optional and intended for advanced use only."]</p>
 
 <div class="mb-3" asp-validation-class-for="Authority">
     <label asp-for="Authority" class="form-label">@T["Authority"]</label>
     <input asp-for="Authority" class="form-control" />
     <span asp-validation-for="Authority"></span>
-    <span class="hint">@T["The base URL of the identity server (this site). If none is provided, a default value based on the site host is automatically computed."]</span>
+    <span class="hint">@T["The base URL of the identity server (this site). If not provided, a default value will be automatically generated based on the site host."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="EncryptionCertificateStoreLocation">
@@ -173,7 +173,7 @@
                 var friendlyName = certificate.FriendlyName;
                 if (string.IsNullOrWhiteSpace(friendlyName) && !string.IsNullOrWhiteSpace(certificate.ThumbPrint))
                 {
-                    friendlyName = "No Friendly Name";
+                    friendlyName = T["No Friendly Name"].Value;
                 }
                 <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
                     @friendlyName [@certificate.NotBefore.ToString("dd/MM/yy") - @certificate.NotAfter.ToString("dd/MM/yy")] @certificate.Subject
@@ -185,7 +185,7 @@
     }
     else
     {
-        <div class="alert alert-warning" asp-validation-for="CertificateThumbprint">@T["You need to add a certificate to your server for setting up OpenID Connect module."]</div>
+        <div class="alert alert-warning" asp-validation-for="CertificateThumbprint">@T["A certificate must be added to your server to set up the OpenID Connect module."]</div>
     }
 </div>
 
@@ -237,7 +237,7 @@
                 var friendlyName = certificate.FriendlyName;
                 if (string.IsNullOrWhiteSpace(friendlyName) && !string.IsNullOrWhiteSpace(certificate.ThumbPrint))
                 {
-                    friendlyName = "No Friendly Name";
+                    friendlyName = T["No Friendly Name"].Value; ;
                 }
                 <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
                     @friendlyName [@certificate.NotBefore.ToString("dd/MM/yy") - @certificate.NotAfter.ToString("dd/MM/yy")] @certificate.Subject
@@ -278,7 +278,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="DisableAccessTokenEncryption">
         <label class="form-check-label" asp-for="DisableAccessTokenEncryption">@T["Disable Access Token Encryption (only for JWT tokens)"]</label>
-        <span class="hint dashed">@T["When this option is enabled, the JWT access token tokens are not encrypted."]</span>
+        <span class="hint dashed">@T["When enabled, JWT access tokens are not encrypted."]</span>
     </div>
 </div>
 
@@ -286,7 +286,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="UseReferenceAccessTokens">
         <label class="form-check-label" asp-for="UseReferenceAccessTokens">@T["Use Reference Access Tokens"]</label>
-        <span class="hint dashed">@T["When this option is enabled, the access token are stored in the database and fixed size tokens are returned to the client, which can be useful when storing a very large number of claims. Important: this option cannot be currently enabled when other tenants are configured to use this server."]</span>
+        <span class="hint dashed">@T["When enabled, access tokens are stored in the database, and fixed-size tokens are returned to the client. This can be useful for handling a large number of claims. Note: This option cannot be enabled if other tenants are configured to use this server."]</span>
     </div>
 </div>
 
