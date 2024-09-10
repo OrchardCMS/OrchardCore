@@ -113,7 +113,7 @@
 
     <div class="mb-3 collapse" asp-validation-class-for="ClientSecret">
         <label asp-for="ClientSecret" class="form-label">@T["Client Secret"]</label>
-        <input asp-for="ClientSecret" class="form-control" type="password" autocomplete="new-password" />
+        <input asp-for="ClientSecret" class="form-control" type="password" autocomplete="new-password" placeholder="@(Model.HasClientSecret ? T["A client secret is securely stored. Provide a new one to replace it."]: T["Set a client secret for your new account."])" />
         <span asp-validation-for="ClientSecret"></span>
         <span class="hint">@T["The '{0}' assigned by the identity provider.", "client_secret"]</span>
     </div>
