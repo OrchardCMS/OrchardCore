@@ -19,18 +19,6 @@ public sealed class DefaultScopesMigration : DataMigration
             var S = shellScope.ServiceProvider.GetService<IStringLocalizer<DefaultScopesMigration>>();
             var scopeManager = shellScope.ServiceProvider.GetRequiredService<IOpenIdScopeManager>();
 
-            if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.Profile) == null)
-            {
-                var descriptor = new OpenIdScopeDescriptor
-                {
-                    DisplayName = S["Profile"],
-                    Name = OpenIddictConstants.Scopes.Profile,
-                    Description = S["Requests access to the user's default profile information."]
-                };
-
-                await scopeManager.CreateAsync(descriptor);
-            }
-
             if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.Email) == null)
             {
                 var descriptor = new OpenIdScopeDescriptor
