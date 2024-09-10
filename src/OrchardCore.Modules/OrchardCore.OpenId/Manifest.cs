@@ -30,7 +30,7 @@ using OrchardCore.OpenId;
 [assembly: Feature(
     Id = OpenIdConstants.Features.Management,
     Name = "OpenID Connect Management UI",
-    Description = "Adds a user interface for managing OpenID Connect applications, scopes, and permissions.",
+    Description = "Adds a user interface for managing OpenID Connect applications, scopes and permissions.",
     Category = "OpenID Connect",
     Dependencies =
     [
