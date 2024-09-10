@@ -31,6 +31,17 @@ public sealed class DefaultScopesMigration : DataMigration
                 await scopeManager.CreateAsync(descriptor);
             }
 
+            if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.Profile) == null)
+            {
+                var descriptor = new OpenIdScopeDescriptor
+                {
+                    DisplayName = S["Profile"],
+                    Name = OpenIddictConstants.Scopes.Profile,
+                    Description = S["Requests access to the user's default profile information."]
+                };
+                await scopeManager.CreateAsync(descriptor);
+            }
+
             if (await scopeManager.FindByNameAsync(OpenIddictConstants.Scopes.Phone) == null)
             {
                 var descriptor = new OpenIdScopeDescriptor
