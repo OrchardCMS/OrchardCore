@@ -12,23 +12,22 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.ContentPreview
+namespace OrchardCore.ContentPreview;
+
+public sealed class Startup : Modules.StartupBase
 {
-    public sealed class Startup : Modules.StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
 
-            services.AddScoped<IContentDisplayDriver, ContentPreviewDriver>();
+        services.AddScoped<IContentDisplayDriver, ContentPreviewDriver>();
 
-            // Preview Part
-            services.AddContentPart<PreviewPart>()
-                .AddHandler<PreviewPartHandler>();
+        // Preview Part
+        services.AddContentPart<PreviewPart>()
+            .AddHandler<PreviewPartHandler>();
 
-            services.AddDataMigration<Migrations>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, PreviewPartSettingsDisplayDriver>();
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, PreviewStartupFilter>());
-        }
+        services.AddDataMigration<Migrations>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, PreviewPartSettingsDisplayDriver>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, PreviewStartupFilter>());
     }
 }

@@ -1,38 +1,36 @@
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 
-namespace OrchardCore.OpenId.Deployment
+namespace OrchardCore.OpenId.Deployment;
+
+public class OpenIdValidationDeploymentSource : IDeploymentSource
 {
-    public class OpenIdValidationDeploymentSource : IDeploymentSource
+    private readonly IOpenIdValidationService _openIdValidationService;
+
+    public OpenIdValidationDeploymentSource(IOpenIdValidationService openIdValidationService)
     {
-        private readonly IOpenIdValidationService _openIdValidationService;
+        _openIdValidationService = openIdValidationService;
+    }
 
-        public OpenIdValidationDeploymentSource(IOpenIdValidationService openIdValidationService)
+    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    {
+        var openIdValidationStep = step as OpenIdValidationDeploymentStep;
+
+        if (openIdValidationStep == null)
         {
-            _openIdValidationService = openIdValidationService;
+            return;
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-        {
-            var openIdValidationStep = step as OpenIdValidationDeploymentStep;
+        var validationSettings = await _openIdValidationService.GetSettingsAsync();
 
-            if (openIdValidationStep == null)
-            {
-                return;
-            }
+        // The 'name' property should match the related recipe step name.
+        var jObject = new JsonObject { ["name"] = nameof(OpenIdValidationSettings) };
 
-            var validationSettings = await _openIdValidationService.GetSettingsAsync();
+        // Merge settings as the recipe step doesn't use a child property.
+        jObject.Merge(JObject.FromObject(validationSettings));
 
-            // The 'name' property should match the related recipe step name.
-            var jObject = new JsonObject { ["name"] = nameof(OpenIdValidationSettings) };
-
-            // Merge settings as the recipe step doesn't use a child property.
-            jObject.Merge(JObject.FromObject(validationSettings));
-
-            result.Steps.Add(jObject);
-        }
+        result.Steps.Add(jObject);
     }
 }

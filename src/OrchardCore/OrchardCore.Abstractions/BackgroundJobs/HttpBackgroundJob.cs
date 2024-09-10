@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
@@ -63,7 +61,7 @@ public static class HttpBackgroundJob
             httpContextAccessor.HttpContext = shellContext.CreateHttpContext();
             // Restore the current user.
             httpContextAccessor.HttpContext.User = userPrincipal;
-            
+
             // Here the 'IActionContextAccessor.ActionContext' need to be cleared, this 'AsyncLocal'
             // field is not cleared by 'AspnetCore' and still references the previous 'HttpContext'.
             var actionContextAccessor = scope.ServiceProvider.GetService<IActionContextAccessor>();

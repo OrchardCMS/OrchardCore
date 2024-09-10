@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement;
@@ -11,35 +9,34 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using YesSql;
 using YesSql.Services;
 
-namespace OrchardCore.ContentLocalization.Services
+namespace OrchardCore.ContentLocalization.Services;
+
+public class LocalizationPartContentsAdminListFilter : IContentsAdminListFilter
 {
-    public class LocalizationPartContentsAdminListFilter : IContentsAdminListFilter
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+
+    public LocalizationPartContentsAdminListFilter(IContentDefinitionManager contentDefinitionManager)
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        _contentDefinitionManager = contentDefinitionManager;
+    }
 
-        public LocalizationPartContentsAdminListFilter(IContentDefinitionManager contentDefinitionManager)
+    public async Task FilterAsync(ContentOptionsViewModel model, IQuery<ContentItem> query, IUpdateModel updater)
+    {
+        var viewModel = new LocalizationContentsAdminFilterViewModel();
+        await updater.TryUpdateModelAsync(viewModel, "Localization");
+
+        // Show localization content items
+        // This is intended to be used by adding ?Localization.ShowLocalizedContentTypes to an AdminMenu url.
+        if (viewModel.ShowLocalizedContentTypes)
         {
-            _contentDefinitionManager = contentDefinitionManager;
-        }
+            var localizedTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
+                .Where(x =>
+                    x.Parts.Any(p =>
+                        p.PartDefinition.Name == nameof(LocalizationPart)))
+                .Select(x => x.Name);
 
-        public async Task FilterAsync(ContentOptionsViewModel model, IQuery<ContentItem> query, IUpdateModel updater)
-        {
-            var viewModel = new LocalizationContentsAdminFilterViewModel();
-            await updater.TryUpdateModelAsync(viewModel, "Localization");
+            query.With<ContentItemIndex>(x => x.ContentType.IsIn(localizedTypes));
 
-            // Show localization content items
-            // This is intended to be used by adding ?Localization.ShowLocalizedContentTypes to an AdminMenu url.
-            if (viewModel.ShowLocalizedContentTypes)
-            {
-                var localizedTypes = (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                    .Where(x =>
-                        x.Parts.Any(p =>
-                            p.PartDefinition.Name == nameof(LocalizationPart)))
-                    .Select(x => x.Name);
-
-                query.With<ContentItemIndex>(x => x.ContentType.IsIn(localizedTypes));
-
-            }
         }
     }
 }

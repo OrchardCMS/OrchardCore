@@ -1,13 +1,12 @@
-using System.Collections.Generic;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Notifications.ViewModels;
 
 namespace OrchardCore.Notifications.Drivers;
 
-public class NotificationDisplayDriver : DisplayDriver<Notification>
+public sealed class NotificationDisplayDriver : DisplayDriver<Notification>
 {
-    public override IDisplayResult Display(Notification notification)
+    public override Task<IDisplayResult> DisplayAsync(Notification notification, BuildDisplayContext context)
     {
         var results = new List<IDisplayResult>()
         {
@@ -19,6 +18,6 @@ public class NotificationDisplayDriver : DisplayDriver<Notification>
                 .Location("SummaryAdmin", "ActionsMenu:10"),
         };
 
-        return Combine(results);
+        return CombineAsync(results);
     }
 }

@@ -1,10 +1,8 @@
-using System.Collections.Generic;
 using OrchardCore.Data.Documents;
 
-namespace OrchardCore.Layers.Models
+namespace OrchardCore.Layers.Models;
+
+public class LayersDocument : Document
 {
-    public class LayersDocument : Document
-    {
-        public List<Layer> Layers { get; set; } = [];
-    }
+    public List<Layer> Layers { get; set; } = [];
 }

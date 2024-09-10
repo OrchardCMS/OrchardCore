@@ -6,7 +6,6 @@ using OrchardCore.Facebook.Filters;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook;
 
@@ -15,9 +14,9 @@ public sealed class StartupPixel : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<ISite>, FacebookPixelSettingsDisplayDriver>();
-        services.AddScoped<IPermissionProvider, PixelPermissionProvider>();
-        services.AddScoped<INavigationProvider, AdminMenuPixel>();
+        services.AddSiteDisplayDriver<FacebookPixelSettingsDisplayDriver>();
+        services.AddPermissionProvider<PixelPermissionProvider>();
+        services.AddNavigationProvider<AdminMenuPixel>();
 
         services.Configure<MvcOptions>((options) =>
         {

@@ -1,171 +1,166 @@
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.FileProviders.Physical;
 using Microsoft.Extensions.Logging;
 using OrchardCore.FileStorage;
 
-namespace OrchardCore.Media.Core
+namespace OrchardCore.Media.Core;
+
+public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMediaFileStoreCacheFileProvider
 {
-    public class DefaultMediaFileStoreCacheFileProvider : PhysicalFileProvider, IMediaFileStoreCacheFileProvider
+    /// <summary>
+    /// The path in the wwwroot folder containing the asset cache.
+    /// The tenants name will be prepended to this path.
+    /// </summary>
+    public const string AssetsCachePath = "ms-cache";
+
+    // Use default stream copy buffer size to stay in gen0 garbage collection.
+    private const int StreamCopyBufferSize = 81920;
+
+    private readonly ILogger _logger;
+
+    public DefaultMediaFileStoreCacheFileProvider(ILogger<DefaultMediaFileStoreCacheFileProvider> logger, PathString virtualPathBase, string root) : base(root)
     {
-        /// <summary>
-        /// The path in the wwwroot folder containing the asset cache.
-        /// The tenants name will be prepended to this path.
-        /// </summary>
-        public const string AssetsCachePath = "ms-cache";
+        _logger = logger;
+        VirtualPathBase = virtualPathBase;
+    }
 
-        // Use default stream copy buffer size to stay in gen0 garbage collection.
-        private const int StreamCopyBufferSize = 81920;
+    public DefaultMediaFileStoreCacheFileProvider(ILogger<DefaultMediaFileStoreCacheFileProvider> logger, PathString virtualPathBase, string root, ExclusionFilters filters) : base(root, filters)
+    {
+        _logger = logger;
+        VirtualPathBase = virtualPathBase;
+    }
 
-        private readonly ILogger _logger;
+    public PathString VirtualPathBase { get; }
 
-        public DefaultMediaFileStoreCacheFileProvider(ILogger<DefaultMediaFileStoreCacheFileProvider> logger, PathString virtualPathBase, string root) : base(root)
+    public Task<bool> IsCachedAsync(string path)
+    {
+        // Opportunity here to save metadata and/or provide cache validation / integrity checks.
+
+        var fileInfo = GetFileInfo(path);
+        return Task.FromResult(fileInfo.Exists);
+    }
+
+    public async Task SetCacheAsync(Stream stream, IFileStoreEntry fileStoreEntry, CancellationToken cancellationToken)
+    {
+        // File store semantics may include a leading slash.
+        var cachePath = Path.Combine(Root, fileStoreEntry.Path.TrimStart('/'));
+        var directory = Path.GetDirectoryName(cachePath);
+
+        if (!Directory.Exists(directory))
         {
-            _logger = logger;
-            VirtualPathBase = virtualPathBase;
+            Directory.CreateDirectory(directory);
         }
 
-        public DefaultMediaFileStoreCacheFileProvider(ILogger<DefaultMediaFileStoreCacheFileProvider> logger, PathString virtualPathBase, string root, ExclusionFilters filters) : base(root, filters)
+        // A file download may fail, so a partially downloaded file should be deleted so the next request can reprocess.
+        // All exceptions here are recaught by the MediaFileStoreResolverMiddleware.
+        try
         {
-            _logger = logger;
-            VirtualPathBase = virtualPathBase;
-        }
-
-        public PathString VirtualPathBase { get; }
-
-        public Task<bool> IsCachedAsync(string path)
-        {
-            // Opportunity here to save metadata and/or provide cache validation / integrity checks.
-
-            var fileInfo = GetFileInfo(path);
-            return Task.FromResult(fileInfo.Exists);
-        }
-
-        public async Task SetCacheAsync(Stream stream, IFileStoreEntry fileStoreEntry, CancellationToken cancellationToken)
-        {
-            // File store semantics may include a leading slash.
-            var cachePath = Path.Combine(Root, fileStoreEntry.Path.TrimStart('/'));
-            var directory = Path.GetDirectoryName(cachePath);
-
-            if (!Directory.Exists(directory))
+            if (File.Exists(cachePath))
             {
-                Directory.CreateDirectory(directory);
+                File.Delete(cachePath);
             }
 
-            // A file download may fail, so a partially downloaded file should be deleted so the next request can reprocess.
-            // All exceptions here are recaught by the MediaFileStoreResolverMiddleware.
-            try
-            {
-                if (File.Exists(cachePath))
-                {
-                    File.Delete(cachePath);
-                }
+            using var fileStream = File.Create(cachePath);
+            await stream.CopyToAsync(fileStream, StreamCopyBufferSize, CancellationToken.None);
+            await stream.FlushAsync(CancellationToken.None);
 
-                using var fileStream = File.Create(cachePath);
-                await stream.CopyToAsync(fileStream, StreamCopyBufferSize, CancellationToken.None);
-                await stream.FlushAsync(CancellationToken.None);
-
-                if (fileStream.Length == 0)
-                {
-                    throw new Exception($"Error retrieving file (length equals 0 byte) : {cachePath}");
-                }
-            }
-            catch (Exception ex)
+            if (fileStream.Length == 0)
             {
-                _logger.LogError(ex, "Error saving file {Path}", cachePath);
-                if (File.Exists(cachePath))
-                {
-                    try
-                    {
-                        File.Delete(cachePath);
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogError(e, "Error deleting file {Path}", cachePath);
-                        throw;
-                    }
-                }
-                throw;
+                throw new Exception($"Error retrieving file (length equals 0 byte) : {cachePath}");
             }
         }
-
-        public Task<bool> PurgeAsync()
+        catch (Exception ex)
         {
-            var hasErrors = false;
-            var folders = GetDirectoryContents(string.Empty);
-            foreach (var fileInfo in folders)
-            {
-                if (fileInfo.IsDirectory)
-                {
-                    try
-                    {
-                        Directory.Delete(fileInfo.PhysicalPath, true);
-                    }
-                    catch (IOException ex)
-                    {
-                        _logger.LogError(ex, "Error deleting cache folder {Path}", fileInfo.PhysicalPath);
-                        hasErrors = true;
-                    }
-                }
-                else
-                {
-                    try
-                    {
-                        File.Delete(fileInfo.PhysicalPath);
-                    }
-                    catch (IOException ex)
-                    {
-                        _logger.LogError(ex, "Error deleting cache file {Path}", fileInfo.PhysicalPath);
-                        hasErrors = true;
-                    }
-                }
-            }
-
-            return Task.FromResult(hasErrors);
-        }
-
-        public Task<bool> TryDeleteDirectoryAsync(string path)
-        {
-            var directoryInfo = GetFileInfo(path);
-
-            try
-            {
-                Directory.Delete(directoryInfo.PhysicalPath, true);
-            }
-            catch (IOException ex)
-            {
-                _logger.LogError(ex, "Error deleting cache folder {Path}", directoryInfo.PhysicalPath);
-                return Task.FromResult(false);
-            }
-
-            return Task.FromResult(true);
-        }
-
-        public Task<bool> TryDeleteFileAsync(string path)
-        {
-            var fileInfo = GetFileInfo(path);
-
-            if (fileInfo.Exists)
+            _logger.LogError(ex, "Error saving file {Path}", cachePath);
+            if (File.Exists(cachePath))
             {
                 try
                 {
-                    File.Delete(fileInfo.PhysicalPath);
-                    return Task.FromResult(true);
+                    File.Delete(cachePath);
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Error deleting file {Path}", cachePath);
+                    throw;
+                }
+            }
+            throw;
+        }
+    }
+
+    public Task<bool> PurgeAsync()
+    {
+        var hasErrors = false;
+        var folders = GetDirectoryContents(string.Empty);
+        foreach (var fileInfo in folders)
+        {
+            if (fileInfo.IsDirectory)
+            {
+                try
+                {
+                    Directory.Delete(fileInfo.PhysicalPath, true);
                 }
                 catch (IOException ex)
                 {
-                    _logger.LogError(ex, "Error deleting cache file {Path}", fileInfo.PhysicalPath);
-                    return Task.FromResult(false);
+                    _logger.LogError(ex, "Error deleting cache folder {Path}", fileInfo.PhysicalPath);
+                    hasErrors = true;
                 }
             }
             else
             {
+                try
+                {
+                    File.Delete(fileInfo.PhysicalPath);
+                }
+                catch (IOException ex)
+                {
+                    _logger.LogError(ex, "Error deleting cache file {Path}", fileInfo.PhysicalPath);
+                    hasErrors = true;
+                }
+            }
+        }
+
+        return Task.FromResult(hasErrors);
+    }
+
+    public Task<bool> TryDeleteDirectoryAsync(string path)
+    {
+        var directoryInfo = GetFileInfo(path);
+
+        try
+        {
+            Directory.Delete(directoryInfo.PhysicalPath, true);
+        }
+        catch (IOException ex)
+        {
+            _logger.LogError(ex, "Error deleting cache folder {Path}", directoryInfo.PhysicalPath);
+            return Task.FromResult(false);
+        }
+
+        return Task.FromResult(true);
+    }
+
+    public Task<bool> TryDeleteFileAsync(string path)
+    {
+        var fileInfo = GetFileInfo(path);
+
+        if (fileInfo.Exists)
+        {
+            try
+            {
+                File.Delete(fileInfo.PhysicalPath);
+                return Task.FromResult(true);
+            }
+            catch (IOException ex)
+            {
+                _logger.LogError(ex, "Error deleting cache file {Path}", fileInfo.PhysicalPath);
                 return Task.FromResult(false);
             }
+        }
+        else
+        {
+            return Task.FromResult(false);
         }
     }
 }

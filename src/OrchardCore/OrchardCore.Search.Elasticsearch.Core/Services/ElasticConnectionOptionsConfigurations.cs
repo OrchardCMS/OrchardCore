@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using Elasticsearch.Net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

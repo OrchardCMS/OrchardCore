@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Lucene.Net.QueryParsers.Classic;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Search.Abstractions;

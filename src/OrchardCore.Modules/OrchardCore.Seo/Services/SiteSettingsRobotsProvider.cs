@@ -1,5 +1,4 @@
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Settings;

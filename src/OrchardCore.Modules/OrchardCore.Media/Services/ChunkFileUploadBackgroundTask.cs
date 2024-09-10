@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using OrchardCore.BackgroundTasks;
 
 namespace OrchardCore.Media.Services;

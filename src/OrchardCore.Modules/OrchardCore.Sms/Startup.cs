@@ -5,7 +5,6 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Notifications;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Sms.Activities;
 using OrchardCore.Sms.Drivers;
 using OrchardCore.Sms.Services;
@@ -33,11 +32,11 @@ public sealed class Startup : StartupBase
         }
 
         services.AddTwilioSmsProvider()
-            .AddScoped<IDisplayDriver<ISite>, TwilioSettingsDisplayDriver>();
+            .AddSiteDisplayDriver<TwilioSettingsDisplayDriver>();
 
-        services.AddScoped<IPermissionProvider, SmsPermissionProvider>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IDisplayDriver<ISite>, SmsSettingsDisplayDriver>();
+        services.AddPermissionProvider<SmsPermissionProvider>();
+        services.AddSiteDisplayDriver<SmsSettingsDisplayDriver>();
+        services.AddNavigationProvider<AdminMenu>();
     }
 }
 

@@ -8,7 +8,6 @@ using OrchardCore.Email.Azure.Services;
 using OrchardCore.Email.Core;
 using OrchardCore.Email.Services;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Azure;
 
@@ -26,7 +25,7 @@ public sealed class Startup
         services.AddTransient<IConfigureOptions<AzureEmailOptions>, AzureEmailOptionsConfiguration>();
 
         services.AddEmailProviderOptionsConfiguration<AzureEmailProviderOptionsConfigurations>()
-            .AddScoped<IDisplayDriver<ISite>, AzureEmailSettingsDisplayDriver>();
+            .AddSiteDisplayDriver<AzureEmailSettingsDisplayDriver>();
 
         services.Configure<DefaultAzureEmailOptions>(options =>
         {

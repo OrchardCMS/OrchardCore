@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
@@ -6,38 +5,37 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.Liquid;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Users.Liquid
+namespace OrchardCore.Users.Liquid;
+
+public class HasPermissionFilter : ILiquidFilter
 {
-    public class HasPermissionFilter : ILiquidFilter
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public HasPermissionFilter(IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
     {
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        _authorizationService = authorizationService;
+        _httpContextAccessor = httpContextAccessor;
+    }
 
-        public HasPermissionFilter(IAuthorizationService authorizationService, IHttpContextAccessor httpContextAccessor)
+    public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+    {
+        if (input.ToObjectValue() is LiquidUserAccessor)
         {
-            _authorizationService = authorizationService;
-            _httpContextAccessor = httpContextAccessor;
-        }
-
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
-        {
-            if (input.ToObjectValue() is LiquidUserAccessor)
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (user != null)
             {
-                var user = _httpContextAccessor.HttpContext?.User;
-                if (user != null)
-                {
-                    var permissionName = arguments["permission"].Or(arguments.At(0)).ToStringValue();
-                    var resource = arguments["resource"].Or(arguments.At(1)).ToObjectValue();
+                var permissionName = arguments["permission"].Or(arguments.At(0)).ToStringValue();
+                var resource = arguments["resource"].Or(arguments.At(1)).ToObjectValue();
 
-                    if (!string.IsNullOrEmpty(permissionName) &&
-                        await _authorizationService.AuthorizeAsync(user, new Permission(permissionName), resource))
-                    {
-                        return BooleanValue.True;
-                    }
+                if (!string.IsNullOrEmpty(permissionName) &&
+                    await _authorizationService.AuthorizeAsync(user, new Permission(permissionName), resource))
+                {
+                    return BooleanValue.True;
                 }
             }
-
-            return BooleanValue.False;
         }
+
+        return BooleanValue.False;
     }
 }

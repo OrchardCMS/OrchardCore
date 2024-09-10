@@ -8,57 +8,56 @@ using OrchardCore.ContentTypes.Events;
 using OrchardCore.Security.Permissions;
 using YesSql.Indexes;
 
-namespace OrchardCore.ContentManagement.GraphQL
+namespace OrchardCore.ContentManagement.GraphQL;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    public static IServiceCollection AddContentGraphQL(this IServiceCollection services)
     {
-        public static IServiceCollection AddContentGraphQL(this IServiceCollection services)
-        {
-            services.AddSingleton<ISchemaBuilder, ContentItemQuery>();
-            services.AddSingleton<ISchemaBuilder, ContentTypeQuery>();
-            services.AddTransient<ContentItemInterface>();
+        services.AddSingleton<ISchemaBuilder, ContentItemQuery>();
+        services.AddSingleton<ISchemaBuilder, ContentTypeQuery>();
+        services.AddTransient<ContentItemInterface>();
 
-            services.AddTransient<ContentItemType>();
+        services.AddTransient<ContentItemType>();
 
-            services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
 
-            services.AddTransient<DynamicPartGraphType>();
-            services.AddScoped<IContentTypeBuilder, TypedContentTypeBuilder>();
-            services.AddScoped<IContentTypeBuilder, DynamicContentTypeQueryBuilder>();
+        services.AddTransient<DynamicPartGraphType>();
+        services.AddScoped<IContentTypeBuilder, TypedContentTypeBuilder>();
+        services.AddScoped<IContentTypeBuilder, DynamicContentTypeQueryBuilder>();
 
-            services.AddOptions<GraphQLContentOptions>();
-            services.AddGraphQLFilterType<ContentItem, ContentItemFilters>();
-            services.AddWhereInputIndexPropertyProvider<ContentItemIndex>();
+        services.AddOptions<GraphQLContentOptions>();
+        services.AddGraphQLFilterType<ContentItem, ContentItemFilters>();
+        services.AddWhereInputIndexPropertyProvider<ContentItemIndex>();
 
-            return services;
-        }
+        return services;
+    }
 
-        public static IServiceCollection AddContentFieldsInputGraphQL(this IServiceCollection services)
-        {
-            services.AddScoped<IIndexAliasProvider, DynamicContentFieldsIndexAliasProvider>();
-            services.AddScoped<IContentTypeBuilder, DynamicContentTypeWhereInputBuilder>();
-            services.AddScoped<IContentDefinitionEventHandler, DynamicContentFieldsIndexAliasProvider>();
+    public static IServiceCollection AddContentFieldsInputGraphQL(this IServiceCollection services)
+    {
+        services.AddScoped<IIndexAliasProvider, DynamicContentFieldsIndexAliasProvider>();
+        services.AddScoped<IContentTypeBuilder, DynamicContentTypeWhereInputBuilder>();
+        services.AddScoped<IContentDefinitionEventHandler, DynamicContentFieldsIndexAliasProvider>();
 
-            return services;
-        }
+        return services;
+    }
 
-        public static void AddWhereInputIndexPropertyProvider<TIndexType>(this IServiceCollection services)
-            where TIndexType : MapIndex
-        {
-            services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<TIndexType>>();
-        }
+    public static void AddWhereInputIndexPropertyProvider<TIndexType>(this IServiceCollection services)
+        where TIndexType : MapIndex
+    {
+        services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<TIndexType>>();
+    }
 
-        /// <summary>
-        /// Registers a type providing custom filters for content item filters.
-        /// </summary>
-        /// <typeparam name="TObjectTypeToFilter"></typeparam>
-        /// <typeparam name="TFilterType"></typeparam>
-        /// <param name="services"></param>
-        public static void AddGraphQLFilterType<TObjectTypeToFilter, TFilterType>(this IServiceCollection services)
-            where TObjectTypeToFilter : class
-            where TFilterType : GraphQLFilter<TObjectTypeToFilter>
-        {
-            services.AddTransient<IGraphQLFilter<TObjectTypeToFilter>, TFilterType>();
-        }
+    /// <summary>
+    /// Registers a type providing custom filters for content item filters.
+    /// </summary>
+    /// <typeparam name="TObjectTypeToFilter"></typeparam>
+    /// <typeparam name="TFilterType"></typeparam>
+    /// <param name="services"></param>
+    public static void AddGraphQLFilterType<TObjectTypeToFilter, TFilterType>(this IServiceCollection services)
+        where TObjectTypeToFilter : class
+        where TFilterType : GraphQLFilter<TObjectTypeToFilter>
+    {
+        services.AddTransient<IGraphQLFilter<TObjectTypeToFilter>, TFilterType>();
     }
 }

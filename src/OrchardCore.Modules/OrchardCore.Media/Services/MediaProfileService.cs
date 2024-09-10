@@ -1,63 +1,61 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using OrchardCore.Media.Processing;
+using Format = OrchardCore.Media.Processing.Format;
+using ResizeMode = OrchardCore.Media.Processing.ResizeMode;
 
-namespace OrchardCore.Media.Services
+namespace OrchardCore.Media.Services;
+
+public class MediaProfileService : IMediaProfileService
 {
-    public class MediaProfileService : IMediaProfileService
+    private static readonly IDictionary<string, string> _nullProfile = new Dictionary<string, string>();
+    private readonly MediaProfilesManager _mediaProfilesManager;
+
+    public MediaProfileService(MediaProfilesManager mediaProfilesManager)
     {
-        private static readonly IDictionary<string, string> _nullProfile = new Dictionary<string, string>();
-        private readonly MediaProfilesManager _mediaProfilesManager;
+        _mediaProfilesManager = mediaProfilesManager;
+    }
 
-        public MediaProfileService(MediaProfilesManager mediaProfilesManager)
+    public async Task<IDictionary<string, string>> GetMediaProfileCommands(string name)
+    {
+        var mediaProfilesDocument = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
+
+        if (mediaProfilesDocument.MediaProfiles.TryGetValue(name, out var mediaProfile))
         {
-            _mediaProfilesManager = mediaProfilesManager;
+            var commands = new Dictionary<string, string>();
+            if (mediaProfile.Width > 0)
+            {
+                commands["width"] = mediaProfile.Width.ToString();
+            }
+
+            if (mediaProfile.Height > 0)
+            {
+                commands["height"] = mediaProfile.Height.ToString();
+            }
+
+            if (mediaProfile.Mode != ResizeMode.Undefined)
+            {
+                commands["rmode"] = mediaProfile.Mode.ToString().ToLower();
+            }
+
+            if (mediaProfile.Format != Format.Undefined)
+            {
+                commands["format"] = mediaProfile.Format.ToString().ToLower();
+            }
+
+            if (mediaProfile.Quality > 0 && mediaProfile.Quality < 100)
+            {
+                commands["quality"] = mediaProfile.Quality.ToString();
+            }
+
+            if (!string.IsNullOrEmpty(mediaProfile.BackgroundColor))
+            {
+                commands["bgcolor"] = mediaProfile.BackgroundColor;
+            }
+
+            return commands;
         }
-
-        public async Task<IDictionary<string, string>> GetMediaProfileCommands(string name)
+        else
         {
-            var mediaProfilesDocument = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
+            return _nullProfile;
 
-            if (mediaProfilesDocument.MediaProfiles.TryGetValue(name, out var mediaProfile))
-            {
-                var commands = new Dictionary<string, string>();
-                if (mediaProfile.Width > 0)
-                {
-                    commands["width"] = mediaProfile.Width.ToString();
-                }
-
-                if (mediaProfile.Height > 0)
-                {
-                    commands["height"] = mediaProfile.Height.ToString();
-                }
-
-                if (mediaProfile.Mode != ResizeMode.Undefined)
-                {
-                    commands["rmode"] = mediaProfile.Mode.ToString().ToLower();
-                }
-
-                if (mediaProfile.Format != Format.Undefined)
-                {
-                    commands["format"] = mediaProfile.Format.ToString().ToLower();
-                }
-
-                if (mediaProfile.Quality > 0 && mediaProfile.Quality < 100)
-                {
-                    commands["quality"] = mediaProfile.Quality.ToString();
-                }
-
-                if (!string.IsNullOrEmpty(mediaProfile.BackgroundColor))
-                {
-                    commands["bgcolor"] = mediaProfile.BackgroundColor;
-                }
-
-                return commands;
-            }
-            else
-            {
-                return _nullProfile;
-
-            }
         }
     }
 }

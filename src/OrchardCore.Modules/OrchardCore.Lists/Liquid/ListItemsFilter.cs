@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.ContentManagement;
@@ -6,33 +5,32 @@ using OrchardCore.Liquid;
 using OrchardCore.Lists.Helpers;
 using YesSql;
 
-namespace OrchardCore.Lists.Liquid
+namespace OrchardCore.Lists.Liquid;
+
+public class ListItemsFilter : ILiquidFilter
 {
-    public class ListItemsFilter : ILiquidFilter
+    private readonly ISession _session;
+
+    public ListItemsFilter(ISession session)
     {
-        private readonly ISession _session;
+        _session = session;
+    }
 
-        public ListItemsFilter(ISession session)
+    public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+    {
+        string listContentItemId;
+
+        if (input.Type == FluidValues.Object && input.ToObjectValue() is ContentItem contentItem)
         {
-            _session = session;
+            listContentItemId = contentItem.ContentItemId;
+        }
+        else
+        {
+            listContentItemId = input.ToStringValue();
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
-        {
-            string listContentItemId;
+        var listItems = await ListQueryHelpers.QueryListItemsAsync(_session, listContentItemId);
 
-            if (input.Type == FluidValues.Object && input.ToObjectValue() is ContentItem contentItem)
-            {
-                listContentItemId = contentItem.ContentItemId;
-            }
-            else
-            {
-                listContentItemId = input.ToStringValue();
-            }
-
-            var listItems = await ListQueryHelpers.QueryListItemsAsync(_session, listContentItemId);
-
-            return FluidValue.Create(listItems, ctx.Options);
-        }
+        return FluidValue.Create(listItems, ctx.Options);
     }
 }

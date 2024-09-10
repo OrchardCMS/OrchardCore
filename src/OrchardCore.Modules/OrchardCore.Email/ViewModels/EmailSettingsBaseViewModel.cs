@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Email.ViewModels;
+namespace OrchardCore.Email.ViewModels;
 
 public class EmailSettingsBaseViewModel
 {

@@ -1,54 +1,52 @@
 using System.Text;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Templates.Models;
 using OrchardCore.Templates.Services;
 
-namespace OrchardCore.Templates.Deployment
+namespace OrchardCore.Templates.Deployment;
+
+public class AllAdminTemplatesDeploymentSource : IDeploymentSource
 {
-    public class AllAdminTemplatesDeploymentSource : IDeploymentSource
+    private readonly AdminTemplatesManager _templatesManager;
+
+    public AllAdminTemplatesDeploymentSource(AdminTemplatesManager templatesManager)
     {
-        private readonly AdminTemplatesManager _templatesManager;
+        _templatesManager = templatesManager;
+    }
 
-        public AllAdminTemplatesDeploymentSource(AdminTemplatesManager templatesManager)
+    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    {
+        if (step is not AllAdminTemplatesDeploymentStep allTemplatesStep)
         {
-            _templatesManager = templatesManager;
+            return;
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        var templateObjects = new JsonObject();
+        var templates = await _templatesManager.GetTemplatesDocumentAsync();
+
+        if (allTemplatesStep.ExportAsFiles)
         {
-            if (step is not AllAdminTemplatesDeploymentStep allTemplatesStep)
+            foreach (var template in templates.Templates)
             {
-                return;
+                var fileName = "AdminTemplates/" + template.Key.Replace("__", "-").Replace("_", ".") + ".liquid";
+                var templateValue = new Template { Description = template.Value.Description, Content = $"[file:text('{fileName}')]" };
+                await result.FileBuilder.SetFileAsync(fileName, Encoding.UTF8.GetBytes(template.Value.Content));
+                templateObjects[template.Key] = JObject.FromObject(templateValue);
             }
-
-            var templateObjects = new JsonObject();
-            var templates = await _templatesManager.GetTemplatesDocumentAsync();
-
-            if (allTemplatesStep.ExportAsFiles)
-            {
-                foreach (var template in templates.Templates)
-                {
-                    var fileName = "AdminTemplates/" + template.Key.Replace("__", "-").Replace("_", ".") + ".liquid";
-                    var templateValue = new Template { Description = template.Value.Description, Content = $"[file:text('{fileName}')]" };
-                    await result.FileBuilder.SetFileAsync(fileName, Encoding.UTF8.GetBytes(template.Value.Content));
-                    templateObjects[template.Key] = JObject.FromObject(templateValue);
-                }
-            }
-            else
-            {
-                foreach (var template in templates.Templates)
-                {
-                    templateObjects[template.Key] = JObject.FromObject(template.Value);
-                }
-            }
-
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "AdminTemplates",
-                ["AdminTemplates"] = templateObjects,
-            });
         }
+        else
+        {
+            foreach (var template in templates.Templates)
+            {
+                templateObjects[template.Key] = JObject.FromObject(template.Value);
+            }
+        }
+
+        result.Steps.Add(new JsonObject
+        {
+            ["name"] = "AdminTemplates",
+            ["AdminTemplates"] = templateObjects,
+        });
     }
 }

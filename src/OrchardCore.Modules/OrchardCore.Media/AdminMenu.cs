@@ -1,37 +1,32 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Media
+namespace OrchardCore.Media;
+
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    public sealed class AdminMenu : INavigationProvider
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        internal readonly IStringLocalizer S;
+        S = stringLocalizer;
+    }
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            S = localizer;
-        }
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        builder
+            .Add(S["Content"], content => content
+                .AddClass("media")
+                .Id("media")
+                .Add(S["Media Library"], S["Media Library"].PrefixPosition(), media => media
+                    .Permission(Permissions.ManageMedia)
+                    .Action("Index", "Admin", "OrchardCore.Media")
+                    .LocalNav()
+                )
+            );
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!NavigationHelper.IsAdminMenu(name))
-            {
-                return Task.CompletedTask;
-            }
-
-            builder
-                .Add(S["Content"], content => content
-                    .AddClass("media")
-                    .Id("media")
-                    .Add(S["Media Library"], S["Media Library"].PrefixPosition(), media => media
-                        .Permission(Permissions.ManageMedia)
-                        .Action("Index", "Admin", "OrchardCore.Media")
-                        .LocalNav()
-                    )
-                );
-
-            builder.Add(S["Configuration"], configuration => configuration
+        builder
+            .Add(S["Configuration"], configuration => configuration
                 .Add(S["Media"], S["Media"].PrefixPosition(), media => media
                     .Add(S["Media Options"], S["Media Options"].PrefixPosition(), options => options
                         .Action("Options", "Admin", "OrchardCore.Media")
@@ -46,35 +41,6 @@ namespace OrchardCore.Media
                 )
             );
 
-            return Task.CompletedTask;
-        }
-    }
-
-    public sealed class MediaCacheAdminMenu : INavigationProvider
-    {
-        internal readonly IStringLocalizer S;
-
-        public MediaCacheAdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            S = localizer;
-        }
-
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!NavigationHelper.IsAdminMenu(name))
-            {
-                return Task.CompletedTask;
-            }
-
-            builder.Add(S["Configuration"], configuration => configuration
-                .Add(S["Media"], S["Media"].PrefixPosition(), media => media
-                    .Add(S["Media Cache"], S["Media Cache"].PrefixPosition(), cache => cache
-                        .Action("Index", "MediaCache", "OrchardCore.Media")
-                        .Permission(MediaCachePermissions.ManageAssetCache)
-                        .LocalNav())
-            ));
-
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

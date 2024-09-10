@@ -8,23 +8,22 @@ using OrchardCore.Queries.Sql.Drivers;
 using OrchardCore.Queries.Sql.Migrations;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Queries.Sql
-{
-    /// <summary>
-    /// These services are registered on the tenant service collection.
-    /// </summary>
-    [Feature("OrchardCore.Queries.Sql")]
-    public sealed class Startup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<IDisplayDriver<Query>, SqlQueryDisplayDriver>();
-            services.AddQuerySource<SqlQuerySource>(SqlQuerySource.SourceName);
+namespace OrchardCore.Queries.Sql;
 
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddDataMigration<SqlQueryMigrations>();
-            services.AddScoped<IQueryHandler, SqlQueryHandler>();
-        }
+/// <summary>
+/// These services are registered on the tenant service collection.
+/// </summary>
+[Feature("OrchardCore.Queries.Sql")]
+public sealed class Startup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddPermissionProvider<Permissions>();
+        services.AddScoped<IDisplayDriver<Query>, SqlQueryDisplayDriver>();
+        services.AddQuerySource<SqlQuerySource>(SqlQuerySource.SourceName);
+
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddDataMigration<SqlQueryMigrations>();
+        services.AddScoped<IQueryHandler, SqlQueryHandler>();
     }
 }

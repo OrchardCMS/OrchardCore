@@ -1,61 +1,57 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.AdminMenu.Models;
 using OrchardCore.Documents;
 
-namespace OrchardCore.AdminMenu.Services
+namespace OrchardCore.AdminMenu.Services;
+
+public class AdminMenuService : IAdminMenuService
 {
-    public class AdminMenuService : IAdminMenuService
+    private readonly IDocumentManager<AdminMenuList> _documentManager;
+
+    public AdminMenuService(IDocumentManager<AdminMenuList> documentManager) => _documentManager = documentManager;
+
+    /// <summary>
+    /// Loads the admin menus from the store for updating and that should not be cached.
+    /// </summary>
+    public Task<AdminMenuList> LoadAdminMenuListAsync() => _documentManager.GetOrCreateMutableAsync();
+
+    /// <summary>
+    /// Gets the admin menus from the cache for sharing and that should not be updated.
+    /// </summary>
+    public Task<AdminMenuList> GetAdminMenuListAsync() => _documentManager.GetOrCreateImmutableAsync();
+
+    public async Task SaveAsync(Models.AdminMenu tree)
     {
-        private readonly IDocumentManager<AdminMenuList> _documentManager;
+        var adminMenuList = await LoadAdminMenuListAsync();
 
-        public AdminMenuService(IDocumentManager<AdminMenuList> documentManager) => _documentManager = documentManager;
+        var preexisting = adminMenuList.AdminMenu.FirstOrDefault(x => string.Equals(x.Id, tree.Id, StringComparison.OrdinalIgnoreCase));
 
-        /// <summary>
-        /// Loads the admin menus from the store for updating and that should not be cached.
-        /// </summary>
-        public Task<AdminMenuList> LoadAdminMenuListAsync() => _documentManager.GetOrCreateMutableAsync();
-
-        /// <summary>
-        /// Gets the admin menus from the cache for sharing and that should not be updated.
-        /// </summary>
-        public Task<AdminMenuList> GetAdminMenuListAsync() => _documentManager.GetOrCreateImmutableAsync();
-
-        public async Task SaveAsync(Models.AdminMenu tree)
+        // it's new? add it
+        if (preexisting == null)
         {
-            var adminMenuList = await LoadAdminMenuListAsync();
-
-            var preexisting = adminMenuList.AdminMenu.FirstOrDefault(x => string.Equals(x.Id, tree.Id, StringComparison.OrdinalIgnoreCase));
-
-            // it's new? add it
-            if (preexisting == null)
-            {
-                adminMenuList.AdminMenu.Add(tree);
-            }
-            else // not new: replace it
-            {
-                var index = adminMenuList.AdminMenu.IndexOf(preexisting);
-                adminMenuList.AdminMenu[index] = tree;
-            }
-
-            await _documentManager.UpdateAsync(adminMenuList);
+            adminMenuList.AdminMenu.Add(tree);
+        }
+        else // not new: replace it
+        {
+            var index = adminMenuList.AdminMenu.IndexOf(preexisting);
+            adminMenuList.AdminMenu[index] = tree;
         }
 
-        public Models.AdminMenu GetAdminMenuById(AdminMenuList adminMenuList, string id)
-        {
-            return adminMenuList.AdminMenu.FirstOrDefault(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
-        }
+        await _documentManager.UpdateAsync(adminMenuList);
+    }
 
-        public async Task<int> DeleteAsync(Models.AdminMenu tree)
-        {
-            var adminMenuList = await LoadAdminMenuListAsync();
+    public Models.AdminMenu GetAdminMenuById(AdminMenuList adminMenuList, string id)
+    {
+        return adminMenuList.AdminMenu.FirstOrDefault(x => string.Equals(x.Id, id, StringComparison.OrdinalIgnoreCase));
+    }
 
-            var count = adminMenuList.AdminMenu.RemoveAll(x => string.Equals(x.Id, tree.Id, StringComparison.OrdinalIgnoreCase));
+    public async Task<int> DeleteAsync(Models.AdminMenu tree)
+    {
+        var adminMenuList = await LoadAdminMenuListAsync();
 
-            await _documentManager.UpdateAsync(adminMenuList);
+        var count = adminMenuList.AdminMenu.RemoveAll(x => string.Equals(x.Id, tree.Id, StringComparison.OrdinalIgnoreCase));
 
-            return count;
-        }
+        await _documentManager.UpdateAsync(adminMenuList);
+
+        return count;
     }
 }

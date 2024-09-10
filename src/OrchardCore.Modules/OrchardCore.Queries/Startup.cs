@@ -15,55 +15,54 @@ using OrchardCore.Recipes;
 using OrchardCore.Scripting;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Queries
+namespace OrchardCore.Queries;
+
+/// <summary>
+/// These services are registered on the tenant service collection.
+/// </summary>
+public sealed class Startup : StartupBase
 {
-    /// <summary>
-    /// These services are registered on the tenant service collection.
-    /// </summary>
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-        }
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
+        services.AddPermissionProvider<Permissions>();
     }
+}
 
-    [Feature("OrchardCore.Queries.Core")]
-    public sealed class CoreStartup : StartupBase
+[Feature("OrchardCore.Queries.Core")]
+public sealed class CoreStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRecipeExecutionStep<QueryStep>();
-            services.AddDeployment<AllQueriesDeploymentSource, AllQueriesDeploymentStep, AllQueriesDeploymentStepDriver>();
-            services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
+        services.AddRecipeExecutionStep<QueryStep>();
+        services.AddDeployment<AllQueriesDeploymentSource, AllQueriesDeploymentStep, AllQueriesDeploymentStepDriver>();
+        services.AddSingleton<IGlobalMethodProvider, QueryGlobalMethodProvider>();
 
-            services.Configure<TemplateOptions>(o =>
+        services.Configure<TemplateOptions>(o =>
+        {
+            o.Scope.SetValue("Queries", new ObjectValue(new LiquidQueriesAccessor()));
+            o.MemberAccessStrategy.Register<LiquidQueriesAccessor, FluidValue>(async (obj, name, context) =>
             {
-                o.Scope.SetValue("Queries", new ObjectValue(new LiquidQueriesAccessor()));
-                o.MemberAccessStrategy.Register<LiquidQueriesAccessor, FluidValue>(async (obj, name, context) =>
-                {
-                    var liquidTemplateContext = (LiquidTemplateContext)context;
-                    var queryManager = liquidTemplateContext.Services.GetRequiredService<IQueryManager>();
+                var liquidTemplateContext = (LiquidTemplateContext)context;
+                var queryManager = liquidTemplateContext.Services.GetRequiredService<IQueryManager>();
 
-                    var query = await queryManager.GetQueryAsync(name);
+                var query = await queryManager.GetQueryAsync(name);
 
-                    return FluidValue.Create(query, context.Options);
-                });
-            })
-            .AddLiquidFilter<QueryFilter>("query");
+                return FluidValue.Create(query, context.Options);
+            });
+        })
+        .AddLiquidFilter<QueryFilter>("query");
 
-            services.AddScoped<IQueryManager, DefaultQueryManager>();
-        }
+        services.AddScoped<IQueryManager, DefaultQueryManager>();
     }
+}
 
-    [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Contents")]
-    public class DeploymentStartup : StartupBase
+[RequireFeatures("OrchardCore.Deployment", "OrchardCore.Contents")]
+public class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDeployment<QueryBasedContentDeploymentSource, QueryBasedContentDeploymentStep, QueryBasedContentDeploymentStepDriver>();
-        }
+        services.AddDeployment<QueryBasedContentDeploymentSource, QueryBasedContentDeploymentStep, QueryBasedContentDeploymentStepDriver>();
     }
 }

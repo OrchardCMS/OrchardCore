@@ -1,14 +1,12 @@
-using System.Collections.Generic;
 using OrchardCore.Scripting;
 
-namespace OrchardCore.Workflows.Models
-{
-    public class WorkflowExecutionScriptContext : WorkflowExecutionHandlerContextBase
-    {
-        public WorkflowExecutionScriptContext(WorkflowExecutionContext workflowContext) : base(workflowContext)
-        {
-        }
+namespace OrchardCore.Workflows.Models;
 
-        public IList<IGlobalMethodProvider> ScopedMethodProviders { get; init; } = [];
+public class WorkflowExecutionScriptContext : WorkflowExecutionHandlerContextBase
+{
+    public WorkflowExecutionScriptContext(WorkflowExecutionContext workflowContext) : base(workflowContext)
+    {
     }
+
+    public IList<IGlobalMethodProvider> ScopedMethodProviders { get; init; } = [];
 }

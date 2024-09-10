@@ -1,44 +1,42 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Search.Lucene
+namespace OrchardCore.Search.Lucene;
+
+public class LuceneIndexInitializerService : ModularTenantEvents
 {
-    public class LuceneIndexInitializerService : ModularTenantEvents
+    private readonly ShellSettings _shellSettings;
+
+    public LuceneIndexInitializerService(ShellSettings shellSettings)
     {
-        private readonly ShellSettings _shellSettings;
+        _shellSettings = shellSettings;
+    }
 
-        public LuceneIndexInitializerService(ShellSettings shellSettings)
+    public override Task ActivatedAsync()
+    {
+        if (_shellSettings.IsRunning())
         {
-            _shellSettings = shellSettings;
-        }
-
-        public override Task ActivatedAsync()
-        {
-            if (_shellSettings.IsRunning())
+            ShellScope.AddDeferredTask(async scope =>
             {
-                ShellScope.AddDeferredTask(async scope =>
+                var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
+                var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
+                var indexManager = scope.ServiceProvider.GetRequiredService<LuceneIndexManager>();
+
+                var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync();
+
+                foreach (var settings in luceneIndexSettings)
                 {
-                    var luceneIndexSettingsService = scope.ServiceProvider.GetRequiredService<LuceneIndexSettingsService>();
-                    var luceneIndexingService = scope.ServiceProvider.GetRequiredService<LuceneIndexingService>();
-                    var indexManager = scope.ServiceProvider.GetRequiredService<LuceneIndexManager>();
-
-                    var luceneIndexSettings = await luceneIndexSettingsService.GetSettingsAsync();
-
-                    foreach (var settings in luceneIndexSettings)
+                    if (!indexManager.Exists(settings.IndexName))
                     {
-                        if (!indexManager.Exists(settings.IndexName))
-                        {
-                            await luceneIndexingService.CreateIndexAsync(settings);
-                            await luceneIndexingService.ProcessContentItemsAsync(settings.IndexName);
-                        }
+                        await luceneIndexingService.CreateIndexAsync(settings);
+                        await luceneIndexingService.ProcessContentItemsAsync(settings.IndexName);
                     }
-                });
-            }
-
-            return Task.CompletedTask;
+                }
+            });
         }
+
+        return Task.CompletedTask;
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -30,80 +29,79 @@ using OrchardCore.Lists.Settings;
 using OrchardCore.Lists.ViewModels;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Lists
+namespace OrchardCore.Lists;
+
+public sealed class Startup : StartupBase
 {
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        services.Configure<TemplateOptions>(o =>
         {
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<ListPartViewModel>();
-            })
-            .AddLiquidFilter<ListCountFilter>("list_count")
-            .AddLiquidFilter<ListItemsFilter>("list_items")
-            .AddLiquidFilter<ContainerFilter>("container");
+            o.MemberAccessStrategy.Register<ListPartViewModel>();
+        })
+        .AddLiquidFilter<ListCountFilter>("list_count")
+        .AddLiquidFilter<ListItemsFilter>("list_items")
+        .AddLiquidFilter<ContainerFilter>("container");
 
-            services.AddIndexProvider<ContainedPartIndexProvider>();
-            services.AddScoped<IContentDisplayDriver, ContainedPartDisplayDriver>();
-            services.AddScoped<IContentHandler, ContainedPartHandler>();
-            services.AddContentPart<ContainedPart>();
-            services.AddScoped<IContentsAdminListFilter, ListPartContentsAdminListFilter>();
-            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ListPartContentsAdminListDisplayDriver>();
+        services.AddIndexProvider<ContainedPartIndexProvider>();
+        services.AddScoped<IContentDisplayDriver, ContainedPartDisplayDriver>();
+        services.AddScoped<IContentHandler, ContainedPartHandler>();
+        services.AddContentPart<ContainedPart>();
+        services.AddScoped<IContentsAdminListFilter, ListPartContentsAdminListFilter>();
+        services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ListPartContentsAdminListDisplayDriver>();
 
-            // List Part
-            services.AddContentPart<ListPart>()
-                .UseDisplayDriver<ListPartDisplayDriver>()
-                .AddHandler<ListPartHandler>();
+        // List Part
+        services.AddContentPart<ListPart>()
+            .UseDisplayDriver<ListPartDisplayDriver>()
+            .AddHandler<ListPartHandler>();
 
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, ListPartSettingsDisplayDriver>();
-            services.AddDataMigration<Migrations>();
-            services.AddScoped<IContentItemIndexHandler, ContainedPartContentIndexHandler>();
-            services.AddScoped<IContainerService, ContainerService>();
-        }
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, ListPartSettingsDisplayDriver>();
+        services.AddDataMigration<Migrations>();
+        services.AddScoped<IContentItemIndexHandler, ContainedPartContentIndexHandler>();
+        services.AddScoped<IContainerService, ContainerService>();
     }
+}
 
-    [RequireFeatures("OrchardCore.AdminMenu")]
-    public sealed class AdminMenuStartup : StartupBase
+[RequireFeatures("OrchardCore.AdminMenu")]
+public sealed class AdminMenuStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddAdminNode<ListsAdminNode, ListsAdminNodeNavigationBuilder, ListsAdminNodeDriver>();
-        }
+        services.AddAdminNode<ListsAdminNode, ListsAdminNodeNavigationBuilder, ListsAdminNodeDriver>();
     }
+}
 
-    [RequireFeatures("OrchardCore.ContentLocalization")]
-    public sealed class ContentLocalizationStartup : StartupBase
+[RequireFeatures("OrchardCore.ContentLocalization")]
+public sealed class ContentLocalizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IContentLocalizationPartHandler, ContainedPartLocalizationHandler>();
-            services.AddScoped<IContentLocalizationPartHandler, ListPartLocalizationHandler>();
-            services.AddContentPart<LocalizationPart>()
-                .AddHandler<LocalizationContainedPartHandler>();
-        }
+        services.AddScoped<IContentLocalizationPartHandler, ContainedPartLocalizationHandler>();
+        services.AddScoped<IContentLocalizationPartHandler, ListPartLocalizationHandler>();
+        services.AddContentPart<LocalizationPart>()
+            .AddHandler<LocalizationContainedPartHandler>();
     }
+}
 
-    [RequireFeatures("OrchardCore.Feeds")]
-    public sealed class FeedsStartup : StartupBase
+[RequireFeatures("OrchardCore.Feeds")]
+public sealed class FeedsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            // Feeds
-            services.AddScoped<IFeedQueryProvider, ListFeedQuery>();
+        // Feeds
+        services.AddScoped<IFeedQueryProvider, ListFeedQuery>();
 
-            services.AddContentPart<ListPart>()
-                .UseDisplayDriver<ListPartFeedDisplayDriver>()
-                .AddHandler<ListPartFeedHandler>();
-        }
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "ListFeed",
-                areaName: "OrchardCore.Feeds",
-                pattern: "Contents/Lists/{contentItemId}/rss",
-                defaults: new { controller = "Feed", action = "Index", format = "rss" }
-            );
-        }
+        services.AddContentPart<ListPart>()
+            .UseDisplayDriver<ListPartFeedDisplayDriver>()
+            .AddHandler<ListPartFeedHandler>();
+    }
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.MapAreaControllerRoute(
+            name: "ListFeed",
+            areaName: "OrchardCore.Feeds",
+            pattern: "Contents/Lists/{contentItemId}/rss",
+            defaults: new { controller = "Feed", action = "Index", format = "rss" }
+        );
     }
 }

@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-
 namespace OrchardCore.Search.AzureAI.Models;
 
 public class AzureAISearchIndexSettings

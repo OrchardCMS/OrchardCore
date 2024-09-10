@@ -1,8 +1,7 @@
-namespace OrchardCore.Media.Events
+namespace OrchardCore.Media.Events;
+
+public class MediaMoveContext
 {
-    public class MediaMoveContext
-    {
-        public string NewPath { get; set; }
-        public string OldPath { get; set; }
-    }
+    public string NewPath { get; set; }
+    public string OldPath { get; set; }
 }

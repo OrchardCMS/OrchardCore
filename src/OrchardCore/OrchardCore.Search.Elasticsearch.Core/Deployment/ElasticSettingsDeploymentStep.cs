@@ -1,15 +1,14 @@
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Search.Elasticsearch.Core.Deployment
+namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
+
+/// <summary>
+/// Adds layers to a <see cref="DeploymentPlanResult"/>.
+/// </summary>
+public class ElasticSettingsDeploymentStep : DeploymentStep
 {
-    /// <summary>
-    /// Adds layers to a <see cref="DeploymentPlanResult"/>.
-    /// </summary>
-    public class ElasticSettingsDeploymentStep : DeploymentStep
+    public ElasticSettingsDeploymentStep()
     {
-        public ElasticSettingsDeploymentStep()
-        {
-            Name = "ElasticSettings";
-        }
+        Name = "ElasticSettings";
     }
 }

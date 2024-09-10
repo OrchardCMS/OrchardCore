@@ -1,23 +1,20 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Contents.Services
+namespace OrchardCore.Contents.Services;
+
+public class ContentItemIdHandleProvider : IContentHandleProvider
 {
-    public class ContentItemIdHandleProvider : IContentHandleProvider
+    public int Order => 0;
+
+    public Task<string> GetContentItemIdAsync(string handle)
     {
-        public int Order => 0;
-
-        public Task<string> GetContentItemIdAsync(string handle)
+        if (handle.StartsWith("contentitemid:", StringComparison.OrdinalIgnoreCase))
         {
-            if (handle.StartsWith("contentitemid:", StringComparison.OrdinalIgnoreCase))
-            {
-                var contentItemId = handle[14..];
+            var contentItemId = handle[14..];
 
-                return Task.FromResult(contentItemId);
-            }
-
-            return Task.FromResult<string>(null);
+            return Task.FromResult(contentItemId);
         }
+
+        return Task.FromResult<string>(null);
     }
 }

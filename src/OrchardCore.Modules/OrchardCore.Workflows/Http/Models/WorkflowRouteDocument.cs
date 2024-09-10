@@ -1,10 +1,8 @@
-using System.Collections.Generic;
 using OrchardCore.Data.Documents;
 
-namespace OrchardCore.Workflows.Http.Models
+namespace OrchardCore.Workflows.Http.Models;
+
+public class WorkflowRouteDocument : Document
 {
-    public class WorkflowRouteDocument : Document
-    {
-        public Dictionary<string, IList<WorkflowRoutesEntry>> Entries { get; set; } = [];
-    }
+    public Dictionary<string, IList<WorkflowRoutesEntry>> Entries { get; set; } = [];
 }

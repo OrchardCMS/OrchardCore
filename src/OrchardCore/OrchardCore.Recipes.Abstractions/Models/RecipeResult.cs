@@ -1,13 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
+namespace OrchardCore.Recipes.Models;
 
-namespace OrchardCore.Recipes.Models
+public class RecipeResult
 {
-    public class RecipeResult
-    {
-        public string ExecutionId { get; set; }
-        public List<RecipeStepResult> Steps { get; set; } = [];
-        public bool IsCompleted => Steps.All(s => s.IsCompleted);
-        public bool IsSuccessful => Steps.All(s => s.IsCompleted && s.IsSuccessful);
-    }
+    public string ExecutionId { get; set; }
+    public List<RecipeStepResult> Steps { get; set; } = [];
+    public bool IsCompleted => Steps.All(s => s.IsCompleted);
+    public bool IsSuccessful => Steps.All(s => s.IsCompleted && s.IsSuccessful);
 }

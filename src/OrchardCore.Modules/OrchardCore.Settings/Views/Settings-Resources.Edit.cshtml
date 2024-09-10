@@ -29,7 +29,7 @@
     <div class="col-xl-6" asp-validation-class-for="ResourceDebugMode">
         <label asp-for="ResourceDebugMode" class="form-label">@T["Resource Debug Mode"]</label>
         <select asp-for="ResourceDebugMode" class="form-select">
-            <option value="@ResourceDebugMode.FromConfiguration.ToString()">@T["From environment — disabled in <em>Production</em>, enabled otherwise"]</option>
+            <option value="@ResourceDebugMode.FromConfiguration.ToString()">@T["From environment — disabled in Production, enabled otherwise"]</option>
             <option value="@ResourceDebugMode.Enabled.ToString()">@T["Enabled — use debuggable version of resources"]</option>
             <option value="@ResourceDebugMode.Disabled.ToString()">@T["Disabled — use minified version of resources"]</option>
         </select>

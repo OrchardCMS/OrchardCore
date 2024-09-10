@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Fluid.Values;
 using GraphQL;
 using GraphQL.Types;
@@ -17,51 +13,50 @@ using OrchardCore.Liquid;
 using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 
-namespace OrchardCore.Html.GraphQL
+namespace OrchardCore.Html.GraphQL;
+
+public class HtmlBodyQueryObjectType : ObjectGraphType<HtmlBodyPart>
 {
-    public class HtmlBodyQueryObjectType : ObjectGraphType<HtmlBodyPart>
+    public HtmlBodyQueryObjectType(IStringLocalizer<HtmlBodyQueryObjectType> S)
     {
-        public HtmlBodyQueryObjectType(IStringLocalizer<HtmlBodyQueryObjectType> S)
+        Name = "HtmlBodyPart";
+        Description = S["Content stored as HTML."];
+
+        Field<StringGraphType>("html")
+            .Description(S["the HTML content"])
+            .ResolveLockedAsync(RenderHtml);
+    }
+
+    private static async ValueTask<object> RenderHtml(IResolveFieldContext<HtmlBodyPart> ctx)
+    {
+        var shortcodeService = ctx.RequestServices.GetRequiredService<IShortcodeService>();
+        var contentDefinitionManager = ctx.RequestServices.GetRequiredService<IContentDefinitionManager>();
+
+        var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
+        var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "HtmlBodyPart", StringComparison.Ordinal));
+        var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
+
+        var html = ctx.Source.Html;
+
+        if (!settings.SanitizeHtml)
         {
-            Name = "HtmlBodyPart";
-            Description = S["Content stored as HTML."];
-
-            Field<StringGraphType>("html")
-                .Description(S["the HTML content"])
-                .ResolveLockedAsync(RenderHtml);
-        }
-
-        private static async ValueTask<object> RenderHtml(IResolveFieldContext<HtmlBodyPart> ctx)
-        {
-            var shortcodeService = ctx.RequestServices.GetRequiredService<IShortcodeService>();
-            var contentDefinitionManager = ctx.RequestServices.GetRequiredService<IContentDefinitionManager>();
-
-            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(ctx.Source.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "HtmlBodyPart", StringComparison.Ordinal));
-            var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
-
-            var html = ctx.Source.Html;
-
-            if (!settings.SanitizeHtml)
+            var model = new HtmlBodyPartViewModel()
             {
-                var model = new HtmlBodyPartViewModel()
-                {
-                    Html = ctx.Source.Html,
-                    HtmlBodyPart = ctx.Source,
-                    ContentItem = ctx.Source.ContentItem
-                };
-                var liquidTemplateManager = ctx.RequestServices.GetRequiredService<ILiquidTemplateManager>();
-                var htmlEncoder = ctx.RequestServices.GetService<HtmlEncoder>();
+                Html = ctx.Source.Html,
+                HtmlBodyPart = ctx.Source,
+                ContentItem = ctx.Source.ContentItem
+            };
+            var liquidTemplateManager = ctx.RequestServices.GetRequiredService<ILiquidTemplateManager>();
+            var htmlEncoder = ctx.RequestServices.GetService<HtmlEncoder>();
 
-                html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model, new Dictionary<string, FluidValue> { ["ContentItem"] = new ObjectValue(model.ContentItem) });
-            }
-
-            return await shortcodeService.ProcessAsync(html,
-                new Context
-                {
-                    ["ContentItem"] = ctx.Source.ContentItem,
-                    ["TypePartDefinition"] = contentTypePartDefinition
-                });
+            html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model, new Dictionary<string, FluidValue> { ["ContentItem"] = new ObjectValue(model.ContentItem) });
         }
+
+        return await shortcodeService.ProcessAsync(html,
+            new Context
+            {
+                ["ContentItem"] = ctx.Source.ContentItem,
+                ["TypePartDefinition"] = contentTypePartDefinition
+            });
     }
 }

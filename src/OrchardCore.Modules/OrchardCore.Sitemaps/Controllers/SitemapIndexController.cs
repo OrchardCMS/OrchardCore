@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -19,349 +15,348 @@ using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 using OrchardCore.Sitemaps.ViewModels;
 
-namespace OrchardCore.Sitemaps.Controllers
+namespace OrchardCore.Sitemaps.Controllers;
+
+[Admin("SitemapIndexes/{action}/{sitemapId?}", "SitemapIndexes{action}")]
+public sealed class SitemapIndexController : Controller
 {
-    [Admin("SitemapIndexes/{action}/{sitemapId?}", "SitemapIndexes{action}")]
-    public class SitemapIndexController : Controller
+    private const string _optionsSearch = "Options.Search";
+
+    private readonly ISitemapHelperService _sitemapService;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly ISitemapIdGenerator _sitemapIdGenerator;
+    private readonly ISitemapManager _sitemapManager;
+    private readonly PagerOptions _pagerOptions;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly INotifier _notifier;
+    private readonly IShapeFactory _shapeFactory;
+
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+
+    public SitemapIndexController(
+        ISitemapHelperService sitemapService,
+        IAuthorizationService authorizationService,
+        ISitemapIdGenerator sitemapIdGenerator,
+        ISitemapManager sitemapManager,
+        IOptions<PagerOptions> pagerOptions,
+        IUpdateModelAccessor updateModelAccessor,
+        IShapeFactory shapeFactory,
+        IStringLocalizer<SitemapIndexController> stringLocalizer,
+        IHtmlLocalizer<SitemapIndexController> htmlLocalizer,
+        INotifier notifier)
     {
-        private const string _optionsSearch = "Options.Search";
+        _sitemapService = sitemapService;
+        _authorizationService = authorizationService;
+        _sitemapIdGenerator = sitemapIdGenerator;
+        _sitemapManager = sitemapManager;
+        _pagerOptions = pagerOptions.Value;
+        _updateModelAccessor = updateModelAccessor;
+        _notifier = notifier;
+        _shapeFactory = shapeFactory;
+        S = stringLocalizer;
+        H = htmlLocalizer;
+    }
 
-        private readonly ISitemapHelperService _sitemapService;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly ISitemapIdGenerator _sitemapIdGenerator;
-        private readonly ISitemapManager _sitemapManager;
-        private readonly PagerOptions _pagerOptions;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly INotifier _notifier;
-        private readonly IShapeFactory _shapeFactory;
-
-        protected readonly IStringLocalizer S;
-        protected readonly IHtmlLocalizer H;
-
-        public SitemapIndexController(
-            ISitemapHelperService sitemapService,
-            IAuthorizationService authorizationService,
-            ISitemapIdGenerator sitemapIdGenerator,
-            ISitemapManager sitemapManager,
-            IOptions<PagerOptions> pagerOptions,
-            IUpdateModelAccessor updateModelAccessor,
-            IShapeFactory shapeFactory,
-            IStringLocalizer<SitemapIndexController> stringLocalizer,
-            IHtmlLocalizer<SitemapIndexController> htmlLocalizer,
-            INotifier notifier)
+    public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
         {
-            _sitemapService = sitemapService;
-            _authorizationService = authorizationService;
-            _sitemapIdGenerator = sitemapIdGenerator;
-            _sitemapManager = sitemapManager;
-            _pagerOptions = pagerOptions.Value;
-            _updateModelAccessor = updateModelAccessor;
-            _notifier = notifier;
-            _shapeFactory = shapeFactory;
-            S = stringLocalizer;
-            H = htmlLocalizer;
+            return Forbid();
         }
 
-        public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
+        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+
+        var sitemaps = (await _sitemapManager.GetSitemapsAsync())
+            .OfType<SitemapIndex>();
+
+        if (!string.IsNullOrWhiteSpace(options.Search))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
-            {
-                return Forbid();
-            }
-
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
-
-            var sitemaps = (await _sitemapManager.GetSitemapsAsync())
-                .OfType<SitemapIndex>();
-
-            if (!string.IsNullOrWhiteSpace(options.Search))
-            {
-                sitemaps = sitemaps.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
-            }
-
-            var count = sitemaps.Count();
-
-            var results = sitemaps
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize)
-                .ToList();
-
-            // Maintain previous route data when generating page links.
-            var routeData = new RouteData();
-
-            if (!string.IsNullOrEmpty(options.Search))
-            {
-                routeData.Values.TryAdd(_optionsSearch, options.Search);
-            }
-
-            var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
-
-            var model = new ListSitemapIndexViewModel
-            {
-                SitemapIndexes = results.Select(sm => new SitemapIndexListEntry { SitemapId = sm.SitemapId, Name = sm.Name, Enabled = sm.Enabled }).ToList(),
-                Options = options,
-                Pager = pagerShape
-            };
-
-            model.Options.ContentsBulkAction =
-            [
-                new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
-            ];
-
-
-            return View(model);
+            sitemaps = sitemaps.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
         }
 
-        [HttpPost, ActionName(nameof(List))]
-        [FormValueRequired("submit.Filter")]
-        public ActionResult ListFilterPOST(ListSitemapIndexViewModel model)
-            => RedirectToAction(nameof(List), new RouteValueDictionary
-            {
-                { _optionsSearch, model.Options.Search }
-            });
+        var count = sitemaps.Count();
 
-        public async Task<IActionResult> Create()
+        var results = sitemaps
+            .Skip(pager.GetStartIndex())
+            .Take(pager.PageSize)
+            .ToList();
+
+        // Maintain previous route data when generating page links.
+        var routeData = new RouteData();
+
+        if (!string.IsNullOrEmpty(options.Search))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+            routeData.Values.TryAdd(_optionsSearch, options.Search);
+        }
+
+        var pagerShape = await _shapeFactory.PagerAsync(pager, count, routeData);
+
+        var model = new ListSitemapIndexViewModel
+        {
+            SitemapIndexes = results.Select(sm => new SitemapIndexListEntry { SitemapId = sm.SitemapId, Name = sm.Name, Enabled = sm.Enabled }).ToList(),
+            Options = options,
+            Pager = pagerShape
+        };
+
+        model.Options.ContentsBulkAction =
+        [
+            new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+        ];
+
+
+        return View(model);
+    }
+
+    [HttpPost, ActionName(nameof(List))]
+    [FormValueRequired("submit.Filter")]
+    public ActionResult ListFilterPOST(ListSitemapIndexViewModel model)
+        => RedirectToAction(nameof(List), new RouteValueDictionary
+        {
+            { _optionsSearch, model.Options.Search }
+        });
+
+    public async Task<IActionResult> Create()
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        {
+            return Forbid();
+        }
+
+        var sitemaps = await _sitemapManager.GetSitemapsAsync();
+
+        var containableSitemaps = sitemaps
+            .Where(s => s.GetType() != typeof(SitemapIndex))
+            .Select(s => new ContainableSitemapEntryViewModel
             {
-                return Forbid();
-            }
+                SitemapId = s.SitemapId,
+                Name = s.Name,
+                IsChecked = false
+            })
+            .OrderBy(s => s.Name)
+            .ToArray();
 
-            var sitemaps = await _sitemapManager.GetSitemapsAsync();
+        var model = new CreateSitemapIndexViewModel
+        {
+            ContainableSitemaps = containableSitemaps
+        };
 
-            var containableSitemaps = sitemaps
-                .Where(s => s.GetType() != typeof(SitemapIndex))
-                .Select(s => new ContainableSitemapEntryViewModel
-                {
-                    SitemapId = s.SitemapId,
-                    Name = s.Name,
-                    IsChecked = false
-                })
-                .OrderBy(s => s.Name)
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateSitemapIndexViewModel model)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        {
+            return Forbid();
+        }
+
+        var sitemap = new SitemapIndex
+        {
+            SitemapId = _sitemapIdGenerator.GenerateUniqueId()
+        };
+
+        var indexSource = new SitemapIndexSource
+        {
+            Id = _sitemapIdGenerator.GenerateUniqueId()
+        };
+
+        sitemap.SitemapSources.Add(indexSource);
+
+        if (ModelState.IsValid)
+        {
+            await _sitemapService.ValidatePathAsync(model.Path, _updateModelAccessor.ModelUpdater);
+
+        }
+
+        // Path validation may invalidate model state.
+        if (ModelState.IsValid)
+        {
+            sitemap.Name = model.Name;
+            sitemap.Enabled = model.Enabled;
+            sitemap.Path = model.Path;
+
+            indexSource.ContainedSitemapIds = model.ContainableSitemaps
+                .Where(m => m.IsChecked)
+                .Select(m => m.SitemapId)
                 .ToArray();
-
-            var model = new CreateSitemapIndexViewModel
-            {
-                ContainableSitemaps = containableSitemaps
-            };
-
-            return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create(CreateSitemapIndexViewModel model)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
-            {
-                return Forbid();
-            }
-
-            var sitemap = new SitemapIndex
-            {
-                SitemapId = _sitemapIdGenerator.GenerateUniqueId()
-            };
-
-            var indexSource = new SitemapIndexSource
-            {
-                Id = _sitemapIdGenerator.GenerateUniqueId()
-            };
-
-            sitemap.SitemapSources.Add(indexSource);
-
-            if (ModelState.IsValid)
-            {
-                await _sitemapService.ValidatePathAsync(model.Path, _updateModelAccessor.ModelUpdater);
-
-            }
-
-            // Path validation may invalidate model state.
-            if (ModelState.IsValid)
-            {
-                sitemap.Name = model.Name;
-                sitemap.Enabled = model.Enabled;
-                sitemap.Path = model.Path;
-
-                indexSource.ContainedSitemapIds = model.ContainableSitemaps
-                    .Where(m => m.IsChecked)
-                    .Select(m => m.SitemapId)
-                    .ToArray();
-
-                await _sitemapManager.UpdateSitemapAsync(sitemap);
-
-                await _notifier.SuccessAsync(H["Sitemap index created successfully"]);
-
-                return RedirectToAction(nameof(List));
-            }
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
-        }
-
-        public async Task<IActionResult> Edit(string sitemapId)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
-            {
-                return Forbid();
-            }
-
-            var sitemap = (await _sitemapManager.GetSitemapAsync(sitemapId)) as SitemapIndex;
-
-            if (sitemap == null)
-            {
-                return NotFound();
-            }
-
-            var sitemaps = await _sitemapManager.GetSitemapsAsync();
-
-            var indexSource = sitemap.SitemapSources.FirstOrDefault() as SitemapIndexSource;
-
-            var containableSitemaps = sitemaps
-                .Where(s => s.GetType() != typeof(SitemapIndex))
-                .Select(s => new ContainableSitemapEntryViewModel
-                {
-                    SitemapId = s.SitemapId,
-                    Name = s.Name,
-                    IsChecked = indexSource.ContainedSitemapIds.Any(id => id == s.SitemapId)
-                })
-                .OrderBy(s => s.Name)
-                .ToArray();
-
-            var model = new EditSitemapIndexViewModel
-            {
-                SitemapId = sitemap.SitemapId,
-                Name = sitemap.Name,
-                Enabled = sitemap.Enabled,
-                Path = sitemap.Path,
-                SitemapIndexSource = indexSource,
-                ContainableSitemaps = containableSitemaps
-            };
-
-            return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Edit(EditSitemapIndexViewModel model)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
-            {
-                return Forbid();
-            }
-
-            var sitemap = await _sitemapManager.LoadSitemapAsync(model.SitemapId);
-
-            if (sitemap == null)
-            {
-                return NotFound();
-            }
-
-            var indexSource = sitemap.SitemapSources.FirstOrDefault() as SitemapIndexSource;
-
-            model.SitemapIndexSource = indexSource;
-
-            if (ModelState.IsValid)
-            {
-                await _sitemapService.ValidatePathAsync(model.Path, _updateModelAccessor.ModelUpdater, sitemap.SitemapId);
-            }
-
-            // Path validation may invalidate model state.
-            if (ModelState.IsValid)
-            {
-                sitemap.Name = model.Name;
-                sitemap.Enabled = model.Enabled;
-                sitemap.Path = model.Path;
-
-                indexSource.ContainedSitemapIds = model.ContainableSitemaps
-                    .Where(m => m.IsChecked)
-                    .Select(m => m.SitemapId)
-                    .ToArray();
-
-                await _sitemapManager.UpdateSitemapAsync(sitemap);
-
-                await _notifier.SuccessAsync(H["Sitemap index updated successfully"]);
-
-                return RedirectToAction(nameof(List));
-            }
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Delete(string sitemapId)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
-            {
-                return Forbid();
-            }
-
-            var sitemap = await _sitemapManager.LoadSitemapAsync(sitemapId);
-
-            if (sitemap == null)
-            {
-                return NotFound();
-            }
-
-            await _sitemapManager.DeleteSitemapAsync(sitemapId);
-
-            await _notifier.SuccessAsync(H["Sitemap index deleted successfully."]);
-
-            return RedirectToAction(nameof(List));
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Toggle(string sitemapId)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
-            {
-                return Forbid();
-            }
-
-            var sitemap = await _sitemapManager.LoadSitemapAsync(sitemapId);
-
-            if (sitemap == null)
-            {
-                return NotFound();
-            }
-
-            sitemap.Enabled = !sitemap.Enabled;
 
             await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-            await _notifier.SuccessAsync(H["Sitemap index menu toggled successfully."]);
+            await _notifier.SuccessAsync(H["Sitemap index created successfully"]);
 
             return RedirectToAction(nameof(List));
         }
 
-        [HttpPost, ActionName("List")]
-        [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> ListPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+        // If we got this far, something failed, redisplay form
+        return View(model);
+    }
+
+    public async Task<IActionResult> Edit(string sitemapId)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
-            {
-                return Forbid();
-            }
+            return Forbid();
+        }
 
-            if (itemIds?.Count() > 0)
+        var sitemap = (await _sitemapManager.GetSitemapAsync(sitemapId)) as SitemapIndex;
+
+        if (sitemap == null)
+        {
+            return NotFound();
+        }
+
+        var sitemaps = await _sitemapManager.GetSitemapsAsync();
+
+        var indexSource = sitemap.SitemapSources.FirstOrDefault() as SitemapIndexSource;
+
+        var containableSitemaps = sitemaps
+            .Where(s => s.GetType() != typeof(SitemapIndex))
+            .Select(s => new ContainableSitemapEntryViewModel
             {
-                var sitemapsList = await _sitemapManager.LoadSitemapsAsync();
-                var checkedContentItems = sitemapsList.Where(x => itemIds.Contains(x.SitemapId));
-                switch (options.BulkAction)
-                {
-                    case ContentsBulkAction.None:
-                        break;
-                    case ContentsBulkAction.Remove:
-                        foreach (var item in checkedContentItems)
-                        {
-                            await _sitemapManager.DeleteSitemapAsync(item.SitemapId);
-                        }
-                        await _notifier.SuccessAsync(H["Sitemap indices successfully removed."]);
-                        break;
-                    default:
-                        return BadRequest();
-                }
-            }
+                SitemapId = s.SitemapId,
+                Name = s.Name,
+                IsChecked = indexSource.ContainedSitemapIds.Any(id => id == s.SitemapId)
+            })
+            .OrderBy(s => s.Name)
+            .ToArray();
+
+        var model = new EditSitemapIndexViewModel
+        {
+            SitemapId = sitemap.SitemapId,
+            Name = sitemap.Name,
+            Enabled = sitemap.Enabled,
+            Path = sitemap.Path,
+            SitemapIndexSource = indexSource,
+            ContainableSitemaps = containableSitemaps
+        };
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Edit(EditSitemapIndexViewModel model)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        {
+            return Forbid();
+        }
+
+        var sitemap = await _sitemapManager.LoadSitemapAsync(model.SitemapId);
+
+        if (sitemap == null)
+        {
+            return NotFound();
+        }
+
+        var indexSource = sitemap.SitemapSources.FirstOrDefault() as SitemapIndexSource;
+
+        model.SitemapIndexSource = indexSource;
+
+        if (ModelState.IsValid)
+        {
+            await _sitemapService.ValidatePathAsync(model.Path, _updateModelAccessor.ModelUpdater, sitemap.SitemapId);
+        }
+
+        // Path validation may invalidate model state.
+        if (ModelState.IsValid)
+        {
+            sitemap.Name = model.Name;
+            sitemap.Enabled = model.Enabled;
+            sitemap.Path = model.Path;
+
+            indexSource.ContainedSitemapIds = model.ContainableSitemaps
+                .Where(m => m.IsChecked)
+                .Select(m => m.SitemapId)
+                .ToArray();
+
+            await _sitemapManager.UpdateSitemapAsync(sitemap);
+
+            await _notifier.SuccessAsync(H["Sitemap index updated successfully"]);
 
             return RedirectToAction(nameof(List));
         }
+
+        // If we got this far, something failed, redisplay form
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete(string sitemapId)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        {
+            return Forbid();
+        }
+
+        var sitemap = await _sitemapManager.LoadSitemapAsync(sitemapId);
+
+        if (sitemap == null)
+        {
+            return NotFound();
+        }
+
+        await _sitemapManager.DeleteSitemapAsync(sitemapId);
+
+        await _notifier.SuccessAsync(H["Sitemap index deleted successfully."]);
+
+        return RedirectToAction(nameof(List));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Toggle(string sitemapId)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        {
+            return Forbid();
+        }
+
+        var sitemap = await _sitemapManager.LoadSitemapAsync(sitemapId);
+
+        if (sitemap == null)
+        {
+            return NotFound();
+        }
+
+        sitemap.Enabled = !sitemap.Enabled;
+
+        await _sitemapManager.UpdateSitemapAsync(sitemap);
+
+        await _notifier.SuccessAsync(H["Sitemap index menu toggled successfully."]);
+
+        return RedirectToAction(nameof(List));
+    }
+
+    [HttpPost, ActionName("List")]
+    [FormValueRequired("submit.BulkAction")]
+    public async Task<ActionResult> ListPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        {
+            return Forbid();
+        }
+
+        if (itemIds?.Count() > 0)
+        {
+            var sitemapsList = await _sitemapManager.LoadSitemapsAsync();
+            var checkedContentItems = sitemapsList.Where(x => itemIds.Contains(x.SitemapId));
+            switch (options.BulkAction)
+            {
+                case ContentsBulkAction.None:
+                    break;
+                case ContentsBulkAction.Remove:
+                    foreach (var item in checkedContentItems)
+                    {
+                        await _sitemapManager.DeleteSitemapAsync(item.SitemapId);
+                    }
+                    await _notifier.SuccessAsync(H["Sitemap indices successfully removed."]);
+                    break;
+                default:
+                    return BadRequest();
+            }
+        }
+
+        return RedirectToAction(nameof(List));
     }
 }

@@ -1,87 +1,86 @@
 using OrchardCore.Media.Events;
 
-namespace OrchardCore.Tests.Modules.OrchardCore.Media
+namespace OrchardCore.Tests.Modules.OrchardCore.Media;
+
+public class MediaEventTests
 {
-    public class MediaEventTests
+    [Fact]
+    public async Task DisposesMediaCreatingStreams()
     {
-        [Fact]
-        public async Task DisposesMediaCreatingStreams()
+        var streams = new List<Stream>();
+        var creatingEventHandlers = new List<IMediaCreatingEventHandler>()
         {
-            var streams = new List<Stream>();
-            var creatingEventHandlers = new List<IMediaCreatingEventHandler>()
-            {
-                new TestMediaEventHandler(),
-                new TestMediaEventHandler()
-            };
+            new TestMediaEventHandler(),
+            new TestMediaEventHandler()
+        };
 
-            Stream originalStream = null;
+        Stream originalStream = null;
 
-            var path = string.Empty;
+        var path = string.Empty;
 
-            // This stream will be disposed by the creating stream, or the finally block.
+        // This stream will be disposed by the creating stream, or the finally block.
 #pragma warning disable CA1859 // Change type of variable 'inputStream' from 'System.IO.Stream' to 'System.IO.MemoryStream?' for improved performance
-            Stream inputStream = null;
+        Stream inputStream = null;
 #pragma warning restore CA1859
+        try
+        {
+            inputStream = new MemoryStream();
+            originalStream = inputStream;
+
+            // Add original stream to streams to maintain reference to test disposal.
+            streams.Add(originalStream);
+
+            var outputStream = inputStream;
             try
             {
-                inputStream = new MemoryStream();
-                originalStream = inputStream;
-
-                // Add original stream to streams to maintain reference to test disposal.
-                streams.Add(originalStream);
-
-                var outputStream = inputStream;
-                try
+                var context = new MediaCreatingContext
                 {
-                    var context = new MediaCreatingContext
-                    {
-                        Path = path
-                    };
+                    Path = path
+                };
 
-                    foreach (var eventHandler in creatingEventHandlers)
-                    {
-                        // Creating stream disposed by using.
-                        using var creatingStream = outputStream;
-
-                        // Add to streams to maintain reference to test disposal.
-                        streams.Add(creatingStream);
-                        inputStream = null;
-                        outputStream = null;
-                        outputStream = await eventHandler.MediaCreatingAsync(context, creatingStream);
-                    }
-                }
-                finally
+                foreach (var eventHandler in creatingEventHandlers)
                 {
-                    // This disposes the final outputStream.
-                    if (outputStream != null)
-                    {
-                        await outputStream.DisposeAsync();
-                    }
+                    // Creating stream disposed by using.
+                    using var creatingStream = outputStream;
+
+                    // Add to streams to maintain reference to test disposal.
+                    streams.Add(creatingStream);
+                    inputStream = null;
+                    outputStream = null;
+                    outputStream = await eventHandler.MediaCreatingAsync(context, creatingStream);
                 }
             }
             finally
             {
-                if (inputStream != null)
+                // This disposes the final outputStream.
+                if (outputStream != null)
                 {
-                    await inputStream.DisposeAsync();
+                    await outputStream.DisposeAsync();
                 }
             }
-
-            foreach (var stream in streams)
+        }
+        finally
+        {
+            if (inputStream != null)
             {
-                Assert.Throws<ObjectDisposedException>(() => stream.ReadByte());
+                await inputStream.DisposeAsync();
             }
         }
-    }
 
-    public class TestMediaEventHandler : IMediaCreatingEventHandler
-    {
-        public async Task<Stream> MediaCreatingAsync(MediaCreatingContext context, Stream inputStream)
+        foreach (var stream in streams)
         {
-            var outStream = new MemoryStream();
-            await inputStream.CopyToAsync(outStream);
-
-            return outStream;
+            Assert.Throws<ObjectDisposedException>(() => stream.ReadByte());
         }
+    }
+}
+
+public class TestMediaEventHandler : IMediaCreatingEventHandler
+{
+    public async Task<Stream> MediaCreatingAsync(MediaCreatingContext context, Stream inputStream)
+    {
+        var outStream = new MemoryStream();
+        await inputStream.CopyToAsync(outStream);
+
+        return outStream;
     }
 }

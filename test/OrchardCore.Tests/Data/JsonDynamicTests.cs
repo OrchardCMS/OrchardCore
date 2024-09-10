@@ -350,6 +350,9 @@ public class JsonDynamicTests
         var expectedValue = true;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        bool value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -359,6 +362,10 @@ public class JsonDynamicTests
     {
         bool? expectedValue = true;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
+
+        bool? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
 
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
@@ -370,16 +377,22 @@ public class JsonDynamicTests
         byte expectedValue = 42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        byte value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
 
     [Fact]
-    public void JsonDynamicValueCanImplicitlyConvertToNullableBye()
+    public void JsonDynamicValueCanImplicitlyConvertToNullableByte()
     {
         byte? expectedValue = 42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        byte? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -390,6 +403,9 @@ public class JsonDynamicTests
         var expectedValue = 'A';
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        char value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -400,6 +416,9 @@ public class JsonDynamicTests
         char? expectedValue = 'B';
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        char? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -410,6 +429,9 @@ public class JsonDynamicTests
         var expectedValue = DateTime.UtcNow;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        DateTime value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -420,6 +442,9 @@ public class JsonDynamicTests
         DateTime? expectedValue = DateTime.UtcNow;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        DateTime? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -430,6 +455,9 @@ public class JsonDynamicTests
         DateTimeOffset expectedValue = DateTimeOffset.UtcNow;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        DateTimeOffset value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -440,6 +468,9 @@ public class JsonDynamicTests
         DateTimeOffset? expectedValue = DateTimeOffset.UtcNow;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        DateTimeOffset? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -450,6 +481,9 @@ public class JsonDynamicTests
         decimal expectedValue = 42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        decimal value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -460,6 +494,9 @@ public class JsonDynamicTests
         decimal? expectedValue = 42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        decimal? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -470,6 +507,9 @@ public class JsonDynamicTests
         double expectedValue = 42.42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        double value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -480,6 +520,9 @@ public class JsonDynamicTests
         double? expectedValue = 42.42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        double? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -490,6 +533,9 @@ public class JsonDynamicTests
         Guid expectedValue = Guid.NewGuid();
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        Guid value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -500,6 +546,9 @@ public class JsonDynamicTests
         Guid? expectedValue = Guid.NewGuid();
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        Guid? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -510,6 +559,9 @@ public class JsonDynamicTests
         short expectedValue = 42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        short value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -520,6 +572,9 @@ public class JsonDynamicTests
         short? expectedValue = 42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        short? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -530,6 +585,9 @@ public class JsonDynamicTests
         int expectedValue = 42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        int value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -540,6 +598,9 @@ public class JsonDynamicTests
         int? expectedValue = 42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        int? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -550,6 +611,9 @@ public class JsonDynamicTests
         long expectedValue = 42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        long value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -560,6 +624,9 @@ public class JsonDynamicTests
         long? expectedValue = 42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        long? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -570,6 +637,9 @@ public class JsonDynamicTests
         sbyte expectedValue = -42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        sbyte value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -580,6 +650,9 @@ public class JsonDynamicTests
         sbyte? expectedValue = -42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        sbyte? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -590,6 +663,9 @@ public class JsonDynamicTests
         float expectedValue = 42.42F;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        float value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -600,6 +676,9 @@ public class JsonDynamicTests
         float? expectedValue = 42.42F;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        float? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -610,6 +689,9 @@ public class JsonDynamicTests
         var expectedValue = "A test string value";
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        string value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -620,6 +702,9 @@ public class JsonDynamicTests
         ushort expectedValue = 42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        ushort value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -630,6 +715,9 @@ public class JsonDynamicTests
         ushort? expectedValue = 42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        ushort? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -640,6 +728,9 @@ public class JsonDynamicTests
         uint expectedValue = 42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        uint value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -650,6 +741,9 @@ public class JsonDynamicTests
         uint? expectedValue = 42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        uint? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -660,6 +754,9 @@ public class JsonDynamicTests
         ulong expectedValue = 42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        ulong value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -670,6 +767,9 @@ public class JsonDynamicTests
         ulong? expectedValue = 42;
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        ulong? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -680,6 +780,9 @@ public class JsonDynamicTests
         var expectedValue = Encoding.UTF8.GetBytes("A string in a byte array");
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
+        byte[] value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -690,6 +793,9 @@ public class JsonDynamicTests
         var expectedValue = TimeSpan.FromSeconds(42);
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue.ToString()));
 
+        TimeSpan value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -697,9 +803,12 @@ public class JsonDynamicTests
     [Fact]
     public void JsonDynamicValueCanImplicitlyConvertToNullableTimeSpan()
     {
-        var expectedValue = TimeSpan.FromSeconds(42);
+        TimeSpan? expectedValue = TimeSpan.FromSeconds(42);
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue.ToString()));
 
+        TimeSpan? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -710,6 +819,22 @@ public class JsonDynamicTests
         var expectedValue = new Uri("https://www.orchardcore.net");
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue.ToString()));
 
+        Uri value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
+        Assert.True(expectedValue == myDynamic);
+        Assert.False(expectedValue != myDynamic);
+    }
+
+    [Fact]
+    public void JsonDynamicValueCanImplicitlyConvertToNullable()
+    {
+        int? expectedValue = null;
+        dynamic myDynamic = new JsonDynamicValue(JsonValue.Create((int?)null));
+
+        int? value = myDynamic;
+
+        Assert.Equal(expectedValue, value);
         Assert.True(expectedValue == myDynamic);
         Assert.False(expectedValue != myDynamic);
     }
@@ -799,7 +924,7 @@ public class JsonDynamicTests
         var contentItem = GetContentTestData();
         dynamic contentExpando = new ExpandoObject();
         contentExpando.content = contentItem.Content;
-        
+
         // Act
         var contentStr = JConvert.SerializeObject((ExpandoObject)contentExpando);
 
@@ -822,7 +947,7 @@ public class JsonDynamicTests
             };
             var scriptingEngine = scope.ServiceProvider.GetRequiredService<IScriptingEngine>();
             var scriptingScope = scriptingEngine.CreateScope([getTestContent], scope.ServiceProvider, null, null);
-            
+
             // Act
             var contentStr = (string)scriptingEngine.Evaluate(scriptingScope, "return JSON.stringify(getTestContent().Content)");
 

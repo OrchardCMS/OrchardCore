@@ -1,52 +1,48 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Flows.Models;
 using OrchardCore.Indexing;
 
-namespace OrchardCore.Flows.Indexing
-{
-    public class FlowPartIndexHandler : ContentPartIndexHandler<FlowPart>
-    {
-        private readonly IServiceProvider _serviceProvider;
+namespace OrchardCore.Flows.Indexing;
 
-        public FlowPartIndexHandler(IServiceProvider serviceProvider)
+public class FlowPartIndexHandler : ContentPartIndexHandler<FlowPart>
+{
+    private readonly IServiceProvider _serviceProvider;
+
+    public FlowPartIndexHandler(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
+
+    public override async Task BuildIndexAsync(FlowPart FlowPart, BuildPartIndexContext context)
+    {
+        var options = context.Settings.ToOptions();
+        if (options == DocumentIndexOptions.None)
         {
-            _serviceProvider = serviceProvider;
+            return;
         }
 
-        public override async Task BuildIndexAsync(FlowPart FlowPart, BuildPartIndexContext context)
+        if (FlowPart.Widgets.Count != 0)
         {
-            var options = context.Settings.ToOptions();
-            if (options == DocumentIndexOptions.None)
-            {
-                return;
-            }
+            // Lazy resolution to prevent cyclic dependency.
+            var contentItemIndexHandlers = _serviceProvider.GetServices<IContentItemIndexHandler>();
 
-            if (FlowPart.Widgets.Count != 0)
+            foreach (var contentItemIndexHandler in contentItemIndexHandlers)
             {
-                // Lazy resolution to prevent cyclic dependency.
-                var contentItemIndexHandlers = _serviceProvider.GetServices<IContentItemIndexHandler>();
-
-                foreach (var contentItemIndexHandler in contentItemIndexHandlers)
+                foreach (var contentItem in FlowPart.Widgets)
                 {
-                    foreach (var contentItem in FlowPart.Widgets)
+                    var keys = new List<string>
                     {
-                        var keys = new List<string>
-                        {
-                            contentItem.ContentType,
-                        };
+                        contentItem.ContentType,
+                    };
 
-                        foreach (var key in context.Keys)
-                        {
-                            keys.Add($"{key}.{contentItem.ContentType}");
-                        }
-
-                        var buildIndexContext = new BuildIndexContext(context.DocumentIndex, contentItem, keys, context.Settings);
-
-                        await contentItemIndexHandler.BuildIndexAsync(buildIndexContext);
+                    foreach (var key in context.Keys)
+                    {
+                        keys.Add($"{key}.{contentItem.ContentType}");
                     }
+
+                    var buildIndexContext = new BuildIndexContext(context.DocumentIndex, contentItem, keys, context.Settings);
+
+                    await contentItemIndexHandler.BuildIndexAsync(buildIndexContext);
                 }
             }
         }

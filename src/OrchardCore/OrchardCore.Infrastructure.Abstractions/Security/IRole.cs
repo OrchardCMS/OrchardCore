@@ -1,9 +1,8 @@
-namespace OrchardCore.Security
-{
-    public interface IRole
-    {
-        string RoleName { get; }
+namespace OrchardCore.Security;
 
-        string RoleDescription { get; }
-    }
+public interface IRole
+{
+    string RoleName { get; }
+
+    string RoleDescription { get; }
 }
