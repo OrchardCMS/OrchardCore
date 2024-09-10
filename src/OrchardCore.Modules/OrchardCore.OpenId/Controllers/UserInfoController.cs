@@ -122,10 +122,10 @@ public sealed class UserInfoController : Controller
 
         if (principal.HasScope(Scopes.Phone))
         {
-            var phone = principal.FindFirst(Claims.PhoneNumber)?.Value ??
-                        principal.FindFirst(ClaimTypes.MobilePhone)?.Value ??
-                        principal.FindFirst(ClaimTypes.HomePhone)?.Value ??
-                        principal.FindFirst(ClaimTypes.OtherPhone)?.Value;
+            var phone = principal.FindFirst(Claims.PhoneNumber)?.Value
+                ?? principal.FindFirst(ClaimTypes.MobilePhone)?.Value
+                ?? principal.FindFirst(ClaimTypes.HomePhone)?.Value
+                ?? principal.FindFirst(ClaimTypes.OtherPhone)?.Value;
 
             if (!string.IsNullOrEmpty(phone))
             {
@@ -141,10 +141,7 @@ public sealed class UserInfoController : Controller
 
         if (principal.HasScope(Scopes.Roles))
         {
-            var roles = principal.FindAll(Claims.Role)
-                                 .Concat(principal.FindAll(ClaimTypes.Role))
-                                 .Select(claim => claim.Value)
-                                 .ToArray();
+            var roles = principal.GetRoles();
 
             if (roles.Length != 0)
             {
