@@ -1,21 +1,19 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Records;
+using OrchardCore.ContentManagement.Workflows;
+using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Queries;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
-using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Records;
-using YesSql;
+using OrchardCore.Workflows.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Workflows;
-using Newtonsoft.Json;
-using OrchardCore.Workflows.Services;
-using OrchardCore.Queries;
-using Newtonsoft.Json.Linq;
-using OrchardCore.Environment.Shell.Descriptor.Models;
-using Microsoft.Extensions.DependencyInjection;
+using YesSql;
 
 namespace OrchardCore.Contents.Workflows.Activities
 {
@@ -24,14 +22,13 @@ namespace OrchardCore.Contents.Workflows.Activities
         readonly IStringLocalizer S;
         private readonly ISession _session;
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IContentManager _contentManager;
         private readonly ShellDescriptor _shellDescriptor;
         private readonly IServiceProvider _serviceProvider;
+        private int _currentPage;
 
-        public ContentForEachTask(IWorkflowScriptEvaluator scriptEvaluator, IContentManager contentManager, IStringLocalizer<ContentForEachTask> localizer, ISession session, ShellDescriptor shellDescriptor, IServiceProvider serviceProvider)
+        public ContentForEachTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ContentForEachTask> localizer, ISession session, ShellDescriptor shellDescriptor, IServiceProvider serviceProvider)
         {
             _scriptEvaluator = scriptEvaluator;
-            _contentManager = contentManager;
             _session = session;
             S = localizer;
             _shellDescriptor = shellDescriptor;
@@ -54,98 +51,100 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            //Only try and get service if feature is enabled.
-            if (UseQuery && _shellDescriptor.Features.Any(feature => feature.Id == "OrchardCore.Queries"))
-            {
-                var _queryManager = (IQueryManager)_serviceProvider.GetService(typeof(IQueryManager));
-                if (Index % Take == 0)
-                {
-                    //Query is selected, get the query, 
-                    var contentItems = new List<ContentItem>();                  
-                    dynamic query = await _queryManager.GetQueryAsync(Query);
-                    if (query == null)
-                    {
-                        throw new InvalidOperationException($"Failed to retrieve the query {Query} (Have you changed or deleted the query?)");
-                    }
-                    var queryParameters = !String.IsNullOrEmpty(Parameters) ?
-                        JsonConvert.DeserializeObject<Dictionary<string, object>>(Parameters)
-                        : new Dictionary<string, object>();
-                    //Override skip and take in the query to enable paging of datasource
-                    var template = JObject.Parse(query.Template);
-                    template["from"] = Skip;
-                    template["size"] = Take;
-                    query.Template = template.ToString();
-                    //Store the contentitems or the query results in the workflow context (Return document may not be selected)
-                    var results = (await _queryManager.ExecuteQueryAsync(query, queryParameters)).Items;
-                    if (results != null)
-                    {
-                        foreach (var result in results)
-                        {
-                            if (!(result is ContentItem contentItem))
-                            {
-                                contentItem = null;
 
-                                if (result is JObject jObject)
-                                {
-                                    contentItem = jObject.ToObject<ContentItem>();
-                                }
-                            }
-                            if (contentItem?.ContentItemId == null)
-                            {
-                                continue;
-                            }
-                            contentItems.Add(contentItem);
-                        }
-                    }
-                    Skip += Take;
-                    Index = 0;
-                    ContentItems = contentItems;
-                }
-            }
-            //Query the db for a contenttype and store the result so a db call is not made per iteration
-            else if (Index % Take == 0)
+            if (UseQuery && !_shellDescriptor.Features.Any(feature => feature.Id == "OrchardCore.Queries"))
             {
-                ContentItems = await _session
-                .Query<ContentItem, ContentItemIndex>(index => index.ContentType == ContentType)
-                //If PublishedOnly == true then Publish should be true and Latest can be either and vice versa
-                .Where(w => (w.Published == true || w.Published == PublishedOnly) && (w.Latest == true || w.Latest == !PublishedOnly))
-                .Skip(Skip)
-                .Take(Take)
-                .ListAsync() as List<ContentItem>;
-                Skip += Take;
-                Index = 0;
+                throw new InvalidOperationException($"The '{nameof(ContentForEachTask)}' can't process the query as the feature OrchardCore.Queries is not enabled");
             }
 
-            if (ContentItems.Count() != 0 && Index < ContentItems.Count())
-            {
-                var contentItem = ContentItems[Index];
-                var current = Current = contentItem;
-                workflowContext.CorrelationId = contentItem.ContentItemId;
-                workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
-                workflowContext.LastResult = current;             
-                Index++;
-                return Outcomes("Iterate"); 
-            }
-            else 
+            if (Index >= ContentItems.Count && !await FetchNextBatchAsync(workflowContext))
             {
                 return Outcomes("Done");
             }
-            
+
+            ProcessContentItem(workflowContext);
+            return Outcomes("Iterate");
         }
-        
-        /// <summary>
-        /// The current skip number.
-        /// </summary>
-        public int Skip
+
+        private async Task<bool> FetchNextBatchAsync(WorkflowExecutionContext workflowContext)
         {
-            get => GetProperty(() => 0);
-            set => SetProperty(value);
+            //Have already looped once and there is no PageSize parameter so all results would have come with first query.
+            if (_currentPage > 0 && PageSize == 0)
+            {
+                return false;
+            }
+            if (UseQuery)
+            {
+                ContentItems = await ExecContentQueryAsync(workflowContext);
+            }
+            else
+            {
+                await ExecuteContentTypeQueryAsync();
+            }
+            _currentPage++;
+            Index = 0;
+            return ContentItems.Count > 0;
         }
-        
+
+        private async Task<List<ContentItem>> ExecContentQueryAsync(WorkflowExecutionContext workflowContext)
+        {
+            var _queryManager = (IQueryManager)_serviceProvider.GetService(typeof(IQueryManager));
+            var contentItems = new List<ContentItem>();
+            Query query = await _queryManager.GetQueryAsync(Query);
+            if (query == null)
+            {
+                throw new InvalidOperationException(S[$"Failed to retrieve the query {Query} (Have you changed, deleted the query or disabled the feature?)"]);
+            }
+
+            string queryParameters = await _scriptEvaluator.EvaluateAsync(Parameters, workflowContext, null);
+
+            var parameters = !string.IsNullOrEmpty(queryParameters) ?
+                JsonSerializer.Deserialize<Dictionary<string, object>>(queryParameters)
+                : new Dictionary<string, object>();
+
+            if (PageSize > 0)
+            {
+                parameters["from"] = _currentPage * PageSize;
+                parameters["size"] = PageSize;
+            }
+            try
+            {
+                IQueryResults results = await _queryManager.ExecuteQueryAsync(query, parameters);
+                foreach (ContentItem item in results.Items)
+                {
+                    contentItems.Add(item);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException(S[$"Failed to run the query {Query}, failed with message: {e.Message}."]);
+            }
+            return contentItems;
+        }
+
+        private async Task ExecuteContentTypeQueryAsync()
+        {
+            ContentItems = await _session
+                .Query<ContentItem, ContentItemIndex>(index => index.ContentType == ContentType)
+                .Where(w => (w.Published || w.Published == PublishedOnly) && (w.Latest || w.Latest == !PublishedOnly))
+                .Skip(_currentPage * PageSize)
+                .Take(PageSize)
+                .ListAsync() as List<ContentItem>;
+        }
+        private void ProcessContentItem(WorkflowExecutionContext workflowContext)
+        {
+            var contentItem = ContentItems[Index];
+            Current = contentItem;
+            workflowContext.CorrelationId = contentItem.ContentItemId;
+            workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
+            workflowContext.LastResult = Current;
+            Index++;
+        }
+
         /// <summary>
         /// How many to take each db call.
         /// </summary>
-        public int Take
+        public int PageSize
         {
             get => GetProperty(() => 10);
             set => SetProperty(value);
@@ -193,6 +192,14 @@ namespace OrchardCore.Contents.Workflows.Activities
             set => SetProperty(value);
         }
         /// <summary>
+        /// The selected query source, if any.
+        /// </summary>
+        public string QuerySource
+        {
+            get => GetProperty(() => string.Empty);
+            set => SetProperty(value);
+        }
+        /// <summary>
         /// The name of the query to run.
         /// </summary>
         public string Query
@@ -203,9 +210,9 @@ namespace OrchardCore.Contents.Workflows.Activities
         /// <summary>
         /// Parameters to pass into the query.
         /// </summary>
-        public string Parameters
+        public WorkflowExpression<string> Parameters
         {
-            get => GetProperty(() => string.Empty);
+            get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
         /// <summary>
