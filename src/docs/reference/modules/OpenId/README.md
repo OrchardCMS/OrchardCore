@@ -37,7 +37,7 @@ Supported flows include:
 
 ## OpenID Connect Token Validation
 
-This feature is responsible for validating tokens issued either by Orchard Core's own OpenID Connect Authorization Server or by other trusted servers. It supports JSON Web Tokens (JWT) and OpenID Connect discovery, ensuring secure and reliable token validation across distributed applications.
+This feature is responsible for validating tokens issued either by Orchard Core's own OpenID Connect authorization server or by other trusted servers. It supports JSON Web Tokens (JWT) and OpenID Connect discovery, ensuring secure and reliable token validation across distributed applications.
 
 ### Configuration
 
