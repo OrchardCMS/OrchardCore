@@ -9,7 +9,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="EnableTokenEndpoint">
         <label class="form-check-label" asp-for="EnableTokenEndpoint">@T["Enable Token Endpoint"]</label>
-        <span class="hint dashed">@T["Enables the endpoint:"] <code>/connect/token</code></span>
+        <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/token</code>
     </div>
 </div>
 
@@ -17,7 +17,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="EnableAuthorizationEndpoint">
         <label class="form-check-label" asp-for="EnableAuthorizationEndpoint">@T["Enable Authorization Endpoint"]</label>
-        <span class="hint dashed">@T["Enables the endpoint:"] <code>/connect/authorize</code></span>
+        <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/authorize</code>
     </div>
 </div>
 
@@ -25,7 +25,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="EnableLogoutEndpoint">
         <label class="form-check-label" asp-for="EnableLogoutEndpoint">@T["Enable Logout Endpoint"]</label>
-        <span class="hint dashed">@T["Enables the endpoint:"] <code>/connect/logout</code></span>
+        <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/logout</code>
     </div>
 </div>
 
@@ -33,7 +33,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="EnableUserInfoEndpoint">
         <label class="form-check-label" asp-for="EnableUserInfoEndpoint">@T["Enable User Info Endpoint"]</label>
-        <span class="hint dashed">@T["Enables the endpoint:"] <code>/connect/userinfo</code></span>
+        <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/userinfo</code>
     </div>
 </div>
 
@@ -41,7 +41,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="EnableIntrospectionEndpoint">
         <label class="form-check-label" asp-for="EnableIntrospectionEndpoint">@T["Enable Introspection Endpoint"]</label>
-        <span class="hint dashed">@T["Enables the endpoint:"] <code>/connect/introspect</code></span>
+        <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/introspect</code>
     </div>
 </div>
 
@@ -49,7 +49,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="EnableRevocationEndpoint">
         <label class="form-check-label" asp-for="EnableRevocationEndpoint">@T["Enable Revocation Endpoint"]</label>
-        <span class="hint dashed">@T["Enables the endpoint:"] <code>/connect/revoke</code></span>
+        <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/revoke</code>
     </div>
 </div>
 
@@ -59,7 +59,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="AllowAuthorizationCodeFlow">
         <label class="form-check-label" asp-for="AllowAuthorizationCodeFlow">@T["Allow Authorization Code Flow"]</label>
-        <span class="hint dashed">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth</a></span>
+        <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Authorization Code Flow.", "http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth"]</span>
     </div>
 </div>
 
@@ -67,7 +67,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="AllowImplicitFlow">
         <label class="form-check-label" asp-for="AllowImplicitFlow">@T["Allow Implicit Flow"]</label>
-        <span class="hint dashed">@T["For more information about the Implicit Flow, visit:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth</a></span>
+        <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Implicit Flow.", "http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth"]</span>
     </div>
 </div>
 
@@ -75,7 +75,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="AllowHybridFlow">
         <label class="form-check-label" asp-for="AllowHybridFlow">@T["Allow Hybrid Flow"]</label>
-        <span class="hint dashed">@T["For more information about the Hybrid Flow, visit:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth</a></span>
+        <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Hybrid Flow.", "http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth"]</span>
     </div>
 </div>
 
@@ -83,7 +83,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="AllowPasswordFlow">
         <label class="form-check-label" asp-for="AllowPasswordFlow">@T["Allow Password Flow"]</label>
-        <span class="hint dashed">@T["For more information about the Password Flow, visit:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.3">https://tools.ietf.org/html/rfc6749#section-1.3.3</a></span>
+        <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Password Flow.", "https://tools.ietf.org/html/rfc6749#section-1.3.3"]</span>
     </div>
 </div>
 
@@ -91,7 +91,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="AllowRefreshTokenFlow">
         <label class="form-check-label" asp-for="AllowRefreshTokenFlow">@T["Allow Refresh Token Flow"]</label>
-        <span class="hint dashed">@T["For more information about the Refresh Token Flow, visit:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens">http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens</a></span>
+        <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Refresh Token Flow.", "http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens"]</span>
     </div>
 </div>
 
@@ -99,7 +99,7 @@
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="AllowClientCredentialsFlow">
         <label class="form-check-label" asp-for="AllowClientCredentialsFlow">@T["Allow Client Credentials Flow"]</label>
-        <span class="hint dashed">@T["For more information about the Client Credentials Flow, visit:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.4">https://tools.ietf.org/html/rfc6749#section-1.3.4</a></span>
+        <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Client Credentials Flow.", "https://tools.ietf.org/html/rfc6749#section-1.3.4"]</span>
     </div>
 </div>
 
