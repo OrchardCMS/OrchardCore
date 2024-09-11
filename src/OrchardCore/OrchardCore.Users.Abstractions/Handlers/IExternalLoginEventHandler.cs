@@ -19,4 +19,12 @@ public interface IExternalLoginEventHandler
     /// <param name="context">The <see cref="UpdateUserContext"/>.</param>
     Task UpdateUserAsync(UpdateUserContext context);
 
+    /// <summary>
+    /// Occurs during the logout. The default implementation will be removed in v3.
+    /// </summary>
+    /// <param name="provider"></param>
+    /// <param name="properties"></param>
+    /// <returns></returns>
+    Task SetLogoutAsync(string provider, Dictionary<string, string> properties)
+        => Task.CompletedTask;
 }
