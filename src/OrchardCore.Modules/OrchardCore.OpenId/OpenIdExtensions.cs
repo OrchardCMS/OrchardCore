@@ -23,7 +23,7 @@ internal static class OpenIdExtensions
            throw new InvalidOperationException("No suitable user name can be found in the principal.");
 
     internal static string[] GetRoles(this ClaimsPrincipal principal)
-        => principal.FindAll(c => c.Type is Claims.Role || c.Type is ClaimTypes.Role)
+        => principal.FindAll(c => c.Type is Claims.Role or ClaimTypes.Role)
         .Select(x => x.Value)
         .Distinct()
         .ToArray();
