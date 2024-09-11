@@ -114,14 +114,18 @@ public class DateTimeShapes : IShapeAttributeProvider
                    : H["in a moment"];
     }
 
-
     [Shape]
-    public IHtmlContent Duration(TimeSpan timeSpan)
+    public IHtmlContent Duration(TimeSpan? timeSpan)
     {
-        var days = (int)timeSpan.TotalDays;
-        var hours = timeSpan.Hours;
-        var minutes = timeSpan.Minutes;
-        var seconds = timeSpan.Seconds;
+        if (timeSpan == null)
+        {
+            return HtmlString.Empty;
+        }
+
+        var days = (int)timeSpan.Value.TotalDays;
+        var hours = timeSpan.Value.Hours;
+        var minutes = timeSpan.Value.Minutes;
+        var seconds = timeSpan.Value.Seconds;
 
         var builder = new HtmlContentBuilder();
 
