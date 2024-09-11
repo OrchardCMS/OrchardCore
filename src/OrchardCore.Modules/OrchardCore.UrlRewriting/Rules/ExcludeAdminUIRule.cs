@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Rewrite;
 
-namespace OrchardCore.Rewrite.Rules;
+namespace OrchardCore.UrlRewriting.Rules;
 
 internal sealed class ExcludeAdminUIRule : IRule
 {

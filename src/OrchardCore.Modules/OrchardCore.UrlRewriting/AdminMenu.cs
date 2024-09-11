@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.Rewrite.Drivers;
+using OrchardCore.UrlRewriting.Drivers;
 
-namespace OrchardCore.Rewrite;
+namespace OrchardCore.UrlRewriting;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
@@ -25,8 +25,8 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Settings"], settings => settings
-                   .Add(S["Rewrite"], S["Rewrite"].PrefixPosition(), seo => seo
-                       .Permission(Permissions.ManageRewrites)
+                   .Add(S["URL Rewriting"], S["URL Rewriting"].PrefixPosition(), seo => seo
+                       .Permission(Permissions.ManageUrlRewriting)
                        .Action("Index", "Admin", _routeValues)
                        .LocalNav()
                     )

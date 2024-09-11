@@ -1,10 +1,10 @@
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
-    Name = "Rewrite",
+    Name = "UrlRewriting",
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
-    Description = "The Rewrites module provides a way to rewrite URLs.",
+    Description = "The UrlRewriting module enables URL rewrites and redirects for incoming requests.",
     Category = "Infrastructure"
 )]

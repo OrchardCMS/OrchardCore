@@ -7,13 +7,13 @@ using OrchardCore.Admin;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using OrchardCore.Rewrite.Rules;
 using OrchardCore.Modules;
-using OrchardCore.Rewrite.Models;
-using OrchardCore.Rewrite.Drivers;
+using OrchardCore.UrlRewriting.Rules;
+using OrchardCore.UrlRewriting.Models;
+using OrchardCore.UrlRewriting.Drivers;
 using OrchardCore.DisplayManagement.Handlers;
 
-namespace OrchardCore.Rewrite;
+namespace OrchardCore.UrlRewriting;
 
 public sealed class Startup : StartupBase
 {

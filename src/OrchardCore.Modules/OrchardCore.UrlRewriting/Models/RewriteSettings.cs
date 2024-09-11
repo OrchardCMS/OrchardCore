@@ -1,4 +1,4 @@
-namespace OrchardCore.Rewrite.Models;
+namespace OrchardCore.UrlRewriting.Models;
 
 public class RewriteSettings
 {

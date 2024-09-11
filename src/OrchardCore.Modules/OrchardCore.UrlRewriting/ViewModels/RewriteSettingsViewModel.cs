@@ -1,4 +1,4 @@
-namespace OrchardCore.Rewrite.ViewModels;
+namespace OrchardCore.UrlRewriting.ViewModels;
 
 public class RewriteSettingsViewModel
 {

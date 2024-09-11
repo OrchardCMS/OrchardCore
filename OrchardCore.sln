@@ -525,7 +525,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Rules.Core", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Queries.Core", "src\OrchardCore\OrchardCore.Queries.Core\OrchardCore.Queries.Core.csproj", "{61B358F2-702C-40AA-9DF7-7121248FE6DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Rewrite", "src\OrchardCore.Modules\OrchardCore.Rewrite\OrchardCore.Rewrite.csproj", "{D0F8B342-BDA8-44CB-AA43-7A65C79636A2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.UrlRewriting", "src\OrchardCore.Modules\OrchardCore.UrlRewriting\OrchardCore.UrlRewriting.csproj", "{D0F8B342-BDA8-44CB-AA43-7A65C79636A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

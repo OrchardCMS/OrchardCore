@@ -7,16 +7,16 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Rewrite.Models;
-using OrchardCore.Rewrite.ViewModels;
+using OrchardCore.UrlRewriting.Models;
+using OrchardCore.UrlRewriting.ViewModels;
 using OrchardCore.Settings;
 using OrchardCore.Mvc.ModelBinding;
 
-namespace OrchardCore.Rewrite.Drivers;
+namespace OrchardCore.UrlRewriting.Drivers;
 
 internal sealed class RewriteSettingsDisplayDriver : SiteDisplayDriver<RewriteSettings>
 {
-    public const string GroupId = "Rewrite";
+    public const string GroupId = "UrlRewriting";
 
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -41,7 +41,7 @@ internal sealed class RewriteSettingsDisplayDriver : SiteDisplayDriver<RewriteSe
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageRewrites))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUrlRewriting))
         {
             return null;
         }
@@ -59,7 +59,7 @@ internal sealed class RewriteSettingsDisplayDriver : SiteDisplayDriver<RewriteSe
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageRewrites))
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUrlRewriting))
         {
             return null;
         }
