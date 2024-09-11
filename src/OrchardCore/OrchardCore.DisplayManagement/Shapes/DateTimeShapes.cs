@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Html;
 using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Shapes;
@@ -111,6 +112,54 @@ public class DateTimeShapes : IShapeAttributeProvider
         return time.TotalMilliseconds > 0
                    ? H["a moment ago"]
                    : H["in a moment"];
+    }
+
+
+    [Shape]
+    public IHtmlContent Duration(TimeSpan timeSpan)
+    {
+        var days = (int)timeSpan.TotalDays;
+        var hours = timeSpan.Hours;
+        var minutes = timeSpan.Minutes;
+        var seconds = timeSpan.Seconds;
+
+        var builder = new HtmlContentBuilder();
+
+        if (days > 0)
+        {
+            builder.AppendHtml(H.Plural(days, "{1} day", "{1} days", days));
+        }
+
+        if (hours > 0)
+        {
+            if (builder.Count > 0)
+            {
+                builder.AppendWhitespace();
+            }
+            builder.AppendHtml(H.Plural(hours, "{1} hour", "{1} hours", hours));
+        }
+
+        if (minutes > 0)
+        {
+            if (builder.Count > 0)
+            {
+                builder.AppendWhitespace();
+            }
+
+            builder.AppendHtml(H.Plural(hours, "{1} minute", "{1} minutes", minutes));
+        }
+
+        if (seconds > 0)
+        {
+            if (builder.Count > 0)
+            {
+                builder.AppendWhitespace();
+            }
+
+            builder.AppendHtml(H.Plural(seconds, "{1} second", "{1} seconds", seconds));
+        }
+
+        return builder;
     }
 
     [Shape]
