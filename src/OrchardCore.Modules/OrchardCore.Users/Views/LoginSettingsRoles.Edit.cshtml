@@ -9,7 +9,7 @@
 </div>
 
 <div class="mb-3 ps-3 collapse@(Model.RequireTwoFactorAuthenticationForSpecificRoles ? " show": string.Empty)" asp-validation-class-for="Roles" id="rolesContainer">
-    <span class="hint dashed">@T["Select the roles to require two-factor authentication for."]</span>
+    <span class="hint">@T["Select the roles to require two-factor authentication for."]</span>
 
     @for (var i = 0; i < Model.Roles.Length; i++)
     {
