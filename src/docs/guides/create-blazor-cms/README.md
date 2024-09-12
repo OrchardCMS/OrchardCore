@@ -139,6 +139,7 @@ dotnet sln add ./BlazorCms
   ]
 }
 ```
+
 - Go to `Content` -> `Content Items` and verify that the content item is available as shown in the image below.
  
 ![Content Item](./images/image-001.PNG)
@@ -680,7 +681,7 @@ protected override async Task OnParametersSetAsync()
 ```
 
 - Let's get `SiteName` from Site settings on `OnInitializedAsync` with the following code.
-- 
+
 ```csharp
 protected override async Task OnInitializedAsync()
 {
