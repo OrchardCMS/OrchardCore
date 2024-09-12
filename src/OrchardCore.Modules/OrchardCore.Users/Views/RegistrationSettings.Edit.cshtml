@@ -54,45 +54,7 @@
     </div>
 </div>
 
-<h5 class="mb-3">@T["External Authentication"]<span class="hint dashed">@T["Settings when registering with external authentication providers"]</span></h5>
-
-<div class="mb-3" asp-validation-class-for="UseScriptToGenerateUsername">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="UseScriptToGenerateUsername" />
-        <span asp-validation-for="UseScriptToGenerateUsername"></span>
-        <label class="form-check-label" asp-for="UseScriptToGenerateUsername">@T["Use a script to generate userName based on external provider claims"]</label>
-        <span class="hint dashed">@T["If selected, any IExternalLoginEventHandlers defined in modules are not triggered"]</span>
-    </div>
-    <pre>
-********************************************************************************************
-* context          : {userName,loginProvider,externalClaims[]}                             *
-* ======================================================================================== *
-* -userName        : String                                                                *
-* -loginProvider   : String                                                                *
-* -externalClaims  : [{subject,issuer,originalIssuer,properties[],type,value,valueType}]   *
-*  -subject        : String                                                                *
-*  -issuer         : String                                                                *
-*  -originalIssuer : String                                                                *
-*  -properties     : [{key,value}]                                                         *
-*   -key           : String                                                                *
-*   -value         : String                                                                *
-*  -type           : String                                                                *
-*  -value          : String                                                                *
-*  -valueType      : String                                                                *
-* ======================================================================================== *
-*    Description                                                                           *
-* ---------------------------------------------------------------------------------------- *
-*    Use the loginProvider and externalClaims properties of the context variable to        *
-*    inspect who authenticated the user and with what claims. If you do not set the        *
-*    context.userName property, a username will be generated.                              *
-*                                                                                          *
-********************************************************************************************
-</pre>
-</div>
-<div class="mb-3" asp-validation-class-for="GenerateUsernameScript">
-    <button type="button" class="btn btn-secondary mb-2" onclick="resetScript()">@T["Reset Script"]</button>
-    <textarea asp-for="GenerateUsernameScript" rows="1" class="form-control content-preview-text"></textarea>
-</div>
+<h5 class="mb-3">@T["External Authentication"] <span class="hint dashed">@T["Settings when registering with external authentication providers"]</span></h5>
 
 <div class="mb-3" asp-validation-class-for="NoUsernameForExternalUsers">
     <div class="form-check">
@@ -118,46 +80,113 @@
         <span class="hint dashed">@T["When a new user logs in with an external provider, they are not required to provide a local password."]</span>
     </div>
 </div>
+<div class="mb-3" asp-validation-class-for="UseScriptToGenerateUsername">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="UseScriptToGenerateUsername" />
+        <span asp-validation-for="UseScriptToGenerateUsername"></span>
+        <label class="form-check-label" asp-for="UseScriptToGenerateUsername">@T["Use a script to generate userName based on external provider claims"]</label>
+        <span class="hint dashed">@T["If selected, any IExternalLoginEventHandlers defined in modules are not triggered"]</span>
+    </div>
+</div>
+
+<div class="@(Model.UseScriptToGenerateUsername ? string.Empty : "d-none")" id="ScriptToGenerateUsername_Wrapper">
+<pre>
+********************************************************************************************
+* context          : {userName,loginProvider,externalClaims[]}                             *
+* ======================================================================================== *
+* -userName        : String                                                                *
+* -loginProvider   : String                                                                *
+* -externalClaims  : [{subject,issuer,originalIssuer,properties[],type,value,valueType}]   *
+*  -subject        : String                                                                *
+*  -issuer         : String                                                                *
+*  -originalIssuer : String                                                                *
+*  -properties     : [{key,value}]                                                         *
+*   -key           : String                                                                *
+*   -value         : String                                                                *
+*  -type           : String                                                                *
+*  -value          : String                                                                *
+*  -valueType      : String                                                                *
+* ======================================================================================== *
+*    Description                                                                           *
+* ---------------------------------------------------------------------------------------- *
+*    Use the loginProvider and externalClaims properties of the context variable to        *
+*    inspect who authenticated the user and with what claims. If you do not set the        *
+*    context.userName property, a username will be generated.                              *
+*                                                                                          *
+********************************************************************************************
+</pre>
+
+    <div class="mb-3" asp-validation-class-for="GenerateUsernameScript">
+        <textarea asp-for="GenerateUsernameScript" rows="5" class="form-control content-preview-text"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <button type="button" class="btn btn-secondary mb-2" id="ResetScriptButton">@T["Reset Script"]</button>
+    </div>
+
+</div>
 
 <script at="Foot">
-    //<![CDATA[
     function refresh(e) {
         var usersCanRegisterElement = document.getElementById("@Html.IdFor(m => m.UsersCanRegister)");
-        var externalRegistrationInputs = $("input[data-external-registration]");
+        var externalRegistrationInputs = document.querySelector("input[data-external-registration]");
 
         if (usersCanRegisterElement.value == "NoRegistration") {
-            externalRegistrationInputs.prop('disabled', true);
+            externalRegistrationInputs.disabled = true;
         } else {
-            externalRegistrationInputs.prop('disabled', false);
+            externalRegistrationInputs.disabled = false;
         }
     }
 
-    function resetScript(keepText) {
-        var editor = $('#@Html.IdFor(x => x.GenerateUsernameScript)').data('editor');
-        if (!keepText) {
-            editor.doc.setValue(
-                '/* Uncomment to map AzureAd\n' +
-                '// Uncomment to output the context variable in the logs\n' +
-                '// log("warning", JSON.stringify(context));\n' +
-                'switch (context.loginProvider) {\n' +
-                '    case "AzureAd":\n' +
-                '        context.userName = "azad" + uuid();\n' +
-                '        break;\n' +
-                '    default:\n' +
-                '        log("Warning", "Provider " + context.loginProvider + " was not handled");\n' +
-                '        // Uncomment to generate a username as a uuid\n' +
-                '        // context.userName = "u" + uuid();\n' +
-                '        break;\n' +
-                '}\n' +
-                '*/\n'
-            );
+    function resetScript(element) {
+
+        if (element.editor.doc.getValue() != '') {
+            return;
         }
+
+        element.editor.doc.setValue(
+            '/* Uncomment to map AzureAd\n' +
+            '// Uncomment to output the context variable in the logs\n' +
+            '// log("warning", JSON.stringify(context));\n' +
+            'switch (context.loginProvider) {\n' +
+            '    case "AzureAd":\n' +
+            '        context.userName = "azad" + uuid();\n' +
+            '        break;\n' +
+            '    default:\n' +
+            '        log("Warning", "Provider " + context.loginProvider + " was not handled");\n' +
+            '        // Uncomment to generate a username as a uuid\n' +
+            '        // context.userName = "u" + uuid();\n' +
+            '        break;\n' +
+            '}\n' +
+            '*/\n'
+        );
     }
 
-    window.onload = function () {
+    function toggleEditorState(element) {
+        if (element.checked) {
+            document.getElementById("ScriptToGenerateUsername_Wrapper").classList.remove('d-none');
+            document.getElementById('@Html.IdFor(x => x.GenerateUsernameScript)').classList.remove('d-none');
+        } else {
+            document.getElementById("ScriptToGenerateUsername_Wrapper").classList.add('d-none');
+            document.getElementById('@Html.IdFor(x => x.GenerateUsernameScript)').classList.add('d-none');
+        }
+    }
+    document.getElementById('ResetScriptButton').addEventListener('click', (e) => {
+
+        var textArea = document.getElementById('@Html.IdFor(x => x.GenerateUsernameScript)');
+
+        resetScript(textArea);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        var useGenerateUserName = document.getElementById('@Html.IdFor(x => x.UseScriptToGenerateUsername)');
+
+        useGenerateUserName.addEventListener("change", (e) => toggleEditorState(e.target));
+        toggleEditorState(useGenerateUserName);
+
         refresh();
 
-        $("#@Html.IdFor(m => m.UsersCanRegister)").change(function () {
+        document.getElementById("@Html.IdFor(m => m.UsersCanRegister)").addEventListener('change', function () {
             refresh();
         });
 
@@ -165,6 +194,7 @@
         if (textArea == null) {
             return;
         }
+
         var editor = CodeMirror.fromTextArea(textArea, {
             autoRefresh: true,
             lineNumbers: true,
@@ -173,8 +203,9 @@
             autoCloseTags: true,
             mode: "javascript"
         });
-        $('#@Html.IdFor(x => x.GenerateUsernameScript)').data('editor', editor);
-        resetScript(editor.doc.getValue() != '');
-    };
-    //]]>
+
+        textArea.editor = editor;
+
+        resetScript(textArea);
+    });
 </script>
