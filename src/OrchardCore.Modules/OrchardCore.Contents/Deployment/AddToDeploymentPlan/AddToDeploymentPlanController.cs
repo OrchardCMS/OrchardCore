@@ -133,7 +133,7 @@ public sealed class AddToDeploymentPlanController : Controller
             {
                 await _notifier.WarningAsync(H["Couldn't add selected content to deployment plan."]);
 
-                return this.LocalRedirect(returnUrl, true);
+                return BadRequest();
             }
 
             step.ContentItemId = item.ContentItemId;
