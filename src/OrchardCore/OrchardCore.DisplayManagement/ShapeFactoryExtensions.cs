@@ -19,25 +19,19 @@ public static class ShapeFactoryExtensions
     /// <param name="model">The model to copy.</param>
     /// <returns></returns>
     public static ValueTask<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, TModel model)
-    {
-        return factory.CreateAsync(shapeType, Arguments.From(model));
-    }
+        => factory.CreateAsync(shapeType, Arguments.From(model));
 
     /// <summary>
     /// Creates a new generic shape instance.
     /// </summary>
     public static ValueTask<IShape> CreateAsync(this IShapeFactory factory, string shapeType)
-    {
-        return factory.CreateAsync(shapeType, _newShape);
-    }
+        => factory.CreateAsync(shapeType, _newShape);
 
     /// <summary>
     /// Creates a new generic shape instance and initializes it.
     /// </summary>
     public static ValueTask<IShape> CreateAsync(this IShapeFactory factory, string shapeType, Func<ValueTask<IShape>> shapeFactory)
-    {
-        return factory.CreateAsync(shapeType, shapeFactory, null, null);
-    }
+        => factory.CreateAsync(shapeType, shapeFactory, null, null);
 
     /// <summary>
     /// Creates a dynamic proxy instance for the type and initializes it.
@@ -48,9 +42,7 @@ public static class ShapeFactoryExtensions
     /// <returns></returns>
     public static ValueTask<IShape> CreateAsync<TModel>(this IShapeFactory factory, Action<TModel> initialize = null)
         where TModel : class
-    {
-        return factory.CreateAsync(typeof(TModel).Name, initialize);
-    }
+        => factory.CreateAsync(typeof(TModel).Name, initialize);
 
     /// <summary>
     /// Creates a dynamic proxy instance for the type and initializes it.
@@ -85,13 +77,12 @@ public static class ShapeFactoryExtensions
         {
             var shape = (Shape)createdContext.Shape;
 
-            // If only one non-Type, use it as the source object to copy
-
+            // If only one non-Type, use it as the source object to copy.
             var initializer = parameters.Positional.SingleOrDefault();
 
             if (initializer != null)
             {
-                // Use the Arguments class to optimize reflection code
+                // Use the Arguments class to optimize reflection code.
                 var arguments = Arguments.From(initializer);
 
                 foreach (var prop in arguments.Named)
