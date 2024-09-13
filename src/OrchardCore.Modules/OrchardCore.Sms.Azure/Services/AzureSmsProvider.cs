@@ -16,7 +16,7 @@ public class AzureSmsProvider : ISmsProvider
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger<AzureSmsProvider> _logger;
 
-    private AzureSettings _settings;
+    private AzureSmsSettings _settings;
 
     protected readonly IStringLocalizer S;
 
@@ -82,15 +82,15 @@ public class AzureSmsProvider : ISmsProvider
         }
     }
 
-    private async Task<AzureSettings> GetSettingsAsync()
+    private async Task<AzureSmsSettings> GetSettingsAsync()
     {
         if (_settings == null)
         {
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<AzureSettings>();
+            var settings = (await _siteService.GetSiteSettingsAsync()).As<AzureSmsSettings>();
 
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
 
-            _settings = new AzureSettings
+            _settings = new AzureSmsSettings
             {
                 ConnectionString = settings.ConnectionString == null ? null : protector.Unprotect(settings.ConnectionString),
                 PhoneNumber = settings.PhoneNumber

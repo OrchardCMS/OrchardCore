@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -8,8 +6,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
@@ -21,116 +17,118 @@ using OrchardCore.Sms.Azure.ViewModels;
 
 namespace OrchardCore.Sms.Azure.Drivers;
 
-public class AzureSettingsDisplayDriver : SectionDisplayDriver<ISite, AzureSettings>
+public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSettings>
 {
+    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
-    private readonly INotifier _notifier;
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+
+    protected override string SettingsGroupId => SmsSettings.GroupId;
 
     public AzureSettingsDisplayDriver(
+        IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IPhoneFormatValidator phoneFormatValidator,
         IDataProtectionProvider dataProtectionProvider,
-        IShellHost shellHost,
-        ShellSettings shellSettings,
-        INotifier notifier,
         IHtmlLocalizer<AzureSettingsDisplayDriver> htmlLocalizer,
         IStringLocalizer<AzureSettingsDisplayDriver> stringLocalizer)
     {
+        _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _phoneFormatValidator = phoneFormatValidator;
         _dataProtectionProvider = dataProtectionProvider;
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
-        _notifier = notifier;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(AzureSettings settings)
+    public override IDisplayResult Edit(ISite site, AzureSmsSettings settings, BuildEditorContext c)
     {
-        return Initialize<AzureSettingsViewModel>("TwilioSettings_Edit", model =>
+        return Initialize<AzureSettingsViewModel>("AzureSettings_Edit", model =>
         {
             model.IsEnabled = settings.IsEnabled;
-            model.ConnectionString = settings.ConnectionString;
             model.PhoneNumber = settings.PhoneNumber;
-        }).Location("Content:5#Twilio")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
-        .OnGroup(SmsSettings.GroupId);
+            model.ConnectionString = settings.ConnectionString;
+        }).Location("Content:5#Azure")
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AzureSmsPermissions.ManageAzureSmsSettings))
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureSettings settings, IUpdateModel updater, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureSmsSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!context.GroupId.Equals(SmsSettings.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, AzureSmsPermissions.ManageAzureSmsSettings))
         {
             return null;
         }
 
         var model = new AzureSettingsViewModel();
 
-        if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        var hasChanges = settings.IsEnabled != model.IsEnabled;
+        if (!model.IsEnabled)
         {
-            var hasChanges = settings.IsEnabled != model.IsEnabled;
+            var smsSettings = site.As<SmsSettings>();
 
-            if (!model.IsEnabled)
+            if (hasChanges && smsSettings.DefaultProviderName == AzureSmsProvider.TechnicalName)
             {
-                var smsSettings = site.As<SmsSettings>();
+                smsSettings.DefaultProviderName = null;
 
-                if (hasChanges && smsSettings.DefaultProviderName == AzureSmsProvider.TechnicalName)
-                {
-                    await _notifier.WarningAsync(H["You have successfully disabled the default SMS provider. The SMS service is now disable and will remain disabled until you designate a new default provider."]);
-
-                    smsSettings.DefaultProviderName = null;
-
-                    site.Put(smsSettings);
-                }
-
-                settings.IsEnabled = false;
-            }
-            else
-            {
-                settings.IsEnabled = true;
-
-                if (string.IsNullOrWhiteSpace(model.ConnectionString))
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionString), S["ConnectionString requires a value."]);
-                }
-
-                if (string.IsNullOrWhiteSpace(model.PhoneNumber))
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.PhoneNumber), S["Phone number requires a value."]);
-                }
-                else if (!_phoneFormatValidator.IsValid(model.PhoneNumber))
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.PhoneNumber), S["Please provide a valid phone number."]);
-                }
-
-                // Has change should be evaluated before updating the value.
-                hasChanges |= settings.ConnectionString != model.ConnectionString;
-                hasChanges |= settings.PhoneNumber != model.PhoneNumber;
-
-                settings.ConnectionString = model.ConnectionString;
-                settings.PhoneNumber = model.PhoneNumber;
+                site.Put(smsSettings);
             }
 
-            if (context.Updater.ModelState.IsValid && hasChanges)
+            settings.IsEnabled = false;
+        }
+        else
+        {
+            settings.IsEnabled = true;
+
+            if (string.IsNullOrWhiteSpace(model.PhoneNumber))
             {
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PhoneNumber), S["Invalid Phone number."]);
+            }
+            else if (!_phoneFormatValidator.IsValid(model.PhoneNumber))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PhoneNumber), S["Invalid phone number."]);
+            }
+
+            if (string.IsNullOrWhiteSpace(model.ConnectionString))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionString), S["The ConnectionString is required."]);
+            }
+
+            // Has change should be evaluated before updating the value.
+            hasChanges |= settings.PhoneNumber != model.PhoneNumber;
+            hasChanges |= settings.ConnectionString != model.ConnectionString;
+
+            settings.PhoneNumber = model.PhoneNumber;
+            settings.ConnectionString = model.ConnectionString;
+
+            if (!string.IsNullOrWhiteSpace(model.ConnectionString))
+            {
+                var protector = _dataProtectionProvider.CreateProtector(AzureSmsProvider.ProtectorName);
+
+                var protectedToken = protector.Protect(model.ConnectionString);
+
+                hasChanges |= settings.ConnectionString != protectedToken;
+
+                settings.ConnectionString = protectedToken;
             }
         }
 
-        return Edit(settings);
+        if (hasChanges)
+        {
+            _shellReleaseManager.RequestRelease();
+        }
+
+        return Edit(site, settings, context);
     }
 }

@@ -1,20 +1,17 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Sms.Azure;
 
-public class SmsPermissionProvider : IPermissionProvider
+public class AzureSmsPermissionProvider : IPermissionProvider
 {
-    public static readonly Permission ManageSmsSettings = SmsPermissions.ManageSmsSettings;
+    public static readonly Permission ManageSmsSettings = AzureSmsPermissions.ManageAzureSmsSettings;
 
     private readonly IEnumerable<Permission> _allPermissions =
     [
         ManageSmsSettings,
     ];
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+    public Task<IEnumerable<Permission>> GetPermissionsAsync() => Task.FromResult(_allPermissions);
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
