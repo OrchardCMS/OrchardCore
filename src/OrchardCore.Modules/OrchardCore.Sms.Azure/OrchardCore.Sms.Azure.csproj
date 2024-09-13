@@ -25,6 +25,5 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Sms.Core\OrchardCore.Sms.Core.csproj" />
-    <ProjectReference Include="..\OrchardCore.Sms\OrchardCore.Sms.csproj" />
   </ItemGroup>
 </Project>
