@@ -965,7 +965,7 @@ public sealed class AccountController : AccountBaseController
     private static bool UsersMustValidateEmail(RegistrationSettings registrationSettings) => registrationSettings?.UsersMustValidateEmail ?? false;
 
     private static bool IsUserRegistrationDisabled(RegistrationSettings registrationSettings)
-        => registrationSettings == null || registrationSettings.UsersCanRegister == UserRegistrationType.NoRegistration;
+        => registrationSettings is null || registrationSettings.UsersCanRegister == UserRegistrationType.NoRegistration;
 
     private void AddIdentityErrors(IdentityResult result)
     {
