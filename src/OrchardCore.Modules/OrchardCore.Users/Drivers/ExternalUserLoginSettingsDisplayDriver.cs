@@ -8,14 +8,14 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public sealed class LoginSettingsDisplayDriver : SiteDisplayDriver<LoginSettings>
+public sealed class ExternalUserLoginSettingsDisplayDriver : SiteDisplayDriver<ExternalUserLoginSettings>
 {
     public const string GroupId = "userLogin";
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    public LoginSettingsDisplayDriver(
+    public ExternalUserLoginSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService)
     {
@@ -26,21 +26,17 @@ public sealed class LoginSettingsDisplayDriver : SiteDisplayDriver<LoginSettings
     protected override string SettingsGroupId
         => GroupId;
 
-    public override IDisplayResult Edit(ISite site, LoginSettings settings, BuildEditorContext context)
+    public override IDisplayResult Edit(ISite site, ExternalUserLoginSettings settings, BuildEditorContext context)
     {
-        return Initialize<LoginSettings>("LoginSettings_Edit", model =>
+        return Initialize<ExternalUserLoginSettings>("ExternalUserLoginSettings_Edit", model =>
         {
-            model.UseSiteTheme = settings.UseSiteTheme;
-            model.DisableLocalLogin = settings.DisableLocalLogin;
-            model.AllowChangingEmail = settings.AllowChangingEmail;
-            model.AllowChangingUsername = settings.AllowChangingUsername;
-            model.AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber;
+            model.UseExternalProviderIfOnlyOneDefined = settings.UseExternalProviderIfOnlyOneDefined;
         }).Location("Content:5#General")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ManageUsers))
         .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, LoginSettings section, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, ExternalUserLoginSettings section, UpdateEditorContext context)
     {
         if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
         {

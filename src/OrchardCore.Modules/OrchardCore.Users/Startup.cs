@@ -38,6 +38,7 @@ using OrchardCore.Setup.Events;
 using OrchardCore.Sms;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
+using OrchardCore.Users.DataMigrations;
 using OrchardCore.Users.Deployment;
 using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Handlers;
@@ -114,17 +115,6 @@ public sealed class Startup : StartupBase
         );
 
         routes.MapAreaControllerRoute(
-            name: "ExternalLogins",
-            areaName: UserConstants.Features.Users,
-            pattern: _userOptions.ExternalLoginsUrl,
-            defaults: new
-            {
-                controller = _accountControllerName,
-                action = nameof(AccountController.ExternalLogins),
-            }
-        );
-
-        routes.MapAreaControllerRoute(
             name: "ConfirmEmail",
             areaName: UserConstants.Features.Users,
             pattern: "ConfirmEmail",
@@ -151,6 +141,8 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddDataMigration<ExternalUserMigrations>();
+
         services.Configure<UserOptions>(userOptions =>
         {
             var configuration = ShellScope.Services.GetRequiredService<IShellConfiguration>();
@@ -244,6 +236,46 @@ public sealed class Startup : StartupBase
         services.AddScoped<CustomUserSettingsService>();
         services.AddRecipeExecutionStep<CustomUserSettingsStep>();
         services.AddScoped<IDisplayDriver<LoginForm>, LoginFormDisplayDriver>();
+    }
+}
+
+[Feature(UserConstants.Features.ExternalAuthentication)]
+public sealed class ExternalAuthenticationStartup : StartupBase
+{
+    private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
+
+    private UserOptions _userOptions;
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSiteDisplayDriver<ExternalAuthenticationSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<ExternalUserLoginSettingsDisplayDriver>();
+    }
+
+    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        _userOptions ??= serviceProvider.GetRequiredService<IOptions<UserOptions>>().Value;
+
+        routes.MapAreaControllerRoute(
+            name: "ExternalLogins",
+            areaName: UserConstants.Features.Users,
+            pattern: _userOptions.ExternalLoginsUrl,
+            defaults: new
+            {
+                controller = _accountControllerName,
+                action = nameof(ExternalAuthenticationController.ExternalLogins),
+            }
+        );
+    }
+}
+
+[Feature(UserConstants.Features.ExternalAuthentication)]
+[RequireFeatures("OrchardCore.Roles")]
+public sealed class RoleExternalAuthenticationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSiteDisplayDriver<ExternalUserRoleLoginSettingsDisplayDriver>();
     }
 }
 

@@ -8,14 +8,12 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public sealed class LoginSettingsDisplayDriver : SiteDisplayDriver<LoginSettings>
+public sealed class ExternalUserRoleLoginSettingsDisplayDriver : SiteDisplayDriver<ExternalUserRoleLoginSettings>
 {
-    public const string GroupId = "userLogin";
-
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    public LoginSettingsDisplayDriver(
+    public ExternalUserRoleLoginSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService)
     {
@@ -24,23 +22,20 @@ public sealed class LoginSettingsDisplayDriver : SiteDisplayDriver<LoginSettings
     }
 
     protected override string SettingsGroupId
-        => GroupId;
+        => ExternalUserLoginSettingsDisplayDriver.GroupId;
 
-    public override IDisplayResult Edit(ISite site, LoginSettings settings, BuildEditorContext context)
+    public override IDisplayResult Edit(ISite site, ExternalUserRoleLoginSettings settings, BuildEditorContext context)
     {
-        return Initialize<LoginSettings>("LoginSettings_Edit", model =>
+        return Initialize<ExternalUserRoleLoginSettings>("ExternalUserRoleLoginSettings_Edit", model =>
         {
-            model.UseSiteTheme = settings.UseSiteTheme;
-            model.DisableLocalLogin = settings.DisableLocalLogin;
-            model.AllowChangingEmail = settings.AllowChangingEmail;
-            model.AllowChangingUsername = settings.AllowChangingUsername;
-            model.AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber;
-        }).Location("Content:5#General")
+            model.UseScriptToSyncRoles = settings.UseScriptToSyncRoles;
+            model.SyncRolesScript = settings.SyncRolesScript;
+        }).Location("Content:10#General")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ManageUsers))
         .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, LoginSettings section, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, ExternalUserRoleLoginSettings section, UpdateEditorContext context)
     {
         if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
         {

@@ -1,0 +1,12 @@
+@using OrchardCore.Users.Models
+
+@model ExternalUserLoginSettings
+
+<div class="mb-3" asp-validation-class-for="UseExternalProviderIfOnlyOneDefined">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="UseExternalProviderIfOnlyOneDefined" />
+        <span asp-validation-for="UseExternalProviderIfOnlyOneDefined"></span>
+        <label class="form-check-label" asp-for="UseExternalProviderIfOnlyOneDefined">@T["Use external provider for login."]</label>
+        <span class="hint dashed">@T["If only one external provider is defined, auto challenge the provider to login. You should also configure registration options"]</span>
+    </div>
+</div>

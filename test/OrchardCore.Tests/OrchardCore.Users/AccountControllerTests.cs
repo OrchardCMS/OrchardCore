@@ -23,7 +23,7 @@ public class AccountControllerTests
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings()
         {
-            UsersCanRegister = UserRegistrationType.AllowRegistration,
+            AllowSiteRegistration = true,
         });
 
         // Act
@@ -63,7 +63,7 @@ public class AccountControllerTests
 
             var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginEventHandler>()
                         .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginEventHandler)) as ScriptExternalLoginEventHandler;
-            var loginSettings = new LoginSettings
+            var loginSettings = new ExternalUserRoleLoginSettings
             {
                 UseScriptToSyncRoles = true,
                 SyncRolesScript = """
@@ -130,7 +130,7 @@ public class AccountControllerTests
 
             var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginEventHandler>()
                       .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginEventHandler)) as ScriptExternalLoginEventHandler;
-            var loginSettings = new LoginSettings
+            var loginSettings = new ExternalUserRoleLoginSettings
             {
                 UseScriptToSyncRoles = true,
                 SyncRolesScript = """
@@ -174,7 +174,7 @@ public class AccountControllerTests
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings()
         {
-            UsersCanRegister = UserRegistrationType.AllowRegistration,
+            AllowSiteRegistration = true,
         });
 
         var responseFromGet = await context.Client.GetAsync("Register");
@@ -213,7 +213,7 @@ public class AccountControllerTests
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings()
         {
-            UsersCanRegister = UserRegistrationType.NoRegistration,
+            AllowSiteRegistration = false,
         });
 
         // Act
@@ -229,7 +229,7 @@ public class AccountControllerTests
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings()
         {
-            UsersCanRegister = UserRegistrationType.AllowRegistration,
+            AllowSiteRegistration = true,
         }, enableRegistrationFeature: false);
 
         // Act
@@ -245,7 +245,7 @@ public class AccountControllerTests
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings()
         {
-            UsersCanRegister = UserRegistrationType.AllowRegistration,
+            AllowSiteRegistration = true,
         });
 
         var responseFromGet = await context.Client.GetAsync("Register");
@@ -292,7 +292,7 @@ public class AccountControllerTests
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings()
         {
-            UsersCanRegister = UserRegistrationType.AllowRegistration,
+            AllowSiteRegistration = true,
         }, enableRegistrationFeature: true, requireUniqueEmail: false);
 
         // Register First User
@@ -341,7 +341,7 @@ public class AccountControllerTests
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings()
         {
-            UsersCanRegister = UserRegistrationType.AllowRegistration,
+            AllowSiteRegistration = true,
             UsersAreModerated = true,
         });
 
@@ -382,7 +382,7 @@ public class AccountControllerTests
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings()
         {
-            UsersCanRegister = UserRegistrationType.AllowRegistration,
+            AllowSiteRegistration = true,
             UsersMustValidateEmail = true,
         });
 

@@ -18,7 +18,7 @@ public sealed class RegisterUserLoginFormDisplayDriver : DisplayDriver<LoginForm
     {
         var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
 
-        if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
+        if (!settings.AllowSiteRegistration)
         {
             return null;
         }

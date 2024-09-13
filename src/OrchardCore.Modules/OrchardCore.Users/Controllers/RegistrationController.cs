@@ -54,7 +54,7 @@ public sealed class RegistrationController : Controller
     public async Task<IActionResult> Register(string returnUrl = null)
     {
         var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
-        if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
+        if (!settings.AllowSiteRegistration)
         {
             return NotFound();
         }
@@ -74,7 +74,7 @@ public sealed class RegistrationController : Controller
     {
         var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
 
-        if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
+        if (!settings.AllowSiteRegistration)
         {
             return NotFound();
         }

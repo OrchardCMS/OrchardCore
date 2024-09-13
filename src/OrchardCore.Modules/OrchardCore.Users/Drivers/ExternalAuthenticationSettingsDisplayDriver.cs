@@ -8,14 +8,12 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<RegistrationSettings>
+public sealed class ExternalAuthenticationSettingsDisplayDriver : SiteDisplayDriver<ExternalAuthenticationSettings>
 {
-    public const string GroupId = "userRegistration";
-
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    public RegistrationSettingsDisplayDriver(
+    public ExternalAuthenticationSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService)
     {
@@ -24,9 +22,9 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
     }
 
     protected override string SettingsGroupId
-        => GroupId;
+        => RegistrationSettingsDisplayDriver.GroupId;
 
-    public override async Task<IDisplayResult> EditAsync(ISite site, RegistrationSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(ISite site, ExternalAuthenticationSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
@@ -35,16 +33,18 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
             return null;
         }
 
-        return Initialize<RegistrationSettings>("RegistrationSettings_Edit", model =>
+        return Initialize<ExternalAuthenticationSettings>("ExternalAuthenticationSettings_Edit", model =>
         {
-            model.UsersMustValidateEmail = settings.UsersMustValidateEmail;
-            model.UsersAreModerated = settings.UsersAreModerated;
-            model.UseSiteTheme = settings.UseSiteTheme;
-        }).Location("Content:5")
+            model.NoPassword = settings.NoPassword;
+            model.NoUsername = settings.NoUsername;
+            model.NoEmail = settings.NoEmail;
+            model.UseScriptToGenerateUsername = settings.UseScriptToGenerateUsername;
+            model.GenerateUsernameScript = settings.GenerateUsernameScript;
+        }).Location("Content:10")
         .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, RegistrationSettings settings, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, ExternalAuthenticationSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
