@@ -7,41 +7,67 @@ public class DisplayDriverBase
     protected string Prefix { get; set; } = string.Empty;
 
     /// <summary>
-    /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
+    /// Creates a new strongly typed shape.
+    /// </summary>
+    public ShapeResult Initialize<TModel>() where TModel : class
+    {
+        return Initialize<TModel>(shape => { });
+    }
+
+    /// <summary>
+    /// Creates a new strongly typed shape.
+    /// </summary>
+    public ShapeResult Initialize<TModel>(string shapeType) where TModel : class
+    {
+        return Initialize<TModel>(shapeType, shape => { });
+    }
+
+    /// <summary>
+    /// Creates a new strongly typed shape and initializes it before it is displayed.
     /// </summary>
     public ShapeResult Initialize<TModel>(Action<TModel> initialize) where TModel : class
     {
-        return Initialize<TModel>(shape =>
+        return Initialize<TModel>(typeof(TModel).Name, initialize);
+    }
+
+    /// <summary>
+    /// Creates a new strongly typed shape and initializes it before it is displayed.
+    /// </summary>
+    public ShapeResult Initialize<TModel>(string shapeType, Action<TModel> initialize) where TModel : class
+    {
+        return Initialize<TModel>(shapeType, shape =>
         {
-            initialize(shape);
-            return new ValueTask();
+            initialize?.Invoke(shape);
+
+            return ValueTask.CompletedTask;
         });
     }
 
     /// <summary>
-    /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
+    /// Creates a new strongly typed shape and initializes it before it is displayed.
     /// </summary>
     public ShapeResult Initialize<TModel>(Func<TModel, ValueTask> initializeAsync) where TModel : class
     {
-        return Initialize<TModel>(
+        return Initialize(
             typeof(TModel).Name,
-            shape => initializeAsync(shape)
+            initializeAsync
             );
     }
 
     /// <summary>
-    /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
+    /// Creates a new strongly typed shape and initializes it before it is displayed.
     /// </summary>
     public ShapeResult Initialize<TModel>(string shapeType, Func<TModel, ValueTask> initializeAsync) where TModel : class
     {
         return Factory(
             shapeType,
-            ctx => ctx.ShapeFactory.CreateAsync(shapeType, initializeAsync)
+            shapeBuilder: ctx => ctx.ShapeFactory.CreateAsync<TModel>(shapeType),
+            initializeAsync: shape => initializeAsync?.Invoke((TModel)shape).AsTask()
             );
     }
 
     /// <summary>
-    /// Creates a dynamic proxy for the specified model. Properties are copied to the new object.
+    /// Creates a new strongly typed shape an initializes its properties from an existing object.
     /// </summary>
     public ShapeResult Copy<TModel>(string shapeType, TModel model) where TModel : class
     {
@@ -49,51 +75,38 @@ public class DisplayDriverBase
     }
 
     /// <summary>
-    /// Creates a new strongly typed shape and initializes it if it needs to be rendered.
-    /// </summary>
-    public ShapeResult Initialize<TModel>(string shapeType, Action<TModel> initialize) where TModel : class
-    {
-        return Initialize<TModel>(shapeType, shape =>
-        {
-            initialize(shape);
-            return new ValueTask();
-        });
-    }
-
-    /// <summary>
-    /// Creates a new loosely typed shape and initializes it if it needs to be rendered.
+    /// Creates a new loosely typed shape and initializes it before it is displayed.
     /// </summary>
     public ShapeResult Dynamic(string shapeType, Func<dynamic, Task> initializeAsync)
     {
-        return Factory(shapeType,
-            async ctx =>
-            {
-                var shape = await ctx.ShapeFactory.CreateAsync(shapeType);
-                await initializeAsync(shape);
-                return shape;
-            });
+        return Factory(
+            shapeType,
+            ctx => ctx.ShapeFactory.CreateAsync(shapeType),
+            initializeAsync
+        );
     }
 
     /// <summary>
-    /// Creates a new loosely typed shape and initializes it if it needs to be rendered.
+    /// Creates a new loosely typed shape and initializes it before it is displayed.
     /// </summary>
     public ShapeResult Dynamic(string shapeType, Action<dynamic> initialize)
     {
-        return Factory(shapeType,
-            async ctx =>
+        return Dynamic(
+            shapeType,
+            initializeAsync: shape =>
             {
-                var shape = await ctx.ShapeFactory.CreateAsync(shapeType);
-                initialize(shape);
-                return shape;
-            });
+                initialize?.Invoke(shape);
+                return Task.FromResult(shape);
+            }
+        );
     }
 
     /// <summary>
-    /// If the shape needs to be rendered, it is created automatically from its type name.
+    /// When the shape is displayed, it is created automatically from its type name.
     /// </summary>
     public ShapeResult Dynamic(string shapeType)
     {
-        return Factory(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType));
+        return Dynamic(shapeType, shape => Task.CompletedTask);
     }
 
     /// <summary>
@@ -101,7 +114,7 @@ public class DisplayDriverBase
     /// </summary>
     public ShapeResult View<TModel>(string shapeType, TModel model) where TModel : class
     {
-        return Factory(shapeType, ctx => new ValueTask<IShape>(new ShapeViewModel<TModel>(model)));
+        return Factory(shapeType, ctx => ValueTask.FromResult<IShape>(new ShapeViewModel<TModel>(model)));
     }
 
     /// <summary>
@@ -109,7 +122,7 @@ public class DisplayDriverBase
     /// </summary>
     public ShapeResult Shape(string shapeType, IShape shape)
     {
-        return Factory(shapeType, ctx => new ValueTask<IShape>(shape));
+        return Factory(shapeType, ctx => ValueTask.FromResult<IShape>(shape));
     }
 
     /// <summary>
@@ -125,11 +138,11 @@ public class DisplayDriverBase
     /// </summary>
     public ShapeResult Factory(string shapeType, Func<IBuildShapeContext, IShape> shapeBuilder)
     {
-        return Factory(shapeType, ctx => new ValueTask<IShape>(shapeBuilder(ctx)), null);
+        return Factory(shapeType, ctx => ValueTask.FromResult<IShape>(shapeBuilder(ctx)), null);
     }
 
     /// <summary>
-    /// If the shape needs to be rendered, it is created by the delegate.
+    /// If the shape needs to be displayed, it is created by the delegate.
     /// </summary>
     /// <remarks>
     /// This method is ultimately called by all drivers to create a shape. It's made virtual

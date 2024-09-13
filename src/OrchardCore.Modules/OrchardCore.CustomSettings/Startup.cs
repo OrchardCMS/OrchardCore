@@ -12,7 +12,6 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 
 namespace OrchardCore.CustomSettings;
 
@@ -20,12 +19,12 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IDisplayDriver<ISite>, CustomSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<CustomSettingsDisplayDriver>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<CustomSettingsService>();
         services.AddScoped<IStereotypesProvider, CustomSettingsStereotypesProvider>();
         // Permissions
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<IAuthorizationHandler, CustomSettingsAuthorizationHandler>();
 
         services.AddRecipeExecutionStep<CustomSettingsStep>();

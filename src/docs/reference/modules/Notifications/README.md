@@ -8,9 +8,19 @@ You can customize the default notification options through the configuration pro
 ```json
 "OrchardCore_Notifications": {
     "TotalUnreadNotifications": 10,
-    "DisableNotificationHtmlBodySanitizer": false
+    "DisableNotificationHtmlBodySanitizer": false,
+    "TotalUnreadNotifications": 3600
 }
 ```
+
+Available Options and Their Definitions:
+
+| **Property**                             | **Description**                                                                                                                                                     |
+|------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `TotalUnreadNotifications`               | Specifies the maximum number of unread notifications displayed in the navigation bar. Default is 10.                                                                 |
+| `DisableNotificationHtmlBodySanitizer`   | Allows you to disable the default sanitization of the `HtmlBody` in notifications generated from workflows.                                                          |
+| `AbsoluteCacheExpirationSeconds`         | Specifies the absolute maximum duration, in seconds, for which the top unread user notifications are cached when caching is enabled. A value of 0 does not disable caching but indicates that there is no fixed expiration time for the cache. You can set this value to define a maximum lifespan for the cached data before it is invalidated. |
+| `SlidingCacheExpirationSeconds`          | Defines the sliding cache duration, in seconds, for unread user notifications when caching is enabled. By default, the cache is refreshed and extended for up to 1800 seconds (30 minutes) after each user activity. To disable sliding expiration, you can set this value to 0. |
 
 ## Notification Methods
 

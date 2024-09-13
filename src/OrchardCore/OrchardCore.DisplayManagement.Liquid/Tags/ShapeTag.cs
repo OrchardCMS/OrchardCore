@@ -58,7 +58,7 @@ public class ShapeTag
             }
         }
 
-        var shape = await shapeFactory.CreateAsync<object>(type, customAttributes == null ? Arguments.Empty : Arguments.From(customAttributes));
+        var shape = await shapeFactory.CreateAsync(type, customAttributes == null ? Arguments.Empty : Arguments.From(customAttributes));
 
         if (!string.IsNullOrEmpty(id))
         {

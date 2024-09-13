@@ -13,10 +13,10 @@ public sealed class Startup : StartupBase
     {
         services.AddHttpClient();
 
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<RemoteInstanceService>();
         services.AddScoped<RemoteClientService>();
         services.AddScoped<IDeploymentTargetProvider, RemoteInstanceDeploymentTargetProvider>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
     }
 }

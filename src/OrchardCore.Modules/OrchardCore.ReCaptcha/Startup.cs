@@ -7,7 +7,6 @@ using OrchardCore.ReCaptcha.Core;
 using OrchardCore.ReCaptcha.Drivers;
 using OrchardCore.ReCaptcha.Users.Handlers;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Users;
 using OrchardCore.Users.Events;
@@ -21,10 +20,9 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddReCaptcha();
-
-        services.AddScoped<IDisplayDriver<ISite>, ReCaptchaSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddSiteDisplayDriver<ReCaptchaSettingsDisplayDriver>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddPermissionProvider<Permissions>();
     }
 }
 

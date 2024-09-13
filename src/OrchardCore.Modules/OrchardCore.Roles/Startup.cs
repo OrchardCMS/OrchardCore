@@ -26,8 +26,8 @@ public sealed class Startup : StartupBase
 
         services.AddRecipeExecutionStep<RolesStep>();
         services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
-        services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddPermissionProvider<Permissions>();
+        services.AddNavigationProvider<AdminMenu>();
     }
 }
 

@@ -5,7 +5,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.AuditTrail.Navigation;
 
-public sealed class AuditTrailAdminMenu : INavigationProvider
+public sealed class AuditTrailAdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -20,13 +20,8 @@ public sealed class AuditTrailAdminMenu : INavigationProvider
         S = stringLocalizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return Task.CompletedTask;
-        }
-
         builder
             .Add(S["Audit Trail"], NavigationConstants.AdminMenuAuditTrailPosition, configuration => configuration
                 .AddClass("audittrail")
@@ -36,6 +31,6 @@ public sealed class AuditTrailAdminMenu : INavigationProvider
                 .LocalNav()
             );
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

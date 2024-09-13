@@ -4,7 +4,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Twitter;
 
-public sealed class AdminMenuSignin : INavigationProvider
+public sealed class AdminMenuSignin : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -14,18 +14,13 @@ public sealed class AdminMenuSignin : INavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenuSignin(IStringLocalizer<AdminMenuSignin> localizer)
+    public AdminMenuSignin(IStringLocalizer<AdminMenuSignin> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return Task.CompletedTask;
-        }
-
         builder
             .Add(S["Security"], security => security
                 .Add(S["Authentication"], authentication => authentication
@@ -38,44 +33,6 @@ public sealed class AdminMenuSignin : INavigationProvider
                 )
             );
 
-        return Task.CompletedTask;
-    }
-}
-
-public sealed class AdminMenu : INavigationProvider
-{
-    private static readonly RouteValueDictionary _routeValues = new()
-    {
-        { "area", "OrchardCore.Settings" },
-        { "groupId", TwitterConstants.Features.Twitter },
-    };
-
-    internal readonly IStringLocalizer S;
-
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-    {
-        S = localizer;
-    }
-
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-    {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return Task.CompletedTask;
-        }
-
-        builder
-            .Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], settings => settings
-                    .Add(S["X (Twitter)"], S["X (Twitter)"].PrefixPosition(), twitter => twitter
-                        .AddClass("twitter").Id("twitter")
-                        .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageTwitter)
-                        .LocalNav()
-                    )
-                )
-            );
-
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

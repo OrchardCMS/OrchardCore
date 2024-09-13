@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Entities;
+using OrchardCore.Environment.Cache;
 using OrchardCore.Modules;
 using OrchardCore.Notifications.Indexes;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.ViewModels;
+using OrchardCore.Users.Models;
 using YesSql;
 
 namespace OrchardCore.Notifications.Endpoints.Management;
@@ -30,6 +32,7 @@ public static class MarkAsReadEndpoints
         ReadNotificationViewModel model,
         IAuthorizationService authorizationService,
         IHttpContextAccessor httpContextAccessor,
+        ITagCache tagCache,
         YesSql.ISession session,
         IClock clock)
     {
@@ -64,6 +67,7 @@ public static class MarkAsReadEndpoints
             updated = true;
 
             await session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
+            await tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(httpContextAccessor.HttpContext.User.Identity.Name));
         }
 
         return TypedResults.Ok(new

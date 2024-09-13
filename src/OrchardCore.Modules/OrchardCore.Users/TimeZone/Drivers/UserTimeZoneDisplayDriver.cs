@@ -10,9 +10,9 @@ namespace OrchardCore.Users.TimeZone.Drivers;
 
 public sealed class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserTimeZone>
 {
-    private readonly UserTimeZoneService _userTimeZoneService;
+    private readonly IUserTimeZoneService _userTimeZoneService;
 
-    public UserTimeZoneDisplayDriver(UserTimeZoneService userTimeZoneService)
+    public UserTimeZoneDisplayDriver(IUserTimeZoneService userTimeZoneService)
     {
         _userTimeZoneService = userTimeZoneService;
     }
@@ -33,7 +33,7 @@ public sealed class UserTimeZoneDisplayDriver : SectionDisplayDriver<User, UserT
         userTimeZone.TimeZoneId = model.TimeZoneId;
 
         // Remove the cache entry, don't update it, as the form might still fail validation for other reasons.
-        await _userTimeZoneService.UpdateUserTimeZoneAsync(user);
+        await _userTimeZoneService.UpdateAsync(user);
 
         return await EditAsync(user, userTimeZone, context);
     }

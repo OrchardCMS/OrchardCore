@@ -4,29 +4,27 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Tenants;
 
-public sealed class FeatureProfilesAdminMenu : INavigationProvider
+public sealed class FeatureProfilesAdminMenu : AdminNavigationProvider
 {
     private readonly ShellSettings _shellSettings;
 
     internal readonly IStringLocalizer S;
 
-    public FeatureProfilesAdminMenu(IStringLocalizer<FeatureProfilesAdminMenu> localizer, ShellSettings shellSettings)
+    public FeatureProfilesAdminMenu(
+        ShellSettings shellSettings,
+        IStringLocalizer<FeatureProfilesAdminMenu> stringLocalizer)
     {
         _shellSettings = shellSettings;
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-    {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return Task.CompletedTask;
-        }
 
-        // Don't add the menu item on non-default tenants
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        // Don't add the menu item on non-default tenants.
         if (!_shellSettings.IsDefaultShell())
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         builder
@@ -39,6 +37,6 @@ public sealed class FeatureProfilesAdminMenu : INavigationProvider
                 )
             );
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

@@ -126,7 +126,16 @@ public sealed class AddToDeploymentPlanController : Controller
 
                 return Forbid();
             }
-            var step = (ContentItemDeploymentStep)_factories.FirstOrDefault(x => x.Name == nameof(ContentItemDeploymentStep)).Create();
+
+            var step = (ContentItemDeploymentStep)_factories.FirstOrDefault(x => x.Name == nameof(ContentItemDeploymentStep))?.Create();
+
+            if (step is null)
+            {
+                await _notifier.WarningAsync(H["Couldn't add selected content to deployment plan."]);
+
+                return BadRequest();
+            }
+
             step.ContentItemId = item.ContentItemId;
 
             deploymentPlan.DeploymentSteps.Add(step);

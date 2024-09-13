@@ -6,7 +6,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -16,18 +16,13 @@ public sealed class AdminMenu : INavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return Task.CompletedTask;
-        }
-
         builder
             .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
                 .AddClass("security")
@@ -49,117 +44,6 @@ public sealed class AdminMenu : INavigationProvider
                 )
             );
 
-        return Task.CompletedTask;
-    }
-}
-
-public sealed class ChangeEmailAdminMenu : INavigationProvider
-{
-    private static readonly RouteValueDictionary _routeValues = new()
-    {
-        { "area", "OrchardCore.Settings" },
-        { "groupId", ChangeEmailSettingsDisplayDriver.GroupId },
-    };
-
-    internal readonly IStringLocalizer S;
-
-    public ChangeEmailAdminMenu(IStringLocalizer<ChangeEmailAdminMenu> localizer)
-    {
-        S = localizer;
-    }
-
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-    {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return Task.CompletedTask;
-        }
-
-        builder
-            .Add(S["Security"], security => security
-                .Add(S["Settings"], settings => settings
-                    .Add(S["User Change email"], S["User Change email"].PrefixPosition(), email => email
-                        .Permission(CommonPermissions.ManageUsers)
-                        .Action("Index", "Admin", _routeValues)
-                        .LocalNav()
-                    )
-                )
-            );
-
-        return Task.CompletedTask;
-    }
-}
-
-public sealed class RegistrationAdminMenu : INavigationProvider
-{
-    private static readonly RouteValueDictionary _routeValues = new()
-    {
-        { "area", "OrchardCore.Settings" },
-        { "groupId", RegistrationSettingsDisplayDriver.GroupId },
-    };
-
-    internal readonly IStringLocalizer S;
-
-    public RegistrationAdminMenu(IStringLocalizer<RegistrationAdminMenu> localizer)
-    {
-        S = localizer;
-    }
-
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-    {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return Task.CompletedTask;
-        }
-
-        builder
-            .Add(S["Security"], security => security
-                .Add(S["Settings"], settings => settings
-                    .Add(S["User Registration"], S["User Registration"].PrefixPosition(), registration => registration
-                        .Permission(CommonPermissions.ManageUsers)
-                        .Action("Index", "Admin", _routeValues)
-                        .LocalNav()
-                    )
-                )
-            );
-
-        return Task.CompletedTask;
-    }
-}
-
-public sealed class ResetPasswordAdminMenu : INavigationProvider
-{
-    private static readonly RouteValueDictionary _routeValues = new()
-    {
-        { "area", "OrchardCore.Settings" },
-        { "groupId", ResetPasswordSettingsDisplayDriver.GroupId },
-    };
-
-    internal readonly IStringLocalizer S;
-
-    public ResetPasswordAdminMenu(IStringLocalizer<ResetPasswordAdminMenu> localizer)
-    {
-        S = localizer;
-    }
-
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-    {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return Task.CompletedTask;
-        }
-
-        builder
-            .Add(S["Security"], security => security
-                .Add(S["Settings"], settings => settings
-                    .Add(S["User Reset password"], S["User Reset password"].PrefixPosition(), password => password
-                        .Permission(CommonPermissions.ManageUsers)
-                        .Action("Index", "Admin", _routeValues)
-                        .LocalNav()
-                    )
-                )
-            );
-
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

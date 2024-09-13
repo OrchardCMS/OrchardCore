@@ -98,7 +98,11 @@ public class CustomUserSettingsService
         }
 
         contentItem = await _contentManager.NewAsync(settingsType.Name);
-        await factoryAsync?.Invoke();
+
+        if (factoryAsync != null)
+        {
+            await factoryAsync.Invoke();
+        }
 
         return contentItem;
     }

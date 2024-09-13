@@ -54,7 +54,7 @@ validation:
 # Add files here that are intentionally not in the navigation and thus omitted_files shouldn't warn about them.
 not_in_nav: |
   samples/
-  releases/2.0.0.md
+  releases/2.1.0.md
 
 # Extensions
 markdown_extensions:
@@ -271,6 +271,8 @@ nav:
       - Owners: resources/owners/README.md
       - Workshops: resources/workshops/README.md
   - Releases:
+      - 2.0.0: releases/2.0.0.md
+      - 1.8.4: releases/1.8.4.md
       - 1.8.3: releases/1.8.3.md
       - 1.8.2: releases/1.8.2.md
       - 1.8.1: releases/1.8.1.md

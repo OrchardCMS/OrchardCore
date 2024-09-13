@@ -4,27 +4,23 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.AdminMenu;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    private readonly AdminMenuNavigationProvidersCoordinator _adminMenuNavigationProvider;
+    private readonly AdminMenuNavigationProvidersCoordinator _adminMenuNavigationProviderCoordinator;
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(AdminMenuNavigationProvidersCoordinator adminMenuNavigationProvider,
-        IStringLocalizer<AdminMenu> localizer)
+    public AdminMenu(
+        AdminMenuNavigationProvidersCoordinator adminMenuNavigationProviderCoordinator,
+        IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        _adminMenuNavigationProvider = adminMenuNavigationProvider;
-        S = localizer;
+        _adminMenuNavigationProviderCoordinator = adminMenuNavigationProviderCoordinator;
+        S = stringLocalizer;
     }
 
-    public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return;
-        }
-
-        // Configuration and settings menus for the AdminMenu module
+        // Configuration and settings menus for the AdminMenu module.
         builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Admin Menus"], S["Admin Menus"].PrefixPosition(), adminMenu => adminMenu
@@ -34,7 +30,7 @@ public sealed class AdminMenu : INavigationProvider
                 )
             );
 
-        // This is the entry point for the adminMenu: dynamically generated custom admin menus
-        await _adminMenuNavigationProvider.BuildNavigationAsync(NavigationConstants.AdminMenuId, builder);
+        // This is the entry point for the adminMenu: dynamically generated custom admin menus.
+        return _adminMenuNavigationProviderCoordinator.BuildNavigationAsync(NavigationConstants.AdminMenuId, builder);
     }
 }

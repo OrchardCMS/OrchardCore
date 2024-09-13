@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Trimming.Drivers;
 
 namespace OrchardCore.Workflows.Trimming;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -20,23 +20,19 @@ public sealed class AdminMenu : INavigationProvider
         S = stringLocalizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return Task.CompletedTask;
-        }
-
-        builder.Add(S["Configuration"], configuration => configuration
-            .Add(S["Settings"], settings => settings
-                .Add(S["Workflow Trimming"], S["Workflow Trimming"], trimming => trimming
-                    .Action("Index", "Admin", _routeValues)
-                    .Permission(Permissions.ManageWorkflowSettings)
-                    .LocalNav()
+        builder
+            .Add(S["Configuration"], configuration => configuration
+                .Add(S["Settings"], settings => settings
+                    .Add(S["Workflow Trimming"], S["Workflow Trimming"], trimming => trimming
+                        .Action("Index", "Admin", _routeValues)
+                        .Permission(Permissions.ManageWorkflowSettings)
+                        .LocalNav()
+                    )
                 )
-            )
-        );
+            );
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }
