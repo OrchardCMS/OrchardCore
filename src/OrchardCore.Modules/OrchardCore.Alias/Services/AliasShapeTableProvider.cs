@@ -21,10 +21,12 @@ public class AliasShapeTableProvider : ShapeTableProvider
                 if (aliasPart != null)
                 {
                     var encodedAlias = aliasPart.Alias.EncodeAlternateElement();
-                    displaying.Shape.Metadata.Alternates.Add("Content__" + encodedAlias);
                     
-                    var encodedContentType = contentItem.ContentType.EncodeAlternateElement();
-                    displaying.Shape.Metadata.Alternates.Add("Content__" + encodedContentType + "__" + encodedAlias);
+                    // Content__Alias__[Alias] e.g. Content-Alias-example, Content-Alias-my-page
+                    displaying.Shape.Metadata.Alternates.Add("Content__Alias__" + encodedAlias);
+                    
+                    // Content_[DisplayType]__Alias__[Alias] e.g. Content-Alias-example.Summary, Content-Alias-my-page.Summary
+                    displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__Alias__" + encodedAlias);
                 }
             });
 
