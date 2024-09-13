@@ -1,6 +1,6 @@
 namespace OrchardCore.UrlRewriting.Models;
 
-public class RewriteSettings
+public class UrlRewritingSettings
 {
     public string ApacheModRewrite { get; set; }
 }

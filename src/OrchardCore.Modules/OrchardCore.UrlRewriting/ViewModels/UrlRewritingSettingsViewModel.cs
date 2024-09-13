@@ -1,6 +1,6 @@
 namespace OrchardCore.UrlRewriting.ViewModels;
 
-public class RewriteSettingsViewModel
+public class UrlRewritingSettingsViewModel
 {
     public string ApacheModRewrite { get; set; }
 }

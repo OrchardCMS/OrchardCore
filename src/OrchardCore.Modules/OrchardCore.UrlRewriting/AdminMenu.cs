@@ -10,7 +10,7 @@ public sealed class AdminMenu : AdminNavigationProvider
     private static readonly RouteValueDictionary _routeValues = new()
     {
         { "area", "OrchardCore.Settings" },
-        { "groupId", RewriteSettingsDisplayDriver.GroupId },
+        { "groupId", UrlRewritingSettingsDisplayDriver.GroupId },
     };
 
     public readonly IStringLocalizer S;

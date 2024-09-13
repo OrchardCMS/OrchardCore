@@ -14,7 +14,7 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.UrlRewriting.Drivers;
 
-internal sealed class RewriteSettingsDisplayDriver : SiteDisplayDriver<RewriteSettings>
+internal sealed class UrlRewritingSettingsDisplayDriver : SiteDisplayDriver<UrlRewritingSettings>
 {
     public const string GroupId = "UrlRewriting";
 
@@ -23,11 +23,11 @@ internal sealed class RewriteSettingsDisplayDriver : SiteDisplayDriver<RewriteSe
     private readonly IShellReleaseManager _shellReleaseManager;
     internal readonly IStringLocalizer S;
 
-    public RewriteSettingsDisplayDriver(
+    public UrlRewritingSettingsDisplayDriver(
         IAuthorizationService authorizationService,
         IHttpContextAccessor httpContextAccessor,
         IShellReleaseManager shellReleaseManager,
-        IStringLocalizer<RewriteSettingsDisplayDriver> stringLocalizer)
+        IStringLocalizer<UrlRewritingSettingsDisplayDriver> stringLocalizer)
     {
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
@@ -37,7 +37,7 @@ internal sealed class RewriteSettingsDisplayDriver : SiteDisplayDriver<RewriteSe
 
     protected override string SettingsGroupId => GroupId;
 
-    public override async Task<IDisplayResult> EditAsync(ISite site, RewriteSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(ISite site, UrlRewritingSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
@@ -48,14 +48,14 @@ internal sealed class RewriteSettingsDisplayDriver : SiteDisplayDriver<RewriteSe
 
         context.AddTenantReloadWarningWrapper();
 
-        return Initialize<RewriteSettingsViewModel>("RewriteSettings_Edit", model =>
+        return Initialize<UrlRewritingSettingsViewModel>("UrlRewritingSettings_Edit", model =>
         {
             model.ApacheModRewrite = settings.ApacheModRewrite;
         }).Location("Content:1")
         .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, RewriteSettings settings, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, UrlRewritingSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
@@ -64,7 +64,7 @@ internal sealed class RewriteSettingsDisplayDriver : SiteDisplayDriver<RewriteSe
             return null;
         }
 
-        var model = new RewriteSettingsViewModel();
+        var model = new UrlRewritingSettingsViewModel();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
@@ -72,15 +72,12 @@ internal sealed class RewriteSettingsDisplayDriver : SiteDisplayDriver<RewriteSe
 
         ValidateUrls(settings, context.Updater);
 
-        if (context.Updater.ModelState.IsValid)
-        {
-            _shellReleaseManager.RequestRelease();
-        }
+        _shellReleaseManager.RequestRelease();
 
         return await EditAsync(site, settings, context);
     }
 
-    private void ValidateUrls(RewriteSettings settings, IUpdateModel updater)
+    private void ValidateUrls(UrlRewritingSettings settings, IUpdateModel updater)
     {
         try
         {
@@ -90,11 +87,11 @@ internal sealed class RewriteSettingsDisplayDriver : SiteDisplayDriver<RewriteSe
         }
         catch (FormatException ex)
         {
-            updater.ModelState.AddModelError(Prefix, nameof(RewriteSettingsViewModel.ApacheModRewrite), S["Parsing error: {0}", ex.Message]);
+            updater.ModelState.AddModelError(Prefix, nameof(UrlRewritingSettingsViewModel.ApacheModRewrite), S["Parsing error: {0}", ex.Message]);
         }
         catch (NotImplementedException ex)
         {
-            updater.ModelState.AddModelError(Prefix, nameof(RewriteSettingsViewModel.ApacheModRewrite), S["Parsing error: {0}", ex.Message]);
+            updater.ModelState.AddModelError(Prefix, nameof(UrlRewritingSettingsViewModel.ApacheModRewrite), S["Parsing error: {0}", ex.Message]);
         }
     }
 }
