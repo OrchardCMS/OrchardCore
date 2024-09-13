@@ -950,7 +950,7 @@ public sealed class AccountController : AccountBaseController
         return false;
     }
 
-    private async Task<RegistrationSettings> GetRegistrationSettingsIfEnabledAsync()
+    private async Task<RegistrationSettings> GetRegistrationSettingsOrDefaultAsync()
     {
         var isRegistrationFeatureEnabled = await _shellFeaturesManager.IsFeatureEnabledAsync(UserConstants.Features.UserRegistration);
 
