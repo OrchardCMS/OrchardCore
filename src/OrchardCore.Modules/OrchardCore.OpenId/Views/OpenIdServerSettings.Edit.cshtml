@@ -3,290 +3,300 @@
 @using System.Security.Cryptography.X509Certificates
 @model OpenIdServerSettingsViewModel
 
-<h3>@T["Endpoints"]</h3>
+<div class="mb-4">
+    <h3>@T["Endpoints"]</h3>
 
-<div class="mb-3" asp-validation-class-for="EnableTokenEndpoint">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="EnableTokenEndpoint">
-        <label class="form-check-label" asp-for="EnableTokenEndpoint">@T["Enable Token Endpoint"]</label>
-        <span class="hint dashed">@T["Enables action"] /connect/token</span>
+    <div class="mb-3" asp-validation-class-for="EnableTokenEndpoint">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="EnableTokenEndpoint">
+            <label class="form-check-label" asp-for="EnableTokenEndpoint">@T["Enable Token Endpoint"]</label>
+            <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/token</code>
+        </div>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="EnableAuthorizationEndpoint">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="EnableAuthorizationEndpoint">
+            <label class="form-check-label" asp-for="EnableAuthorizationEndpoint">@T["Enable Authorization Endpoint"]</label>
+            <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/authorize</code>
+        </div>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="EnableLogoutEndpoint">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="EnableLogoutEndpoint">
+            <label class="form-check-label" asp-for="EnableLogoutEndpoint">@T["Enable Logout Endpoint"]</label>
+            <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/logout</code>
+        </div>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="EnableUserInfoEndpoint">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="EnableUserInfoEndpoint">
+            <label class="form-check-label" asp-for="EnableUserInfoEndpoint">@T["Enable User Info Endpoint"]</label>
+            <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/userinfo</code>
+        </div>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="EnableIntrospectionEndpoint">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="EnableIntrospectionEndpoint">
+            <label class="form-check-label" asp-for="EnableIntrospectionEndpoint">@T["Enable Introspection Endpoint"]</label>
+            <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/introspect</code>
+        </div>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="EnableRevocationEndpoint">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="EnableRevocationEndpoint">
+            <label class="form-check-label" asp-for="EnableRevocationEndpoint">@T["Enable Revocation Endpoint"]</label>
+            <span class="hint dashed">@T["Enables the endpoint:"]</span> <code>/connect/revoke</code>
+        </div>
     </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="EnableAuthorizationEndpoint">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="EnableAuthorizationEndpoint">
-        <label class="form-check-label" asp-for="EnableAuthorizationEndpoint">@T["Enable Authorization Endpoint"]</label>
-        <span class="hint dashed">@T["Enables action"] /connect/authorize</span>
+<div class="mb-4">
+    <h3>@T["Flows"]</h3>
+
+    <div class="mb-3 collapse" asp-validation-class-for="AllowAuthorizationCodeFlow">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="AllowAuthorizationCodeFlow">
+            <label class="form-check-label" asp-for="AllowAuthorizationCodeFlow">@T["Allow Authorization Code Flow"]</label>
+            <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Authorization Code Flow.", "http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth"]</span>
+        </div>
+    </div>
+
+    <div class="mb-3 collapse" asp-validation-class-for="AllowImplicitFlow">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="AllowImplicitFlow">
+            <label class="form-check-label" asp-for="AllowImplicitFlow">@T["Allow Implicit Flow"]</label>
+            <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Implicit Flow.", "http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth"]</span>
+        </div>
+    </div>
+
+    <div class="mb-3 collapse" asp-validation-class-for="AllowHybridFlow">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="AllowHybridFlow">
+            <label class="form-check-label" asp-for="AllowHybridFlow">@T["Allow Hybrid Flow"]</label>
+            <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Hybrid Flow.", "http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth"]</span>
+        </div>
+    </div>
+
+    <div class="mb-3 collapse" asp-validation-class-for="AllowPasswordFlow">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="AllowPasswordFlow">
+            <label class="form-check-label" asp-for="AllowPasswordFlow">@T["Allow Password Flow"]</label>
+            <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Password Flow.", "https://tools.ietf.org/html/rfc6749#section-1.3.3"]</span>
+        </div>
+    </div>
+
+    <div class="mb-3 collapse" asp-validation-class-for="AllowRefreshTokenFlow">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="AllowRefreshTokenFlow">
+            <label class="form-check-label" asp-for="AllowRefreshTokenFlow">@T["Allow Refresh Token Flow"]</label>
+            <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Refresh Token Flow.", "http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens"]</span>
+        </div>
+    </div>
+
+    <div class="mb-3 collapse" asp-validation-class-for="AllowClientCredentialsFlow">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="AllowClientCredentialsFlow">
+            <label class="form-check-label" asp-for="AllowClientCredentialsFlow">@T["Allow Client Credentials Flow"]</label>
+            <span class="hint dashed">@T["Click <a href=\"{0}\" target=\"_blank\">here</a> for more information about the Client Credentials Flow.", "https://tools.ietf.org/html/rfc6749#section-1.3.4"]</span>
+        </div>
     </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="EnableLogoutEndpoint">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="EnableLogoutEndpoint">
-        <label class="form-check-label" asp-for="EnableLogoutEndpoint">@T["Enable Logout Endpoint"]</label>
-        <span class="hint dashed">@T["Enables action"] /connect/logout</span>
+<div class="mb-4">
+    <h3>@T["Proof Key for Code Exchange"]</h3>
+    <div class="mb-3" asp-validation-class-for="RequireProofKeyForCodeExchange">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="RequireProofKeyForCodeExchange">
+            <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>
+        </div>
+        <div class="hint">
+            @T["A global setting that enforces PKCE for all registered clients, regardless of whether the 'Require PKCE' option is enabled for individual client applications."]
+        </div>
     </div>
 </div>
 
-<div class="mb-3" asp-validation-class-for="EnableUserInfoEndpoint">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="EnableUserInfoEndpoint">
-        <label class="form-check-label" asp-for="EnableUserInfoEndpoint">@T["Enable User Info Endpoint"]</label>
-        <span class="hint dashed">@T["Enables action"] /connect/userinfo</span>
+<div class="mb-4">
+    <h3>@T["Advanced Options"]</h3>
+
+    <div class="alert alert-info" role="alert">
+        <p class="mb-0">@T["The following options are optional and intended for advanced use only."]</p>
     </div>
-</div>
 
-<div class="mb-3" asp-validation-class-for="EnableIntrospectionEndpoint">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="EnableIntrospectionEndpoint">
-        <label class="form-check-label" asp-for="EnableIntrospectionEndpoint">@T["Enable Introspection Endpoint"]</label>
-        <span class="hint dashed">@T["Enables action"] /connect/introspect</span>
+    <div class="mb-3" asp-validation-class-for="Authority">
+        <label asp-for="Authority" class="form-label">@T["Authority"]</label>
+        <input asp-for="Authority" class="form-control" />
+        <span asp-validation-for="Authority"></span>
+        <span class="hint">@T["The base URL of the identity server (this site). If not provided, a default value will be automatically generated based on the site host."]</span>
     </div>
-</div>
 
-<div class="mb-3" asp-validation-class-for="EnableRevocationEndpoint">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="EnableRevocationEndpoint">
-        <label class="form-check-label" asp-for="EnableRevocationEndpoint">@T["Enable Revocation Endpoint"]</label>
-        <span class="hint dashed">@T["Enables action"] /connect/revoke</span>
-    </div>
-</div>
-
-<h3>@T["Flows"]</h3>
-
-<div class="mb-3 collapse" asp-validation-class-for="AllowAuthorizationCodeFlow">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="AllowAuthorizationCodeFlow">
-        <label class="form-check-label" asp-for="AllowAuthorizationCodeFlow">@T["Allow Authorization Code Flow"]</label>
-        <span class="hint dashed">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth</a></span>
-    </div>
-</div>
-
-<div class="mb-3 collapse" asp-validation-class-for="AllowImplicitFlow">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="AllowImplicitFlow">
-        <label class="form-check-label" asp-for="AllowImplicitFlow">@T["Allow Implicit Flow"]</label>
-        <span class="hint dashed">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth</a></span>
-    </div>
-</div>
-
-<div class="mb-3 collapse" asp-validation-class-for="AllowHybridFlow">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="AllowHybridFlow">
-        <label class="form-check-label" asp-for="AllowHybridFlow">@T["Allow Hybrid Flow"]</label>
-        <span class="hint dashed">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth</a></span>
-    </div>
-</div>
-
-<div class="mb-3 collapse" asp-validation-class-for="AllowPasswordFlow">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="AllowPasswordFlow">
-        <label class="form-check-label" asp-for="AllowPasswordFlow">@T["Allow Password Flow"]</label>
-        <span class="hint dashed">@T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.3">https://tools.ietf.org/html/rfc6749#section-1.3.3</a></span>
-    </div>
-</div>
-
-<div class="mb-3 collapse" asp-validation-class-for="AllowRefreshTokenFlow">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="AllowRefreshTokenFlow">
-        <label class="form-check-label" asp-for="AllowRefreshTokenFlow">@T["Allow Refresh Token Flow"]</label>
-        <span class="hint dashed">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens">http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens</a></span>
-    </div>
-</div>
-
-<div class="mb-3 collapse" asp-validation-class-for="AllowClientCredentialsFlow">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="AllowClientCredentialsFlow">
-        <label class="form-check-label" asp-for="AllowClientCredentialsFlow">@T["Allow Client Credentials Flow"]</label>
-        <span class="hint dashed">@T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.4">https://tools.ietf.org/html/rfc6749#section-1.3.4</a></span>
-    </div>
-</div>
-
-<h3>@T["Proof Key for Code Exchange"]</h3>
-<div class="mb-3" asp-validation-class-for="RequireProofKeyForCodeExchange">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="RequireProofKeyForCodeExchange">
-        <label class="form-check-label" asp-for="RequireProofKeyForCodeExchange">@T["Require Proof Key for Code Exchange"]</label>
-    </div>
-    <div class="hint">
-        @T["Global setting that applies PKCE to all registered clients whether or not the 'Require PKCE' option is set on the individual client application."]
-    </div>
-</div>
-
-<h3>@T["Advanced options"]</h3>
-
-<p class="alert alert-info">@T["These options are all optional and are for advanced users only."]</p>
-
-<div class="mb-3" asp-validation-class-for="Authority">
-    <label asp-for="Authority" class="form-label">@T["Authority"]</label>
-    <input asp-for="Authority" class="form-control" />
-    <span asp-validation-for="Authority"></span>
-    <span class="hint">@T["The base URL of the identity server (this site). If none is provided, a default value based on the site host is automatically computed."]</span>
-</div>
-
-<div class="mb-3" asp-validation-class-for="EncryptionCertificateStoreLocation">
-    <label asp-for="EncryptionCertificateStoreLocation" class="form-label">@T["Encryption Certificate Store Location"]</label>
-    <select asp-for="EncryptionCertificateStoreLocation" class="form-select">
-        <option value="">@T["None"]</option>
-
-        @foreach (StoreLocation location in Enum.GetValues<StoreLocation>())
-        {
-            <option value="@location" selected="@(Model.EncryptionCertificateStoreLocation == location)">@location.ToString()</option>
-        }
-    </select>
-    <span asp-validation-for="EncryptionCertificateStoreLocation"></span>
-    <span class="hint">@T["Select the encryption certificate location."]</span>
-</div>
-
-<div class="mb-3" asp-validation-class-for="EncryptionCertificateStoreName">
-    <label asp-for="EncryptionCertificateStoreName" class="form-label">@T["Encryption Certificate Store Name"]</label>
-    <select asp-for="EncryptionCertificateStoreName" class="form-select">
-        <option value="">@T["None"]</option>
-
-        @foreach (StoreName store in Enum.GetValues<StoreName>())
-        {
-            <option value="@store" selected="@(Model.EncryptionCertificateStoreName == store)">@store.ToString()</option>
-        }
-    </select>
-    <span asp-validation-for="EncryptionCertificateStoreName"></span>
-    <span class="hint">@T["Select the encryption certificate store."]</span>
-</div>
-
-<div class="mb-3" asp-validation-class-for="EncryptionCertificateThumbprint">
-    @if (Model.AvailableCertificates.Count != 0)
-    {
-        <label asp-for="EncryptionCertificateThumbprint" class="form-label">@T["Encryption Certificate"]</label>
-        <select asp-for="EncryptionCertificateThumbprint" class="form-select">
+    <div class="mb-3" asp-validation-class-for="EncryptionCertificateStoreLocation">
+        <label asp-for="EncryptionCertificateStoreLocation" class="form-label">@T["Encryption Certificate Store Location"]</label>
+        <select asp-for="EncryptionCertificateStoreLocation" class="form-select">
             <option value="">@T["None"]</option>
 
-            @foreach (var certificate in Model.AvailableCertificates)
+            @foreach (StoreLocation location in Enum.GetValues<StoreLocation>())
             {
-                var selectedCertificate = Model.EncryptionCertificateThumbprint == certificate.ThumbPrint
-                && Model.EncryptionCertificateStoreLocation.HasValue && Model.EncryptionCertificateStoreLocation.Value == certificate.StoreLocation
-                && Model.EncryptionCertificateStoreName.HasValue && Model.EncryptionCertificateStoreName == certificate.StoreName;
-                if (string.IsNullOrWhiteSpace(certificate.ThumbPrint))
-                {
-                    <option value="" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)"></option>
-                    continue;
-                }
-                var friendlyName = certificate.FriendlyName;
-                if (string.IsNullOrWhiteSpace(friendlyName) && !string.IsNullOrWhiteSpace(certificate.ThumbPrint))
-                {
-                    friendlyName = "No Friendly Name";
-                }
-                <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
-                    @friendlyName [@certificate.NotBefore.ToString("dd/MM/yy") - @certificate.NotAfter.ToString("dd/MM/yy")] @certificate.Subject
-                </option>
+                <option value="@location" selected="@(Model.EncryptionCertificateStoreLocation == location)">@location.ToString()</option>
             }
         </select>
-        <span asp-validation-for="EncryptionCertificateThumbprint"></span>
-        <span class="hint">@T["Select the encryption certificate."]</span>
-    }
-    else
-    {
-        <div class="alert alert-warning" asp-validation-for="CertificateThumbprint">@T["You need to add a certificate to your server for setting up OpenID Connect module."]</div>
-    }
-</div>
+        <span asp-validation-for="EncryptionCertificateStoreLocation"></span>
+        <span class="hint">@T["Select the encryption certificate location."]</span>
+    </div>
 
-<div class="mb-3" asp-validation-class-for="SigningCertificateStoreLocation">
-    <label asp-for="SigningCertificateStoreLocation" class="form-label">@T["Signing Certificate Store Location"]</label>
-    <select asp-for="SigningCertificateStoreLocation" class="form-select">
-        <option value="">@T["None"]</option>
-
-        @foreach (StoreLocation location in Enum.GetValues<StoreLocation>())
-        {
-            <option value="@location" selected="@(Model.SigningCertificateStoreLocation == location)">@location.ToString()</option>
-        }
-    </select>
-    <span asp-validation-for="SigningCertificateStoreLocation"></span>
-    <span class="hint">@T["Select the signing certificate location."]</span>
-</div>
-
-<div class="mb-3" asp-validation-class-for="SigningCertificateStoreName">
-    <label asp-for="SigningCertificateStoreName" class="form-label">@T["Signing Certificate Store Name"]</label>
-    <select asp-for="SigningCertificateStoreName" class="form-select">
-        <option value="">@T["None"]</option>
-
-        @foreach (StoreName store in Enum.GetValues<StoreName>())
-        {
-            <option value="@store" selected="@(Model.SigningCertificateStoreName == store)">@store.ToString()</option>
-        }
-    </select>
-    <span asp-validation-for="SigningCertificateStoreName"></span>
-    <span class="hint">@T["Select the signing certificate store."]</span>
-</div>
-
-<div class="mb-3" asp-validation-class-for="SigningCertificateThumbprint">
-    @if (Model.AvailableCertificates.Count != 0)
-    {
-        <label asp-for="SigningCertificateThumbprint" class="form-label">@T["Signing Certificate"]</label>
-        <select asp-for="SigningCertificateThumbprint" class="form-select">
+    <div class="mb-3" asp-validation-class-for="EncryptionCertificateStoreName">
+        <label asp-for="EncryptionCertificateStoreName" class="form-label">@T["Encryption Certificate Store Name"]</label>
+        <select asp-for="EncryptionCertificateStoreName" class="form-select">
             <option value="">@T["None"]</option>
 
-            @foreach (var certificate in Model.AvailableCertificates)
+            @foreach (StoreName store in Enum.GetValues<StoreName>())
             {
-                var selectedCertificate = Model.SigningCertificateThumbprint == certificate.ThumbPrint
-                && Model.SigningCertificateStoreLocation.HasValue && Model.SigningCertificateStoreLocation.Value == certificate.StoreLocation
-                && Model.SigningCertificateStoreName.HasValue && Model.SigningCertificateStoreName == certificate.StoreName;
-                if (string.IsNullOrWhiteSpace(certificate.ThumbPrint))
-                {
-                    <option value="" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)"></option>
-                    continue;
-                }
-                var friendlyName = certificate.FriendlyName;
-                if (string.IsNullOrWhiteSpace(friendlyName) && !string.IsNullOrWhiteSpace(certificate.ThumbPrint))
-                {
-                    friendlyName = "No Friendly Name";
-                }
-                <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
-                    @friendlyName [@certificate.NotBefore.ToString("dd/MM/yy") - @certificate.NotAfter.ToString("dd/MM/yy")] @certificate.Subject
-                </option>
+                <option value="@store" selected="@(Model.EncryptionCertificateStoreName == store)">@store.ToString()</option>
             }
         </select>
-        <span asp-validation-for="SigningCertificateThumbprint"></span>
-        <span class="hint">@T["Select the signing certificate."]</span>
-    }
-    else
-    {
-        <div class="alert alert-warning" asp-validation-for="CertificateThumbprint">@T["You need to add a certificate to your server for setting up OpenID Connect module."]</div>
-    }
-</div>
-
-<div class="mb-3" asp-validation-class-for="DisableRollingRefreshTokens">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="DisableRollingRefreshTokens">
-        <label class="form-check-label" asp-for="DisableRollingRefreshTokens">@T["Disable Rolling Refresh Tokens"]</label>
-        <span class="hint dashed">@T["When this option is enabled, refresh tokens are not marked as redeemed and can be reused until they expire."]</span>
+        <span asp-validation-for="EncryptionCertificateStoreName"></span>
+        <span class="hint">@T["Select the encryption certificate store."]</span>
     </div>
-</div>
 
-<div class="mb-3" asp-validation-class-for="AccessTokenFormat">
-    <label asp-for="AccessTokenFormat" class="form-label">@T["Token Format"]</label>
-    <select asp-for="AccessTokenFormat" class="form-select">
-        <option value="@OpenIdServerSettings.TokenFormat.DataProtection" selected="@(Model.AccessTokenFormat == OpenIdServerSettings.TokenFormat.DataProtection)">
-            @T["ASP.NET Core Data Protection"]
-        </option>
-        <option value="@OpenIdServerSettings.TokenFormat.JsonWebToken" selected="@(Model.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JsonWebToken)">
-            @T["JSON Web Token (JWT)"]
-        </option>
-    </select>
-    <span asp-validation-for="AccessTokenFormat"></span>
-</div>
+    <div class="mb-3" asp-validation-class-for="EncryptionCertificateThumbprint">
+        @if (Model.AvailableCertificates.Count != 0)
+        {
+            <label asp-for="EncryptionCertificateThumbprint" class="form-label">@T["Encryption Certificate"]</label>
+            <select asp-for="EncryptionCertificateThumbprint" class="form-select">
+                <option value="">@T["None"]</option>
 
-<div class="mb-3" asp-validation-class-for="DisableAccessTokenEncryption">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="DisableAccessTokenEncryption">
-        <label class="form-check-label" asp-for="DisableAccessTokenEncryption">@T["Disable Access Token Encryption (only for JWT tokens)"]</label>
-        <span class="hint dashed">@T["When this option is enabled, the JWT access token tokens are not encrypted."]</span>
+                @foreach (var certificate in Model.AvailableCertificates)
+                {
+                    var selectedCertificate = Model.EncryptionCertificateThumbprint == certificate.ThumbPrint
+                    && Model.EncryptionCertificateStoreLocation.HasValue && Model.EncryptionCertificateStoreLocation.Value == certificate.StoreLocation
+                    && Model.EncryptionCertificateStoreName.HasValue && Model.EncryptionCertificateStoreName == certificate.StoreName;
+                    if (string.IsNullOrWhiteSpace(certificate.ThumbPrint))
+                    {
+                        <option value="" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)"></option>
+                        continue;
+                    }
+                    var friendlyName = certificate.FriendlyName;
+                    if (string.IsNullOrWhiteSpace(friendlyName) && !string.IsNullOrWhiteSpace(certificate.ThumbPrint))
+                    {
+                        friendlyName = T["No Friendly Name"].Value;
+                    }
+                    <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
+                        @friendlyName [@certificate.NotBefore.ToString("dd/MM/yy") - @certificate.NotAfter.ToString("dd/MM/yy")] @certificate.Subject
+                    </option>
+                }
+            </select>
+            <span asp-validation-for="EncryptionCertificateThumbprint"></span>
+            <span class="hint">@T["Select the encryption certificate."]</span>
+        }
+        else
+        {
+            <div class="alert alert-warning" asp-validation-for="CertificateThumbprint">@T["A certificate must be added to your server to set up the OpenID Connect module."]</div>
+        }
     </div>
-</div>
 
-<div class="mb-3" asp-validation-class-for="UseReferenceAccessTokens">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="UseReferenceAccessTokens">
-        <label class="form-check-label" asp-for="UseReferenceAccessTokens">@T["Use Reference Access Tokens"]</label>
-        <span class="hint dashed">@T["When this option is enabled, the access token are stored in the database and fixed size tokens are returned to the client, which can be useful when storing a very large number of claims. Important: this option cannot be currently enabled when other tenants are configured to use this server."]</span>
+    <div class="mb-3" asp-validation-class-for="SigningCertificateStoreLocation">
+        <label asp-for="SigningCertificateStoreLocation" class="form-label">@T["Signing Certificate Store Location"]</label>
+        <select asp-for="SigningCertificateStoreLocation" class="form-select">
+            <option value="">@T["None"]</option>
+
+            @foreach (StoreLocation location in Enum.GetValues<StoreLocation>())
+            {
+                <option value="@location" selected="@(Model.SigningCertificateStoreLocation == location)">@location.ToString()</option>
+            }
+        </select>
+        <span asp-validation-for="SigningCertificateStoreLocation"></span>
+        <span class="hint">@T["Select the signing certificate location."]</span>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="SigningCertificateStoreName">
+        <label asp-for="SigningCertificateStoreName" class="form-label">@T["Signing Certificate Store Name"]</label>
+        <select asp-for="SigningCertificateStoreName" class="form-select">
+            <option value="">@T["None"]</option>
+
+            @foreach (StoreName store in Enum.GetValues<StoreName>())
+            {
+                <option value="@store" selected="@(Model.SigningCertificateStoreName == store)">@store.ToString()</option>
+            }
+        </select>
+        <span asp-validation-for="SigningCertificateStoreName"></span>
+        <span class="hint">@T["Select the signing certificate store."]</span>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="SigningCertificateThumbprint">
+        @if (Model.AvailableCertificates.Count != 0)
+        {
+            <label asp-for="SigningCertificateThumbprint" class="form-label">@T["Signing Certificate"]</label>
+            <select asp-for="SigningCertificateThumbprint" class="form-select">
+                <option value="">@T["None"]</option>
+
+                @foreach (var certificate in Model.AvailableCertificates)
+                {
+                    var selectedCertificate = Model.SigningCertificateThumbprint == certificate.ThumbPrint
+                    && Model.SigningCertificateStoreLocation.HasValue && Model.SigningCertificateStoreLocation.Value == certificate.StoreLocation
+                    && Model.SigningCertificateStoreName.HasValue && Model.SigningCertificateStoreName == certificate.StoreName;
+                    if (string.IsNullOrWhiteSpace(certificate.ThumbPrint))
+                    {
+                        <option value="" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)"></option>
+                        continue;
+                    }
+                    var friendlyName = certificate.FriendlyName;
+                    if (string.IsNullOrWhiteSpace(friendlyName) && !string.IsNullOrWhiteSpace(certificate.ThumbPrint))
+                    {
+                        friendlyName = T["No Friendly Name"].Value; ;
+                    }
+                    <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
+                        @friendlyName [@certificate.NotBefore.ToString("dd/MM/yy") - @certificate.NotAfter.ToString("dd/MM/yy")] @certificate.Subject
+                    </option>
+                }
+            </select>
+            <span asp-validation-for="SigningCertificateThumbprint"></span>
+            <span class="hint">@T["Select the signing certificate."]</span>
+        }
+        else
+        {
+            <div class="alert alert-warning" asp-validation-for="CertificateThumbprint">@T["You need to add a certificate to your server for setting up OpenID Connect module."]</div>
+        }
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="DisableRollingRefreshTokens">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="DisableRollingRefreshTokens">
+            <label class="form-check-label" asp-for="DisableRollingRefreshTokens">@T["Disable Rolling Refresh Tokens"]</label>
+            <span class="hint dashed">@T["When this option is enabled, refresh tokens are not marked as redeemed and can be reused until they expire."]</span>
+        </div>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="AccessTokenFormat">
+        <label asp-for="AccessTokenFormat" class="form-label">@T["Token Format"]</label>
+        <select asp-for="AccessTokenFormat" class="form-select">
+            <option value="@OpenIdServerSettings.TokenFormat.DataProtection" selected="@(Model.AccessTokenFormat == OpenIdServerSettings.TokenFormat.DataProtection)">
+                @T["ASP.NET Core Data Protection"]
+            </option>
+            <option value="@OpenIdServerSettings.TokenFormat.JsonWebToken" selected="@(Model.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JsonWebToken)">
+                @T["JSON Web Token (JWT)"]
+            </option>
+        </select>
+        <span asp-validation-for="AccessTokenFormat"></span>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="DisableAccessTokenEncryption">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="DisableAccessTokenEncryption">
+            <label class="form-check-label" asp-for="DisableAccessTokenEncryption">@T["Disable Access Token Encryption (only for JWT tokens)"]</label>
+            <span class="hint dashed">@T["When enabled, JWT access tokens are not encrypted."]</span>
+        </div>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="UseReferenceAccessTokens">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="UseReferenceAccessTokens">
+            <label class="form-check-label" asp-for="UseReferenceAccessTokens">@T["Use Reference Access Tokens"]</label>
+            <span class="hint dashed">@T["When enabled, access tokens are stored in the database, and fixed-size tokens are returned to the client. This can be useful for handling a large number of claims. Note: This option cannot be enabled if other tenants are configured to use this server."]</span>
+        </div>
     </div>
 </div>
 
