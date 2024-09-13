@@ -957,7 +957,7 @@ public sealed class AccountController : AccountBaseController
         return isRegistrationFeatureEnabled ? await _siteService.GetSettingsAsync<RegistrationSettings>() : null;
     }
 
-    private static bool UsersMustValidateEmail(RegistrationSettings registrationSettings) => registrationSettings?.UsersMustValidateEmail ?? false;
+    private static bool ShouldUserValidateEmail(RegistrationSettings registrationSettings) => registrationSettings?.UsersMustValidateEmail ?? false;
 
     private static bool IsUserRegistrationDisabled(RegistrationSettings registrationSettings)
         => registrationSettings is null || registrationSettings.UsersCanRegister == UserRegistrationType.NoRegistration;
