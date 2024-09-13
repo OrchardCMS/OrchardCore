@@ -382,7 +382,7 @@ public sealed class AccountController : AccountBaseController
             return RedirectToLogin(returnUrl);
         }
 
-        var registrationSettings = await GetRegistrationSettingsIfEnabledAsync();
+        var registrationSettings = await GetRegistrationSettingsOrDefaultAsync();
         var iUser = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
 
         CopyTempDataErrorsToModelState();
