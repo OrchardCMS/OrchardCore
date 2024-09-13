@@ -962,10 +962,7 @@ public sealed class AccountController : AccountBaseController
         return await _siteService.GetSettingsAsync<RegistrationSettings>();
     }
 
-    private static bool UsersMustValidateEmail(RegistrationSettings registrationSettings)
-    {
-        return registrationSettings?.UsersMustValidateEmail ?? false;
-    }
+    private static bool UsersMustValidateEmail(RegistrationSettings registrationSettings) => registrationSettings?.UsersMustValidateEmail ?? false;
 
     private static bool IsUserRegistrationDisabled(RegistrationSettings registrationSettings)
     {
