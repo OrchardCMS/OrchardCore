@@ -952,7 +952,7 @@ public sealed class AccountController : AccountBaseController
 
     private async Task<RegistrationSettings> GetRegistrationSettingsIfEnabledAsync()
     {
-        var registrationFeatureIsAvailable = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+        var registrationFeatureIsAvailable = (await _shellFeaturesManager.GetEnabledFeaturesAsync())
             .Any(feature => feature.Id == UserConstants.Features.UserRegistration);
 
         if (!registrationFeatureIsAvailable)
