@@ -8,7 +8,7 @@ In this article, you will learn how to use Orchard CMS as a decoupled CMS with t
 
 - .NET 8 SDK.
 - Visual Studio 2022 or Visual Studio Code.
-- Orchard Core's [code  generation templates](../../getting-started/templates/README.md)
+- Orchard Core's [code generation templates](../../getting-started/templates/README.md)
 - Knowledge of [getting started with Orchard Core CMS](../../getting-started/README.md)
 - Be familiar with C# and HTML.
 - Basic knowledge of Orchard Cms modules, e.g. creating content definition, creating content, executing recipes.
@@ -40,6 +40,7 @@ dotnet sln add ./BlazorCms
 - Create a new content item and publish it.
 - Alternatively, you can import the following recipe to create the content definition and content item that we are using for this guide.
 - To import the recipe, log in to administration, and go to `Configuration` > `Import/Export` > `JSON Import`
+
 ```json
 {
   "name": "",
@@ -138,6 +139,7 @@ dotnet sln add ./BlazorCms
   ]
 }
 ```
+
 - Go to `Content` -> `Content Items` and verify that the content item is available as shown in the image below.
  
 ![Content Item](./images/image-001.PNG)
@@ -149,7 +151,6 @@ In this section, we will create a .NET Blazor application, as Razor Class librar
 > !!! NOTE
 > 
 > You can add `.razor` files in the main Orchard Core Web application, however adding `.razor` files in Orchard Core modules is not supported. For this reason, and to have maximum reusability of your razor components, always use the razor class library and add it as a reference to your Orchard Core Web project or Orchard Core module.
-
 
 - Create a Razor class library project `OCBlazorLib.csproj` and add it to the solution `BlazorCms`. 
 - Add the project's reference to your web application project.
@@ -629,9 +630,9 @@ Now, it's time to run our application. Once the application is running, notice t
 In our `OCBlazorLib` blazor Library project, Let's enrich our `/content` page to serve content from Orchard Core CMS. To achieve this, follow these steps:
 
 - In `OCBlazorLib.csproj` Add a NuGet package reference to `OrchardCore.ContentManagement`
-- 
+
 ```dotnetcli
-dotnet add ./OCBlazorLib/OCBlazorLib.csproj package OrchardCore.ContentManagement --version 1.8.2
+dotnet add ./OCBlazorLib/OCBlazorLib.csproj package OrchardCore.ContentManagement --version 2.0.0
 ```
 
 - Add the following `using` statements in `_Imports.razor`
@@ -641,6 +642,7 @@ dotnet add ./OCBlazorLib/OCBlazorLib.csproj package OrchardCore.ContentManagemen
 @using OrchardCore.ContentManagement;
 @using OrchardCore.Settings;
 ```
+
 - From the `Pages` folder, open `Content.razor` and edit the `@page` route and add an alias to the route, and add the following `@using` and `@inject`. Here we are injecting `IContentHandleManager` and `IContentManager`.  `IContentHandleManager` helps to retrieve the content item ID from the alias and `IContentManager` helps retrieve the content item using the content item ID.
 
 ```csharp
@@ -659,7 +661,7 @@ public string Alias { get; set; }
 ```
 
 - Also define the following three properties in the `@code` section.
-- 
+
 ```csharp
  protected ContentItem ContentItem { get; set; }
  protected string Markup { get; set; }
@@ -679,7 +681,7 @@ protected override async Task OnParametersSetAsync()
 ```
 
 - Let's get `SiteName` from Site settings on `OnInitializedAsync` with the following code.
-- 
+
 ```csharp
 protected override async Task OnInitializedAsync()
 {
@@ -743,7 +745,6 @@ Navigate to `Multi tenancy` -> `Tenants` and add a new tenant with the following
 - Tenant name: FirstTenant
 - Url Prefix: tenant01
 - Recipe: Headless site
-
 
 ![Create first tenant](./images/first-tenant.png)
 
@@ -834,6 +835,7 @@ Now make sure the tenant 01 also imports the content type and content item, so w
 Import the following:
 
 Log in to administration, and go to `Configuration` > `Import/Export` > `JSON Import`
+
 ```json
 {
   "name": "",
