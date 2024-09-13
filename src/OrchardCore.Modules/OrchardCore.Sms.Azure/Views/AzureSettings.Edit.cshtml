@@ -19,7 +19,7 @@
         <label asp-for="ConnectionString" class="form-label">@T["Connection String"]</label>
         <input asp-for="ConnectionString" class="form-control" />
         <span asp-validation-for="ConnectionString"></span>
-        @if (Model.ConnectionString)
+        @if (Model.HasConnectionString)
         {
             <span class="hint">@T["Connection String was securely saved. Enter a new value if you wish to replace the existing secret."]</span>
         }

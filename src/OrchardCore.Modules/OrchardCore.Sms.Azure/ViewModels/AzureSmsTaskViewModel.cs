@@ -1,6 +1,6 @@
 namespace OrchardCore.Sms.Azure.ViewModels;
 
-public class SmsTaskViewModel
+public class AzureSmsTaskViewModel
 {
     public string PhoneNumber { get; set; }
 

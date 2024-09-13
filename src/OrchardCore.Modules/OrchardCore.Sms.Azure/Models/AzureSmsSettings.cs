@@ -1,6 +1,6 @@
 namespace OrchardCore.Sms.Azure.Models;
 
-public class AzureSettings
+public class AzureSmsSettings
 {
     public bool IsEnabled { get; set; }
 
