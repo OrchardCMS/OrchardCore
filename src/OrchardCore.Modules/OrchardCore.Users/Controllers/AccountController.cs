@@ -382,7 +382,7 @@ public sealed class AccountController : AccountBaseController
             return RedirectToLogin(returnUrl);
         }
 
-        var registrationSettings = await _siteService.GetSettingsAsync<RegistrationSettings>();
+        var registrationSettings = await GetRegistrationSettingsIfEnabledAsync();
         var iUser = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
 
         CopyTempDataErrorsToModelState();
@@ -418,7 +418,7 @@ public sealed class AccountController : AccountBaseController
 
             if (iUser != null)
             {
-                if (iUser is User userToLink && registrationSettings.UsersMustValidateEmail && !userToLink.EmailConfirmed)
+                if (iUser is User userToLink && UsersMustValidateEmail(registrationSettings) && !userToLink.EmailConfirmed)
                 {
                     return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
                         new
@@ -436,7 +436,7 @@ public sealed class AccountController : AccountBaseController
             }
 
             // No user could be matched, check if a new user can register.
-            if (registrationSettings.UsersCanRegister == UserRegistrationType.NoRegistration)
+            if (IsUserRegistrationDisabled(registrationSettings))
             {
                 var message = S["Site does not allow user registration."];
                 _logger.LogWarning("Site does not allow user registration.");
@@ -542,9 +542,9 @@ public sealed class AccountController : AccountBaseController
             return NotFound();
         }
 
-        var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
+        var settings = await GetRegistrationSettingsIfEnabledAsync();
 
-        if (settings.UsersCanRegister == UserRegistrationType.NoRegistration)
+        if (IsUserRegistrationDisabled(settings))
         {
             _logger.LogWarning("Site does not allow user registration.");
 
@@ -936,16 +936,8 @@ public sealed class AccountController : AccountBaseController
 
     private async Task<bool> AddConfirmEmailErrorAsync(IUser user)
     {
-        var registrationFeatureIsAvailable = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-            .Any(feature => feature.Id == UserConstants.Features.UserRegistration);
-
-        if (!registrationFeatureIsAvailable)
-        {
-            return false;
-        }
-
-        var registrationSettings = await _siteService.GetSettingsAsync<RegistrationSettings>();
-        if (registrationSettings.UsersMustValidateEmail)
+        var registrationSettings = await GetRegistrationSettingsIfEnabledAsync();
+        if (UsersMustValidateEmail(registrationSettings))
         {
             // Require that the users have a confirmed email before they can log on.
             if (!await _userManager.IsEmailConfirmedAsync(user))
@@ -956,6 +948,29 @@ public sealed class AccountController : AccountBaseController
         }
 
         return false;
+    }
+
+    private async Task<RegistrationSettings> GetRegistrationSettingsIfEnabledAsync()
+    {
+        var registrationFeatureIsAvailable = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
+            .Any(feature => feature.Id == UserConstants.Features.UserRegistration);
+
+        if (!registrationFeatureIsAvailable)
+        {
+            return null;
+        }
+
+        return await _siteService.GetSettingsAsync<RegistrationSettings>();
+    }
+
+    private static bool UsersMustValidateEmail(RegistrationSettings registrationSettings)
+    {
+        return registrationSettings?.UsersMustValidateEmail ?? false;
+    }
+
+    private static bool IsUserRegistrationDisabled(RegistrationSettings registrationSettings)
+    {
+        return registrationSettings == null || registrationSettings.UsersCanRegister == UserRegistrationType.NoRegistration;
     }
 
     private void AddIdentityErrors(IdentityResult result)
