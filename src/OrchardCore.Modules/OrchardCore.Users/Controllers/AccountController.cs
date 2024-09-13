@@ -418,7 +418,7 @@ public sealed class AccountController : AccountBaseController
 
             if (iUser != null)
             {
-                if (iUser is User userToLink && UsersMustValidateEmail(registrationSettings) && !userToLink.EmailConfirmed)
+                if (iUser is User userToLink && ShouldUserValidateEmail(registrationSettings) && !userToLink.EmailConfirmed)
                 {
                     return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
                         new
