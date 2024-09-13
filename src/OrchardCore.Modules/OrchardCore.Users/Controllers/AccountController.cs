@@ -954,7 +954,7 @@ public sealed class AccountController : AccountBaseController
     {
         var isRegistrationFeatureEnabled = await _shellFeaturesManager.IsFeatureEnabledAsync(UserConstants.Features.UserRegistration);
 
-        if (!registrationFeatureIsAvailable)
+        if (!isRegistrationFeatureEnabled)
         {
             return null;
         }
