@@ -954,12 +954,7 @@ public sealed class AccountController : AccountBaseController
     {
         var isRegistrationFeatureEnabled = await _shellFeaturesManager.IsFeatureEnabledAsync(UserConstants.Features.UserRegistration);
 
-        if (!isRegistrationFeatureEnabled)
-        {
-            return null;
-        }
-
-        return await _siteService.GetSettingsAsync<RegistrationSettings>();
+        return isRegistrationFeatureEnabled ? await _siteService.GetSettingsAsync<RegistrationSettings>() : null;
     }
 
     private static bool UsersMustValidateEmail(RegistrationSettings registrationSettings) => registrationSettings?.UsersMustValidateEmail ?? false;
