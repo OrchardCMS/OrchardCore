@@ -542,7 +542,7 @@ public sealed class AccountController : AccountBaseController
             return NotFound();
         }
 
-        var settings = await GetRegistrationSettingsIfEnabledAsync();
+        var settings = await GetRegistrationSettingsOrDefaultAsync();
 
         if (IsUserRegistrationDisabled(settings))
         {
