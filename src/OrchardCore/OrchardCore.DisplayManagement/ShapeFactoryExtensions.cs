@@ -144,6 +144,7 @@ public static class ShapeFactoryExtensions
         static async ValueTask<IShape> Awaited(ValueTask task, IShape shape)
         {
             await task;
+
             return shape;
         }
     }
