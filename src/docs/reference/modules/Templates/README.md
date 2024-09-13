@@ -51,6 +51,24 @@ For instance, when a content item is displayed in a list, the `Summary` display 
 | `Content_Summary__BlogPost` | `Content-BlogPost.Summary.cshtml` |
 | `Content_Summary__Article` | `Content-Article.Summary.cshtml` |
 
+### `Content__Alias__[Alias]`
+
+This template is called when displaying a content item with a specific alias. It needs to have the `AliasPart` attached to it.
+
+#### Content with Alias Examples
+
+| Template                   | Filename                       |
+|----------------------------|--------------------------------|
+| `Content__Alias__example`  | `Content-Alias-example.cshtml` |
+| `Content__Alias__my__page` | `Content-Alias-my-page.cshtml` |
+
+#### Content with Alias and Display Type Examples
+
+| Template                           | Filename                               |
+|------------------------------------|----------------------------------------|
+| `Content_Summary__Alias__example`  | `Content-Alias-example.Summary.cshtml` |
+| `Content_Summary__Alias__my__page` | `Content-Alias-my-page.Summary.cshtml` |
+
 ## Widget templates
 
 ### `Widget__[ContentType]`
