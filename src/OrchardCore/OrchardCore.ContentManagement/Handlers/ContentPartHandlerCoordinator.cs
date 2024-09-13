@@ -413,9 +413,9 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
 
         foreach (var typePartDefinition in contentTypeDefinition.Parts)
         {
-            if (typePartDefinition.PartDefinition == null)
+            if (typePartDefinition.PartDefinition is null)
             {
-                return;
+                continue;
             }
 
             var partName = typePartDefinition.PartDefinition.Name;
