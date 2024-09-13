@@ -936,7 +936,7 @@ public sealed class AccountController : AccountBaseController
 
     private async Task<bool> AddConfirmEmailErrorAsync(IUser user)
     {
-        var registrationSettings = await GetRegistrationSettingsIfEnabledAsync();
+        var registrationSettings = await GetRegistrationSettingsOrDefaultAsync();
         if (ShouldUserValidateEmail(registrationSettings))
         {
             // Require that the users have a confirmed email before they can log on.
@@ -951,13 +951,12 @@ public sealed class AccountController : AccountBaseController
     }
 
     private async Task<RegistrationSettings> GetRegistrationSettingsOrDefaultAsync()
-    {
-        var isRegistrationFeatureEnabled = await _shellFeaturesManager.IsFeatureEnabledAsync(UserConstants.Features.UserRegistration);
+        => await _shellFeaturesManager.IsFeatureEnabledAsync(UserConstants.Features.UserRegistration)
+            ? await _siteService.GetSettingsAsync<RegistrationSettings>()
+            : null;
 
-        return isRegistrationFeatureEnabled ? await _siteService.GetSettingsAsync<RegistrationSettings>() : null;
-    }
-
-    private static bool ShouldUserValidateEmail(RegistrationSettings registrationSettings) => registrationSettings?.UsersMustValidateEmail ?? false;
+    private static bool ShouldUserValidateEmail(RegistrationSettings registrationSettings)
+        => registrationSettings?.UsersMustValidateEmail ?? false;
 
     private static bool IsUserRegistrationDisabled(RegistrationSettings registrationSettings)
         => registrationSettings is null || registrationSettings.UsersCanRegister == UserRegistrationType.NoRegistration;
