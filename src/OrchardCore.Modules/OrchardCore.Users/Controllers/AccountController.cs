@@ -937,7 +937,7 @@ public sealed class AccountController : AccountBaseController
     private async Task<bool> AddConfirmEmailErrorAsync(IUser user)
     {
         var registrationSettings = await GetRegistrationSettingsIfEnabledAsync();
-        if (UsersMustValidateEmail(registrationSettings))
+        if (ShouldUserValidateEmail(registrationSettings))
         {
             // Require that the users have a confirmed email before they can log on.
             if (!await _userManager.IsEmailConfirmedAsync(user))
