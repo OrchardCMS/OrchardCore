@@ -13,7 +13,8 @@ public class DefaultAzureSmsProvider : AzureSmsProviderBase
         IOptions<DefaultAzureSmsOptions> options,
         IPhoneFormatValidator phoneFormatValidator,
         ILogger<DefaultAzureSmsProvider> logger,
-        IStringLocalizer<DefaultAzureSmsProvider> stringLocalizer) : base(options.Value, phoneFormatValidator, logger, stringLocalizer)
+        IStringLocalizer<DefaultAzureSmsProvider> stringLocalizer)
+        : base(options.Value, phoneFormatValidator, logger, stringLocalizer)
     {
     }
 
