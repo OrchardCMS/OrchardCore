@@ -54,7 +54,7 @@ public abstract class AzureSmsProviderBase : ISmsProvider
 
         if (string.IsNullOrEmpty(message.Body))
         {
-            throw new ArgumentException("A message body is required.");
+            return SmsResult.Failed(S["The message body is required.", message.To]);
         }
 
         try
