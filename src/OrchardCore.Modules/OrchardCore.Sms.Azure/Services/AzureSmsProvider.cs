@@ -10,7 +10,7 @@ using OrchardCore.Sms.Azure.Models;
 
 namespace OrchardCore.Sms.Azure.Services;
 
-public class AzureSmsProvider : ISmsProvider
+public sealed class AzureSmsProvider : ISmsProvider
 {
     private readonly ISiteService _siteService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -18,7 +18,7 @@ public class AzureSmsProvider : ISmsProvider
 
     private AzureSmsSettings _settings;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public const string TechnicalName = "Azure";
 
@@ -69,10 +69,7 @@ public class AzureSmsProvider : ISmsProvider
             {
                 return SmsResult.Success;
             }
-            else
-            {
-                return SmsResult.Failed(S["SMS message was not send."]);
-            }           
+            return SmsResult.Failed(S["SMS message was not send."]);
         }
         catch (Exception ex)
         {
@@ -86,7 +83,7 @@ public class AzureSmsProvider : ISmsProvider
     {
         if (_settings == null)
         {
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<AzureSmsSettings>();
+            var settings = await _siteService.GetSiteSettingsAsync<AzureSmsSettings>();
 
             var protector = _dataProtectionProvider.CreateProtector(ProtectorName);
 

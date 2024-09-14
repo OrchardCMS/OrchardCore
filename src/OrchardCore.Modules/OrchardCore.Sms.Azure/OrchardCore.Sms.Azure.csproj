@@ -7,7 +7,7 @@
     <Description>
       $(OCCMSDescription)
 
-      The Azure SMS module provides a way to send SMS messages using Azure Communication Services (ACS).
+      The Azure SMS module enables sending SMS messages via Azure Communication Services (ACS).
     </Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
