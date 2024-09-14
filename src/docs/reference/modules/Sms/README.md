@@ -10,7 +10,6 @@ Enabling the `SMS` feature will add a new settings page under `Configurations` >
 | --- | --- |
 | `Log` | This particular provider is exclusively meant for debugging purposes and should never be used in a production environment. It permits the message to be written to the logs. |
 | `Twilio` | Opting for this provider enables the utilization of Twilio service for sending SMS messages. Edit the SMS settings to enable this provider. |
-| `Azure` | Opting for this provider enables the utilization of Azure Communication SMS service for sending SMS messages. This provider will become available after enabling the `Azure SMS Provider` feature. Edit the SMS settings to enable this provider. |
 
 !!! note
     After enabling the SMS feature, you must configure the default provider in order to send SMS messages.
@@ -21,8 +20,22 @@ To enable the [Twilio](https://www.twilio.com) provider, navigate to `Configurat
 
 ## Azure Communication SMS Provider
 
-To enable the [Azure Communication SMS](https://learn.microsoft.com/en-us/azure/communication-services/overview) provider, navigate to `Configurations` >> `Settings` >> `SMS`. Click on the `Azure Communication SMS` tab, click the Enable checkbox and provider your Azure Communication SMS account info. Then in the `Providers` tab, select 'Azure Communication SMS' as your default provider.
+To enable the [Azure Communication SMS](https://learn.microsoft.com/en-us/azure/communication-services/overview) providers, you'll need to enable the **Azure Communication SMS** feature. The navigate to `Configurations` >> `Settings` >> `SMS`. Click on the `Azure Communication SMS` tab, click the Enable checkbox and provider your Azure Communication SMS account info. Then in the `Providers` tab, select one of the 'Azure Communication SMS' as your default provider.
 
+Enabling this feature will expose the following providers:
+
+| Provider | Description |
+| --- | --- |
+| `Azure` | This provider enables tenant-specific Azure Communication Services for sending SMS. Configure the SMS settings to activate this provider. |
+| `DefaultAzure` | This provider sets default Azure Communication Service configurations for all tenants.|
+
+The **DefaultAzure** provider can be configured using any configuration provider. For example, you can use the **appsettings.json** file to set the settings as follows:
+```json
+"OrchardCore_Sms_AzureCommunication": {
+    "PhoneNumber": "",
+    "ConnectionString": ""
+}
+```
 
 ## Adding Custom Providers
 
