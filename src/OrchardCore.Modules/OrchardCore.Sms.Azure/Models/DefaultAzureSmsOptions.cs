@@ -1,5 +1,5 @@
 namespace OrchardCore.Sms.Azure.Models;
 
-public class DefaultAzureSmsOptions : AzureSmsOptions
+public sealed class DefaultAzureSmsOptions : AzureSmsOptions
 {
 }

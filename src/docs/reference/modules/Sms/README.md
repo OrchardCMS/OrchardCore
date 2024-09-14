@@ -10,13 +10,19 @@ Enabling the `SMS` feature will add a new settings page under `Configurations` >
 | --- | --- |
 | `Log` | This particular provider is exclusively meant for debugging purposes and should never be used in a production environment. It permits the message to be written to the logs. |
 | `Twilio` | Opting for this provider enables the utilization of Twilio service for sending SMS messages. Edit the SMS settings to enable this provider. |
+| `Azure` | Opting for this provider enables the utilization of Azure Communication SMS service for sending SMS messages. This provider will become available after enabling the `Azure SMS Provider` feature. Edit the SMS settings to enable this provider. |
 
 !!! note
     After enabling the SMS feature, you must configure the default provider in order to send SMS messages.
 
-# Configuring Twilio Provider
+## Configuring Twilio Provider
 
 To enable the [Twilio](https://www.twilio.com) provider, navigate to `Configurations` >> `Settings` >> `SMS`. Click on the `Twilio` tab, click the Enable checkbox and provider your Twilio account info. Then in the `Providers` tab, select Twilio as your default provider.
+
+## Azure Communication SMS Provider
+
+To enable the [Azure Communication SMS](https://learn.microsoft.com/en-us/azure/communication-services/overview) provider, navigate to `Configurations` >> `Settings` >> `SMS`. Click on the `Azure Communication SMS` tab, click the Enable checkbox and provider your Azure Communication SMS account info. Then in the `Providers` tab, select 'Azure Communication SMS' as your default provider.
+
 
 ## Adding Custom Providers
 
@@ -77,7 +83,7 @@ public class TestController
     {
         var message = new SmsMessage
         {
-            To = "17023451234",
+            To = "+17023451234",
             Message = "It's easy to send an SMS message using Orchard!",
         };
 

@@ -5,7 +5,7 @@ namespace OrchardCore.Sms.Azure.Services.Tests;
 public class AzureSmsProviderTests
 {
     [Fact(Skip = "Configure the default sender and connection string for SMS Communication Services (ACS) before run this test.")]
-    public async Task SendSmsShouldSucceed()
+    public async Task SendAsync_WhenCalled_SuccessfullySendMessage()
     {
         // Arrange
         var azureSmsOptions = new AzureSmsOptions
