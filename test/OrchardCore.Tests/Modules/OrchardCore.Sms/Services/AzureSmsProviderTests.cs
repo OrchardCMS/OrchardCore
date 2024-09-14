@@ -1,6 +1,4 @@
-using OrchardCore.Settings;
 using OrchardCore.Sms.Azure.Models;
-using OrchardCore.Tests.Utilities;
 
 namespace OrchardCore.Sms.Azure.Services.Tests;
 
@@ -10,10 +8,15 @@ public class AzureSmsProviderTests
     public async Task SendSmsShouldSucceed()
     {
         // Arrange
-        var siteSettings = GetSiteService();
+        var azureSmsOptions = new AzureSmsOptions
+        {
+            IsEnabled = true,
+            PhoneNumber = "<<Sender>>",
+            ConnectionString = "<<ConnectionString>>"
+        };
         var azureSmsProvider = new AzureSmsProvider(
-            siteSettings,
-            Mock.Of<IDataProtectionProvider>(),
+            Options.Create(azureSmsOptions),
+            Mock.Of<IPhoneFormatValidator>(),
             Mock.Of<ILogger<AzureSmsProvider>>(),
             Mock.Of<IStringLocalizer<AzureSmsProvider>>());
         var message = new SmsMessage
@@ -27,21 +30,5 @@ public class AzureSmsProviderTests
 
         // Assert
         Assert.True(result.Succeeded);
-    }
-
-    private static ISiteService GetSiteService()
-    {
-        var azureSmsSettings = new AzureSmsSettings
-        {
-            PhoneNumber = "<<Sender>>",
-            ConnectionString = "<<ConnectionString>>"
-        };
-        var siteServiceMock = new Mock<ISiteService>();
-
-        siteServiceMock.
-            Setup(siteService => siteService.GetSiteSettingsAsync()).
-            ReturnsAsync(SiteMockHelper.GetSite(azureSmsSettings).Object);
-
-        return siteServiceMock.Object;
     }
 }
