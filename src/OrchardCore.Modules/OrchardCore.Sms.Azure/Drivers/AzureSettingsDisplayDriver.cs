@@ -73,62 +73,67 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+        var smsSettings = site.As<SmsSettings>();
+
         var hasChanges = settings.IsEnabled != model.IsEnabled;
         if (!model.IsEnabled)
         {
-            var smsSettings = site.As<SmsSettings>();
-
             if (hasChanges && smsSettings.DefaultProviderName == AzureSmsProvider.TechnicalName)
             {
                 smsSettings.DefaultProviderName = null;
 
                 site.Put(smsSettings);
             }
-
-            settings.IsEnabled = false;
         }
         else
         {
-            settings.IsEnabled = true;
+            hasChanges |= model.PhoneNumber != settings.PhoneNumber;
 
-            if (string.IsNullOrWhiteSpace(model.PhoneNumber))
+            if (string.IsNullOrEmpty(model.PhoneNumber))
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PhoneNumber), S["Invalid Phone number."]);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.PhoneNumber), S["The phone number is a required."]);
             }
             else if (!_phoneFormatValidator.IsValid(model.PhoneNumber))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.PhoneNumber), S["Invalid phone number."]);
             }
 
-            if (string.IsNullOrWhiteSpace(model.ConnectionString))
-            {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionString), S["The ConnectionString is required."]);
-            }
-
-            // Has change should be evaluated before updating the value.
-            hasChanges |= settings.PhoneNumber != model.PhoneNumber;
-            hasChanges |= settings.ConnectionString != model.ConnectionString;
-
             settings.PhoneNumber = model.PhoneNumber;
-            settings.ConnectionString = model.ConnectionString;
 
-            if (!string.IsNullOrWhiteSpace(model.ConnectionString))
+            if (string.IsNullOrWhiteSpace(model.ConnectionString) && settings.ConnectionString is null)
             {
-                var protector = _dataProtectionProvider.CreateProtector(AzureSmsProvider.ProtectorName);
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.ConnectionString), S["Connection string is required."]);
+            }
+            else if (!string.IsNullOrWhiteSpace(model.ConnectionString))
+            {
+                var protector = _dataProtectionProvider.CreateProtector(AzureSmsOptionsConfiguration.ProtectorName);
 
-                var protectedToken = protector.Protect(model.ConnectionString);
+                var protectedConnection = protector.Protect(model.ConnectionString);
 
-                hasChanges |= settings.ConnectionString != protectedToken;
+                // Check if the connection string changed before setting it.
+                hasChanges |= protectedConnection != settings.ConnectionString;
 
-                settings.ConnectionString = protectedToken;
+                settings.ConnectionString = protectedConnection;
             }
         }
 
-        if (hasChanges)
+        if (context.Updater.ModelState.IsValid)
         {
-            _shellReleaseManager.RequestRelease();
+            if (settings.IsEnabled && string.IsNullOrEmpty(smsSettings.DefaultProviderName))
+            {
+                // If we are enabling the only provider, set it as the default one.
+                smsSettings.DefaultProviderName = AzureSmsProvider.TechnicalName;
+                site.Put(smsSettings);
+
+                hasChanges = true;
+            }
+
+            if (hasChanges)
+            {
+                _shellReleaseManager.RequestRelease();
+            }
         }
 
-        return Edit(site, settings, context);
+        return await EditAsync(site, settings, context);
     }
 }
