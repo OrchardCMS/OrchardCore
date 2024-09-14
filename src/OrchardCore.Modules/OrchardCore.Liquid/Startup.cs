@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Liquid.Filters;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid.Drivers;
@@ -85,7 +85,7 @@ public sealed class LiquidPartStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         // Liquid Part
-        services.AddScoped<IShapeTableProvider, LiquidShapes>();
+        services.AddShapeProvider<LiquidShapes>();
         services.AddContentPart<LiquidPart>()
             .UseDisplayDriver<LiquidPartDisplayDriver>()
             .AddHandler<LiquidPartHandler>();

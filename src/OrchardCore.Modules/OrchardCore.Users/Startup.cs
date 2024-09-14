@@ -17,7 +17,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
@@ -237,7 +237,7 @@ public sealed class Startup : StartupBase
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
         services.AddScoped<IDisplayDriver<Navbar>, UserMenuNavbarDisplayDriver>();
         services.AddScoped<IDisplayDriver<UserMenu>, UserMenuDisplayDriver>();
-        services.AddScoped<IShapeTableProvider, UserMenuShapeTableProvider>();
+        services.AddShapeProvider<UserMenuShapeTableProvider>();
 
         services.AddRecipeExecutionStep<UsersStep>();
 

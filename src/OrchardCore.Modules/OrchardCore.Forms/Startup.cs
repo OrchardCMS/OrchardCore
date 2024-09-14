@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Forms.Activities;
 using OrchardCore.Forms.Activities.Drivers;
 using OrchardCore.Forms.Drivers;
@@ -77,7 +77,7 @@ public sealed class Startup : StartupBase
                 .UseDisplayDriver<FormElementValidationPartDisplayDriver>();
 
         services.AddDataMigration<Migrations>();
-        services.AddScoped<IShapeTableProvider, FormShapeTableProvider>();
+        services.AddShapeProvider<FormShapeTableProvider>();
     }
 }
 

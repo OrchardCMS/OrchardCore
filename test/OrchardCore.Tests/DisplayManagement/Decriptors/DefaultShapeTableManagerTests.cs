@@ -1,3 +1,4 @@
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Implementation;
@@ -146,7 +147,7 @@ public class DefaultShapeTableManagerTests : IDisposable
         });
 #pragma warning restore CA1861 // Avoid constant arrays as arguments
 
-        serviceCollection.AddScoped<IShapeTableProvider, TestShapeProvider>();
+        serviceCollection.AddShapeProvider<TestShapeProvider>();
         serviceCollection.AddScoped(sp => (TestShapeProvider)sp.GetService<IShapeTableProvider>());
 
         _serviceProvider = serviceCollection.BuildServiceProvider();

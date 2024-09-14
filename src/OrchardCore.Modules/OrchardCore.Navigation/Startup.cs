@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
@@ -18,8 +19,8 @@ public sealed class Startup : StartupBase
     {
         services.AddNavigation();
 
-        services.AddScoped<IShapeTableProvider, NavigationShapes>();
-        services.AddScoped<IShapeTableProvider, PagerShapesTableProvider>();
+        services.AddShapeProvider<NavigationShapes>();
+        services.AddShapeProvider<PagerShapesTableProvider>();
         services.AddShapeAttributes<PagerShapes>();
 
         var navigationConfiguration = _shellConfiguration.GetSection("OrchardCore_Navigation");
