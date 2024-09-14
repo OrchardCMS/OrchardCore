@@ -28,7 +28,8 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
 
-    protected override string SettingsGroupId => SmsSettings.GroupId;
+    protected override string SettingsGroupId 
+        => SmsSettings.GroupId;
 
     public AzureSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
