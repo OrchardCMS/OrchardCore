@@ -42,14 +42,10 @@ public abstract class AzureSmsProviderBase : ISmsProvider
         {
             return SmsResult.Failed(S["The phone number for the recipent is required.", message.To]);
         }
-        else
-        {
-            if (!_phoneFormatValidator.IsValid(message.To))
-            {
-                return SmsResult.Failed(S["Invalid phone format for the recipent: '{0}'.", message.To]);
-            }
 
-            message.To = message.To;
+        if (!_phoneFormatValidator.IsValid(message.To))
+        {
+            return SmsResult.Failed(S["Invalid phone format for the recipent: '{0}'.", message.To]);
         }
 
         if (string.IsNullOrEmpty(message.Body))
