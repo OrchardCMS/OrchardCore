@@ -22,7 +22,7 @@ public sealed class AzureSmsProviderOptionsConfigurations : IConfigureOptions<Sm
 
         if (_defaultAzureOptions.IsEnabled)
         {
-            // Only configure the default provider, if settings are provided by the configuration provider.
+            // Configure the default provider only if settings are supplied by the configuration provider.
             ConfigureDefaultProvider(options);
         }
     }

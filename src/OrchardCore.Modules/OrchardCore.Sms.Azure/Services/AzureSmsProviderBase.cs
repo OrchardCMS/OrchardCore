@@ -36,16 +36,16 @@ public abstract class AzureSmsProviderBase : ISmsProvider
             return SmsResult.Failed(S["The Azure SMS Provider is disabled."]);
         }
 
-        _logger.LogDebug("Attempting to send SMS to {Recipent}.", message.To);
+        _logger.LogDebug("Attempting to send SMS to {Recipient}.", message.To);
 
         if (string.IsNullOrWhiteSpace(message.To))
         {
-            return SmsResult.Failed(S["The phone number for the recipent is required.", message.To]);
+            return SmsResult.Failed(S["A phone number is required for the recipient.", message.To]);
         }
 
         if (!_phoneFormatValidator.IsValid(message.To))
         {
-            return SmsResult.Failed(S["Invalid phone format for the recipent: '{0}'.", message.To]);
+            return SmsResult.Failed(S["Invalid phone number format for the recipient: '{0}'.", message.To]);
         }
 
         if (string.IsNullOrEmpty(message.Body))

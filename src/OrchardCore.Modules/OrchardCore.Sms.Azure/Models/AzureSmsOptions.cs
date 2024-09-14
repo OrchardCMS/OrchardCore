@@ -9,5 +9,6 @@ public class AzureSmsOptions
     public string ConnectionString { get; set; }
 
     public bool ConfigurationExists()
-        => !string.IsNullOrWhiteSpace(PhoneNumber) && !string.IsNullOrWhiteSpace(ConnectionString);
+        => !string.IsNullOrWhiteSpace(PhoneNumber) &&
+        !string.IsNullOrWhiteSpace(ConnectionString);
 }

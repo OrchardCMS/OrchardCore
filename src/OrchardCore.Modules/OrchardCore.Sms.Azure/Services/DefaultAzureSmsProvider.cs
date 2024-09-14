@@ -17,5 +17,6 @@ public class DefaultAzureSmsProvider : AzureSmsProviderBase
     {
     }
 
-    public override LocalizedString Name => S["Default Azure Communication Service"];
+    public override LocalizedString Name
+        => S["Default Azure Communication SMS Provider"];
 }

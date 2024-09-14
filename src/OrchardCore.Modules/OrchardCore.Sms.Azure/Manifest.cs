@@ -12,7 +12,7 @@ using OrchardCore.Modules.Manifest;
     Description = "Enables the ability to send SMS messages through Azure Communication Services (ACS).",
     Dependencies =
     [
-        "OrchardCore.Sms"
+        "OrchardCore.Sms",
     ],
     Category = "SMS"
 )]

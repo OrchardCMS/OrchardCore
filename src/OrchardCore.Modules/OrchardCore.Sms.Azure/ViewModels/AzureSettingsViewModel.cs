@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using OrchardCore.Sms.ViewModels;
 
 namespace OrchardCore.Sms.Azure.ViewModels;
 
-public class AzureSettingsViewModel : SmsSettingsBaseViewModel
+public class AzureSettingsViewModel
 {
+    public string DefaultProvider { get; set; }
+
     public bool IsEnabled { get; set; }
 
     public string ConnectionString { get; set; }
