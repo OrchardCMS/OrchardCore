@@ -1,6 +1,5 @@
 using OrchardCore.Modules.Manifest;
 using OrchardCore.OpenId;
-using OrchardCore.Users;
 
 [assembly: Module(
     Name = "OpenID Connect",
@@ -25,7 +24,7 @@ using OrchardCore.Users;
     Dependencies =
     [
         OpenIdConstants.Features.Core,
-        UserConstants.Features.ExternalAuthentication,
+        "OrchardCore.Users.ExternalAuthentication",
     ]
 )]
 
