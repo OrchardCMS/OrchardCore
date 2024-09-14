@@ -5,7 +5,7 @@ using OrchardCore.Sms.Azure.Models;
 
 namespace OrchardCore.Sms.Azure.Services;
 
-public class DefaultAzureSmsProvider : AzureSmsProviderBase
+public sealed class DefaultAzureSmsProvider : AzureSmsProviderBase
 {
     public const string TechnicalName = "DefaultAzure";
 

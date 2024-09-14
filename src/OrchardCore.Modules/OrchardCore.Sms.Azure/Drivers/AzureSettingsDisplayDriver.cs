@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
@@ -24,6 +25,7 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly INotifier _notifier;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -37,6 +39,7 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
         IAuthorizationService authorizationService,
         IPhoneFormatValidator phoneFormatValidator,
         IDataProtectionProvider dataProtectionProvider,
+        INotifier notifier,
         IHtmlLocalizer<AzureSettingsDisplayDriver> htmlLocalizer,
         IStringLocalizer<AzureSettingsDisplayDriver> stringLocalizer)
     {
@@ -45,6 +48,7 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
         _authorizationService = authorizationService;
         _phoneFormatValidator = phoneFormatValidator;
         _dataProtectionProvider = dataProtectionProvider;
+        _notifier = notifier;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
@@ -55,7 +59,7 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
         {
             model.IsEnabled = settings.IsEnabled;
             model.PhoneNumber = settings.PhoneNumber;
-            model.ConnectionString = settings.ConnectionString;
+            model.HasConnectionString = !string.IsNullOrEmpty(settings.ConnectionString);
         }).Location("Content:5#Azure Communication SMS")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
         .OnGroup(SettingsGroupId);
@@ -79,13 +83,19 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
         {
             if (hasChanges && smsSettings.DefaultProviderName == AzureSmsProvider.TechnicalName)
             {
+                await _notifier.WarningAsync(H["You have successfully disabled the default SMS provider. The SMS service is now disable and will remain disabled until you designate a new default provider."]);
+
                 smsSettings.DefaultProviderName = null;
 
                 site.Put(smsSettings);
             }
+
+            settings.IsEnabled = false;
         }
         else
         {
+            settings.IsEnabled = true;
+
             hasChanges |= model.PhoneNumber != settings.PhoneNumber;
 
             if (string.IsNullOrEmpty(model.PhoneNumber))
@@ -116,21 +126,18 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
             }
         }
 
-        if (context.Updater.ModelState.IsValid)
+        if (context.Updater.ModelState.IsValid && settings.IsEnabled && string.IsNullOrEmpty(smsSettings.DefaultProviderName))
         {
-            if (settings.IsEnabled && string.IsNullOrEmpty(smsSettings.DefaultProviderName))
-            {
-                // If we are enabling the only provider, set it as the default one.
-                smsSettings.DefaultProviderName = AzureSmsProvider.TechnicalName;
-                site.Put(smsSettings);
+            // If we are enabling the only provider, set it as the default one.
+            smsSettings.DefaultProviderName = AzureSmsProvider.TechnicalName;
+            site.Put(smsSettings);
 
-                hasChanges = true;
-            }
+            hasChanges = true;
+        }
 
-            if (hasChanges)
-            {
-                _shellReleaseManager.RequestRelease();
-            }
+        if (hasChanges)
+        {
+            _shellReleaseManager.RequestRelease();
         }
 
         return await EditAsync(site, settings, context);
