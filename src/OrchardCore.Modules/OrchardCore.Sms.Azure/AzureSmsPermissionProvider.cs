@@ -2,7 +2,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Sms.Azure;
 
-public class AzureSmsPermissionProvider : IPermissionProvider
+public sealed class AzureSmsPermissionProvider : IPermissionProvider
 {
     public static readonly Permission ManageSmsSettings = AzureSmsPermissions.ManageAzureSmsSettings;
 
@@ -11,7 +11,8 @@ public class AzureSmsPermissionProvider : IPermissionProvider
         ManageSmsSettings,
     ];
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync() => Task.FromResult(_allPermissions);
+    public Task<IEnumerable<Permission>> GetPermissionsAsync() 
+        => Task.FromResult(_allPermissions);
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [

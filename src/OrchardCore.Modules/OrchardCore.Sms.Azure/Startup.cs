@@ -8,7 +8,7 @@ using OrchardCore.Sms.Azure.Drivers;
 
 namespace OrchardCore.Sms.Azure;
 
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     private readonly IHostEnvironment _hostEnvironment;
 
@@ -28,7 +28,7 @@ public class Startup : StartupBase
         }
 
         services.AddTwilioSmsProvider()
-            .AddScoped<IDisplayDriver<ISite>, AzureSettingsDisplayDriver>();
+            .AddSiteSettingsDisplayDriver<AzureSettingsDisplayDriver>();
 
         services.AddScoped<IPermissionProvider, AzureSmsPermissionProvider>();
     }
