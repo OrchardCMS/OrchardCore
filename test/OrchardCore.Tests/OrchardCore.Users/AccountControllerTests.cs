@@ -24,7 +24,7 @@ public class AccountControllerTests
         var context = await GetSiteContextAsync(new RegistrationSettings()
         {
             AllowSiteRegistration = true,
-        });
+        }, true, true, true);
 
         // Act
         var model = new RegisterViewModel()
@@ -433,7 +433,7 @@ public class AccountControllerTests
         return PostRequestHelper.CreateMessageWithCookies("Register", data, response);
     }
 
-    private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true)
+    private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true, bool enableExternalAuthentication = false)
     {
         var context = new SiteContext();
 
@@ -460,14 +460,27 @@ public class AccountControllerTests
                     CancellationToken.None);
             }
 
-            if (enableRegistrationFeature)
+            if (enableRegistrationFeature || enableExternalAuthentication)
             {
                 var shellFeatureManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
                 var extensionManager = scope.ServiceProvider.GetRequiredService<IExtensionManager>();
 
-                var extensionInfo = extensionManager.GetExtension(UserConstants.Features.UserRegistration);
+                var features = new List<FeatureInfo>();
 
-                await shellFeatureManager.EnableFeaturesAsync([new FeatureInfo(UserConstants.Features.UserRegistration, extensionInfo)], true);
+                if (enableRegistrationFeature)
+                {
+                    var extensionInfo = extensionManager.GetExtension(UserConstants.Features.UserRegistration);
+
+                    features.Add(new FeatureInfo(UserConstants.Features.UserRegistration, extensionInfo));
+                }
+
+                if (enableExternalAuthentication)
+                {
+                    var extensionInfo = extensionManager.GetExtension(UserConstants.Features.ExternalAuthentication);
+                    features.Add(new FeatureInfo(UserConstants.Features.ExternalAuthentication, extensionInfo));
+                }
+
+                await shellFeatureManager.EnableFeaturesAsync(features, true);
             }
 
             var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();

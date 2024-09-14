@@ -269,8 +269,7 @@ public sealed class ExternalAuthenticationStartup : StartupBase
     }
 }
 
-[Feature(UserConstants.Features.ExternalAuthentication)]
-[RequireFeatures("OrchardCore.Roles")]
+[RequireFeatures(UserConstants.Features.ExternalAuthentication, "OrchardCore.Roles")]
 public sealed class RoleExternalAuthenticationStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
