@@ -10,6 +10,7 @@ public class AzureSettingsViewModel : SmsSettingsBaseViewModel
     public string ConnectionString { get; set; }
 
     public string PhoneNumber { get; set; }
+
     [BindNever]
     public bool HasConnectionString { get; set; }
 }

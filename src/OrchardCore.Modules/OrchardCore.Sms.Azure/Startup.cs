@@ -13,6 +13,6 @@ public sealed class Startup : StartupBase
         services.AddAzureSmsProvider()
             .AddSiteDisplayDriver<AzureSettingsDisplayDriver>();
 
-        services.AddScoped<IPermissionProvider, AzureSmsPermissionProvider>();
+        services.AddPermissionProvider<AzureSmsPermissionProvider>();
     }
 }

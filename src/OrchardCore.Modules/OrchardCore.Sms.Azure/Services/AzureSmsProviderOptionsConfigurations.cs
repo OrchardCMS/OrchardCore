@@ -39,7 +39,7 @@ public sealed class AzureSmsProviderOptionsConfigurations : IConfigureOptions<Sm
 
     private static void ConfigureDefaultProvider(SmsProviderOptions options)
     {
-        var typeOptions = new SmsProviderTypeOptions(typeof(DefaultAzureSmsProvider))
+        var typeOptions = new SmsProviderTypeOptions(DefaultAzureSmsProvider.TechnicalName)
         {
             IsEnabled = true,
         };
