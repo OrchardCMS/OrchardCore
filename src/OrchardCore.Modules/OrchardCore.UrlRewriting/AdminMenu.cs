@@ -25,8 +25,8 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Settings"], settings => settings
-                   .Add(S["URL Rewriting"], S["URL Rewriting"].PrefixPosition(), seo => seo
-                       .Permission(Permissions.ManageUrlRewriting)
+                   .Add(S["URL Rewriting"], S["URL Rewriting"].PrefixPosition(), rewriting => rewriting
+                       .Permission(UrlRewritingPermissions.ManageUrlRewriting)
                        .Action("Index", "Admin", _routeValues)
                        .LocalNav()
                     )

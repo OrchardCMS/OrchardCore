@@ -4,11 +4,9 @@ namespace OrchardCore.UrlRewriting;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageUrlRewriting = new Permission("ManageUrlRewriting", "Manage URLs rewrites");
-
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ManageUrlRewriting,
+        UrlRewritingPermissions.ManageUrlRewriting,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()

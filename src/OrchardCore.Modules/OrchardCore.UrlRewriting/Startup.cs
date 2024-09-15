@@ -18,7 +18,7 @@ namespace OrchardCore.UrlRewriting;
 public sealed class Startup : StartupBase
 {
     public override int Order
-        => OrchardCoreConstants.ConfigureOrder.InfrastructureService;
+        => OrchardCoreConstants.ConfigureOrder.UrlRewriting;
 
     private readonly AdminOptions _adminOptions;
 

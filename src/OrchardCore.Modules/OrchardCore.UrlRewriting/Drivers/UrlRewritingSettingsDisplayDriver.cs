@@ -21,6 +21,7 @@ internal sealed class UrlRewritingSettingsDisplayDriver : SiteDisplayDriver<UrlR
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IShellReleaseManager _shellReleaseManager;
+
     internal readonly IStringLocalizer S;
 
     public UrlRewritingSettingsDisplayDriver(
@@ -41,7 +42,7 @@ internal sealed class UrlRewritingSettingsDisplayDriver : SiteDisplayDriver<UrlR
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUrlRewriting))
+        if (!await _authorizationService.AuthorizeAsync(user, UrlRewritingPermissions.ManageUrlRewriting))
         {
             return null;
         }
@@ -59,7 +60,7 @@ internal sealed class UrlRewritingSettingsDisplayDriver : SiteDisplayDriver<UrlR
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUrlRewriting))
+        if (!await _authorizationService.AuthorizeAsync(user, UrlRewritingPermissions.ManageUrlRewriting))
         {
             return null;
         }
