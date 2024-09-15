@@ -196,7 +196,7 @@ nav:
           - Shortcodes: reference/modules/Shortcodes/README.md
           - Sitemaps: reference/modules/Sitemaps/README.md
           - SMS: reference/modules/Sms/README.md
-          - Azure SMS Provider: reference/modules/Sms.Azure/README.md
+          - Azure Communication SMS: reference/modules/Sms.Azure/README.md
           - Spatial: reference/modules/Spatial/README.md
           - XML-RPC: reference/modules/XmlRpc/README.md
           - Menu: reference/modules/Menu/README.md

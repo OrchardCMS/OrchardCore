@@ -19,5 +19,5 @@ public sealed class DefaultAzureSmsProvider : AzureSmsProviderBase
     }
 
     public override LocalizedString Name
-        => S["Default Azure Communication SMS"];
+        => S["Default Azure Communication"];
 }
