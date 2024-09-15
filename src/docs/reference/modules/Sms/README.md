@@ -18,26 +18,6 @@ Enabling the `SMS` feature will add a new settings page under `Configurations` >
 
 To enable the [Twilio](https://www.twilio.com) provider, navigate to `Configurations` >> `Settings` >> `SMS`. Click on the `Twilio` tab, click the Enable checkbox and provider your Twilio account info. Then in the `Providers` tab, select Twilio as your default provider.
 
-## Configuring the Azure Communication SMS Providers
-
-To enable the [Azure Communication SMS](https://learn.microsoft.com/en-us/azure/communication-services/overview) providers, you'll need to enable the **Azure Communication SMS** feature. The navigate to `Configurations` >> `Settings` >> `SMS`. Click on the `Azure Communication SMS` tab, click the Enable checkbox and provider your Azure Communication SMS account info. Then in the `Providers` tab, select one of the 'Azure Communication SMS' as your default provider.
-
-Enabling this feature will expose the following providers:
-
-| Provider | Description |
-| --- | --- |
-| `Azure` | This provider enables tenant-specific Azure Communication Services for sending SMS. Configure the SMS settings to activate this provider. |
-| `DefaultAzure` | This provider sets default Azure Communication Service configurations for all tenants.|
-
-The **DefaultAzure** provider can be configured using any configuration provider. For example, you can use the **appsettings.json** file to set the settings as follows:
-
-```json
-"OrchardCore_Sms_AzureCommunication": {
-    "PhoneNumber": "",
-    "ConnectionString": ""
-}
-```
-
 ## Adding Custom Providers
 
 The `OrchardCore.Sms` module provides you with the capability to integrate additional providers for dispatching SMS messages. To achieve this, you can easily create an implementation of the `ISmsProvider` interface and then proceed to register it using one of the following approaches:
