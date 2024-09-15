@@ -30,6 +30,7 @@ Enabling this feature will expose the following providers:
 | `DefaultAzure` | This provider sets default Azure Communication Service configurations for all tenants.|
 
 The **DefaultAzure** provider can be configured using any configuration provider. For example, you can use the **appsettings.json** file to set the settings as follows:
+
 ```json
 "OrchardCore_Sms_AzureCommunication": {
     "PhoneNumber": "",
