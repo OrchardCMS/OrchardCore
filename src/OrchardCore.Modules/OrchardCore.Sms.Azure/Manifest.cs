@@ -7,7 +7,7 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Name = "Azure SMS Provider",
+    Name = "Azure Communication SMS",
     Id = "OrchardCore.Sms.Azure",
     Description = "Enables the ability to send SMS messages through Azure Communication Services (ACS).",
     Dependencies =
