@@ -2,7 +2,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.UrlRewriting;
 
-public sealed class Permissions : IPermissionProvider
+public sealed class UrlRewritingPermissionProvider : IPermissionProvider
 {
     private readonly IEnumerable<Permission> _allPermissions =
     [
