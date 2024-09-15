@@ -14,11 +14,11 @@ Enabling the `SMS` feature will add a new settings page under `Configurations` >
 !!! note
     After enabling the SMS feature, you must configure the default provider in order to send SMS messages.
 
-## Configuring Twilio Provider
+## Configuring the Twilio Providers
 
 To enable the [Twilio](https://www.twilio.com) provider, navigate to `Configurations` >> `Settings` >> `SMS`. Click on the `Twilio` tab, click the Enable checkbox and provider your Twilio account info. Then in the `Providers` tab, select Twilio as your default provider.
 
-## Azure Communication SMS Provider
+## Configuring the Azure Communication SMS Providers
 
 To enable the [Azure Communication SMS](https://learn.microsoft.com/en-us/azure/communication-services/overview) providers, you'll need to enable the **Azure Communication SMS** feature. The navigate to `Configurations` >> `Settings` >> `SMS`. Click on the `Azure Communication SMS` tab, click the Enable checkbox and provider your Azure Communication SMS account info. Then in the `Providers` tab, select one of the 'Azure Communication SMS' as your default provider.
 
