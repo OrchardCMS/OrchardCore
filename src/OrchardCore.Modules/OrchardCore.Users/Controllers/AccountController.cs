@@ -108,7 +108,7 @@ public sealed class AccountController : AccountBaseController
             var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
             if (schemes.Count() == 1)
             {
-                var dataProtector = _dataProtectionProvider.CreateProtector(DefaultExternalLoginProtector)
+                var dataProtector = _dataProtectionProvider.CreateProtector(ExternalAuthenticationController.DefaultExternalLoginProtector)
                     .ToTimeLimitedDataProtector();
 
                 var token = Guid.NewGuid();
