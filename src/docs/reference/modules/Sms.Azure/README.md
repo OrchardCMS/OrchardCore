@@ -1,10 +1,10 @@
 # Azure SMS (`OrchardCore.Sms.Azure`)
 
-This module provides an SMS provider for sending SMS through [Azure Communication Services SMS](https://learn.microsoft.com/en-us/azure/communication-services/concepts/sms/concepts).
+This feature provides SMS providers for sending SMS through [Azure Communication Services SMS](https://learn.microsoft.com/en-us/azure/communication-services/concepts/sms/concepts).
 
-## Azure Communication Service Settings
+## **Azure Communication SMS** Provider Configuration
 
-Enabling this module will introduce a new tab labeled 'Azure' within the SMS settings, allowing you to configure the service. To access these settings, navigate to `Configuration` → `Settings` → `Sms` and click on the 'Azure' tab. The following are the available settings
+Enabling this feature will introduce a new tab labeled **Azure** within the SMS settings, allowing you to configure the service. To access these settings from the admin dashboard, navigate to `Configuration` → `Settings` → `Sms` and click on the 'Azure Communication SMS' tab. The following are the available settings.
 
 | Provider | Description |
 | --- | --- |
@@ -12,9 +12,9 @@ Enabling this module will introduce a new tab labeled 'Azure' within the SMS set
 | `DefaultAzure` | This provider sets default Azure Communication Service configurations for all tenants.|
 
 
-## Default Azure SMS Communication Service Configuration
+## **Default Azure Communication SMS** Provider Configuration
 
-You may configure the Default Azure SMS Service provider by the configuration provider using the following settings:
+You may configure the **Default Azure Communication SMS** using any configuration provider via the following settings:
 
 ```json
 "OrchardCore_Sms_AzureCommunicationServices": {
@@ -26,4 +26,4 @@ You may configure the Default Azure SMS Service provider by the configuration pr
 For more information about configurations, please refer to [Configuration](../../core/Configuration/README.md).
 
 !!! note
-    Configuration of the Default Azure SMS provider is not possible through Admin Settings. Utilize the configuration provider for the necessary setup. The provider will appear only if the configuration exists.
+    Configuration of the **Default Azure Communication SMS** provider cannot be performed through Admin Settings. Instead, use the configuration provider for setup. Note that the provider will only appear if the configuration is present.
