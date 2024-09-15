@@ -2,9 +2,9 @@
 
 This feature provides SMS providers for sending SMS through [Azure Communication Services SMS](https://learn.microsoft.com/en-us/azure/communication-services/concepts/sms/concepts).
 
-## **Azure Communication SMS** Provider Configuration
+## **Azure Communication** Provider Configuration
 
-Enabling this feature will introduce a new tab labeled **Azure** within the SMS settings, allowing you to configure the service. To access these settings from the admin dashboard, navigate to `Configuration` → `Settings` → `Sms` and click on the 'Azure Communication SMS' tab. The following are the available settings.
+Enabling this feature will introduce a new tab labeled **Azure** within the SMS settings, allowing you to configure the service. To access these settings from the admin dashboard, navigate to `Configuration` → `Settings` → `Sms` and click on the 'Azure Communication' tab. The following are the available settings.
 
 | Provider | Description |
 | --- | --- |
@@ -12,9 +12,9 @@ Enabling this feature will introduce a new tab labeled **Azure** within the SMS 
 | `DefaultAzure` | This provider sets default Azure Communication Service configurations for all tenants.|
 
 
-## **Default Azure Communication SMS** Provider Configuration
+## **Default Azure Communication** Provider Configuration
 
-You may configure the **Default Azure Communication SMS** using any configuration provider via the following settings:
+You may configure the **Default Azure Communication** using any configuration provider via the following settings:
 
 ```json
 "OrchardCore_Sms_AzureCommunicationServices": {
@@ -26,4 +26,4 @@ You may configure the **Default Azure Communication SMS** using any configuratio
 For more information about configurations, please refer to [Configuration](../../core/Configuration/README.md).
 
 !!! note
-    Configuration of the **Default Azure Communication SMS** provider cannot be performed through Admin Settings. Instead, use the configuration provider for setup. Note that the provider will only appear if the configuration is present.
+    Configuration of the **Default Azure Communication** provider cannot be performed through Admin Settings. Instead, use the configuration provider for setup. Note that the provider will only appear if the configuration is present.
