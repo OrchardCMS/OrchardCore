@@ -11,6 +11,8 @@ public abstract class AzureSmsProviderBase : ISmsProvider
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly ILogger _logger;
 
+    private SmsClient _smsClient;
+
     protected readonly IStringLocalizer S;
 
     public AzureSmsProviderBase(
@@ -55,8 +57,9 @@ public abstract class AzureSmsProviderBase : ISmsProvider
 
         try
         {
-            var client = new SmsClient(_providerOptions.ConnectionString);
-            var response = await client.SendAsync(_providerOptions.PhoneNumber, message.To, message.Body);
+            _smsClient ??= new SmsClient(_providerOptions.ConnectionString);
+
+            var response = await _smsClient.SendAsync(_providerOptions.PhoneNumber, message.To, message.Body);
 
             if (response.Value.Successful)
             {
