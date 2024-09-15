@@ -1,8 +1,6 @@
 using System.Text.Json.Nodes;
+using OrchardCore.Deployment.Services;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Extensions;
-using OrchardCore.Environment.Extensions.Features;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
 using OrchardCore.Tests.Apis.Context;
@@ -460,29 +458,6 @@ public class AccountControllerTests
                     CancellationToken.None);
             }
 
-            if (enableRegistrationFeature || enableExternalAuthentication)
-            {
-                var shellFeatureManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
-                var extensionManager = scope.ServiceProvider.GetRequiredService<IExtensionManager>();
-
-                var features = new List<FeatureInfo>();
-
-                if (enableRegistrationFeature)
-                {
-                    var extensionInfo = extensionManager.GetExtension(UserConstants.Features.UserRegistration);
-
-                    features.Add(new FeatureInfo(UserConstants.Features.UserRegistration, extensionInfo));
-                }
-
-                if (enableExternalAuthentication)
-                {
-                    var extensionInfo = extensionManager.GetExtension(UserConstants.Features.ExternalAuthentication);
-                    features.Add(new FeatureInfo(UserConstants.Features.ExternalAuthentication, extensionInfo));
-                }
-
-                await shellFeatureManager.EnableFeaturesAsync(features, true);
-            }
-
             var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
 
             var site = await siteService.LoadSiteSettingsAsync();
@@ -491,6 +466,68 @@ public class AccountControllerTests
 
             await siteService.UpdateSiteSettingsAsync(site);
         });
+
+        if (enableRegistrationFeature || enableExternalAuthentication)
+        {
+            await context.UsingTenantScopeAsync(async scope =>
+            {
+                var featureIds = new JsonArray();
+
+                if (enableRegistrationFeature)
+                {
+                    featureIds.Add(UserConstants.Features.UserRegistration);
+                }
+
+                if (enableExternalAuthentication)
+                {
+                    featureIds.Add(UserConstants.Features.ExternalAuthentication);
+                }
+
+                var tempArchiveName = Path.GetTempFileName() + ".json";
+                var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+                var data = new JsonObject
+                {
+                    ["steps"] = new JsonArray
+                    {
+                        new JsonObject
+                        {
+                            { "name", "feature" },
+                            { "enable", featureIds },
+                        }
+                    },
+                };
+
+                try
+                {
+                    using (var stream = new FileStream(tempArchiveName, FileMode.Create))
+                    {
+                        var bytes = Encoding.UTF8.GetBytes(data.ToString());
+
+                        await stream.WriteAsync(bytes);
+                    }
+
+                    Directory.CreateDirectory(tempArchiveFolder);
+                    File.Move(tempArchiveName, Path.Combine(tempArchiveFolder, "Recipe.json"));
+
+                    var deploymentManager = scope.ServiceProvider.GetRequiredService<IDeploymentManager>();
+
+                    await deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
+                }
+                finally
+                {
+                    if (File.Exists(tempArchiveName))
+                    {
+                        File.Delete(tempArchiveName);
+                    }
+
+                    if (Directory.Exists(tempArchiveFolder))
+                    {
+                        Directory.Delete(tempArchiveFolder, true);
+                    }
+                }
+            });
+        }
 
         return context;
     }

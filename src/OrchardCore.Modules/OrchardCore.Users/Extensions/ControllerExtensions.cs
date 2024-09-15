@@ -60,7 +60,7 @@ internal static class ControllerExtensions
 
         var settings = await controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<ISiteService>().GetSettingsAsync<RegistrationSettings>();
 
-        if (!settings.AllowSiteRegistration)
+        if (settings.AllowSiteRegistration)
         {
             var registrationEvents = controller.ControllerContext.HttpContext.RequestServices.GetServices<IRegistrationFormEvents>();
 
