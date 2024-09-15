@@ -9,6 +9,6 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddShapeProvider<MediaShapes>();
+        services.AddShapeTableProvider<MediaShapes>();
     }
 }
