@@ -38,7 +38,7 @@ public abstract class AzureSmsProviderBase : ISmsProvider
             return SmsResult.Failed(S["The Azure Communication Provider is disabled."]);
         }
 
-        _logger.LogDebug("Attempting to send SMS to {Recipient}.", message.To);
+        _logger.LogDebug("Attempting to send an SMS message using Azure Communication service to {Recipient}.", message.To);
 
         if (string.IsNullOrWhiteSpace(message.To))
         {
