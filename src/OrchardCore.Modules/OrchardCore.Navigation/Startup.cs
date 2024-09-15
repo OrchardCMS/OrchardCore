@@ -19,8 +19,8 @@ public sealed class Startup : StartupBase
     {
         services.AddNavigation();
 
-        services.AddShapeProvider<NavigationShapes>();
-        services.AddShapeProvider<PagerShapesTableProvider>();
+        services.AddShapeTableProvider<NavigationShapes>();
+        services.AddShapeTableProvider<PagerShapesTableProvider>();
         services.AddShapeAttributes<PagerShapes>();
 
         var navigationConfiguration = _shellConfiguration.GetSection("OrchardCore_Navigation");

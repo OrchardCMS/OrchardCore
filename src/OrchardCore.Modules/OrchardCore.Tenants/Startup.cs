@@ -34,7 +34,7 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<ITenantValidator, TenantValidator>();
-        services.AddShapeProvider<TenantShapeTableProvider>();
+        services.AddShapeTableProvider<TenantShapeTableProvider>();
         services.AddSetup();
 
         services.Configure<TenantsOptions>(_shellConfiguration.GetSection("OrchardCore_Tenants"));
@@ -114,7 +114,7 @@ public sealed class FeatureProfilesStartup : StartupBase
         services.AddScoped<FeatureProfilesManager>();
         services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
         services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
-        services.AddShapeProvider<TenantFeatureProfileShapeTableProvider>();
+        services.AddShapeTableProvider<TenantFeatureProfileShapeTableProvider>();
 
         services.AddRecipeExecutionStep<FeatureProfilesStep>();
     }
@@ -134,6 +134,6 @@ public sealed class TenantFeatureProfilesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddShapeProvider<TenantFeatureShapeTableProvider>();
+        services.AddShapeTableProvider<TenantFeatureShapeTableProvider>();
     }
 }

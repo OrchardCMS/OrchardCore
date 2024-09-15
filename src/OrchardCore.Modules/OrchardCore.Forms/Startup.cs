@@ -77,7 +77,7 @@ public sealed class Startup : StartupBase
                 .UseDisplayDriver<FormElementValidationPartDisplayDriver>();
 
         services.AddDataMigration<Migrations>();
-        services.AddShapeProvider<FormShapeTableProvider>();
+        services.AddShapeTableProvider<FormShapeTableProvider>();
     }
 }
 

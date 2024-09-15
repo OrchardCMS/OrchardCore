@@ -46,7 +46,7 @@ public sealed class Startup : StartupBase
         .AddLiquidFilter<TaxonomyTermsFilter>("taxonomy_terms");
 
         services.AddDataMigration<Migrations>();
-        services.AddShapeProvider<TermShapes>();
+        services.AddShapeTableProvider<TermShapes>();
         services.AddPermissionProvider<Permissions>();
 
         // Taxonomy Part

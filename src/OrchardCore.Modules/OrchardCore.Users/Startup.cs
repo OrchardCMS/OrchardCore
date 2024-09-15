@@ -237,7 +237,7 @@ public sealed class Startup : StartupBase
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
         services.AddScoped<IDisplayDriver<Navbar>, UserMenuNavbarDisplayDriver>();
         services.AddScoped<IDisplayDriver<UserMenu>, UserMenuDisplayDriver>();
-        services.AddShapeProvider<UserMenuShapeTableProvider>();
+        services.AddShapeTableProvider<UserMenuShapeTableProvider>();
 
         services.AddRecipeExecutionStep<UsersStep>();
 

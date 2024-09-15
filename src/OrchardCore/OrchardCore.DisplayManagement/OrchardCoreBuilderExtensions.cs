@@ -63,9 +63,9 @@ public static class OrchardCoreBuilderExtensions
                 services.AddKeyedSingleton<IDictionary<string, ShapeTable>>(nameof(DefaultShapeTableManager), new ConcurrentDictionary<string, ShapeTable>());
                 services.AddScoped<IShapeTableManager, DefaultShapeTableManager>();
 
-                services.AddShapeProvider<ShapeAttributeBindingStrategy>();
-                services.AddShapeProvider<ShapePlacementParsingStrategy>();
-                services.AddShapeProvider<ShapeTemplateBindingStrategy>();
+                services.AddShapeTableProvider<ShapeAttributeBindingStrategy>();
+                services.AddShapeTableProvider<ShapePlacementParsingStrategy>();
+                services.AddShapeTableProvider<ShapeTemplateBindingStrategy>();
 
                 services.AddScoped<IPlacementNodeFilterProvider, PathPlacementNodeFilterProvider>();
 
@@ -76,9 +76,9 @@ public static class OrchardCoreBuilderExtensions
                 services.TryAddSingleton<IShapeTemplateFileProviderAccessor, ShapeTemplateFileProviderAccessor>();
 
                 services.AddShapeAttributes<CoreShapes>();
-                services.AddShapeProvider<CoreShapesTableProvider>();
+                services.AddShapeTableProvider<CoreShapesTableProvider>();
                 services.AddShapeAttributes<ZoneShapes>();
-                services.AddShapeProvider<ZoneShapeAlternates>();
+                services.AddShapeTableProvider<ZoneShapeAlternates>();
                 services.AddShapeAttributes<GroupShapes>();
 
                 services.AddScoped(typeof(IDisplayManager<>), typeof(DisplayManager<>));

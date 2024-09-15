@@ -85,7 +85,7 @@ public sealed class LiquidPartStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         // Liquid Part
-        services.AddShapeProvider<LiquidShapes>();
+        services.AddShapeTableProvider<LiquidShapes>();
         services.AddContentPart<LiquidPart>()
             .UseDisplayDriver<LiquidPartDisplayDriver>()
             .AddHandler<LiquidPartHandler>();

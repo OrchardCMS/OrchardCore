@@ -147,7 +147,7 @@ public class DefaultShapeTableManagerTests : IDisposable
         });
 #pragma warning restore CA1861 // Avoid constant arrays as arguments
 
-        serviceCollection.AddShapeProvider<TestShapeProvider>();
+        serviceCollection.AddShapeTableProvider<TestShapeProvider>();
         serviceCollection.AddScoped(sp => (TestShapeProvider)sp.GetService<IShapeTableProvider>());
 
         _serviceProvider = serviceCollection.BuildServiceProvider();

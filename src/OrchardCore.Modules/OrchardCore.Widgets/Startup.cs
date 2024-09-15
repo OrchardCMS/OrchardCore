@@ -19,7 +19,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         // Add Widget Card Shapes
-        services.AddShapeProvider<ContentCardShapes>();
+        services.AddShapeTableProvider<ContentCardShapes>();
         // Widgets List Part
         services.AddContentPart<WidgetsListPart>()
             .UseDisplayDriver<WidgetsListPartDisplayDriver>();

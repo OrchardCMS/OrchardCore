@@ -20,7 +20,7 @@ public sealed class StartupWidgets : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDataMigration<WidgetMigrations>();
-        services.AddShapeProvider<LiquidShapes>();
+        services.AddShapeTableProvider<LiquidShapes>();
 
         services.AddContentPart<FacebookPluginPart>()
             .UseDisplayDriver<FacebookPluginPartDisplayDriver>()
