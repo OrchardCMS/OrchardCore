@@ -140,6 +140,6 @@ public sealed class AzureSettingsDisplayDriver : SiteDisplayDriver<AzureSmsSetti
             _shellReleaseManager.RequestRelease();
         }
 
-        return await EditAsync(site, settings, context);
+        return Edit(site, settings, context);
     }
 }
