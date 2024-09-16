@@ -18,7 +18,7 @@ If your company works with Orchard Core and would like to incentivize community 
 
 ## Winners of the Jean-Thierry Kéchichian Community Award
 
-We'll have the first Jean-Thierry Kéchichian Community Award for our Orchard Harvest conference in 2024.
+- 2024: [Hisham Bin Ateya](https://github.com/hishamco)
 
 ## Organizing the Jean-Thierry Kéchichian Community Award
 
