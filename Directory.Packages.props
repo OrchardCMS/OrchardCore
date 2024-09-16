@@ -25,8 +25,8 @@
     <PackageVersion Include="Castle.Core" Version="5.1.1" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.1.0" />
     <PackageVersion Include="Fluid.Core" Version="2.11.1" />
-    <PackageVersion Include="GraphQL" Version="7.8.0" />
-    <PackageVersion Include="GraphQL.DataLoader" Version="7.8.0" />
+    <PackageVersion Include="GraphQL" Version="8.0.2" />
+    <PackageVersion Include="GraphQL.DataLoader" Version="8.0.2" />
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="7.8.0" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="7.8.0" />
     <PackageVersion Include="Jint" Version="4.0.2" />
@@ -119,7 +119,7 @@
                └─ System.Windows.Extensions (v4.7.0)
                   └─ System.Drawing.Common (v4.7.0)
     -->
-    <PackageVersion Include="System.Drawing.Common" Version="4.7.2" />
+    <PackageVersion Include="System.Drawing.Common" Version="8.0.8" />
 
     <!--
       Microsoft.AspNetCore.DataProtection.StackExchangeRedis (v8.0.8)
