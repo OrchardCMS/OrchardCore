@@ -17,11 +17,11 @@ public class ShapeResult : IDisplayResult
     private string _cacheId;
     private readonly string _shapeType;
     private readonly Func<IBuildShapeContext, ValueTask<IShape>> _shapeBuilder;
-    private readonly Func<IShape, Task> _initializing;
+    private readonly Func<IShape, Task> _initializingAsync;
     private Action<CacheContext> _cache;
     private string _groupId;
     private Action<ShapeDisplayContext> _displaying;
-    private Func<IShape, Task> _processing;
+    private Func<IShape, Task> _processingAsync;
     private Func<Task<bool>> _renderPredicateAsync;
 
     /// <summary>
@@ -47,7 +47,7 @@ public class ShapeResult : IDisplayResult
 
         _shapeType = shapeType;
         _shapeBuilder = shapeBuilder;
-        _initializing = initializing;
+        _initializingAsync = initializing;
     }
 
     public Task ApplyAsync(BuildDisplayContext context)
@@ -100,7 +100,7 @@ public class ShapeResult : IDisplayResult
         _groupId = placement.GetGroup() ?? _groupId;
 
         // If the shape's group doesn't match the currently rendered one, return.
-        if (!string.Equals(context.GroupId ?? "", _groupId ?? "", StringComparison.OrdinalIgnoreCase))
+        if (!string.Equals(context.GroupId ?? string.Empty, _groupId ?? string.Empty, StringComparison.OrdinalIgnoreCase))
         {
             return;
         }
@@ -134,9 +134,9 @@ public class ShapeResult : IDisplayResult
         // These Displaying methods are used to create alternates for instance, so the
         // Shape needs to have required properties available first.
 
-        if (_initializing != null)
+        if (_initializingAsync != null)
         {
-            await _initializing.Invoke(Shape);
+            await _initializingAsync.Invoke(Shape);
         }
 
         if (_displaying != null)
@@ -144,9 +144,9 @@ public class ShapeResult : IDisplayResult
             newShapeMetadata.OnDisplaying(_displaying);
         }
 
-        if (_processing != null)
+        if (_processingAsync != null)
         {
-            newShapeMetadata.OnProcessing(_processing);
+            newShapeMetadata.OnProcessing(_processingAsync);
         }
 
         // Apply cache settings
@@ -259,7 +259,7 @@ public class ShapeResult : IDisplayResult
     /// </summary>
     public ShapeResult Processing(Func<IShape, Task> processing)
     {
-        _processing = processing;
+        _processingAsync = processing;
 
         return this;
     }
@@ -269,7 +269,7 @@ public class ShapeResult : IDisplayResult
     /// </summary>
     public ShapeResult Processing<T>(Func<T, Task> processing)
     {
-        _processing = shape => processing?.Invoke((T)shape);
+        _processingAsync = shape => processing?.Invoke((T)shape);
 
         return this;
     }
