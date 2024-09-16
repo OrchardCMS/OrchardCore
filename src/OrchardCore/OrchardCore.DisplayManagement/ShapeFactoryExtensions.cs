@@ -68,6 +68,8 @@ public static class ShapeFactoryExtensions
     /// </summary>
     public static ValueTask<IShape> CreateAsync(this IShapeFactory factory, string shapeType, INamedEnumerable<object> parameters)
     {
+        ArgumentException.ThrowIfNullOrEmpty(shapeType);
+
         if (parameters == null || parameters == Arguments.Empty)
         {
             return factory.CreateAsync(shapeType);
@@ -122,6 +124,8 @@ public static class ShapeFactoryExtensions
     public static ValueTask<IShape> CreateAsync<TModel>(this IShapeFactory factory, string shapeType, Func<TModel, ValueTask> initializeAsync)
         where TModel : class
     {
+        ArgumentException.ThrowIfNullOrEmpty(shapeType);
+
         return factory.CreateAsync(shapeType, () => ShapeFactory(initializeAsync));
 
         static ValueTask<IShape> ShapeFactory(Func<TModel, ValueTask> init)
