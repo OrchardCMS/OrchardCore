@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.Queries.Core;
 
 public interface IQueryHandler

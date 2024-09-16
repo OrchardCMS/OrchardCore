@@ -1,16 +1,13 @@
-using System.Collections.Generic;
+namespace OrchardCore.Roles.ViewModels;
 
-namespace OrchardCore.Roles.ViewModels
+public class RolesViewModel
 {
-    public class RolesViewModel
-    {
-        public List<RoleEntry> RoleEntries { get; set; } = [];
-    }
+    public List<RoleEntry> RoleEntries { get; set; } = [];
+}
 
-    public class RoleEntry
-    {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public bool Selected { get; set; }
-    }
+public class RoleEntry
+{
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public bool Selected { get; set; }
 }

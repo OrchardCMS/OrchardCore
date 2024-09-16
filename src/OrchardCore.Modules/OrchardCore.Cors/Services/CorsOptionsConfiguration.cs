@@ -1,88 +1,86 @@
-using System.Linq;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.Cors.Services
+namespace OrchardCore.Cors.Services;
+
+public sealed class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
 {
-    public sealed class CorsOptionsConfiguration : IConfigureOptions<CorsOptions>
+    private readonly CorsService _corsService;
+    private readonly ILogger _logger;
+
+    public CorsOptionsConfiguration(CorsService corsService, ILogger<CorsOptionsConfiguration> logger)
     {
-        private readonly CorsService _corsService;
-        private readonly ILogger _logger;
+        _corsService = corsService;
+        _logger = logger;
+    }
 
-        public CorsOptionsConfiguration(CorsService corsService, ILogger<CorsOptionsConfiguration> logger)
+    public void Configure(CorsOptions options)
+    {
+        var corsSettings = _corsService.GetSettingsAsync().GetAwaiter().GetResult();
+        if (corsSettings?.Policies == null || !corsSettings.Policies.Any())
         {
-            _corsService = corsService;
-            _logger = logger;
+            return;
         }
 
-        public void Configure(CorsOptions options)
+        foreach (var corsPolicy in corsSettings.Policies)
         {
-            var corsSettings = _corsService.GetSettingsAsync().GetAwaiter().GetResult();
-            if (corsSettings?.Policies == null || !corsSettings.Policies.Any())
+            if (corsPolicy.AllowCredentials && corsPolicy.AllowAnyOrigin)
             {
-                return;
+                _logger.LogWarning("Using AllowCredentials and AllowAnyOrigin at the same time is considered a security risk, the {PolicyName} policy will not be loaded.", corsPolicy.Name);
+                continue;
             }
 
-            foreach (var corsPolicy in corsSettings.Policies)
+            options.AddPolicy(corsPolicy.Name, configurePolicy =>
             {
-                if (corsPolicy.AllowCredentials && corsPolicy.AllowAnyOrigin)
+                if (corsPolicy.AllowAnyHeader)
                 {
-                    _logger.LogWarning("Using AllowCredentials and AllowAnyOrigin at the same time is considered a security risk, the {PolicyName} policy will not be loaded.", corsPolicy.Name);
-                    continue;
+                    configurePolicy.AllowAnyHeader();
+                }
+                else
+                {
+                    configurePolicy.WithHeaders(corsPolicy.AllowedHeaders);
                 }
 
-                options.AddPolicy(corsPolicy.Name, configurePolicy =>
+                if (corsPolicy.AllowAnyMethod)
                 {
-                    if (corsPolicy.AllowAnyHeader)
-                    {
-                        configurePolicy.AllowAnyHeader();
-                    }
-                    else
-                    {
-                        configurePolicy.WithHeaders(corsPolicy.AllowedHeaders);
-                    }
-
-                    if (corsPolicy.AllowAnyMethod)
-                    {
-                        configurePolicy.AllowAnyMethod();
-                    }
-                    else
-                    {
-                        configurePolicy.WithMethods(corsPolicy.AllowedMethods);
-                    }
-
-                    if (corsPolicy.AllowAnyOrigin)
-                    {
-                        configurePolicy.AllowAnyOrigin();
-                    }
-                    else
-                    {
-                        configurePolicy.WithOrigins(corsPolicy.AllowedOrigins);
-                    }
-
-                    if (corsPolicy.AllowCredentials)
-                    {
-                        configurePolicy.AllowCredentials();
-                    }
-                    else
-                    {
-                        configurePolicy.DisallowCredentials();
-                    }
-
-                    if (corsPolicy.ExposedHeaders?.Length > 0)
-                    {
-                        configurePolicy.WithExposedHeaders(corsPolicy.ExposedHeaders);
-                    }
-                });
-
-                if (corsPolicy.IsDefaultPolicy)
-                {
-                    options.DefaultPolicyName = corsPolicy.Name;
+                    configurePolicy.AllowAnyMethod();
                 }
+                else
+                {
+                    configurePolicy.WithMethods(corsPolicy.AllowedMethods);
+                }
+
+                if (corsPolicy.AllowAnyOrigin)
+                {
+                    configurePolicy.AllowAnyOrigin();
+                }
+                else
+                {
+                    configurePolicy.WithOrigins(corsPolicy.AllowedOrigins);
+                }
+
+                if (corsPolicy.AllowCredentials)
+                {
+                    configurePolicy.AllowCredentials();
+                }
+                else
+                {
+                    configurePolicy.DisallowCredentials();
+                }
+
+                if (corsPolicy.ExposedHeaders?.Length > 0)
+                {
+                    configurePolicy.WithExposedHeaders(corsPolicy.ExposedHeaders);
+                }
+            });
+
+            if (corsPolicy.IsDefaultPolicy)
+            {
+                options.DefaultPolicyName = corsPolicy.Name;
             }
-
-            options.DefaultPolicyName ??= corsSettings.Policies.FirstOrDefault()?.Name;
         }
+
+        options.DefaultPolicyName ??= corsSettings.Policies.FirstOrDefault()?.Name;
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -15,7 +14,6 @@ using OrchardCore.Recipes;
 using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Seo;
-using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.Deployment;
@@ -26,113 +24,112 @@ using OrchardCore.Sitemaps.Recipes;
 using OrchardCore.Sitemaps.Routing;
 using OrchardCore.Sitemaps.Services;
 
-namespace OrchardCore.Sitemaps
+namespace OrchardCore.Sitemaps;
+
+public sealed class Startup : StartupBase
 {
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDataMigration<Migrations>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddDataMigration<Migrations>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddPermissionProvider<Permissions>();
 
-            services.Configure<SitemapsOptions>(options =>
+        services.Configure<SitemapsOptions>(options =>
+        {
+            if (options.GlobalRouteValues.Count == 0)
             {
-                if (options.GlobalRouteValues.Count == 0)
+                options.GlobalRouteValues = new RouteValueDictionary
                 {
-                    options.GlobalRouteValues = new RouteValueDictionary
-                    {
-                        {"Area", "OrchardCore.Sitemaps"},
-                        {"Controller", "Sitemap"},
-                        {"Action", "Index"}
-                    };
+                    {"Area", "OrchardCore.Sitemaps"},
+                    {"Controller", "Sitemap"},
+                    {"Action", "Index"}
+                };
 
-                    options.SitemapIdKey = "sitemapId";
-                }
-            });
+                options.SitemapIdKey = "sitemapId";
+            }
+        });
 
-            services.AddSingleton<SitemapEntries>();
-            services.AddSingleton<ISitemapManager, SitemapManager>();
-            services.AddSingleton<IShellRouteValuesAddressScheme, SitemapValuesAddressScheme>();
-            services.AddSingleton<SitemapRouteTransformer>();
+        services.AddSingleton<SitemapEntries>();
+        services.AddSingleton<ISitemapManager, SitemapManager>();
+        services.AddSingleton<IShellRouteValuesAddressScheme, SitemapValuesAddressScheme>();
+        services.AddSingleton<SitemapRouteTransformer>();
 
-            services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
-            services.AddScoped<ISitemapHelperService, SitemapHelperService>();
-            services.AddScoped<ISitemapBuilder, DefaultSitemapBuilder>();
-            services.AddScoped<ISitemapTypeBuilder, SitemapTypeBuilder>();
-            services.AddScoped<ISitemapCacheProvider, DefaultSitemapCacheProvider>();
-            services.AddScoped<ISitemapUpdateHandler, DefaultSitemapUpdateHandler>();
-            services.AddScoped<ISitemapTypeUpdateHandler, SitemapTypeUpdateHandler>();
-            services.AddScoped<ISitemapTypeBuilder, SitemapIndexTypeBuilder>();
-            services.AddScoped<ISitemapTypeUpdateHandler, SitemapIndexTypeUpdateHandler>();
-            services.AddScoped<ISitemapModifiedDateProvider, DefaultSitemapModifiedDateProvider>();
-            services.AddScoped<IRouteableContentTypeCoordinator, DefaultRouteableContentTypeCoordinator>();
+        services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
+        services.AddScoped<ISitemapHelperService, SitemapHelperService>();
+        services.AddScoped<ISitemapBuilder, DefaultSitemapBuilder>();
+        services.AddScoped<ISitemapTypeBuilder, SitemapTypeBuilder>();
+        services.AddScoped<ISitemapCacheProvider, DefaultSitemapCacheProvider>();
+        services.AddScoped<ISitemapUpdateHandler, DefaultSitemapUpdateHandler>();
+        services.AddScoped<ISitemapTypeUpdateHandler, SitemapTypeUpdateHandler>();
+        services.AddScoped<ISitemapTypeBuilder, SitemapIndexTypeBuilder>();
+        services.AddScoped<ISitemapTypeUpdateHandler, SitemapIndexTypeUpdateHandler>();
+        services.AddScoped<ISitemapModifiedDateProvider, DefaultSitemapModifiedDateProvider>();
+        services.AddScoped<IRouteableContentTypeCoordinator, DefaultRouteableContentTypeCoordinator>();
 
-            // Sitemap Part.
-            services.AddContentPart<SitemapPart>()
-                .UseDisplayDriver<SitemapPartDisplayDriver>()
-                .AddHandler<SitemapPartHandler>();
+        // Sitemap Part.
+        services.AddContentPart<SitemapPart>()
+            .UseDisplayDriver<SitemapPartDisplayDriver>()
+            .AddHandler<SitemapPartHandler>();
 
-            // Custom sitemap path.
-            services.AddScoped<ISitemapSourceBuilder, CustomPathSitemapSourceBuilder>();
-            services.AddScoped<ISitemapSourceUpdateHandler, CustomPathSitemapSourceUpdateHandler>();
-            services.AddScoped<ISitemapSourceModifiedDateProvider, CustomPathSitemapSourceModifiedDateProvider>();
-            services.AddScoped<IDisplayDriver<SitemapSource>, CustomPathSitemapSourceDriver>();
-            services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<CustomPathSitemapSource>>();
+        // Custom sitemap path.
+        services.AddScoped<ISitemapSourceBuilder, CustomPathSitemapSourceBuilder>();
+        services.AddScoped<ISitemapSourceUpdateHandler, CustomPathSitemapSourceUpdateHandler>();
+        services.AddScoped<ISitemapSourceModifiedDateProvider, CustomPathSitemapSourceModifiedDateProvider>();
+        services.AddScoped<IDisplayDriver<SitemapSource>, CustomPathSitemapSourceDriver>();
+        services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<CustomPathSitemapSource>>();
 
-            services.AddRecipeExecutionStep<SitemapsStep>();
+        services.AddRecipeExecutionStep<SitemapsStep>();
 
-            // Allows to serialize 'SitemapType' derived types.
-            services.AddJsonDerivedTypeInfo<Sitemap, SitemapType>();
-            services.AddJsonDerivedTypeInfo<SitemapIndex, SitemapType>();
+        // Allows to serialize 'SitemapType' derived types.
+        services.AddJsonDerivedTypeInfo<Sitemap, SitemapType>();
+        services.AddJsonDerivedTypeInfo<SitemapIndex, SitemapType>();
 
-            // Allows to serialize 'SitemapSource' derived types.
-            services.AddJsonDerivedTypeInfo<ContentTypesSitemapSource, SitemapSource>();
-            services.AddJsonDerivedTypeInfo<CustomPathSitemapSource, SitemapSource>();
-            services.AddJsonDerivedTypeInfo<SitemapIndexSource, SitemapSource>();
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapDynamicControllerRoute<SitemapRouteTransformer>("/{**sitemap}");
-        }
+        // Allows to serialize 'SitemapSource' derived types.
+        services.AddJsonDerivedTypeInfo<ContentTypesSitemapSource, SitemapSource>();
+        services.AddJsonDerivedTypeInfo<CustomPathSitemapSource, SitemapSource>();
+        services.AddJsonDerivedTypeInfo<SitemapIndexSource, SitemapSource>();
     }
 
-    [Feature("OrchardCore.Sitemaps.RazorPages")]
-    public sealed class SitemapsRazorPagesStartup : StartupBase
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddOptions<SitemapsRazorPagesOptions>();
-            services.AddScoped<IRouteableContentTypeProvider, RazorPagesContentTypeProvider>();
-        }
+        routes.MapDynamicControllerRoute<SitemapRouteTransformer>("/{**sitemap}");
     }
+}
 
-    [Feature("OrchardCore.Sitemaps.Cleanup")]
-    public sealed class SitemapsCleanupStartup : StartupBase
+[Feature("OrchardCore.Sitemaps.RazorPages")]
+public sealed class SitemapsRazorPagesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSingleton<IBackgroundTask, SitemapCacheBackgroundTask>();
-        }
+        services.AddOptions<SitemapsRazorPagesOptions>();
+        services.AddScoped<IRouteableContentTypeProvider, RazorPagesContentTypeProvider>();
     }
+}
 
-    [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Sitemaps")]
-    public sealed class SitemapsDeploymentStartup : StartupBase
+[Feature("OrchardCore.Sitemaps.Cleanup")]
+public sealed class SitemapsCleanupStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDeployment<AllSitemapsDeploymentSource, AllSitemapsDeploymentStep, AllSitemapsDeploymentStepDriver>();
-        }
+        services.AddSingleton<IBackgroundTask, SitemapCacheBackgroundTask>();
     }
+}
 
-    [RequireFeatures("OrchardCore.Seo")]
-    public sealed class SeoStartup : StartupBase
+[RequireFeatures("OrchardCore.Deployment", "OrchardCore.Sitemaps")]
+public sealed class SitemapsDeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTransient<IRobotsProvider, SitemapsRobotsProvider>();
-            services.AddScoped<IDisplayDriver<ISite>, SitemapsRobotsSettingsDisplayDriver>();
-        }
+        services.AddDeployment<AllSitemapsDeploymentSource, AllSitemapsDeploymentStep, AllSitemapsDeploymentStepDriver>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Seo")]
+public sealed class SeoStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddTransient<IRobotsProvider, SitemapsRobotsProvider>();
+        services.AddSiteDisplayDriver<SitemapsRobotsSettingsDisplayDriver>();
     }
 }

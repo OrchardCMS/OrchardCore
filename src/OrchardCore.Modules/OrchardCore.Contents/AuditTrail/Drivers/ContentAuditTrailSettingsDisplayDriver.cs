@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.AuditTrail;
@@ -10,52 +9,51 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Contents.AuditTrail.Drivers
+namespace OrchardCore.Contents.AuditTrail.Drivers;
+
+public sealed class ContentAuditTrailSettingsDisplayDriver : SiteDisplayDriver<ContentAuditTrailSettings>
 {
-    public sealed class ContentAuditTrailSettingsDisplayDriver : SiteDisplayDriver<ContentAuditTrailSettings>
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+
+    public ContentAuditTrailSettingsDisplayDriver(
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService)
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+    }
 
-        public ContentAuditTrailSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+    protected override string SettingsGroupId
+        => AuditTrailSettingsGroup.Id;
+
+    public override async Task<IDisplayResult> EditAsync(ISite site, ContentAuditTrailSettings section, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
         {
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
+            return null;
         }
 
-        protected override string SettingsGroupId
-            => AuditTrailSettingsGroup.Id;
-
-        public override async Task<IDisplayResult> EditAsync(ISite site, ContentAuditTrailSettings section, BuildEditorContext context)
+        return Initialize<ContentAuditTrailSettingsViewModel>("ContentAuditTrailSettings_Edit", model =>
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
-            {
-                return null;
-            }
+            model.AllowedContentTypes = section.AllowedContentTypes;
+        }).Location("Content:10#Content;5")
+        .OnGroup(SettingsGroupId);
+    }
 
-            return Initialize<ContentAuditTrailSettingsViewModel>("ContentAuditTrailSettings_Edit", model =>
-            {
-                model.AllowedContentTypes = section.AllowedContentTypes;
-            }).Location("Content:10#Content;5")
-            .OnGroup(SettingsGroupId);
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, ContentAuditTrailSettings section, UpdateEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
+        {
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ISite site, ContentAuditTrailSettings section, UpdateEditorContext context)
-        {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
-            {
-                return null;
-            }
+        var model = new ContentAuditTrailSettings();
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+        section.AllowedContentTypes = model.AllowedContentTypes;
 
-            var model = new ContentAuditTrailSettings();
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
-            section.AllowedContentTypes = model.AllowedContentTypes;
-
-            return await EditAsync(site, section, context);
-        }
+        return await EditAsync(site, section, context);
     }
 }

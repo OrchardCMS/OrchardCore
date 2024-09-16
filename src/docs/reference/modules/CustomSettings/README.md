@@ -42,7 +42,7 @@ Here is an example of getting the `HtmlBodyPart` of a custom settings section na
     These types may be modified in the CMS. It's important to make sure these types will not be modified outside of the development cycle when consuming them in code.
 
 ```csharp
-public class MyController : Controller
+public sealed class MyController : Controller
 {
     private readonly ISiteService _siteService;
     public MyController(ISiteService siteService)

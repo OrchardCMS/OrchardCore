@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Hosting;
 using NLog;
 using NLog.Web;
-using OrchardCore.Abstractions.Setup;
 
 namespace OrchardCore.Logging;
 

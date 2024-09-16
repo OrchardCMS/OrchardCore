@@ -1,41 +1,38 @@
-using System;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Shortcodes.Models;
 using OrchardCore.Shortcodes.Services;
 
-namespace OrchardCore.Shortcodes.Recipes
-{
-    /// <summary>
-    /// This recipe step creates a set of shortcodes.
-    /// </summary>
-    public sealed class ShortcodeTemplateStep : IRecipeStepHandler
-    {
-        private readonly ShortcodeTemplatesManager _templatesManager;
+namespace OrchardCore.Shortcodes.Recipes;
 
-        public ShortcodeTemplateStep(ShortcodeTemplatesManager templatesManager)
+/// <summary>
+/// This recipe step creates a set of shortcodes.
+/// </summary>
+public sealed class ShortcodeTemplateStep : IRecipeStepHandler
+{
+    private readonly ShortcodeTemplatesManager _templatesManager;
+
+    public ShortcodeTemplateStep(ShortcodeTemplatesManager templatesManager)
+    {
+        _templatesManager = templatesManager;
+    }
+
+    public async Task ExecuteAsync(RecipeExecutionContext context)
+    {
+        if (!string.Equals(context.Name, "ShortcodeTemplates", StringComparison.OrdinalIgnoreCase))
         {
-            _templatesManager = templatesManager;
+            return;
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        if (context.Step.TryGetPropertyValue("ShortcodeTemplates", out var jsonNode) && jsonNode is JsonObject templates)
         {
-            if (!string.Equals(context.Name, "ShortcodeTemplates", StringComparison.OrdinalIgnoreCase))
+            foreach (var property in templates)
             {
-                return;
-            }
+                var name = property.Key;
+                var value = property.Value.ToObject<ShortcodeTemplate>();
 
-            if (context.Step.TryGetPropertyValue("ShortcodeTemplates", out var jsonNode) && jsonNode is JsonObject templates)
-            {
-                foreach (var property in templates)
-                {
-                    var name = property.Key;
-                    var value = property.Value.ToObject<ShortcodeTemplate>();
-
-                    await _templatesManager.UpdateShortcodeTemplateAsync(name, value);
-                }
+                await _templatesManager.UpdateShortcodeTemplateAsync(name, value);
             }
         }
     }

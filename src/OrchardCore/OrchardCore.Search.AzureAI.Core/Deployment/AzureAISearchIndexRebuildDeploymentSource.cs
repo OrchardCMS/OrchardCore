@@ -1,5 +1,4 @@
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.AzureAI.Deployment;

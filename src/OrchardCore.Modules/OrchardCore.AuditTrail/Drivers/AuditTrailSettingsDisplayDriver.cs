@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.AuditTrail.Services;
@@ -11,108 +8,107 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 
-namespace OrchardCore.AuditTrail.Drivers
-{
-    public sealed class AuditTrailSettingsDisplayDriver : SiteDisplayDriver<AuditTrailSettings>
-    {
-        private readonly IAuditTrailManager _auditTrailManager;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IServiceProvider _serviceProvider;
+namespace OrchardCore.AuditTrail.Drivers;
 
-        public AuditTrailSettingsDisplayDriver(
-            IAuditTrailManager auditTrailManager,
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService,
-            IServiceProvider serviceProvider)
+public sealed class AuditTrailSettingsDisplayDriver : SiteDisplayDriver<AuditTrailSettings>
+{
+    private readonly IAuditTrailManager _auditTrailManager;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IServiceProvider _serviceProvider;
+
+    public AuditTrailSettingsDisplayDriver(
+        IAuditTrailManager auditTrailManager,
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService,
+        IServiceProvider serviceProvider)
+    {
+        _auditTrailManager = auditTrailManager;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+        _serviceProvider = serviceProvider;
+    }
+
+    protected override string SettingsGroupId
+        => AuditTrailSettingsGroup.Id;
+
+    public override async Task<IDisplayResult> EditAsync(ISite site, AuditTrailSettings settings, BuildEditorContext context)
+    {
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings))
         {
-            _auditTrailManager = auditTrailManager;
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
-            _serviceProvider = serviceProvider;
+            return null;
         }
 
-        protected override string SettingsGroupId
-            => AuditTrailSettingsGroup.Id;
-
-        public override async Task<IDisplayResult> EditAsync(ISite site, AuditTrailSettings settings, BuildEditorContext context)
+        return Initialize<AuditTrailSettingsViewModel>("AuditTrailSettings_Edit", model =>
         {
-            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings))
-            {
-                return null;
-            }
+            var categories = _auditTrailManager.DescribeCategories();
 
-            return Initialize<AuditTrailSettingsViewModel>("AuditTrailSettings_Edit", model =>
-            {
-                var categories = _auditTrailManager.DescribeCategories();
+            var settingsGroups = settings.Categories
+                .ToLookup(category => category.Events
+                .FirstOrDefault()?.Category ?? "");
 
-                var settingsGroups = settings.Categories
-                    .ToLookup(category => category.Events
-                    .FirstOrDefault()?.Category ?? "");
+            var categoriesViewModel = categories
+                .Select(category => new AuditTrailCategorySettingsViewModel()
+                {
+                    Name = category.Name,
+                    LocalizedName = category.LocalizedName(_serviceProvider),
+                    Events = category.Events.Values
+                        .Select(auditTrailEvent =>
+                        {
+                            var settings = settingsGroups[auditTrailEvent.Category]
+                                .FirstOrDefault()?.Events
+                                .FirstOrDefault(settings => settings.Name == auditTrailEvent.Name);
 
-                var categoriesViewModel = categories
-                    .Select(category => new AuditTrailCategorySettingsViewModel()
-                    {
-                        Name = category.Name,
-                        LocalizedName = category.LocalizedName(_serviceProvider),
-                        Events = category.Events.Values
-                            .Select(auditTrailEvent =>
+                            return new AuditTrailEventSettingsViewModel()
                             {
-                                var settings = settingsGroups[auditTrailEvent.Category]
-                                    .FirstOrDefault()?.Events
-                                    .FirstOrDefault(settings => settings.Name == auditTrailEvent.Name);
+                                Name = auditTrailEvent.Name,
+                                Category = auditTrailEvent.Category,
+                                LocalizedName = auditTrailEvent.LocalizedName(_serviceProvider),
+                                Description = auditTrailEvent.Description(_serviceProvider),
+                                IsEnabled = auditTrailEvent.IsMandatory || (settings?.IsEnabled ?? auditTrailEvent.IsEnabledByDefault),
+                                IsMandatory = auditTrailEvent.IsMandatory
+                            };
+                        })
+                    .ToArray()
+                })
+            .ToArray();
 
-                                return new AuditTrailEventSettingsViewModel()
-                                {
-                                    Name = auditTrailEvent.Name,
-                                    Category = auditTrailEvent.Category,
-                                    LocalizedName = auditTrailEvent.LocalizedName(_serviceProvider),
-                                    Description = auditTrailEvent.Description(_serviceProvider),
-                                    IsEnabled = auditTrailEvent.IsMandatory || (settings?.IsEnabled ?? auditTrailEvent.IsEnabledByDefault),
-                                    IsMandatory = auditTrailEvent.IsMandatory
-                                };
-                            })
+            model.Categories = categoriesViewModel;
+            model.ClientIpAddressAllowed = settings.ClientIpAddressAllowed;
+        }).Location("Content:1#Events")
+        .OnGroup(SettingsGroupId);
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, AuditTrailSettings settings, UpdateEditorContext context)
+    {
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings))
+        {
+            return null;
+        }
+
+        if (context.GroupId == AuditTrailSettingsGroup.Id)
+        {
+            var model = new AuditTrailSettingsViewModel();
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            settings.Categories = model.Categories
+                .Select(categorySettings => new AuditTrailCategorySettings()
+                {
+                    Name = categorySettings.Name,
+                    Events = categorySettings.Events
+                        .Select(settings => new AuditTrailEventSettings()
+                        {
+                            Name = settings.Name,
+                            Category = settings.Category,
+                            IsEnabled = settings.IsEnabled
+                        })
                         .ToArray()
-                    })
+                })
                 .ToArray();
 
-                model.Categories = categoriesViewModel;
-                model.ClientIpAddressAllowed = settings.ClientIpAddressAllowed;
-            }).Location("Content:1#Events")
-            .OnGroup(SettingsGroupId);
+            settings.ClientIpAddressAllowed = model.ClientIpAddressAllowed;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ISite site, AuditTrailSettings settings, UpdateEditorContext context)
-        {
-            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings))
-            {
-                return null;
-            }
-
-            if (context.GroupId == AuditTrailSettingsGroup.Id)
-            {
-                var model = new AuditTrailSettingsViewModel();
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                settings.Categories = model.Categories
-                    .Select(categorySettings => new AuditTrailCategorySettings()
-                    {
-                        Name = categorySettings.Name,
-                        Events = categorySettings.Events
-                            .Select(settings => new AuditTrailEventSettings()
-                            {
-                                Name = settings.Name,
-                                Category = settings.Category,
-                                IsEnabled = settings.IsEnabled
-                            })
-                            .ToArray()
-                    })
-                    .ToArray();
-
-                settings.ClientIpAddressAllowed = model.ClientIpAddressAllowed;
-            }
-
-            return await EditAsync(site, settings, context);
-        }
+        return await EditAsync(site, settings, context);
     }
 }

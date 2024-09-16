@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace OrchardCore.Admin.Controllers
+namespace OrchardCore.Admin.Controllers;
+
+[Authorize]
+public sealed class AdminController : Controller
 {
-    [Authorize]
-    public class AdminController : Controller
+    public IActionResult Index()
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
+        return View();
     }
 }

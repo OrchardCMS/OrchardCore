@@ -1,8 +1,5 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -10,7 +7,6 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 using OrchardCore.Sms.ViewModels;
 
@@ -70,18 +66,11 @@ public sealed class SmsSettingsDisplayDriver : SiteDisplayDriver<SmsSettings>
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        if (string.IsNullOrEmpty(model.DefaultProvider))
+        if (settings.DefaultProviderName != model.DefaultProvider)
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.DefaultProvider), S["You must select a default provider."]);
-        }
-        else
-        {
-            if (settings.DefaultProviderName != model.DefaultProvider)
-            {
-                settings.DefaultProviderName = model.DefaultProvider;
+            settings.DefaultProviderName = model.DefaultProvider;
 
-                _shellReleaseManager.RequestRelease();
-            }
+            _shellReleaseManager.RequestRelease();
         }
 
         return Edit(site, settings, context);

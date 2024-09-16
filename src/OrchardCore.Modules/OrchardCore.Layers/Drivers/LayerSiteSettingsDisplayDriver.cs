@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
@@ -9,60 +7,59 @@ using OrchardCore.Layers.Models;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Layers.Drivers
+namespace OrchardCore.Layers.Drivers;
+
+public sealed class LayerSiteSettingsDisplayDriver : SiteDisplayDriver<LayerSettings>
 {
-    public sealed class LayerSiteSettingsDisplayDriver : SiteDisplayDriver<LayerSettings>
+    public const string GroupId = "zones";
+
+    private static readonly char[] _separator = [' ', ','];
+
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+
+    public LayerSiteSettingsDisplayDriver(
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService)
     {
-        public const string GroupId = "zones";
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+    }
 
-        private static readonly char[] _separator = [' ', ','];
+    protected override string SettingsGroupId
+        => GroupId;
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
+    public override async Task<IDisplayResult> EditAsync(ISite site, LayerSettings settings, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
 
-        public LayerSiteSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLayers))
         {
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
+            return null;
         }
 
-        protected override string SettingsGroupId
-            => GroupId;
-
-        public override async Task<IDisplayResult> EditAsync(ISite site, LayerSettings settings, BuildEditorContext context)
+        return Initialize<LayerSettingsViewModel>("LayerSettings_Edit", model =>
         {
-            var user = _httpContextAccessor.HttpContext?.User;
+            model.Zones = string.Join(", ", settings.Zones);
+        }).Location("Content:3")
+        .OnGroup(SettingsGroupId);
+    }
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLayers))
-            {
-                return null;
-            }
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, LayerSettings settings, UpdateEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
 
-            return Initialize<LayerSettingsViewModel>("LayerSettings_Edit", model =>
-            {
-                model.Zones = string.Join(", ", settings.Zones);
-            }).Location("Content:3")
-            .OnGroup(SettingsGroupId);
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLayers))
+        {
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ISite site, LayerSettings settings, UpdateEditorContext context)
-        {
-            var user = _httpContextAccessor.HttpContext?.User;
+        var model = new LayerSettingsViewModel();
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLayers))
-            {
-                return null;
-            }
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            var model = new LayerSettingsViewModel();
+        settings.Zones = (model.Zones ?? string.Empty).Split(_separator, StringSplitOptions.RemoveEmptyEntries);
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-            settings.Zones = (model.Zones ?? string.Empty).Split(_separator, StringSplitOptions.RemoveEmptyEntries);
-
-            return await EditAsync(site, settings, context);
-        }
+        return await EditAsync(site, settings, context);
     }
 }

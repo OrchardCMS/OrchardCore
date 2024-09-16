@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
 using OrchardCore.ContentLocalization;

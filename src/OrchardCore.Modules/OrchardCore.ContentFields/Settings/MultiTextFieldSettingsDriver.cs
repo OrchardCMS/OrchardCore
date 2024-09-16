@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
@@ -8,51 +7,50 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentFields.Settings
+namespace OrchardCore.ContentFields.Settings;
+
+public sealed class MultiTextFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MultiTextField>
 {
-    public sealed class MultiTextFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MultiTextField>
+    internal readonly IStringLocalizer S;
+
+    public MultiTextFieldSettingsDriver(IStringLocalizer<MultiTextFieldSettingsDriver> localizer)
     {
-        internal readonly IStringLocalizer S;
+        S = localizer;
+    }
 
-        public MultiTextFieldSettingsDriver(IStringLocalizer<MultiTextFieldSettingsDriver> localizer)
+    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+    {
+        return Initialize<MultiTextFieldSettingsViewModel>("MultiTextFieldSettings_Edit", model =>
         {
-            S = localizer;
+            var settings = partFieldDefinition.GetSettings<MultiTextFieldSettings>();
+
+            model.Required = settings.Required;
+            model.Hint = settings.Hint;
+            model.Options = JConvert.SerializeObject(settings.Options, JOptions.Indented);
+        }).Location("Content");
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+    {
+        var model = new MultiTextFieldSettingsViewModel();
+        var settings = new MultiTextFieldSettings();
+
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        settings.Required = model.Required;
+        settings.Hint = model.Hint;
+
+        try
+        {
+            settings.Options = JConvert.DeserializeObject<MultiTextFieldValueOption[]>(model.Options);
+
+            context.Builder.WithSettings(settings);
+        }
+        catch
+        {
+            context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
         }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
-        {
-            return Initialize<MultiTextFieldSettingsViewModel>("MultiTextFieldSettings_Edit", model =>
-            {
-                var settings = partFieldDefinition.GetSettings<MultiTextFieldSettings>();
-
-                model.Required = settings.Required;
-                model.Hint = settings.Hint;
-                model.Options = JConvert.SerializeObject(settings.Options, JOptions.Indented);
-            }).Location("Content");
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
-        {
-            var model = new MultiTextFieldSettingsViewModel();
-            var settings = new MultiTextFieldSettings();
-
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-            settings.Required = model.Required;
-            settings.Hint = model.Hint;
-
-            try
-            {
-                settings.Options = JConvert.DeserializeObject<MultiTextFieldValueOption[]>(model.Options);
-
-                context.Builder.WithSettings(settings);
-            }
-            catch
-            {
-                context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
-            }
-
-            return Edit(partFieldDefinition, context);
-        }
+        return Edit(partFieldDefinition, context);
     }
 }

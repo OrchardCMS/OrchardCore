@@ -1,7 +1,6 @@
-namespace OrchardCore.Features.ViewModels
+namespace OrchardCore.Features.ViewModels;
+
+public class AllFeaturesDeploymentStepViewModel
 {
-    public class AllFeaturesDeploymentStepViewModel
-    {
-        public bool IgnoreDisabledFeatures { get; set; }
-    }
+    public bool IgnoreDisabledFeatures { get; set; }
 }

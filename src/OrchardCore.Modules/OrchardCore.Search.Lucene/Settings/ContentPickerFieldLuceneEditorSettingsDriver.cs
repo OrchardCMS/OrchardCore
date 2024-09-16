@@ -1,51 +1,47 @@
-using System;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Search.Lucene.Settings
+namespace OrchardCore.Search.Lucene.Settings;
+
+public sealed class ContentPickerFieldLuceneEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver
 {
-    public sealed class ContentPickerFieldLuceneEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver
+    private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
+
+    public ContentPickerFieldLuceneEditorSettingsDriver(LuceneIndexSettingsService luceneIndexSettingsService)
     {
-        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
+        _luceneIndexSettingsService = luceneIndexSettingsService;
+    }
 
-        public ContentPickerFieldLuceneEditorSettingsDriver(LuceneIndexSettingsService luceneIndexSettingsService)
+    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+    {
+        return Initialize<ContentPickerFieldLuceneEditorSettings>("ContentPickerFieldLuceneEditorSettings_Edit", async model =>
         {
-            _luceneIndexSettingsService = luceneIndexSettingsService;
+            var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldLuceneEditorSettings>();
+
+            model.Index = settings.Index;
+            model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
+        }).Location("Editor");
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+    {
+        if (partFieldDefinition.Editor() == "Lucene")
+        {
+            var model = new ContentPickerFieldLuceneEditorSettings();
+
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            context.Builder.WithSettings(model);
         }
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
-        {
-            return Initialize<ContentPickerFieldLuceneEditorSettings>("ContentPickerFieldLuceneEditorSettings_Edit", async model =>
-            {
-                var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldLuceneEditorSettings>();
+        return Edit(partFieldDefinition, context);
+    }
 
-                model.Index = settings.Index;
-                model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-            }).Location("Editor");
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
-        {
-            if (partFieldDefinition.Editor() == "Lucene")
-            {
-                var model = new ContentPickerFieldLuceneEditorSettings();
-
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                context.Builder.WithSettings(model);
-            }
-
-            return Edit(partFieldDefinition, context);
-        }
-
-        public override bool CanHandleModel(ContentPartFieldDefinition model)
-        {
-            return string.Equals("ContentPickerField", model.FieldDefinition.Name, StringComparison.Ordinal);
-        }
+    public override bool CanHandleModel(ContentPartFieldDefinition model)
+    {
+        return string.Equals("ContentPickerField", model.FieldDefinition.Name, StringComparison.Ordinal);
     }
 }

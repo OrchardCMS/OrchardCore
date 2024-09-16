@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.AdminDashboard.Indexes;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -7,61 +6,60 @@ using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
 using YesSql.Sql;
 
-namespace OrchardCore.AdminDashboard
+namespace OrchardCore.AdminDashboard;
+
+public sealed class Migrations : DataMigration
 {
-    public sealed class Migrations : DataMigration
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IRecipeMigrator _recipeMigrator;
+
+    public Migrations(
+        IContentDefinitionManager contentDefinitionManager,
+        IRecipeMigrator recipeMigrator)
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IRecipeMigrator _recipeMigrator;
+        _contentDefinitionManager = contentDefinitionManager;
+        _recipeMigrator = recipeMigrator;
+    }
 
-        public Migrations(
-            IContentDefinitionManager contentDefinitionManager,
-            IRecipeMigrator recipeMigrator)
-        {
-            _contentDefinitionManager = contentDefinitionManager;
-            _recipeMigrator = recipeMigrator;
-        }
+    public async Task<int> CreateAsync()
+    {
+        await SchemaBuilder.CreateMapIndexTableAsync<DashboardPartIndex>(table => table
+           .Column<double>("Position")
+        );
 
-        public async Task<int> CreateAsync()
-        {
-            await SchemaBuilder.CreateMapIndexTableAsync<DashboardPartIndex>(table => table
-               .Column<double>("Position")
+        await SchemaBuilder.AlterIndexTableAsync<DashboardPartIndex>(table => table
+            .CreateIndex("IDX_DashboardPart_DocumentId",
+                "DocumentId",
+                "Position")
+        );
+
+        await _contentDefinitionManager.AlterPartDefinitionAsync("DashboardPart", builder => builder
+            .Attachable()
+            .WithDescription("Provides a way to add widgets to a dashboard.")
             );
 
-            await SchemaBuilder.AlterIndexTableAsync<DashboardPartIndex>(table => table
-                .CreateIndex("IDX_DashboardPart_DocumentId",
-                    "DocumentId",
-                    "Position")
-            );
+        await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
 
-            await _contentDefinitionManager.AlterPartDefinitionAsync("DashboardPart", builder => builder
-                .Attachable()
-                .WithDescription("Provides a way to add widgets to a dashboard.")
-                );
+        // Shortcut other migration steps on new content definition schemas.
+        return 3;
+    }
 
-            await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
+    public async Task<int> UpdateFrom1Async()
+    {
+        await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
 
-            // Shortcut other migration steps on new content definition schemas.
-            return 3;
-        }
+        return 2;
+    }
 
-        public async Task<int> UpdateFrom1Async()
-        {
-            await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
+    // This code can be removed in a later version.
+    public async Task<int> UpdateFrom2Async()
+    {
+        await SchemaBuilder.AlterIndexTableAsync<DashboardPartIndex>(table => table
+            .CreateIndex("IDX_DashboardPart_DocumentId",
+                "DocumentId",
+                "Position")
+        );
 
-            return 2;
-        }
-
-        // This code can be removed in a later version.
-        public async Task<int> UpdateFrom2Async()
-        {
-            await SchemaBuilder.AlterIndexTableAsync<DashboardPartIndex>(table => table
-                .CreateIndex("IDX_DashboardPart_DocumentId",
-                    "DocumentId",
-                    "Position")
-            );
-
-            return 3;
-        }
+        return 3;
     }
 }

@@ -1,3 +1,5 @@
+@using OrchardCore.Tenants.Controllers
+
 @model EditTenantViewModel
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Create Tenant"])</h1></zone>
@@ -21,7 +23,8 @@
     <partial name="_TenantFeatureProfile" model="Model" />
 
     <div class="mb-3">
-        <button class="btn btn-primary create" type="submit">@T["Create"]</button>
+        <button class="btn btn-primary create" type="submit" name="action" value="create">@T["Create"]</button>
+        <button class="btn btn-primary" type="submit" name="action" value="@AdminController.CreateAndSetupValue">@T["Create &amp; Setup"]</button>
         <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
     </div>
 </form>

@@ -5,16 +5,15 @@ using OrchardCore.Users.Models;
 using OrchardCore.Users.TimeZone.Drivers;
 using OrchardCore.Users.TimeZone.Services;
 
-namespace OrchardCore.Users.TimeZone
+namespace OrchardCore.Users.TimeZone;
+
+[Feature("OrchardCore.Users.TimeZone")]
+public sealed class Startup : StartupBase
 {
-    [Feature("OrchardCore.Users.TimeZone")]
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<ITimeZoneSelector, UserTimeZoneSelector>();
-            services.AddSingleton<UserTimeZoneService>();
-            services.AddScoped<IDisplayDriver<User>, UserTimeZoneDisplayDriver>();
-        }
+        services.AddScoped<ITimeZoneSelector, UserTimeZoneSelector>();
+        services.AddScoped<IUserTimeZoneService, UserTimeZoneService>();
+        services.AddScoped<IDisplayDriver<User>, UserTimeZoneDisplayDriver>();
     }
 }

@@ -1,71 +1,74 @@
-using System.Collections.Generic;
 using System.Text;
 
-namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
+namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
+
+/// <summary>
+/// A sequence of logical <see cref="IPredicate" />s combined by some associative
+/// logical operator.
+/// </summary>
+public abstract class Junction : IPredicate
 {
+    private readonly List<IPredicate> _predicates = [];
+
     /// <summary>
-    /// A sequence of logical <see cref="IPredicate" />s combined by some associative
-    /// logical operator.
+    /// Get the Sql operator to put between multiple <see cref="IPredicate" />s.
     /// </summary>
-    public abstract class Junction : IPredicate
+    protected abstract string Operation { get; }
+
+    /// <summary>
+    /// The <see cref="string" /> corresponding to an instance with no added sub-criteria.
+    /// </summary>
+    protected abstract string EmptyExpression { get; }
+
+    public void SearchUsedAlias(IPredicateQuery predicateQuery)
     {
-        private readonly List<IPredicate> _predicates = [];
-
-        /// <summary>
-        /// Get the Sql operator to put between multiple <see cref="IPredicate" />s.
-        /// </summary>
-        protected abstract string Operation { get; }
-
-        /// <summary>
-        /// The <see cref="string" /> corresponding to an instance with no added sub-criteria.
-        /// </summary>
-        protected abstract string EmptyExpression { get; }
-
-        public void SearchUsedAlias(IPredicateQuery predicateQuery)
+        if (_predicates.Count == 0)
         {
-            if (_predicates.Count == 0) return;
-
-
-            for (var i = 0; i < _predicates.Count; i++)
-            {
-                _predicates[i].SearchUsedAlias(predicateQuery);
-            }
-
+            return;
         }
 
-        public string ToSqlString(IPredicateQuery predicateQuery)
+        for (var i = 0; i < _predicates.Count; i++)
         {
-            if (_predicates.Count == 0) return EmptyExpression;
-
-            var sqlBuilder = new StringBuilder();
-
-            sqlBuilder.Append('(');
-
-            for (var i = 0; i < _predicates.Count - 1; i++)
-            {
-                sqlBuilder.Append(_predicates[i].ToSqlString(predicateQuery));
-                sqlBuilder.Append(Operation);
-            }
-
-            sqlBuilder.Append(_predicates[_predicates.Count - 1].ToSqlString(predicateQuery));
-
-            sqlBuilder.Append(')');
-
-            return sqlBuilder.ToString();
+            _predicates[i].SearchUsedAlias(predicateQuery);
         }
 
-        /// <summary>
-        /// Adds an <see cref="IPredicate" /> to the list of <see cref="IPredicate" />s
-        /// to junction together.
-        /// </summary>
-        /// <param name="predicate">The <see cref="IPredicate" /> to add.</param>
-        /// <returns>
-        /// This <see cref="Junction" /> instance.
-        /// </returns>
-        public Junction Add(IPredicate predicate)
+    }
+
+    public string ToSqlString(IPredicateQuery predicateQuery)
+    {
+        if (_predicates.Count == 0)
         {
-            _predicates.Add(predicate);
-            return this;
+            return EmptyExpression;
         }
+
+        var sqlBuilder = new StringBuilder();
+
+        sqlBuilder.Append('(');
+
+        for (var i = 0; i < _predicates.Count - 1; i++)
+        {
+            sqlBuilder.Append(_predicates[i].ToSqlString(predicateQuery));
+            sqlBuilder.Append(Operation);
+        }
+
+        sqlBuilder.Append(_predicates[_predicates.Count - 1].ToSqlString(predicateQuery));
+
+        sqlBuilder.Append(')');
+
+        return sqlBuilder.ToString();
+    }
+
+    /// <summary>
+    /// Adds an <see cref="IPredicate" /> to the list of <see cref="IPredicate" />s
+    /// to junction together.
+    /// </summary>
+    /// <param name="predicate">The <see cref="IPredicate" /> to add.</param>
+    /// <returns>
+    /// This <see cref="Junction" /> instance.
+    /// </returns>
+    public Junction Add(IPredicate predicate)
+    {
+        _predicates.Add(predicate);
+        return this;
     }
 }

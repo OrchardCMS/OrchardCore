@@ -1,35 +1,33 @@
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Theming;
 
-namespace OrchardCore.Themes.Services
+namespace OrchardCore.Themes.Services;
+
+/// <summary>
+/// Provides the theme defined in the site configuration for the current scope (request).
+/// The same <see cref="ThemeSelectorResult"/> is returned if called multiple times
+/// during the same scope.
+/// </summary>
+public class SiteThemeSelector : IThemeSelector
 {
-    /// <summary>
-    /// Provides the theme defined in the site configuration for the current scope (request).
-    /// The same <see cref="ThemeSelectorResult"/> is returned if called multiple times
-    /// during the same scope.
-    /// </summary>
-    public class SiteThemeSelector : IThemeSelector
+    private readonly ISiteThemeService _siteThemeService;
+
+    public SiteThemeSelector(ISiteThemeService siteThemeService)
     {
-        private readonly ISiteThemeService _siteThemeService;
+        _siteThemeService = siteThemeService;
+    }
 
-        public SiteThemeSelector(ISiteThemeService siteThemeService)
+    public async Task<ThemeSelectorResult> GetThemeAsync()
+    {
+        var currentThemeName = await _siteThemeService.GetSiteThemeNameAsync();
+        if (string.IsNullOrEmpty(currentThemeName))
         {
-            _siteThemeService = siteThemeService;
+            return null;
         }
 
-        public async Task<ThemeSelectorResult> GetThemeAsync()
+        return new ThemeSelectorResult
         {
-            var currentThemeName = await _siteThemeService.GetSiteThemeNameAsync();
-            if (string.IsNullOrEmpty(currentThemeName))
-            {
-                return null;
-            }
-
-            return new ThemeSelectorResult
-            {
-                Priority = 0,
-                ThemeName = currentThemeName
-            };
-        }
+            Priority = 0,
+            ThemeName = currentThemeName
+        };
     }
 }

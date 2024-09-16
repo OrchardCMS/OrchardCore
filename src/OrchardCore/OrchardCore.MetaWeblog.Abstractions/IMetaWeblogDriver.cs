@@ -1,14 +1,12 @@
-using System;
 using OrchardCore.ContentManagement;
 using OrchardCore.XmlRpc;
 using OrchardCore.XmlRpc.Models;
 
-namespace OrchardCore.MetaWeblog
+namespace OrchardCore.MetaWeblog;
+
+public interface IMetaWeblogDriver
 {
-    public interface IMetaWeblogDriver
-    {
-        void SetCapabilities(Action<string, string> setCapability);
-        void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem);
-        void EditPost(XRpcStruct rpcStruct, ContentItem contentItem);
-    }
+    void SetCapabilities(Action<string, string> setCapability);
+    void BuildPost(XRpcStruct rpcStruct, XmlRpcContext context, ContentItem contentItem);
+    void EditPost(XRpcStruct rpcStruct, ContentItem contentItem);
 }

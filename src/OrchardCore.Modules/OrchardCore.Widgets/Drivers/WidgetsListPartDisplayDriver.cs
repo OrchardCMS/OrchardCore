@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -14,124 +10,123 @@ using OrchardCore.Widgets.Models;
 using OrchardCore.Widgets.Settings;
 using OrchardCore.Widgets.ViewModels;
 
-namespace OrchardCore.Widgets.Drivers
+namespace OrchardCore.Widgets.Drivers;
+
+public sealed class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<WidgetsListPart>
 {
-    public sealed class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<WidgetsListPart>
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IContentManager _contentManager;
+    private readonly IServiceProvider _serviceProvider;
+
+    public WidgetsListPartDisplayDriver(
+        IContentManager contentManager,
+        IContentDefinitionManager contentDefinitionManager,
+        IServiceProvider serviceProvider
+        )
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IContentManager _contentManager;
-        private readonly IServiceProvider _serviceProvider;
+        _contentDefinitionManager = contentDefinitionManager;
+        _contentManager = contentManager;
+        _serviceProvider = serviceProvider;
+    }
 
-        public WidgetsListPartDisplayDriver(
-            IContentManager contentManager,
-            IContentDefinitionManager contentDefinitionManager,
-            IServiceProvider serviceProvider
-            )
+    public override async Task<IDisplayResult> DisplayAsync(WidgetsListPart part, BuildPartDisplayContext context)
+    {
+        if (context.DisplayType != "Detail" || part.Widgets.Count == 0)
         {
-            _contentDefinitionManager = contentDefinitionManager;
-            _contentManager = contentManager;
-            _serviceProvider = serviceProvider;
-        }
-
-        public override async Task<IDisplayResult> DisplayAsync(WidgetsListPart part, BuildPartDisplayContext context)
-        {
-            if (context.DisplayType != "Detail" || part.Widgets.Count == 0)
-            {
-                return null;
-            }
-
-            var layout = context.Layout;
-            var layoutZones = layout.Zones;
-
-            var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
-
-            foreach (var zone in part.Widgets.Keys)
-            {
-                foreach (var widget in part.Widgets[zone])
-                {
-                    var layerMetadata = widget.As<WidgetMetadata>();
-
-                    if (layerMetadata != null)
-                    {
-                        var widgetContent = await contentItemDisplayManager.BuildDisplayAsync(widget, context.Updater);
-
-                        widgetContent.Classes.Add("widget");
-                        widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
-
-                        var contentZone = layoutZones[zone];
-                        await contentZone.AddAsync(widgetContent, "");
-                    }
-                }
-            }
-
             return null;
         }
 
-        public override IDisplayResult Edit(WidgetsListPart widgetPart, BuildPartEditorContext context)
+        var layout = context.Layout;
+        var layoutZones = layout.Zones;
+
+        var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
+
+        foreach (var zone in part.Widgets.Keys)
         {
-            return Initialize<WidgetsListPartEditViewModel>(GetEditorShapeType(context), async m =>
+            foreach (var widget in part.Widgets[zone])
             {
-                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(widgetPart.ContentItem.ContentType);
-                var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(WidgetsListPart));
-                var settings = contentTypePartDefinition.GetSettings<WidgetsListPartSettings>();
+                var layerMetadata = widget.As<WidgetMetadata>();
 
-                m.AvailableZones = settings.Zones;
+                if (layerMetadata != null)
+                {
+                    var widgetContent = await contentItemDisplayManager.BuildDisplayAsync(widget, context.Updater);
 
-                m.WidgetsListPart = widgetPart;
-                m.Updater = context.Updater;
-            });
+                    widgetContent.Classes.Add("widget");
+                    widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
+
+                    var contentZone = layoutZones[zone];
+                    await contentZone.AddAsync(widgetContent, "");
+                }
+            }
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(WidgetsListPart part, UpdatePartEditorContext context)
+        return null;
+    }
+
+    public override IDisplayResult Edit(WidgetsListPart widgetPart, BuildPartEditorContext context)
+    {
+        return Initialize<WidgetsListPartEditViewModel>(GetEditorShapeType(context), async m =>
         {
-            var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(widgetPart.ContentItem.ContentType);
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(WidgetsListPart));
+            var settings = contentTypePartDefinition.GetSettings<WidgetsListPartSettings>();
 
-            var model = new WidgetsListPartEditViewModel { WidgetsListPart = part };
+            m.AvailableZones = settings.Zones;
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            m.WidgetsListPart = widgetPart;
+            m.Updater = context.Updater;
+        });
+    }
 
-            var zonedContentItems = new Dictionary<string, List<ContentItem>>();
+    public override async Task<IDisplayResult> UpdateAsync(WidgetsListPart part, UpdatePartEditorContext context)
+    {
+        var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
 
-            // Remove any content or the zones would be merged and not be cleared.
-            part.Content.Remove("Widgets");
+        var model = new WidgetsListPartEditViewModel { WidgetsListPart = part };
 
-            for (var i = 0; i < model.Prefixes.Length; i++)
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        var zonedContentItems = new Dictionary<string, List<ContentItem>>();
+
+        // Remove any content or the zones would be merged and not be cleared.
+        part.Content.Remove("Widgets");
+
+        for (var i = 0; i < model.Prefixes.Length; i++)
+        {
+            var contentType = model.ContentTypes[i];
+            var zone = model.Zones[i];
+            var prefix = model.Prefixes[i];
+
+            var contentItem = await _contentManager.NewAsync(contentType);
+            if (part.Widgets.TryGetValue(zone, out var widgets))
             {
-                var contentType = model.ContentTypes[i];
-                var zone = model.Zones[i];
-                var prefix = model.Prefixes[i];
+                var existingContentItem = widgets.FirstOrDefault(x => string.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
 
-                var contentItem = await _contentManager.NewAsync(contentType);
-                if (part.Widgets.TryGetValue(zone, out var widgets))
+                // When the content item already exists merge its elements to reverse nested content item ids.
+                // All of the data for these merged items is then replaced by the model values on update, while a nested content item id is maintained.
+                // This prevents nested items which rely on the content item id, i.e. the media attached field, losing their reference point.
+                if (existingContentItem != null)
                 {
-                    var existingContentItem = widgets.FirstOrDefault(x => string.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
-
-                    // When the content item already exists merge its elements to reverse nested content item ids.
-                    // All of the data for these merged items is then replaced by the model values on update, while a nested content item id is maintained.
-                    // This prevents nested items which rely on the content item id, i.e. the media attached field, losing their reference point.
-                    if (existingContentItem != null)
-                    {
-                        contentItem.ContentItemId = model.ContentItems[i];
-                        contentItem.Merge(existingContentItem);
-                    }
+                    contentItem.ContentItemId = model.ContentItems[i];
+                    contentItem.Merge(existingContentItem);
                 }
-
-                contentItem.Weld(new WidgetMetadata());
-
-                var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: prefix);
-
-                if (!zonedContentItems.TryGetValue(zone, out var value))
-                {
-                    value = [];
-                    zonedContentItems.Add(zone, value);
-                }
-
-                value.Add(contentItem);
             }
 
-            part.Widgets = zonedContentItems;
+            contentItem.Weld(new WidgetMetadata());
 
-            return Edit(part, context);
+            var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: prefix);
+
+            if (!zonedContentItems.TryGetValue(zone, out var value))
+            {
+                value = [];
+                zonedContentItems.Add(zone, value);
+            }
+
+            value.Add(contentItem);
         }
+
+        part.Widgets = zonedContentItems;
+
+        return Edit(part, context);
     }
 }

@@ -1,4 +1,3 @@
-using System.IO;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Localization;

@@ -1,17 +1,16 @@
 using OrchardCore.Workflows.Display;
 
-namespace OrchardCore.Workflows.Timers
-{
-    public sealed class TimerEventDisplayDriver : ActivityDisplayDriver<TimerEvent, TimerEventViewModel>
-    {
-        protected override void EditActivity(TimerEvent source, TimerEventViewModel model)
-        {
-            model.CronExpression = source.CronExpression;
-        }
+namespace OrchardCore.Workflows.Timers;
 
-        protected override void UpdateActivity(TimerEventViewModel model, TimerEvent target)
-        {
-            target.CronExpression = model.CronExpression.Trim();
-        }
+public sealed class TimerEventDisplayDriver : ActivityDisplayDriver<TimerEvent, TimerEventViewModel>
+{
+    protected override void EditActivity(TimerEvent source, TimerEventViewModel model)
+    {
+        model.CronExpression = source.CronExpression;
+    }
+
+    protected override void UpdateActivity(TimerEventViewModel model, TimerEvent target)
+    {
+        target.CronExpression = model.CronExpression.Trim();
     }
 }

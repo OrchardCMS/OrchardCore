@@ -1,17 +1,16 @@
 using GraphQL.Types;
 using OrchardCore.Menu.Models;
 
-namespace OrchardCore.Menu.GraphQL
-{
-    public class HtmlMenuItemQueryObjectType : ObjectGraphType<HtmlMenuItemPart>
-    {
-        public HtmlMenuItemQueryObjectType()
-        {
-            Name = "HtmlMenuItemPart";
+namespace OrchardCore.Menu.GraphQL;
 
-            Field(x => x.Url, nullable: true);
-            Field(x => x.Target, nullable: true);
-            Field(x => x.Html, nullable: true);
-        }
+public class HtmlMenuItemQueryObjectType : ObjectGraphType<HtmlMenuItemPart>
+{
+    public HtmlMenuItemQueryObjectType()
+    {
+        Name = "HtmlMenuItemPart";
+
+        Field(x => x.Url, nullable: true);
+        Field(x => x.Target, nullable: true);
+        Field(x => x.Html, nullable: true);
     }
 }

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +6,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Users.Controllers;
 
-public class AccountBaseController : Controller
+public abstract class AccountBaseController : Controller
 {
     protected async Task<IActionResult> LoggedInActionResultAsync(IUser user, string returnUrl = null, ExternalLoginInfo info = null)
     {

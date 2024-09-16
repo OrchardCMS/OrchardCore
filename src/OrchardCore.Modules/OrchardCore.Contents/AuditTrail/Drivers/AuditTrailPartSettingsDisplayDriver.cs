@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.Settings;
@@ -8,41 +6,40 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Contents.AuditTrail.Drivers
+namespace OrchardCore.Contents.AuditTrail.Drivers;
+
+public sealed class AuditTrailPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
 {
-    public sealed class AuditTrailPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public override IDisplayResult Edit(ContentTypePartDefinition model, BuildEditorContext context)
     {
-        public override IDisplayResult Edit(ContentTypePartDefinition model, BuildEditorContext context)
+        if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, StringComparison.Ordinal))
         {
-            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, StringComparison.Ordinal))
-            {
-                return null;
-            }
-
-            return Initialize<AuditTrailPartSettingsViewModel>("AuditTrailPartSettings_Edit", viewModel =>
-            {
-                var settings = model.GetSettings<AuditTrailPartSettings>();
-                viewModel.ShowCommentInput = settings.ShowCommentInput;
-            }).Location("Content");
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)
+        return Initialize<AuditTrailPartSettingsViewModel>("AuditTrailPartSettings_Edit", viewModel =>
         {
-            if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, StringComparison.Ordinal))
-            {
-                return null;
-            }
+            var settings = model.GetSettings<AuditTrailPartSettings>();
+            viewModel.ShowCommentInput = settings.ShowCommentInput;
+        }).Location("Content");
+    }
 
-            var viewModel = new AuditTrailPartSettingsViewModel();
-
-            await context.Updater.TryUpdateModelAsync(viewModel, Prefix, m => m.ShowCommentInput);
-
-            context.Builder.WithSettings(new AuditTrailPartSettings
-            {
-                ShowCommentInput = viewModel.ShowCommentInput
-            });
-
-            return Edit(model, context);
+    public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition model, UpdateTypePartEditorContext context)
+    {
+        if (!string.Equals(nameof(AuditTrailPart), model.PartDefinition.Name, StringComparison.Ordinal))
+        {
+            return null;
         }
+
+        var viewModel = new AuditTrailPartSettingsViewModel();
+
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix, m => m.ShowCommentInput);
+
+        context.Builder.WithSettings(new AuditTrailPartSettings
+        {
+            ShowCommentInput = viewModel.ShowCommentInput
+        });
+
+        return Edit(model, context);
     }
 }

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -6,32 +5,31 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.ViewModels;
 
-namespace OrchardCore.Markdown.Settings
+namespace OrchardCore.Markdown.Settings;
+
+public sealed class MarkdownBodyPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<MarkdownBodyPart>
 {
-    public sealed class MarkdownBodyPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver<MarkdownBodyPart>
+    public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
     {
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+        return Initialize<MarkdownBodyPartSettingsViewModel>("MarkdownBodyPartSettings_Edit", model =>
         {
-            return Initialize<MarkdownBodyPartSettingsViewModel>("MarkdownBodyPartSettings_Edit", model =>
-            {
-                var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
+            var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
-                model.SanitizeHtml = settings.SanitizeHtml;
-            }).Location("Content:20");
-        }
+            model.SanitizeHtml = settings.SanitizeHtml;
+        }).Location("Content:20");
+    }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
-        {
-            var model = new MarkdownBodyPartSettingsViewModel();
-            var settings = new MarkdownBodyPartSettings();
+    public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
+    {
+        var model = new MarkdownBodyPartSettingsViewModel();
+        var settings = new MarkdownBodyPartSettings();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            settings.SanitizeHtml = model.SanitizeHtml;
+        settings.SanitizeHtml = model.SanitizeHtml;
 
-            context.Builder.WithSettings(settings);
+        context.Builder.WithSettings(settings);
 
-            return Edit(contentTypePartDefinition, context);
-        }
+        return Edit(contentTypePartDefinition, context);
     }
 }

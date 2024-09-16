@@ -1,40 +1,38 @@
-using System.Threading.Tasks;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Lists.Models;
 using OrchardCore.Lists.ViewModels;
 
-namespace OrchardCore.Lists.Drivers
+namespace OrchardCore.Lists.Drivers;
+
+public sealed class ListPartContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
 {
-    public sealed class ListPartContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>
+    protected override void BuildPrefix(ContentOptionsViewModel model, string htmlFieldPrefix)
     {
-        protected override void BuildPrefix(ContentOptionsViewModel model, string htmlFieldPrefix)
+        Prefix = "ListPart";
+    }
+
+    public override IDisplayResult Edit(ContentOptionsViewModel model, BuildEditorContext context)
+    {
+        return Dynamic("ContentsAdminList__ListPartFilter").Location("Actions:20");
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, UpdateEditorContext context)
+    {
+        var viewModel = new ListPartContentsAdminFilterViewModel();
+        await context.Updater.TryUpdateModelAsync(viewModel, nameof(ListPart));
+
+        if (viewModel.ShowListContentTypes)
         {
-            Prefix = "ListPart";
+            model.RouteValues.TryAdd("ListPart.ShowListContentTypes", viewModel.ShowListContentTypes);
         }
 
-        public override IDisplayResult Edit(ContentOptionsViewModel model, BuildEditorContext context)
+        if (!string.IsNullOrEmpty(viewModel.ListContentItemId))
         {
-            return Dynamic("ContentsAdminList__ListPartFilter").Location("Actions:20");
+            model.RouteValues.TryAdd("ListPart.ListContentItemId", viewModel.ListContentItemId);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, UpdateEditorContext context)
-        {
-            var viewModel = new ListPartContentsAdminFilterViewModel();
-            await context.Updater.TryUpdateModelAsync(viewModel, nameof(ListPart));
-
-            if (viewModel.ShowListContentTypes)
-            {
-                model.RouteValues.TryAdd("ListPart.ShowListContentTypes", viewModel.ShowListContentTypes);
-            }
-
-            if (!string.IsNullOrEmpty(viewModel.ListContentItemId))
-            {
-                model.RouteValues.TryAdd("ListPart.ListContentItemId", viewModel.ListContentItemId);
-            }
-
-            return Edit(model, context);
-        }
+        return Edit(model, context);
     }
 }

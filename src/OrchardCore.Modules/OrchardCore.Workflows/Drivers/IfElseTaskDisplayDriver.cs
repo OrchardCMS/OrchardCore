@@ -3,18 +3,17 @@ using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.ViewModels;
 
-namespace OrchardCore.Workflows.Drivers
-{
-    public sealed class IfElseTaskDisplayDriver : ActivityDisplayDriver<IfElseTask, IfElseTaskViewModel>
-    {
-        protected override void EditActivity(IfElseTask activity, IfElseTaskViewModel model)
-        {
-            model.ConditionExpression = activity.Condition.Expression;
-        }
+namespace OrchardCore.Workflows.Drivers;
 
-        protected override void UpdateActivity(IfElseTaskViewModel model, IfElseTask activity)
-        {
-            activity.Condition = new WorkflowExpression<bool>(model.ConditionExpression);
-        }
+public sealed class IfElseTaskDisplayDriver : ActivityDisplayDriver<IfElseTask, IfElseTaskViewModel>
+{
+    protected override void EditActivity(IfElseTask activity, IfElseTaskViewModel model)
+    {
+        model.ConditionExpression = activity.Condition.Expression;
+    }
+
+    protected override void UpdateActivity(IfElseTaskViewModel model, IfElseTask activity)
+    {
+        activity.Condition = new WorkflowExpression<bool>(model.ConditionExpression);
     }
 }

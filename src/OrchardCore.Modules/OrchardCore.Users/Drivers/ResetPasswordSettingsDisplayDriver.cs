@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
@@ -7,55 +6,54 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
-namespace OrchardCore.Users.Drivers
+namespace OrchardCore.Users.Drivers;
+
+public sealed class ResetPasswordSettingsDisplayDriver : SiteDisplayDriver<ResetPasswordSettings>
 {
-    public sealed class ResetPasswordSettingsDisplayDriver : SiteDisplayDriver<ResetPasswordSettings>
+    public const string GroupId = "userResetPassword";
+
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+
+    public ResetPasswordSettingsDisplayDriver(
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService)
     {
-        public const string GroupId = "userResetPassword";
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+    }
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
+    protected override string SettingsGroupId
+        => GroupId;
 
-        public ResetPasswordSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+    public override async Task<IDisplayResult> EditAsync(ISite site, ResetPasswordSettings settings, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
         {
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
+            return null;
         }
 
-        protected override string SettingsGroupId
-            => GroupId;
-
-        public override async Task<IDisplayResult> EditAsync(ISite site, ResetPasswordSettings settings, BuildEditorContext context)
+        return Initialize<ResetPasswordSettings>("ResetPasswordSettings_Edit", model =>
         {
-            var user = _httpContextAccessor.HttpContext?.User;
+            model.AllowResetPassword = settings.AllowResetPassword;
+            model.UseSiteTheme = settings.UseSiteTheme;
+        }).Location("Content:5")
+        .OnGroup(SettingsGroupId);
+    }
 
-            if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
-            {
-                return null;
-            }
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, ResetPasswordSettings settings, UpdateEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
 
-            return Initialize<ResetPasswordSettings>("ResetPasswordSettings_Edit", model =>
-            {
-                model.AllowResetPassword = settings.AllowResetPassword;
-                model.UseSiteTheme = settings.UseSiteTheme;
-            }).Location("Content:5")
-            .OnGroup(SettingsGroupId);
+        if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
+        {
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ISite site, ResetPasswordSettings settings, UpdateEditorContext context)
-        {
-            var user = _httpContextAccessor.HttpContext?.User;
+        await context.Updater.TryUpdateModelAsync(settings, Prefix);
 
-            if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
-            {
-                return null;
-            }
-
-            await context.Updater.TryUpdateModelAsync(settings, Prefix);
-
-            return await EditAsync(site, settings, context);
-        }
+        return await EditAsync(site, settings, context);
     }
 }

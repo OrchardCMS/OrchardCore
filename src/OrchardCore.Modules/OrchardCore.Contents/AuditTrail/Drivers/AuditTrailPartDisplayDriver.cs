@@ -1,38 +1,35 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.Contents.AuditTrail.Models;
 using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Contents.AuditTrail.ViewModels;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Contents.AuditTrail.Drivers
+namespace OrchardCore.Contents.AuditTrail.Drivers;
+
+public sealed class AuditTrailPartDisplayDriver : ContentPartDisplayDriver<AuditTrailPart>
 {
-    public sealed class AuditTrailPartDisplayDriver : ContentPartDisplayDriver<AuditTrailPart>
+    public override IDisplayResult Edit(AuditTrailPart part, BuildPartEditorContext context)
     {
-        public override IDisplayResult Edit(AuditTrailPart part, BuildPartEditorContext context)
+        var settings = context.TypePartDefinition.GetSettings<AuditTrailPartSettings>();
+        if (settings.ShowCommentInput)
         {
-            var settings = context.TypePartDefinition.GetSettings<AuditTrailPartSettings>();
-            if (settings.ShowCommentInput)
+            return Initialize<AuditTrailPartViewModel>(GetEditorShapeType(context), model =>
             {
-                return Initialize<AuditTrailPartViewModel>(GetEditorShapeType(context), model =>
+                if (part.ShowComment)
                 {
-                    if (part.ShowComment)
-                    {
-                        model.Comment = part.Comment;
-                    }
-                });
-            }
-
-            return null;
+                    model.Comment = part.Comment;
+                }
+            });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AuditTrailPart part, UpdatePartEditorContext context)
-        {
-            await context.Updater.TryUpdateModelAsync(part, Prefix);
+        return null;
+    }
 
-            return Edit(part, context);
-        }
+    public override async Task<IDisplayResult> UpdateAsync(AuditTrailPart part, UpdatePartEditorContext context)
+    {
+        await context.Updater.TryUpdateModelAsync(part, Prefix);
+
+        return Edit(part, context);
     }
 }

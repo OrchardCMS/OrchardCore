@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Media;
 
 // Leave this type and the const internal so that we can remove it at any time

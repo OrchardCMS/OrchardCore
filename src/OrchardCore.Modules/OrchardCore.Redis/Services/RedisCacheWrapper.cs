@@ -1,5 +1,3 @@
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Options;
@@ -10,7 +8,10 @@ namespace OrchardCore.Redis.Services;
 /// <summary>
 /// Wrapper preventing the <see cref="RedisCache"/> to dispose a shared <see cref="IConnectionMultiplexer"/>.
 /// </summary>
-public class RedisCacheWrapper : IDistributedCache
+/// <remarks>
+/// This is done by not disposing the `RedisCache` instance which would otherwise close the redis connection.
+/// </remarks>
+public sealed class RedisCacheWrapper : IDistributedCache
 {
     private readonly RedisCache _cache;
 

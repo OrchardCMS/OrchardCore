@@ -1,71 +1,68 @@
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Security;
 
-namespace OrchardCore.Roles
+namespace OrchardCore.Roles;
+
+/// <summary>
+/// This authorization handler ensures that Anonymous and Authenticated permissions are checked.
+/// </summary>
+public class RolesPermissionsHandler : AuthorizationHandler<PermissionRequirement>
 {
-    /// <summary>
-    /// This authorization handler ensures that Anonymous and Authenticated permissions are checked.
-    /// </summary>
-    public class RolesPermissionsHandler : AuthorizationHandler<PermissionRequirement>
+    private readonly RoleManager<IRole> _roleManager;
+    private readonly IPermissionGrantingService _permissionGrantingService;
+
+
+    private IEnumerable<RoleClaim> _anonymousClaims;
+    private IEnumerable<RoleClaim> _authenticatedClaims;
+
+    public RolesPermissionsHandler(
+        RoleManager<IRole> roleManager,
+        IPermissionGrantingService permissionGrantingService)
     {
-        private readonly RoleManager<IRole> _roleManager;
-        private readonly IPermissionGrantingService _permissionGrantingService;
+        _roleManager = roleManager;
+        _permissionGrantingService = permissionGrantingService;
+    }
 
-
-        private IEnumerable<RoleClaim> _anonymousClaims;
-        private IEnumerable<RoleClaim> _authenticatedClaims;
-
-        public RolesPermissionsHandler(
-            RoleManager<IRole> roleManager,
-            IPermissionGrantingService permissionGrantingService)
+    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
+    {
+        if (context.HasSucceeded)
         {
-            _roleManager = roleManager;
-            _permissionGrantingService = permissionGrantingService;
+            // This handler is not revoking any pre-existing grants.
+            return;
         }
 
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
+        var claims = new HashSet<Claim>();
+        foreach (var claim in _anonymousClaims ??= await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Anonymous))
         {
-            if (context.HasSucceeded)
-            {
-                // This handler is not revoking any pre-existing grants.
-                return;
-            }
+            claims.Add(claim);
+        }
 
-            var claims = new HashSet<Claim>();
-            foreach (var claim in _anonymousClaims ??= await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Anonymous))
+        if (context.User.Identity.IsAuthenticated)
+        {
+            foreach (var claim in _authenticatedClaims ??= await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Authenticated))
             {
                 claims.Add(claim);
             }
-
-            if (context.User.Identity.IsAuthenticated)
-            {
-                foreach (var claim in _authenticatedClaims ??= await GetRoleClaimsAsync(OrchardCoreConstants.Roles.Authenticated))
-                {
-                    claims.Add(claim);
-                }
-            }
-
-            if (_permissionGrantingService.IsGranted(requirement, claims))
-            {
-                context.Succeed(requirement);
-                return;
-            }
         }
 
-        private async Task<IEnumerable<RoleClaim>> GetRoleClaimsAsync(string roleName)
+        if (_permissionGrantingService.IsGranted(requirement, claims))
         {
-            var role = await _roleManager.FindByNameAsync(roleName);
-
-            if (role != null)
-            {
-                return ((Role)role).RoleClaims;
-            }
-
-            return [];
+            context.Succeed(requirement);
+            return;
         }
+    }
+
+    private async Task<IEnumerable<RoleClaim>> GetRoleClaimsAsync(string roleName)
+    {
+        var role = await _roleManager.FindByNameAsync(roleName);
+
+        if (role != null)
+        {
+            return ((Role)role).RoleClaims;
+        }
+
+        return [];
     }
 }

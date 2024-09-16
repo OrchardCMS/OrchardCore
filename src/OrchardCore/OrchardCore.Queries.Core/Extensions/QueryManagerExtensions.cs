@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 namespace OrchardCore.Queries;
 
 public static class QueryManagerExtensions

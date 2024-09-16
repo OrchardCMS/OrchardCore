@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -43,11 +42,11 @@ public sealed class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserFo
 
         await context.Updater.TryUpdateModelAsync(vm, Prefix);
 
-        if (await _userManager.FindByNameAsync(vm.UserName) != null)
+        if (!string.IsNullOrEmpty(vm.UserName) && await _userManager.FindByNameAsync(vm.UserName) != null)
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(vm.UserName), S["A user with the same username already exists."]);
         }
-        else if (_identityOptions.User.RequireUniqueEmail && await _userManager.FindByEmailAsync(vm.Email) != null)
+        else if (_identityOptions.User.RequireUniqueEmail && !string.IsNullOrEmpty(vm.Email) && await _userManager.FindByEmailAsync(vm.Email) != null)
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(vm.Email), S["A user with the same email address already exists."]);
         }

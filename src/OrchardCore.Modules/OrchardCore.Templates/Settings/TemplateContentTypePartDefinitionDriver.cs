@@ -5,38 +5,37 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Templates.ViewModels;
 
-namespace OrchardCore.Templates.Settings
+namespace OrchardCore.Templates.Settings;
+
+public sealed class TemplateContentTypePartDefinitionDriver : ContentTypePartDefinitionDisplayDriver
 {
-    public sealed class TemplateContentTypePartDefinitionDriver : ContentTypePartDefinitionDisplayDriver
+    internal readonly IStringLocalizer S;
+
+    public TemplateContentTypePartDefinitionDriver(IStringLocalizer<TemplateContentTypePartDefinitionDriver> localizer)
     {
-        internal readonly IStringLocalizer S;
+        S = localizer;
+    }
 
-        public TemplateContentTypePartDefinitionDriver(IStringLocalizer<TemplateContentTypePartDefinitionDriver> localizer)
+    public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
+    {
+        return Initialize<ContentSettingsViewModel>("TemplateSettings", model =>
         {
-            S = localizer;
-        }
+            var contentType = contentTypePartDefinition.ContentTypeDefinition.Name;
+            var partName = contentTypePartDefinition.Name;
 
-        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
-        {
-            return Initialize<ContentSettingsViewModel>("TemplateSettings", model =>
-            {
-                var contentType = contentTypePartDefinition.ContentTypeDefinition.Name;
-                var partName = contentTypePartDefinition.Name;
+            model.ContentSettingsEntries.Add(
+                new ContentSettingsEntry
+                {
+                    Key = $"{contentType}__{partName}",
+                    Description = S["Template for the {0} part in a {1} type in detail views", partName, contentTypePartDefinition.ContentTypeDefinition.DisplayName]
+                });
 
-                model.ContentSettingsEntries.Add(
-                    new ContentSettingsEntry
-                    {
-                        Key = $"{contentType}__{partName}",
-                        Description = S["Template for the {0} part in a {1} type in detail views", partName, contentTypePartDefinition.ContentTypeDefinition.DisplayName]
-                    });
-
-                model.ContentSettingsEntries.Add(
-                    new ContentSettingsEntry
-                    {
-                        Key = $"{contentType}_Summary__{partName}",
-                        Description = S["Template for the {0} part in a {1} type in summary views", partName, contentTypePartDefinition.ContentTypeDefinition.DisplayName]
-                    });
-            }).Location("Shortcuts");
-        }
+            model.ContentSettingsEntries.Add(
+                new ContentSettingsEntry
+                {
+                    Key = $"{contentType}_Summary__{partName}",
+                    Description = S["Template for the {0} part in a {1} type in summary views", partName, contentTypePartDefinition.ContentTypeDefinition.DisplayName]
+                });
+        }).Location("Shortcuts");
     }
 }

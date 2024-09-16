@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.IO;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Microsoft.AspNetCore.Http;
@@ -11,91 +8,90 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.Media.Liquid
+namespace OrchardCore.Media.Liquid;
+
+public class MediaAnchorTag : IAnchorTag
 {
-    public class MediaAnchorTag : IAnchorTag
+    public int Order => -20;
+
+    public bool Match(IReadOnlyList<FilterArgument> argumentsList)
     {
-        public int Order => -20;
-
-        public bool Match(IReadOnlyList<FilterArgument> argumentsList)
+        foreach (var argument in argumentsList)
         {
-            foreach (var argument in argumentsList)
+            switch (argument.Name)
             {
-                switch (argument.Name)
-                {
-                    case "asset-href": return true;
-                }
+                case "asset-href": return true;
             }
-
-            return false;
         }
 
-        public async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context)
+        return false;
+    }
+
+    public async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context)
+    {
+        var services = context.Services;
+        var mediaFileStore = services.GetRequiredService<IMediaFileStore>();
+        var fileVersionProvider = services.GetRequiredService<IFileVersionProvider>();
+        var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
+
+        string assetHref = null;
+        string appendVersion = null;
+
+        Dictionary<string, string> customAttributes = null;
+
+        foreach (var argument in argumentsList)
         {
-            var services = context.Services;
-            var mediaFileStore = services.GetRequiredService<IMediaFileStore>();
-            var fileVersionProvider = services.GetRequiredService<IFileVersionProvider>();
-            var httpContextAccessor = services.GetRequiredService<IHttpContextAccessor>();
-
-            string assetHref = null;
-            string appendVersion = null;
-
-            Dictionary<string, string> customAttributes = null;
-
-            foreach (var argument in argumentsList)
+            switch (argument.Name)
             {
-                switch (argument.Name)
-                {
-                    case "asset_href": assetHref = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "append_version": appendVersion = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "asset_href": assetHref = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "append_version": appendVersion = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
 
-                    default:
+                default:
 
-                        customAttributes ??= [];
-                        customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
+                    customAttributes ??= [];
+                    customAttributes[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue();
 
-                        break;
-                }
+                    break;
             }
+        }
 
-            if (string.IsNullOrEmpty(assetHref))
-            {
-                return Completion.Normal;
-            }
-
-            var resolvedUrl = mediaFileStore != null ? mediaFileStore.MapPathToPublicUrl(assetHref) : assetHref;
-
-            if (appendVersion != null && fileVersionProvider != null)
-            {
-                customAttributes["href"] = fileVersionProvider.AddFileVersionToPath(httpContextAccessor.HttpContext.Request.PathBase, resolvedUrl);
-            }
-            else
-            {
-                customAttributes["href"] = resolvedUrl;
-            }
-
-            var tagBuilder = new TagBuilder("a");
-
-            foreach (var attribute in customAttributes)
-            {
-                tagBuilder.Attributes[attribute.Key] = attribute.Value;
-            }
-
-            tagBuilder.RenderStartTag().WriteTo(writer, (HtmlEncoder)encoder);
-
-            if (statements != null && statements.Count > 0)
-            {
-                var completion = await statements.RenderStatementsAsync(writer, encoder, context);
-
-                if (completion != Completion.Normal)
-                {
-                    return completion;
-                }
-            }
-
-            tagBuilder.RenderEndTag().WriteTo(writer, (HtmlEncoder)encoder);
-
+        if (string.IsNullOrEmpty(assetHref))
+        {
             return Completion.Normal;
         }
+
+        var resolvedUrl = mediaFileStore != null ? mediaFileStore.MapPathToPublicUrl(assetHref) : assetHref;
+
+        if (appendVersion != null && fileVersionProvider != null)
+        {
+            customAttributes["href"] = fileVersionProvider.AddFileVersionToPath(httpContextAccessor.HttpContext.Request.PathBase, resolvedUrl);
+        }
+        else
+        {
+            customAttributes["href"] = resolvedUrl;
+        }
+
+        var tagBuilder = new TagBuilder("a");
+
+        foreach (var attribute in customAttributes)
+        {
+            tagBuilder.Attributes[attribute.Key] = attribute.Value;
+        }
+
+        tagBuilder.RenderStartTag().WriteTo(writer, (HtmlEncoder)encoder);
+
+        if (statements != null && statements.Count > 0)
+        {
+            var completion = await statements.RenderStatementsAsync(writer, encoder, context);
+
+            if (completion != Completion.Normal)
+            {
+                return completion;
+            }
+        }
+
+        tagBuilder.RenderEndTag().WriteTo(writer, (HtmlEncoder)encoder);
+
+        return Completion.Normal;
     }
 }

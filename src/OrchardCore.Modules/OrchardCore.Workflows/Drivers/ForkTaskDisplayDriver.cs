@@ -1,21 +1,18 @@
-using System;
-using System.Linq;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Display;
 using OrchardCore.Workflows.ViewModels;
 
-namespace OrchardCore.Workflows.Drivers
-{
-    public sealed class ForkTaskDisplayDriver : ActivityDisplayDriver<ForkTask, ForkTaskViewModel>
-    {
-        protected override void EditActivity(ForkTask activity, ForkTaskViewModel model)
-        {
-            model.Forks = string.Join(", ", activity.Forks);
-        }
+namespace OrchardCore.Workflows.Drivers;
 
-        protected override void UpdateActivity(ForkTaskViewModel model, ForkTask activity)
-        {
-            activity.Forks = model.Forks.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
-        }
+public sealed class ForkTaskDisplayDriver : ActivityDisplayDriver<ForkTask, ForkTaskViewModel>
+{
+    protected override void EditActivity(ForkTask activity, ForkTaskViewModel model)
+    {
+        model.Forks = string.Join(", ", activity.Forks);
+    }
+
+    protected override void UpdateActivity(ForkTaskViewModel model, ForkTask activity)
+    {
+        activity.Forks = model.Forks.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
     }
 }

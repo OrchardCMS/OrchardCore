@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Web;
 using Fluid;
@@ -19,7 +17,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
@@ -35,7 +33,6 @@ using OrchardCore.Recipes.Services;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Setup.Events;
 using OrchardCore.Sms;
@@ -52,519 +49,519 @@ using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 using YesSql.Filters.Query;
 
-namespace OrchardCore.Users
+namespace OrchardCore.Users;
+
+public sealed class Startup : StartupBase
 {
-    public sealed class Startup : StartupBase
+    private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
+    private static readonly string _emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
+
+
+    private readonly string _tenantName;
+    private UserOptions _userOptions;
+
+    public Startup(ShellSettings shellSettings)
     {
-        private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
-        private static readonly string _emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
-
-
-        private readonly string _tenantName;
-        private UserOptions _userOptions;
-
-        public Startup(ShellSettings shellSettings)
-        {
-            _tenantName = shellSettings.Name;
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            _userOptions ??= serviceProvider.GetRequiredService<IOptions<UserOptions>>().Value;
-
-            routes.MapAreaControllerRoute(
-                name: "Login",
-                areaName: UserConstants.Features.Users,
-                pattern: _userOptions.LoginPath,
-                defaults: new
-                {
-                    controller = _accountControllerName,
-                    action = nameof(AccountController.Login),
-                }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "ChangePassword",
-                areaName: UserConstants.Features.Users,
-                pattern: _userOptions.ChangePasswordUrl,
-                defaults: new
-                {
-                    controller = _accountControllerName,
-                    action = nameof(AccountController.ChangePassword),
-                }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "ChangePasswordConfirmation",
-                areaName: UserConstants.Features.Users,
-                pattern: _userOptions.ChangePasswordConfirmationUrl,
-                defaults: new
-                {
-                    controller = _accountControllerName,
-                    action = nameof(AccountController.ChangePasswordConfirmation),
-                }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "UsersLogOff",
-                areaName: UserConstants.Features.Users,
-                pattern: _userOptions.LogoffPath,
-                defaults: new
-                {
-                    controller = _accountControllerName,
-                    action = nameof(AccountController.LogOff),
-                }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "ExternalLogins",
-                areaName: UserConstants.Features.Users,
-                pattern: _userOptions.ExternalLoginsUrl,
-                defaults: new
-                {
-                    controller = _accountControllerName,
-                    action = nameof(AccountController.ExternalLogins),
-                }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "ConfirmEmail",
-                areaName: UserConstants.Features.Users,
-                pattern: "ConfirmEmail",
-                defaults: new
-                {
-                    controller = _emailConfirmationControllerName,
-                    action = nameof(EmailConfirmationController.ConfirmEmail),
-                }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "ConfirmEmailSent",
-                areaName: UserConstants.Features.Users,
-                pattern: "ConfirmEmailSent",
-                defaults: new
-                {
-                    controller = _emailConfirmationControllerName,
-                    action = nameof(EmailConfirmationController.ConfirmEmailSent),
-                }
-            );
-
-            builder.UseAuthorization();
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.Configure<UserOptions>(userOptions =>
-            {
-                var configuration = ShellScope.Services.GetRequiredService<IShellConfiguration>();
-                configuration.GetSection("OrchardCore_Users").Bind(userOptions);
-            });
-
-            // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
-            services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
-
-            // Add the default token providers used to generate tokens for an admin to change user's password.
-            services.AddIdentity<IUser, IRole>()
-                .AddTokenProvider<DataProtectorTokenProvider<IUser>>(TokenOptions.DefaultProvider);
-
-            // Configure token provider for email confirmation.
-            services.AddTransient<IConfigureOptions<IdentityOptions>, EmailConfirmationIdentityOptionsConfigurations>()
-                .AddTransient<EmailConfirmationTokenProvider>()
-                .AddOptions<EmailConfirmationTokenProviderOptions>();
-
-            services.AddTransient<IConfigureOptions<IdentityOptions>, IdentityOptionsConfigurations>();
-            services.AddPhoneFormatValidator();
-            // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
-            // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
-            services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
-
-            services.AddUsers();
-
-            services.ConfigureApplicationCookie(options =>
-            {
-                var userOptions = ShellScope.Services.GetRequiredService<IOptions<UserOptions>>();
-
-                options.Cookie.Name = "orchauth_" + HttpUtility.UrlEncode(_tenantName);
-
-                // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
-                // set by the pipeline and coming from the request 'PathBase' which already ends with the
-                // tenant prefix but may also start by a path related e.g to a virtual folder.
-
-                options.LoginPath = "/" + userOptions.Value.LoginPath;
-                options.LogoutPath = "/" + userOptions.Value.LogoffPath;
-                options.AccessDeniedPath = "/Error/403";
-            });
-            services.AddTransient<IPostConfigureOptions<SecurityStampValidatorOptions>, ConfigureSecurityStampOptions>();
-            services.AddDataMigration<Migrations>();
-
-            services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
-            services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
-
-            services.AddScoped<IMembershipService, MembershipService>();
-            services.AddScoped<ISetupEventHandler, SetupEventHandler>();
-            services.AddScoped<ICommandHandler, UserCommands>();
-            services.AddScoped<IExternalLoginEventHandler, ScriptExternalLoginEventHandler>();
-
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-
-            services.AddScoped<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
-
-            services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
-            services.AddScoped<IDisplayDriver<User>, UserInformationDisplayDriver>();
-            services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
-
-            services.AddScoped<IThemeSelector, UsersThemeSelector>();
-
-            services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSuperUserProvider>();
-
-            services.AddScoped<IUsersAdminListQueryService, DefaultUsersAdminListQueryService>();
-
-            services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();
-
-            services.AddSingleton<IUsersAdminListFilterParser>(sp =>
-            {
-                var filterProviders = sp.GetServices<IUsersAdminListFilterProvider>();
-                var builder = new QueryEngineBuilder<User>();
-                foreach (var provider in filterProviders)
-                {
-                    provider.Build(builder);
-                }
-
-                var parser = builder.Build();
-
-                return new DefaultUsersAdminListFilterParser(parser);
-            });
-
-            services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
-            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
-            services.AddScoped<IDisplayDriver<Navbar>, UserMenuNavbarDisplayDriver>();
-            services.AddScoped<IDisplayDriver<UserMenu>, UserMenuDisplayDriver>();
-            services.AddScoped<IShapeTableProvider, UserMenuShapeTableProvider>();
-
-            services.AddRecipeExecutionStep<UsersStep>();
-
-            services.AddScoped<CustomUserSettingsService>();
-            services.AddRecipeExecutionStep<CustomUserSettingsStep>();
-            services.AddScoped<IDisplayDriver<LoginForm>, LoginFormDisplayDriver>();
-        }
+        _tenantName = shellSettings.Name;
     }
 
-    [RequireFeatures("OrchardCore.Roles")]
-    public sealed class RolesStartup : StartupBase
+    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
-            services.AddIndexProvider<UserByRoleNameIndexProvider>();
-            services.AddScoped<IDisplayDriver<User>, UserRoleDisplayDriver>();
-            services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
-            services.AddScoped<IPermissionProvider, UserRolePermissions>();
-            services.AddSingleton<IUsersAdminListFilterProvider, RolesAdminListFilterProvider>();
-        }
+        _userOptions ??= serviceProvider.GetRequiredService<IOptions<UserOptions>>().Value;
+
+        routes.MapAreaControllerRoute(
+            name: "Login",
+            areaName: UserConstants.Features.Users,
+            pattern: _userOptions.LoginPath,
+            defaults: new
+            {
+                controller = _accountControllerName,
+                action = nameof(AccountController.Login),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "ChangePassword",
+            areaName: UserConstants.Features.Users,
+            pattern: _userOptions.ChangePasswordUrl,
+            defaults: new
+            {
+                controller = _accountControllerName,
+                action = nameof(AccountController.ChangePassword),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "ChangePasswordConfirmation",
+            areaName: UserConstants.Features.Users,
+            pattern: _userOptions.ChangePasswordConfirmationUrl,
+            defaults: new
+            {
+                controller = _accountControllerName,
+                action = nameof(AccountController.ChangePasswordConfirmation),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "UsersLogOff",
+            areaName: UserConstants.Features.Users,
+            pattern: _userOptions.LogoffPath,
+            defaults: new
+            {
+                controller = _accountControllerName,
+                action = nameof(AccountController.LogOff),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "ExternalLogins",
+            areaName: UserConstants.Features.Users,
+            pattern: _userOptions.ExternalLoginsUrl,
+            defaults: new
+            {
+                controller = _accountControllerName,
+                action = nameof(AccountController.ExternalLogins),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "ConfirmEmail",
+            areaName: UserConstants.Features.Users,
+            pattern: "ConfirmEmail",
+            defaults: new
+            {
+                controller = _emailConfirmationControllerName,
+                action = nameof(EmailConfirmationController.ConfirmEmail),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "ConfirmEmailSent",
+            areaName: UserConstants.Features.Users,
+            pattern: "ConfirmEmailSent",
+            defaults: new
+            {
+                controller = _emailConfirmationControllerName,
+                action = nameof(EmailConfirmationController.ConfirmEmailSent),
+            }
+        );
+
+        builder.UseAuthorization();
     }
 
-    [RequireFeatures("OrchardCore.Liquid")]
-    public sealed class LiquidStartup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        services.Configure<UserOptions>(userOptions =>
         {
-            services.Configure<TemplateOptions>(o =>
+            var configuration = ShellScope.Services.GetRequiredService<IShellConfiguration>();
+            configuration.GetSection("OrchardCore_Users").Bind(userOptions);
+        });
+
+        // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
+        services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
+
+        // Add the default token providers used to generate tokens for an admin to change user's password.
+        services.AddIdentity<IUser, IRole>()
+            .AddTokenProvider<DataProtectorTokenProvider<IUser>>(TokenOptions.DefaultProvider);
+
+        // Configure token provider for email confirmation.
+        services.AddTransient<IConfigureOptions<IdentityOptions>, EmailConfirmationIdentityOptionsConfigurations>()
+            .AddTransient<EmailConfirmationTokenProvider>()
+            .AddOptions<EmailConfirmationTokenProviderOptions>();
+
+        services.AddTransient<IConfigureOptions<IdentityOptions>, IdentityOptionsConfigurations>();
+        services.AddPhoneFormatValidator();
+        // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
+        // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
+        services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
+
+        services.AddUsers();
+
+        services.ConfigureApplicationCookie(options =>
+        {
+            var userOptions = ShellScope.Services.GetRequiredService<IOptions<UserOptions>>();
+
+            options.Cookie.Name = "orchauth_" + HttpUtility.UrlEncode(_tenantName);
+
+            // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
+            // set by the pipeline and coming from the request 'PathBase' which already ends with the
+            // tenant prefix but may also start by a path related e.g to a virtual folder.
+
+            options.LoginPath = "/" + userOptions.Value.LoginPath;
+            options.LogoutPath = "/" + userOptions.Value.LogoffPath;
+            options.AccessDeniedPath = "/Error/403";
+        });
+        services.AddTransient<IPostConfigureOptions<SecurityStampValidatorOptions>, ConfigureSecurityStampOptions>();
+        services.AddDataMigration<Migrations>();
+
+        services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
+        services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
+
+        services.AddScoped<IMembershipService, MembershipService>();
+        services.AddScoped<ISetupEventHandler, SetupEventHandler>();
+        services.AddScoped<ICommandHandler, UserCommands>();
+        services.AddScoped<IExternalLoginEventHandler, ScriptExternalLoginEventHandler>();
+
+        services.AddPermissionProvider<Permissions>();
+        services.AddNavigationProvider<AdminMenu>();
+
+        services.AddSiteDisplayDriver<LoginSettingsDisplayDriver>();
+
+        services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
+        services.AddScoped<IDisplayDriver<User>, UserInformationDisplayDriver>();
+        services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
+
+        services.AddScoped<IThemeSelector, UsersThemeSelector>();
+
+        services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSuperUserProvider>();
+
+        services.AddScoped<IUsersAdminListQueryService, DefaultUsersAdminListQueryService>();
+
+        services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();
+
+        services.AddSingleton<IUsersAdminListFilterParser>(sp =>
+        {
+            var filterProviders = sp.GetServices<IUsersAdminListFilterProvider>();
+            var builder = new QueryEngineBuilder<User>();
+            foreach (var provider in filterProviders)
             {
-                o.Filters.AddFilter("has_claim", UserFilters.HasClaim);
-                o.Filters.AddFilter("user_id", UserFilters.UserId);
+                provider.Build(builder);
+            }
 
-                o.MemberAccessStrategy.Register<ClaimsPrincipal>();
-                o.MemberAccessStrategy.Register<ClaimsIdentity>();
+            var parser = builder.Build();
 
-                o.Scope.SetValue("User", new ObjectValue(new LiquidUserAccessor()));
-                o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, ctx) =>
-                {
-                    var user = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext?.User;
-                    if (user != null)
-                    {
-                        return name switch
-                        {
-                            nameof(ClaimsPrincipal.Identity) => new ObjectValue(user.Identity),
-                            _ => NilValue.Instance
-                        };
-                    }
+            return new DefaultUsersAdminListFilterParser(parser);
+        });
 
-                    return NilValue.Instance;
-                });
+        services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
+        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
+        services.AddScoped<IDisplayDriver<Navbar>, UserMenuNavbarDisplayDriver>();
+        services.AddScoped<IDisplayDriver<UserMenu>, UserMenuDisplayDriver>();
+        services.AddShapeTableProvider<UserMenuShapeTableProvider>();
 
-                o.MemberAccessStrategy.Register<User, FluidValue>((user, name, context) =>
+        services.AddRecipeExecutionStep<UsersStep>();
+
+        services.AddScoped<CustomUserSettingsService>();
+        services.AddRecipeExecutionStep<CustomUserSettingsStep>();
+        services.AddScoped<IDisplayDriver<LoginForm>, LoginFormDisplayDriver>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Roles")]
+public sealed class RolesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
+        services.AddIndexProvider<UserByRoleNameIndexProvider>();
+        services.AddScoped<IDisplayDriver<User>, UserRoleDisplayDriver>();
+        services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
+        services.AddPermissionProvider<UserRolePermissions>();
+        services.AddSingleton<IUsersAdminListFilterProvider, RolesAdminListFilterProvider>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Liquid")]
+public sealed class LiquidStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<TemplateOptions>(o =>
+        {
+            o.Filters.AddFilter("has_claim", UserFilters.HasClaim);
+            o.Filters.AddFilter("user_id", UserFilters.UserId);
+
+            o.MemberAccessStrategy.Register<ClaimsPrincipal>();
+            o.MemberAccessStrategy.Register<ClaimsIdentity>();
+
+            o.Scope.SetValue("User", new ObjectValue(new LiquidUserAccessor()));
+            o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, ctx) =>
+            {
+                var user = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext?.User;
+                if (user != null)
                 {
                     return name switch
                     {
-                        nameof(User.UserId) => new StringValue(user.UserId),
-                        nameof(User.UserName) => new StringValue(user.UserName),
-                        nameof(User.NormalizedUserName) => new StringValue(user.NormalizedUserName),
-                        nameof(User.Email) => new StringValue(user.Email),
-                        nameof(User.NormalizedEmail) => new StringValue(user.NormalizedEmail),
-                        nameof(User.EmailConfirmed) => user.EmailConfirmed ? BooleanValue.True : BooleanValue.False,
-                        nameof(User.IsEnabled) => user.IsEnabled ? BooleanValue.True : BooleanValue.False,
-                        nameof(User.RoleNames) => new ArrayValue(user.RoleNames.Select(x => new StringValue(x)).ToArray()),
-                        nameof(User.Properties) => new ObjectValue(user.Properties),
+                        nameof(ClaimsPrincipal.Identity) => new ObjectValue(user.Identity),
                         _ => NilValue.Instance
                     };
-                });
-            })
-           .AddLiquidFilter<UsersByIdFilter>("users_by_id")
-           .AddLiquidFilter<HasPermissionFilter>("has_permission")
-           .AddLiquidFilter<IsInRoleFilter>("is_in_role")
-           .AddLiquidFilter<UserEmailFilter>("user_email");
-        }
-    }
-
-    [RequireFeatures("OrchardCore.Deployment")]
-    public sealed class LoginDeploymentStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSiteSettingsPropertyDeploymentStep<LoginSettings, LoginDeploymentStartup>(S => S["Login settings"], S => S["Exports the Login settings."]);
-        }
-    }
-
-    [Feature("OrchardCore.Users.ChangeEmail")]
-    public sealed class ChangeEmailStartup : StartupBase
-    {
-        private const string ChangeEmailPath = "ChangeEmail";
-        private const string ChangeEmailConfirmationPath = "ChangeEmailConfirmation";
-        private const string ChangeEmailControllerName = "ChangeEmail";
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "ChangeEmail",
-                areaName: UserConstants.Features.Users,
-                pattern: ChangeEmailPath,
-                defaults: new
-                {
-                    controller = ChangeEmailControllerName,
-                    action = nameof(ChangeEmailController.Index),
                 }
-            );
 
-            routes.MapAreaControllerRoute(
-                name: "ChangeEmailConfirmation",
-                areaName: UserConstants.Features.Users,
-                pattern: ChangeEmailConfirmationPath,
-                defaults: new
-                {
-                    controller = ChangeEmailControllerName,
-                    action = nameof(ChangeEmailController.ChangeEmailConfirmation),
-                }
-            );
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTransient<IConfigureOptions<IdentityOptions>, ChangeEmailIdentityOptionsConfigurations>()
-                .AddTransient<ChangeEmailTokenProvider>()
-                .AddOptions<ChangeEmailTokenProviderOptions>();
-
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<ChangeEmailViewModel>();
+                return NilValue.Instance;
             });
 
-            services.AddScoped<INavigationProvider, ChangeEmailAdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, ChangeEmailSettingsDisplayDriver>();
-            services.AddScoped<IDisplayDriver<UserMenu>, ChangeEmailUserMenuDisplayDriver>();
-        }
-    }
-
-    [Feature("OrchardCore.Users.ChangeEmail")]
-    [RequireFeatures("OrchardCore.Deployment")]
-    public sealed class ChangeEmailDeploymentStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSiteSettingsPropertyDeploymentStep<ChangeEmailDeploymentStartup, ChangeEmailDeploymentStartup>(S => S["Change Email settings"], S => S["Exports the Change Email settings."]);
-        }
-    }
-
-    [Feature(UserConstants.Features.UserRegistration)]
-    public sealed class RegistrationStartup : StartupBase
-    {
-        private const string RegisterPath = nameof(RegistrationController.Register);
-        private const string ConfirmEmailSent = nameof(EmailConfirmationController.ConfirmEmailSent);
-        private const string RegistrationPending = nameof(RegistrationController.RegistrationPending);
-        private const string RegistrationControllerName = "Registration";
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: RegisterPath,
-                areaName: UserConstants.Features.Users,
-                pattern: RegisterPath,
-                defaults: new
-                {
-                    controller = RegistrationControllerName,
-                    action = RegisterPath,
-                }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: ConfirmEmailSent,
-                areaName: UserConstants.Features.Users,
-                pattern: ConfirmEmailSent,
-                defaults: new
-                {
-                    controller = RegistrationControllerName,
-                    action = ConfirmEmailSent,
-                }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: RegistrationPending,
-                areaName: UserConstants.Features.Users,
-                pattern: RegistrationPending,
-                defaults: new
-                {
-                    controller = RegistrationControllerName,
-                    action = RegistrationPending,
-                }
-            );
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.Configure<TemplateOptions>(o =>
+            o.MemberAccessStrategy.Register<User, FluidValue>((user, name, context) =>
             {
-                o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
+                return name switch
+                {
+                    nameof(User.UserId) => new StringValue(user.UserId),
+                    nameof(User.UserName) => new StringValue(user.UserName),
+                    nameof(User.NormalizedUserName) => new StringValue(user.NormalizedUserName),
+                    nameof(User.Email) => new StringValue(user.Email),
+                    nameof(User.NormalizedEmail) => new StringValue(user.NormalizedEmail),
+                    nameof(User.EmailConfirmed) => user.EmailConfirmed ? BooleanValue.True : BooleanValue.False,
+                    nameof(User.IsEnabled) => user.IsEnabled ? BooleanValue.True : BooleanValue.False,
+                    nameof(User.RoleNames) => new ArrayValue(user.RoleNames.Select(x => new StringValue(x)).ToArray()),
+                    nameof(User.Properties) => new ObjectValue(user.Properties),
+                    _ => NilValue.Instance
+                };
             });
-
-            services.AddScoped<INavigationProvider, RegistrationAdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
-            services.AddScoped<IDisplayDriver<LoginForm>, RegisterUserLoginFormDisplayDriver>();
-            services.AddScoped<IDisplayDriver<RegisterUserForm>, RegisterUserFormDisplayDriver>();
-        }
+        })
+       .AddLiquidFilter<UsersByIdFilter>("users_by_id")
+       .AddLiquidFilter<HasPermissionFilter>("has_permission")
+       .AddLiquidFilter<IsInRoleFilter>("is_in_role")
+       .AddLiquidFilter<UserEmailFilter>("user_email");
     }
+}
 
-    [Feature(UserConstants.Features.UserRegistration)]
-    [RequireFeatures("OrchardCore.Deployment")]
-    public sealed class RegistrationDeploymentStartup : StartupBase
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class LoginDeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSiteSettingsPropertyDeploymentStep<RegistrationSettings, RegistrationDeploymentStartup>(S => S["Registration settings"], S => S["Exports the Registration settings."]);
-        }
+        services.AddSiteSettingsPropertyDeploymentStep<LoginSettings, LoginDeploymentStartup>(S => S["Login settings"], S => S["Exports the Login settings."]);
     }
+}
 
-    [Feature(UserConstants.Features.ResetPassword)]
-    public sealed class ResetPasswordStartup : StartupBase
+[Feature("OrchardCore.Users.ChangeEmail")]
+public sealed class ChangeEmailStartup : StartupBase
+{
+    private const string ChangeEmailPath = "ChangeEmail";
+    private const string ChangeEmailConfirmationPath = "ChangeEmailConfirmation";
+    private const string ChangeEmailControllerName = "ChangeEmail";
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        private const string ForgotPasswordPath = "ForgotPassword";
-        private const string ForgotPasswordConfirmationPath = "ForgotPasswordConfirmation";
-        private const string ResetPasswordPath = "ResetPassword";
-        private const string ResetPasswordConfirmationPath = "ResetPasswordConfirmation";
-        private const string ResetPasswordControllerName = "ResetPassword";
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-                name: "ForgotPassword",
-                areaName: UserConstants.Features.Users,
-                pattern: ForgotPasswordPath,
-                defaults: new
-                {
-                    controller = ResetPasswordControllerName,
-                    action = nameof(ResetPasswordController.ForgotPassword),
-                }
-            );
-            routes.MapAreaControllerRoute(
-                name: "ForgotPasswordConfirmation",
-                areaName: UserConstants.Features.Users,
-                pattern: ForgotPasswordConfirmationPath,
-                defaults: new
-                {
-                    controller = ResetPasswordControllerName,
-                    action = nameof(ResetPasswordController.ForgotPasswordConfirmation),
-                }
-            );
-            routes.MapAreaControllerRoute(
-                name: "ResetPassword",
-                areaName: UserConstants.Features.Users,
-                pattern: ResetPasswordPath,
-                defaults: new
-                {
-                    controller = ResetPasswordControllerName,
-                    action = nameof(ResetPasswordController.ResetPassword),
-                }
-            );
-            routes.MapAreaControllerRoute(
-                name: "ResetPasswordConfirmation",
-                areaName: UserConstants.Features.Users,
-                pattern: ResetPasswordConfirmationPath,
-                defaults: new
-                {
-                    controller = ResetPasswordControllerName,
-                    action = nameof(ResetPasswordController.ResetPasswordConfirmation),
-                }
-            );
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTransient<IConfigureOptions<IdentityOptions>, PasswordResetIdentityOptionsConfigurations>()
-                .AddTransient<PasswordResetTokenProvider>()
-                .AddOptions<PasswordResetTokenProviderOptions>();
-
-            services.Configure<TemplateOptions>(o =>
+        routes.MapAreaControllerRoute(
+            name: "ChangeEmail",
+            areaName: UserConstants.Features.Users,
+            pattern: ChangeEmailPath,
+            defaults: new
             {
-                o.MemberAccessStrategy.Register<LostPasswordViewModel>();
-            });
+                controller = ChangeEmailControllerName,
+                action = nameof(ChangeEmailController.Index),
+            }
+        );
 
-            services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
-            services.AddScoped<IDisplayDriver<ResetPasswordForm>, ResetPasswordFormDisplayDriver>();
-
-            services.AddScoped<IDisplayDriver<LoginForm>, ForgotPasswordLoginFormDisplayDriver>();
-            services.AddScoped<IDisplayDriver<ForgotPasswordForm>, ForgotPasswordFormDisplayDriver>();
-        }
-    }
-
-    [Feature(UserConstants.Features.ResetPassword)]
-    [RequireFeatures("OrchardCore.Deployment")]
-    public sealed class ResetPasswordDeploymentStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSiteSettingsPropertyDeploymentStep<ResetPasswordSettings, ResetPasswordDeploymentStartup>(S => S["Reset Password settings"], S => S["Exports the Reset Password settings."]);
-        }
-    }
-
-    [Feature("OrchardCore.Users.CustomUserSettings")]
-    public sealed class CustomUserSettingsStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
-            services.AddScoped<IPermissionProvider, CustomUserSettingsPermissions>();
-            services.AddDeployment<CustomUserSettingsDeploymentSource, CustomUserSettingsDeploymentStep, CustomUserSettingsDeploymentStepDriver>();
-            services.AddScoped<IStereotypesProvider, CustomUserSettingsStereotypesProvider>();
-
-            services.Configure<ContentTypeDefinitionOptions>(options =>
+        routes.MapAreaControllerRoute(
+            name: "ChangeEmailConfirmation",
+            areaName: UserConstants.Features.Users,
+            pattern: ChangeEmailConfirmationPath,
+            defaults: new
             {
-                options.Stereotypes.TryAdd("CustomUserSettings", new ContentTypeDefinitionDriverOptions
-                {
-                    ShowCreatable = false,
-                    ShowListable = false,
-                    ShowDraftable = false,
-                    ShowVersionable = false,
-                });
-            });
-        }
+                controller = ChangeEmailControllerName,
+                action = nameof(ChangeEmailController.ChangeEmailConfirmation),
+            }
+        );
     }
 
-    [RequireFeatures("OrchardCore.Deployment")]
-    public sealed class UserDeploymentStartup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        services.AddTransient<IConfigureOptions<IdentityOptions>, ChangeEmailIdentityOptionsConfigurations>()
+            .AddTransient<ChangeEmailTokenProvider>()
+            .AddOptions<ChangeEmailTokenProviderOptions>();
+
+        services.Configure<TemplateOptions>(o =>
         {
-            services.AddDeployment<AllUsersDeploymentSource, AllUsersDeploymentStep, AllUsersDeploymentStepDriver>();
-        }
+            o.MemberAccessStrategy.Register<ChangeEmailViewModel>();
+        });
+
+        services.AddSiteDisplayDriver<ChangeEmailSettingsDisplayDriver>();
+        services.AddNavigationProvider<ChangeEmailAdminMenu>();
+        services.AddScoped<IDisplayDriver<UserMenu>, ChangeEmailUserMenuDisplayDriver>();
+    }
+}
+
+[Feature("OrchardCore.Users.ChangeEmail")]
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class ChangeEmailDeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSiteSettingsPropertyDeploymentStep<ChangeEmailDeploymentStartup, ChangeEmailDeploymentStartup>(S => S["Change Email settings"], S => S["Exports the Change Email settings."]);
+    }
+}
+
+[Feature(UserConstants.Features.UserRegistration)]
+public sealed class RegistrationStartup : StartupBase
+{
+    private const string RegisterPath = nameof(RegistrationController.Register);
+    private const string ConfirmEmailSent = nameof(EmailConfirmationController.ConfirmEmailSent);
+    private const string RegistrationPending = nameof(RegistrationController.RegistrationPending);
+    private const string RegistrationControllerName = "Registration";
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.MapAreaControllerRoute(
+            name: RegisterPath,
+            areaName: UserConstants.Features.Users,
+            pattern: RegisterPath,
+            defaults: new
+            {
+                controller = RegistrationControllerName,
+                action = RegisterPath,
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: ConfirmEmailSent,
+            areaName: UserConstants.Features.Users,
+            pattern: ConfirmEmailSent,
+            defaults: new
+            {
+                controller = RegistrationControllerName,
+                action = ConfirmEmailSent,
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: RegistrationPending,
+            areaName: UserConstants.Features.Users,
+            pattern: RegistrationPending,
+            defaults: new
+            {
+                controller = RegistrationControllerName,
+                action = RegistrationPending,
+            }
+        );
+    }
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<TemplateOptions>(o =>
+        {
+            o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
+        });
+
+        services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
+        services.AddNavigationProvider<RegistrationAdminMenu>();
+
+        services.AddScoped<IDisplayDriver<LoginForm>, RegisterUserLoginFormDisplayDriver>();
+        services.AddScoped<IDisplayDriver<RegisterUserForm>, RegisterUserFormDisplayDriver>();
+    }
+}
+
+[Feature(UserConstants.Features.UserRegistration)]
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class RegistrationDeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSiteSettingsPropertyDeploymentStep<RegistrationSettings, RegistrationDeploymentStartup>(S => S["Registration settings"], S => S["Exports the Registration settings."]);
+    }
+}
+
+[Feature(UserConstants.Features.ResetPassword)]
+public sealed class ResetPasswordStartup : StartupBase
+{
+    private const string ForgotPasswordPath = "ForgotPassword";
+    private const string ForgotPasswordConfirmationPath = "ForgotPasswordConfirmation";
+    private const string ResetPasswordPath = "ResetPassword";
+    private const string ResetPasswordConfirmationPath = "ResetPasswordConfirmation";
+    private const string ResetPasswordControllerName = "ResetPassword";
+
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        routes.MapAreaControllerRoute(
+            name: "ForgotPassword",
+            areaName: UserConstants.Features.Users,
+            pattern: ForgotPasswordPath,
+            defaults: new
+            {
+                controller = ResetPasswordControllerName,
+                action = nameof(ResetPasswordController.ForgotPassword),
+            }
+        );
+        routes.MapAreaControllerRoute(
+            name: "ForgotPasswordConfirmation",
+            areaName: UserConstants.Features.Users,
+            pattern: ForgotPasswordConfirmationPath,
+            defaults: new
+            {
+                controller = ResetPasswordControllerName,
+                action = nameof(ResetPasswordController.ForgotPasswordConfirmation),
+            }
+        );
+        routes.MapAreaControllerRoute(
+            name: "ResetPassword",
+            areaName: UserConstants.Features.Users,
+            pattern: ResetPasswordPath,
+            defaults: new
+            {
+                controller = ResetPasswordControllerName,
+                action = nameof(ResetPasswordController.ResetPassword),
+            }
+        );
+        routes.MapAreaControllerRoute(
+            name: "ResetPasswordConfirmation",
+            areaName: UserConstants.Features.Users,
+            pattern: ResetPasswordConfirmationPath,
+            defaults: new
+            {
+                controller = ResetPasswordControllerName,
+                action = nameof(ResetPasswordController.ResetPasswordConfirmation),
+            }
+        );
+    }
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddTransient<IConfigureOptions<IdentityOptions>, PasswordResetIdentityOptionsConfigurations>()
+            .AddTransient<PasswordResetTokenProvider>()
+            .AddOptions<PasswordResetTokenProviderOptions>();
+
+        services.Configure<TemplateOptions>(o =>
+        {
+            o.MemberAccessStrategy.Register<LostPasswordViewModel>();
+        });
+
+        services.AddSiteDisplayDriver<ResetPasswordSettingsDisplayDriver>();
+        services.AddNavigationProvider<ResetPasswordAdminMenu>();
+
+        services.AddScoped<IDisplayDriver<ResetPasswordForm>, ResetPasswordFormDisplayDriver>();
+        services.AddScoped<IDisplayDriver<LoginForm>, ForgotPasswordLoginFormDisplayDriver>();
+        services.AddScoped<IDisplayDriver<ForgotPasswordForm>, ForgotPasswordFormDisplayDriver>();
+    }
+}
+
+[Feature(UserConstants.Features.ResetPassword)]
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class ResetPasswordDeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddSiteSettingsPropertyDeploymentStep<ResetPasswordSettings, ResetPasswordDeploymentStartup>(S => S["Reset Password settings"], S => S["Exports the Reset Password settings."]);
+    }
+}
+
+[Feature("OrchardCore.Users.CustomUserSettings")]
+public sealed class CustomUserSettingsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
+        services.AddPermissionProvider<CustomUserSettingsPermissions>();
+        services.AddDeployment<CustomUserSettingsDeploymentSource, CustomUserSettingsDeploymentStep, CustomUserSettingsDeploymentStepDriver>();
+        services.AddScoped<IStereotypesProvider, CustomUserSettingsStereotypesProvider>();
+
+        services.Configure<ContentTypeDefinitionOptions>(options =>
+        {
+            options.Stereotypes.TryAdd("CustomUserSettings", new ContentTypeDefinitionDriverOptions
+            {
+                ShowCreatable = false,
+                ShowListable = false,
+                ShowDraftable = false,
+                ShowVersionable = false,
+            });
+        });
+    }
+}
+
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class UserDeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDeployment<AllUsersDeploymentSource, AllUsersDeploymentStep, AllUsersDeploymentStepDriver>();
     }
 }

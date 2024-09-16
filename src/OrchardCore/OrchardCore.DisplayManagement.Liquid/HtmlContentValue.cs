@@ -1,104 +1,99 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 
-namespace OrchardCore.DisplayManagement.Liquid
+namespace OrchardCore.DisplayManagement.Liquid;
+
+public class HtmlContentValue : FluidValue
 {
-    public class HtmlContentValue : FluidValue
+    private readonly IHtmlContent _value;
+
+    public HtmlContentValue(IHtmlContent value)
     {
-        private readonly IHtmlContent _value;
+        _value = value;
+    }
 
-        public HtmlContentValue(IHtmlContent value)
+    public override FluidValues Type
+        => FluidValues.String;
+
+    public override bool Equals(FluidValue other)
+    {
+        if (other.IsNil())
         {
-            _value = value;
+            return _value == null;
         }
 
-        public override FluidValues Type
-            => FluidValues.String;
+        return _value == other;
+    }
 
-        public override bool Equals(FluidValue other)
+    protected override FluidValue GetIndex(FluidValue index, TemplateContext context)
+    {
+        return NilValue.Instance;
+    }
+
+    protected override FluidValue GetValue(string name, TemplateContext context)
+    {
+        return NilValue.Instance;
+    }
+
+    public override bool ToBooleanValue()
+    {
+        return true;
+    }
+
+    public override decimal ToNumberValue()
+    {
+        return 0;
+    }
+
+    public override string ToStringValue()
+    {
+        return _value.ToString();
+    }
+
+    public override ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
+    {
+        _value.WriteTo(writer, (HtmlEncoder)encoder);
+
+        return ValueTask.CompletedTask;
+    }
+
+    public override object ToObjectValue()
+    {
+        return _value;
+    }
+
+    public override bool Contains(FluidValue value)
+    {
+        return false;
+    }
+
+    public override IEnumerable<FluidValue> Enumerate(TemplateContext context)
+    {
+        return [];
+    }
+
+    public override bool Equals(object other)
+    {
+        // The is operator will return false if null
+        if (other is HtmlContentValue otherValue)
         {
-            if (other.IsNil())
-            {
-                return _value == null;
-            }
-
-            return _value == other;
+            return _value.Equals(otherValue._value);
         }
 
-        protected override FluidValue GetIndex(FluidValue index, TemplateContext context)
-        {
-            return NilValue.Instance;
-        }
+        return false;
+    }
 
-        protected override FluidValue GetValue(string name, TemplateContext context)
-        {
-            return NilValue.Instance;
-        }
+    public override int GetHashCode()
+    {
+        return _value.GetHashCode();
+    }
 
-        public override bool ToBooleanValue()
-        {
-            return true;
-        }
-
-        public override decimal ToNumberValue()
-        {
-            return 0;
-        }
-
-        public override string ToStringValue()
-        {
-            return _value.ToString();
-        }
-
-        public override ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
-        {
-            _value.WriteTo(writer, (HtmlEncoder)encoder);
-
-            return ValueTask.CompletedTask;
-        }
-
-        public override object ToObjectValue()
-        {
-            return _value;
-        }
-
-        public override bool Contains(FluidValue value)
-        {
-            return false;
-        }
-
-        public override IEnumerable<FluidValue> Enumerate(TemplateContext context)
-        {
-            return [];
-        }
-
-        public override bool Equals(object other)
-        {
-            // The is operator will return false if null
-            if (other is HtmlContentValue otherValue)
-            {
-                return _value.Equals(otherValue._value);
-            }
-
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            return _value.GetHashCode();
-        }
-
-        [Obsolete("WriteTo is obsolete, prefer the WriteToAsync method.")]
-        public override void WriteTo(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
-        {
-            _value.WriteTo(writer, (HtmlEncoder)encoder);
-        }
+    [Obsolete("WriteTo is obsolete, prefer the WriteToAsync method.")]
+    public override void WriteTo(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
+    {
+        _value.WriteTo(writer, (HtmlEncoder)encoder);
     }
 }

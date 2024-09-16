@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -45,7 +42,10 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
         {
             model.RequireTwoFactorAuthenticationForSpecificRoles = settings.RequireTwoFactorAuthenticationForSpecificRoles;
             var roles = await _roleService.GetRolesAsync();
-            model.Roles = roles.Select(role => new RoleEntry()
+
+            model.Roles = roles
+            .Where(role => !RoleHelper.SystemRoleNames.Contains(role.RoleName))
+            .Select(role => new RoleEntry()
             {
                 Role = role.RoleName,
                 IsSelected = settings.Roles != null && settings.Roles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
@@ -69,7 +69,8 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
 
         if (model.RequireTwoFactorAuthenticationForSpecificRoles)
         {
-            var roles = await _roleService.GetRolesAsync();
+            var roles = (await _roleService.GetRolesAsync())
+                .Where(role => !RoleHelper.SystemRoleNames.Contains(role.RoleName));
 
             var selectedRoles = model.Roles.Where(x => x.IsSelected)
                 .Join(roles, e => e.Role, r => r.RoleName, (e, r) => r.RoleName)

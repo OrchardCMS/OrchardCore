@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Admin.Models;
@@ -9,64 +7,63 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Admin.Drivers
+namespace OrchardCore.Admin.Drivers;
+
+public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSettings>
 {
-    public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSettings>
+    public const string GroupId = "admin";
+
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+
+    public AdminSiteSettingsDisplayDriver(
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService)
     {
-        public const string GroupId = "admin";
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+    }
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
+    protected override string SettingsGroupId
+        => GroupId;
 
-        public AdminSiteSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+    public override async Task<IDisplayResult> EditAsync(ISite site, AdminSettings settings, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        if (!await _authorizationService.AuthorizeAsync(user, PermissionsAdminSettings.ManageAdminSettings))
         {
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
+            return null;
         }
 
-        protected override string SettingsGroupId
-            => GroupId;
-
-        public override async Task<IDisplayResult> EditAsync(ISite site, AdminSettings settings, BuildEditorContext context)
+        return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
         {
-            var user = _httpContextAccessor.HttpContext?.User;
+            model.DisplayThemeToggler = settings.DisplayThemeToggler;
+            model.DisplayMenuFilter = settings.DisplayMenuFilter;
+            model.DisplayNewMenu = settings.DisplayNewMenu;
+            model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
+        }).Location("Content:3")
+        .OnGroup(SettingsGroupId);
+    }
 
-            if (!await _authorizationService.AuthorizeAsync(user, PermissionsAdminSettings.ManageAdminSettings))
-            {
-                return null;
-            }
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, AdminSettings settings, UpdateEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
 
-            return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
-            {
-                model.DisplayThemeToggler = settings.DisplayThemeToggler;
-                model.DisplayMenuFilter = settings.DisplayMenuFilter;
-                model.DisplayNewMenu = settings.DisplayNewMenu;
-                model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
-            }).Location("Content:3")
-            .OnGroup(SettingsGroupId);
+        if (!await _authorizationService.AuthorizeAsync(user, PermissionsAdminSettings.ManageAdminSettings))
+        {
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ISite site, AdminSettings settings, UpdateEditorContext context)
-        {
-            var user = _httpContextAccessor.HttpContext?.User;
+        var model = new AdminSettingsViewModel();
 
-            if (!await _authorizationService.AuthorizeAsync(user, PermissionsAdminSettings.ManageAdminSettings))
-            {
-                return null;
-            }
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            var model = new AdminSettingsViewModel();
+        settings.DisplayThemeToggler = model.DisplayThemeToggler;
+        settings.DisplayMenuFilter = model.DisplayMenuFilter;
+        settings.DisplayNewMenu = model.DisplayNewMenu;
+        settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-            settings.DisplayThemeToggler = model.DisplayThemeToggler;
-            settings.DisplayMenuFilter = model.DisplayMenuFilter;
-            settings.DisplayNewMenu = model.DisplayNewMenu;
-            settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;
-
-            return await EditAsync(site, settings, context);
-        }
+        return await EditAsync(site, settings, context);
     }
 }

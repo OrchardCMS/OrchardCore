@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Cysharp.Text;
 using Fluid;
 using Fluid.Ast;
@@ -11,165 +7,164 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.Resources.Liquid
+namespace OrchardCore.Resources.Liquid;
+
+public class StyleBlock
 {
-    public class StyleBlock
+    private static readonly char[] _separators = [',', ' '];
+
+    public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
     {
-        private static readonly char[] _separators = [',', ' '];
+        var services = ((LiquidTemplateContext)context).Services;
+        var resourceManager = services.GetRequiredService<IResourceManager>();
 
-        public static async ValueTask<Completion> WriteToAsync(IReadOnlyList<FilterArgument> argumentsList, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
+        string name = null;
+        string condition = null;
+        string culture = null;
+        bool? debug = null;
+        string dependsOn = null;
+        string version = null;
+        var at = ResourceLocation.Unspecified;
+
+        Dictionary<string, string> customAttributes = null;
+
+        foreach (var argument in argumentsList)
         {
-            var services = ((LiquidTemplateContext)context).Services;
-            var resourceManager = services.GetRequiredService<IResourceManager>();
-
-            string name = null;
-            string condition = null;
-            string culture = null;
-            bool? debug = null;
-            string dependsOn = null;
-            string version = null;
-            var at = ResourceLocation.Unspecified;
-
-            Dictionary<string, string> customAttributes = null;
-
-            foreach (var argument in argumentsList)
+            switch (argument.Name)
             {
-                switch (argument.Name)
+                case "name": name = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "condition": condition = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "culture": culture = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "debug": debug = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(); break;
+                case "depends_on": dependsOn = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "version": version = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                case "at": Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), ignoreCase: true, out at); break;
+                default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(name))
+        {
+            // Resource required
+
+            var setting = resourceManager.RegisterResource("stylesheet", name);
+
+            if (customAttributes != null)
+            {
+                foreach (var attribute in customAttributes)
                 {
-                    case "name": name = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "condition": condition = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "culture": culture = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "debug": debug = (await argument.Expression.EvaluateAsync(context)).ToBooleanValue(); break;
-                    case "depends_on": dependsOn = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "version": version = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
-                    case "at": Enum.TryParse((await argument.Expression.EvaluateAsync(context)).ToStringValue(), ignoreCase: true, out at); break;
-                    default: (customAttributes ??= [])[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToStringValue(); break;
+                    setting.SetAttribute(attribute.Key, attribute.Value);
                 }
             }
 
-            if (!string.IsNullOrEmpty(name))
+            if (at != ResourceLocation.Unspecified)
             {
-                // Resource required
-
-                var setting = resourceManager.RegisterResource("stylesheet", name);
-
-                if (customAttributes != null)
-                {
-                    foreach (var attribute in customAttributes)
-                    {
-                        setting.SetAttribute(attribute.Key, attribute.Value);
-                    }
-                }
-
-                if (at != ResourceLocation.Unspecified)
-                {
-                    setting.AtLocation(at);
-                }
-                else
-                {
-                    setting.AtLocation(ResourceLocation.Head);
-                }
-
-                if (!string.IsNullOrEmpty(condition))
-                {
-                    setting.UseCondition(condition);
-                }
-
-                if (debug != null)
-                {
-                    setting.UseDebugMode(debug.Value);
-                }
-
-                if (!string.IsNullOrEmpty(culture))
-                {
-                    setting.UseCulture(culture);
-                }
-
-                if (!string.IsNullOrEmpty(version))
-                {
-                    setting.UseVersion(version);
-                }
-
-                // This allows additions to the pre registered style dependencies.
-                if (!string.IsNullOrEmpty(dependsOn))
-                {
-                    setting.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
-                }
-
-                var content = "";
-
-                if (statements != null && statements.Count > 0)
-                {
-                    using var sw = new ZStringWriter();
-                    var completion = await statements.RenderStatementsAsync(sw, encoder, context);
-
-                    if (completion != Completion.Normal)
-                    {
-                        return completion;
-                    }
-
-                    content = sw.ToString();
-                }
-
-                if (!string.IsNullOrWhiteSpace(content))
-                {
-                    // Inline named style definition
-                    resourceManager.InlineManifest.DefineStyle(name).SetInnerContent(content);
-                }
-
-                if (at == ResourceLocation.Inline)
-                {
-                    resourceManager.RenderLocalStyle(setting, writer);
-                }
+                setting.AtLocation(at);
             }
             else
             {
-                // Custom style content
+                setting.AtLocation(ResourceLocation.Head);
+            }
 
-                var content = "";
+            if (!string.IsNullOrEmpty(condition))
+            {
+                setting.UseCondition(condition);
+            }
 
-                if (statements != null && statements.Count > 0)
+            if (debug != null)
+            {
+                setting.UseDebugMode(debug.Value);
+            }
+
+            if (!string.IsNullOrEmpty(culture))
+            {
+                setting.UseCulture(culture);
+            }
+
+            if (!string.IsNullOrEmpty(version))
+            {
+                setting.UseVersion(version);
+            }
+
+            // This allows additions to the pre registered style dependencies.
+            if (!string.IsNullOrEmpty(dependsOn))
+            {
+                setting.SetDependencies(dependsOn.Split(_separators, StringSplitOptions.RemoveEmptyEntries));
+            }
+
+            var content = "";
+
+            if (statements != null && statements.Count > 0)
+            {
+                using var sw = new ZStringWriter();
+                var completion = await statements.RenderStatementsAsync(sw, encoder, context);
+
+                if (completion != Completion.Normal)
                 {
-                    using var sw = new ZStringWriter();
-                    var completion = await statements.RenderStatementsAsync(sw, encoder, context);
-
-                    if (completion != Completion.Normal)
-                    {
-                        return completion;
-                    }
-
-                    content = sw.ToString();
+                    return completion;
                 }
 
-                var builder = new TagBuilder("style");
-                builder.InnerHtml.AppendHtml(content);
-                builder.TagRenderMode = TagRenderMode.Normal;
+                content = sw.ToString();
+            }
 
-                if (customAttributes != null)
+            if (!string.IsNullOrWhiteSpace(content))
+            {
+                // Inline named style definition
+                resourceManager.InlineManifest.DefineStyle(name).SetInnerContent(content);
+            }
+
+            if (at == ResourceLocation.Inline)
+            {
+                resourceManager.RenderLocalStyle(setting, writer);
+            }
+        }
+        else
+        {
+            // Custom style content
+
+            var content = "";
+
+            if (statements != null && statements.Count > 0)
+            {
+                using var sw = new ZStringWriter();
+                var completion = await statements.RenderStatementsAsync(sw, encoder, context);
+
+                if (completion != Completion.Normal)
                 {
-                    foreach (var attribute in customAttributes)
-                    {
-                        builder.Attributes.Add(attribute.Key, attribute.Value);
-                    }
+                    return completion;
                 }
 
-                // If no type was specified, define a default one
-                if (!builder.Attributes.ContainsKey("type"))
-                {
-                    builder.Attributes.Add("type", "text/css");
-                }
+                content = sw.ToString();
+            }
 
-                if (at == ResourceLocation.Inline)
+            var builder = new TagBuilder("style");
+            builder.InnerHtml.AppendHtml(content);
+            builder.TagRenderMode = TagRenderMode.Normal;
+
+            if (customAttributes != null)
+            {
+                foreach (var attribute in customAttributes)
                 {
-                    builder.WriteTo(writer, (HtmlEncoder)encoder);
-                }
-                else
-                {
-                    resourceManager.RegisterStyle(builder);
+                    builder.Attributes.Add(attribute.Key, attribute.Value);
                 }
             }
 
-            return Completion.Normal;
+            // If no type was specified, define a default one
+            if (!builder.Attributes.ContainsKey("type"))
+            {
+                builder.Attributes.Add("type", "text/css");
+            }
+
+            if (at == ResourceLocation.Inline)
+            {
+                builder.WriteTo(writer, (HtmlEncoder)encoder);
+            }
+            else
+            {
+                resourceManager.RegisterStyle(builder);
+            }
         }
+
+        return Completion.Normal;
     }
 }

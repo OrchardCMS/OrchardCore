@@ -1,66 +1,62 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Media.Deployment
+namespace OrchardCore.Media.Deployment;
+
+public class MediaDeploymentSource : IDeploymentSource
 {
-    public class MediaDeploymentSource : IDeploymentSource
+    private readonly IMediaFileStore _mediaFileStore;
+
+    public MediaDeploymentSource(IMediaFileStore mediaFileStore)
     {
-        private readonly IMediaFileStore _mediaFileStore;
+        _mediaFileStore = mediaFileStore;
+    }
 
-        public MediaDeploymentSource(IMediaFileStore mediaFileStore)
+    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    {
+        if (step is not MediaDeploymentStep mediaStep)
         {
-            _mediaFileStore = mediaFileStore;
+            return;
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        IAsyncEnumerable<string> paths = null;
+
+        if (mediaStep.IncludeAll)
         {
-            if (step is not MediaDeploymentStep mediaStep)
+            paths = _mediaFileStore.GetDirectoryContentAsync(null, true).Where(e => !e.IsDirectory).Select(e => e.Path);
+        }
+        else
+        {
+            paths = new List<string>(mediaStep.FilePaths ?? []).ToAsyncEnumerable();
+
+            foreach (var directoryPath in mediaStep.DirectoryPaths ?? [])
             {
-                return;
+                paths = paths.Concat(_mediaFileStore.GetDirectoryContentAsync(directoryPath, true).Where(e => !e.IsDirectory).Select(e => e.Path));
             }
 
-            IAsyncEnumerable<string> paths = null;
-
-            if (mediaStep.IncludeAll)
-            {
-                paths = _mediaFileStore.GetDirectoryContentAsync(null, true).Where(e => !e.IsDirectory).Select(e => e.Path);
-            }
-            else
-            {
-                paths = new List<string>(mediaStep.FilePaths ?? []).ToAsyncEnumerable();
-
-                foreach (var directoryPath in mediaStep.DirectoryPaths ?? [])
-                {
-                    paths = paths.Concat(_mediaFileStore.GetDirectoryContentAsync(directoryPath, true).Where(e => !e.IsDirectory).Select(e => e.Path));
-                }
-
-                paths = paths.OrderBy(p => p);
-            }
-
-            var output = await paths.Select(p => new MediaDeploymentStepModel { SourcePath = p, TargetPath = p }).ToArrayAsync();
-
-            foreach (var path in output)
-            {
-                var stream = await _mediaFileStore.GetFileStreamAsync(path.SourcePath);
-
-                await result.FileBuilder.SetFileAsync(path.SourcePath, stream);
-            }
-
-            // Adding media files
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "media",
-                ["Files"] = JArray.FromObject(output),
-            });
+            paths = paths.OrderBy(p => p);
         }
 
-        private sealed class MediaDeploymentStepModel
+        var output = await paths.Select(p => new MediaDeploymentStepModel { SourcePath = p, TargetPath = p }).ToArrayAsync();
+
+        foreach (var path in output)
         {
-            public string SourcePath { get; set; }
-            public string TargetPath { get; set; }
+            var stream = await _mediaFileStore.GetFileStreamAsync(path.SourcePath);
+
+            await result.FileBuilder.SetFileAsync(path.SourcePath, stream);
         }
+
+        // Adding media files
+        result.Steps.Add(new JsonObject
+        {
+            ["name"] = "media",
+            ["Files"] = JArray.FromObject(output),
+        });
+    }
+
+    private sealed class MediaDeploymentStepModel
+    {
+        public string SourcePath { get; set; }
+        public string TargetPath { get; set; }
     }
 }

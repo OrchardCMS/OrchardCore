@@ -1,37 +1,34 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
 
-namespace OrchardCore.Forms.Drivers
+namespace OrchardCore.Forms.Drivers;
+
+public sealed class LabelPartDisplayDriver : ContentPartDisplayDriver<LabelPart>
 {
-    public sealed class LabelPartDisplayDriver : ContentPartDisplayDriver<LabelPart>
+    public override IDisplayResult Display(LabelPart part, BuildPartDisplayContext context)
     {
-        public override IDisplayResult Display(LabelPart part, BuildPartDisplayContext context)
+        return View("LabelPart", part).Location("Detail", "Content");
+    }
+
+    public override IDisplayResult Edit(LabelPart part, BuildPartEditorContext context)
+    {
+        return Initialize<LabelPartEditViewModel>("LabelPart_Fields_Edit", m =>
         {
-            return View("LabelPart", part).Location("Detail", "Content");
-        }
+            m.For = part.For;
+        });
+    }
 
-        public override IDisplayResult Edit(LabelPart part, BuildPartEditorContext context)
-        {
-            return Initialize<LabelPartEditViewModel>("LabelPart_Fields_Edit", m =>
-            {
-                m.For = part.For;
-            });
-        }
+    public override async Task<IDisplayResult> UpdateAsync(LabelPart part, UpdatePartEditorContext context)
+    {
+        var viewModel = new LabelPartEditViewModel();
 
-        public override async Task<IDisplayResult> UpdateAsync(LabelPart part, UpdatePartEditorContext context)
-        {
-            var viewModel = new LabelPartEditViewModel();
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
-            await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
+        part.For = viewModel.For?.Trim();
 
-            part.For = viewModel.For?.Trim();
-
-            return Edit(part, context);
-        }
+        return Edit(part, context);
     }
 }

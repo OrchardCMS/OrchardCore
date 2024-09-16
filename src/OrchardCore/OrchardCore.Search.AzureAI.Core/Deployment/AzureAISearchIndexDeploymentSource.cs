@@ -1,6 +1,4 @@
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Search.AzureAI.Deployment.Models;
 using OrchardCore.Search.AzureAI.Models;

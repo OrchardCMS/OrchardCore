@@ -1,4 +1,3 @@
-namespace OrchardCore.ContentTypes.Events
-{
-    public class ContentPartUpdatedContext : ContentPartContext { }
-}
+namespace OrchardCore.ContentTypes.Events;
+
+public class ContentPartUpdatedContext : ContentPartContext { }

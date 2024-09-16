@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.Notifications.ViewModels;
 
 public class UserNotificationNavbarViewModel

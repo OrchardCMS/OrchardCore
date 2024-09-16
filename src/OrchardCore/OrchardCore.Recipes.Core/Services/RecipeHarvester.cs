@@ -1,71 +1,65 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 
-namespace OrchardCore.Recipes.Services
+namespace OrchardCore.Recipes.Services;
+
+public class RecipeHarvester : IRecipeHarvester
 {
-    public class RecipeHarvester : IRecipeHarvester
+    private readonly IRecipeReader _recipeReader;
+    private readonly IExtensionManager _extensionManager;
+    private readonly IHostEnvironment _hostingEnvironment;
+    private readonly ILogger _logger;
+
+    public RecipeHarvester(
+        IRecipeReader recipeReader,
+        IExtensionManager extensionManager,
+        IHostEnvironment hostingEnvironment,
+        ILogger<RecipeHarvester> logger)
     {
-        private readonly IRecipeReader _recipeReader;
-        private readonly IExtensionManager _extensionManager;
-        private readonly IHostEnvironment _hostingEnvironment;
-        private readonly ILogger _logger;
+        _recipeReader = recipeReader;
+        _extensionManager = extensionManager;
+        _hostingEnvironment = hostingEnvironment;
+        _logger = logger;
+    }
 
-        public RecipeHarvester(
-            IRecipeReader recipeReader,
-            IExtensionManager extensionManager,
-            IHostEnvironment hostingEnvironment,
-            ILogger<RecipeHarvester> logger)
+    /// <inheritdoc/>
+    public virtual Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
+        => _extensionManager.GetExtensions().InvokeAsync(GetRecipesAsync, _logger);
+
+    /// <summary>
+    /// Returns a list of recipes for a content path.
+    /// </summary>
+    /// <param name="path">A path string relative to the content root of the application.</param>
+    /// <returns>The list of <see cref="RecipeDescriptor"/> instances.</returns>
+    protected async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string path)
+    {
+        var recipeDescriptors = new List<RecipeDescriptor>();
+
+        var recipeFiles = _hostingEnvironment.ContentRootFileProvider.GetDirectoryContents(path)
+            .Where(f => !f.IsDirectory && f.Name.EndsWith(RecipesConstants.RecipeExtension, StringComparison.Ordinal));
+
+        foreach (var recipeFile in recipeFiles)
         {
-            _recipeReader = recipeReader;
-            _extensionManager = extensionManager;
-            _hostingEnvironment = hostingEnvironment;
-            _logger = logger;
-        }
+            var recipeDescriptor = await _recipeReader.GetRecipeDescriptorAsync(path, recipeFile, _hostingEnvironment.ContentRootFileProvider);
 
-        /// <inheritdoc/>
-        public virtual Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync()
-            => _extensionManager.GetExtensions().InvokeAsync(GetRecipesAsync, _logger);
-
-        /// <summary>
-        /// Returns a list of recipes for a content path.
-        /// </summary>
-        /// <param name="path">A path string relative to the content root of the application.</param>
-        /// <returns>The list of <see cref="RecipeDescriptor"/> instances.</returns>
-        protected async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string path)
-        {
-            var recipeDescriptors = new List<RecipeDescriptor>();
-
-            var recipeFiles = _hostingEnvironment.ContentRootFileProvider.GetDirectoryContents(path)
-                .Where(f => !f.IsDirectory && f.Name.EndsWith(RecipesConstants.RecipeExtension, StringComparison.Ordinal));
-
-            foreach (var recipeFile in recipeFiles)
+            if (recipeDescriptor == null)
             {
-                var recipeDescriptor = await _recipeReader.GetRecipeDescriptorAsync(path, recipeFile, _hostingEnvironment.ContentRootFileProvider);
-
-                if (recipeDescriptor == null)
-                {
-                    continue;
-                }
-
-                recipeDescriptors.Add(recipeDescriptor);
+                continue;
             }
 
-            return recipeDescriptors;
+            recipeDescriptors.Add(recipeDescriptor);
         }
 
-        private Task<IEnumerable<RecipeDescriptor>> GetRecipesAsync(IExtensionInfo extension)
-        {
-            var folderSubPath = PathExtensions.Combine(extension.SubPath, RecipesConstants.RecipesFolderName);
+        return recipeDescriptors;
+    }
 
-            return HarvestRecipesAsync(folderSubPath);
-        }
+    private Task<IEnumerable<RecipeDescriptor>> GetRecipesAsync(IExtensionInfo extension)
+    {
+        var folderSubPath = PathExtensions.Combine(extension.SubPath, RecipesConstants.RecipesFolderName);
+
+        return HarvestRecipesAsync(folderSubPath);
     }
 }

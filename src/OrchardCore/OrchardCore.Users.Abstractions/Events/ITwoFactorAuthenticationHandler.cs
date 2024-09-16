@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.Users.Events;
 
 public interface ITwoFactorAuthenticationHandler

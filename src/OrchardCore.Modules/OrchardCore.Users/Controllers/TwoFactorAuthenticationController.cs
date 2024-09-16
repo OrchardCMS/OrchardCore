@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +21,7 @@ namespace OrchardCore.Users.Controllers;
 
 [Authorize]
 [Feature(UserConstants.Features.TwoFactorAuthentication)]
-public class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseController, IUpdateModel
+public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseController, IUpdateModel
 {
     private readonly ILogger _logger;
     private readonly IEnumerable<ILoginFormEvent> _accountEvents;

@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Azure;
 using Azure.Communication.Email;
 using Microsoft.Extensions.Localization;

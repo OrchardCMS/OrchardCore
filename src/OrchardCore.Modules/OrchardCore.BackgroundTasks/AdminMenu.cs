@@ -1,34 +1,30 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.BackgroundTasks
+namespace OrchardCore.BackgroundTasks;
+
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    public sealed class AdminMenu : INavigationProvider
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        internal readonly IStringLocalizer S;
+        S = stringLocalizer;
+    }
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer) => S = localizer;
-
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!NavigationHelper.IsAdminMenu(name))
-            {
-                return Task.CompletedTask;
-            }
-
-            builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Tasks"], S["Tasks"].PrefixPosition(), tasks => tasks
-                        .Add(S["Background Tasks"], S["Background Tasks"].PrefixPosition(), backgroundTasks => backgroundTasks
-                            .Action("Index", "BackgroundTask", "OrchardCore.BackgroundTasks")
-                            .Permission(Permissions.ManageBackgroundTasks)
-                            .LocalNav()
-                        )
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        builder
+            .Add(S["Configuration"], configuration => configuration
+                .Add(S["Tasks"], S["Tasks"].PrefixPosition(), tasks => tasks
+                    .Add(S["Background Tasks"], S["Background Tasks"].PrefixPosition(), backgroundTasks => backgroundTasks
+                        .Action("Index", "BackgroundTask", "OrchardCore.BackgroundTasks")
+                        .Permission(Permissions.ManageBackgroundTasks)
+                        .LocalNav()
                     )
-                );
+                )
+            );
 
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

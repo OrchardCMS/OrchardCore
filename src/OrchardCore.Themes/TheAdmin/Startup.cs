@@ -5,21 +5,20 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.Themes.TheAdmin
+namespace OrchardCore.Themes.TheAdmin;
+
+public sealed class Startup : StartupBase
 {
-    public sealed class Startup : StartupBase
+    private readonly IShellConfiguration _configuration;
+
+    public Startup(IShellConfiguration configuration)
     {
-        private readonly IShellConfiguration _configuration;
+        _configuration = configuration;
+    }
 
-        public Startup(IShellConfiguration configuration)
-        {
-            _configuration = configuration;
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
-            services.Configure<TheAdminThemeOptions>(_configuration.GetSection("TheAdminTheme:StyleSettings"));
-        }
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        services.Configure<TheAdminThemeOptions>(_configuration.GetSection("TheAdminTheme:StyleSettings"));
     }
 }

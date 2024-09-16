@@ -5,22 +5,21 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
 
-namespace OrchardCore.ReCaptcha.Forms
+namespace OrchardCore.ReCaptcha.Forms;
+
+[RequireFeatures("OrchardCore.Forms", "OrchardCore.ReCaptcha")]
+public sealed class Startup : StartupBase
 {
-    [RequireFeatures("OrchardCore.Forms", "OrchardCore.ReCaptcha")]
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        services.Configure<TemplateOptions>(o =>
         {
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<ReCaptchaPart>();
-            });
+            o.MemberAccessStrategy.Register<ReCaptchaPart>();
+        });
 
-            services.AddContentPart<ReCaptchaPart>()
-                .UseDisplayDriver<ReCaptchaPartDisplayDriver>();
+        services.AddContentPart<ReCaptchaPart>()
+            .UseDisplayDriver<ReCaptchaPartDisplayDriver>();
 
-            services.AddDataMigration<Migrations>();
-        }
+        services.AddDataMigration<Migrations>();
     }
 }

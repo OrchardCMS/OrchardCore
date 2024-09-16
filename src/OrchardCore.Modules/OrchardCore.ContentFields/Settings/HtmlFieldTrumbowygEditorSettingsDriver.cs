@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Acornima;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
@@ -10,64 +8,63 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 
-namespace OrchardCore.ContentFields.Settings
+namespace OrchardCore.ContentFields.Settings;
+
+public sealed class HtmlFieldTrumbowygEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<HtmlField>
 {
-    public sealed class HtmlFieldTrumbowygEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<HtmlField>
+    internal readonly IStringLocalizer S;
+
+    public HtmlFieldTrumbowygEditorSettingsDriver(IStringLocalizer<HtmlFieldTrumbowygEditorSettingsDriver> stringLocalizer)
     {
-        internal readonly IStringLocalizer S;
+        S = stringLocalizer;
+    }
 
-        public HtmlFieldTrumbowygEditorSettingsDriver(IStringLocalizer<HtmlFieldTrumbowygEditorSettingsDriver> stringLocalizer)
+    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+    {
+        return Initialize<TrumbowygSettingsViewModel>("HtmlFieldTrumbowygEditorSettings_Edit", model =>
         {
-            S = stringLocalizer;
-        }
+            var settings = partFieldDefinition.GetSettings<HtmlFieldTrumbowygEditorSettings>();
 
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
+            model.Options = settings.Options;
+            model.InsertMediaWithUrl = settings.InsertMediaWithUrl;
+        }).Location("Editor");
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+    {
+        if (partFieldDefinition.Editor() == "Trumbowyg")
         {
-            return Initialize<TrumbowygSettingsViewModel>("HtmlFieldTrumbowygEditorSettings_Edit", model =>
+            var model = new TrumbowygSettingsViewModel();
+
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            try
             {
-                var settings = partFieldDefinition.GetSettings<HtmlFieldTrumbowygEditorSettings>();
+                var options = model.Options.Trim();
 
-                model.Options = settings.Options;
-                model.InsertMediaWithUrl = settings.InsertMediaWithUrl;
-            }).Location("Editor");
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
-        {
-            if (partFieldDefinition.Editor() == "Trumbowyg")
-            {
-                var model = new TrumbowygSettingsViewModel();
-
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                try
+                if (!options.StartsWith('{') || !options.EndsWith('}'))
                 {
-                    var options = model.Options.Trim();
-
-                    if (!options.StartsWith('{') || !options.EndsWith('}'))
-                    {
-                        throw new Exception();
-                    }
-
-                    var parser = new Parser();
-
-                    var optionsScript = parser.ParseScript("var config = " + options);
-
-                    var settings = new HtmlFieldTrumbowygEditorSettings
-                    {
-                        InsertMediaWithUrl = model.InsertMediaWithUrl,
-                        Options = options
-                    };
-
-                    context.Builder.WithSettings(settings);
+                    throw new Exception();
                 }
-                catch
+
+                var parser = new Parser();
+
+                var optionsScript = parser.ParseScript("var config = " + options);
+
+                var settings = new HtmlFieldTrumbowygEditorSettings
                 {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Options), S["The options are written in an incorrect format."]);
-                }
+                    InsertMediaWithUrl = model.InsertMediaWithUrl,
+                    Options = options
+                };
+
+                context.Builder.WithSettings(settings);
             }
-
-            return Edit(partFieldDefinition, context);
+            catch
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Options), S["The options are written in an incorrect format."]);
+            }
         }
+
+        return Edit(partFieldDefinition, context);
     }
 }
