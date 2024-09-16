@@ -1,3 +1,4 @@
+using System.Dynamic;
 using System.Globalization;
 using System.Numerics;
 using System.Text.Json.Nodes;
@@ -122,6 +123,38 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
         {
             return value?.ToString() ?? string.Empty;
         }
+    }
+
+    public override bool TryConvert(ConvertBinder binder, out object? result)
+    {
+        if (!binder.Explicit)
+        {
+            try
+            {
+                if (_jsonValue is null || _jsonValue.GetValueKind() == JsonValueKind.Null)
+                {
+                    if (binder.Type.IsValueType && 
+                        (!binder.Type.IsGenericType || binder.Type.GetGenericTypeDefinition() != typeof(Nullable<>)))
+                    {
+                        // Create default instance of the value type.
+                        result = Activator.CreateInstance(binder.Type);
+                    }
+                    else
+                    {
+                        result = null;
+                    }
+                }
+                else
+                {
+                    result = ((IConvertible)this).ToType(binder.Type, CultureInfo.InvariantCulture);
+                }
+
+                return true;
+            }
+            catch (Exception) { }
+        }
+
+        return base.TryConvert(binder, out result);
     }
 
     TypeCode IConvertible.GetTypeCode()

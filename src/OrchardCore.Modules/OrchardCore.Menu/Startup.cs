@@ -4,7 +4,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Menu.Drivers;
 using OrchardCore.Menu.Handlers;
 using OrchardCore.Menu.Models;
@@ -22,7 +22,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDataMigration<Migrations>();
-        services.AddScoped<IShapeTableProvider, MenuShapes>();
+        services.AddShapeTableProvider<MenuShapes>();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
 

@@ -67,7 +67,7 @@ public sealed class ContentTypesSitemapSourceDriver : DisplayDriver<SitemapSourc
             model.ChangeFrequency = sitemapSource.ChangeFrequency;
             model.ContentTypes = entries;
             model.LimitedContentTypes = limitedEntries;
-            model.LimitedContentType = limitedCtd != null ? limitedCtd.Name : contentTypeDefinitions.FirstOrDefault().Name;
+            model.LimitedContentType = limitedCtd is null ? contentTypeDefinitions.FirstOrDefault()?.Name : limitedCtd.Name;
             model.SitemapSource = sitemapSource;
         }).Location("Content");
     }
