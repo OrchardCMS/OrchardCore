@@ -8,13 +8,14 @@ namespace OrchardCore.Redis.Services;
 /// <summary>
 /// Wrapper preventing the <see cref="RedisCache"/> to dispose a shared <see cref="IConnectionMultiplexer"/>.
 /// </summary>
-public sealed class RedisCacheWrapper : IDistributedCache, IDisposable
+/// <remarks>
+/// This is done by not disposing the `RedisCache` instance which would otherwise close the redis connection.
+/// </remarks>
+public sealed class RedisCacheWrapper : IDistributedCache
 {
     private readonly RedisCache _cache;
 
     public RedisCacheWrapper(IOptions<RedisCacheOptions> optionsAccessor) => _cache = new RedisCache(optionsAccessor);
-
-    public void Dispose() => _cache.Dispose();
 
     public byte[] Get(string key) => _cache.Get(key);
 
