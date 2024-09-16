@@ -51,8 +51,7 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
                 model.MaxVisibleNotifications = _notificationOptions.TotalUnreadNotifications;
                 model.TotalUnread = notifications.Count;
 
-            })
-            .Location("Detail", "Content:9")
+            }).Location("Detail", "Content:9")
             .Location("DetailAdmin", "Content:9");
 
         if (_notificationOptions.AbsoluteCacheExpirationSeconds > 0 || _notificationOptions.SlidingCacheExpirationSeconds > 0)
@@ -69,7 +68,8 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
                     {
                         context.WithExpiryAfter(TimeSpan.FromSeconds(_notificationOptions.AbsoluteCacheExpirationSeconds));
                     }
-                    else if (_notificationOptions.SlidingCacheExpirationSeconds > 0)
+
+                    if (_notificationOptions.SlidingCacheExpirationSeconds > 0)
                     {
                         context.WithExpirySliding(TimeSpan.FromSeconds(_notificationOptions.SlidingCacheExpirationSeconds));
                     }
