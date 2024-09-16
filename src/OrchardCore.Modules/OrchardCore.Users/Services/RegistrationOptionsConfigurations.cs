@@ -4,7 +4,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services;
 
-public class RegistrationOptionsConfigurations : IConfigureOptions<RegistrationOptions>
+public sealed class RegistrationOptionsConfigurations : IConfigureOptions<RegistrationOptions>
 {
     private readonly ISiteService _siteService;
 
