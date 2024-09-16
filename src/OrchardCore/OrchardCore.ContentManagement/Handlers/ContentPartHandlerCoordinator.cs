@@ -265,6 +265,11 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
 
         foreach (var typePartDefinition in contentTypeDefinition.Parts)
         {
+            if (typePartDefinition.PartDefinition is null)
+            {
+                continue;
+            }
+
             var partName = typePartDefinition.PartDefinition.Name;
             var activator = _contentPartFactory.GetTypeActivator(partName);
             var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
@@ -277,7 +282,7 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
             var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
             await partHandlers.InvokeAsync((handler, context, part) => handler.GetContentItemAspectAsync(context, part), context, part, _logger);
 
-            if (typePartDefinition.PartDefinition?.Fields == null)
+            if (typePartDefinition.PartDefinition.Fields is null)
             {
                 continue;
             }
@@ -334,6 +339,11 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
 
         foreach (var typePartDefinition in contentTypeDefinition.Parts)
         {
+            if (typePartDefinition.PartDefinition is null)
+            {
+                continue;
+            }
+
             var partName = typePartDefinition.PartDefinition.Name;
             var partActivator = _contentPartFactory.GetTypeActivator(partName);
             var part = context.ContentItem.Get(partActivator.Type, typePartDefinition.Name) as ContentPart;
@@ -352,7 +362,7 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
             var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
             await partHandlers.InvokeAsync(partHandlerAction, context, part, _logger);
 
-            if (typePartDefinition.PartDefinition?.Fields == null)
+            if (typePartDefinition.PartDefinition.Fields == null)
             {
                 continue;
             }
@@ -403,6 +413,11 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
 
         foreach (var typePartDefinition in contentTypeDefinition.Parts)
         {
+            if (typePartDefinition.PartDefinition is null)
+            {
+                continue;
+            }
+
             var partName = typePartDefinition.PartDefinition.Name;
             var partActivator = _contentPartFactory.GetTypeActivator(partName);
 
@@ -418,7 +433,7 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
 
             await partHandlers.InvokeAsync(partHandlerAction, context, existingPart, buildingPart, _logger);
 
-            if (typePartDefinition.PartDefinition?.Fields == null)
+            if (typePartDefinition.PartDefinition.Fields == null)
             {
                 continue;
             }
@@ -459,6 +474,12 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
 
         foreach (var typePartDefinition in contentTypeDefinition.Parts)
         {
+
+            if (typePartDefinition.PartDefinition is null)
+            {
+                continue;
+            }
+
             var partName = typePartDefinition.PartDefinition.Name;
             var partActivator = _contentPartFactory.GetTypeActivator(partName);
             var part = context.ContentItem.Get(partActivator.Type, typePartDefinition.Name) as ContentPart;
@@ -483,7 +504,7 @@ public class ContentPartHandlerCoordinator : ContentHandlerBase
                 context.ContentValidateResult.Fail(error);
             }
 
-            if (typePartDefinition.PartDefinition?.Fields == null)
+            if (typePartDefinition.PartDefinition.Fields == null)
             {
                 continue;
             }
