@@ -1,24 +1,22 @@
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
 public sealed class RegisterUserLoginFormDisplayDriver : DisplayDriver<LoginForm>
 {
-    private readonly ISiteService _siteService;
+    private readonly RegistrationOptions _registrationOptions;
 
-    public RegisterUserLoginFormDisplayDriver(ISiteService siteService)
+    public RegisterUserLoginFormDisplayDriver(IOptions<RegistrationOptions> registrationOptions)
     {
-        _siteService = siteService;
+        _registrationOptions = registrationOptions.Value;
     }
 
-    public override async Task<IDisplayResult> EditAsync(LoginForm model, BuildEditorContext context)
+    public override IDisplayResult Edit(LoginForm model, BuildEditorContext context)
     {
-        var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
-
-        if (!settings.AllowSiteRegistration)
+        if (!_registrationOptions.AllowSiteRegistration)
         {
             return null;
         }

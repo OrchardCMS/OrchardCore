@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -23,6 +24,7 @@ public sealed class RegistrationController : Controller
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
     private readonly IDisplayManager<RegisterUserForm> _registerUserDisplayManager;
+    private readonly RegistrationOptions _registrationOptions;
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
     internal readonly IStringLocalizer S;
@@ -35,6 +37,7 @@ public sealed class RegistrationController : Controller
         INotifier notifier,
         ILogger<RegistrationController> logger,
         IDisplayManager<RegisterUserForm> registerUserDisplayManager,
+        IOptions<RegistrationOptions> registrationOptions,
         IUpdateModelAccessor updateModelAccessor,
         IHtmlLocalizer<RegistrationController> htmlLocalizer,
         IStringLocalizer<RegistrationController> stringLocalizer)
@@ -45,6 +48,7 @@ public sealed class RegistrationController : Controller
         _notifier = notifier;
         _logger = logger;
         _registerUserDisplayManager = registerUserDisplayManager;
+        _registrationOptions = registrationOptions.Value;
         _updateModelAccessor = updateModelAccessor;
         H = htmlLocalizer;
         S = stringLocalizer;
@@ -53,8 +57,7 @@ public sealed class RegistrationController : Controller
     [AllowAnonymous]
     public async Task<IActionResult> Register(string returnUrl = null)
     {
-        var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
-        if (!settings.AllowSiteRegistration)
+        if (!_registrationOptions.AllowSiteRegistration)
         {
             return NotFound();
         }
@@ -72,9 +75,7 @@ public sealed class RegistrationController : Controller
     [ActionName(nameof(Register))]
     public async Task<IActionResult> RegisterPOST(string returnUrl = null)
     {
-        var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
-
-        if (!settings.AllowSiteRegistration)
+        if (!_registrationOptions.AllowSiteRegistration)
         {
             return NotFound();
         }
@@ -89,15 +90,15 @@ public sealed class RegistrationController : Controller
         {
             var iUser = await this.RegisterUser(model, S["Confirm your account"], _logger);
 
-            // If we get a user, redirect to returnUrl
+            // If we get a user, redirect to returnUrl.
             if (iUser is User user)
             {
-                if (settings.UsersMustValidateEmail && !user.EmailConfirmed)
+                if (_registrationOptions.UsersMustValidateEmail && !user.EmailConfirmed)
                 {
                     return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent), typeof(EmailConfirmationController).ControllerName(), new { ReturnUrl = returnUrl });
                 }
 
-                if (settings.UsersAreModerated && !user.IsEnabled)
+                if (_registrationOptions.UsersAreModerated && !user.IsEnabled)
                 {
                     return RedirectToAction(nameof(RegistrationPending), new { ReturnUrl = returnUrl });
                 }

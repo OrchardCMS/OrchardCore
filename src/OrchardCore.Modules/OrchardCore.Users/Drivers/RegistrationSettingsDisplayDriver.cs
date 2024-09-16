@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
@@ -14,13 +15,16 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IShellReleaseManager _shellReleaseManager;
 
     public RegistrationSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IShellReleaseManager shellReleaseManager)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        _shellReleaseManager = shellReleaseManager;
     }
 
     protected override string SettingsGroupId
@@ -35,8 +39,11 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
             return null;
         }
 
+        context.AddTenantReloadWarningWrapper();
+
         return Initialize<RegistrationSettings>("RegistrationSettings_Edit", model =>
         {
+            model.AllowSiteRegistration = settings.AllowSiteRegistration;
             model.UsersMustValidateEmail = settings.UsersMustValidateEmail;
             model.UsersAreModerated = settings.UsersAreModerated;
             model.UseSiteTheme = settings.UseSiteTheme;
@@ -53,7 +60,24 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(settings, Prefix);
+        var model = new RegistrationSettings();
+
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        var hasChange = model.AllowSiteRegistration != settings.AllowSiteRegistration
+            || model.UsersMustValidateEmail != settings.UsersMustValidateEmail
+            || model.UsersAreModerated != settings.UsersAreModerated
+            || model.UseSiteTheme != model.UseSiteTheme;
+
+        settings.AllowSiteRegistration = model.AllowSiteRegistration;
+        settings.UsersMustValidateEmail = model.UsersMustValidateEmail;
+        settings.UsersAreModerated = model.UsersAreModerated;
+        settings.UseSiteTheme = model.UseSiteTheme;
+
+        if (hasChange)
+        {
+            _shellReleaseManager.RequestRelease();
+        }
 
         return await EditAsync(site, settings, context);
     }

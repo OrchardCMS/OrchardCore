@@ -1,5 +1,3 @@
-using System.Text.Json.Nodes;
-using System.Text.Json.Settings;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -9,10 +7,10 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
@@ -21,7 +19,6 @@ using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
-using OrchardCore.Workflows.Helpers;
 using YesSql.Services;
 
 namespace OrchardCore.Users.Controllers;
@@ -38,19 +35,14 @@ public sealed class AccountController : AccountBaseController
     private readonly ILogger _logger;
     private readonly ISiteService _siteService;
     private readonly IEnumerable<ILoginFormEvent> _accountEvents;
+    private readonly ExternalUserLoginSettings _externalUserLoginSettings;
+    private readonly RegistrationOptions _registrationOptions;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly IDisplayManager<LoginForm> _loginFormDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly INotifier _notifier;
     private readonly IClock _clock;
     private readonly IDistributedCache _distributedCache;
-
-    private static readonly JsonMergeSettings _jsonMergeSettings = new()
-    {
-        MergeArrayHandling = MergeArrayHandling.Replace,
-        MergeNullValueHandling = MergeNullValueHandling.Merge
-    };
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -64,11 +56,12 @@ public sealed class AccountController : AccountBaseController
         IHtmlLocalizer<AccountController> htmlLocalizer,
         IStringLocalizer<AccountController> stringLocalizer,
         IEnumerable<ILoginFormEvent> accountEvents,
+        IOptions<RegistrationOptions> registrationOptions,
+        IOptions<ExternalUserLoginSettings> externalUserLoginSettings,
         INotifier notifier,
         IClock clock,
         IDistributedCache distributedCache,
         IDataProtectionProvider dataProtectionProvider,
-        IShellFeaturesManager shellFeaturesManager,
         IDisplayManager<LoginForm> loginFormDisplayManager,
         IUpdateModelAccessor updateModelAccessor)
     {
@@ -78,11 +71,12 @@ public sealed class AccountController : AccountBaseController
         _logger = logger;
         _siteService = siteService;
         _accountEvents = accountEvents;
+        _externalUserLoginSettings = externalUserLoginSettings.Value;
+        _registrationOptions = registrationOptions.Value;
         _notifier = notifier;
         _clock = clock;
         _distributedCache = distributedCache;
         _dataProtectionProvider = dataProtectionProvider;
-        _shellFeaturesManager = shellFeaturesManager;
         _loginFormDisplayManager = loginFormDisplayManager;
         _updateModelAccessor = updateModelAccessor;
 
@@ -102,8 +96,7 @@ public sealed class AccountController : AccountBaseController
         // Clear the existing external cookie to ensure a clean login process.
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-        var loginSettings = await _siteService.GetSettingsAsync<ExternalUserLoginSettings>();
-        if (loginSettings.UseExternalProviderIfOnlyOneDefined)
+        if (_externalUserLoginSettings.UseExternalProviderIfOnlyOneDefined)
         {
             var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
             if (schemes.Count() == 1)
@@ -141,72 +134,74 @@ public sealed class AccountController : AccountBaseController
 
         var formShape = await _loginFormDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
-        var disableLocalLogin = (await _siteService.GetSettingsAsync<LoginSettings>()).DisableLocalLogin;
+        var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
 
-        if (disableLocalLogin)
+        if (loginSettings.DisableLocalLogin)
         {
             ModelState.AddModelError(string.Empty, S["Local login is disabled."]);
+
+            return View(formShape);
         }
-        else
+
+        await _accountEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(model.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
+
+        IUser user = null;
+
+        if (ModelState.IsValid)
         {
-            await _accountEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(model.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
+            user = await _userService.GetUserAsync(model.UserName);
 
-            IUser user = null;
-            if (ModelState.IsValid)
+            if (user != null)
             {
-                user = await _userService.GetUserAsync(model.UserName);
-                if (user != null)
+                var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
+                if (result.Succeeded)
                 {
-                    var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
-                    if (result.Succeeded)
+                    if (!await AddConfirmEmailErrorAsync(user) && !AddUserEnabledError(user, S))
                     {
-                        if (!await AddConfirmEmailErrorAsync(user) && !AddUserEnabledError(user, S))
+                        result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+
+                        if (result.Succeeded)
                         {
-                            result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+                            _logger.LogInformation(1, "User logged in.");
+                            await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
-                            if (result.Succeeded)
-                            {
-                                _logger.LogInformation(1, "User logged in.");
-                                await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
-
-                                return await LoggedInActionResultAsync(user, returnUrl);
-                            }
+                            return await LoggedInActionResultAsync(user, returnUrl);
                         }
-                    }
-
-                    if (result.RequiresTwoFactor)
-                    {
-                        return RedirectToAction(nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
-                            typeof(TwoFactorAuthenticationController).ControllerName(),
-                            new
-                            {
-                                returnUrl,
-                                model.RememberMe
-                            });
-                    }
-
-                    if (result.IsLockedOut)
-                    {
-                        ModelState.AddModelError(string.Empty, S["The account is locked out"]);
-                        await _accountEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
-
-                        return View();
                     }
                 }
 
-                ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
+                if (result.RequiresTwoFactor)
+                {
+                    return RedirectToAction(nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
+                        typeof(TwoFactorAuthenticationController).ControllerName(),
+                        new
+                        {
+                            returnUrl,
+                            model.RememberMe
+                        });
+                }
+
+                if (result.IsLockedOut)
+                {
+                    ModelState.AddModelError(string.Empty, S["The account is locked out"]);
+                    await _accountEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
+
+                    return View();
+                }
             }
 
-            if (user == null)
-            {
-                // Login failed unknown user.
-                await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
-            }
-            else
-            {
-                // Login failed with a known user.
-                await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
-            }
+            ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
+        }
+
+        if (user == null)
+        {
+            // Login failed unknown user.
+            await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
+        }
+        else
+        {
+            // Login failed with a known user.
+            await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
         }
 
         // If we got this far, something failed, redisplay form.
@@ -258,78 +253,19 @@ public sealed class AccountController : AccountBaseController
     public IActionResult ChangePasswordConfirmation()
         => View();
 
-    public static async Task<bool> UpdateUserPropertiesAsync(UserManager<IUser> userManager, User user, UpdateUserContext context)
-    {
-        await userManager.AddToRolesAsync(user, context.RolesToAdd.Distinct());
-        await userManager.RemoveFromRolesAsync(user, context.RolesToRemove.Distinct());
-
-        var userNeedUpdate = false;
-        if (context.PropertiesToUpdate != null)
-        {
-            var currentProperties = user.Properties.DeepClone();
-            user.Properties.Merge(context.PropertiesToUpdate, _jsonMergeSettings);
-            userNeedUpdate = !JsonNode.DeepEquals(currentProperties, user.Properties);
-        }
-
-        var currentClaims = user.UserClaims
-            .Where(x => !string.IsNullOrEmpty(x.ClaimType))
-            .DistinctBy(x => new { x.ClaimType, x.ClaimValue })
-            .ToList();
-
-        var claimsChanged = false;
-        if (context.ClaimsToRemove?.Count > 0)
-        {
-            var claimsToRemove = context.ClaimsToRemove.ToHashSet();
-            foreach (var item in claimsToRemove)
-            {
-                var exists = currentClaims.FirstOrDefault(claim => claim.ClaimType == item.ClaimType && claim.ClaimValue == item.ClaimValue);
-                if (exists is not null)
-                {
-                    currentClaims.Remove(exists);
-                    claimsChanged = true;
-                }
-            }
-        }
-
-        if (context.ClaimsToUpdate?.Count > 0)
-        {
-            foreach (var item in context.ClaimsToUpdate)
-            {
-                var existing = currentClaims.FirstOrDefault(claim => claim.ClaimType == item.ClaimType && claim.ClaimValue == item.ClaimValue);
-                if (existing is null)
-                {
-                    currentClaims.Add(item);
-                    claimsChanged = true;
-                }
-            }
-        }
-
-        if (claimsChanged)
-        {
-            user.UserClaims = currentClaims;
-            userNeedUpdate = true;
-        }
-
-        return userNeedUpdate;
-    }
+    [Obsolete("This method will be removed in version 3. Instead please use UserManagerHelper.UpdateUserPropertiesAsync(userManager, user, context).")]
+    public static Task<bool> UpdateUserPropertiesAsync(UserManager<IUser> userManager, User user, UpdateUserContext context)
+        => UserManagerHelper.UpdateUserPropertiesAsync(userManager, user, context);
 
     private async Task<bool> AddConfirmEmailErrorAsync(IUser user)
     {
-        var registrationFeatureIsAvailable = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-            .Any(feature => feature.Id == UserConstants.Features.UserRegistration);
-
-        if (!registrationFeatureIsAvailable)
-        {
-            return false;
-        }
-
-        var registrationSettings = await _siteService.GetSettingsAsync<RegistrationSettings>();
-        if (registrationSettings.UsersMustValidateEmail)
+        if (_registrationOptions.UsersMustValidateEmail)
         {
             // Require that the users have a confirmed email before they can log on.
             if (!await _userManager.IsEmailConfirmedAsync(user))
             {
                 ModelState.AddModelError(string.Empty, S["You must confirm your email."]);
+
                 return true;
             }
         }

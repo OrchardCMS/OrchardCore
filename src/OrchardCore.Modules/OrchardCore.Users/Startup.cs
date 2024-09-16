@@ -57,86 +57,13 @@ public sealed class Startup : StartupBase
     private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
     private static readonly string _emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
 
-
     private readonly string _tenantName;
+
     private UserOptions _userOptions;
 
     public Startup(ShellSettings shellSettings)
     {
         _tenantName = shellSettings.Name;
-    }
-
-    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-    {
-        _userOptions ??= serviceProvider.GetRequiredService<IOptions<UserOptions>>().Value;
-
-        routes.MapAreaControllerRoute(
-            name: "Login",
-            areaName: UserConstants.Features.Users,
-            pattern: _userOptions.LoginPath,
-            defaults: new
-            {
-                controller = _accountControllerName,
-                action = nameof(AccountController.Login),
-            }
-        );
-
-        routes.MapAreaControllerRoute(
-            name: "ChangePassword",
-            areaName: UserConstants.Features.Users,
-            pattern: _userOptions.ChangePasswordUrl,
-            defaults: new
-            {
-                controller = _accountControllerName,
-                action = nameof(AccountController.ChangePassword),
-            }
-        );
-
-        routes.MapAreaControllerRoute(
-            name: "ChangePasswordConfirmation",
-            areaName: UserConstants.Features.Users,
-            pattern: _userOptions.ChangePasswordConfirmationUrl,
-            defaults: new
-            {
-                controller = _accountControllerName,
-                action = nameof(AccountController.ChangePasswordConfirmation),
-            }
-        );
-
-        routes.MapAreaControllerRoute(
-            name: "UsersLogOff",
-            areaName: UserConstants.Features.Users,
-            pattern: _userOptions.LogoffPath,
-            defaults: new
-            {
-                controller = _accountControllerName,
-                action = nameof(AccountController.LogOff),
-            }
-        );
-
-        routes.MapAreaControllerRoute(
-            name: "ConfirmEmail",
-            areaName: UserConstants.Features.Users,
-            pattern: "ConfirmEmail",
-            defaults: new
-            {
-                controller = _emailConfirmationControllerName,
-                action = nameof(EmailConfirmationController.ConfirmEmail),
-            }
-        );
-
-        routes.MapAreaControllerRoute(
-            name: "ConfirmEmailSent",
-            areaName: UserConstants.Features.Users,
-            pattern: "ConfirmEmailSent",
-            defaults: new
-            {
-                controller = _emailConfirmationControllerName,
-                action = nameof(EmailConfirmationController.ConfirmEmailSent),
-            }
-        );
-
-        builder.UseAuthorization();
     }
 
     public override void ConfigureServices(IServiceCollection services)
@@ -237,6 +164,79 @@ public sealed class Startup : StartupBase
         services.AddRecipeExecutionStep<CustomUserSettingsStep>();
         services.AddScoped<IDisplayDriver<LoginForm>, LoginFormDisplayDriver>();
     }
+
+    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        _userOptions ??= serviceProvider.GetRequiredService<IOptions<UserOptions>>().Value;
+
+        routes.MapAreaControllerRoute(
+            name: "Login",
+            areaName: UserConstants.Features.Users,
+            pattern: _userOptions.LoginPath,
+            defaults: new
+            {
+                controller = _accountControllerName,
+                action = nameof(AccountController.Login),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "ChangePassword",
+            areaName: UserConstants.Features.Users,
+            pattern: _userOptions.ChangePasswordUrl,
+            defaults: new
+            {
+                controller = _accountControllerName,
+                action = nameof(AccountController.ChangePassword),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "ChangePasswordConfirmation",
+            areaName: UserConstants.Features.Users,
+            pattern: _userOptions.ChangePasswordConfirmationUrl,
+            defaults: new
+            {
+                controller = _accountControllerName,
+                action = nameof(AccountController.ChangePasswordConfirmation),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "UsersLogOff",
+            areaName: UserConstants.Features.Users,
+            pattern: _userOptions.LogoffPath,
+            defaults: new
+            {
+                controller = _accountControllerName,
+                action = nameof(AccountController.LogOff),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "ConfirmEmail",
+            areaName: UserConstants.Features.Users,
+            pattern: "ConfirmEmail",
+            defaults: new
+            {
+                controller = _emailConfirmationControllerName,
+                action = nameof(EmailConfirmationController.ConfirmEmail),
+            }
+        );
+
+        routes.MapAreaControllerRoute(
+            name: "ConfirmEmailSent",
+            areaName: UserConstants.Features.Users,
+            pattern: "ConfirmEmailSent",
+            defaults: new
+            {
+                controller = _emailConfirmationControllerName,
+                action = nameof(EmailConfirmationController.ConfirmEmailSent),
+            }
+        );
+
+        builder.UseAuthorization();
+    }
 }
 
 [Feature(UserConstants.Features.ExternalAuthentication)]
@@ -251,6 +251,12 @@ public sealed class ExternalAuthenticationStartup : StartupBase
         services.AddSiteDisplayDriver<ExternalAuthenticationSettingsDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalUserLoginSettingsDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalUserRoleLoginSettingsDisplayDriver>();
+        services.AddTransient<IConfigureOptions<ExternalUserLoginOptions>, ExternalUserLoginOptionsConfigurations>();
+        services.PostConfigure<RegistrationOptions>(options =>
+        {
+            // When this feature is enabled, always ensure that site-registration is allowed.
+            options.AllowSiteRegistration = true;
+        });
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -413,6 +419,21 @@ public sealed class RegistrationStartup : StartupBase
     private const string RegistrationPending = nameof(RegistrationController.RegistrationPending);
     private const string RegistrationControllerName = "Registration";
 
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<TemplateOptions>(o =>
+        {
+            o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
+        });
+
+        services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
+        services.AddNavigationProvider<RegistrationAdminMenu>();
+
+        services.AddScoped<IDisplayDriver<LoginForm>, RegisterUserLoginFormDisplayDriver>();
+        services.AddScoped<IDisplayDriver<RegisterUserForm>, RegisterUserFormDisplayDriver>();
+        services.AddTransient<IConfigureOptions<RegistrationOptions>, RegistrationOptionsConfigurations>();
+    }
+
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
         routes.MapAreaControllerRoute(
@@ -448,20 +469,6 @@ public sealed class RegistrationStartup : StartupBase
             }
         );
     }
-
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
-        });
-
-        services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
-        services.AddNavigationProvider<RegistrationAdminMenu>();
-
-        services.AddScoped<IDisplayDriver<LoginForm>, RegisterUserLoginFormDisplayDriver>();
-        services.AddScoped<IDisplayDriver<RegisterUserForm>, RegisterUserFormDisplayDriver>();
-    }
 }
 
 [Feature(UserConstants.Features.UserRegistration)]
@@ -482,6 +489,25 @@ public sealed class ResetPasswordStartup : StartupBase
     private const string ResetPasswordPath = "ResetPassword";
     private const string ResetPasswordConfirmationPath = "ResetPasswordConfirmation";
     private const string ResetPasswordControllerName = "ResetPassword";
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddTransient<IConfigureOptions<IdentityOptions>, PasswordResetIdentityOptionsConfigurations>()
+            .AddTransient<PasswordResetTokenProvider>()
+            .AddOptions<PasswordResetTokenProviderOptions>();
+
+        services.Configure<TemplateOptions>(o =>
+        {
+            o.MemberAccessStrategy.Register<LostPasswordViewModel>();
+        });
+
+        services.AddSiteDisplayDriver<ResetPasswordSettingsDisplayDriver>();
+        services.AddNavigationProvider<ResetPasswordAdminMenu>();
+
+        services.AddScoped<IDisplayDriver<ResetPasswordForm>, ResetPasswordFormDisplayDriver>();
+        services.AddScoped<IDisplayDriver<LoginForm>, ForgotPasswordLoginFormDisplayDriver>();
+        services.AddScoped<IDisplayDriver<ForgotPasswordForm>, ForgotPasswordFormDisplayDriver>();
+    }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
@@ -525,25 +551,6 @@ public sealed class ResetPasswordStartup : StartupBase
                 action = nameof(ResetPasswordController.ResetPasswordConfirmation),
             }
         );
-    }
-
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddTransient<IConfigureOptions<IdentityOptions>, PasswordResetIdentityOptionsConfigurations>()
-            .AddTransient<PasswordResetTokenProvider>()
-            .AddOptions<PasswordResetTokenProviderOptions>();
-
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<LostPasswordViewModel>();
-        });
-
-        services.AddSiteDisplayDriver<ResetPasswordSettingsDisplayDriver>();
-        services.AddNavigationProvider<ResetPasswordAdminMenu>();
-
-        services.AddScoped<IDisplayDriver<ResetPasswordForm>, ResetPasswordFormDisplayDriver>();
-        services.AddScoped<IDisplayDriver<LoginForm>, ForgotPasswordLoginFormDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ForgotPasswordForm>, ForgotPasswordFormDisplayDriver>();
     }
 }
 

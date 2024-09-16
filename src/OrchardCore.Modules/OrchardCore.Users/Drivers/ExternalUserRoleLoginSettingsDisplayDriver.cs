@@ -22,7 +22,7 @@ public sealed class ExternalUserRoleLoginSettingsDisplayDriver : SiteDisplayDriv
     }
 
     protected override string SettingsGroupId
-        => ExternalUserLoginSettingsDisplayDriver.GroupId;
+        => LoginSettingsDisplayDriver.GroupId;
 
     public override IDisplayResult Edit(ISite site, ExternalUserRoleLoginSettings settings, BuildEditorContext context)
     {

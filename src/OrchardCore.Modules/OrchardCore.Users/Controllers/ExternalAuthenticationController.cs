@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using System.Text.Json.Settings;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -36,12 +35,6 @@ public sealed class ExternalAuthenticationController : AccountBaseController
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
     private readonly IdentityOptions _identityOptions;
-
-    private static readonly JsonMergeSettings _jsonMergeSettings = new()
-    {
-        MergeArrayHandling = MergeArrayHandling.Replace,
-        MergeNullValueHandling = MergeNullValueHandling.Merge
-    };
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -568,7 +561,7 @@ public sealed class ExternalAuthenticationController : AccountBaseController
             }
         }
 
-        if (await AccountController.UpdateUserPropertiesAsync(_userManager, userInfo, context))
+        if (await UserManagerHelper.UpdateUserPropertiesAsync(_userManager, userInfo, context))
         {
             await _userManager.UpdateAsync(user);
         }

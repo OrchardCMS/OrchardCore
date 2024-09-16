@@ -46,7 +46,6 @@ public abstract class AccountBaseController : Controller
         }
     }
 
-
     protected bool AddUserEnabledError(IUser user, IStringLocalizer S)
     {
         if (user is not User localUser || !localUser.IsEnabled)
