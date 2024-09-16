@@ -38,21 +38,4 @@
     <Owners>Orchard Core Community and Contributors</Owners>
   </PropertyGroup>
 
-  <ItemGroup>
-    <!--This is used for Source Link -->
-    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
-    <None Include="$(MSBuildThisFileDirectory)/nuget-icon.png">
-      <Pack>True</Pack>
-      <PackagePath>icon.png</PackagePath>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all" />
-  </ItemGroup>
-
 </Project>
