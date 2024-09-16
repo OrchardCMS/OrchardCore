@@ -3,7 +3,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Facebook.Widgets;
 using OrchardCore.Facebook.Widgets.Drivers;
 using OrchardCore.Facebook.Widgets.Handlers;
@@ -20,7 +20,7 @@ public sealed class StartupWidgets : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDataMigration<WidgetMigrations>();
-        services.AddScoped<IShapeTableProvider, LiquidShapes>();
+        services.AddShapeTableProvider<LiquidShapes>();
 
         services.AddContentPart<FacebookPluginPart>()
             .UseDisplayDriver<FacebookPluginPartDisplayDriver>()

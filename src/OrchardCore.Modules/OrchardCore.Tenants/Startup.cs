@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Distributed;
@@ -34,7 +34,7 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<ITenantValidator, TenantValidator>();
-        services.AddScoped<IShapeTableProvider, TenantShapeTableProvider>();
+        services.AddShapeTableProvider<TenantShapeTableProvider>();
         services.AddSetup();
 
         services.Configure<TenantsOptions>(_shellConfiguration.GetSection("OrchardCore_Tenants"));
@@ -114,7 +114,7 @@ public sealed class FeatureProfilesStartup : StartupBase
         services.AddScoped<FeatureProfilesManager>();
         services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
         services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
-        services.AddScoped<IShapeTableProvider, TenantFeatureProfileShapeTableProvider>();
+        services.AddShapeTableProvider<TenantFeatureProfileShapeTableProvider>();
 
         services.AddRecipeExecutionStep<FeatureProfilesStep>();
     }
@@ -134,6 +134,6 @@ public sealed class TenantFeatureProfilesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IShapeTableProvider, TenantFeatureShapeTableProvider>();
+        services.AddShapeTableProvider<TenantFeatureShapeTableProvider>();
     }
 }

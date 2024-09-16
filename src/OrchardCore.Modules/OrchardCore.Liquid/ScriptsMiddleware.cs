@@ -32,6 +32,7 @@ public class ScriptsMiddleware
                     if (v.Contains(_etag))
                     {
                         httpContext.Response.StatusCode = StatusCodes.Status304NotModified;
+
                         return;
                     }
                 }
@@ -57,10 +58,13 @@ public class ScriptsMiddleware
                 httpContext.Response.Headers[HeaderNames.CacheControl] = cacheControl;
                 httpContext.Response.Headers[HeaderNames.ContentType] = "application/javascript";
                 httpContext.Response.Headers[HeaderNames.ETag] = _etag;
-                await httpContext.Response.Body.WriteAsync(_bytes, httpContext?.RequestAborted ?? CancellationToken.None);
+
+                await httpContext.Response.Body.WriteAsync(_bytes, httpContext.RequestAborted);
+
                 return;
             }
         }
+
         await _next.Invoke(httpContext);
     }
 }

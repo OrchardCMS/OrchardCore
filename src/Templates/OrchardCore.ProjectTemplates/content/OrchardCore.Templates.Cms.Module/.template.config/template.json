@@ -45,7 +45,7 @@
       "datatype": "string",
       "description": "Specifies which version of Orchard Core packages to use.",
       "replaces": "$(TemplateOrchardPackageVersion)",
-      "defaultValue": "1.8.4"
+      "defaultValue": "2.0.0"
     }
   },
   "sources": [
