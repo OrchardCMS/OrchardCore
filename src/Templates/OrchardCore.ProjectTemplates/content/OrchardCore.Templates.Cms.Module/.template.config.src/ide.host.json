@@ -4,28 +4,28 @@
   "symbolInfo": [
     {
       "id": "Framework",
-      "isVisible": "true"
+      "isVisible": true
     },
     {
       "id": "AddPart",
       "name": {
         "text": "Add all files required for a part"
       },
-      "isVisible": "true"
+      "isVisible": true
     },
     {
       "id": "PartName",
       "name": {
         "text": "Part name (without Part suffix)"
       },
-      "isVisible": "true"
+      "isVisible": true
     },
     {
       "id": "OrchardVersion",
       "name": {
         "text": "Orchard Core Version"
       },
-      "isVisible": "true"
+      "isVisible": true
     }
   ]
 }

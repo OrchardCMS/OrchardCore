@@ -12,6 +12,6 @@
   },
   "usageExamples": [
     "--framework net8.0",
-    "--orchard-version 1.8.3"
+    "--orchard-version ${TemplateOrchardVersion}"
   ]
 }
