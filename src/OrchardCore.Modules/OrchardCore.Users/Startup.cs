@@ -250,6 +250,7 @@ public sealed class ExternalAuthenticationStartup : StartupBase
     {
         services.AddSiteDisplayDriver<ExternalAuthenticationSettingsDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalUserLoginSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<ExternalUserRoleLoginSettingsDisplayDriver>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -266,15 +267,6 @@ public sealed class ExternalAuthenticationStartup : StartupBase
                 action = nameof(ExternalAuthenticationController.ExternalLogins),
             }
         );
-    }
-}
-
-[RequireFeatures(UserConstants.Features.ExternalAuthentication, "OrchardCore.Roles")]
-public sealed class RoleExternalAuthenticationStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddSiteDisplayDriver<ExternalUserRoleLoginSettingsDisplayDriver>();
     }
 }
 
