@@ -20,7 +20,7 @@ To enable the [Twilio](https://www.twilio.com) provider, navigate to `Configurat
 
 ## Additional Available Providers
 
-- [Azure Communication](../reference/modules/Sms.Azure/README.md) service provider.
+- [Azure Communication](../Sms.Azure/README.md) service provider.
 
 ## Adding Custom Providers
 
