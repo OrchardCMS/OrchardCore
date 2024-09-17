@@ -6,7 +6,6 @@
 @using OrchardCore.Users.Models
 
 @inject SignInManager<IUser> SignInManager
-@inject ISiteService SiteService
 @inject UserManager<IUser> UserManager
 @inject IDisplayManager<LoginForm> LoginFormDisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
@@ -15,7 +14,7 @@
     ViewLayout = "Layout__Login";
 
     var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-    var disableLocalLogin = (await SiteService.GetSettingsAsync<LoginSettings>()).DisableLocalLogin;
+    var disableLocalLogin = Site.As<LoginSettings>().DisableLocalLogin;
 }
 
 <script asp-name="font-awesome" at="Foot" version="6"></script>
