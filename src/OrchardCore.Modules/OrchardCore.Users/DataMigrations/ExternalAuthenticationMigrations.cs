@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Migration;
 using OrchardCore.Entities;
@@ -18,7 +19,7 @@ public sealed class ExternalAuthenticationMigrations : DataMigration
 
             var site = await siteService.LoadSiteSettingsAsync();
 
-            var registrationSettings = site.Properties[nameof(RegistrationSettings)].AsObject();
+            var registrationSettings = site.Properties[nameof(RegistrationSettings)]?.AsObject() ?? new JsonObject();
 
             site.Put(new ExternalRegistrationSettings
             {
@@ -29,7 +30,7 @@ public sealed class ExternalAuthenticationMigrations : DataMigration
                 UseScriptToGenerateUsername = registrationSettings["UseScriptToGenerateUsername"]?.GetValue<bool>() ?? false,
             });
 
-            var loginSettings = site.Properties[nameof(LoginSettings)].AsObject();
+            var loginSettings = site.Properties[nameof(LoginSettings)]?.AsObject() ?? new JsonObject();
 
             site.Put(new ExternalLoginSettings
             {

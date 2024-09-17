@@ -80,7 +80,9 @@ internal static class ControllerExtensions
 
                     await signInManager.SignInAsync(user, isPersistent: false);
                 }
+
                 logger.LogInformation(3, "User created a new account with password.");
+
                 await registrationEvents.InvokeAsync((e, user) => e.RegisteredAsync(user), user, logger);
 
                 return user;
@@ -93,7 +95,9 @@ internal static class ControllerExtensions
     internal static async Task<string> SendEmailConfirmationTokenAsync(this Controller controller, User user, string subject)
     {
         var userManager = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<UserManager<IUser>>();
+
         var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+
         var callbackUrl = controller.Url.Action(nameof(EmailConfirmationController.ConfirmEmail), typeof(EmailConfirmationController).ControllerName(),
             new
             {
