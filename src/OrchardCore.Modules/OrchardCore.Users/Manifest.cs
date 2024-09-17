@@ -21,8 +21,9 @@ using OrchardCore.Users;
 
 [assembly: Feature(
     Id = UserConstants.Features.ExternalAuthentication,
-    Name = "External User Authentication",
+    Name = "External Authentication",
     Description = "Provides a way to allow authentication using an external identity provider.",
+    EnabledByDependencyOnly = true,
     Dependencies =
     [
         UserConstants.Features.Users,

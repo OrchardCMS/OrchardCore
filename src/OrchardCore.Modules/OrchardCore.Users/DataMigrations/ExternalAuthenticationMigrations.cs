@@ -45,7 +45,8 @@ public sealed class ExternalAuthenticationMigrations : DataMigration
 
             await siteService.UpdateSiteSettingsAsync(site);
 
-            if (registrationSettings.UsersCanRegister == UserRegistrationType.NoRegistration)
+            if (registrationSettings.UsersCanRegister == UserRegistrationType.NoRegistration ||
+            registrationSettings.UsersCanRegister == UserRegistrationType.AllowOnlyExternalUsers)
             {
                 var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
 
@@ -55,17 +56,6 @@ public sealed class ExternalAuthenticationMigrations : DataMigration
                 }
 
                 await featuresManager.DisableFeaturesAsync(UserConstants.Features.UserRegistration);
-            }
-            else if (registrationSettings.UsersCanRegister == UserRegistrationType.AllowOnlyExternalUsers)
-            {
-                var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
-
-                if (await featuresManager.IsFeatureEnabledAsync(UserConstants.Features.ExternalAuthentication))
-                {
-                    return;
-                }
-
-                await featuresManager.UpdateFeaturesAsync([UserConstants.Features.UserRegistration], [UserConstants.Features.ExternalAuthentication]);
             }
         });
 
