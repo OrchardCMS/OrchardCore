@@ -35,6 +35,7 @@ public sealed class ExternalRegistrationSettingsDisplayDriver : SiteDisplayDrive
 
         return Initialize<ExternalRegistrationSettings>("ExternalRegistrationSettings_Edit", model =>
         {
+            model.DisableNewRegistrations = settings.DisableNewRegistrations;
             model.NoPassword = settings.NoPassword;
             model.NoUsername = settings.NoUsername;
             model.NoEmail = settings.NoEmail;

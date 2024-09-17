@@ -11,6 +11,15 @@
 
 <h5 class="mb-3">@T["Configuring External Authentication for User Registration with Third-Party Providers"]</h5>
 
+<div class="mb-3" asp-validation-class-for="DisableNewRegistrations">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="DisableNewRegistrations" />
+        <span asp-validation-for="DisableNewRegistrations"></span>
+        <label class="form-check-label" asp-for="DisableNewRegistrations">@T["Disable new external registration"]</label>
+        <span class="hint dashed">@T["If selected, new users will not be able to register using external authentication. This means users without a local account will be unable to authenticate."]</span>
+    </div>
+</div>
+
 <div class="mb-3" asp-validation-class-for="NoUsername">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="NoUsername" />
@@ -19,6 +28,7 @@
         <span class="hint dashed">@T["When a new user logs in with an external provider, they are not required to provide a local username. You can customize how it works by providing an IExternalLoginEventHandler or writing a script."]</span>
     </div>
 </div>
+
 <div class="mb-3" asp-validation-class-for="NoEmail">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="NoEmail" />
@@ -27,6 +37,7 @@
         <span class="hint dashed">@T["When a new user logs in with an external provider and the email claim is defined, they are not required to provide a local email address."]</span>
     </div>
 </div>
+
 <div class="mb-3" asp-validation-class-for="NoPassword">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="NoPassword" />
@@ -35,6 +46,7 @@
         <span class="hint dashed">@T["When a new user logs in with an external provider, they are not required to provide a local password."]</span>
     </div>
 </div>
+
 <div class="mb-3" asp-validation-class-for="UseScriptToGenerateUsername">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="UseScriptToGenerateUsername" />

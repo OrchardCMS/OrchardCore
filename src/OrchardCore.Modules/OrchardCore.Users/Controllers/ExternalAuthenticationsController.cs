@@ -9,6 +9,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -33,6 +34,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
     private readonly ISiteService _siteService;
     private readonly IEnumerable<ILoginFormEvent> _accountEvents;
     private readonly IShellFeaturesManager _shellFeaturesManager;
+    private readonly INotifier _notifier;
     private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
     private readonly ExternalLoginOptions _externalLoginOption;
     private readonly IdentityOptions _identityOptions;
@@ -51,6 +53,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         IStringLocalizer<ExternalAuthenticationsController> stringLocalizer,
         IEnumerable<ILoginFormEvent> accountEvents,
         IShellFeaturesManager shellFeaturesManager,
+        INotifier notifier,
         IEnumerable<IExternalLoginEventHandler> externalLoginHandlers,
         IOptions<ExternalLoginOptions> externalLoginOption,
         IOptions<IdentityOptions> identityOptions)
@@ -63,6 +66,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         _siteService = siteService;
         _accountEvents = accountEvents;
         _shellFeaturesManager = shellFeaturesManager;
+        _notifier = notifier;
         _externalLoginHandlers = externalLoginHandlers;
         _externalLoginOption = externalLoginOption.Value;
         _identityOptions = identityOptions.Value;
@@ -268,6 +272,13 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                 }
             }
 
+            if (settings.DisableNewRegistrations)
+            {
+                await _notifier.ErrorAsync(H["New registrations are disabled for this site."]);
+
+                return RedirectToLogin();
+            }
+
             return View(nameof(RegisterExternalLogin), externalLoginViewModel);
         }
 
@@ -279,6 +290,15 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RegisterExternalLogin(RegisterExternalLoginViewModel model, string returnUrl = null)
     {
+        var settings = await _siteService.GetSettingsAsync<ExternalRegistrationSettings>();
+
+        if (settings.DisableNewRegistrations)
+        {
+            await _notifier.ErrorAsync(H["New registrations are disabled for this site."]);
+
+            return RedirectToLogin();
+        }
+
         var info = await _signInManager.GetExternalLoginInfoAsync();
 
         if (info == null)
@@ -290,8 +310,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         ViewData["ReturnUrl"] = returnUrl;
         ViewData["LoginProvider"] = info.LoginProvider;
-
-        var settings = await _siteService.GetSettingsAsync<ExternalRegistrationSettings>();
 
         model.NoPassword = settings.NoPassword;
         model.NoEmail = settings.NoEmail;
@@ -372,11 +390,12 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                         return await LoggedInActionResultAsync(iUser, returnUrl, info);
                     }
                 }
+
                 AddIdentityErrors(identityResult);
             }
         }
 
-        return View(nameof(RegisterExternalLogin), model);
+        return View(model);
     }
 
     [HttpPost]

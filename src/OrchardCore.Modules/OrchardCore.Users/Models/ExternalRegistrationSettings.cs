@@ -2,6 +2,8 @@ namespace OrchardCore.Users.Models;
 
 public class ExternalRegistrationSettings
 {
+    public bool DisableNewRegistrations { get; set; }
+
     public bool NoPassword { get; set; }
 
     public bool NoUsername { get; set; }

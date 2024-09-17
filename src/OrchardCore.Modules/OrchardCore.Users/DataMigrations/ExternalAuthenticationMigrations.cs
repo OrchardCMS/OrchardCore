@@ -21,8 +21,11 @@ public sealed class ExternalAuthenticationMigrations : DataMigration
 
             var registrationSettings = site.Properties[nameof(RegistrationSettings)]?.AsObject() ?? new JsonObject();
 
+            var enumValue = registrationSettings["UsersCanRegister"]?.GetValue<int>();
+
             site.Put(new ExternalRegistrationSettings
             {
+                DisableNewRegistrations = enumValue == 0,
                 NoUsername = registrationSettings["NoUsernameForExternalUsers"]?.GetValue<bool>() ?? false,
                 NoEmail = registrationSettings["NoEmailForExternalUsers"]?.GetValue<bool>() ?? false,
                 NoPassword = registrationSettings["NoPasswordForExternalUsers"]?.GetValue<bool>() ?? false,
@@ -40,7 +43,6 @@ public sealed class ExternalAuthenticationMigrations : DataMigration
             });
 
             await siteService.UpdateSiteSettingsAsync(site);
-            var enumValue = registrationSettings["UsersCanRegister"]?.GetValue<int>();
 
             if (enumValue is not null && enumValue != 1)
             {
