@@ -22,7 +22,7 @@ using OrchardCore.Users;
 [assembly: Feature(
     Id = UserConstants.Features.ExternalAuthentication,
     Name = "External User Authentication",
-    Description = "Provides a way to allow authentication using identity provider.",
+    Description = "Provides a way to allow authentication using an external identity provider.",
     Dependencies =
     [
         UserConstants.Features.Users,
