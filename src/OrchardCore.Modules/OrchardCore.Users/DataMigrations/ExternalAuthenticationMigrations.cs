@@ -10,10 +10,7 @@ namespace OrchardCore.Users.DataMigrations;
 
 public sealed class ExternalAuthenticationMigrations : DataMigration
 {
-#pragma warning disable CA1822 // Mark members as static
     public int Create()
-#pragma warning restore CA1822 // Mark members as static
-#pragma warning disable CS0618 // Type or member is obsolete
     {
         ShellScope.AddDeferredTask(async scope =>
         {
@@ -21,32 +18,30 @@ public sealed class ExternalAuthenticationMigrations : DataMigration
 
             var site = await siteService.LoadSiteSettingsAsync();
 
-            var registrationSettings = site.As<RegistrationSettings>();
-
-            site.Put(registrationSettings);
+            var registrationSettings = site.Properties[nameof(RegistrationSettings)].AsObject();
 
             site.Put(new ExternalRegistrationSettings
             {
-                NoUsername = registrationSettings.NoUsernameForExternalUsers,
-                NoEmail = registrationSettings.NoEmailForExternalUsers,
-                NoPassword = registrationSettings.NoPasswordForExternalUsers,
-                GenerateUsernameScript = registrationSettings.GenerateUsernameScript,
-                UseScriptToGenerateUsername = registrationSettings.UseScriptToGenerateUsername
+                NoUsername = registrationSettings["NoUsernameForExternalUsers"]?.GetValue<bool>() ?? false,
+                NoEmail = registrationSettings["NoEmailForExternalUsers"]?.GetValue<bool>() ?? false,
+                NoPassword = registrationSettings["NoPasswordForExternalUsers"]?.GetValue<bool>() ?? false,
+                GenerateUsernameScript = registrationSettings["GenerateUsernameScript"]?.ToString(),
+                UseScriptToGenerateUsername = registrationSettings["UseScriptToGenerateUsername"]?.GetValue<bool>() ?? false,
             });
 
-            var loginSettings = site.As<LoginSettings>();
+            var loginSettings = site.Properties[nameof(LoginSettings)].AsObject();
 
             site.Put(new ExternalLoginSettings
             {
-                UseExternalProviderIfOnlyOneDefined = loginSettings.UseExternalProviderIfOnlyOneDefined,
-                UseScriptToSyncProperties = loginSettings.UseScriptToSyncRoles,
-                SyncPropertiesScript = loginSettings.SyncRolesScript,
+                UseExternalProviderIfOnlyOneDefined = loginSettings["UseExternalProviderIfOnlyOneDefined"]?.GetValue<bool>() ?? false,
+                UseScriptToSyncProperties = loginSettings["UseScriptToSyncRoles"]?.GetValue<bool>() ?? false,
+                SyncPropertiesScript = loginSettings["SyncRolesScript"]?.ToString(),
             });
 
             await siteService.UpdateSiteSettingsAsync(site);
+            var enumValue = registrationSettings["UsersCanRegister"]?.GetValue<int>();
 
-            if (registrationSettings.UsersCanRegister == UserRegistrationType.NoRegistration ||
-            registrationSettings.UsersCanRegister == UserRegistrationType.AllowOnlyExternalUsers)
+            if (enumValue is not null && enumValue != 1)
             {
                 var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
 
@@ -61,5 +56,4 @@ public sealed class ExternalAuthenticationMigrations : DataMigration
 
         return 1;
     }
-#pragma warning restore CS0618 // Type or member is obsolete
 }
