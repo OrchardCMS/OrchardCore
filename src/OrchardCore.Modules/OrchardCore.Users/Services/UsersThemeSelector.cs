@@ -19,18 +19,15 @@ public class UsersThemeSelector : IThemeSelector
 {
     private readonly ISiteService _siteService;
     private readonly IAdminThemeService _adminThemeService;
-    private readonly RegistrationOptions _registrationOptions;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public UsersThemeSelector(
         ISiteService siteService,
         IAdminThemeService adminThemeService,
-        IOptions<RegistrationOptions> registrationOptions,
         IHttpContextAccessor httpContextAccessor)
     {
         _siteService = siteService;
         _adminThemeService = adminThemeService;
-        _registrationOptions = registrationOptions.Value;
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -69,7 +66,7 @@ public class UsersThemeSelector : IThemeSelector
                     }
                     break;
                 case "Registration":
-                    useSiteTheme = _registrationOptions.UseSiteTheme;
+                    useSiteTheme = (await _siteService.GetSettingsAsync<RegistrationSettings>()).UseSiteTheme;
                     break;
                 case "ResetPassword":
                     useSiteTheme = (await _siteService.GetSettingsAsync<ResetPasswordSettings>()).UseSiteTheme;

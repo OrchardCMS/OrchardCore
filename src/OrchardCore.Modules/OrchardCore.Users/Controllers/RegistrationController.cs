@@ -57,11 +57,6 @@ public sealed class RegistrationController : Controller
     [AllowAnonymous]
     public async Task<IActionResult> Register(string returnUrl = null)
     {
-        if (!_registrationOptions.AllowSiteRegistration)
-        {
-            return NotFound();
-        }
-
         var shape = await _registerUserDisplayManager.BuildEditorAsync(_updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
         ViewData["ReturnUrl"] = returnUrl;
@@ -75,11 +70,6 @@ public sealed class RegistrationController : Controller
     [ActionName(nameof(Register))]
     public async Task<IActionResult> RegisterPOST(string returnUrl = null)
     {
-        if (!_registrationOptions.AllowSiteRegistration)
-        {
-            return NotFound();
-        }
-
         var model = new RegisterUserForm();
 
         var shape = await _registerUserDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);

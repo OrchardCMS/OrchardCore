@@ -19,10 +19,7 @@ public class AccountControllerTests
     public async Task ExternalLoginSignIn_Test()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings()
-        {
-            AllowSiteRegistration = true,
-        }, true, true, true);
+        var context = await GetSiteContextAsync(new RegistrationSettings(), true, true, true);
 
         // Act
         var model = new RegisterViewModel()
@@ -170,10 +167,7 @@ public class AccountControllerTests
     public async Task Register_WhenAllowed_RegisterUser()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings()
-        {
-            AllowSiteRegistration = true,
-        });
+        var context = await GetSiteContextAsync(new RegistrationSettings());
 
         var responseFromGet = await context.Client.GetAsync("Register");
 
@@ -209,10 +203,7 @@ public class AccountControllerTests
     public async Task Register_WhenNotAllowed_ReturnNotFound()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings()
-        {
-            AllowSiteRegistration = false,
-        });
+        var context = await GetSiteContextAsync(new RegistrationSettings(), false);
 
         // Act
         var response = await context.Client.GetAsync("Register");
@@ -225,10 +216,7 @@ public class AccountControllerTests
     public async Task Register_WhenFeatureIsNotEnable_ReturnNotFound()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings()
-        {
-            AllowSiteRegistration = true,
-        }, enableRegistrationFeature: false);
+        var context = await GetSiteContextAsync(new RegistrationSettings(), enableRegistrationFeature: false);
 
         // Act
         var response = await context.Client.GetAsync("Register");
@@ -241,10 +229,7 @@ public class AccountControllerTests
     public async Task Register_WhenRequireUniqueEmailIsTrue_PreventRegisteringMultipleUsersWithTheSameEmails()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings()
-        {
-            AllowSiteRegistration = true,
-        });
+        var context = await GetSiteContextAsync(new RegistrationSettings());
 
         var responseFromGet = await context.Client.GetAsync("Register");
 
@@ -288,10 +273,7 @@ public class AccountControllerTests
     public async Task Register_WhenRequireUniqueEmailIsFalse_AllowRegisteringMultipleUsersWithTheSameEmails()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings()
-        {
-            AllowSiteRegistration = true,
-        }, enableRegistrationFeature: true, requireUniqueEmail: false);
+        var context = await GetSiteContextAsync(new RegistrationSettings(), enableRegistrationFeature: true, requireUniqueEmail: false);
 
         // Register First User
         var responseFromGet = await context.Client.GetAsync("Register");
@@ -339,7 +321,6 @@ public class AccountControllerTests
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings()
         {
-            AllowSiteRegistration = true,
             UsersAreModerated = true,
         });
 
@@ -380,7 +361,6 @@ public class AccountControllerTests
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings()
         {
-            AllowSiteRegistration = true,
             UsersMustValidateEmail = true,
         });
 

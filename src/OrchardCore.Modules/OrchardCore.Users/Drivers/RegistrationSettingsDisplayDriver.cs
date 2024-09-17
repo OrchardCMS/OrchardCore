@@ -43,7 +43,6 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
 
         return Initialize<RegistrationSettings>("RegistrationSettings_Edit", model =>
         {
-            model.AllowSiteRegistration = settings.AllowSiteRegistration;
             model.UsersMustValidateEmail = settings.UsersMustValidateEmail;
             model.UsersAreModerated = settings.UsersAreModerated;
             model.UseSiteTheme = settings.UseSiteTheme;
@@ -64,12 +63,10 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var hasChange = model.AllowSiteRegistration != settings.AllowSiteRegistration
-            || model.UsersMustValidateEmail != settings.UsersMustValidateEmail
+        var hasChange = model.UsersMustValidateEmail != settings.UsersMustValidateEmail
             || model.UsersAreModerated != settings.UsersAreModerated
             || model.UseSiteTheme != model.UseSiteTheme;
 
-        settings.AllowSiteRegistration = model.AllowSiteRegistration;
         settings.UsersMustValidateEmail = model.UsersMustValidateEmail;
         settings.UsersAreModerated = model.UsersAreModerated;
         settings.UseSiteTheme = model.UseSiteTheme;

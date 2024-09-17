@@ -19,7 +19,6 @@ public sealed class RegistrationOptionsConfigurations : IConfigureOptions<Regist
             .GetAwaiter()
             .GetResult();
 
-        options.AllowSiteRegistration = settings.AllowSiteRegistration;
         options.UsersMustValidateEmail = settings.UsersMustValidateEmail;
         options.UsersAreModerated = settings.UsersAreModerated;
         options.UseSiteTheme = settings.UseSiteTheme;
