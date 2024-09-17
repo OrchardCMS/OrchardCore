@@ -1,6 +1,6 @@
-﻿namespace OrchardCore.Users.Models;
+namespace OrchardCore.Users.Models;
 
-public class ExternalAuthenticationSettings
+public class ExternalRegistrationSettings
 {
     public bool NoPassword { get; set; }
 

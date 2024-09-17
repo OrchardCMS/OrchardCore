@@ -47,19 +47,14 @@ internal static class ControllerExtensions
     /// <returns></returns>
     internal static async Task<IUser> RegisterUser(this Controller controller, RegisterUserForm model, string confirmationEmailSubject, ILogger logger)
     {
-        var registrationOptions = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IOptions<RegistrationOptions>>().Value;
-
-        if (!registrationOptions.AllowSiteRegistration)
-        {
-            return null;
-        }
-
         var registrationEvents = controller.ControllerContext.HttpContext.RequestServices.GetServices<IRegistrationFormEvents>();
 
         await registrationEvents.InvokeAsync((e, modelState) => e.RegistrationValidationAsync((key, message) => modelState.AddModelError(key, message)), controller.ModelState, logger);
 
         if (controller.ModelState.IsValid)
         {
+            var registrationOptions = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IOptions<RegistrationOptions>>().Value;
+
             var userService = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IUserService>();
 
             var user = await userService.CreateUserAsync(new User

@@ -61,10 +61,10 @@ public class AccountControllerTests
 
             var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginEventHandler>()
                         .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginEventHandler)) as ScriptExternalLoginEventHandler;
-            var loginSettings = new ExternalUserRoleLoginSettings
+            var loginSettings = new ExternalLoginSettings
             {
-                UseScriptToSyncRoles = true,
-                SyncRolesScript = """
+                UseScriptToSyncProperties = true,
+                SyncPropertiesScript = """
                     if(!context.user.userClaims?.find(x=> x.claimType=="lastName" && claimValue=="Zhang")){
                         context.claimsToUpdate.push({claimType:"lastName",    claimValue:"Zhang"});
                     }
@@ -128,10 +128,10 @@ public class AccountControllerTests
 
             var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginEventHandler>()
                       .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginEventHandler)) as ScriptExternalLoginEventHandler;
-            var loginSettings = new ExternalUserRoleLoginSettings
+            var loginSettings = new ExternalLoginSettings
             {
-                UseScriptToSyncRoles = true,
-                SyncRolesScript = """
+                UseScriptToSyncProperties = true,
+                SyncPropertiesScript = """
                     context.claimsToUpdate.push({claimType:"displayName", claimValue:"Sam Zhang"});
                     context.claimsToUpdate.push({claimType:"firstName",   claimValue:"Sam"});
                     context.claimsToUpdate.push({claimType:"lastName",    claimValue:"Zhang"});

@@ -4,18 +4,18 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services;
 
-public sealed class ExternalUserLoginOptionsConfigurations : IConfigureOptions<ExternalUserLoginOptions>
+public sealed class ExternalLoginOptionsConfigurations : IConfigureOptions<ExternalLoginOptions>
 {
     private readonly ISiteService _siteService;
 
-    public ExternalUserLoginOptionsConfigurations(ISiteService siteService)
+    public ExternalLoginOptionsConfigurations(ISiteService siteService)
     {
         _siteService = siteService;
     }
 
-    public void Configure(ExternalUserLoginOptions options)
+    public void Configure(ExternalLoginOptions options)
     {
-        var settings = _siteService.GetSettingsAsync<ExternalUserLoginSettings>()
+        var settings = _siteService.GetSettingsAsync<ExternalLoginSettings>()
             .GetAwaiter()
             .GetResult();
 

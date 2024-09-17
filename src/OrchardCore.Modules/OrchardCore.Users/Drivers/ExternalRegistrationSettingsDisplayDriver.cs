@@ -8,12 +8,12 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public sealed class ExternalAuthenticationSettingsDisplayDriver : SiteDisplayDriver<ExternalAuthenticationSettings>
+public sealed class ExternalRegistrationSettingsDisplayDriver : SiteDisplayDriver<ExternalRegistrationSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    public ExternalAuthenticationSettingsDisplayDriver(
+    public ExternalRegistrationSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService)
     {
@@ -24,7 +24,7 @@ public sealed class ExternalAuthenticationSettingsDisplayDriver : SiteDisplayDri
     protected override string SettingsGroupId
         => RegistrationSettingsDisplayDriver.GroupId;
 
-    public override async Task<IDisplayResult> EditAsync(ISite site, ExternalAuthenticationSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(ISite site, ExternalRegistrationSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
@@ -33,18 +33,18 @@ public sealed class ExternalAuthenticationSettingsDisplayDriver : SiteDisplayDri
             return null;
         }
 
-        return Initialize<ExternalAuthenticationSettings>("ExternalAuthenticationSettings_Edit", model =>
+        return Initialize<ExternalRegistrationSettings>("ExternalRegistrationSettings_Edit", model =>
         {
             model.NoPassword = settings.NoPassword;
             model.NoUsername = settings.NoUsername;
             model.NoEmail = settings.NoEmail;
             model.UseScriptToGenerateUsername = settings.UseScriptToGenerateUsername;
             model.GenerateUsernameScript = settings.GenerateUsernameScript;
-        }).Location("Content:10")
+        }).Location("Content:5#External Authentication;5")
         .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, ExternalAuthenticationSettings settings, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, ExternalRegistrationSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 

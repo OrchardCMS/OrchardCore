@@ -27,7 +27,7 @@ namespace OrchardCore.Users.Controllers;
 public sealed class AccountController : AccountBaseController
 {
     [Obsolete("This property will be removed in v3. Instead use ExternalAuthenticationController.DefaultExternalLoginProtector")]
-    public const string DefaultExternalLoginProtector = ExternalAuthenticationController.DefaultExternalLoginProtector;
+    public const string DefaultExternalLoginProtector = ExternalAuthenticationsController.DefaultExternalLoginProtector;
 
     private readonly IUserService _userService;
     private readonly SignInManager<IUser> _signInManager;
@@ -35,7 +35,7 @@ public sealed class AccountController : AccountBaseController
     private readonly ILogger _logger;
     private readonly ISiteService _siteService;
     private readonly IEnumerable<ILoginFormEvent> _accountEvents;
-    private readonly ExternalUserLoginSettings _externalUserLoginSettings;
+    private readonly ExternalLoginOptions _externalLoginOptions;
     private readonly RegistrationOptions _registrationOptions;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IDisplayManager<LoginForm> _loginFormDisplayManager;
@@ -57,7 +57,7 @@ public sealed class AccountController : AccountBaseController
         IStringLocalizer<AccountController> stringLocalizer,
         IEnumerable<ILoginFormEvent> accountEvents,
         IOptions<RegistrationOptions> registrationOptions,
-        IOptions<ExternalUserLoginSettings> externalUserLoginSettings,
+        IOptions<ExternalLoginOptions> externalLoginOptions,
         INotifier notifier,
         IClock clock,
         IDistributedCache distributedCache,
@@ -71,7 +71,7 @@ public sealed class AccountController : AccountBaseController
         _logger = logger;
         _siteService = siteService;
         _accountEvents = accountEvents;
-        _externalUserLoginSettings = externalUserLoginSettings.Value;
+        _externalLoginOptions = externalLoginOptions.Value;
         _registrationOptions = registrationOptions.Value;
         _notifier = notifier;
         _clock = clock;
@@ -96,20 +96,23 @@ public sealed class AccountController : AccountBaseController
         // Clear the existing external cookie to ensure a clean login process.
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-        if (_externalUserLoginSettings.UseExternalProviderIfOnlyOneDefined)
+        if (_externalLoginOptions.UseExternalProviderIfOnlyOneDefined)
         {
             var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
             if (schemes.Count() == 1)
             {
-                var dataProtector = _dataProtectionProvider.CreateProtector(ExternalAuthenticationController.DefaultExternalLoginProtector)
+                var dataProtector = _dataProtectionProvider.CreateProtector(ExternalAuthenticationsController.DefaultExternalLoginProtector)
                     .ToTimeLimitedDataProtector();
 
                 var token = Guid.NewGuid();
                 var expiration = new TimeSpan(0, 0, 5);
                 var protectedToken = dataProtector.Protect(token.ToString(), _clock.UtcNow.Add(expiration));
-                await _distributedCache.SetAsync(token.ToString(), token.ToByteArray(), new DistributedCacheEntryOptions() { AbsoluteExpirationRelativeToNow = expiration });
+                await _distributedCache.SetAsync(token.ToString(), token.ToByteArray(), new DistributedCacheEntryOptions()
+                {
+                    AbsoluteExpirationRelativeToNow = expiration,
+                });
 
-                return RedirectToAction(nameof(ExternalAuthenticationController.DefaultExternalLogin), typeof(ExternalAuthenticationController).ControllerName(), new { protectedToken, returnUrl });
+                return RedirectToAction(nameof(ExternalAuthenticationsController.DefaultExternalLogin), typeof(ExternalAuthenticationsController).ControllerName(), new { protectedToken, returnUrl });
             }
         }
 

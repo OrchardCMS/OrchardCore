@@ -8,14 +8,10 @@ namespace OrchardCore.Users.Drivers;
 
 public sealed class UserMenuDisplayDriver : DisplayDriver<UserMenu>
 {
-    private readonly SignInManager<IUser> _signInManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public UserMenuDisplayDriver(
-        SignInManager<IUser> signInManager,
-        IHttpContextAccessor httpContextAccessor)
+    public UserMenuDisplayDriver(IHttpContextAccessor httpContextAccessor)
     {
-        _signInManager = signInManager;
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -37,12 +33,6 @@ public sealed class UserMenuDisplayDriver : DisplayDriver<UserMenu>
             .Location("DetailAdmin", "Content:5")
             .Differentiator("Profile"),
 
-            View("UserMenuItems__ExternalLogins", model)
-            .RenderWhen(async () => (await _signInManager.GetExternalAuthenticationSchemesAsync()).Any())
-            .Location("Detail", "Content:10")
-            .Location("DetailAdmin", "Content:10")
-            .Differentiator("ExternalLogins"),
-
             View("UserMenuItems__SignOut", model)
             .Location("Detail", "Content:100")
             .Location("DetailAdmin", "Content:100")
@@ -57,5 +47,23 @@ public sealed class UserMenuDisplayDriver : DisplayDriver<UserMenu>
         }
 
         return CombineAsync(results);
+    }
+}
+public sealed class ExternalAuthenticationUserMenuDisplayDriver : DisplayDriver<UserMenu>
+{
+    private readonly SignInManager<IUser> _signInManager;
+
+    public ExternalAuthenticationUserMenuDisplayDriver(SignInManager<IUser> signInManager)
+    {
+        _signInManager = signInManager;
+    }
+
+    public override IDisplayResult Display(UserMenu model, BuildDisplayContext context)
+    {
+        return View("UserMenuItems__ExternalLogins", model)
+            .RenderWhen(async () => (await _signInManager.GetExternalAuthenticationSchemesAsync()).Any())
+            .Location("Detail", "Content:10")
+            .Location("DetailAdmin", "Content:10")
+            .Differentiator("ExternalLogins");
     }
 }

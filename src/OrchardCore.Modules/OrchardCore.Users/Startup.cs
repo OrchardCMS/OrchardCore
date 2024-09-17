@@ -68,7 +68,7 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDataMigration<ExternalUserMigrations>();
+        services.AddDataMigration<ExternalAuthenticationMigrations>();
 
         services.Configure<UserOptions>(userOptions =>
         {
@@ -248,15 +248,11 @@ public sealed class ExternalAuthenticationStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSiteDisplayDriver<ExternalAuthenticationSettingsDisplayDriver>();
-        services.AddSiteDisplayDriver<ExternalUserLoginSettingsDisplayDriver>();
-        services.AddSiteDisplayDriver<ExternalUserRoleLoginSettingsDisplayDriver>();
-        services.AddTransient<IConfigureOptions<ExternalUserLoginOptions>, ExternalUserLoginOptionsConfigurations>();
-        services.PostConfigure<RegistrationOptions>(options =>
-        {
-            // When this feature is enabled, always ensure that site-registration is allowed.
-            options.AllowSiteRegistration = true;
-        });
+        services.AddNavigationProvider<RegistrationAdminMenu>();
+        services.AddScoped<IDisplayDriver<UserMenu>, ExternalAuthenticationUserMenuDisplayDriver>();
+        services.AddSiteDisplayDriver<ExternalRegistrationSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<ExternalLoginSettingsDisplayDriver>();
+        services.AddTransient<IConfigureOptions<ExternalLoginOptions>, ExternalLoginOptionsConfigurations>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -270,7 +266,7 @@ public sealed class ExternalAuthenticationStartup : StartupBase
             defaults: new
             {
                 controller = _accountControllerName,
-                action = nameof(ExternalAuthenticationController.ExternalLogins),
+                action = nameof(ExternalAuthenticationsController.ExternalLogins),
             }
         );
     }

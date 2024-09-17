@@ -1,5 +1,5 @@
 @using OrchardCore.Users.Models
-@model ExternalAuthenticationSettings
+@model ExternalRegistrationSettings
 
 <style asp-name="codemirror"></style>
 <script asp-name="codemirror" at="Foot"></script>
@@ -13,7 +13,7 @@
 
 <div class="mb-3" asp-validation-class-for="NoUsername">
     <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="NoUsername" data-external-registration />
+        <input type="checkbox" class="form-check-input" asp-for="NoUsername" />
         <span asp-validation-for="NoUsername"></span>
         <label class="form-check-label" asp-for="NoUsername">@T["Do not ask username"]</label>
         <span class="hint dashed">@T["When a new user logs in with an external provider, they are not required to provide a local username. You can customize how it works by providing an IExternalLoginEventHandler or writing a script."]</span>
@@ -21,7 +21,7 @@
 </div>
 <div class="mb-3" asp-validation-class-for="NoEmail">
     <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="NoEmail" data-external-registration />
+        <input type="checkbox" class="form-check-input" asp-for="NoEmail" />
         <span asp-validation-for="NoEmail"></span>
         <label class="form-check-label" asp-for="NoEmail">@T["Do not ask email address"]</label>
         <span class="hint dashed">@T["When a new user logs in with an external provider and the email claim is defined, they are not required to provide a local email address."]</span>
@@ -29,9 +29,9 @@
 </div>
 <div class="mb-3" asp-validation-class-for="NoPassword">
     <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="NoPassword" data-external-registration />
+        <input type="checkbox" class="form-check-input" asp-for="NoPassword" />
         <span asp-validation-for="NoPassword"></span>
-        <label class="form-check-label" asp-for="NoPassword">@T["Do not create local password for external users"]</label>
+        <label class="form-check-label" asp-for="NoPassword">@T["Do not create local password"]</label>
         <span class="hint dashed">@T["When a new user logs in with an external provider, they are not required to provide a local password."]</span>
     </div>
 </div>

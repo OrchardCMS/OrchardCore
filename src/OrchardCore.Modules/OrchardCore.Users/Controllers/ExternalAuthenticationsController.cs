@@ -21,7 +21,7 @@ using OrchardCore.Users.ViewModels;
 namespace OrchardCore.Users.Controllers;
 
 [Feature(UserConstants.Features.ExternalAuthentication)]
-public sealed class ExternalAuthenticationController : AccountBaseController
+public sealed class ExternalAuthenticationsController : AccountBaseController
 {
     public const string DefaultExternalLoginProtector = "DefaultExternalLogin";
 
@@ -34,23 +34,25 @@ public sealed class ExternalAuthenticationController : AccountBaseController
     private readonly IEnumerable<ILoginFormEvent> _accountEvents;
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
+    private readonly ExternalLoginOptions _externalLoginOption;
     private readonly IdentityOptions _identityOptions;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
 
-    public ExternalAuthenticationController(
+    public ExternalAuthenticationsController(
         SignInManager<IUser> signInManager,
         UserManager<IUser> userManager,
-        ILogger<ExternalAuthenticationController> logger,
+        ILogger<ExternalAuthenticationsController> logger,
         IDataProtectionProvider dataProtectionProvider,
         IDistributedCache distributedCache,
         ISiteService siteService,
-        IHtmlLocalizer<ExternalAuthenticationController> htmlLocalizer,
-        IStringLocalizer<ExternalAuthenticationController> stringLocalizer,
+        IHtmlLocalizer<ExternalAuthenticationsController> htmlLocalizer,
+        IStringLocalizer<ExternalAuthenticationsController> stringLocalizer,
         IEnumerable<ILoginFormEvent> accountEvents,
         IShellFeaturesManager shellFeaturesManager,
         IEnumerable<IExternalLoginEventHandler> externalLoginHandlers,
+        IOptions<ExternalLoginOptions> externalLoginOption,
         IOptions<IdentityOptions> identityOptions)
     {
         _signInManager = signInManager;
@@ -62,18 +64,17 @@ public sealed class ExternalAuthenticationController : AccountBaseController
         _accountEvents = accountEvents;
         _shellFeaturesManager = shellFeaturesManager;
         _externalLoginHandlers = externalLoginHandlers;
+        _externalLoginOption = externalLoginOption.Value;
         _identityOptions = identityOptions.Value;
 
         H = htmlLocalizer;
         S = stringLocalizer;
     }
 
-    [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> DefaultExternalLogin(string protectedToken, string returnUrl = null)
     {
-        var loginSettings = await _siteService.GetSettingsAsync<ExternalUserLoginSettings>();
-        if (loginSettings.UseExternalProviderIfOnlyOneDefined)
+        if (_externalLoginOption.UseExternalProviderIfOnlyOneDefined)
         {
             var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
             if (schemes.Count() == 1)
@@ -115,7 +116,6 @@ public sealed class ExternalAuthenticationController : AccountBaseController
         return Challenge(properties, provider);
     }
 
-    [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
     {
@@ -190,7 +190,7 @@ public sealed class ExternalAuthenticationController : AccountBaseController
                 return View(nameof(LinkExternalLogin));
             }
 
-            var settings = await _siteService.GetSettingsAsync<ExternalAuthenticationSettings>();
+            var settings = await _siteService.GetSettingsAsync<ExternalRegistrationSettings>();
 
             var externalLoginViewModel = new RegisterExternalLoginViewModel
             {
@@ -291,7 +291,7 @@ public sealed class ExternalAuthenticationController : AccountBaseController
         ViewData["ReturnUrl"] = returnUrl;
         ViewData["LoginProvider"] = info.LoginProvider;
 
-        var settings = await _siteService.GetSettingsAsync<ExternalAuthenticationSettings>();
+        var settings = await _siteService.GetSettingsAsync<ExternalRegistrationSettings>();
 
         model.NoPassword = settings.NoPassword;
         model.NoEmail = settings.NoEmail;
@@ -435,7 +435,6 @@ public sealed class ExternalAuthenticationController : AccountBaseController
         return RedirectToLogin();
     }
 
-    [HttpGet]
     public async Task<IActionResult> ExternalLogins()
     {
         var user = await _userManager.GetUserAsync(User);
@@ -444,11 +443,14 @@ public sealed class ExternalAuthenticationController : AccountBaseController
             return Forbid();
         }
 
-        var model = new ExternalLoginsViewModel { CurrentLogins = await _userManager.GetLoginsAsync(user) };
+        var model = new ExternalLoginsViewModel
+        {
+            CurrentLogins = await _userManager.GetLoginsAsync(user),
+        };
+        model.ShowRemoveButton = await _userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
         model.OtherLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync())
             .Where(auth => model.CurrentLogins.All(ul => auth.Name != ul.LoginProvider))
-            .ToList();
-        model.ShowRemoveButton = await _userManager.HasPasswordAsync(user) || model.CurrentLogins.Count > 1;
+            .ToArray();
 
         CopyTempDataErrorsToModelState();
 
@@ -469,7 +471,6 @@ public sealed class ExternalAuthenticationController : AccountBaseController
         return new ChallengeResult(provider, properties);
     }
 
-    [HttpGet]
     public async Task<IActionResult> LinkLoginCallback()
     {
         var user = await _userManager.GetUserAsync(User);

@@ -8,7 +8,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.DataMigrations;
 
-public sealed class ExternalUserMigrations : DataMigration
+public sealed class ExternalAuthenticationMigrations : DataMigration
 {
 #pragma warning disable CA1822 // Mark members as static
     public int Create()
@@ -27,7 +27,7 @@ public sealed class ExternalUserMigrations : DataMigration
 
             site.Put(registrationSettings);
 
-            site.Put(new ExternalAuthenticationSettings
+            site.Put(new ExternalRegistrationSettings
             {
                 NoUsername = registrationSettings.NoUsernameForExternalUsers,
                 NoEmail = registrationSettings.NoEmailForExternalUsers,
@@ -38,9 +38,11 @@ public sealed class ExternalUserMigrations : DataMigration
 
             var loginSettings = site.As<LoginSettings>();
 
-            site.Put(new ExternalUserLoginSettings
+            site.Put(new ExternalLoginSettings
             {
                 UseExternalProviderIfOnlyOneDefined = loginSettings.UseExternalProviderIfOnlyOneDefined,
+                UseScriptToSyncProperties = loginSettings.UseScriptToSyncRoles,
+                SyncPropertiesScript = loginSettings.SyncRolesScript,
             });
 
             await siteService.UpdateSiteSettingsAsync(site);

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Settings;
@@ -18,15 +19,18 @@ public class UsersThemeSelector : IThemeSelector
 {
     private readonly ISiteService _siteService;
     private readonly IAdminThemeService _adminThemeService;
+    private readonly RegistrationOptions _registrationOptions;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public UsersThemeSelector(
         ISiteService siteService,
         IAdminThemeService adminThemeService,
+        IOptions<RegistrationOptions> registrationOptions,
         IHttpContextAccessor httpContextAccessor)
     {
         _siteService = siteService;
         _adminThemeService = adminThemeService;
+        _registrationOptions = registrationOptions.Value;
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -41,6 +45,7 @@ public class UsersThemeSelector : IThemeSelector
             switch (routeValues["controller"]?.ToString())
             {
                 case "Account":
+                case "ExternalAuthentications":
                     useSiteTheme = (await _siteService.GetSettingsAsync<LoginSettings>()).UseSiteTheme;
                     break;
                 case "TwoFactorAuthentication":
@@ -64,7 +69,7 @@ public class UsersThemeSelector : IThemeSelector
                     }
                     break;
                 case "Registration":
-                    useSiteTheme = (await _siteService.GetSettingsAsync<RegistrationSettings>()).UseSiteTheme;
+                    useSiteTheme = _registrationOptions.UseSiteTheme;
                     break;
                 case "ResetPassword":
                     useSiteTheme = (await _siteService.GetSettingsAsync<ResetPasswordSettings>()).UseSiteTheme;

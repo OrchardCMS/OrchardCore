@@ -1,6 +1,6 @@
 namespace OrchardCore.Users.Models;
 
-public class ExternalUserLoginOptions
+public class ExternalLoginOptions
 {
     public bool UseExternalProviderIfOnlyOneDefined { get; set; }
 }
