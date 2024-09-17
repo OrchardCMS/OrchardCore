@@ -38,7 +38,6 @@
     <Owners>Orchard Core Community and Contributors</Owners>
   </PropertyGroup>
 
-
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)/nuget-icon.png">
       <Pack>True</Pack>
