@@ -50,12 +50,15 @@ public class ContainedPartIndexProvider : IndexProvider<ContentItem>
                     Order = containedPart.Order,
                     Published = contentItem.Published,
                     Latest = contentItem.Latest,
-                    DisplayText = contentItem.DisplayText,
                 };
 
                 if (containedPartIndex.DisplayText?.Length > ContainedPartIndex.MaxDisplayTextSize)
                 {
                     containedPartIndex.DisplayText = contentItem.DisplayText[..ContainedPartIndex.MaxDisplayTextSize];
+                } 
+                else 
+                {
+                    containedPartIndex.DisplayText = contentItem.DisplayText;
                 }
 
                 return containedPartIndex;
