@@ -152,6 +152,11 @@ public class DateTimeShapes : IShapeAttributeProvider
             return GetDurationInMinutes(timeSpan.Value, minutes);
         }
 
+        if (timeSpan.Value.Milliseconds < 1000)
+        {
+            return H["less than a second"];
+        }
+
         var seconds = timeSpan.Value.Seconds;
 
         return H.Plural(seconds, "1 second", "{0} seconds");
@@ -166,7 +171,7 @@ public class DateTimeShapes : IShapeAttributeProvider
             return H.Plural(days, "1 day", "{0} days");
         }
 
-        return H.Plural((int)Math.Round(totalDays), "Approximately a day", "Approximately {0} days");
+        return H.Plural((int)Math.Round(totalDays), "approximately a day", "approximately {0} days");
     }
 
     private LocalizedHtmlString GetDurationInHours(TimeSpan timeSpan, int hours)
@@ -178,7 +183,7 @@ public class DateTimeShapes : IShapeAttributeProvider
             return H.Plural(hours, "1 hour", "{0} hours");
         }
 
-        return H.Plural((int)Math.Round(totalHours), "Approximately an hour", "Approximately {0} hours");
+        return H.Plural((int)Math.Round(totalHours), "approximately an hour", "approximately {0} hours");
     }
 
     private LocalizedHtmlString GetDurationInMinutes(TimeSpan timeSpan, int minutes)
@@ -190,7 +195,7 @@ public class DateTimeShapes : IShapeAttributeProvider
             return H.Plural(minutes, "1 minute", "{0} minutes");
         }
 
-        return H.Plural((int)Math.Round(totalMinutes), "Approximately a minute", "Approximately {0} minutes");
+        return H.Plural((int)Math.Round(totalMinutes), "approximately a minute", "approximately {0} minutes");
     }
 }
 
