@@ -4,7 +4,9 @@
 @inject IOptions<CookieAuthenticationOptions> CookieAuthenticationOptions
 
 @model OrchardCore.Users.Models.TwoFactorLoginSettings
-
+@{
+    var duration = await DisplayAsync(await New.Duration(timeSpan: CookieAuthenticationOptions.Value.ExpireTimeSpan));
+}
 <fieldset>
     <legend>@T["Two-Factor Settings"]</legend>
 
@@ -14,8 +16,7 @@
             <span asp-validation-for="AllowRememberClientTwoFactorAuthentication"></span>
             <label class="form-check-label" asp-for="AllowRememberClientTwoFactorAuthentication">@T["Allow users to remember client"]</label>
             <span class="hint dashed">
-                @T["When selected, users may use Remember Client during login to avoid having to provide a token every time."]
-                @T["The client will be remembered for:"] @await DisplayAsync(await New.Duration(timeSpan: CookieAuthenticationOptions.Value.ExpireTimeSpan))
+                @T["When selected, users may use Remember Client during login to avoid having to provide a token every time. The client will be remembered for: {0}", duration]
             </span>
         </div>
     </div>

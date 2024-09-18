@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Html;
 using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Shapes;
@@ -110,60 +109,8 @@ public class DateTimeShapes : IShapeAttributeProvider
         }
 
         return time.TotalMilliseconds > 0
-                   ? H["a moment ago"]
-                   : H["in a moment"];
-    }
-
-    [Shape]
-    public IHtmlContent Duration(TimeSpan? timeSpan)
-    {
-        if (timeSpan == null)
-        {
-            return HtmlString.Empty;
-        }
-
-        var days = (int)timeSpan.Value.TotalDays;
-        var hours = timeSpan.Value.Hours;
-        var minutes = timeSpan.Value.Minutes;
-        var seconds = timeSpan.Value.Seconds;
-
-        var builder = new HtmlContentBuilder();
-
-        if (days > 0)
-        {
-            builder.AppendHtml(H.Plural(days, "{1} day", "{1} days", days));
-        }
-
-        if (hours > 0)
-        {
-            if (builder.Count > 0)
-            {
-                builder.AppendWhitespace();
-            }
-            builder.AppendHtml(H.Plural(hours, "{1} hour", "{1} hours", hours));
-        }
-
-        if (minutes > 0)
-        {
-            if (builder.Count > 0)
-            {
-                builder.AppendWhitespace();
-            }
-
-            builder.AppendHtml(H.Plural(hours, "{1} minute", "{1} minutes", minutes));
-        }
-
-        if (seconds > 0)
-        {
-            if (builder.Count > 0)
-            {
-                builder.AppendWhitespace();
-            }
-
-            builder.AppendHtml(H.Plural(seconds, "{1} second", "{1} seconds", seconds));
-        }
-
-        return builder;
+            ? H["a moment ago"]
+            : H["in a moment"];
     }
 
     [Shape]
@@ -174,6 +121,121 @@ public class DateTimeShapes : IShapeAttributeProvider
         Format ??= S[LongDateTimeFormat].Value;
 
         return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.CurrentUICulture)));
+    }
+
+    [Shape]
+    public IHtmlContent Duration(TimeSpan? timeSpan)
+    {
+        if (timeSpan == null)
+        {
+            return HtmlString.Empty;
+        }
+
+        var tag = new TagBuilder("span");
+
+        tag.AddCssClass("timespan-preview-value");
+
+        tag.Attributes["title"] = timeSpan.ToString();
+
+        tag.InnerHtml.AppendHtml(GetDuration(timeSpan.Value));
+
+        return tag;
+    }
+
+    private LocalizedHtmlString GetDuration(TimeSpan timeSpan)
+    {
+        var days = timeSpan.Days;
+        var hours = timeSpan.Hours;
+        var minutes = timeSpan.Minutes;
+        var seconds = timeSpan.Seconds;
+
+        if (days > 0)
+        {
+            return GetDurationInDays(timeSpan, days, hours, minutes, seconds);
+        }
+
+        if (hours > 0)
+        {
+            return GetDurationInHours(timeSpan, hours, minutes, seconds);
+        }
+
+        if (minutes > 0)
+        {
+            return GetDurationInMinutes(timeSpan, minutes, seconds);
+        }
+
+        return H.Plural(seconds, "One second", "{0} seconds");
+    }
+
+    private LocalizedHtmlString GetDurationInMinutes(TimeSpan timeSpan, int minutes, int seconds)
+    {
+        if (seconds == timeSpan.TotalSeconds)
+        {
+            return H.Plural(minutes, "One minute", "{0} minutes");
+        }
+
+        return H.Plural(minutes, "Approximately a minute", "Approximately {0} minutes");
+    }
+
+    private LocalizedHtmlString GetDurationInHours(TimeSpan timeSpan, int hours, int minutes, int seconds)
+    {
+        if (hours == timeSpan.TotalHours)
+        {
+            return H.Plural(hours, "One hour", "{0} hours");
+        }
+
+        if (minutes == 0)
+        {
+            return H.Plural(hours, "Approximately an hour", "Approximately {0} hours");
+        }
+
+        if (hours == 1)
+        {
+            if (seconds > 0)
+            {
+                return H.Plural(minutes, "Approximately one hour and one minute", "Approximately one hour and {0} minutes");
+            }
+
+            return H.Plural(minutes, "One hour and one minute", "One hour and {0} minutes");
+        }
+
+        if (seconds > 0)
+        {
+            return H.Plural(minutes, "Approximately {1} hours and one minute", "Approximately {1} hours and {0} minutes", hours);
+        }
+
+        return H.Plural(minutes, "{1} hours and one minute", "{1} hours and {0} minutes", hours);
+
+    }
+
+    private LocalizedHtmlString GetDurationInDays(TimeSpan timeSpan, int days, int hours, int minutes, int seconds)
+    {
+        if (days == timeSpan.TotalDays)
+        {
+            return H.Plural(days, "One day", "{0} days");
+        }
+
+        if (hours == 0)
+        {
+            return H.Plural(days, "Approximately a day", "Approximately {0} days");
+        }
+
+        if (days == 1)
+        {
+            if (minutes + seconds > 0)
+            {
+                return H.Plural(hours, "Approximately one day and one hour", "Approximately one day and {0} hours");
+            }
+
+            return H.Plural(hours, "One day and one hour", "One day and {0} hours");
+        }
+
+        if (minutes + seconds > 0)
+        {
+            return H.Plural(hours, "Approximately {1} day and one hour", "Approximately {1} day and {0} hours", days);
+        }
+
+        return H.Plural(hours, "{1} day and one hour", "{1} day and {0} hours", days);
     }
 }
 
