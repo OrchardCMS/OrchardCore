@@ -6,6 +6,8 @@ namespace OrchardCore.Lists.Indexes;
 
 public class ContainedPartIndex : MapIndex
 {
+    public const int MaxDisplayTextSize = 255;
+
     public string ListContentItemId { get; set; }
 
     public int Order { get; set; }
@@ -40,7 +42,7 @@ public class ContainedPartIndexProvider : IndexProvider<ContentItem>
                     return null;
                 }
 
-                return new ContainedPartIndex
+                var containedPartIndex = new ContainedPartIndex
                 {
                     ContentItemId = contentItem.ContentItemId,
                     ListContentType = containedPart.ListContentType,
@@ -48,8 +50,18 @@ public class ContainedPartIndexProvider : IndexProvider<ContentItem>
                     Order = containedPart.Order,
                     Published = contentItem.Published,
                     Latest = contentItem.Latest,
-                    DisplayText = contentItem.DisplayText,
                 };
+
+                if (containedPartIndex.DisplayText?.Length > ContainedPartIndex.MaxDisplayTextSize)
+                {
+                    containedPartIndex.DisplayText = contentItem.DisplayText[..ContainedPartIndex.MaxDisplayTextSize];
+                } 
+                else 
+                {
+                    containedPartIndex.DisplayText = contentItem.DisplayText;
+                }
+
+                return containedPartIndex;
             });
     }
 }
