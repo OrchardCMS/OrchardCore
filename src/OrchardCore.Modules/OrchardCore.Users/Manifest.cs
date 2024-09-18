@@ -20,6 +20,18 @@ using OrchardCore.Users;
 )]
 
 [assembly: Feature(
+    Id = UserConstants.Features.ExternalAuthentication,
+    Name = "External Authentication",
+    Description = "Provides a way to allow authentication using an external identity provider.",
+    EnabledByDependencyOnly = true,
+    Dependencies =
+    [
+        UserConstants.Features.Users,
+    ],
+    Category = "Security"
+)]
+
+[assembly: Feature(
     Id = "OrchardCore.Users.ChangeEmail",
     Name = "Users Change Email",
     Description = "The Change email feature allows users to change their email address.",

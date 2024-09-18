@@ -1,9 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\OrchardCore.Build\OrchardCore.Commons.props" />
-  <ItemGroup>
-    <PackageReference Remove="Microsoft.SourceLink.GitHub" />
-    <PackageReference Remove="StyleCop.Analyzers" />
-  </ItemGroup>
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
     <IncludeBuildOutput>False</IncludeBuildOutput>

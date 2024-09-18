@@ -29,6 +29,9 @@ public sealed class Startup
 
         services.Configure<DefaultAzureEmailOptions>(options =>
         {
+            _shellConfiguration.GetSection("OrchardCore_Email_AzureCommunicationServices").Bind(options);
+
+            // The 'OrchardCore_Email_Azure' key can be removed in version 3. 
             _shellConfiguration.GetSection("OrchardCore_Email_Azure").Bind(options);
 
             options.IsEnabled = options.ConfigurationExists();
