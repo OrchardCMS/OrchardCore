@@ -24,7 +24,7 @@ public sealed class Startup : StartupBase
 
         services.Configure<DefaultAzureSmsOptions>(options =>
         {
-            _shellConfiguration.GetSection("OrchardCore_Sms_AzureCommunicationServices").Bind(options);
+            _shellConfiguration.GetSection("OrchardCore_Sms_AzureCommunication").Bind(options);
 
             options.IsEnabled = options.ConfigurationExists();
         });

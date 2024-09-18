@@ -60,7 +60,7 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
             model.IsEnabled = settings.IsEnabled;
             model.DefaultSender = settings.DefaultSender;
             model.HasConnectionString = !string.IsNullOrWhiteSpace(settings.ConnectionString);
-        }).Location("Content:5#Azure")
+        }).Location("Content:5#Azure Communication")
         .OnGroup(SettingsGroupId);
     }
 

@@ -1,4 +1,4 @@
-# Azure SMS (`OrchardCore.Sms.Azure`)
+# Azure Communication SMS (`OrchardCore.Sms.Azure`)
 
 This feature provides SMS providers for sending SMS through [Azure Communication Services SMS](https://learn.microsoft.com/en-us/azure/communication-services/concepts/sms/concepts).
 
@@ -17,7 +17,7 @@ Enabling this feature will introduce a new tab labeled **Azure** within the SMS 
 You may configure the **Default Azure Communication** using any configuration provider via the following settings:
 
 ```json
-"OrchardCore_Sms_AzureCommunicationServices": {
+"OrchardCore_Sms_AzureCommunication": {
     "PhoneNumber": "",
     "ConnectionString": ""
 }
