@@ -11,8 +11,9 @@ public class DynamicContentTypeWhereInputBuilder : DynamicContentTypeBuilder
 {
     public DynamicContentTypeWhereInputBuilder(IHttpContextAccessor httpContextAccessor,
         IOptions<GraphQLContentOptions> contentOptionsAccessor,
+        IEnumerable<IContentFieldProvider> contentFieldProviders,
         IStringLocalizer<DynamicContentTypeWhereInputBuilder> localizer)
-        : base(httpContextAccessor, contentOptionsAccessor, localizer) { }
+        : base(httpContextAccessor, contentOptionsAccessor, contentFieldProviders, localizer) { }
 
     public override void Build(ISchema schema, FieldType contentQuery, ContentTypeDefinition contentTypeDefinition, ContentItemType contentItemType)
     {

@@ -1,5 +1,4 @@
 using GraphQL.Types;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
@@ -7,29 +6,28 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 public sealed class DynamicPartGraphType : ObjectGraphType<ContentPart>
 {
     private ContentTypePartDefinition _part;
+    private readonly IEnumerable<IContentFieldProvider> _contentFieldProviders;
 
-    public DynamicPartGraphType(ContentTypePartDefinition part)
+    public DynamicPartGraphType(
+        ContentTypePartDefinition part,
+        IEnumerable<IContentFieldProvider> contentFieldProviders)
     {
         Name = part.Name;
         _part = part;
+        _contentFieldProviders = contentFieldProviders;
     }
 
     public override void Initialize(ISchema schema)
     {
-        if (schema is IServiceProvider serviceProvider)
+        foreach (var field in _part.PartDefinition.Fields)
         {
-            var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
-
-            foreach (var field in _part.PartDefinition.Fields)
+            foreach (var fieldProvider in _contentFieldProviders)
             {
-                foreach (var fieldProvider in contentFieldProviders)
+                var fieldType = fieldProvider.GetField(schema, field, _part.Name);
+                if (fieldType != null)
                 {
-                    var fieldType = fieldProvider.GetField(schema, field, _part.Name);
-                    if (fieldType != null)
-                    {
-                        AddField(fieldType);
-                        break;
-                    }
+                    AddField(fieldType);
+                    break;
                 }
             }
         }

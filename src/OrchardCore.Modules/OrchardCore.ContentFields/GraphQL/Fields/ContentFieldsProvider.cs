@@ -127,7 +127,8 @@ public class ContentFieldsProvider : IContentFieldProvider
         };
     }
 
-    public bool HasField(ISchema schema, ContentPartFieldDefinition field) => _contentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name);
+    public bool HasField(ISchema schema, ContentPartFieldDefinition field)
+        => _contentFieldTypeMappings.ContainsKey(field.FieldDefinition.Name);
 
     public FieldTypeIndexDescriptor GetFieldIndex(ContentPartFieldDefinition field)
     {
@@ -145,8 +146,8 @@ public class ContentFieldsProvider : IContentFieldProvider
         };
     }
 
-    public bool HasFieldIndex(ContentPartFieldDefinition field) =>
-        _contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var fieldTypeDescriptor) &&
+    public bool HasFieldIndex(ContentPartFieldDefinition field)
+        => _contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var fieldTypeDescriptor) &&
         fieldTypeDescriptor.IndexType != null &&
         !string.IsNullOrWhiteSpace(fieldTypeDescriptor.Index);
 
