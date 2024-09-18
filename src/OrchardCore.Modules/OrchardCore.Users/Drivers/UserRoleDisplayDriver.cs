@@ -58,13 +58,6 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
         // This view is always rendered, however there will be no editable roles if the user does not have permission to edit them.
         return Initialize<EditUserRoleViewModel>("UserRoleFields_Edit", async model =>
         {
-            // The current user can only view their roles if they have assign role, to prevent listing roles when managing their own profile.
-            if (_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId
-                && !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.AssignRoleToUsers))
-            {
-                return;
-            }
-
             var roles = await GetRoleAsync();
 
             // When a user is in a role that the current user cannot manage the role is shown but selection is disabled.
@@ -91,13 +84,6 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
 
     public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
     {
-        // The current user cannot alter their own roles. This prevents them removing access to the site for themselves.
-        if (_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId
-            && !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, StandardPermissions.SiteOwner))
-        {
-            return null;
-        }
-
         var model = new EditUserRoleViewModel();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
