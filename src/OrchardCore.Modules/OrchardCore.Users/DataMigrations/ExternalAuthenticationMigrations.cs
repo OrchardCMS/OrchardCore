@@ -48,7 +48,7 @@ public sealed class ExternalAuthenticationMigrations : DataMigration
             {
                 var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
 
-                if (await featuresManager.IsFeatureEnabledAsync(UserConstants.Features.UserRegistration))
+                if (!await featuresManager.IsFeatureEnabledAsync(UserConstants.Features.UserRegistration))
                 {
                     return;
                 }

@@ -63,36 +63,36 @@
         );
     }
 
-    // don't format here.
-    const suggestion = `/**
-                                                            * Use the loginProvider and externalClaims properties of the context variable to inspect
-                                                            * who authenticated the user and with what claims. Check currentRoles property and apply
-                                                            * your business logic to fill the rolesToAdd and rolesToRemove arrays in order to update
-                                                            */
-                                                            const context = {} as Context;
-                                                            type Context = {
-                                                                readonly user: {
-                                                                    userName: string;
-                                                                    userRoles: string[];
-                                                                    userClaims: { claimType: string; claimValue: string; }[];
-                                                                    userProperties: { [key: string]: string };
-                                                                },
-                                                                readonly loginProvider: string,
-                                                                rolesToAdd: string[];
-                                                                rolesToRemove: string[];
-                                                                claimsToUpdate: { claimType: string; claimValue: string; }[];
-                                                                claimsToRemove: { claimType: string; claimValue: string; }[];
-                                                                propertiesToUpdate: { [key: string]: string };
-                                                                externalClaims: readonly [{
-                                                                    valueType: string;
-                                                                    type: string;
-                                                                    value: string;
-                                                                    subject: string;
-                                                                    issuer: string;
-                                                                    originalIssuer: string;
-                                                                    properties: { [key: string]: string };
-                                                                }]
-                                                            }`
+// don't format here.
+const suggestion = `/**                                                                     
+* Use the loginProvider and externalClaims properties of the context variable to inspect
+* who authenticated the user and with what claims. Check currentRoles property and apply
+* your business logic to fill the rolesToAdd and rolesToRemove arrays in order to update
+*/
+const context = {} as Context;
+type Context = {
+    readonly user: {  
+        userName: string;
+        userRoles: string[];
+        userClaims: { claimType: string; claimValue: string; }[];
+        userProperties: { [key: string]: string };
+    },
+    readonly loginProvider: string,
+    rolesToAdd: string[];
+    rolesToRemove: string[];
+    claimsToUpdate: { claimType: string; claimValue: string; }[];
+    claimsToRemove: { claimType: string; claimValue: string; }[];
+    propertiesToUpdate: { [key: string]: string };
+    externalClaims: readonly [{
+        valueType: string;
+        type: string;
+        value: string;
+        subject: string;
+        issuer: string;
+        originalIssuer: string;
+        properties: { [key: string]: string };
+    }]
+}`
     var codeEditor;
     document.addEventListener('DOMContentLoaded', function () {
         require(['vs/editor/editor.main'], function () {
