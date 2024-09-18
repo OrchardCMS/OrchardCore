@@ -31,10 +31,7 @@ public sealed class LoginSettingsDisplayDriver : SiteDisplayDriver<LoginSettings
         return Initialize<LoginSettings>("LoginSettings_Edit", model =>
         {
             model.UseSiteTheme = settings.UseSiteTheme;
-            model.UseExternalProviderIfOnlyOneDefined = settings.UseExternalProviderIfOnlyOneDefined;
             model.DisableLocalLogin = settings.DisableLocalLogin;
-            model.UseScriptToSyncRoles = settings.UseScriptToSyncRoles;
-            model.SyncRolesScript = settings.SyncRolesScript;
             model.AllowChangingEmail = settings.AllowChangingEmail;
             model.AllowChangingUsername = settings.AllowChangingUsername;
             model.AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber;

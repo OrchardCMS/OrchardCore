@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Users.Models;
 using OrchardCore.Workflows.Services;
 
@@ -35,5 +36,25 @@ public abstract class AccountBaseController : Controller
         }
 
         return Redirect("~/");
+    }
+
+    protected void CopyTempDataErrorsToModelState()
+    {
+        foreach (var errorMessage in TempData.Where(x => x.Key.StartsWith("error")).Select(x => x.Value.ToString()))
+        {
+            ModelState.AddModelError(string.Empty, errorMessage);
+        }
+    }
+
+    protected bool AddUserEnabledError(IUser user, IStringLocalizer S)
+    {
+        if (user is not User localUser || !localUser.IsEnabled)
+        {
+            ModelState.AddModelError(string.Empty, S["The specified user is not allowed to sign in."]);
+
+            return true;
+        }
+
+        return false;
     }
 }
