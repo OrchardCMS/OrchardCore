@@ -13,9 +13,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
 {
     protected readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IEnumerable<IContentFieldProvider> _contentFieldProviders;
+    protected readonly IEnumerable<IContentFieldProvider> _contentFieldProviders;
     protected readonly GraphQLContentOptions _contentOptions;
     protected readonly IStringLocalizer S;
+
     private readonly Dictionary<string, FieldType> _dynamicPartFields;
 
     protected DynamicContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
@@ -41,7 +42,7 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
         }
 
         var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
-        var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
+        var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToArray();
 
         foreach (var part in contentTypeDefinition.Parts)
         {
