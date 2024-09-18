@@ -16,7 +16,7 @@ Enabling this module will introduce a new tab labeled **Azure Communication** wi
 You may configure the Default Azure Email Service provider by the configuration provider using the following settings:
 
 ```json
-"OrchardCore_Email_Azure": {
+"OrchardCore_Email_AzureCommunicationServices": {
     "DefaultSender": "",
     "ConnectionString": ""
 }

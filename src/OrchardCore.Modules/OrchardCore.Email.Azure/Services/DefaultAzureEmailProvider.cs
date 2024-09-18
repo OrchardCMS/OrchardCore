@@ -19,5 +19,5 @@ public class DefaultAzureEmailProvider : AzureEmailProviderBase
     }
 
     public override LocalizedString DisplayName
-        => S["Default Azure Communication"];
+        => S["Default Azure Communication Services"];
 }
