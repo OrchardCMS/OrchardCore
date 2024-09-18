@@ -146,7 +146,9 @@ public class DateTimeShapes : IShapeAttributeProvider
             return GetDurationInMinutes(timeSpan.Value);
         }
 
-        if (timeSpan.Value.Seconds > 0)
+        var seconds = timeSpan.Value.Seconds;
+
+        if (seconds > 0)
         {
             return H.Plural(seconds, "1 second", "{0} seconds");
         }
