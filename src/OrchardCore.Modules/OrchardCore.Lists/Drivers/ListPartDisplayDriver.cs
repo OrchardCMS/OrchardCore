@@ -143,7 +143,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
                 await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listPartFilterViewModel, Prefix);
                 model.ListPartFilterViewModel = listPartFilterViewModel;
 
-             }))
+             })
             .Location("DetailAdmin", "Content:5");
     }
 
