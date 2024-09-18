@@ -131,30 +131,28 @@ public class DateTimeShapes : IShapeAttributeProvider
             return HtmlString.Empty;
         }
 
-        return GetDuration(timeSpan.Value);
-    }
-
-    private LocalizedHtmlString GetDuration(TimeSpan timeSpan)
-    {
-        var days = timeSpan.Days;
-        var hours = timeSpan.Hours;
-        var minutes = timeSpan.Minutes;
-        var seconds = timeSpan.Seconds;
+        var days = timeSpan.Value.Days;
 
         if (days > 0)
         {
-            return GetDurationInDays(timeSpan, days);
+            return GetDurationInDays(timeSpan.Value, days);
         }
+
+        var hours = timeSpan.Value.Hours;
 
         if (hours > 0)
         {
-            return GetDurationInHours(timeSpan, hours);
+            return GetDurationInHours(timeSpan.Value, hours);
         }
+
+        var minutes = timeSpan.Value.Minutes;
 
         if (minutes > 0)
         {
-            return GetDurationInMinutes(timeSpan, minutes);
+            return GetDurationInMinutes(timeSpan.Value, minutes);
         }
+
+        var seconds = timeSpan.Value.Seconds;
 
         return H.Plural(seconds, "1 second", "{0} seconds");
     }
