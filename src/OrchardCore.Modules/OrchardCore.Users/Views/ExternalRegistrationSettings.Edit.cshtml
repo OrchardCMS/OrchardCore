@@ -16,7 +16,7 @@
         <input type="checkbox" class="form-check-input" asp-for="DisableNewRegistrations" />
         <span asp-validation-for="DisableNewRegistrations"></span>
         <label class="form-check-label" asp-for="DisableNewRegistrations">@T["Disable new external registration"]</label>
-        <span class="hint dashed">@T["If selected, new users will not be able to register using external authentication. This means users without a local account will be unable to authenticate."]</span>
+        <span class="hint dashed">@T["If selected, only users with existing local accounts will be able to authenticate, and new users will not be able to register using external authentication. Users without a local account will not be able to authenticate."]</span>
     </div>
 </div>
 
