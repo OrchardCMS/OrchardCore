@@ -186,7 +186,7 @@ public class DateTimeShapes : IShapeAttributeProvider
 
         if (minutes == 0)
         {
-            return H.Plural(hours, "Approximately an hour", "Approximately {0} hours");
+            return H.Plural(Math.Round(timeSpan.TotalHours), "Approximately an hour", "Approximately {0} hours");
         }
 
         if (hours == 1)
