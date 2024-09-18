@@ -1,4 +1,4 @@
-# Azure Communication Services (SMS) (`OrchardCore.Sms.Azure`)
+# Azure Communication Services SMS (`OrchardCore.Sms.Azure`)
 
 This feature provides SMS providers for sending SMS through [Azure Communication Services SMS](https://learn.microsoft.com/en-us/azure/communication-services/concepts/sms/concepts).
 

@@ -1,7 +1,7 @@
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
-    Name = "Azure Communication Services (Email)",
+    Name = "Azure Communication Services Email",
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
