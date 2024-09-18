@@ -1,0 +1,17 @@
+<zone Name="Title"><h1>@RenderTitleSegments(T["URL Rewriting"])</h1></zone>
+
+<div class="card mb-3 text-bg-theme position-sticky action-bar">
+    <div class="card-body">
+        <div class="row gx-3">
+            <div class="col">
+                <div class="has-search">
+                    <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                    <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                </div>
+            </div>
+            <div class="col-auto">
+                <a asp-route-action="CreateRule" id="btnCreate" class="btn btn-secondary create" role="button">@T["Create new rule"]</a>
+            </div>
+        </div>
+    </div>
+</div>

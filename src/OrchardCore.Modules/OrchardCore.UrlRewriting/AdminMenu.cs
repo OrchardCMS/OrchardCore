@@ -26,8 +26,9 @@ public sealed class AdminMenu : AdminNavigationProvider
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Settings"], settings => settings
                    .Add(S["URL Rewriting"], S["URL Rewriting"].PrefixPosition(), rewriting => rewriting
+                       .AddClass("urlrewriting").Id("urlrewriting")
                        .Permission(UrlRewritingPermissions.ManageUrlRewriting)
-                       .Action("Index", "Admin", _routeValues)
+                       .Action("Index", "Admin", "OrchardCore.UrlRewriting")
                        .LocalNav()
                     )
                 )
