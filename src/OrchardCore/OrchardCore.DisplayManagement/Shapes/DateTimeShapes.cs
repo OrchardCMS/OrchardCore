@@ -131,15 +131,7 @@ public class DateTimeShapes : IShapeAttributeProvider
             return HtmlString.Empty;
         }
 
-        var tag = new TagBuilder("span");
-
-        tag.AddCssClass("timespan-preview-value");
-
-        tag.Attributes["title"] = timeSpan.ToString();
-
-        tag.InnerHtml.AppendHtml(GetDuration(timeSpan.Value));
-
-        return tag;
+        return GetDuration(timeSpan.Value);
     }
 
     private LocalizedHtmlString GetDuration(TimeSpan timeSpan)
