@@ -60,7 +60,7 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
         {
             var roles = await GetRoleAsync();
 
-            // When a user is in a role that the current user cannot manage the role is shown but selection is disabled.
+            // When a user is in a role that the current user cannot manage the role is not shown.
             var authorizedRoleNames = await GetAccessibleRoleNamesAsync(roles);
             var userRoleNames = await _userRoleStore.GetRolesAsync(user, default);
 
