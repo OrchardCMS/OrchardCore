@@ -181,7 +181,7 @@ public class DateTimeShapes : IShapeAttributeProvider
     {
         if (hours == timeSpan.TotalHours)
         {
-            return H.Plural(hours, "One hour", "{0} hours");
+            return H.Plural(hours, "1 hour", "{0} hours");
         }
 
         if (minutes == 0)
