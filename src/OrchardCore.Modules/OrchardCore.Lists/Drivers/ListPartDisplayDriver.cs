@@ -137,7 +137,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
     }
     private ShapeResult InitializeDisplayListPartDetailAdminSearchPanelShape()
     {
-        return Initialize("ListPartDetailAdminSearchPanel", (Func<ListPartViewModel, ValueTask>)(async model =>
+        return Initialize<ListPartViewModel>("ListPartDetailAdminSearchPanel", async model =>
             {
                 var listPartFilterViewModel = new ListPartFilterViewModel();
                 await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listPartFilterViewModel, Prefix);
