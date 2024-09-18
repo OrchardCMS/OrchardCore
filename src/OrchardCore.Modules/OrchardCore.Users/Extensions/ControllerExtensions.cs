@@ -4,12 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Email;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
-using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -48,55 +47,45 @@ internal static class ControllerExtensions
     /// <returns></returns>
     internal static async Task<IUser> RegisterUser(this Controller controller, RegisterUserForm model, string confirmationEmailSubject, ILogger logger)
     {
-        var shellFeaturesManager = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IShellFeaturesManager>();
+        var registrationEvents = controller.ControllerContext.HttpContext.RequestServices.GetServices<IRegistrationFormEvents>();
 
-        var registrationFeatureIsAvailable = (await shellFeaturesManager.GetAvailableFeaturesAsync())
-           .Any(feature => feature.Id == UserConstants.Features.UserRegistration);
+        await registrationEvents.InvokeAsync((e, modelState) => e.RegistrationValidationAsync((key, message) => modelState.AddModelError(key, message)), controller.ModelState, logger);
 
-        if (!registrationFeatureIsAvailable)
+        if (controller.ModelState.IsValid)
         {
-            return null;
-        }
+            var registrationOptions = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IOptions<RegistrationOptions>>().Value;
 
-        var settings = await controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<ISiteService>().GetSettingsAsync<RegistrationSettings>();
+            var userService = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IUserService>();
 
-        if (settings.UsersCanRegister != UserRegistrationType.NoRegistration)
-        {
-            var registrationEvents = controller.ControllerContext.HttpContext.RequestServices.GetServices<IRegistrationFormEvents>();
-
-            await registrationEvents.InvokeAsync((e, modelState) => e.RegistrationValidationAsync((key, message) => modelState.AddModelError(key, message)), controller.ModelState, logger);
-
-            if (controller.ModelState.IsValid)
+            var user = await userService.CreateUserAsync(new User
             {
-                var userService = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IUserService>();
+                UserName = model.UserName,
+                Email = model.Email,
+                EmailConfirmed = !registrationOptions.UsersMustValidateEmail,
+                IsEnabled = !registrationOptions.UsersAreModerated,
+            }, model.Password, controller.ModelState.AddModelError) as User;
 
-                var user = await userService.CreateUserAsync(new User
+            if (user != null && controller.ModelState.IsValid)
+            {
+                if (registrationOptions.UsersMustValidateEmail && !user.EmailConfirmed)
                 {
-                    UserName = model.UserName,
-                    Email = model.Email,
-                    EmailConfirmed = !settings.UsersMustValidateEmail,
-                    IsEnabled = !settings.UsersAreModerated,
-                }, model.Password, controller.ModelState.AddModelError) as User;
-
-                if (user != null && controller.ModelState.IsValid)
-                {
-                    if (settings.UsersMustValidateEmail && !user.EmailConfirmed)
-                    {
-                        // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
-                        // Send an email with this link
-                        await controller.SendEmailConfirmationTokenAsync(user, confirmationEmailSubject);
-                    }
-                    else if (!(settings.UsersAreModerated && !user.IsEnabled))
-                    {
-                        var signInManager = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<SignInManager<IUser>>();
-
-                        await signInManager.SignInAsync(user, isPersistent: false);
-                    }
-                    logger.LogInformation(3, "User created a new account with password.");
-                    await registrationEvents.InvokeAsync((e, user) => e.RegisteredAsync(user), user, logger);
-
-                    return user;
+                    // For more information on how to enable account confirmation and password
+                    // reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
+                    // Send an email with this link
+                    await controller.SendEmailConfirmationTokenAsync(user, confirmationEmailSubject);
                 }
+                else if (!(registrationOptions.UsersAreModerated && !user.IsEnabled))
+                {
+                    var signInManager = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<SignInManager<IUser>>();
+
+                    await signInManager.SignInAsync(user, isPersistent: false);
+                }
+
+                logger.LogInformation(3, "User created a new account with password.");
+
+                await registrationEvents.InvokeAsync((e, user) => e.RegisteredAsync(user), user, logger);
+
+                return user;
             }
         }
 
@@ -106,7 +95,9 @@ internal static class ControllerExtensions
     internal static async Task<string> SendEmailConfirmationTokenAsync(this Controller controller, User user, string subject)
     {
         var userManager = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<UserManager<IUser>>();
+
         var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
+
         var callbackUrl = controller.Url.Action(nameof(EmailConfirmationController.ConfirmEmail), typeof(EmailConfirmationController).ControllerName(),
             new
             {
