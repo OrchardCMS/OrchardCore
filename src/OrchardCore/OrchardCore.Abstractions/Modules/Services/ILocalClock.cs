@@ -12,7 +12,10 @@ public interface ILocalClock
     /// Gets the time for the local time zone.
     /// </summary>
 
-    Task<DateTimeOffset> GetLocalNowAsync() => LocalNowAsync;
+#pragma warning disable CS0618 // Type or member is obsolete
+    Task<DateTimeOffset> GetLocalNowAsync()
+        => LocalNowAsync;
+#pragma warning restore CS0618 // Type or member is obsolete
 
     /// <summary>
     /// Returns the local time zone.

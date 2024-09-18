@@ -8,20 +8,29 @@ public class LocalClock : ILocalClock
     private readonly IEnumerable<ITimeZoneSelector> _timeZoneSelectors;
     private readonly IClock _clock;
     private readonly ICalendarManager _calendarManager;
+
     private ITimeZone _timeZone;
 
-    public LocalClock(IEnumerable<ITimeZoneSelector> timeZoneSelectors, IClock clock, ICalendarManager calendarManager)
+
+    public LocalClock(
+        IEnumerable<ITimeZoneSelector> timeZoneSelectors,
+        IClock clock,
+        ICalendarManager calendarManager)
     {
         _timeZoneSelectors = timeZoneSelectors;
         _clock = clock;
         _calendarManager = calendarManager;
     }
 
+    public Task<DateTimeOffset> LocalNowAsync
+        => GetLocalNowAsync();
+
     public async Task<DateTimeOffset> GetLocalNowAsync()
         => _clock.ConvertToTimeZone(_clock.UtcNow, await GetLocalTimeZoneAsync());
 
     // Caching the result per request.
-    public async Task<ITimeZone> GetLocalTimeZoneAsync() => _timeZone ??= await LoadLocalTimeZoneAsync();
+    public async Task<ITimeZone> GetLocalTimeZoneAsync()
+        => _timeZone ??= await LoadLocalTimeZoneAsync();
 
     public async Task<DateTimeOffset> ConvertToLocalAsync(DateTimeOffset dateTimeOffSet)
     {
@@ -30,7 +39,9 @@ public class LocalClock : ILocalClock
         var offsetDateTime = OffsetDateTime.FromDateTimeOffset(dateTimeOffSet);
         var currentCalendar = BclCalendars.GetCalendarByName(await _calendarManager.GetCurrentCalendar());
 
-        return offsetDateTime.InZone(dateTimeZone).WithCalendar(currentCalendar).ToDateTimeOffset();
+        return offsetDateTime.InZone(dateTimeZone)
+            .WithCalendar(currentCalendar)
+            .ToDateTimeOffset();
     }
 
     public async Task<DateTime> ConvertToUtcAsync(DateTime dateTime)
@@ -38,6 +49,7 @@ public class LocalClock : ILocalClock
         var localTimeZone = await GetLocalTimeZoneAsync();
         var dateTimeZone = ((TimeZone)localTimeZone).DateTimeZone;
         var localDate = LocalDateTime.FromDateTime(dateTime);
+
         return dateTimeZone.AtStrictly(localDate).ToDateTimeUtc();
     }
 
@@ -59,7 +71,8 @@ public class LocalClock : ILocalClock
         {
             return _clock.GetSystemTimeZone();
         }
-        else if (timeZoneResults.Count > 1)
+
+        if (timeZoneResults.Count > 1)
         {
             timeZoneResults.Sort((x, y) => y.Priority.CompareTo(x.Priority));
         }
