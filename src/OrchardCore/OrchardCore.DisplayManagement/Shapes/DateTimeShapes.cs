@@ -161,17 +161,17 @@ public class DateTimeShapes : IShapeAttributeProvider
 
         if (minutes > 0)
         {
-            return GetDurationInMinutes(timeSpan, minutes, seconds);
+            return GetDurationInMinutes(timeSpan, minutes);
         }
 
         return H.Plural(seconds, "1 second", "{0} seconds");
     }
 
-    private LocalizedHtmlString GetDurationInMinutes(TimeSpan timeSpan, int minutes, int seconds)
+    private LocalizedHtmlString GetDurationInMinutes(TimeSpan timeSpan, int minutes)
     {
         var totalMinutes = timeSpan.TotalMinutes;
 
-        if (seconds == totalMinutes)
+        if (minutes == totalMinutes)
         {
             return H.Plural(minutes, "1 minute", "{0} minutes");
         }
