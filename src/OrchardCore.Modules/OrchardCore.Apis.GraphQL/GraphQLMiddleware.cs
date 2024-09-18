@@ -156,13 +156,7 @@ public class GraphQLMiddleware : IMiddleware
             {
                 MaxDepth = _settings.MaxDepth,
                 MaxComplexity = _settings.MaxComplexity,
-                DefaultComplexityImpactDelegate = (ctx) =>
-                {
-                    return new FieldComplexityResult()
-                    {
-                        FieldImpact = _settings.FieldImpact ?? 0,
-                    };
-                }
+                DefaultObjectImpact = _settings.FieldImpact ?? 0,
             }));
             options.Listeners.Add(dataLoaderDocumentListener);
             options.RequestServices = context.RequestServices;
