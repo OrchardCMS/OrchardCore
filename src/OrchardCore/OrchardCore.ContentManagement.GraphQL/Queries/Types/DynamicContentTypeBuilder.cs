@@ -13,19 +13,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
 {
     protected readonly IHttpContextAccessor _httpContextAccessor;
-    protected readonly IEnumerable<IContentFieldProvider> _contentFieldProviders;
     protected readonly GraphQLContentOptions _contentOptions;
     protected readonly IStringLocalizer S;
 
     private readonly Dictionary<string, FieldType> _dynamicPartFields;
 
-    protected DynamicContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
+    protected DynamicContentTypeBuilder(
+        IHttpContextAccessor httpContextAccessor,
         IOptions<GraphQLContentOptions> contentOptionsAccessor,
-        IEnumerable<IContentFieldProvider> contentFieldProviders,
         IStringLocalizer<DynamicContentTypeBuilder> localizer)
     {
         _httpContextAccessor = httpContextAccessor;
-        _contentFieldProviders = contentFieldProviders;
         _contentOptions = contentOptionsAccessor.Value;
         _dynamicPartFields = [];
 
@@ -40,7 +38,6 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
         {
             return;
         }
-
         var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
         var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToArray();
 
@@ -188,7 +185,7 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
                     Name = partFieldName,
                     Description = S["Represents a {0}.", part.PartDefinition.Name],
                     Type = typeof(DynamicPartGraphType),
-                    ResolvedType = new DynamicPartGraphType(part, _contentFieldProviders, schema),
+                    ResolvedType = new DynamicPartGraphType(part, contentFieldProviders, schema),
                     Resolver = new FuncFieldResolver<ContentElement, object>(context =>
                     {
                         var nameToResolve = partName;

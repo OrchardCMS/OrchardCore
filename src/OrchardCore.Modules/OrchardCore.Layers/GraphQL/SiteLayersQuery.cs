@@ -38,7 +38,8 @@ public class SiteLayersQuery : ISchemaBuilder
             Name = "SiteLayers",
             Description = S["Site layers define the rules and zone placement for widgets."],
             Type = typeof(ListGraphType<LayerQueryObjectType>),
-            Resolver = new LockedAsyncFieldResolver<IEnumerable<Layer>>(ResolveAsync)
+            ResolvedType = new ListGraphType<LayerQueryObjectType>(),
+            Resolver = new LockedAsyncFieldResolver<IEnumerable<Layer>>(ResolveAsync),
         };
 
         schema.Query.AddField(field);

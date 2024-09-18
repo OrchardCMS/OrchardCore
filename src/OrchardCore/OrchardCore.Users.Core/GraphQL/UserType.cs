@@ -8,7 +8,7 @@ namespace OrchardCore.Users.GraphQL;
 
 public class UserType : ObjectGraphType<User>
 {
-    protected readonly IStringLocalizer<UserType> S;
+    protected readonly IStringLocalizer S;
 
     public UserType(IStringLocalizer<UserType> localizer)
     {

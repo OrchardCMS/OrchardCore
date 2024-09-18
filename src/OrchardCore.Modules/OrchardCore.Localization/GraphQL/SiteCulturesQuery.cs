@@ -46,7 +46,8 @@ public class SiteCulturesQuery : ISchemaBuilder
             Name = "SiteCultures",
             Description = S["The active cultures configured for the site."],
             Type = typeof(ListGraphType<CultureQueryObjectType>),
-            Resolver = new LockedAsyncFieldResolver<IEnumerable<SiteCulture>>(ResolveAsync)
+            ResolvedType = new ListGraphType<CultureQueryObjectType>(),
+            Resolver = new LockedAsyncFieldResolver<IEnumerable<SiteCulture>>(ResolveAsync),
         };
 
         schema.Query.AddField(field);

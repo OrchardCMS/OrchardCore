@@ -20,10 +20,11 @@ public class ContentFieldsProvider : IContentFieldProvider
             {
                 Description = "Boolean field",
                 FieldType = typeof(BooleanGraphType),
+                ResolvedType = new BooleanGraphType(),
                 UnderlyingType = typeof(BooleanField),
                 FieldAccessor = field => ((BooleanField)field).Value,
                 IndexType = typeof(BooleanFieldIndex),
-                Index = nameof(BooleanFieldIndex.Boolean)
+                Index = nameof(BooleanFieldIndex.Boolean),
             }
         },
         {
@@ -32,10 +33,11 @@ public class ContentFieldsProvider : IContentFieldProvider
             {
                 Description = "Date field",
                 FieldType = typeof(DateGraphType),
+                ResolvedType = new DateGraphType(),
                 UnderlyingType = typeof(DateField),
                 FieldAccessor = field => ((DateField)field).Value,
                 IndexType = typeof(DateFieldIndex),
-                Index = nameof(DateFieldIndex.Date)
+                Index = nameof(DateFieldIndex.Date),
             }
         },
         {
@@ -44,10 +46,11 @@ public class ContentFieldsProvider : IContentFieldProvider
             {
                 Description = "Date & time field",
                 FieldType = typeof(DateTimeGraphType),
+                ResolvedType = new DateTimeGraphType(),
                 UnderlyingType = typeof(DateTimeField),
                 FieldAccessor = field => ((DateTimeField)field).Value,
                 IndexType = typeof(DateTimeFieldIndex),
-                Index = nameof(DateTimeFieldIndex.DateTime)
+                Index = nameof(DateTimeFieldIndex.DateTime),
             }
         },
         {
@@ -56,6 +59,7 @@ public class ContentFieldsProvider : IContentFieldProvider
             {
                 Description = "Numeric field",
                 FieldType = typeof(DecimalGraphType),
+                ResolvedType = new DecimalGraphType(),
                 UnderlyingType = typeof(NumericField),
                 FieldAccessor = field => ((NumericField)field).Value,
                 IndexType = typeof(NumericFieldIndex),
@@ -68,6 +72,7 @@ public class ContentFieldsProvider : IContentFieldProvider
             {
                 Description = "Text field",
                 FieldType = typeof(StringGraphType),
+                ResolvedType = new StringGraphType(),
                 UnderlyingType = typeof(TextField),
                 FieldAccessor = field => ((TextField)field).Text,
                 IndexType = typeof(TextFieldIndex),
@@ -80,6 +85,7 @@ public class ContentFieldsProvider : IContentFieldProvider
             {
                 Description = "Time field",
                 FieldType = typeof(TimeSpanGraphType),
+                ResolvedType = new TimeSpanGraphType(),
                 UnderlyingType = typeof(TimeField),
                 FieldAccessor = field => ((TimeField)field).Value,
                 IndexType = typeof(TimeFieldIndex),
@@ -92,6 +98,7 @@ public class ContentFieldsProvider : IContentFieldProvider
             {
                 Description = "Multi text field",
                 FieldType = typeof(ListGraphType<StringGraphType>),
+                ResolvedType = new ListGraphType<StringGraphType>(),
                 UnderlyingType = typeof(MultiTextField),
                 FieldAccessor = field => ((MultiTextField)field).Values,
             }
@@ -110,6 +117,7 @@ public class ContentFieldsProvider : IContentFieldProvider
             Name = customFieldName ?? field.Name,
             Description = fieldDescriptor.Description,
             Type = fieldDescriptor.FieldType,
+            ResolvedType = fieldDescriptor.ResolvedType,
             Resolver = new FuncFieldResolver<ContentElement, object>(context =>
             {
                 // Check if part has been collapsed by trying to get the parent part.
@@ -154,10 +162,17 @@ public class ContentFieldsProvider : IContentFieldProvider
     private sealed class FieldTypeDescriptor
     {
         public string Description { get; set; }
+
         public Type FieldType { get; set; }
+
         public Type UnderlyingType { get; set; }
+
+        public required IGraphType ResolvedType { get; set; }
+
         public Func<ContentElement, object> FieldAccessor { get; set; }
+
         public string Index { get; set; }
+
         public Type IndexType { get; set; }
     }
 }
