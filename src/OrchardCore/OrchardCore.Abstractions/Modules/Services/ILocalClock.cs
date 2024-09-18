@@ -5,14 +5,14 @@ namespace OrchardCore.Modules;
 /// </summary>
 public interface ILocalClock
 {
-    [Obsolete("This property has been deprecated and will be removed in a future version. Please use GetLocalNowAsync() instead.", error: true)]
-    Task<DateTimeOffset> LocalNowAsync => GetLocalNowAsync();
+    [Obsolete("This property has been deprecated and will be removed in a future version. Please use GetLocalNowAsync() instead.")]
+    Task<DateTimeOffset> LocalNowAsync { get; }
 
     /// <summary>
     /// Gets the time for the local time zone.
     /// </summary>
 
-    Task<DateTimeOffset> GetLocalNowAsync();
+    Task<DateTimeOffset> GetLocalNowAsync() => LocalNowAsync;
 
     /// <summary>
     /// Returns the local time zone.
