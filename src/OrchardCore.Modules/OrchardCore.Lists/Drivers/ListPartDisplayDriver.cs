@@ -49,6 +49,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
                 InitializeDisplayListPartDisplayShape(listPart, context),
                 InitializeDisplayListPartDetailAdminShape(listPart, context),
                 InitializeDisplayListPartNavigationAdminShape(listPart, context, settings),
+                InitializeDisplayListPartDetailAdminSearchPanelShape(),
                 InitializeDisplayListPartHeaderAdminShape(listPart, settings),
                 InitializeDisplayListPartSummaryAdmin(listPart)
             );
@@ -133,6 +134,17 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             model.Pager = await context.New.PagerSlim(pager);
         }))
             .Location("DetailAdmin", "Content:10");
+    }
+    private ShapeResult InitializeDisplayListPartDetailAdminSearchPanelShape()
+    {
+        return Initialize("ListPartDetailAdminSearchPanel", (Func<ListPartViewModel, ValueTask>)(async model =>
+            {
+                var listPartFilterViewModel = new ListPartFilterViewModel();
+                await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listPartFilterViewModel, Prefix);
+                model.ListPartFilterViewModel = listPartFilterViewModel;
+
+             }))
+            .Location("DetailAdmin", "Content:5");
     }
 
     private ShapeResult InitializeDisplayListPartDisplayShape(ListPart listPart, BuildPartDisplayContext context)
