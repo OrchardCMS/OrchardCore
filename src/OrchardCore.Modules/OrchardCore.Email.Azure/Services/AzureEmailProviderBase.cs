@@ -81,6 +81,8 @@ public abstract class AzureEmailProviderBase : IEmailProvider
     private readonly IEmailAddressValidator _emailAddressValidator;
     private readonly ILogger _logger;
 
+    private EmailClient _emailClient;
+
     protected readonly IStringLocalizer S;
 
     public AzureEmailProviderBase(
@@ -132,8 +134,9 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
         try
         {
-            var client = new EmailClient(_providerOptions.ConnectionString);
-            var emailResult = await client.SendAsync(WaitUntil.Completed, emailMessage);
+            _emailClient ??= new EmailClient(_providerOptions.ConnectionString);
+
+            var emailResult = await _emailClient.SendAsync(WaitUntil.Completed, emailMessage);
 
             if (emailResult.HasValue)
             {

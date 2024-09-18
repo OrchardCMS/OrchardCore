@@ -24,6 +24,7 @@ using OrchardCore.OpenId;
     Dependencies =
     [
         OpenIdConstants.Features.Core,
+        "OrchardCore.Users.ExternalAuthentication",
     ]
 )]
 
