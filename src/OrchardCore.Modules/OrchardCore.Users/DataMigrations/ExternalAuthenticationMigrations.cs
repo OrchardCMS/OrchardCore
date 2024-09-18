@@ -15,6 +15,10 @@ public sealed class ExternalAuthenticationMigrations : DataMigration
     {
         ShellScope.AddDeferredTask(async scope =>
         {
+            var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
+
+            var isRegistrationFeatureEnabled = await featuresManager.IsFeatureEnabledAsync(UserConstants.Features.UserRegistration);
+
             var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
 
             var site = await siteService.LoadSiteSettingsAsync();
@@ -25,7 +29,7 @@ public sealed class ExternalAuthenticationMigrations : DataMigration
 
             site.Put(new ExternalRegistrationSettings
             {
-                DisableNewRegistrations = enumValue == 0,
+                DisableNewRegistrations = enumValue == 0 || !isRegistrationFeatureEnabled,
                 NoUsername = registrationSettings["NoUsernameForExternalUsers"]?.GetValue<bool>() ?? false,
                 NoEmail = registrationSettings["NoEmailForExternalUsers"]?.GetValue<bool>() ?? false,
                 NoPassword = registrationSettings["NoPasswordForExternalUsers"]?.GetValue<bool>() ?? false,
@@ -46,9 +50,7 @@ public sealed class ExternalAuthenticationMigrations : DataMigration
 
             if (enumValue is not null && enumValue != 1)
             {
-                var featuresManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
-
-                if (!await featuresManager.IsFeatureEnabledAsync(UserConstants.Features.UserRegistration))
+                if (!isRegistrationFeatureEnabled)
                 {
                     return;
                 }
