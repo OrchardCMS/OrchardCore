@@ -151,12 +151,12 @@ public class DateTimeShapes : IShapeAttributeProvider
 
         if (days > 0)
         {
-            return GetDurationInDays(timeSpan, days, hours, minutes, seconds);
+            return GetDurationInDays(timeSpan, days);
         }
 
         if (hours > 0)
         {
-            return GetDurationInHours(timeSpan, hours, minutes, seconds);
+            return GetDurationInHours(timeSpan, hours);
         }
 
         if (minutes > 0)
@@ -164,78 +164,41 @@ public class DateTimeShapes : IShapeAttributeProvider
             return GetDurationInMinutes(timeSpan, minutes, seconds);
         }
 
-        return H.Plural(seconds, "One second", "{0} seconds");
+        return H.Plural(seconds, "1 second", "{0} seconds");
     }
 
     private LocalizedHtmlString GetDurationInMinutes(TimeSpan timeSpan, int minutes, int seconds)
     {
-        if (seconds == timeSpan.TotalSeconds)
+        var totalMinutes = timeSpan.TotalMinutes;
+
+        if (seconds == totalMinutes)
         {
-            return H.Plural(minutes, "One minute", "{0} minutes");
+            return H.Plural(minutes, "1 minute", "{0} minutes");
         }
 
-        return H.Plural(minutes, "Approximately a minute", "Approximately {0} minutes");
+        return H.Plural((int)Math.Round(totalMinutes), "Approximately a minute", "Approximately {0} minutes");
     }
 
-    private LocalizedHtmlString GetDurationInHours(TimeSpan timeSpan, int hours, int minutes, int seconds)
+    private LocalizedHtmlString GetDurationInHours(TimeSpan timeSpan, int hours)
     {
-        if (hours == timeSpan.TotalHours)
+        var totalHours = timeSpan.TotalHours;
+
+        if (hours == totalHours)
         {
             return H.Plural(hours, "1 hour", "{0} hours");
         }
 
-        if (minutes == 0)
-        {
-            return H.Plural(Math.Round(timeSpan.TotalHours), "Approximately an hour", "Approximately {0} hours");
-        }
-
-        if (hours == 1)
-        {
-            if (seconds > 0)
-            {
-                return H.Plural(minutes, "Approximately one hour and one minute", "Approximately one hour and {0} minutes");
-            }
-
-            return H.Plural(minutes, "One hour and one minute", "One hour and {0} minutes");
-        }
-
-        if (seconds > 0)
-        {
-            return H.Plural(minutes, "Approximately {1} hours and one minute", "Approximately {1} hours and {0} minutes", hours);
-        }
-
-        return H.Plural(minutes, "{1} hours and one minute", "{1} hours and {0} minutes", hours);
-
+        return H.Plural((int)Math.Round(totalHours), "Approximately an hour", "Approximately {0} hours");
     }
 
-    private LocalizedHtmlString GetDurationInDays(TimeSpan timeSpan, int days, int hours, int minutes, int seconds)
+    private LocalizedHtmlString GetDurationInDays(TimeSpan timeSpan, int days)
     {
         if (days == timeSpan.TotalDays)
         {
-            return H.Plural(days, "One day", "{0} days");
+            return H.Plural(days, "1 day", "{0} days");
         }
 
-        if (hours == 0)
-        {
-            return H.Plural(days, "Approximately a day", "Approximately {0} days");
-        }
-
-        if (days == 1)
-        {
-            if (minutes + seconds > 0)
-            {
-                return H.Plural(hours, "Approximately one day and one hour", "Approximately one day and {0} hours");
-            }
-
-            return H.Plural(hours, "One day and one hour", "One day and {0} hours");
-        }
-
-        if (minutes + seconds > 0)
-        {
-            return H.Plural(hours, "Approximately {1} day and one hour", "Approximately {1} day and {0} hours", days);
-        }
-
-        return H.Plural(hours, "{1} day and one hour", "{1} day and {0} hours", days);
+        return H.Plural(days, "Approximately a day", "Approximately {0} days");
     }
 }
 
