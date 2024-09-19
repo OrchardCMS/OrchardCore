@@ -1,6 +1,5 @@
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles;
 
@@ -15,38 +14,21 @@ public sealed class Permissions : IPermissionProvider
     [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Security.StandardPermissions.SiteOwner'.")]
     public static readonly Permission SiteOwner = StandardPermissions.SiteOwner;
 
-    private readonly IRoleService _roleService;
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        CommonPermissions.ManageRoles,
+        StandardPermissions.SiteOwner,
+    ];
 
-    public Permissions(IRoleService roleService)
-    {
-        _roleService = roleService;
-    }
-
-    public async Task<IEnumerable<Permission>> GetPermissionsAsync()
-    {
-        var roleNames = (await _roleService.GetRoleNamesAsync())
-            .Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName))
-            .ToArray();
-
-        var list = new List<Permission>(roleNames.Length + 2)
-        {
-            CommonPermissions.ManageRoles,
-            StandardPermissions.SiteOwner,
-        };
-
-        return list;
-    }
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [
         new PermissionStereotype
         {
             Name = OrchardCoreConstants.Roles.Administrator,
-            Permissions =
-            [
-                CommonPermissions.ManageRoles,
-                StandardPermissions.SiteOwner,
-            ],
+            Permissions = _allPermissions,
         },
     ];
 }
