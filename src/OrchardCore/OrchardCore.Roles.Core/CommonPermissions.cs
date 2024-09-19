@@ -12,6 +12,7 @@ public static class CommonPermissions
     /// <summary>
     /// Dynamic permission template for assign role.
     /// </summary>
+    [Obsolete("This Permission is no longer used and will be removed. Instead use OrchardCore.Users.CommonPermissions.CreateAssignRoleToUsersPermission(roleName).")]
     private static readonly Permission _assignRole = new("AssignRole_{0}", "Assign Role - {0}", [AssignRoles, ManageRoles]);
 
     [Obsolete("This Permission is no longer used and will be removed. Instead use OrchardCore.Users.CommonPermissions.CreateAssignRoleToUsersPermission(roleName).")]
