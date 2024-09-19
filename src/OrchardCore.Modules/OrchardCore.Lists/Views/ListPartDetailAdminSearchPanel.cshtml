@@ -4,14 +4,11 @@
 @using OrchardCore.Localization
 @model OrchardCore.Lists.ViewModels.ListPartViewModel
 @{
-    var dropdownClassList = new List<string>()
-    {
-        "dropdown-menu"
-    };
+    var dropdownClassList = "dropdown-menu";
 
     if (CultureInfo.CurrentUICulture.IsRightToLeft())
     {
-        dropdownClassList.Add("dropdown-menu-start");
+        dropdownClassList += " dropdown-menu-start";
     }
 }
 
@@ -24,7 +21,7 @@
                         <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa-solid fa-filter" title="@T["Filters"]" aria-hidden="true"></i>
                         </button>
-                        <div class="@string.Join(' ', dropdownClassList)" aria-labelledby="filter-dropdown">
+                        <div class="@dropdownClassList" aria-labelledby="filter-dropdown">
                             @* Latest not surfaced here to be consistent with the main content items list filter. *@
                             <a class="dropdown-item" href="?Status=Draft">@T["Only draft items"]</a>
                             <a class="dropdown-item" href="?Status=Published">@T["Only published items"]</a>
