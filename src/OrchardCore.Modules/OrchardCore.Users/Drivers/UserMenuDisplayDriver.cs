@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
@@ -8,14 +7,10 @@ namespace OrchardCore.Users.Drivers;
 
 public sealed class UserMenuDisplayDriver : DisplayDriver<UserMenu>
 {
-    private readonly SignInManager<IUser> _signInManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public UserMenuDisplayDriver(
-        SignInManager<IUser> signInManager,
-        IHttpContextAccessor httpContextAccessor)
+    public UserMenuDisplayDriver(IHttpContextAccessor httpContextAccessor)
     {
-        _signInManager = signInManager;
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -36,12 +31,6 @@ public sealed class UserMenuDisplayDriver : DisplayDriver<UserMenu>
             .Location("Detail", "Content:5")
             .Location("DetailAdmin", "Content:5")
             .Differentiator("Profile"),
-
-            View("UserMenuItems__ExternalLogins", model)
-            .RenderWhen(async () => (await _signInManager.GetExternalAuthenticationSchemesAsync()).Any())
-            .Location("Detail", "Content:10")
-            .Location("DetailAdmin", "Content:10")
-            .Differentiator("ExternalLogins"),
 
             View("UserMenuItems__SignOut", model)
             .Location("Detail", "Content:100")
