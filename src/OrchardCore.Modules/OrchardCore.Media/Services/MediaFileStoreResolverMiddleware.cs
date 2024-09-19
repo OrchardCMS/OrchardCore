@@ -58,7 +58,6 @@ public class MediaFileStoreResolverMiddleware
             return;
         }
 
-
         // subPath.Value returns an unescaped path value, subPath returns an escaped path value.
         var subPathValue = subPath.Value;
 
