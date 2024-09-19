@@ -26,19 +26,13 @@ public sealed class Permissions : IPermissionProvider
     {
         var roleNames = (await _roleService.GetRoleNamesAsync())
             .Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName))
-            .ToList();
+            .ToArray();
 
-        var list = new List<Permission>(roleNames.Count + 3)
+        var list = new List<Permission>(roleNames.Length + 2)
         {
             CommonPermissions.ManageRoles,
-            CommonPermissions.AssignRoles,
             StandardPermissions.SiteOwner,
         };
-
-        foreach (var roleName in roleNames)
-        {
-            list.Add(CommonPermissions.CreatePermissionForAssignRole(roleName));
-        }
 
         return list;
     }
