@@ -8,10 +8,12 @@
     var authorizedContentTypeDefinitions = new List<ContentTypeDefinition>();
     foreach (var contentTypeDefinition in Model.ContainedContentTypeDefinitions)
     {
-        if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, await ContentManager.NewAsync(contentTypeDefinition.Name)))
+        if (!await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, await ContentManager.NewAsync(contentTypeDefinition.Name)))
         {
-            authorizedContentTypeDefinitions.Add(contentTypeDefinition);
+            continue;
         }
+        
+        authorizedContentTypeDefinitions.Add(contentTypeDefinition);
     }
 }
 <div class="card text-bg-theme text-right mb-3 second-action-bar">
