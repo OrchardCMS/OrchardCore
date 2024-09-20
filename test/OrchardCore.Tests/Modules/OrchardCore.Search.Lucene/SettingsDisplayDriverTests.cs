@@ -21,28 +21,30 @@ using OrchardCore.Scripting;
 using OrchardCore.Search.Lucene;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Settings;
+using OrchardCore.Tests.Modules.OrchardCore.ContentFields.Settings;
 using OrchardCore.Tests.Stubs;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Search.Lucene;
 
-public partial class DriverTests
+public partial class SettingsDisplayDriverTests
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly IShapeFactory _shapeFactory;
     private readonly ShapeTable _shapeTable;
 
-    public DriverTests()
+    public SettingsDisplayDriverTests()
     {
-        IServiceCollection serviceCollection = new ServiceCollection();
+        var serviceCollection = new ServiceCollection();
 
-        serviceCollection.AddScripting();
-        serviceCollection.AddLogging();
+        serviceCollection.AddScripting()
+            .AddLogging()
+            .AddScoped<ILoggerFactory, NullLoggerFactory>()
+            .AddScoped<IThemeManager, ThemeManager>()
+            .AddScoped<IShapeFactory, DefaultShapeFactory>()
+            .AddScoped<IExtensionManager, StubExtensionManager>()
+            .AddScoped<IShapeTableManager, TestShapeTableManager>()
+            .AddScoped<IDocumentManager<LuceneIndexSettingsDocument>, MockLuceneIndexSettingsDocumentManager>();
 
-        serviceCollection.AddScoped<ILoggerFactory, NullLoggerFactory>();
-        serviceCollection.AddScoped<IThemeManager, ThemeManager>();
-        serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
-        serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
-        serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
-        serviceCollection.AddScoped<IDocumentManager<LuceneIndexSettingsDocument>, MockLuceneIndexSettingsDocumentManager>();
         _shapeTable = new ShapeTable
         (
             new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
@@ -52,13 +54,14 @@ public partial class DriverTests
         serviceCollection.AddSingleton(_shapeTable);
         serviceCollection.AddSingleton<IDistributedLock, LocalLock>();
         _serviceProvider = serviceCollection.BuildServiceProvider();
+
+        _shapeFactory = _serviceProvider.GetRequiredService<IShapeFactory>();
     }
 
 
     [Fact]
     public async Task ContentPickerFieldLuceneEditorSettingsShouldDeserialize()
     {
-
         await (await CreateShellContext().CreateScopeAsync()).UsingAsync(async scope =>
         {
             // Arrange
@@ -73,22 +76,21 @@ public partial class DriverTests
             localizerMock.Setup(localizer => localizer[It.IsAny<string>()])
             .Returns((string name) => new LocalizedString(name, name));
 
+            var settings = new ContentPickerFieldLuceneEditorSettings
+            {
+                Index = "testIndex",
+                Indices = ["idx1", "idx2", "testIndex"],
+            };
+
             // Act
-            var contentDefinition =
-                BuildContentPartWithField(field => field
-                            .OfType(nameof(ContentPickerField))
-                            .WithSettings(new ContentPickerFieldLuceneEditorSettings
-                            {
-                                Index = "testIndex",
-                                Indices = ["idx1", "idx2", "testIndex"]
-                            }));
+            var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<ContentPickerField>(field => field.WithSettings(settings));
             var luceneService = new LuceneIndexSettingsService(new MockLuceneIndexSettingsDocumentManager());
             var shapeResult = await GetShapeResult(contentDefinition, new ContentPickerFieldLuceneEditorSettingsDriver(luceneService));
-            var settings = (ContentPickerFieldLuceneEditorSettings)shapeResult.Shape;
+            var shape = (ContentPickerFieldLuceneEditorSettings)shapeResult.Shape;
 
             // Assert
-            Assert.Equal("testIndex", settings.Index);
-            Assert.Equal<string[]>(["idx1", "idx2", "testIndex"], settings.Indices);
+            Assert.Equal(settings.Index, shape.Index);
+            Assert.Equal(settings.Indices, shape.Indices);
         });
     }
 
@@ -102,7 +104,7 @@ public partial class DriverTests
     private static Task<ShellScope> GetScopeAsync() => ShellScope.Context.CreateScopeAsync();
 
     private static ContentPartDefinition BuildContentPartWithField(Action<ContentPartFieldDefinitionBuilder> configuration)
-    {        
+    {
         return new ContentPartDefinitionBuilder()
                 .Named("SomeContentPart")
                 .WithField("SomeField",
