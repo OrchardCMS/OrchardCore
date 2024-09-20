@@ -4,11 +4,9 @@ namespace OrchardCore.Media;
 
 public sealed class MediaCachePermissions : IPermissionProvider
 {
-    public static readonly Permission ManageAssetCache = new("ManageAssetCache", "Manage Asset Cache Folder");
-
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ManageAssetCache,
+        MediaPermissions.ManageAssetCache,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
