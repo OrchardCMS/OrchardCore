@@ -24,11 +24,11 @@ public class DriverTests
     {
         IServiceCollection serviceCollection = new ServiceCollection();
 
-        serviceCollection.AddScoped<ILoggerFactory, NullLoggerFactory>();
-        serviceCollection.AddScoped<IThemeManager, ThemeManager>();
-        serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
-        serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
-        serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
+        serviceCollection.AddScoped<ILoggerFactory, NullLoggerFactory>()
+             .AddScoped<IThemeManager, ThemeManager>()
+             .AddScoped<IShapeFactory, DefaultShapeFactory>()
+             .AddScoped<IExtensionManager, StubExtensionManager>()
+             .AddScoped<IShapeTableManager, TestShapeTableManager>();
 
         _shapeTable = new ShapeTable
         (
