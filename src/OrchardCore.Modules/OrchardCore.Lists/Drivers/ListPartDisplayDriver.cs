@@ -144,8 +144,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
              
              model.ListPartFilterViewModel = listPartFilterViewModel;
 
-        })
-        .Location("DetailAdmin", "Content:5");
+        }).Location("DetailAdmin", "Content:5");
     }
 
     private ShapeResult InitializeDisplayListPartDisplayShape(ListPart listPart, BuildPartDisplayContext context)
