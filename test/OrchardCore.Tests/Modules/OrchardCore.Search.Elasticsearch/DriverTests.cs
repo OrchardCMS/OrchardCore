@@ -37,12 +37,12 @@ public partial class DriverTests
         serviceCollection.AddScripting();
         serviceCollection.AddLogging();
 
-        serviceCollection.AddScoped<ILoggerFactory, NullLoggerFactory>();
-        serviceCollection.AddScoped<IThemeManager, ThemeManager>();
-        serviceCollection.AddScoped<IShapeFactory, DefaultShapeFactory>();
-        serviceCollection.AddScoped<IExtensionManager, StubExtensionManager>();
-        serviceCollection.AddScoped<IShapeTableManager, TestShapeTableManager>();
-        serviceCollection.AddScoped<IDocumentManager<ElasticIndexSettingsDocument>, MockElasticIndexSettingsDocumentManager>();
+        serviceCollection.AddScoped<ILoggerFactory, NullLoggerFactory>()
+            .AddScoped<IThemeManager, ThemeManager>()
+            .AddScoped<IShapeFactory, DefaultShapeFactory>()
+            .AddScoped<IExtensionManager, StubExtensionManager>()
+            .AddScoped<IShapeTableManager, TestShapeTableManager>()
+            .AddScoped<IDocumentManager<ElasticIndexSettingsDocument>, MockElasticIndexSettingsDocumentManager>();
         _shapeTable = new ShapeTable
         (
             new Dictionary<string, ShapeDescriptor>(StringComparer.OrdinalIgnoreCase),
