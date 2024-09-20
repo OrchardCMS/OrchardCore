@@ -13,7 +13,7 @@ public sealed class BooleanFieldSettingsDriver : ContentPartFieldDefinitionDispl
     {
         return Initialize<BooleanFieldSettings>("BooleanFieldSettings_Edit", model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<BooleanFieldSettings>();
+            var settings = partFieldDefinition.GetSettings<BooleanFieldSettings>();
 
             model.Hint = settings.Hint;
             model.Label = settings.Label;
