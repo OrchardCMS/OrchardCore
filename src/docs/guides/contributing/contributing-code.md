@@ -49,7 +49,7 @@ You might also read these two blog posts on contributing code: [Open Source Cont
 - If your PR addresses an issue, be sure to [link them](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue). This helps everyone find their way around contributions, and merging your PR will automatically close the issue too.
 - If there's no issue for your PR, then please describe the context and rationale in the pull request description, and provide screenshots/screen recordings of the changes if they affect the UX.
 - Refactoring is great, but if you do so, please guard it with new tests.
-- If you add a significant new feature or a breaking change, then document this under the release notes of the upcoming pull request.
+- If you add a significant new feature or a breaking change, then document this under the release notes of the upcoming release (you can find this in the `docs/OrchardCore.Docs/releases` folder).
 - So we can help you better, please [allow our core contributors to edit your PR](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork).
 
 !!! tip
