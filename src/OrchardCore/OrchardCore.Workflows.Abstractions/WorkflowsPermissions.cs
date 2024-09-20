@@ -2,7 +2,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Workflows;
 
-public sealed class WorkflowsPermissions
+public static class WorkflowsPermissions
 {
     public static readonly Permission ManageWorkflows = new("ManageWorkflows", "Manage workflows", isSecurityCritical: true);
 

@@ -2,7 +2,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentLocalization;
 
-public sealed class ContentLocalizationPermissions
+public static class ContentLocalizationPermissions
 {
     public static readonly Permission LocalizeContent = new("LocalizeContent", "Localize content for others");
 

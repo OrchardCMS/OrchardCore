@@ -2,7 +2,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Deployment;
 
-public sealed class DeploymentPermissions
+public static class DeploymentPermissions
 {
     public static readonly Permission ManageDeploymentPlan = new("ManageDeploymentPlan", "Manage deployment plans");
 

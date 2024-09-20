@@ -2,7 +2,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.OpenId;
 
-public sealed class OpenIdPermissions
+public static class OpenIdPermissions
 {
     public static readonly Permission ManageApplications
         = new("ManageApplications", "View, add, edit and remove the OpenID Connect applications.");

@@ -2,7 +2,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Features;
 
-public sealed class FeaturesPermissions
+public static class FeaturesPermissions
 {
     public static readonly Permission ManageFeatures = new("ManageFeatures", "Manage Features");
 }

@@ -2,7 +2,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Settings;
 
-public sealed class SettingsPermissions
+public static class SettingsPermissions
 {
     public static readonly Permission ManageSettings = new("ManageSettings", "Manage settings");
 
