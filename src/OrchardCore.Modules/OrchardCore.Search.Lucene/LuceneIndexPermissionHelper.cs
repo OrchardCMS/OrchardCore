@@ -4,9 +4,7 @@ namespace OrchardCore.Search.Lucene;
 
 public static class LuceneIndexPermissionHelper
 {
-    public static readonly Permission ManageLuceneIndexes = new("ManageLuceneIndexes", "Manage Lucene Indexes");
-
-    private static readonly Permission _indexPermissionTemplate = new("QueryLucene{0}Index", "Query Lucene {0} Index", new[] { ManageLuceneIndexes });
+    private static readonly Permission _indexPermissionTemplate = new("QueryLucene{0}Index", "Query Lucene {0} Index", new[] { LuceneSearchPermissions.ManageLuceneIndexes });
 
     private static readonly Dictionary<string, Permission> _permissions = [];
 

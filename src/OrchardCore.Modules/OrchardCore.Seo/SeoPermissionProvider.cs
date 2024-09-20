@@ -4,11 +4,9 @@ namespace OrchardCore.Seo;
 
 public sealed class SeoPermissionProvider : IPermissionProvider
 {
-    public static readonly Permission ManageSeoSettings = SeoConstants.ManageSeoSettings;
-
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ManageSeoSettings,
+        SeoPermissions.ManageSeoSettings,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()

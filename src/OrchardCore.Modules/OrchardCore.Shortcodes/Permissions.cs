@@ -4,11 +4,9 @@ namespace OrchardCore.Shortcodes;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageShortcodeTemplates = new("ManageShortcodeTemplates", "Manage shortcode templates", isSecurityCritical: true);
-
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ManageShortcodeTemplates,
+        ShortcodesPermissions.ManageShortcodeTemplates,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
