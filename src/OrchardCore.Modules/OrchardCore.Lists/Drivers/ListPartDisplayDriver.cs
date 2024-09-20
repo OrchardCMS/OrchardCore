@@ -138,13 +138,14 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
     private ShapeResult InitializeDisplayListPartDetailAdminSearchPanelShape()
     {
         return Initialize<ListPartViewModel>("ListPartDetailAdminSearchPanel", async model =>
-            {
-                var listPartFilterViewModel = new ListPartFilterViewModel();
-                await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listPartFilterViewModel, Prefix);
-                model.ListPartFilterViewModel = listPartFilterViewModel;
+        {
+             var listPartFilterViewModel = new ListPartFilterViewModel();
+             await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listPartFilterViewModel, Prefix);
+             
+             model.ListPartFilterViewModel = listPartFilterViewModel;
 
-             })
-            .Location("DetailAdmin", "Content:5");
+        })
+        .Location("DetailAdmin", "Content:5");
     }
 
     private ShapeResult InitializeDisplayListPartDisplayShape(ListPart listPart, BuildPartDisplayContext context)
