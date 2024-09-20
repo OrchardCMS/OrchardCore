@@ -54,6 +54,7 @@ public class MediaFileStoreResolverMiddleware
         if (!validatePath || string.IsNullOrEmpty(_mediaFileStore.NormalizePath(subPath)))
         {
             await _next(context);
+
             return;
         }
 
