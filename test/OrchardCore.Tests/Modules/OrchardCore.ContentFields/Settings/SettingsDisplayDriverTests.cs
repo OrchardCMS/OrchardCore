@@ -1,26 +1,21 @@
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
-using OrchardCore.ContentManagement.Metadata.Builders;
-using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Theming;
-using OrchardCore.DisplayManagement.Views;
-using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Tests.Stubs;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.ContentFields.Settings;
 
-public class DriverTests
+public class SettingsDisplayDriverTests
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly IShapeFactory _shapeFactory;
     private readonly ShapeTable _shapeTable;
 
-    public DriverTests()
+    public SettingsDisplayDriverTests()
     {
         var serviceCollection = new ServiceCollection();
 
@@ -39,6 +34,8 @@ public class DriverTests
         serviceCollection.AddSingleton(_shapeTable);
 
         _serviceProvider = serviceCollection.BuildServiceProvider();
+
+        _shapeFactory = _serviceProvider.GetRequiredService<IShapeFactory>();
     }
 
     [Fact]
@@ -51,9 +48,9 @@ public class DriverTests
             Label = "Test Label",
         };
 
-        var contentDefinition = GetContentPartDefinition<BooleanField>(field => field.WithSettings(settings));
+        var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<BooleanField>(field => field.WithSettings(settings));
 
-        var shapeResult = await GetShapeResult<BooleanFieldSettingsDriver>(contentDefinition);
+        var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync<BooleanFieldSettingsDriver>(_shapeFactory, contentDefinition);
 
         var shape = (BooleanFieldSettings)shapeResult.Shape;
 
@@ -71,9 +68,9 @@ public class DriverTests
             Required = true,
         };
 
-        var contentDefinition = GetContentPartDefinition<DateField>(field => field.WithSettings(settings));
+        var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<DateField>(field => field.WithSettings(settings));
 
-        var shapeResult = await GetShapeResult<DateFieldSettingsDriver>(contentDefinition);
+        var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync<DateFieldSettingsDriver>(_shapeFactory, contentDefinition);
 
         var shape = (DateFieldSettings)shapeResult.Shape;
 
@@ -90,9 +87,9 @@ public class DriverTests
             Required = true,
         };
 
-        var contentDefinition = GetContentPartDefinition<DateTimeField>(field => field.WithSettings(settings));
-                        
-        var shapeResult = await GetShapeResult<DateTimeFieldSettingsDriver>(contentDefinition);
+        var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<DateTimeField>(field => field.WithSettings(settings));
+
+        var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync<DateTimeFieldSettingsDriver>(_shapeFactory, contentDefinition);
 
         var shape = (DateTimeFieldSettings)shapeResult.Shape;
 
@@ -116,9 +113,9 @@ public class DriverTests
             DefaultTarget = "Test Target",
         };
 
-        var contentDefinition = GetContentPartDefinition<LinkField>(field => field.WithSettings(settings));
+        var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<LinkField>(field => field.WithSettings(settings));
 
-        var shapeResult = await GetShapeResult<LinkFieldSettingsDriver>(contentDefinition);
+        var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync<LinkFieldSettingsDriver>(_shapeFactory, contentDefinition);
 
         var shape = (LinkFieldSettings)shapeResult.Shape;
 
@@ -137,23 +134,23 @@ public class DriverTests
     public async Task LocalizationSetContentPickerFieldSettingsShouldDeserialize()
     {
         var settings = new LocalizationSetContentPickerFieldSettings
-        { 
+        {
             Hint = "Test Hint",
             Required = true,
             Multiple = true,
             DisplayedContentTypes = ["one", "two", "three"],
         };
 
-        var contentDefinition = GetContentPartDefinition<LocalizationSetContentPickerField>(field => field.WithSettings(settings));
+        var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<LocalizationSetContentPickerField>(field => field.WithSettings(settings));
 
-        var shapeResult = await GetShapeResult<LocalizationSetContentPickerFieldSettingsDriver>(contentDefinition);
+        var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync<LocalizationSetContentPickerFieldSettingsDriver>(_shapeFactory, contentDefinition);
 
         var shape = (LocalizationSetContentPickerFieldSettings)shapeResult.Shape;
 
         Assert.Equal(settings.Hint, shape.Hint);
         Assert.Equal(settings.Required, shape.Required);
         Assert.Equal(settings.Multiple, shape.Multiple);
-        Assert.Equal<string[]>(settings.DisplayedContentTypes, shape.DisplayedContentTypes);
+        Assert.Equal(settings.DisplayedContentTypes, shape.DisplayedContentTypes);
     }
 
     [Fact]
@@ -170,9 +167,9 @@ public class DriverTests
             DefaultValue = "Test Default Value",
         };
 
-        var contentDefinition = GetContentPartDefinition<NumericField>(field => field.WithSettings(settings));
+        var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<NumericField>(field => field.WithSettings(settings));
 
-        var shapeResult = await GetShapeResult<NumericFieldSettingsDriver>(contentDefinition);
+        var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync<NumericFieldSettingsDriver>(_shapeFactory, contentDefinition);
 
         var shape = (NumericFieldSettings)shapeResult.Shape;
 
@@ -194,10 +191,10 @@ public class DriverTests
             Hint = "Test Hint",
             Required = true,
         };
-        
-        var contentDefinition = GetContentPartDefinition<TextField>(field => field.WithSettings());
 
-        var shapeResult = await GetShapeResult<TextFieldSettingsDriver>(contentDefinition);
+        var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<TextField>(field => field.WithSettings(settings));
+
+        var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync<TextFieldSettingsDriver>(_shapeFactory, contentDefinition);
 
         var shape = (TextFieldSettings)shapeResult.Shape;
 
@@ -216,9 +213,9 @@ public class DriverTests
             Step = "Test Step",
         };
 
-        var contentDefinition = GetContentPartDefinition<TimeField>(field => field.WithSettings());
+        var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<TimeField>(field => field.WithSettings(settings));
 
-        var shapeResult = await GetShapeResult<TimeFieldSettingsDriver>(contentDefinition);
+        var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync<TimeFieldSettingsDriver>(_shapeFactory, contentDefinition);
 
         var shape = (TimeFieldSettings)shapeResult.Shape;
 
@@ -228,7 +225,7 @@ public class DriverTests
     }
 
     [Fact]
-    public async Task YoutubeFieldSettingsShouldDeserialize()
+    public async Task YouTubeFieldSettingsShouldDeserialize()
     {
         var settings = new YoutubeFieldSettings
         {
@@ -239,9 +236,9 @@ public class DriverTests
             Required = true,
         };
 
-        var contentDefinition = GetContentPartDefinition<YoutubeField>(field => field.WithSettings(settings));
+        var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<YoutubeField>(field => field.WithSettings(settings));
 
-        var shapeResult = await GetShapeResult<YoutubeFieldSettingsDriver>(contentDefinition);
+        var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync<YoutubeFieldSettingsDriver>(_shapeFactory, contentDefinition);
 
         var shape = (YoutubeFieldSettings)shapeResult.Shape;
 
@@ -251,33 +248,4 @@ public class DriverTests
         Assert.Equal(settings.Height, shape.Height);
         Assert.Equal(settings.Required, shape.Required);
     }
-
-    #region Private methods
-    private static ContentPartDefinition GetContentPartDefinition<TField>(Action<ContentPartFieldDefinitionBuilder> configuration)
-    {        
-        return new ContentPartDefinitionBuilder()
-            .Named("SomeContentPart")
-            .WithField<TField>("SomeField", configuration)
-            .Build();
-    }
-    
-    private async Task<ShapeResult> GetShapeResult<TDriver>(ContentPartDefinition contentDefinition)
-        where TDriver : new(), IContentPartFieldDefinitionDisplayDriver
-    {
-        var factory = _serviceProvider.GetService<IShapeFactory>();
-        var partFieldDefinition = contentDefinition.Fields.First();
-
-        var partFieldDefinitionShape = await factory.CreateAsync("ContentPartFieldDefinition_Edit", () =>
-            ValueTask.FromResult<IShape>(new ZoneHolding(() => factory.CreateAsync("ContentZone"))));
-        partFieldDefinitionShape.Properties["ContentField"] = partFieldDefinition;
-
-        var editorContext = new BuildEditorContext(partFieldDefinitionShape, "", false, "", factory, null, null);
-
-        var driver = new TDriver()
-        var result = await driver.BuildEditorAsync(partFieldDefinition, editorContext);
-        await result.ApplyAsync(editorContext);
-
-        return (ShapeResult)result;
-    }
-    #endregion
 }
