@@ -1,14 +1,8 @@
 using OrchardCore.ContentFields.Fields;
-using OrchardCore.ContentManagement.Metadata.Builders;
-using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Theming;
-using OrchardCore.DisplayManagement.Views;
-using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Documents;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
@@ -43,7 +37,8 @@ public partial class SettingsDisplayDriverTests
             .AddScoped<IShapeFactory, DefaultShapeFactory>()
             .AddScoped<IExtensionManager, StubExtensionManager>()
             .AddScoped<IShapeTableManager, TestShapeTableManager>()
-            .AddScoped<IDocumentManager<LuceneIndexSettingsDocument>, MockLuceneIndexSettingsDocumentManager>();
+            .AddScoped<IDocumentManager<LuceneIndexSettingsDocument>, MockLuceneIndexSettingsDocumentManager>()
+            .AddSingleton<IDistributedLock, LocalLock>();
 
         _shapeTable = new ShapeTable
         (
@@ -52,12 +47,11 @@ public partial class SettingsDisplayDriverTests
         );
 
         serviceCollection.AddSingleton(_shapeTable);
-        serviceCollection.AddSingleton<IDistributedLock, LocalLock>();
+
         _serviceProvider = serviceCollection.BuildServiceProvider();
 
         _shapeFactory = _serviceProvider.GetRequiredService<IShapeFactory>();
     }
-
 
     [Fact]
     public async Task ContentPickerFieldLuceneEditorSettingsShouldDeserialize()
@@ -85,7 +79,7 @@ public partial class SettingsDisplayDriverTests
             // Act
             var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<ContentPickerField>(field => field.WithSettings(settings));
             var luceneService = new LuceneIndexSettingsService(new MockLuceneIndexSettingsDocumentManager());
-            var shapeResult = await GetShapeResult(contentDefinition, new ContentPickerFieldLuceneEditorSettingsDriver(luceneService));
+            var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(_shapeFactory, contentDefinition, new ContentPickerFieldLuceneEditorSettingsDriver(luceneService));
             var shape = (ContentPickerFieldLuceneEditorSettings)shapeResult.Shape;
 
             // Assert
@@ -94,38 +88,12 @@ public partial class SettingsDisplayDriverTests
         });
     }
 
-    #region Private methods
     private ShellContext CreateShellContext() => new()
     {
         Settings = new ShellSettings().AsDefaultShell().AsRunning(),
         ServiceProvider = _serviceProvider,
     };
 
-    private static Task<ShellScope> GetScopeAsync() => ShellScope.Context.CreateScopeAsync();
-
-    private static ContentPartDefinition BuildContentPartWithField(Action<ContentPartFieldDefinitionBuilder> configuration)
-    {
-        return new ContentPartDefinitionBuilder()
-                .Named("SomeContentPart")
-                .WithField("SomeField",
-                    configuration)
-                .Build();
-    }
-    private async Task<ShapeResult> GetShapeResult(ContentPartDefinition contentDefinition, IContentPartFieldDefinitionDisplayDriver driver)
-    {
-        var factory = _serviceProvider.GetService<IShapeFactory>();
-        var partFieldDefinition = contentDefinition.Fields.First();
-
-        var partFieldDefinitionShape = await factory.CreateAsync("ContentPartFieldDefinition_Edit", () =>
-            ValueTask.FromResult<IShape>(new ZoneHolding(() => factory.CreateAsync("ContentZone"))));
-        partFieldDefinitionShape.Properties["ContentField"] = partFieldDefinition;
-
-        var editorContext = new BuildEditorContext(partFieldDefinitionShape, "", false, "", factory, null, null);
-
-        var result = await driver.BuildEditorAsync(partFieldDefinition, editorContext);
-        await result.ApplyAsync(editorContext);
-
-        return (ShapeResult)result;
-    }
-    #endregion
+    private static Task<ShellScope> GetScopeAsync()
+        => ShellScope.Context.CreateScopeAsync();
 }
