@@ -22,13 +22,13 @@ public class DriverTests
 
     public DriverTests()
     {
-        IServiceCollection serviceCollection = new ServiceCollection();
+        var serviceCollection = new ServiceCollection();
 
         serviceCollection.AddScoped<ILoggerFactory, NullLoggerFactory>()
-             .AddScoped<IThemeManager, ThemeManager>()
-             .AddScoped<IShapeFactory, DefaultShapeFactory>()
-             .AddScoped<IExtensionManager, StubExtensionManager>()
-             .AddScoped<IShapeTableManager, TestShapeTableManager>();
+            .AddScoped<IThemeManager, ThemeManager>()
+            .AddScoped<IShapeFactory, DefaultShapeFactory>()
+            .AddScoped<IExtensionManager, StubExtensionManager>()
+            .AddScoped<IShapeTableManager, TestShapeTableManager>();
 
         _shapeTable = new ShapeTable
         (
@@ -44,221 +44,225 @@ public class DriverTests
     [Fact]
     public async Task BooleanFieldSettingsShouldDeserialize()
     {
-        var contentDefinition =
-            BuildContentPartWithField(field => field
-                        .OfType(nameof(BooleanField))
-                        .WithSettings(new BooleanFieldSettings
-                        {
-                            DefaultValue = true,
-                            Hint = "Test Hint",
-                            Label = "Test Label",
-                        }));
-        var shapeResult = await GetShapeResult(contentDefinition, new BooleanFieldSettingsDriver());
-        var settings = (BooleanFieldSettings)shapeResult.Shape;
+        var settings = new BooleanFieldSettings
+        {
+            DefaultValue = true,
+            Hint = "Test Hint",
+            Label = "Test Label",
+        };
 
-        Assert.Equal("Test Hint", settings.Hint);
-        Assert.Equal("Test Label", settings.Label);
-        Assert.True(settings.DefaultValue);
+        var contentDefinition = GetContentPartDefinition<BooleanField>(field => field.WithSettings(settings));
+
+        var shapeResult = await GetShapeResult<BooleanFieldSettingsDriver>(contentDefinition);
+
+        var shape = (BooleanFieldSettings)shapeResult.Shape;
+
+        Assert.Equal(settings.Hint, shape.Hint);
+        Assert.Equal(settings.Label, shape.Label);
+        Assert.Equal(settings.DefaultValue, shape.DefaultValue);
     }
 
     [Fact]
     public async Task DateFieldSettingsShouldDeserialize()
     {
-        var contentDefinition =
-            BuildContentPartWithField(field => field
-                        .OfType(nameof(DateField))
-                        .WithSettings(new DateFieldSettings
-                        {
-                            Hint = "Test Hint",
-                            Required = true,
-                        }));
-        var shapeResult = await GetShapeResult(contentDefinition, new DateFieldSettingsDriver());
-        var settings = (DateFieldSettings)shapeResult.Shape;
+        var settings = new DateFieldSettings
+        {
+            Hint = "Test Hint",
+            Required = true,
+        };
 
-        Assert.Equal("Test Hint", settings.Hint);
-        Assert.True(settings.Required);
+        var contentDefinition = GetContentPartDefinition<DateField>(field => field.WithSettings(settings));
+
+        var shapeResult = await GetShapeResult<DateFieldSettingsDriver>(contentDefinition);
+
+        var shape = (DateFieldSettings)shapeResult.Shape;
+
+        Assert.Equal(settings.Hint, shape.Hint);
+        Assert.Equal(settings.Required, shape.Required);
     }
 
     [Fact]
     public async Task DateTimeFieldSettingsShouldDeserialize()
     {
-        var contentDefinition =
-            BuildContentPartWithField(field => field
-                        .OfType(nameof(DateTimeField))
-                        .WithSettings(new DateTimeFieldSettings
-                        {
-                            Hint = "Test Hint",
-                            Required = true,
-                        }));
-        var shapeResult = await GetShapeResult(contentDefinition, new DateTimeFieldSettingsDriver());
-        var settings = (DateTimeFieldSettings)shapeResult.Shape;
+        var settings = new DateTimeFieldSettings
+        {
+            Hint = "Test Hint",
+            Required = true,
+        };
 
-        Assert.Equal("Test Hint", settings.Hint);
-        Assert.True(settings.Required);
+        var contentDefinition = GetContentPartDefinition<DateTimeField>(field => field.WithSettings(settings));
+                        
+        var shapeResult = await GetShapeResult<DateTimeFieldSettingsDriver>(contentDefinition);
+
+        var shape = (DateTimeFieldSettings)shapeResult.Shape;
+
+        Assert.Equal(settings.Hint, shape.Hint);
+        Assert.Equal(settings.Required, shape.Required);
     }
 
     [Fact]
     public async Task LinkFieldSettingsShouldDeserialize()
     {
-        var contentDefinition =
-            BuildContentPartWithField(field => field
-                        .OfType(nameof(LinkField))
-                        .WithSettings(new LinkFieldSettings
-                        {
-                            Hint = "Test Hint",
-                            HintLinkText = "Test Hint Link Text",
-                            Required = true,
-                            LinkTextMode = LinkTextMode.Static,
-                            UrlPlaceholder = "Test Url Placeholder",
-                            TextPlaceholder = "Test Text Placeholder",
-                            DefaultUrl = "https://www.orchardcore.net",
-                            DefaultText = "Test Text",
-                            DefaultTarget = "Test Target",
-                        }));
-        var shapeResult = await GetShapeResult(contentDefinition, new LinkFieldSettingsDriver());
-        var settings = (LinkFieldSettings)shapeResult.Shape;
+        var settings = new LinkFieldSettings
+        {
+            Hint = "Test Hint",
+            HintLinkText = "Test Hint Link Text",
+            Required = true,
+            LinkTextMode = LinkTextMode.Static,
+            UrlPlaceholder = "Test Url Placeholder",
+            TextPlaceholder = "Test Text Placeholder",
+            DefaultUrl = "https://www.orchardcore.net",
+            DefaultText = "Test Text",
+            DefaultTarget = "Test Target",
+        };
 
-        Assert.Equal("Test Hint", settings.Hint);
-        Assert.Equal("Test Hint Link Text", settings.HintLinkText);
-        Assert.True(settings.Required);
-        Assert.Equal(LinkTextMode.Static, settings.LinkTextMode);
-        Assert.Equal("Test Url Placeholder", settings.UrlPlaceholder);
-        Assert.Equal("Test Text Placeholder", settings.TextPlaceholder);
-        Assert.Equal("https://www.orchardcore.net", settings.DefaultUrl);
-        Assert.Equal("Test Text", settings.DefaultText);
-        Assert.Equal("Test Target", settings.DefaultTarget);
+        var contentDefinition = GetContentPartDefinition<LinkField>(field => field.WithSettings(settings));
+
+        var shapeResult = await GetShapeResult<LinkFieldSettingsDriver>(contentDefinition);
+
+        var shape = (LinkFieldSettings)shapeResult.Shape;
+
+        Assert.Equal(settings.Hint, shape.Hint);
+        Assert.Equal(settings.HintLinkText, shape.HintLinkText);
+        Assert.Equal(settings.Required, shape.Required);
+        Assert.Equal(settings.LinkTextMode, shape.LinkTextMode);
+        Assert.Equal(settings.UrlPlaceholder, shape.UrlPlaceholder);
+        Assert.Equal(settings.TextPlaceholder, shape.TextPlaceholder);
+        Assert.Equal(settings.DefaultUrl, shape.DefaultUrl);
+        Assert.Equal(settings.DefaultText, shape.DefaultText);
+        Assert.Equal(settings.DefaultTarget, shape.DefaultTarget);
     }
 
     [Fact]
     public async Task LocalizationSetContentPickerFieldSettingsShouldDeserialize()
     {
-        var contentDefinition =
-            BuildContentPartWithField(field => field
-                        .OfType(nameof(LocalizationSetContentPickerField))
-                        .WithSettings(new LocalizationSetContentPickerFieldSettings
-                        { 
-                            Hint = "Test Hint",
-                            Required = true,
-                            Multiple = true,
-                            DisplayedContentTypes = ["one", "two", "three"],
-                        }));
+        var settings = new LocalizationSetContentPickerFieldSettings
+        { 
+            Hint = "Test Hint",
+            Required = true,
+            Multiple = true,
+            DisplayedContentTypes = ["one", "two", "three"],
+        };
 
-        var shapeResult = await GetShapeResult(contentDefinition, new LocalizationSetContentPickerFieldSettingsDriver());
-        var settings = (LocalizationSetContentPickerFieldSettings)shapeResult.Shape;
+        var contentDefinition = GetContentPartDefinition<LocalizationSetContentPickerField>(field => field.WithSettings(settings));
 
-        Assert.Equal("Test Hint", settings.Hint);
-        Assert.True(settings.Required);
-        Assert.True(settings.Multiple);
-        Assert.Equal<string[]>(["one", "two", "three"], settings.DisplayedContentTypes);
+        var shapeResult = await GetShapeResult<LocalizationSetContentPickerFieldSettingsDriver>(contentDefinition);
+
+        var shape = (LocalizationSetContentPickerFieldSettings)shapeResult.Shape;
+
+        Assert.Equal(settings.Hint, shape.Hint);
+        Assert.Equal(settings.Required, shape.Required);
+        Assert.Equal(settings.Multiple, shape.Multiple);
+        Assert.Equal<string[]>(settings.DisplayedContentTypes, shape.DisplayedContentTypes);
     }
 
     [Fact]
     public async Task NumericFieldSettingsShouldDeserialize()
     {
-        var contentDefinition =
-            BuildContentPartWithField(field => field
-                        .OfType(nameof(NumericField))
-                        .WithSettings(new NumericFieldSettings
-                        {
-                            Hint = "Test Hint",
-                            Required = true,
-                            Scale = 4,
-                            Minimum = 3,
-                            Maximum = 1000,
-                            Placeholder = "Test Placeholder",
-                            DefaultValue = "Test Default Value",
-                        }));
+        var settings = new NumericFieldSettings
+        {
+            Hint = "Test Hint",
+            Required = true,
+            Scale = 4,
+            Minimum = 3,
+            Maximum = 1000,
+            Placeholder = "Test Placeholder",
+            DefaultValue = "Test Default Value",
+        };
 
-        var shapeResult = await GetShapeResult(contentDefinition, new NumericFieldSettingsDriver());
-        var settings = (NumericFieldSettings)shapeResult.Shape;
+        var contentDefinition = GetContentPartDefinition<NumericField>(field => field.WithSettings(settings));
 
-        Assert.Equal("Test Hint", settings.Hint);
-        Assert.True(settings.Required);
-        Assert.Equal(4, settings.Scale);
-        Assert.Equal(3, settings.Minimum);
-        Assert.Equal(1000, settings.Maximum);
-        Assert.Equal("Test Placeholder", settings.Placeholder);
-        Assert.Equal("Test Default Value", settings.DefaultValue);
+        var shapeResult = await GetShapeResult<NumericFieldSettingsDriver>(contentDefinition);
+
+        var shape = (NumericFieldSettings)shapeResult.Shape;
+
+        Assert.Equal(settings.Hint, shape.Hint);
+        Assert.Equal(settings.Required, shape.Required);
+        Assert.Equal(settings.Scale, shape.Scale);
+        Assert.Equal(settings.Minimum, shape.Minimum);
+        Assert.Equal(settings.Maximum, shape.Maximum);
+        Assert.Equal(settings.Placeholder, shape.Placeholder);
+        Assert.Equal(settings.DefaultValue, shape.DefaultValue);
     }
 
     [Fact]
     public async Task TextFieldSettingsShouldDeserialize()
     {
-        var contentDefinition =
-            BuildContentPartWithField(field => field
-                        .OfType(nameof(TextField))
-                        .WithSettings(new TextFieldSettings
-                        {
-                            DefaultValue = "Test Default",
-                            Hint = "Test Hint",
-                            Required = true,
-                        }));
+        var settings = new TextFieldSettings
+        {
+            DefaultValue = "Test Default",
+            Hint = "Test Hint",
+            Required = true,
+        };
+        
+        var contentDefinition = GetContentPartDefinition<TextField>(field => field.WithSettings());
 
-        var shapeResult = await GetShapeResult(contentDefinition, new TextFieldSettingsDriver());
-        var settings = (TextFieldSettings)shapeResult.Shape;
+        var shapeResult = await GetShapeResult<TextFieldSettingsDriver>(contentDefinition);
 
-        Assert.Equal("Test Hint", settings.Hint);
-        Assert.Equal("Test Default", settings.DefaultValue);
-        Assert.True(settings.Required);
+        var shape = (TextFieldSettings)shapeResult.Shape;
+
+        Assert.Equal(settings.Hint, shape.Hint);
+        Assert.Equal(settings.DefaultValue, shape.DefaultValue);
+        Assert.Equal(settings.Required, shape.Required);
     }
 
     [Fact]
     public async Task TimeFieldSettingsShouldDeserialize()
     {
-        var contentDefinition =
-            BuildContentPartWithField(field => field
-                        .OfType(nameof(TimeField))
-                        .WithSettings(new TimeFieldSettings
-                        {
-                            Hint = "Test Hint",
-                            Required = true,
-                            Step = "Test Step",
-                        }));
+        var settings = new TimeFieldSettings
+        {
+            Hint = "Test Hint",
+            Required = true,
+            Step = "Test Step",
+        };
 
-        var shapeResult = await GetShapeResult(contentDefinition, new TimeFieldSettingsDriver());
-        var settings = (TimeFieldSettings)shapeResult.Shape;
+        var contentDefinition = GetContentPartDefinition<TimeField>(field => field.WithSettings());
 
-        Assert.Equal("Test Hint", settings.Hint);
-        Assert.True(settings.Required);
-        Assert.Equal("Test Step", settings.Step);
+        var shapeResult = await GetShapeResult<TimeFieldSettingsDriver>(contentDefinition);
+
+        var shape = (TimeFieldSettings)shapeResult.Shape;
+
+        Assert.Equal(settings.Hint, shape.Hint);
+        Assert.Equal(settings.Required, shape.Required);
+        Assert.Equal(settings.Step, shape.Step);
     }
 
     [Fact]
     public async Task YoutubeFieldSettingsShouldDeserialize()
     {
-        var contentDefinition =
-            BuildContentPartWithField(field => field
-                        .OfType(nameof(YoutubeField))
-                        .WithSettings(new YoutubeFieldSettings
-                        {
-                            Hint = "Test Hint",
-                            Label = "Test Label",
-                            Width = 1024,
-                            Height = 768,
-                            Required = true,
-                        }));
+        var settings = new YoutubeFieldSettings
+        {
+            Hint = "Test Hint",
+            Label = "Test Label",
+            Width = 1024,
+            Height = 768,
+            Required = true,
+        };
 
-        var shapeResult = await GetShapeResult(contentDefinition, new YoutubeFieldSettingsDriver());
-        var settings = (YoutubeFieldSettings)shapeResult.Shape;
+        var contentDefinition = GetContentPartDefinition<YoutubeField>(field => field.WithSettings(settings));
 
-        Assert.Equal("Test Hint", settings.Hint);
-        Assert.Equal("Test Label", settings.Label);
-        Assert.Equal(1024, settings.Width);
-        Assert.Equal(768, settings.Height);
-        Assert.True(settings.Required);
+        var shapeResult = await GetShapeResult<YoutubeFieldSettingsDriver>(contentDefinition);
+
+        var shape = (YoutubeFieldSettings)shapeResult.Shape;
+
+        Assert.Equal(settings.Hint, shape.Hint);
+        Assert.Equal(settings.Label, shape.Label);
+        Assert.Equal(settings.Width, shape.Width);
+        Assert.Equal(settings.Height, shape.Height);
+        Assert.Equal(settings.Required, shape.Required);
     }
 
     #region Private methods
-    private static ContentPartDefinition BuildContentPartWithField(Action<ContentPartFieldDefinitionBuilder> configuration)
+    private static ContentPartDefinition GetContentPartDefinition<TField>(Action<ContentPartFieldDefinitionBuilder> configuration)
     {        
         return new ContentPartDefinitionBuilder()
-                .Named("SomeContentPart")
-                .WithField("SomeField",
-                    configuration)
-                .Build();
+            .Named("SomeContentPart")
+            .WithField<TField>("SomeField", configuration)
+            .Build();
     }
     
-    private async Task<ShapeResult> GetShapeResult(ContentPartDefinition contentDefinition, IContentPartFieldDefinitionDisplayDriver driver)
+    private async Task<ShapeResult> GetShapeResult<TDriver>(ContentPartDefinition contentDefinition)
+        where TDriver : new(), IContentPartFieldDefinitionDisplayDriver
     {
         var factory = _serviceProvider.GetService<IShapeFactory>();
         var partFieldDefinition = contentDefinition.Fields.First();
@@ -269,6 +273,7 @@ public class DriverTests
 
         var editorContext = new BuildEditorContext(partFieldDefinitionShape, "", false, "", factory, null, null);
 
+        var driver = new TDriver()
         var result = await driver.BuildEditorAsync(partFieldDefinition, editorContext);
         await result.ApplyAsync(editorContext);
 
