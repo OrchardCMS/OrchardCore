@@ -4,11 +4,9 @@
 @using OrchardCore.Localization
 @model OrchardCore.Lists.ViewModels.ListPartViewModel
 @{
-    var dropdownClassList = "dropdown-menu";
-    if (CultureInfo.CurrentUICulture.IsRightToLeft())
-    {
-        dropdownClassList += " dropdown-menu-start";
-    }
+    var dropdownClassList = CultureInfo.CurrentUICulture.IsRightToLeft() 
+       ? "dropdown-menu dropdown-menu-start" 
+       : "dropdown-menu";
 }
 
 <form>
