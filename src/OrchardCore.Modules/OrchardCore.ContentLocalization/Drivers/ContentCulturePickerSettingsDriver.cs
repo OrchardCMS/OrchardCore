@@ -30,7 +30,7 @@ public sealed class ContentCulturePickerSettingsDriver : SiteDisplayDriver<Conte
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageContentCulturePicker))
+        if (!await _authorizationService.AuthorizeAsync(user, ContentLocalizationPermissions.ManageContentCulturePicker))
         {
             return null;
         }
@@ -47,7 +47,7 @@ public sealed class ContentCulturePickerSettingsDriver : SiteDisplayDriver<Conte
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageContentCulturePicker))
+        if (!await _authorizationService.AuthorizeAsync(user, ContentLocalizationPermissions.ManageContentCulturePicker))
         {
             return null;
         }

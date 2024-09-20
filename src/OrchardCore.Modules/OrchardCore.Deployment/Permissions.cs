@@ -15,9 +15,9 @@ public sealed class Permissions : IPermissionProvider
 
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        CommonPermissions.Import,
-        CommonPermissions.Export,
-        CommonPermissions.ManageDeploymentPlan,
+        DeploymentPermissions.ImportData,
+        DeploymentPermissions.ExportData,
+        DeploymentPermissions.ManageDeploymentPlan,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()

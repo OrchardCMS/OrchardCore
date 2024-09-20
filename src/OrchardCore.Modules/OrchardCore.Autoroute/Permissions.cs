@@ -4,11 +4,9 @@ namespace OrchardCore.Autoroute;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission SetHomepage = new("SetHomepage", "Set homepage.");
-
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        SetHomepage,
+        AutoroutePermissions.SetHomepage,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()

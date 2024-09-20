@@ -60,7 +60,7 @@ public class GraphQLMiddleware : IMiddleware
                 context.User = authenticateResult.Principal;
             }
             var authorizationService = context.RequestServices.GetService<IAuthorizationService>();
-            var authorized = await authorizationService.AuthorizeAsync(context.User, CommonPermissions.ExecuteGraphQL);
+            var authorized = await authorizationService.AuthorizeAsync(context.User, GraphQLPermissions.ExecuteGraphQL);
 
             if (authorized)
             {

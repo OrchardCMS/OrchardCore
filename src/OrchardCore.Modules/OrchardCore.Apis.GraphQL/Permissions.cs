@@ -12,8 +12,8 @@ public sealed class Permissions : IPermissionProvider
 
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        CommonPermissions.ExecuteGraphQL,
-        CommonPermissions.ExecuteGraphQLMutations,
+        GraphQLPermissions.ExecuteGraphQL,
+        GraphQLPermissions.ExecuteGraphQLMutations,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
@@ -26,7 +26,7 @@ public sealed class Permissions : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
-                CommonPermissions.ExecuteGraphQLMutations,
+                GraphQLPermissions.ExecuteGraphQLMutations,
             ],
         },
     ];

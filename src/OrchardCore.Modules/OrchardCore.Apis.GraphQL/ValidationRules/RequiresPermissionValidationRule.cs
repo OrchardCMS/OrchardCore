@@ -60,7 +60,7 @@ public class RequiresPermissionValidationRule : IValidationRule
 
     private async Task AuthorizeOperationAsync(ASTNode node, ValidationContext validationContext, GraphQLUserContext userContext, OperationType? operationType, string operationName)
     {
-        if (operationType == OperationType.Mutation && !(await _authorizationService.AuthorizeAsync(userContext.User, CommonPermissions.ExecuteGraphQLMutations)))
+        if (operationType == OperationType.Mutation && !(await _authorizationService.AuthorizeAsync(userContext.User, GraphQLPermissions.ExecuteGraphQLMutations)))
         {
             validationContext.ReportError(new ValidationError(
                 validationContext.Document.Source,

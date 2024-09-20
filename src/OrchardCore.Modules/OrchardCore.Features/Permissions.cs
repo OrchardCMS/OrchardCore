@@ -4,11 +4,9 @@ namespace OrchardCore.Features;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageFeatures = new("ManageFeatures", "Manage Features");
-
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ManageFeatures,
+        FeaturesPermissions.ManageFeatures,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()

@@ -58,9 +58,9 @@ public class LocalizeContentAuthorizationHandler : AuthorizationHandler<Permissi
 
     private static Permission GetOwnerVariation(Permission permission)
     {
-        if (permission.Name == Permissions.LocalizeContent.Name)
+        if (permission.Name == ContentLocalizationPermissions.LocalizeContent.Name)
         {
-            return Permissions.LocalizeOwnContent;
+            return ContentLocalizationPermissions.LocalizeOwnContent;
         }
 
         return null;
