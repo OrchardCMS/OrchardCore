@@ -53,8 +53,6 @@ public partial class DriverTests
         serviceCollection.AddSingleton<IDistributedLock, LocalLock>();
         _serviceProvider = serviceCollection.BuildServiceProvider();
     }
-
-
     [Fact]
     public async Task ContentPickerFieldElasticEditorSettingsShouldDeserialize()
     {
