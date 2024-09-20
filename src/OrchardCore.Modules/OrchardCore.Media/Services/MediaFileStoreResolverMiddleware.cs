@@ -53,7 +53,6 @@ public class MediaFileStoreResolverMiddleware
         var validatePath = context.Request.Path.StartsWithNormalizedSegments(_assetsRequestPath, StringComparison.OrdinalIgnoreCase, out var subPath);
         if (!validatePath || string.IsNullOrEmpty(_mediaFileStore.NormalizePath(subPath)))
         {
-            _logger.LogDebug("Request path {Path} does not match the assets request path {RequestPath}", subPath, _assetsRequestPath);
             await _next(context);
             return;
         }
