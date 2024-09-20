@@ -257,6 +257,7 @@ public class DriverTests
                     configuration)
                 .Build();
     }
+    
     private async Task<ShapeResult> GetShapeResult(ContentPartDefinition contentDefinition, IContentPartFieldDefinitionDisplayDriver driver)
     {
         var factory = _serviceProvider.GetService<IShapeFactory>();
