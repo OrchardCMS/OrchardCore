@@ -13,11 +13,11 @@ public sealed class TaxonomyFieldTagsEditorSettingsDriver : ContentPartFieldDefi
     {
         return Initialize<TaxonomyFieldTagsEditorSettings>("TaxonomyFieldTagsEditorSettings_Edit", model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<TaxonomyFieldTagsEditorSettings>();
+            var settings = partFieldDefinition.GetSettings<TaxonomyFieldTagsEditorSettings>();
 
             model.Open = settings.Open;
         }).Location("Content");
-    }
+    } 
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
     {
