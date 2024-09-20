@@ -37,7 +37,8 @@ public partial class SettingsDisplayDriverTests
             .AddScoped<IShapeFactory, DefaultShapeFactory>()
             .AddScoped<IExtensionManager, StubExtensionManager>()
             .AddScoped<IShapeTableManager, TestShapeTableManager>()
-            .AddScoped<IDocumentManager<ElasticIndexSettingsDocument>, MockElasticIndexSettingsDocumentManager>();
+            .AddScoped<IDocumentManager<ElasticIndexSettingsDocument>, MockElasticIndexSettingsDocumentManager>()
+            .AddSingleton<IDistributedLock, LocalLock>();
 
         _shapeTable = new ShapeTable
         (
@@ -45,8 +46,7 @@ public partial class SettingsDisplayDriverTests
             new Dictionary<string, ShapeBinding>(StringComparer.OrdinalIgnoreCase)
         );
 
-        serviceCollection.AddSingleton(_shapeTable)
-            .AddSingleton<IDistributedLock, LocalLock>();
+        serviceCollection.AddSingleton(_shapeTable);
 
         _serviceProvider = serviceCollection.BuildServiceProvider();
 

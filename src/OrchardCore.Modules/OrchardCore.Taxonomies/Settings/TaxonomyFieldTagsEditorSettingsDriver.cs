@@ -17,7 +17,7 @@ public sealed class TaxonomyFieldTagsEditorSettingsDriver : ContentPartFieldDefi
 
             model.Open = settings.Open;
         }).Location("Content");
-    } 
+    }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
     {
