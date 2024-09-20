@@ -10,6 +10,7 @@ Orchard Core consists of two distinct projects:
 [![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE)
 [![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://docs.orchardcore.net/)
 [![Crowdin](https://badges.crowdin.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
+[![Discord](https://img.shields.io/discord/551136772243980291?color=%237289DA&label=OrchardCore&logo=discord&logoColor=white&style=flat-square)](https://orchardcore.net/discord)
 
 ## Build Status
 
