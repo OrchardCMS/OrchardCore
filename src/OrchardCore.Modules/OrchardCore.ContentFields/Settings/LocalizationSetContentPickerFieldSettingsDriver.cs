@@ -15,7 +15,7 @@ public sealed class LocalizationSetContentPickerFieldSettingsDriver : ContentPar
     {
         return Initialize<LocalizationSetContentPickerFieldSettings>("LocalizationSetContentPickerFieldSettings_Edit", model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<LocalizationSetContentPickerFieldSettings>();
+            var settings = partFieldDefinition.GetSettings<LocalizationSetContentPickerFieldSettings>();
 
             model.Hint = settings.Hint;
             model.Required = settings.Required;
