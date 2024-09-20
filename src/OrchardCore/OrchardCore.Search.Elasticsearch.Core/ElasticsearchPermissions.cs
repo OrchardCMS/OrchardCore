@@ -1,6 +1,6 @@
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Search.Elasticsearch.Core;
+namespace OrchardCore.Search.Elasticsearch;
 
 public sealed class ElasticsearchPermissions
 {

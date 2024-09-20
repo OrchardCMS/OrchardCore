@@ -45,7 +45,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                             {
                                 settings.Add(S["Authentication client"], "1", client => client
                                         .Action("Index", "Admin", _clientRouteValues)
-                                        .Permission(Permissions.ManageClientSettings)
+                                        .Permission(OpenIdPermissions.ManageClientSettings)
                                         .LocalNav());
                             }
 
@@ -53,7 +53,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                             {
                                 settings.Add(S["Authorization server"], "2", server => server
                                         .Action("Index", "ServerConfiguration", "OrchardCore.OpenId")
-                                        .Permission(Permissions.ManageServerSettings)
+                                        .Permission(OpenIdPermissions.ManageServerSettings)
                                         .LocalNav());
                             }
 
@@ -61,7 +61,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                             {
                                 settings.Add(S["Token validation"], "3", validation => validation
                                         .Action("Index", "ValidationConfiguration", "OrchardCore.OpenId")
-                                        .Permission(Permissions.ManageValidationSettings)
+                                        .Permission(OpenIdPermissions.ManageValidationSettings)
                                         .LocalNav());
                             }
                         });
@@ -73,12 +73,12 @@ public sealed class AdminMenu : AdminNavigationProvider
                         {
                             management.Add(S["Applications"], "1", applications => applications
                                       .Action("Index", "Application", "OrchardCore.OpenId")
-                                      .Permission(Permissions.ManageApplications)
+                                      .Permission(OpenIdPermissions.ManageApplications)
                                       .LocalNav());
 
                             management.Add(S["Scopes"], "2", applications => applications
                                       .Action("Index", "Scope", "OrchardCore.OpenId")
-                                      .Permission(Permissions.ManageScopes)
+                                      .Permission(OpenIdPermissions.ManageScopes)
                                       .LocalNav());
                         });
                     }

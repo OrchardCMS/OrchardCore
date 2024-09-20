@@ -1,6 +1,6 @@
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Queries.Core;
+namespace OrchardCore.Queries;
 
 public sealed class QueriesPermissions
 {

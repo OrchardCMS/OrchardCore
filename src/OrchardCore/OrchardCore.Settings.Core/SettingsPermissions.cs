@@ -1,6 +1,6 @@
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Settings.Core;
+namespace OrchardCore.Settings;
 
 public sealed class SettingsPermissions
 {

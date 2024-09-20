@@ -1,6 +1,6 @@
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.OpenId.Core;
+namespace OrchardCore.OpenId;
 
 public sealed class OpenIdPermissions
 {

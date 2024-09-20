@@ -1,4 +1,3 @@
-using OrchardCore.OpenId.Core;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.OpenId;

@@ -17,7 +17,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["SEO"], S["SEO"].PrefixPosition(), seo => seo
-                    .Permission(Permissions.ManageSitemaps)
+                    .Permission(SitemapsPermissions.ManageSitemaps)
                     .Add(S["Sitemaps"], S["Sitemaps"].PrefixPosition("1"), sitemaps => sitemaps
                         .Action("List", "Admin", "OrchardCore.Sitemaps")
                         .LocalNav()

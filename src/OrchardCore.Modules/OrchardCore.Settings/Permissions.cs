@@ -1,5 +1,4 @@
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings.Core;
 
 namespace OrchardCore.Settings;
 

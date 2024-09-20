@@ -1,6 +1,7 @@
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search.Lucene;
+
 public sealed class LuceneSearchPermissions
 {
     public static readonly Permission ManageLuceneIndexes = new("ManageLuceneIndexes", "Manage Lucene Indexes");

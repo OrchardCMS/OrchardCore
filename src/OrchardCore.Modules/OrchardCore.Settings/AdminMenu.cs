@@ -31,7 +31,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                         .AddClass("general")
                         .Id("general")
                         .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageGroupSettings)
+                        .Permission(SettingsPermissions.ManageGroupSettings)
                         .LocalNav()
                     ),
                 priority: 1)
