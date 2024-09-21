@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
+using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.TimeZone.Models;
 
@@ -15,13 +16,16 @@ public class UserTimeZoneService : IUserTimeZoneService
 
     private readonly IClock _clock;
     private readonly IDistributedCache _distributedCache;
+    private readonly ISiteService _siteService;
 
     public UserTimeZoneService(
         IClock clock,
-        IDistributedCache distributedCache)
+        IDistributedCache distributedCache,
+        ISiteService siteService)
     {
         _clock = clock;
         _distributedCache = distributedCache;
+        _siteService = siteService;
     }
 
     /// <inheritdoc/>
@@ -67,7 +71,7 @@ public class UserTimeZoneService : IUserTimeZoneService
         // The timezone is not cached yet, resolve it and store the value
         if (string.IsNullOrEmpty(timeZoneId))
         {
-            if (user is User u) 
+            if (user is User u)
             {
                 timeZoneId = u.As<UserTimeZone>()?.TimeZoneId;
             }
@@ -85,7 +89,8 @@ public class UserTimeZoneService : IUserTimeZoneService
         // Do we know this user doesn't have a configured value?
         if (timeZoneId == EmptyTimeZone)
         {
-            return null;
+            // The user opted to use the site's time zone.
+            return (await _siteService.GetSiteSettingsAsync())?.TimeZoneId;
         }
 
         return timeZoneId;
