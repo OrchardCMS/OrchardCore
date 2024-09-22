@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using OrchardCore.UrlRewriting.Rules;
 
 namespace OrchardCore.UrlRewriting.ViewModels;
 
@@ -22,6 +21,12 @@ public class CreateUrlRewriteRuleViewModel
     public List<SelectListItem> AvailableActions { get; set; } = [];
 }
 
+public enum RuleAction
+{
+    Rewrite,
+    Redirect
+}
+
 public enum RedirectType
 {
     MovedPermanently301,
@@ -36,7 +41,7 @@ public class RedirectActionViewModel
 
     public bool AppendQueryString { get; set; } = true;
 
-    public RedirectType RedirectType { get; set; } = RedirectType.TemporaryRedirect307;
+    public RedirectType RedirectType { get; set; } = RedirectType.Found302;
 
     [BindNever]
     public List<SelectListItem> AvailableRedirectTypes { get; set; } = [];
@@ -47,4 +52,6 @@ public class RewriteActionViewModel
     public string RewriteUrl { get; set; }
 
     public bool AppendQueryString { get; set; } = true;
+
+    public bool SkipFurtherRules { get; set; }
 }

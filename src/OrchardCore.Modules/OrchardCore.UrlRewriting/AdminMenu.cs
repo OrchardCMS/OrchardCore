@@ -7,12 +7,6 @@ namespace OrchardCore.UrlRewriting;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    private static readonly RouteValueDictionary _routeValues = new()
-    {
-        { "area", "OrchardCore.Settings" },
-        { "groupId", UrlRewritingSettingsDisplayDriver.GroupId },
-    };
-
     public readonly IStringLocalizer S;
 
     public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
