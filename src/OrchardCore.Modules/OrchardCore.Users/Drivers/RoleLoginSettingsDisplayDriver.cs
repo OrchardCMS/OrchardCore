@@ -5,6 +5,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Security.Services;
 using OrchardCore.Settings;
@@ -41,10 +42,9 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
         return Initialize<RoleLoginSettingsViewModel>("LoginSettingsRoles_Edit", async model =>
         {
             model.RequireTwoFactorAuthenticationForSpecificRoles = settings.RequireTwoFactorAuthenticationForSpecificRoles;
-            var roles = await _roleService.GetRolesAsync();
+            var roles = await _roleService.GetRolesAsync(RoleType.Standard);
 
             model.Roles = roles
-            .Where(role => !RoleHelper.SystemRoleNames.Contains(role.RoleName))
             .Select(role => new RoleEntry()
             {
                 Role = role.RoleName,
@@ -69,8 +69,7 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
 
         if (model.RequireTwoFactorAuthenticationForSpecificRoles)
         {
-            var roles = (await _roleService.GetRolesAsync())
-                .Where(role => !RoleHelper.SystemRoleNames.Contains(role.RoleName));
+            var roles = (await _roleService.GetRolesAsync(RoleType.Standard));
 
             var selectedRoles = model.Roles.Where(x => x.IsSelected)
                 .Join(roles, e => e.Role, r => r.RoleName, (e, r) => r.RoleName)

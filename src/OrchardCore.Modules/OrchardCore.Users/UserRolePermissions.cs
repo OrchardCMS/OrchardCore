@@ -1,3 +1,4 @@
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
 
@@ -22,8 +23,7 @@ public sealed class UserRolePermissions : IPermissionProvider
             CommonPermissions.AssignRoleToUsers,
         };
 
-        var roleNames = (await _roleService.GetRoleNamesAsync())
-        .Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName))
+        var roleNames = (await _roleService.GetRoleNamesAsync(RoleType.Standard))
         .OrderBy(roleName => roleName);
 
         foreach (var roleName in roleNames)

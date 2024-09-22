@@ -1,9 +1,11 @@
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Identity;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Recipes;
 
@@ -42,13 +44,19 @@ public sealed class RolesStep : IRecipeStepHandler
             {
                 role = new Role
                 {
-                    RoleName = importedRole.Name
+                    RoleName = importedRole.Name,
                 };
             }
 
             role.RoleDescription = importedRole.Description;
+            role.HasFullAccess = importedRole.HasFullAccess;
+            role.Type = RoleHelper.SystemRoleNames.Contains(importedRole.Name)
+                ? RoleType.System
+                : importedRole.Type;
+
             role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
-            role.RoleClaims.AddRange(importedRole.Permissions.Select(p => new RoleClaim
+            role.RoleClaims.AddRange(importedRole.Permissions.Select(p =>
+            new RoleClaim
             {
                 ClaimType = Permission.ClaimType,
                 ClaimValue = p,
@@ -74,6 +82,12 @@ public sealed class RolesStepModel
 public sealed class RolesStepRoleModel
 {
     public string Name { get; set; }
+
     public string Description { get; set; }
+
+    public bool HasFullAccess { get; set; }
+
+    public RoleType Type { get; set; }
+
     public string[] Permissions { get; set; }
 }

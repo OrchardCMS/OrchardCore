@@ -1,3 +1,4 @@
+using OrchardCore.Roles.Core;
 using OrchardCore.Security;
 using OrchardCore.Security.AuthorizationHandlers;
 using OrchardCore.Security.Permissions;
@@ -23,7 +24,7 @@ public class PermissionHandlerTests
     }
 
     [Fact]
-    public async Task DontRevokeExistingGrants()
+    public async Task DoNotRevokeExistingGrants()
     {
         // Arrange
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Required"), ["Other"], true);
@@ -39,7 +40,7 @@ public class PermissionHandlerTests
     }
 
     [Fact]
-    public async Task DontHandleNonAuthenticated()
+    public async Task DoNotHandleNonAuthenticated()
     {
         // Arrange
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Allowed"), ["Allowed"]);
@@ -78,6 +79,24 @@ public class PermissionHandlerTests
 
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required, ["ReQuIrEd"], true);
         var permissionHandler = CreatePermissionHandler();
+
+        // Act
+        await permissionHandler.HandleAsync(context);
+
+        // Assert
+        Assert.True(context.HasSucceeded);
+    }
+
+    [Fact]
+    public async Task RolesWithFullAccessShouldAutoGrantPermissions()
+    {
+        // Arrange
+        var adminRolePermission = new Claim("role", "Administrator");
+        var required = new Permission("Required", "Foo");
+
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required, [adminRolePermission], true);
+
+        var permissionHandler = new RolesPermissionHandler(new RoleTrackerTest(["Administrator"]));
 
         // Act
         await permissionHandler.HandleAsync(context);

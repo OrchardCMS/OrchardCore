@@ -10,6 +10,8 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Infrastructure.Security;
+using OrchardCore.Roles.Core;
 using OrchardCore.Roles.ViewModels;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -28,6 +30,7 @@ public sealed class AdminController : Controller
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly IRoleService _roleService;
     private readonly INotifier _notifier;
+    private readonly IRoleTracker _roleTracker;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -41,6 +44,7 @@ public sealed class AdminController : Controller
         IShellFeaturesManager shellFeaturesManager,
         IRoleService roleService,
         INotifier notifier,
+        IRoleTracker roleTracker,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
@@ -52,6 +56,7 @@ public sealed class AdminController : Controller
         _shellFeaturesManager = shellFeaturesManager;
         _roleService = roleService;
         _notifier = notifier;
+        _roleTracker = roleTracker;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -67,7 +72,12 @@ public sealed class AdminController : Controller
 
         var model = new RolesViewModel
         {
-            RoleEntries = roles.Select(BuildRoleEntry).ToList()
+            RoleEntries = roles.Select(role => new RoleEntry
+            {
+                Name = role.RoleName,
+                Description = role.RoleDescription,
+                Type = role.Type,
+            }).ToList()
         };
 
         return View(model);
@@ -110,11 +120,24 @@ public sealed class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            var role = new Role { RoleName = model.RoleName, RoleDescription = model.RoleDescription };
+            var role = new Role
+            {
+                RoleName = model.RoleName,
+                RoleDescription = model.RoleDescription,
+                HasFullAccess = model.HasFullAccess,
+                Type = RoleType.Standard,
+            };
+
             var result = await _roleManager.CreateAsync(role);
+
             if (result.Succeeded)
             {
+                if (role.HasFullAccess)
+                {
+                    await _roleTracker.AddAsync(role);
+                }
                 await _notifier.SuccessAsync(H["Role created successfully."]);
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -126,7 +149,7 @@ public sealed class AdminController : Controller
             }
         }
 
-        // If we got this far, something failed, redisplay form
+        // If we got this far, something failed, redisplay form.
         return View(model);
     }
 
@@ -145,10 +168,22 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
+        if (currentRole.Type == RoleType.System)
+        {
+            await _notifier.ErrorAsync(H["System roles cannot be deleted."]);
+
+            return RedirectToAction(nameof(Index));
+        }
+
         var result = await _roleManager.DeleteAsync(currentRole);
 
         if (result.Succeeded)
         {
+            if (currentRole.HasFullAccess)
+            {
+                await _roleTracker.RemoveAsync(currentRole);
+            }
+
             await _notifier.SuccessAsync(H["Role deleted successfully."]);
         }
         else
@@ -186,6 +221,7 @@ public sealed class AdminController : Controller
             Role = role,
             Name = role.RoleName,
             RoleDescription = role.RoleDescription,
+            HasFullAccess = role.HasFullAccess,
             EffectivePermissions = await GetEffectivePermissions(role, allPermissions),
             RoleCategoryPermissions = installedPermissions
         };
@@ -194,7 +230,7 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost, ActionName(nameof(Edit))]
-    public async Task<IActionResult> EditPost(string id, string roleDescription)
+    public async Task<IActionResult> EditPost(string id, string roleDescription, bool hasFullAccess)
     {
         if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
         {
@@ -206,37 +242,53 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        role.RoleDescription = roleDescription;
+        var roleAccessChanged = role.HasFullAccess != hasFullAccess;
 
-        // Save.
-        var rolePermissions = new List<RoleClaim>();
-        foreach (var key in Request.Form.Keys)
+        if (roleAccessChanged)
         {
-            if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
-            {
-                var permissionName = key["Checkbox.".Length..];
-                rolePermissions.Add(new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = permissionName });
-            }
+            role.HasFullAccess = hasFullAccess;
         }
 
-        role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
-        role.RoleClaims.AddRange(rolePermissions);
+        role.RoleDescription = roleDescription;
+
+        if (!hasFullAccess)
+        {
+            var rolePermissions = new List<RoleClaim>();
+            foreach (var key in Request.Form.Keys)
+            {
+                if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
+                {
+                    var permissionName = key["Checkbox.".Length..];
+                    rolePermissions.Add(new RoleClaim
+                    {
+                        ClaimType = Permission.ClaimType,
+                        ClaimValue = permissionName,
+                    });
+                }
+            }
+
+            role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
+            role.RoleClaims.AddRange(rolePermissions);
+        }
 
         await _roleManager.UpdateAsync(role);
+
+        // After updating the document manager, update the tracker.
+        if (roleAccessChanged)
+        {
+            if (role.HasFullAccess)
+            {
+                await _roleTracker.AddAsync(role);
+            }
+            else
+            {
+                await _roleTracker.RemoveAsync(role);
+            }
+        }
 
         await _notifier.SuccessAsync(H["Role updated successfully."]);
 
         return RedirectToAction(nameof(Index));
-    }
-
-    private RoleEntry BuildRoleEntry(IRole role)
-    {
-        return new RoleEntry
-        {
-            Name = role.RoleName,
-            Description = role.RoleDescription,
-            Selected = false
-        };
     }
 
     private async Task<IDictionary<PermissionGroupKey, IEnumerable<Permission>>> GetInstalledPermissionsAsync()

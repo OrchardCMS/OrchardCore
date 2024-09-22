@@ -3,6 +3,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Services;
 
 namespace OrchardCore.ContentFields.Settings;
@@ -24,8 +25,7 @@ public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDi
             model.Hint = settings.Hint;
             model.Required = settings.Required;
             model.Multiple = settings.Multiple;
-            var roles = (await _roleService.GetRoleNamesAsync())
-                .Except(RoleHelper.SystemRoleNames, StringComparer.OrdinalIgnoreCase)
+            var roles = (await _roleService.GetRoleNamesAsync(RoleType.Standard))
                 .Select(roleName => new RoleEntry
                 {
                     Role = roleName,

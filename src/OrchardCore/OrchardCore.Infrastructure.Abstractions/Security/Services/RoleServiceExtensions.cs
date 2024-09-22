@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Security.Services;
@@ -13,6 +14,20 @@ public static class RoleServiceExtensions
         return roles.Select(r => r.RoleName);
     }
 
+    public static async Task<IEnumerable<string>> GetRoleNamesAsync(this IRoleService roleService, RoleType type)
+    {
+        var roles = await roleService.GetRolesAsync(type);
+
+        return roles.Select(r => r.RoleName);
+    }
+
+    public static async Task<IEnumerable<IRole>> GetRolesAsync(this IRoleService roleService, RoleType type)
+    {
+        var roles = await roleService.GetRolesAsync();
+
+        return roles.Where(r => r.Type == type);
+    }
+
     public static async Task<IEnumerable<IRole>> GetAccessibleRolesAsync(this IRoleService roleService, IAuthorizationService authorizationService, ClaimsPrincipal user, Permission permission)
     {
         var roles = await roleService.GetRolesAsync();
@@ -20,7 +35,7 @@ public static class RoleServiceExtensions
         var accessibleRoles = new List<IRole>();
         foreach (var role in roles)
         {
-            if (RoleHelper.SystemRoleNames.Contains(role.RoleName))
+            if (role.Type == RoleType.System)
             {
                 continue;
             }

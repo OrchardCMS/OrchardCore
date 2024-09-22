@@ -328,6 +328,8 @@ public class ViewMediaFolderAuthorizationHandlerTests
             mockUserAssetFolderNameProvider.Object,
             NullLogger<AttachedMediaFieldFileService>.Instance);
 
+        var roleHashSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         // Create an IAuthorizationService mock that mimics how OC is granting permissions. 
         var mockAuthorizationService = new Mock<IAuthorizationService>();
         mockAuthorizationService

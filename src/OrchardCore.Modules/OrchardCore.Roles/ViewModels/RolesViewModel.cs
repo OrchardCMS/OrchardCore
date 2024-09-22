@@ -1,3 +1,5 @@
+using OrchardCore.Infrastructure.Security;
+
 namespace OrchardCore.Roles.ViewModels;
 
 public class RolesViewModel
@@ -8,6 +10,10 @@ public class RolesViewModel
 public class RoleEntry
 {
     public string Name { get; set; }
+
     public string Description { get; set; }
+
     public bool Selected { get; set; }
+
+    public RoleType Type { get; set; }
 }

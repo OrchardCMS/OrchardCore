@@ -7,7 +7,10 @@ namespace OrchardCore.Roles.ViewModels;
 public class EditRoleViewModel
 {
     public string Name { get; set; }
+
     public string RoleDescription { get; set; }
+
+    public bool HasFullAccess { get; set; }
 
     [BindNever]
     public IDictionary<PermissionGroupKey, IEnumerable<Permission>> RoleCategoryPermissions { get; set; }

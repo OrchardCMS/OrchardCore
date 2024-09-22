@@ -1,4 +1,5 @@
 @using System.Linq
+@using OrchardCore.Infrastructure.Security
 
 @model OrchardCore.Roles.ViewModels.RolesViewModel
 
@@ -24,17 +25,21 @@
     <ul class="list-group">
         @for (var i = 0; i < Model.RoleEntries.Count; i++)
         {
+            var entry = Model.RoleEntries[i];
+
             var message = T["Are you sure you want to delete this role?"];
 
-            <li class="list-group-item" data-filter-value="@Model.RoleEntries[i].Name">
+            <li class="list-group-item" data-filter-value="@entry.Name">
                 <div class="w-100">
                     <div class="float-end">
-                        <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@Model.RoleEntries[i].Name">@T["Edit"]</a>
-                        <a class="delete btn btn-danger btn-sm" asp-route-id="@Model.RoleEntries[i].Name" role="button" asp-action="Delete" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Delete Role"]" data-message="@message">@T["Delete"]</a>
+                        <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@entry.Name">@T["Edit"]</a>
+                        @if (entry.Type != RoleType.System)
+                        {
+                            <a class="delete btn btn-danger btn-sm" asp-route-id="@entry.Name" role="button" asp-action="Delete" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Delete Role"]" data-message="@message">@T["Delete"]</a>
+                        }
                     </div>
-                    @*<input asp-for="RoleEntries[i].Selected" type="checkbox">*@
-                    @Model.RoleEntries[i].Name
-                    <p class="text-muted">@Model.RoleEntries[i].Description</p>
+                    @entry.Name
+                    <p class="text-muted">@entry.Description</p>
                 </div>
             </li>
         }

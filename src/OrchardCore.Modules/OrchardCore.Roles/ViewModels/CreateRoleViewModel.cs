@@ -8,4 +8,6 @@ public class CreateRoleViewModel
     public string RoleName { get; set; }
 
     public string RoleDescription { get; set; }
+
+    public bool HasFullAccess { get; set; }
 }

@@ -1,7 +1,7 @@
 @model EditRoleViewModel
 @using OrchardCore.Roles.ViewModels
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Role {0}", Model.Name])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit '{0}' Role", Model.Name])</h1></zone>
 
 <form autocomplete="off" class="mb-3">
 
@@ -15,74 +15,86 @@
 </form>
 
 <form asp-action="Edit" method="post" class="no-multisubmit">
+
     <h2>@T["Edit Role Detail"]</h2>
+
     <div class="mb-3" asp-validation-class-for="RoleDescription">
-        <label asp-for="RoleDescription" class="form-label">@T["Role description"]</label>
+        <label asp-for="RoleDescription" class="form-label">@T["Description"]</label>
         <input asp-for="RoleDescription" class="form-control" />
+        <span asp-validation-for="RoleDescription" class="text-danger"></span>
     </div>
-    <hr class="my-3">
 
-    <h2>@T["Role permissions"]</h2>
-
-    <div class="w-100 ms-2">
-        @T["Allow"] <span class="hint dashed">@T["Permission is granted explicitly."]</span>
+    <div class="mb-3">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="HasFullAccess" checked="@Model.HasFullAccess" role="button" data-bs-toggle="collapse" data-bs-target="#Role_Permissions_Container" aria-expanded="@(Model.HasFullAccess ? "false" :"true")" aria-controls="Role_Permissions_Container" />
+            <label class="form-check-label" asp-for="HasFullAccess">@T["Has Full Access?"]</label>
+        </div>
     </div>
-    <div class="w-100 ms-2">
-        @T["Effective"] <span class="hint dashed">@T["Permission is implied by a higher level permission, or explicitly granted."]</span>
-    </div>
-    <hr>
 
-    @foreach (var group in Model.RoleCategoryPermissions.OrderBy(x => x.Key.Title).ThenBy(x => x.Key.Source))
-    {
-        <fieldset class="permissions-list">
-            <legend>
-                <span>@group.Key.Title</span>
-                @if (!string.IsNullOrEmpty(group.Key.Source))
-                {
-                    <span class="hint">(@group.Key.Source)</span>
-                }
-            </legend>
+    <div id="Role_Permissions_Container" class="my-3 collapse@(Model.HasFullAccess ? string.Empty : " show")">
 
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th class="col-10">@T["Permission"]</th>
-                        <th class="col-1">@T["Allow"]</th>
-                        <th class="col-1">@T["Effective"]</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var permission in group.Value.OrderBy(x => x.Description))
+        <h2>@T["Permissions"]</h2>
+
+        <div class="w-100 ms-2">
+            <strong>@T["Allow"]</strong> <span class="hint dashed">@T["Permission is granted explicitly."]</span>
+        </div>
+        <div class="w-100 ms-2">
+            <strong>@T["Effective"]</strong> <span class="hint dashed">@T["Permission is implied by a higher level permission, or explicitly granted."]</span>
+        </div>
+        <hr>
+
+        @foreach (var group in Model.RoleCategoryPermissions.OrderBy(x => x.Key.Title).ThenBy(x => x.Key.Source))
+        {
+            <fieldset class="permissions-list">
+                <legend>
+                    <span>@group.Key.Title</span>
+                    @if (!string.IsNullOrEmpty(group.Key.Source))
                     {
-                        <tr data-text="@permission.Description">
-                            <td class="col-10">
-                                @permission.Description
-                                @if (permission.IsSecurityCritical)
-                                {
-                                    <div class="float-end">
-                                        <span class="badge text-bg-danger" data-bs-toggle="tooltip" data-html="true" title="@T["This permission could allow a user to elevate their other permissions. Grant it with extreme consideration."]">@T["Security Critical"]</span>
-                                    </div>
-                                }
-                            </td>
-                            <td class="col-1">
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="Checkbox.@permission.Name" name="Checkbox.@permission.Name" checked="@(Model.Role.RoleClaims.Any(x => x.ClaimValue == permission.Name))" value="true">
-                                    <label class="form-check-label" for="Checkbox.@permission.Name"></label>
-                                </div>
-                            </td>
-                            <td class="col-1">
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" disabled="disabled" id="Effective.@permission.Name" name="Effective.@permission.Name" checked="@(Model.EffectivePermissions.Contains(permission.Name))">
-                                    <label class="form-check-label" for="Effective.@permission.Name"></label>
-                                </div>
-                            </td>
-                        </tr>
+                        <span class="hint">(@group.Key.Source)</span>
                     }
-                </tbody>
-            </table>
-        </fieldset>
-    }
+                </legend>
 
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th class="col-10">@T["Permission"]</th>
+                            <th class="col-1">@T["Allow"]</th>
+                            <th class="col-1">@T["Effective"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var permission in group.Value.OrderBy(x => x.Description))
+                        {
+                            <tr data-text="@permission.Description">
+                                <td class="col-10">
+                                    @permission.Description
+                                    @if (permission.IsSecurityCritical)
+                                    {
+                                        <div class="float-end">
+                                            <span class="badge text-bg-danger" data-bs-toggle="tooltip" data-html="true" title="@T["This permission could allow a user to elevate their other permissions. Grant it with extreme consideration."]">@T["Security Critical"]</span>
+                                        </div>
+                                    }
+                                </td>
+                                <td class="col-1">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="Checkbox.@permission.Name" name="Checkbox.@permission.Name" checked="@(Model.Role.RoleClaims.Any(x => x.ClaimValue == permission.Name))" value="true">
+                                        <label class="form-check-label" for="Checkbox.@permission.Name"></label>
+                                    </div>
+                                </td>
+                                <td class="col-1">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" disabled="disabled" id="Effective.@permission.Name" name="Effective.@permission.Name" checked="@(Model.EffectivePermissions.Contains(permission.Name))">
+                                        <label class="form-check-label" for="Effective.@permission.Name"></label>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </fieldset>
+        }
+
+    </div>
     <div class="mb-3">
         <button class="btn btn-primary save" type="submit">@T["Save"]</button>
         <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
