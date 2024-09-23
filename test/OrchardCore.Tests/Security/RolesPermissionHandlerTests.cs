@@ -1,4 +1,4 @@
-﻿using OrchardCore.Roles.Core;
+using OrchardCore.Roles.Core;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Tests.Security;
@@ -14,7 +14,9 @@ public class RolesPermissionHandlerTests
 
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required, [adminRolePermission], true);
 
-        var permissionHandler = new RolesPermissionHandler(new RoleTrackerTest(["Administrator"]));
+        var options = new Mock<IOptions<IdentityOptions>>();
+
+        var permissionHandler = GetRolesPermissionHandler("Administrator");
 
         // Act
         await permissionHandler.HandleAsync(context);
@@ -32,12 +34,23 @@ public class RolesPermissionHandlerTests
 
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required, [adminRolePermission], true);
 
-        var permissionHandler = new RolesPermissionHandler(new RoleTrackerTest());
+        var permissionHandler = GetRolesPermissionHandler();
 
         // Act
         await permissionHandler.HandleAsync(context);
 
         // Assert
         Assert.False(context.HasSucceeded);
+    }
+
+    public static RolesPermissionHandler GetRolesPermissionHandler(params string[] roles)
+    {
+        var options = new Mock<IOptions<IdentityOptions>>();
+
+        options.Setup(x => x.Value).Returns(new IdentityOptions());
+
+        var permissionHandler = new RolesPermissionHandler(new RoleTrackerTest(roles), options.Object);
+
+        return permissionHandler;
     }
 }

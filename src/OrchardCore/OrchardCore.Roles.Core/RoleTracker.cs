@@ -13,10 +13,9 @@ public class RoleTracker : IRoleTracker
     private readonly IDistributedCache _distributedCache;
     private readonly IMemoryCache _memoryCache;
     private readonly RoleManager<IRole> _roleManager;
+    private readonly SemaphoreSlim _semaphore = new(1);
 
     private HashSet<string> _roleWithFullAccess;
-
-    private readonly SemaphoreSlim _semaphore = new(1);
 
     public RoleTracker(
         IDistributedCache distributedCache,
@@ -29,7 +28,7 @@ public class RoleTracker : IRoleTracker
         memoryCache.TryGetValue(_roleTrackerCacheKey, out _roleWithFullAccess);
     }
 
-    public async Task<IReadOnlySet<string>> GetAsync()
+    public async ValueTask<IReadOnlySet<string>> GetAsync()
     {
         if (_roleWithFullAccess is null)
         {
@@ -39,7 +38,7 @@ public class RoleTracker : IRoleTracker
         return _roleWithFullAccess;
     }
 
-    public async Task AddAsync(IRole role)
+    public async ValueTask AddAsync(IRole role)
     {
         if (_roleWithFullAccess is null)
         {
@@ -64,7 +63,7 @@ public class RoleTracker : IRoleTracker
         }
     }
 
-    public async Task RemoveAsync(IRole role)
+    public async ValueTask RemoveAsync(IRole role)
     {
         if (_roleWithFullAccess is null)
         {

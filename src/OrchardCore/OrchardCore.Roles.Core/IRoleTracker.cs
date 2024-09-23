@@ -5,9 +5,9 @@ namespace OrchardCore.Roles.Core;
 
 public interface IRoleTracker
 {
-    Task AddAsync(IRole role);
+    ValueTask AddAsync(IRole role);
 
-    Task<IReadOnlySet<string>> GetAsync();
+    ValueTask<IReadOnlySet<string>> GetAsync();
 
-    Task RemoveAsync(IRole role);
+    ValueTask RemoveAsync(IRole role);
 }

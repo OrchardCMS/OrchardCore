@@ -19,22 +19,22 @@ public class RoleTrackerTest : IRoleTracker
             _roles.Add(role);
         }
     }
-    public Task AddAsync(IRole role)
+    public ValueTask AddAsync(IRole role)
     {
         _roles.Add(role.RoleName);
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 
-    public Task<IReadOnlySet<string>> GetAsync()
+    public ValueTask<IReadOnlySet<string>> GetAsync()
     {
-        return Task.FromResult<IReadOnlySet<string>>(_roles);
+        return ValueTask.FromResult<IReadOnlySet<string>>(_roles);
     }
 
-    public Task RemoveAsync(IRole role)
+    public ValueTask RemoveAsync(IRole role)
     {
         _roles.Remove(role.RoleName);
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

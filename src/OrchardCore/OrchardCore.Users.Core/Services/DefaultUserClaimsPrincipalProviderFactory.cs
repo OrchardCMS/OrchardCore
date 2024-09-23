@@ -3,24 +3,23 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
-using OrchardCore.Security;
 
 namespace OrchardCore.Users.Services;
 
 /// <summary>
 /// Custom implementation of <see cref="IUserClaimsPrincipalFactory{TUser}"/> allowing adding claims by implementing the <see cref="IUserClaimsProvider"/>.
 /// </summary>
-public class DefaultUserClaimsPrincipalProviderFactory : UserClaimsPrincipalFactory<IUser, IRole>
+public class DefaultUserClaimsPrincipalProviderFactory : UserClaimsPrincipalFactory<IUser>
 {
     private readonly IEnumerable<IUserClaimsProvider> _claimsProviders;
     private readonly ILogger _logger;
 
     public DefaultUserClaimsPrincipalProviderFactory(
         UserManager<IUser> userManager,
-        RoleManager<IRole> roleManager,
         IOptions<IdentityOptions> identityOptions,
         IEnumerable<IUserClaimsProvider> claimsProviders,
-        ILogger<DefaultUserClaimsPrincipalProviderFactory> logger) : base(userManager, roleManager, identityOptions)
+        ILogger<DefaultUserClaimsPrincipalProviderFactory> logger)
+        : base(userManager, identityOptions)
     {
         _claimsProviders = claimsProviders;
         _logger = logger;

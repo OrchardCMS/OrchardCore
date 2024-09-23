@@ -96,7 +96,7 @@ public class PermissionHandlerTests
 
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required, [adminRolePermission], true);
 
-        var permissionHandler = new RolesPermissionHandler(new RoleTrackerTest(["Administrator"]));
+        var permissionHandler = RolesPermissionHandlerTests.GetRolesPermissionHandler("Administrator");
 
         // Act
         await permissionHandler.HandleAsync(context);
