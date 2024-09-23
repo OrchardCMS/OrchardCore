@@ -275,10 +275,10 @@ public sealed class AdminController : Controller
 
         await _roleManager.UpdateAsync(role);
 
-        // After updating the document manager, update the tracker.
+        // After updating the document manager, update the role tracker.
         if (roleAccessChanged)
         {
-            if (role.HasFullAccess)
+            if (hasFullAccess)
             {
                 await _roleTracker.AddAsync(role);
             }
