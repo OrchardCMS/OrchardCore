@@ -52,7 +52,7 @@ public sealed class RolesStep : IRecipeStepHandler
 
             role.RoleDescription = importedRole.Description;
             role.HasFullAccess = !isSystemRole && importedRole.HasFullAccess;
-            role.Type = isSystemRole ? RoleType.System : importedRole.Type;
+            role.Type = isSystemRole ? RoleType.System : RoleType.Standard;
 
             role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
             role.RoleClaims.AddRange(importedRole.Permissions.Select(p => new RoleClaim
@@ -85,8 +85,6 @@ public sealed class RolesStepRoleModel
     public string Description { get; set; }
 
     public bool HasFullAccess { get; set; }
-
-    public RoleType Type { get; set; }
 
     public string[] Permissions { get; set; }
 }
