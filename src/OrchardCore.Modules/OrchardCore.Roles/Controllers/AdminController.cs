@@ -125,7 +125,9 @@ public sealed class AdminController : Controller
                 RoleName = model.RoleName,
                 RoleDescription = model.RoleDescription,
                 HasFullAccess = model.HasFullAccess,
-                Type = RoleType.Standard,
+                Type = RoleHelper.SystemRoleNames.Contains(model.RoleName)
+                ? RoleType.System
+                : RoleType.Standard,
             };
 
             var result = await _roleManager.CreateAsync(role);

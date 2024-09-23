@@ -48,15 +48,14 @@ public sealed class RolesStep : IRecipeStepHandler
                 };
             }
 
+            var isSystemRole = RoleHelper.SystemRoleNames.Contains(importedRole.Name);
+
             role.RoleDescription = importedRole.Description;
-            role.HasFullAccess = importedRole.HasFullAccess;
-            role.Type = RoleHelper.SystemRoleNames.Contains(importedRole.Name)
-                ? RoleType.System
-                : importedRole.Type;
+            role.HasFullAccess = isSystemRole ? false : importedRole.HasFullAccess;
+            role.Type = isSystemRole ? RoleType.System : importedRole.Type;
 
             role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
-            role.RoleClaims.AddRange(importedRole.Permissions.Select(p =>
-            new RoleClaim
+            role.RoleClaims.AddRange(importedRole.Permissions.Select(p => new RoleClaim
             {
                 ClaimType = Permission.ClaimType,
                 ClaimValue = p,

@@ -73,6 +73,7 @@
         {
           "Name": "Administrator",
           "Description": "Administrator",
+          "HasFullAccess": true,
           "Permissions": []
         },
         {

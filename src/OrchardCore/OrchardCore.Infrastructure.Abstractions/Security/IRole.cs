@@ -10,5 +10,5 @@ public interface IRole
 
     bool HasFullAccess { get; }
 
-    public RoleType Type { get; set; }
+    RoleType Type { get; set; }
 }

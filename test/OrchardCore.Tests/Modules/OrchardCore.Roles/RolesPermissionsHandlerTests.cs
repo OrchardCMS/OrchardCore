@@ -23,7 +23,11 @@ public class RolesPermissionsHandlerTests
                 RoleName = OrchardCoreConstants.Roles.Anonymous,
                 RoleClaims =
                 [
-                    new() { ClaimType = Permission.ClaimType, ClaimValue = "AllowAnonymous" }
+                    new()
+                    {
+                        ClaimType = Permission.ClaimType,
+                        ClaimValue = "AllowAnonymous",
+                    }
                 ]
             },
             new Role
@@ -31,7 +35,11 @@ public class RolesPermissionsHandlerTests
                 RoleName = OrchardCoreConstants.Roles.Authenticated,
                 RoleClaims =
                 [
-                    new() { ClaimType = Permission.ClaimType, ClaimValue = "AllowAuthenticated" }
+                    new()
+                    {
+                        ClaimType = Permission.ClaimType,
+                        ClaimValue = "AllowAuthenticated",
+                    }
                 ]
             }
         );
@@ -44,7 +52,7 @@ public class RolesPermissionsHandlerTests
     }
 
     [Fact]
-    public async Task DontRevokeExistingGrants()
+    public async Task DoNotRevokeExistingGrants()
     {
         // Arrange
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Required"), ["Other"], true);
@@ -76,8 +84,11 @@ public class RolesPermissionsHandlerTests
                 RoleName = OrchardCoreConstants.Roles.Anonymous,
                 RoleClaims =
                 [
-                    new() {
-                        ClaimType = Permission.ClaimType, ClaimValue = "Implicit2" }
+                    new()
+                    {
+                        ClaimType = Permission.ClaimType,
+                        ClaimValue = "Implicit2",
+                    }
                 ]
             }
         );
@@ -111,7 +122,11 @@ public class RolesPermissionsHandlerTests
                 RoleName = OrchardCoreConstants.Roles.Authenticated,
                 RoleClaims =
                 [
-                    new() { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAuThEnTiCaTeD" }
+                    new()
+                    {
+                        ClaimType = Permission.ClaimType,
+                        ClaimValue = "aLlOwAuThEnTiCaTeD",
+                    }
                 ]
             }
         );
