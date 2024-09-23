@@ -51,7 +51,7 @@ public sealed class RolesStep : IRecipeStepHandler
             var isSystemRole = RoleHelper.SystemRoleNames.Contains(importedRole.Name);
 
             role.RoleDescription = importedRole.Description;
-            role.HasFullAccess = isSystemRole ? false : importedRole.HasFullAccess;
+            role.HasFullAccess = !isSystemRole && importedRole.HasFullAccess;
             role.Type = isSystemRole ? RoleType.System : importedRole.Type;
 
             role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);

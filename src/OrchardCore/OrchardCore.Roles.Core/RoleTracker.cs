@@ -26,7 +26,7 @@ public class RoleTracker : IRoleTracker
         _distributedCache = distributedCache;
         _memoryCache = memoryCache;
         _roleManager = roleManager;
-        memoryCache.TryGetValue(_roleWithFullAccess, out _roleWithFullAccess);
+        memoryCache.TryGetValue(_roleTrackerCacheKey, out _roleWithFullAccess);
     }
 
     public async Task<IReadOnlySet<string>> GetAsync()

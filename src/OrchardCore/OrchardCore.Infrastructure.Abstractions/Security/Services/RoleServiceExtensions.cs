@@ -33,6 +33,7 @@ public static class RoleServiceExtensions
         var roles = await roleService.GetRolesAsync();
 
         var accessibleRoles = new List<IRole>();
+
         foreach (var role in roles)
         {
             if (role.Type == RoleType.System)
