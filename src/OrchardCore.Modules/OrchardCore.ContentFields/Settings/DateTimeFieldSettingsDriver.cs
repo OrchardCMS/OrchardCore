@@ -13,7 +13,7 @@ public sealed class DateTimeFieldSettingsDriver : ContentPartFieldDefinitionDisp
     {
         return Initialize<DateTimeFieldSettings>("DateTimeFieldSettings_Edit", model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<DateTimeFieldSettings>();
+            var settings = partFieldDefinition.GetSettings<DateTimeFieldSettings>();
 
             model.Hint = settings.Hint;
             model.Required = settings.Required;

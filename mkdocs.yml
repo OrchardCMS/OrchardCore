@@ -5,11 +5,12 @@ theme:
   logo: assets/images/orchard-logo.png
   favicon: assets/images/favicon.png
   features:
-    - navigation.footer
+    - content.tabs.link
     - header.autohide
+    - navigation.footer
     - navigation.instant
     - navigation.tabs
-    - content.tabs.link
+    - navigation.top
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default

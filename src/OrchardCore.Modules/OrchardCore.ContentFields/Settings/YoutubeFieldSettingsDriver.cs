@@ -13,10 +13,13 @@ public sealed class YoutubeFieldSettingsDriver : ContentPartFieldDefinitionDispl
     {
         return Initialize<YoutubeFieldSettings>("YoutubeFieldSetting_Edit", model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<YoutubeFieldSettings>();
+            var settings = partFieldDefinition.GetSettings<YoutubeFieldSettings>();
 
-            model.Height = model.Height != default ? model.Height : 315;
-            model.Width = model.Width != default ? model.Width : 560;
+            model.Hint = settings.Hint;
+            model.Label = settings.Label;
+            model.Height = settings.Height != default ? settings.Height : 315;
+            model.Width = settings.Width != default ? settings.Width : 560;
+            model.Required = settings.Required;
         }).Location("Content");
     }
 
