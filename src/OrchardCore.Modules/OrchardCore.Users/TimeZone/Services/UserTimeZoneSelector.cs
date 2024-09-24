@@ -27,15 +27,12 @@ public class UserTimeZoneSelector : ITimeZoneSelector
     {
         var currentUser = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
 
-        if (currentUser == null)
-        {
-            return null;
-        }
-
-        return new TimeZoneSelectorResult
-        {
-            Priority = 100,
-            TimeZoneId = async () => (await _userTimeZoneService.GetAsync(currentUser))?.TimeZoneId
-        };
+        return currentUser == null
+            ? null
+            : new TimeZoneSelectorResult
+            {
+                Priority = 100,
+                TimeZoneId = async () => (await _userTimeZoneService.GetAsync(currentUser))?.TimeZoneId
+            };
     }
 }
