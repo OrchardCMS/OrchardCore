@@ -49,7 +49,7 @@ public class RolesPermissionHandlerTests
 
         options.Setup(x => x.Value).Returns(new IdentityOptions());
 
-        var permissionHandler = new RolesPermissionHandler(new RoleTrackerTest(roles), options.Object);
+        var permissionHandler = new RolesPermissionHandler(new OwnerRoleTrackerTest(roles), options.Object);
 
         return permissionHandler;
     }

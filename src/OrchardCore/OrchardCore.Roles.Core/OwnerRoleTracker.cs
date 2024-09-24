@@ -7,7 +7,7 @@ using OrchardCore.Security;
 
 namespace OrchardCore.Roles.Core;
 
-public class RoleTracker : IRoleTracker
+public class OwnerRoleTracker : IRoleTracker
 {
     private const string _roleTrackerCacheKey = "ROLES_WITH_FULL_ACCESS_TRACKER";
 
@@ -18,7 +18,7 @@ public class RoleTracker : IRoleTracker
 
     private HashSet<string> _roleWithFullAccess;
 
-    public RoleTracker(
+    public OwnerRoleTracker(
         IDistributedCache distributedCache,
         IMemoryCache memoryCache,
         RoleManager<IRole> roleManager)

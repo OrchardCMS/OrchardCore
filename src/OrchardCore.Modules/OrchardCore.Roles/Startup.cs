@@ -22,7 +22,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IAuthorizationHandler, RolesPermissionHandler>();
-        services.AddScoped<IRoleTracker, RoleTracker>();
+        services.AddScoped<IRoleTracker, OwnerRoleTracker>();
         services.AddScoped<RoleStore>();
         services.Replace(ServiceDescriptor.Scoped<IRoleClaimStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));
         services.Replace(ServiceDescriptor.Scoped<IRoleStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));

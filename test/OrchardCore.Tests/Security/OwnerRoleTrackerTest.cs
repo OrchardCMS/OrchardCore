@@ -3,16 +3,16 @@ using OrchardCore.Security;
 
 namespace OrchardCore.Tests.Security;
 
-public class RoleTrackerTest : IRoleTracker
+public class OwnerRoleTrackerTest : IRoleTracker
 {
     private readonly HashSet<string> _roles = new(StringComparer.OrdinalIgnoreCase);
 
-    public RoleTrackerTest()
+    public OwnerRoleTrackerTest()
     {
 
     }
 
-    public RoleTrackerTest(IEnumerable<string> roles)
+    public OwnerRoleTrackerTest(IEnumerable<string> roles)
     {
         foreach (var role in roles)
         {
