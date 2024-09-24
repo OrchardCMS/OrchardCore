@@ -13,7 +13,7 @@ public sealed class TextFieldSettingsDriver : ContentPartFieldDefinitionDisplayD
     {
         return Initialize<TextFieldSettings>("TextFieldSettings_Edit", model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<TextFieldSettings>();
+            var settings = partFieldDefinition.GetSettings<TextFieldSettings>();
 
             model.Hint = settings.Hint;
             model.Required = settings.Required;
