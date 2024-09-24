@@ -124,17 +124,16 @@ public sealed class AdminController : Controller
             {
                 RoleName = model.RoleName,
                 RoleDescription = model.RoleDescription,
-                HasFullAccess = model.HasFullAccess,
                 Type = RoleHelper.SystemRoleNames.Contains(model.RoleName)
                 ? RoleType.System
-                : RoleType.Standard,
+                : model.IsOwnerType ? RoleType.Owner : RoleType.Standard,
             };
 
             var result = await _roleManager.CreateAsync(role);
 
             if (result.Succeeded)
             {
-                if (role.HasFullAccess)
+                if (role.Type == RoleType.Owner)
                 {
                     await _roleTracker.AddAsync(role);
                 }
@@ -181,7 +180,7 @@ public sealed class AdminController : Controller
 
         if (result.Succeeded)
         {
-            if (currentRole.HasFullAccess)
+            if (currentRole.Type == RoleType.Owner)
             {
                 await _roleTracker.RemoveAsync(currentRole);
             }
@@ -223,7 +222,7 @@ public sealed class AdminController : Controller
             Role = role,
             Name = role.RoleName,
             RoleDescription = role.RoleDescription,
-            HasFullAccess = role.HasFullAccess,
+            IsOwnerType = role.Type == RoleType.Owner,
             EffectivePermissions = await GetEffectivePermissions(role, allPermissions),
             RoleCategoryPermissions = installedPermissions
         };
@@ -244,11 +243,9 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var roleAccessChanged = role.HasFullAccess != hasFullAccess;
-
-        if (roleAccessChanged)
+        if (hasFullAccess)
         {
-            role.HasFullAccess = hasFullAccess;
+            role.Type = RoleType.Owner;
         }
 
         role.RoleDescription = roleDescription;
@@ -276,16 +273,13 @@ public sealed class AdminController : Controller
         await _roleManager.UpdateAsync(role);
 
         // After updating the document manager, update the role tracker.
-        if (roleAccessChanged)
+        if (role.Type == RoleType.Owner)
         {
-            if (hasFullAccess)
-            {
-                await _roleTracker.AddAsync(role);
-            }
-            else
-            {
-                await _roleTracker.RemoveAsync(role);
-            }
+            await _roleTracker.AddAsync(role);
+        }
+        else
+        {
+            await _roleTracker.RemoveAsync(role);
         }
 
         await _notifier.SuccessAsync(H["Role updated successfully."]);

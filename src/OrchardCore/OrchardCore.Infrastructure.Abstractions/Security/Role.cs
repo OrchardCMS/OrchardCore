@@ -12,8 +12,6 @@ public class Role : IRole
 
     public List<RoleClaim> RoleClaims { get; set; } = [];
 
-    public bool HasFullAccess { get; set; }
-
     public RoleType Type { get; set; }
 
     public Role Clone()
@@ -23,7 +21,6 @@ public class Role : IRole
             RoleName = RoleName,
             RoleDescription = RoleDescription,
             NormalizedRoleName = NormalizedRoleName,
-            HasFullAccess = HasFullAccess,
             Type = Type,
         };
 

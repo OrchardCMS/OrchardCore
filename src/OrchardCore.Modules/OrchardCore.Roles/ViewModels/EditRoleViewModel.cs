@@ -10,7 +10,7 @@ public class EditRoleViewModel
 
     public string RoleDescription { get; set; }
 
-    public bool HasFullAccess { get; set; }
+    public bool IsOwnerType { get; set; }
 
     [BindNever]
     public IDictionary<PermissionGroupKey, IEnumerable<Permission>> RoleCategoryPermissions { get; set; }

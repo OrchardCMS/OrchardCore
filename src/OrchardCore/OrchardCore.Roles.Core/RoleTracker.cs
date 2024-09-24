@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security;
 
 namespace OrchardCore.Roles.Core;
@@ -117,7 +118,7 @@ public class RoleTracker : IRoleTracker
 
                 foreach (var role in roles)
                 {
-                    if (!role.HasFullAccess)
+                    if (role.Type == RoleType.Owner)
                     {
                         continue;
                     }

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security;
 using OrchardCore.Users;
 using OrchardCore.Users.Services;
@@ -52,7 +53,7 @@ public class RoleClaimsProvider : IUserClaimsProvider
             roles.Add(role);
         }
 
-        if (roles.Count == 0 || roles.Any(x => x.HasFullAccess))
+        if (roles.Count == 0 || roles.Any(role => role.Type == RoleType.Owner))
         {
             return;
         }

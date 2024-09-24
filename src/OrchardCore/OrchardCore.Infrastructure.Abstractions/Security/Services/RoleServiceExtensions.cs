@@ -14,18 +14,14 @@ public static class RoleServiceExtensions
         return roles.Select(r => r.RoleName);
     }
 
-    public static async Task<IEnumerable<string>> GetRoleNamesAsync(this IRoleService roleService, RoleType type)
-    {
-        var roles = await roleService.GetRolesAsync(type);
+    public static async Task<IEnumerable<string>> GetRoleNamesAsync(this IRoleService roleService, Func<IRole, bool> predicate)
+        => (await roleService.GetRolesAsync(predicate)).Select(r => r.RoleName);
 
-        return roles.Select(r => r.RoleName);
-    }
-
-    public static async Task<IEnumerable<IRole>> GetRolesAsync(this IRoleService roleService, RoleType type)
+    public static async Task<IEnumerable<IRole>> GetRolesAsync(this IRoleService roleService, Func<IRole, bool> predicate)
     {
         var roles = await roleService.GetRolesAsync();
 
-        return roles.Where(r => r.Type == type);
+        return roles.Where(predicate);
     }
 
     public static async Task<IEnumerable<IRole>> GetAccessibleRolesAsync(this IRoleService roleService, IAuthorizationService authorizationService, ClaimsPrincipal user, Permission permission)

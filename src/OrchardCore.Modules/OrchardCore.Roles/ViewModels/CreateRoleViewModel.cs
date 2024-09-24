@@ -9,5 +9,5 @@ public class CreateRoleViewModel
 
     public string RoleDescription { get; set; }
 
-    public bool HasFullAccess { get; set; }
+    public bool IsOwnerType { get; set; }
 }

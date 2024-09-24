@@ -8,7 +8,5 @@ public interface IRole
 
     string RoleDescription { get; }
 
-    bool HasFullAccess { get; }
-
     RoleType Type { get; set; }
 }

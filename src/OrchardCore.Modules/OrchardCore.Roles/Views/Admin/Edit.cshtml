@@ -26,12 +26,13 @@
 
     <div class="mb-3">
         <div class="form-check">
-            <input type="checkbox" class="form-check-input" asp-for="HasFullAccess" checked="@Model.HasFullAccess" role="button" data-bs-toggle="collapse" data-bs-target="#Role_Permissions_Container" aria-expanded="@(Model.HasFullAccess ? "false" :"true")" aria-controls="Role_Permissions_Container" />
-            <label class="form-check-label" asp-for="HasFullAccess">@T["Has Full Access?"]</label>
+            <input type="checkbox" class="form-check-input" asp-for="IsOwnerType" checked="@Model.IsOwnerType" role="button" />
+            <label class="form-check-label" asp-for="IsOwnerType">@T["Site Owner?"]</label>
+            <span class="hint dashed">@T["Roles with the Owner type will automatically grant the user full access to all permissions."]</span>
         </div>
     </div>
 
-    <div id="Role_Permissions_Container" class="my-3 collapse@(Model.HasFullAccess ? string.Empty : " show")">
+    <div id="Role_Permissions_Container" class="my-3 collapse@(Model.IsOwnerType ? string.Empty : " show")">
 
         <h2>@T["Permissions"]</h2>
 
