@@ -19,7 +19,7 @@ public sealed class ContentPickerFieldLuceneEditorSettingsDriver : ContentPartFi
     {
         return Initialize<ContentPickerFieldLuceneEditorSettings>("ContentPickerFieldLuceneEditorSettings_Edit", async model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldLuceneEditorSettings>();
+            var settings = partFieldDefinition.GetSettings<ContentPickerFieldLuceneEditorSettings>();
 
             model.Index = settings.Index;
             model.Indices = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
