@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Infrastructure.Security;
+using OrchardCore.Roles.Core;
 using OrchardCore.Security;
 
 namespace OrchardCore.Roles.Migrations;
@@ -16,9 +17,29 @@ public sealed class RolesMigrations : DataMigration
         ShellScope.AddDeferredTask(async scope =>
         {
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IRole>>();
+            var ownerRoleCache = scope.ServiceProvider.GetRequiredService<IOwnerRoleCache>();
 
             await UpdateSystemRoleAsync(roleManager, OrchardCoreConstants.Roles.Anonymous);
             await UpdateSystemRoleAsync(roleManager, OrchardCoreConstants.Roles.Authenticated);
+
+            var roles = roleManager.Roles.ToList();
+
+            foreach (var role in roles)
+            {
+                if (role.Type == RoleType.Owner || role is not Role r)
+                {
+                    continue;
+                }
+
+                if (r.RoleClaims.Any(x => x.ClaimValue == "SiteOwner"))
+                {
+                    r.Type = RoleType.Owner;
+
+                    await roleManager.UpdateAsync(r);
+
+                    await ownerRoleCache.AddAsync(r);
+                }
+            }
         });
 
         return 1;
