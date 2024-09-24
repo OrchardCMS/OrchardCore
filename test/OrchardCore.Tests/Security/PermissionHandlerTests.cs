@@ -87,24 +87,6 @@ public class PermissionHandlerTests
         Assert.True(context.HasSucceeded);
     }
 
-    [Fact]
-    public async Task RolesWithFullAccessShouldAutoGrantPermissions()
-    {
-        // Arrange
-        var adminRolePermission = new Claim("role", "Administrator");
-        var required = new Permission("Required", "Foo");
-
-        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required, [adminRolePermission], true);
-
-        var permissionHandler = RolesPermissionHandlerTests.GetRolesPermissionHandler("Administrator");
-
-        // Act
-        await permissionHandler.HandleAsync(context);
-
-        // Assert
-        Assert.True(context.HasSucceeded);
-    }
-
     private static PermissionHandler CreatePermissionHandler()
     {
         var permissionGrantingService = new DefaultPermissionGrantingService();
