@@ -19,4 +19,10 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Redis.Abstractions\OrchardCore.Redis.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+      <_Parameter1>OrchardCore.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
 </Project>
