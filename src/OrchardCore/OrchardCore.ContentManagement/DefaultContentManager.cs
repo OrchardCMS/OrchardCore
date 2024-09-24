@@ -287,9 +287,6 @@ public class DefaultContentManager : IContentManager
             {
                 finalItems.Add(item);
             }
-
-            // We save the previous version further because this call might do a session query.
-            await _session.SaveAsync(item, checkConcurrency: true);
         }
 
         if (needVersions.Count > 0)
