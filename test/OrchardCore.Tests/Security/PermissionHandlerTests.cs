@@ -1,4 +1,3 @@
-using OrchardCore.Roles.Core;
 using OrchardCore.Security;
 using OrchardCore.Security.AuthorizationHandlers;
 using OrchardCore.Security.Permissions;

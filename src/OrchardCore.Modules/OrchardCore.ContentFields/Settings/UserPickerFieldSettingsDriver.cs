@@ -27,11 +27,11 @@ public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDi
             model.Multiple = settings.Multiple;
             var roles = await _roleService.GetRolesAsync();
             var roleEntries = roles.Where(role => role.Type != RoleType.System)
-            .Select(role => new RoleEntry
-            {
-                Role = role.RoleName,
-                IsSelected = settings.DisplayedRoles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
-            }).ToArray();
+                .Select(role => new RoleEntry
+                {
+                    Role = role.RoleName,
+                    IsSelected = settings.DisplayedRoles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
+                }).ToArray();
 
             model.Roles = roleEntries;
             model.DisplayAllUsers = settings.DisplayAllUsers || !roleEntries.Where(x => x.IsSelected).Any();
