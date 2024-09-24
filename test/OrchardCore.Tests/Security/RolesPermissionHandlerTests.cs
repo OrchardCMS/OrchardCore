@@ -14,8 +14,6 @@ public class RolesPermissionHandlerTests
 
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required, [adminRolePermission], true);
 
-        var options = new Mock<IOptions<IdentityOptions>>();
-
         var permissionHandler = GetRolesPermissionHandler("Administrator");
 
         // Act
