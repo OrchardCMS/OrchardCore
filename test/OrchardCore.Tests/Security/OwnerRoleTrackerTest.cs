@@ -9,7 +9,6 @@ public class RoleTrackerStub : IRoleTracker
 
     public OwnerRoleTrackerTest()
     {
-
     }
 
     public OwnerRoleTrackerTest(IEnumerable<string> roles)
