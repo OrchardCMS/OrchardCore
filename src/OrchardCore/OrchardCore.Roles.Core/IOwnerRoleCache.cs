@@ -3,7 +3,7 @@ using OrchardCore.Security;
 
 namespace OrchardCore.Roles.Core;
 
-public interface IRoleTracker
+public interface IOwnerRoleCache
 {
     ValueTask AddAsync(IRole role);
 

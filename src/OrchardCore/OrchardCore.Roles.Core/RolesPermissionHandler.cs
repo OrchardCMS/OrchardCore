@@ -8,11 +8,11 @@ namespace OrchardCore.Roles.Core;
 
 public class RolesPermissionHandler : AuthorizationHandler<PermissionRequirement>
 {
-    private readonly IRoleTracker _roleTracker;
+    private readonly IOwnerRoleCache _roleTracker;
     private readonly IdentityOptions _identityOptions;
 
     public RolesPermissionHandler(
-        IRoleTracker roleTracker,
+        IOwnerRoleCache roleTracker,
         IOptions<IdentityOptions> identityOptions)
     {
         _roleTracker = roleTracker;

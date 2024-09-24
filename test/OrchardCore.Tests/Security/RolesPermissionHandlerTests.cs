@@ -6,7 +6,7 @@ namespace OrchardCore.Tests.Security;
 public class RolesPermissionHandlerTests
 {
     [Fact]
-    public async Task RolesWithFullAccessShouldAutoGrantPermissions()
+    public async Task OwnerRolesShouldAutoGrantPermissions()
     {
         // Arrange
         var adminRolePermission = new Claim("role", "Administrator");
@@ -24,7 +24,7 @@ public class RolesPermissionHandlerTests
     }
 
     [Fact]
-    public async Task RolesWithNoFullAccessShouldNotGrantPermissions()
+    public async Task StandardRolesShouldNotGrantPermissions()
     {
         // Arrange
         var adminRolePermission = new Claim("role", "Administrator");
@@ -41,13 +41,13 @@ public class RolesPermissionHandlerTests
         Assert.False(context.HasSucceeded);
     }
 
-    public static RolesPermissionHandler GetRolesPermissionHandler(params string[] roles)
+    public static RolesPermissionHandler GetRolesPermissionHandler(params string[] ownerRoles)
     {
         var options = new Mock<IOptions<IdentityOptions>>();
 
         options.Setup(x => x.Value).Returns(new IdentityOptions());
 
-        var permissionHandler = new RolesPermissionHandler(new OwnerRoleTrackerTest(roles), options.Object);
+        var permissionHandler = new RolesPermissionHandler(new RoleTrackerStub(ownerRoles), options.Object);
 
         return permissionHandler;
     }

@@ -30,7 +30,7 @@ public sealed class AdminController : Controller
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly IRoleService _roleService;
     private readonly INotifier _notifier;
-    private readonly IRoleTracker _roleTracker;
+    private readonly IOwnerRoleCache _ownerRoleCache;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -44,7 +44,7 @@ public sealed class AdminController : Controller
         IShellFeaturesManager shellFeaturesManager,
         IRoleService roleService,
         INotifier notifier,
-        IRoleTracker roleTracker,
+        IOwnerRoleCache ownerRoleCache,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
@@ -56,7 +56,7 @@ public sealed class AdminController : Controller
         _shellFeaturesManager = shellFeaturesManager;
         _roleService = roleService;
         _notifier = notifier;
-        _roleTracker = roleTracker;
+        _ownerRoleCache = ownerRoleCache;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -135,7 +135,7 @@ public sealed class AdminController : Controller
             {
                 if (role.Type == RoleType.Owner)
                 {
-                    await _roleTracker.AddAsync(role);
+                    await _ownerRoleCache.AddAsync(role);
                 }
                 await _notifier.SuccessAsync(H["Role created successfully."]);
 
@@ -182,7 +182,7 @@ public sealed class AdminController : Controller
         {
             if (currentRole.Type == RoleType.Owner)
             {
-                await _roleTracker.RemoveAsync(currentRole);
+                await _ownerRoleCache.RemoveAsync(currentRole);
             }
 
             await _notifier.SuccessAsync(H["Role deleted successfully."]);
@@ -223,6 +223,7 @@ public sealed class AdminController : Controller
             Name = role.RoleName,
             RoleDescription = role.RoleDescription,
             IsOwnerType = role.Type == RoleType.Owner,
+            IsSystemRole = role.Type == RoleType.System,
             EffectivePermissions = await GetEffectivePermissions(role, allPermissions),
             RoleCategoryPermissions = installedPermissions
         };
@@ -243,9 +244,18 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (isOwnerType)
+        var isSystemRole = RoleHelper.SystemRoleNames.Contains(role.RoleName);
+
+        if (!isSystemRole)
         {
-            role.Type = RoleType.Owner;
+            if (isOwnerType)
+            {
+                role.Type = RoleType.Owner;
+            }
+            else
+            {
+                role.Type = RoleType.Standard;
+            }
         }
 
         role.RoleDescription = roleDescription;
@@ -273,13 +283,16 @@ public sealed class AdminController : Controller
         await _roleManager.UpdateAsync(role);
 
         // After updating the document manager, update the role tracker.
-        if (role.Type == RoleType.Owner)
+        if (!isSystemRole)
         {
-            await _roleTracker.AddAsync(role);
-        }
-        else
-        {
-            await _roleTracker.RemoveAsync(role);
+            if (role.Type == RoleType.Owner)
+            {
+                await _ownerRoleCache.AddAsync(role);
+            }
+            else
+            {
+                await _ownerRoleCache.RemoveAsync(role);
+            }
         }
 
         await _notifier.SuccessAsync(H["Role updated successfully."]);

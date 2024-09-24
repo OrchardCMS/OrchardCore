@@ -7,18 +7,18 @@ using OrchardCore.Security;
 
 namespace OrchardCore.Roles.Core;
 
-public class OwnerRoleTracker : IRoleTracker
+public class DefaultOwnerRoleCache : IOwnerRoleCache
 {
-    private const string _roleTrackerCacheKey = "ROLES_WITH_FULL_ACCESS_TRACKER";
+    private const string _cacheKey = "OWNER_ROLES_CACHE";
 
     private readonly IDistributedCache _distributedCache;
     private readonly IMemoryCache _memoryCache;
     private readonly RoleManager<IRole> _roleManager;
     private readonly SemaphoreSlim _semaphore = new(1);
 
-    private HashSet<string> _roleWithFullAccess;
+    private HashSet<string> _ownerRoles;
 
-    public OwnerRoleTracker(
+    public DefaultOwnerRoleCache(
         IDistributedCache distributedCache,
         IMemoryCache memoryCache,
         RoleManager<IRole> roleManager)
@@ -26,27 +26,27 @@ public class OwnerRoleTracker : IRoleTracker
         _distributedCache = distributedCache;
         _memoryCache = memoryCache;
         _roleManager = roleManager;
-        memoryCache.TryGetValue(_roleTrackerCacheKey, out _roleWithFullAccess);
+        memoryCache.TryGetValue(_cacheKey, out _ownerRoles);
     }
 
     public async ValueTask<IReadOnlySet<string>> GetAsync()
     {
-        if (_roleWithFullAccess is null)
+        if (_ownerRoles is null)
         {
             await InitializeAsync();
         }
 
-        return _roleWithFullAccess;
+        return _ownerRoles;
     }
 
     public async ValueTask AddAsync(IRole role)
     {
-        if (_roleWithFullAccess is null)
+        if (_ownerRoles is null)
         {
             await InitializeAsync();
         }
 
-        if (_roleWithFullAccess.Contains(role.RoleName))
+        if (_ownerRoles.Contains(role.RoleName))
         {
             return;
         }
@@ -54,7 +54,7 @@ public class OwnerRoleTracker : IRoleTracker
         await _semaphore.WaitAsync();
         try
         {
-            _roleWithFullAccess.Add(role.RoleName);
+            _ownerRoles.Add(role.RoleName);
 
             await SaveAsync();
         }
@@ -66,12 +66,12 @@ public class OwnerRoleTracker : IRoleTracker
 
     public async ValueTask RemoveAsync(IRole role)
     {
-        if (_roleWithFullAccess is null)
+        if (_ownerRoles is null)
         {
             await InitializeAsync();
         }
 
-        if (!_roleWithFullAccess.Contains(role.RoleName))
+        if (!_ownerRoles.Contains(role.RoleName))
         {
             return;
         }
@@ -79,7 +79,7 @@ public class OwnerRoleTracker : IRoleTracker
         await _semaphore.WaitAsync();
         try
         {
-            _roleWithFullAccess.Remove(role.RoleName);
+            _ownerRoles.Remove(role.RoleName);
 
             await SaveAsync();
         }
@@ -94,9 +94,9 @@ public class OwnerRoleTracker : IRoleTracker
         await _semaphore.WaitAsync();
         try
         {
-            var data = await _distributedCache.GetAsync(_roleTrackerCacheKey);
+            var data = await _distributedCache.GetAsync(_cacheKey);
 
-            _roleWithFullAccess = new(StringComparer.OrdinalIgnoreCase);
+            _ownerRoles = new(StringComparer.OrdinalIgnoreCase);
 
             if (data is not null)
             {
@@ -105,11 +105,11 @@ public class OwnerRoleTracker : IRoleTracker
 
                 foreach (var item in items)
                 {
-                    _roleWithFullAccess.Add(item);
+                    _ownerRoles.Add(item);
                 }
 
                 // No need to update the distributed cache, but update the memory cache.
-                _memoryCache.Set(_roleTrackerCacheKey, _roleWithFullAccess);
+                _memoryCache.Set(_cacheKey, _ownerRoles);
             }
             else
             {
@@ -123,7 +123,7 @@ public class OwnerRoleTracker : IRoleTracker
                         continue;
                     }
 
-                    _roleWithFullAccess.Add(role.RoleName);
+                    _ownerRoles.Add(role.RoleName);
                 }
 
                 // Update the memory and the distributed cache.
@@ -138,10 +138,10 @@ public class OwnerRoleTracker : IRoleTracker
 
     private Task SaveAsync()
     {
-        _memoryCache.Set(_roleTrackerCacheKey, _roleWithFullAccess);
+        _memoryCache.Set(_cacheKey, _ownerRoles);
 
-        var bytes = JsonSerializer.SerializeToUtf8Bytes(_roleWithFullAccess);
+        var bytes = JsonSerializer.SerializeToUtf8Bytes(_ownerRoles);
 
-        return _distributedCache.SetAsync(_roleTrackerCacheKey, bytes);
+        return _distributedCache.SetAsync(_cacheKey, bytes);
     }
 }

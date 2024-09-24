@@ -20,4 +20,7 @@ public class EditRoleViewModel
 
     [BindNever]
     public Role Role { get; set; }
+
+    [BindNever]
+    public bool IsSystemRole { get; set; }
 }

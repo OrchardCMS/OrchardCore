@@ -24,13 +24,17 @@
         <span asp-validation-for="RoleDescription" class="text-danger"></span>
     </div>
 
-    <div class="mb-3">
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input" asp-for="IsOwnerType" checked="@Model.IsOwnerType" role="button" />
-            <label class="form-check-label" asp-for="IsOwnerType">@T["Site Owner"]</label>
-            <span class="hint dashed">@T["Roles with the Owner type will automatically grant the user full access to all permissions."]</span>
+    @if (!Model.IsSystemRole)
+    {
+        <div class="mb-3">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="IsOwnerType" checked="@Model.IsOwnerType" role="button" />
+                <label class="form-check-label" asp-for="IsOwnerType">@T["Site Owner?"]</label>
+                <span class="badge text-bg-danger">@T["Security Critical"]</span>
+                <span class="hint dashed">@T["Roles with the Owner type will automatically grant the user full access to all permissions."]</span>
+            </div>
         </div>
-    </div>
+    }
 
     <div id="Role_Permissions_Container" class="my-3 collapse@(Model.IsOwnerType ? string.Empty : " show")">
 

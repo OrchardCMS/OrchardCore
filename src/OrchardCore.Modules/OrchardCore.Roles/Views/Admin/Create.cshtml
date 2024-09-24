@@ -21,6 +21,7 @@
         <div class="form-check">
             <input type="checkbox" class="form-check-input" asp-for="IsOwnerType" checked="@Model.IsOwnerType" role="button" />
             <label class="form-check-label" asp-for="IsOwnerType">@T["Site Owner?"]</label>
+            <span class="badge text-bg-danger">@T["Security Critical"]</span>
             <span class="hint dashed">@T["Roles with the Owner type will automatically grant the user full access to all permissions."]</span>
         </div>
     </div>
