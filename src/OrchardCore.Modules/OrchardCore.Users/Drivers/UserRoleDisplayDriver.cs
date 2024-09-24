@@ -131,7 +131,7 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
                     // Make sure we always have at least one enabled administrator account.
                     if (enabledUsersOfAdminRole.Count == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)
                     {
-                        await _notifier.WarningAsync(H[$"Cannot remove {OrchardCoreConstants.Roles.Administrator} role from the only enabled administrator."]);
+                        await _notifier.WarningAsync(H["Cannot remove {0} role from the only enabled administrator.", OrchardCoreConstants.Roles.Administrator]);
 
                         continue;
                     }

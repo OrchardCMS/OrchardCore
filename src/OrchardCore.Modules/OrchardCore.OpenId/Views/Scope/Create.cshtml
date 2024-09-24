@@ -9,13 +9,13 @@
 
     <div class="mb-3" asp-validation-class-for="DisplayName">
         <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
-        <input asp-for="DisplayName" class="form-control" />
+        <input asp-for="DisplayName" class="form-control" autofocus />
         <span asp-validation-for="DisplayName" class="text-danger"></span>
     </div>
 
     <div class="mb-3" asp-validation-class-for="Name">
         <label asp-for="Name" class="form-label">@T["Name"]</label>
-        <input asp-for="Name" class="form-control" autofocus />
+        <input asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
