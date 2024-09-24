@@ -30,7 +30,7 @@ public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDi
             .Select(role => new RoleEntry
             {
                 Role = role.RoleName,
-                IsSelected = settings.DisplayedRoles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase)
+                IsSelected = settings.DisplayedRoles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
             }).ToArray();
 
             model.Roles = roleEntries;
