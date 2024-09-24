@@ -75,7 +75,9 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
             if (!roleNames.Any())
             {
                 // When the user is in no roles, we check to see if the current user can manage any roles.
-                roleNames = await _roleService.GetRoleNamesAsync(role => role.Type != RoleType.System);
+                roleNames = (await _roleService.GetRolesAsync())
+                    .Where(role => role.Type != RoleType.System)
+                    .Select(x => x.RoleName);
             }
 
             // Check every role to see if the current user has permission to at least one role.

@@ -42,9 +42,9 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
         return Initialize<RoleLoginSettingsViewModel>("LoginSettingsRoles_Edit", async model =>
         {
             model.RequireTwoFactorAuthenticationForSpecificRoles = settings.RequireTwoFactorAuthenticationForSpecificRoles;
-            var roles = await _roleService.GetRolesAsync(role => role.Type != RoleType.System);
+            var roles = await _roleService.GetRolesAsync();
 
-            model.Roles = roles
+            model.Roles = roles.Where(role => role.Type != RoleType.System)
             .Select(role => new RoleEntry()
             {
                 Role = role.RoleName,
@@ -69,7 +69,9 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
 
         if (model.RequireTwoFactorAuthenticationForSpecificRoles)
         {
-            var roles = await _roleService.GetRolesAsync(role => role.Type != RoleType.System);
+            var roles = await _roleService.GetRolesAsync();
+
+            var roleEntries = roles.Where(role => role.Type != RoleType.System);
 
             var selectedRoles = model.Roles.Where(x => x.IsSelected)
                 .Join(roles, e => e.Role, r => r.RoleName, (e, r) => r.RoleName)

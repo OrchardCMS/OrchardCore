@@ -23,8 +23,10 @@ public sealed class UserRolePermissions : IPermissionProvider
             CommonPermissions.AssignRoleToUsers,
         };
 
-        var roleNames = (await _roleService.GetRoleNamesAsync(role => role.Type != RoleType.System))
-        .OrderBy(roleName => roleName);
+        var roleNames = (await _roleService.GetRolesAsync())
+            .Where(role => role.Type != RoleType.System)
+            .Select(role => role.RoleName)
+            .OrderBy(roleName => roleName);
 
         foreach (var roleName in roleNames)
         {

@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -59,7 +58,7 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
         // This view is always rendered, however there will be no editable roles if the user does not have permission to edit them.
         return Initialize<EditUserRoleViewModel>("UserRoleFields_Edit", async model =>
         {
-            var roles = await _roleService.GetRolesAsync(role => role.Type != RoleType.System);
+            var roles = (await _roleService.GetRolesAsync()).Where(role => role.Type != RoleType.System);
 
             // When a user is in a role that the current user cannot manage the role is not shown.
             var authorizedRoleNames = await GetAccessibleRoleNamesAsync(roles);
@@ -89,13 +88,15 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var roles = await _roleService.GetRolesAsync(role => role.Type != RoleType.System);
+        var roles = await _roleService.GetRolesAsync();
+
+        var roleEntries = roles.Where(role => role.Type != RoleType.System);
         // Authorize each role in the model to prevent html injection.
-        var accessibleRoleNames = await GetAccessibleRoleNamesAsync(roles);
+        var accessibleRoleNames = await GetAccessibleRoleNamesAsync(roleEntries);
         var currentUserRoleNames = await _userRoleStore.GetRolesAsync(user, default);
 
         var selectedRoleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role);
-        var selectedRoles = roles.Where(x => selectedRoleNames.Contains(x.RoleName, StringComparer.OrdinalIgnoreCase));
+        var selectedRoles = roleEntries.Where(x => selectedRoleNames.Contains(x.RoleName, StringComparer.OrdinalIgnoreCase));
         var accessibleAndSelectedRoleNames = await GetAccessibleRoleNamesAsync(selectedRoles);
 
         if (context.IsNew)

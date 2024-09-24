@@ -77,7 +77,7 @@
         {
           "Name": "Administrator",
           "Description": "Administrator",
-          "HasFullAccess": true,
+          "IsOwnerType": true,
           "Permissions": []
         },
         {

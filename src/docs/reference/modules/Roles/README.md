@@ -29,12 +29,12 @@ A sample of a roles configuration step:
         {
             "Name": "Journalist",
             "Permissions": ["PublishContent", "EditContent"],
-            "HasFullAccess": false
+            "IsOwnerType": false
         },
         {
             "Name": "Subscriber",
             "Permissions": [],
-            "HasFullAccess": false
+            "IsOwnerType": false
         },
     ]
 }

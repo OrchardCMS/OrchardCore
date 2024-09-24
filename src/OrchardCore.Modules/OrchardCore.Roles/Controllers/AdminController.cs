@@ -231,7 +231,7 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost, ActionName(nameof(Edit))]
-    public async Task<IActionResult> EditPost(string id, string roleDescription, bool hasFullAccess)
+    public async Task<IActionResult> EditPost(string id, string roleDescription, bool isOwnerType)
     {
         if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
         {
@@ -243,14 +243,14 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (hasFullAccess)
+        if (isOwnerType)
         {
             role.Type = RoleType.Owner;
         }
 
         role.RoleDescription = roleDescription;
 
-        if (!hasFullAccess)
+        if (!isOwnerType)
         {
             var rolePermissions = new List<RoleClaim>();
             foreach (var key in Request.Form.Keys)
