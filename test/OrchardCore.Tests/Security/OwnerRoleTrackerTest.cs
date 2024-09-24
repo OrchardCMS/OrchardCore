@@ -3,7 +3,7 @@ using OrchardCore.Security;
 
 namespace OrchardCore.Tests.Security;
 
-public class OwnerRoleTrackerTest : IRoleTracker
+public class RoleTrackerStub : IRoleTracker
 {
     private readonly HashSet<string> _roles = new(StringComparer.OrdinalIgnoreCase);
 
