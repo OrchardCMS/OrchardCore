@@ -9,6 +9,8 @@ using OrchardCore.Modules;
 using OrchardCore.UrlRewriting.Drivers;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.UrlRewriting.Options;
+using OrchardCore.UrlRewriting.Models;
+using OrchardCore.UrlRewriting.Services;
 
 namespace OrchardCore.UrlRewriting;
 
@@ -19,8 +21,10 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<RewriteRulesStore>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddSiteDisplayDriver<UrlRewritingSettingsDisplayDriver>();
+        services.AddScoped<IDisplayDriver<RewriteRule>, RewriteRuleDisplayDriver>();
         services.AddPermissionProvider<UrlRewritingPermissionProvider>();
         services.AddTransient<IConfigureOptions<RewriteOptions>, RewriteOptionsConfiguration>();
     }

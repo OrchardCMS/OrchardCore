@@ -5,7 +5,7 @@ namespace OrchardCore.UrlRewriting.Rules;
 
 public class ApacheRuleBuilder
 {
-    public static string FromViewModel(CreateUrlRewriteRuleViewModel viewModel, bool includeFlags = true)
+    public static string FlagsFromViewModel(RewriteRuleViewModel viewModel)
     {
         var sbFlags = new StringBuilder();
 
@@ -40,13 +40,20 @@ public class ApacheRuleBuilder
             sbFlags.Remove(sbFlags.Length - 1, 1);
         }
 
+        return sbFlags.ToString();
+    }
+
+    public static string FromViewModel(RewriteRuleViewModel viewModel, bool includeFlags = true)
+    {
+        var flags = FlagsFromViewModel(viewModel); 
+
         var sbRewrite = new StringBuilder();
         var replaceUrl = viewModel.RuleAction == RuleAction.Rewrite ? viewModel.RewriteAction.RewriteUrl : viewModel.RedirectAction.RedirectUrl;
 
-        var flags = sbFlags.Length > 0 ? $"[{sbFlags}]" : "";
-        if (flags.Length > 0 && includeFlags)
+        var flagsStr = flags.Length > 0 ? $"[{flags}]" : "";
+        if (flagsStr.Length > 0 && includeFlags)
         {
-            sbRewrite.Append($"RewriteRule \"{viewModel.Pattern}\" \"{replaceUrl}\" {flags}");
+            sbRewrite.Append($"RewriteRule \"{viewModel.Pattern}\" \"{replaceUrl}\" {flagsStr}");
         }
         else
         {

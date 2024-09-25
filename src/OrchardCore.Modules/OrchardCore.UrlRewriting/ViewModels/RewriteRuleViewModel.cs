@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.UrlRewriting.ViewModels;
 
-public class CreateUrlRewriteRuleViewModel
+public class RewriteRuleViewModel
 {
     public string DisplayName { get; set; }
 

@@ -1,0 +1,10 @@
+<div class="edit-item">
+    <div class="edit-item-primary">
+        @if (Model.Content != null)
+        {
+            <div class="edit-item-content">
+                @await DisplayAsync(Model.Content)
+            </div>
+        }
+    </div>
+</div>
