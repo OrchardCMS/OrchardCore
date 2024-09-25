@@ -66,32 +66,27 @@
       "Roles": [
         {
           "Name": "Administrator",
-          "Description": "Administrator",
+          "IsOwnerType": true,
           "Permissions": []
         },
         {
           "Name": "Moderator",
-          "Description": "Moderator",
           "Permissions": []
         },
         {
           "Name": "Editor",
-          "Description": "Editor",
           "Permissions": []
         },
         {
           "Name": "Author",
-          "Description": "Author",
           "Permissions": []
         },
         {
           "Name": "Contributor",
-          "Description": "Contributor",
           "Permissions": []
         },
         {
           "Name": "Authenticated",
-          "Description": "Authenticated",
           "Permissions": [
             "ViewContent",
             "ExecuteGraphQL",
@@ -100,7 +95,6 @@
         },
         {
           "Name": "Anonymous",
-          "Description": "Anonymous",
           "Permissions": []
         }
       ]

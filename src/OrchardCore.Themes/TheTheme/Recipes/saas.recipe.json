@@ -45,18 +45,15 @@
       "Roles": [
         {
           "Name": "Administrator",
-          "Description": "Administrator",
           "IsOwnerType": true,
           "Permissions": []
         },
         {
           "Name": "Authenticated",
-          "Description": "Authenticated",
           "Permissions": []
         },
         {
           "Name": "Anonymous",
-          "Description": "Anonymous",
           "Permissions": []
         }
       ]
