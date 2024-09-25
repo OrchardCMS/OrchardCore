@@ -67,7 +67,7 @@ public sealed class AdminController : Controller
 
         var model = new RolesViewModel
         {
-            RoleEntries = roles.Select(BuildRoleEntry).ToList()
+            RoleEntries = roles.OrderBy(r => r.RoleName).Select(BuildRoleEntry).ToList()
         };
 
         return View(model);
