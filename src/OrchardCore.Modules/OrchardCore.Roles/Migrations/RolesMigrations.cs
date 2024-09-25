@@ -46,7 +46,7 @@ public sealed class RolesMigrations : DataMigration
 
     private static async Task UpdateSystemRoleAsync(RoleManager<IRole> roleManager, string name)
     {
-        var role = await roleManager.FindByNameAsync(roleManager.NormalizeKey(name));
+        var role = await roleManager.FindByNameAsync(name);
 
         if (role is not null && role.Type is not RoleType.System)
         {

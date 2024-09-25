@@ -109,7 +109,7 @@ public sealed class AdminController : Controller
                 ModelState.AddModelError(string.Empty, S["Invalid role name."]);
             }
 
-            if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(model.RoleName)) != null)
+            if (await _roleManager.FindByNameAsync(model.RoleName) != null)
             {
                 ModelState.AddModelError(string.Empty, S["The role is already used."]);
             }
@@ -152,7 +152,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id)) is not Role role)
+        if (await _roleManager.FindByNameAsync(id) is not Role role)
         {
             return NotFound();
         }
@@ -185,7 +185,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id)) is not Role role)
+        if (await _roleManager.FindByNameAsync(id) is not Role role)
         {
             return NotFound();
         }
@@ -232,7 +232,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (currentRole.Type == RoleType.System)
+        if (currentRole.Type.HasFlag(RoleType.System))
         {
             await _notifier.ErrorAsync(H["System roles cannot be deleted."]);
 
