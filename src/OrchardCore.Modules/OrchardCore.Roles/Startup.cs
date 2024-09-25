@@ -25,7 +25,6 @@ public sealed class Startup : StartupBase
     {
         services.AddDataMigration<RolesMigrations>();
         services.AddScoped<IAuthorizationHandler, RolesPermissionHandler>();
-        services.AddScoped<IOwnerRoleCache, DefaultOwnerRoleCache>();
         services.AddScoped<RoleStore>();
         services.Replace(ServiceDescriptor.Scoped<IRoleClaimStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));
         services.Replace(ServiceDescriptor.Scoped<IRoleStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));

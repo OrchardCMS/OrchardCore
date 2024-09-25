@@ -1,5 +1,8 @@
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Roles.Core;
+using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Security.Services;
 
 namespace OrchardCore.Tests.Security;
 
@@ -47,7 +50,17 @@ public class RolesPermissionHandlerTests
 
         options.Setup(x => x.Value).Returns(new IdentityOptions());
 
-        var permissionHandler = new RolesPermissionHandler(new RoleTrackerStub(ownerRoles), options.Object);
+        var roles = ownerRoles?.Select(roleName => new Role
+        {
+            RoleName = roleName,
+            Type = RoleType.Owner,
+        }) ?? [];
+
+        var roleService = new Mock<IRoleService>();
+        roleService.Setup(x => x.GetRolesAsync())
+            .ReturnsAsync(roles);
+
+        var permissionHandler = new RolesPermissionHandler(roleService.Object, options.Object);
 
         return permissionHandler;
     }

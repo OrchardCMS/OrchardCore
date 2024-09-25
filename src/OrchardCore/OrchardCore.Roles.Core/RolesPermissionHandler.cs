@@ -2,21 +2,25 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security;
+using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Core;
 
 public class RolesPermissionHandler : AuthorizationHandler<PermissionRequirement>
 {
-    private readonly IOwnerRoleCache _roleTracker;
     private readonly IdentityOptions _identityOptions;
+    private readonly IRoleService _roleService;
+
+    private string[] _rolesWithFullAccess;
 
     public RolesPermissionHandler(
-        IOwnerRoleCache roleTracker,
+        IRoleService roleService,
         IOptions<IdentityOptions> identityOptions)
     {
-        _roleTracker = roleTracker;
         _identityOptions = identityOptions.Value;
+        _roleService = roleService;
     }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
@@ -26,16 +30,19 @@ public class RolesPermissionHandler : AuthorizationHandler<PermissionRequirement
             return;
         }
 
-        var rolesWithFullAccess = await _roleTracker.GetAsync();
+        _rolesWithFullAccess ??= (await _roleService.GetRolesAsync())
+            .Where(x => x.Type == RoleType.Owner)
+            .Select(x => x.RoleName)
+            .ToArray();
 
-        if (rolesWithFullAccess.Count == 0)
+        if (_rolesWithFullAccess.Length == 0)
         {
             return;
         }
 
         foreach (var role in context.User.FindAll(c => c.Type == _identityOptions.ClaimsIdentity.RoleClaimType || c.Type is "role" or ClaimTypes.Role))
         {
-            if (rolesWithFullAccess.Contains(role.Value))
+            if (_rolesWithFullAccess.Contains(role.Value, StringComparer.OrdinalIgnoreCase))
             {
                 context.Succeed(requirement);
 

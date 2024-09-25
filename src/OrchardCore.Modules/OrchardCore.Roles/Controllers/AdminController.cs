@@ -30,7 +30,6 @@ public sealed class AdminController : Controller
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly IRoleService _roleService;
     private readonly INotifier _notifier;
-    private readonly IOwnerRoleCache _ownerRoleCache;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -44,7 +43,6 @@ public sealed class AdminController : Controller
         IShellFeaturesManager shellFeaturesManager,
         IRoleService roleService,
         INotifier notifier,
-        IOwnerRoleCache ownerRoleCache,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
@@ -56,7 +54,6 @@ public sealed class AdminController : Controller
         _shellFeaturesManager = shellFeaturesManager;
         _roleService = roleService;
         _notifier = notifier;
-        _ownerRoleCache = ownerRoleCache;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -133,10 +130,6 @@ public sealed class AdminController : Controller
 
             if (result.Succeeded)
             {
-                if (role.Type == RoleType.Owner)
-                {
-                    await _ownerRoleCache.AddAsync(role);
-                }
                 await _notifier.SuccessAsync(H["Role created successfully."]);
 
                 return RedirectToAction(nameof(Index));
@@ -180,11 +173,6 @@ public sealed class AdminController : Controller
 
         if (result.Succeeded)
         {
-            if (currentRole.Type == RoleType.Owner)
-            {
-                await _ownerRoleCache.RemoveAsync(currentRole);
-            }
-
             await _notifier.SuccessAsync(H["Role deleted successfully."]);
         }
         else
@@ -281,19 +269,6 @@ public sealed class AdminController : Controller
         }
 
         await _roleManager.UpdateAsync(role);
-
-        // After updating the document manager, update the role tracker.
-        if (!isSystemRole)
-        {
-            if (role.Type == RoleType.Owner)
-            {
-                await _ownerRoleCache.AddAsync(role);
-            }
-            else
-            {
-                await _ownerRoleCache.RemoveAsync(role);
-            }
-        }
 
         await _notifier.SuccessAsync(H["Role updated successfully."]);
 
