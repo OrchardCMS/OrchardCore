@@ -74,7 +74,8 @@ public sealed class AdminController : Controller
                 Name = role.RoleName,
                 Description = role.RoleDescription,
                 Type = role.Type,
-            }).ToList()
+            }).OrderBy(r => r.Name)
+            .ToList()
         };
 
         return View(model);
