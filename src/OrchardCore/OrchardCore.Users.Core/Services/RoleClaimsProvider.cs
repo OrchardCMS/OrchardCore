@@ -53,7 +53,7 @@ public class RoleClaimsProvider : IUserClaimsProvider
             roles.Add(role);
         }
 
-        if (roles.Count == 0 || roles.Any(role => role.Type == RoleType.Owner))
+        if (roles.Count == 0 || roles.Any(role => role.Type.HasFlag(RoleType.Owner)))
         {
             return;
         }

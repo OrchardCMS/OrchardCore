@@ -4,6 +4,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security;
+using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Migrations;
 
@@ -17,8 +18,10 @@ public sealed class RolesMigrations : DataMigration
         {
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IRole>>();
 
-            await UpdateSystemRoleAsync(roleManager, OrchardCoreConstants.Roles.Anonymous);
-            await UpdateSystemRoleAsync(roleManager, OrchardCoreConstants.Roles.Authenticated);
+            foreach (var role in RoleHelper.SystemRoleNames)
+            {
+                await UpdateSystemRoleAsync(roleManager, role);
+            }
 
             var roles = roleManager.Roles.ToList();
 
@@ -31,7 +34,7 @@ public sealed class RolesMigrations : DataMigration
 
                 if (r.RoleClaims.Any(x => x.ClaimValue == "SiteOwner"))
                 {
-                    r.Type = RoleType.Owner;
+                    r.Type = RoleHelper.GetRoleType(role.RoleName, true);
 
                     await roleManager.UpdateAsync(r);
                 }
@@ -47,7 +50,7 @@ public sealed class RolesMigrations : DataMigration
 
         if (role is not null && role.Type is not RoleType.System)
         {
-            role.Type = RoleType.System;
+            role.Type = RoleHelper.GetRoleType(role.RoleName);
 
             await roleManager.UpdateAsync(role);
         }

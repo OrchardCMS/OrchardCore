@@ -25,13 +25,12 @@ public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDi
             model.Hint = settings.Hint;
             model.Required = settings.Required;
             model.Multiple = settings.Multiple;
-            var roles = await _roleService.GetRolesAsync();
-            var roleEntries = roles.Where(role => role.Type != RoleType.System)
-                .Select(role => new RoleEntry
-                {
-                    Role = role.RoleName,
-                    IsSelected = settings.DisplayedRoles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
-                }).ToArray();
+            var roles = await _roleService.GetAssignableRolesAsync();
+            var roleEntries = roles.Select(role => new RoleEntry
+            {
+                Role = role.RoleName,
+                IsSelected = settings.DisplayedRoles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
+            }).ToArray();
 
             model.Roles = roleEntries;
             model.DisplayAllUsers = settings.DisplayAllUsers || !roleEntries.Where(x => x.IsSelected).Any();
@@ -51,7 +50,12 @@ public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDi
             Multiple = model.Multiple
         };
 
-        var selectedRoles = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
+        var roles = await _roleService.GetAssignableRolesAsync();
+
+        var selectedRoles = model.Roles
+            .Where(x => x.IsSelected && roles.Any(y => y.RoleName == x.Role))
+            .Select(x => x.Role)
+            .ToArray();
 
         if (model.DisplayAllUsers || selectedRoles.Length == 0)
         {

@@ -5,7 +5,6 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Infrastructure.Security;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Security.Services;
 using OrchardCore.Settings;
@@ -42,15 +41,15 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
         return Initialize<RoleLoginSettingsViewModel>("LoginSettingsRoles_Edit", async model =>
         {
             model.RequireTwoFactorAuthenticationForSpecificRoles = settings.RequireTwoFactorAuthenticationForSpecificRoles;
-            var roles = await _roleService.GetRolesAsync();
+            var roles = await _roleService.GetAssignableRolesAsync();
 
-            model.Roles = roles.Where(role => role.Type != RoleType.System)
-            .Select(role => new RoleEntry()
-            {
-                Role = role.RoleName,
-                IsSelected = settings.Roles != null && settings.Roles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
-            }).OrderBy(entry => entry.Role)
-            .ToArray();
+            model.Roles = roles
+                .Select(role => new RoleEntry()
+                {
+                    Role = role.RoleName,
+                    IsSelected = settings.Roles != null && settings.Roles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
+                }).OrderBy(entry => entry.Role)
+                .ToArray();
         }).Location("Content:6#Two-Factor Authentication")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
         .OnGroup(SettingsGroupId);
@@ -69,9 +68,7 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
 
         if (model.RequireTwoFactorAuthenticationForSpecificRoles)
         {
-            var roles = await _roleService.GetRolesAsync();
-
-            var roleEntries = roles.Where(role => role.Type != RoleType.System);
+            var roles = await _roleService.GetAssignableRolesAsync();
 
             var selectedRoles = model.Roles.Where(x => x.IsSelected)
                 .Join(roles, e => e.Role, r => r.RoleName, (e, r) => r.RoleName)

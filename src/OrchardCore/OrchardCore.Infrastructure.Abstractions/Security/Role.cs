@@ -26,11 +26,7 @@ public class Role : IRole
 
         foreach (var claim in RoleClaims)
         {
-            role.RoleClaims.Add(new RoleClaim
-            {
-                ClaimType = claim.ClaimType,
-                ClaimValue = claim.ClaimValue,
-            });
+            role.RoleClaims.Add(claim.Clone());
         }
 
         return role;

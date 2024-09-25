@@ -38,7 +38,14 @@
                             <a class="delete btn btn-danger btn-sm" asp-route-id="@entry.Name" role="button" asp-action="Delete" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Delete Role"]" data-message="@message">@T["Delete"]</a>
                         }
                     </div>
-                    @entry.Name
+                    <span>@entry.Name</span>
+
+                    @if (entry.Type.HasFlag(RoleType.System))
+                    {
+                        <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["System roles cannot be deleted."]">
+                            <i class="fa-solid fa-shield text-secondary me-1" aria-hidden="true"></i>@T["System"]
+                        </span>
+                    }
                     <p class="text-muted">@entry.Description</p>
                 </div>
             </li>

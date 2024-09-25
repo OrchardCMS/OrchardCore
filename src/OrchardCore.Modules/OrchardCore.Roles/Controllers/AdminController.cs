@@ -11,7 +11,6 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Infrastructure.Security;
-using OrchardCore.Roles.Core;
 using OrchardCore.Roles.ViewModels;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -122,9 +121,7 @@ public sealed class AdminController : Controller
             {
                 RoleName = model.RoleName,
                 RoleDescription = model.RoleDescription,
-                Type = RoleHelper.SystemRoleNames.Contains(model.RoleName)
-                ? RoleType.System
-                : model.IsOwnerType ? RoleType.Owner : RoleType.Standard,
+                Type = RoleHelper.GetRoleType(model.RoleName, model.IsOwnerType),
             };
 
             var result = await _roleManager.CreateAsync(role);
@@ -146,6 +143,78 @@ public sealed class AdminController : Controller
 
         // If we got this far, something failed, redisplay form.
         return View(model);
+    }
+
+    public async Task<IActionResult> Edit(string id)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
+        {
+            return Forbid();
+        }
+
+        if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id)) is not Role role)
+        {
+            return NotFound();
+        }
+        var model = new EditRoleViewModel
+        {
+            Role = role,
+            Name = role.RoleName,
+            RoleDescription = role.RoleDescription,
+            IsSystemRole = role.Type.HasFlag(RoleType.System),
+            IsOwnerType = role.Type.HasFlag(RoleType.Owner),
+        };
+
+        if (!(model.IsSystemRole && model.IsOwnerType))
+        {
+            var installedPermissions = await GetInstalledPermissionsAsync();
+            var allPermissions = installedPermissions.SelectMany(x => x.Value);
+
+            model.EffectivePermissions = await GetEffectivePermissions(role, allPermissions);
+            model.RoleCategoryPermissions = installedPermissions;
+        }
+
+        return View(model);
+    }
+
+    [HttpPost, ActionName(nameof(Edit))]
+    public async Task<IActionResult> EditPost(string id, string roleDescription, bool isOwnerType)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
+        {
+            return Forbid();
+        }
+
+        if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id)) is not Role role)
+        {
+            return NotFound();
+        }
+
+        role.Type = RoleHelper.GetRoleType(role.RoleName, isOwnerType);
+        role.RoleDescription = roleDescription;
+
+        if (!role.Type.HasFlag(RoleType.Owner))
+        {
+            var rolePermissions = new List<RoleClaim>();
+
+            foreach (var key in Request.Form.Keys)
+            {
+                if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
+                {
+                    var permissionName = key["Checkbox.".Length..];
+                    rolePermissions.Add(new RoleClaim(permissionName, Permission.ClaimType));
+                }
+            }
+
+            role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
+            role.RoleClaims.AddRange(rolePermissions);
+        }
+
+        await _roleManager.UpdateAsync(role);
+
+        await _notifier.SuccessAsync(H["Role updated successfully."]);
+
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
@@ -187,91 +256,6 @@ public sealed class AdminController : Controller
                 await _notifier.ErrorAsync(H[error.Description]);
             }
         }
-
-        return RedirectToAction(nameof(Index));
-    }
-
-    public async Task<IActionResult> Edit(string id)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
-        {
-            return Forbid();
-        }
-
-        if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id)) is not Role role)
-        {
-            return NotFound();
-        }
-
-        var installedPermissions = await GetInstalledPermissionsAsync();
-        var allPermissions = installedPermissions.SelectMany(x => x.Value);
-
-        var model = new EditRoleViewModel
-        {
-            Role = role,
-            Name = role.RoleName,
-            RoleDescription = role.RoleDescription,
-            IsOwnerType = role.Type == RoleType.Owner,
-            IsSystemRole = role.Type == RoleType.System,
-            EffectivePermissions = await GetEffectivePermissions(role, allPermissions),
-            RoleCategoryPermissions = installedPermissions
-        };
-
-        return View(model);
-    }
-
-    [HttpPost, ActionName(nameof(Edit))]
-    public async Task<IActionResult> EditPost(string id, string roleDescription, bool isOwnerType)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
-        {
-            return Forbid();
-        }
-
-        if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id)) is not Role role)
-        {
-            return NotFound();
-        }
-
-        var isSystemRole = RoleHelper.SystemRoleNames.Contains(role.RoleName);
-
-        if (!isSystemRole)
-        {
-            if (isOwnerType)
-            {
-                role.Type = RoleType.Owner;
-            }
-            else
-            {
-                role.Type = RoleType.Standard;
-            }
-        }
-
-        role.RoleDescription = roleDescription;
-
-        if (!isOwnerType)
-        {
-            var rolePermissions = new List<RoleClaim>();
-            foreach (var key in Request.Form.Keys)
-            {
-                if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
-                {
-                    var permissionName = key["Checkbox.".Length..];
-                    rolePermissions.Add(new RoleClaim
-                    {
-                        ClaimType = Permission.ClaimType,
-                        ClaimValue = permissionName,
-                    });
-                }
-            }
-
-            role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
-            role.RoleClaims.AddRange(rolePermissions);
-        }
-
-        await _roleManager.UpdateAsync(role);
-
-        await _notifier.SuccessAsync(H["Role updated successfully."]);
 
         return RedirectToAction(nameof(Index));
     }

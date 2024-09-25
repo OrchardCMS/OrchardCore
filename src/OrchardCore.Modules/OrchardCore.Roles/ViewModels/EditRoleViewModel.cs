@@ -13,6 +13,9 @@ public class EditRoleViewModel
     public bool IsOwnerType { get; set; }
 
     [BindNever]
+    public bool IsSystemRole { get; set; }
+
+    [BindNever]
     public IDictionary<PermissionGroupKey, IEnumerable<Permission>> RoleCategoryPermissions { get; set; }
 
     [BindNever]
@@ -20,7 +23,4 @@ public class EditRoleViewModel
 
     [BindNever]
     public Role Role { get; set; }
-
-    [BindNever]
-    public bool IsSystemRole { get; set; }
 }

@@ -1,5 +1,6 @@
 namespace OrchardCore.Infrastructure.Security;
 
+[Flags]
 public enum RoleType
 {
     Standard = 0,
