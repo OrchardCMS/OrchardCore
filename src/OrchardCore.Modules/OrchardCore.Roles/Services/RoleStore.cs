@@ -192,7 +192,7 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
 
         ArgumentNullException.ThrowIfNull(claim);
 
-        ((Role)role).RoleClaims.Add(new RoleClaim { ClaimType = claim.Type, ClaimValue = claim.Value });
+        ((Role)role).RoleClaims.Add(new RoleClaim(value: claim.Value, type: claim.Type));
 
         return Task.CompletedTask;
     }

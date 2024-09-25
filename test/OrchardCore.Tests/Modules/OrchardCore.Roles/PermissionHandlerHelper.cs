@@ -23,11 +23,7 @@ public class PermissionHandlerHelper
                 RoleName = OrchardCoreConstants.Roles.Anonymous,
                 RoleClaims =
                 [
-                    new()
-                    {
-                        ClaimType = Permission.ClaimType,
-                        ClaimValue = "AllowAnonymous",
-                    }
+                    new("AllowAnonymous"),
                 ]
             },
             new Role
@@ -35,11 +31,7 @@ public class PermissionHandlerHelper
                 RoleName = OrchardCoreConstants.Roles.Authenticated,
                 RoleClaims =
                 [
-                    new()
-                    {
-                        ClaimType = Permission.ClaimType,
-                        ClaimValue = "AllowAuthenticated",
-                    }
+                    new("AllowAuthenticated"),
                 ]
             }
         );
@@ -114,7 +106,7 @@ public class PermissionHandlerHelper
                 RoleName = OrchardCoreConstants.Roles.Anonymous,
                 RoleClaims =
                 [
-                    new() { ClaimType = Permission.ClaimType, ClaimValue = "aLlOwAnOnYmOuS" }
+                    new("aLlOwAnOnYmOuS"),
                 ]
             },
             new Role
@@ -122,11 +114,7 @@ public class PermissionHandlerHelper
                 RoleName = OrchardCoreConstants.Roles.Authenticated,
                 RoleClaims =
                 [
-                    new()
-                    {
-                        ClaimType = Permission.ClaimType,
-                        ClaimValue = "aLlOwAuThEnTiCaTeD",
-                    }
+                    new("aLlOwAuThEnTiCaTeD"),
                 ]
             }
         );
