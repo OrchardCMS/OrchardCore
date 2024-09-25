@@ -13,7 +13,7 @@ public class RolesPermissionHandler : AuthorizationHandler<PermissionRequirement
     private readonly IdentityOptions _identityOptions;
     private readonly IRoleService _roleService;
 
-    private string[] _rolesWithFullAccess;
+    private string[] _rolesWithOwnerType;
 
     public RolesPermissionHandler(
         IRoleService roleService,
@@ -30,19 +30,19 @@ public class RolesPermissionHandler : AuthorizationHandler<PermissionRequirement
             return;
         }
 
-        _rolesWithFullAccess ??= (await _roleService.GetRolesAsync())
+        _rolesWithOwnerType ??= (await _roleService.GetRolesAsync())
             .Where(x => x.Type.HasFlag(RoleType.Owner))
             .Select(x => x.RoleName)
             .ToArray();
 
-        if (_rolesWithFullAccess.Length == 0)
+        if (_rolesWithOwnerType.Length == 0)
         {
             return;
         }
 
         foreach (var role in context.User.FindAll(c => c.Type == _identityOptions.ClaimsIdentity.RoleClaimType || c.Type is "role" or ClaimTypes.Role))
         {
-            if (_rolesWithFullAccess.Contains(role.Value, StringComparer.OrdinalIgnoreCase))
+            if (_rolesWithOwnerType.Contains(role.Value, StringComparer.OrdinalIgnoreCase))
             {
                 context.Succeed(requirement);
 

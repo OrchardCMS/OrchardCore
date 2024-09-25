@@ -28,14 +28,16 @@ A sample of a roles configuration step:
     "Roles": [
         {
             "Name": "Journalist",
-            "Permissions": ["PublishContent", "EditContent"],
+            "Description" "Journalist Role",
             "IsOwnerType": false
+            "Permissions": ["PublishContent", "EditContent"]
         },
         {
             "Name": "Subscriber",
-            "Permissions": [],
+            "Description" "Subscriber Role",
             "IsOwnerType": false
-        },
+            "Permissions": []
+        }
     ]
 }
 ```

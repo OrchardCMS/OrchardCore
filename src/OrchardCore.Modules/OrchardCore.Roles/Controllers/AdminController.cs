@@ -156,6 +156,7 @@ public sealed class AdminController : Controller
         {
             return NotFound();
         }
+
         var model = new EditRoleViewModel
         {
             Role = role,
