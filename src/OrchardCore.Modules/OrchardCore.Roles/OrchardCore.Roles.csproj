@@ -4,11 +4,9 @@
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <!-- NuGet properties-->
     <Title>OrchardCore Roles</Title>
-    <Description>
-      $(OCCMSDescription)
+    <Description>$(OCCMSDescription)
 
-      The roles module adds the ability to manage roles and assign permissions to roles.
-    </Description>
+    The roles module adds the ability to manage roles and assign permissions to roles.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 

@@ -31,7 +31,7 @@ public class RolesPermissionHandler : AuthorizationHandler<PermissionRequirement
         }
 
         _rolesWithFullAccess ??= (await _roleService.GetRolesAsync())
-            .Where(x => x.Type == RoleType.Owner)
+            .Where(x => x.Type.HasFlag(RoleType.Owner))
             .Select(x => x.RoleName)
             .ToArray();
 

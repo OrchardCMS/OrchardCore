@@ -27,7 +27,7 @@ public sealed class RolesMigrations : DataMigration
 
             foreach (var role in roles)
             {
-                if (role.Type == RoleType.Owner || role is not Role r)
+                if (role.Type.HasFlag(RoleType.Owner) || role is not Role r)
                 {
                     continue;
                 }
@@ -48,7 +48,7 @@ public sealed class RolesMigrations : DataMigration
     {
         var role = await roleManager.FindByNameAsync(name);
 
-        if (role is not null && role.Type is not RoleType.System)
+        if (role is not null)
         {
             role.Type = RoleHelper.GetRoleType(role.RoleName);
 
