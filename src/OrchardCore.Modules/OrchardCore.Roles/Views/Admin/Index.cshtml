@@ -1,5 +1,4 @@
 @using System.Linq
-@using OrchardCore.Infrastructure.Security
 
 @model OrchardCore.Roles.ViewModels.RolesViewModel
 
@@ -26,24 +25,33 @@
         @for (var i = 0; i < Model.RoleEntries.Count; i++)
         {
             var entry = Model.RoleEntries[i];
-            var isSystemRole = entry.Type.HasFlag(RoleType.System);
 
             var message = T["Are you sure you want to delete this role?"];
 
             <li class="list-group-item" data-filter-value="@entry.Name">
                 <div class="w-100">
                     <div class="float-end">
-                        <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@entry.Name">@T["Edit"]</a>
-                        @if (!isSystemRole)
+                        @if (!entry.IsAdminRole)
+                        {
+                            <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@entry.Name">@T["Edit"]</a>
+                        }
+
+                        @if (!entry.IsAdminRole && !entry.IsSystemRole)
                         {
                             <a class="delete btn btn-danger btn-sm" asp-route-id="@entry.Name" role="button" asp-action="Delete" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Delete Role"]" data-message="@message">@T["Delete"]</a>
                         }
                     </div>
                     <span>@entry.Name</span>
 
-                    @if (isSystemRole)
+                    @if (entry.IsSystemRole)
                     {
-                        <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["System roles cannot be deleted."]">
+                        <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["The '{0}' role cannot be deleted.", entry.Name]">
+                            <i class="fa-solid fa-shield text-secondary me-1" aria-hidden="true"></i>@T["System"]
+                        </span>
+                    }
+                    else if (entry.IsAdminRole)
+                    {
+                        <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["The '{0}' role cannot be edited or deleted.", entry.Name]">
                             <i class="fa-solid fa-shield text-secondary me-1" aria-hidden="true"></i>@T["System"]
                         </span>
                     }

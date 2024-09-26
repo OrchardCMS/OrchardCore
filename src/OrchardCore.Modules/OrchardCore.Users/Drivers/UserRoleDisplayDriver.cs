@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security;
 using OrchardCore.Security.Services;
 using OrchardCore.Users.Models;

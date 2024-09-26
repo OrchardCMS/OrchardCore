@@ -10,7 +10,6 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Infrastructure.Security;
 using OrchardCore.Roles.ViewModels;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -28,6 +27,7 @@ public sealed class AdminController : Controller
     private readonly ITypeFeatureProvider _typeFeatureProvider;
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly IRoleService _roleService;
+    private readonly ShellSettings _shellSettings;
     private readonly INotifier _notifier;
 
     internal readonly IStringLocalizer S;
@@ -41,6 +41,7 @@ public sealed class AdminController : Controller
         ITypeFeatureProvider typeFeatureProvider,
         IShellFeaturesManager shellFeaturesManager,
         IRoleService roleService,
+        ShellSettings shellSettings,
         INotifier notifier,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
@@ -52,6 +53,7 @@ public sealed class AdminController : Controller
         _typeFeatureProvider = typeFeatureProvider;
         _shellFeaturesManager = shellFeaturesManager;
         _roleService = roleService;
+        _shellSettings = shellSettings;
         _notifier = notifier;
         S = stringLocalizer;
         H = htmlLocalizer;
@@ -66,13 +68,16 @@ public sealed class AdminController : Controller
 
         var roles = await _roleService.GetRolesAsync();
 
+        var adminRoleName = _shellSettings.GetSystemAdminRoleName();
+
         var model = new RolesViewModel
         {
             RoleEntries = roles.Select(role => new RoleEntry
             {
                 Name = role.RoleName,
                 Description = role.RoleDescription,
-                Type = role.Type,
+                IsSystemRole = RoleHelper.SystemRoleNames.Contains(role.RoleName),
+                IsAdminRole = role.RoleName.Equals(adminRoleName, StringComparison.OrdinalIgnoreCase),
             }).OrderBy(r => r.Name)
             .ToList()
         };
@@ -121,7 +126,6 @@ public sealed class AdminController : Controller
             {
                 RoleName = model.RoleName,
                 RoleDescription = model.RoleDescription,
-                Type = RoleHelper.GetRoleType(model.RoleName, model.IsOwnerType),
             };
 
             var result = await _roleManager.CreateAsync(role);
@@ -157,29 +161,30 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
+        if (role.RoleName.Equals(_shellSettings.GetSystemAdminRoleName(), StringComparison.OrdinalIgnoreCase))
+        {
+            await _notifier.ErrorAsync(H["The '{0}' role cannot be edited.", role.RoleName]);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        var installedPermissions = await GetInstalledPermissionsAsync();
+        var allPermissions = installedPermissions.SelectMany(x => x.Value);
+
         var model = new EditRoleViewModel
         {
             Role = role,
             Name = role.RoleName,
             RoleDescription = role.RoleDescription,
-            IsSystemRole = role.Type.HasFlag(RoleType.System),
-            IsOwnerType = role.Type.HasFlag(RoleType.Owner),
+            EffectivePermissions = await GetEffectivePermissions(role, allPermissions),
+            RoleCategoryPermissions = installedPermissions
         };
-
-        if (!(model.IsSystemRole && model.IsOwnerType))
-        {
-            var installedPermissions = await GetInstalledPermissionsAsync();
-            var allPermissions = installedPermissions.SelectMany(x => x.Value);
-
-            model.EffectivePermissions = await GetEffectivePermissions(role, allPermissions);
-            model.RoleCategoryPermissions = installedPermissions;
-        }
 
         return View(model);
     }
 
     [HttpPost, ActionName(nameof(Edit))]
-    public async Task<IActionResult> EditPost(string id, string roleDescription, bool isOwnerType)
+    public async Task<IActionResult> EditPost(string id, string roleDescription)
     {
         if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
         {
@@ -191,25 +196,28 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        role.Type = RoleHelper.GetRoleType(role.RoleName, isOwnerType);
+        if (role.RoleName.Equals(_shellSettings.GetSystemAdminRoleName(), StringComparison.OrdinalIgnoreCase))
+        {
+            await _notifier.ErrorAsync(H["The '{0}' role cannot be edited.", role.RoleName]);
+
+            return RedirectToAction(nameof(Index));
+        }
+
         role.RoleDescription = roleDescription;
 
-        if (!role.Type.HasFlag(RoleType.Owner))
+        var rolePermissions = new List<RoleClaim>();
+
+        foreach (var key in Request.Form.Keys)
         {
-            var rolePermissions = new List<RoleClaim>();
-
-            foreach (var key in Request.Form.Keys)
+            if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
             {
-                if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
-                {
-                    var permissionName = key["Checkbox.".Length..];
-                    rolePermissions.Add(new RoleClaim(permissionName, Permission.ClaimType));
-                }
+                var permissionName = key["Checkbox.".Length..];
+                rolePermissions.Add(new RoleClaim(permissionName, Permission.ClaimType));
             }
-
-            role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
-            role.RoleClaims.AddRange(rolePermissions);
         }
+
+        role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
+        role.RoleClaims.AddRange(rolePermissions);
 
         await _roleManager.UpdateAsync(role);
 
@@ -226,21 +234,22 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var currentRole = await _roleManager.FindByIdAsync(id);
+        var role = await _roleManager.FindByIdAsync(id);
 
-        if (currentRole == null)
+        if (role == null)
         {
             return NotFound();
         }
 
-        if (currentRole.Type.HasFlag(RoleType.System))
+        if (role.RoleName.Equals(_shellSettings.GetSystemAdminRoleName(), StringComparison.OrdinalIgnoreCase) ||
+            RoleHelper.SystemRoleNames.Contains(role.RoleName))
         {
             await _notifier.ErrorAsync(H["System roles cannot be deleted."]);
 
             return RedirectToAction(nameof(Index));
         }
 
-        var result = await _roleManager.DeleteAsync(currentRole);
+        var result = await _roleManager.DeleteAsync(role);
 
         if (result.Succeeded)
         {
@@ -254,7 +263,7 @@ public sealed class AdminController : Controller
 
             foreach (var error in result.Errors)
             {
-                await _notifier.ErrorAsync(H[error.Description]);
+                await _notifier.ErrorAsync(new LocalizedHtmlString(error.Description, error.Description));
             }
         }
 

@@ -19,15 +19,6 @@
     </div>
 
     <div class="mb-3">
-        <div class="form-check">
-            <input type="checkbox" class="form-check-input" asp-for="IsOwnerType" />
-            <label class="form-check-label" asp-for="IsOwnerType">@T["Site Owner"]</label>
-            <span class="badge text-bg-danger">@T["Security Critical"]</span>
-            <span class="hint dashed">@T["Roles with the Owner type will automatically grant the user full access to all permissions."]</span>
-        </div>
-    </div>
-
-    <div class="mb-3">
         <button class="btn btn-primary create" type="submit">@T["Create"]</button>
         <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
     </div>

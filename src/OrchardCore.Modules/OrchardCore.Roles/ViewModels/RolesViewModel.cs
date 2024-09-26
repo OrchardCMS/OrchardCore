@@ -1,4 +1,4 @@
-using OrchardCore.Infrastructure.Security;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Roles.ViewModels;
 
@@ -15,5 +15,9 @@ public class RoleEntry
 
     public bool Selected { get; set; }
 
-    public RoleType Type { get; set; }
+    [BindNever]
+    public bool IsSystemRole { get; set; }
+
+    [BindNever]
+    public bool IsAdminRole { get; set; }
 }

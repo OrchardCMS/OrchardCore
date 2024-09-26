@@ -3,7 +3,6 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Services;
 
 namespace OrchardCore.ContentFields.Settings;

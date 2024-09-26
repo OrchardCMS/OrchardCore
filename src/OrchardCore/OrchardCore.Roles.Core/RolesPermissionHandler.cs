@@ -2,52 +2,40 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using OrchardCore.Infrastructure.Security;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Security;
-using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Core;
 
 public class RolesPermissionHandler : AuthorizationHandler<PermissionRequirement>
 {
     private readonly IdentityOptions _identityOptions;
-    private readonly IRoleService _roleService;
-
-    private string[] _rolesWithOwnerType;
+    private readonly ShellSettings _shellSettings;
 
     public RolesPermissionHandler(
-        IRoleService roleService,
+        ShellSettings shellSettings,
         IOptions<IdentityOptions> identityOptions)
     {
         _identityOptions = identityOptions.Value;
-        _roleService = roleService;
+        _shellSettings = shellSettings;
     }
 
-    protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
     {
         if (context.HasSucceeded || context?.User?.Identity?.IsAuthenticated == false)
         {
-            return;
+            return Task.CompletedTask;
         }
 
-        _rolesWithOwnerType ??= (await _roleService.GetRolesAsync())
-            .Where(x => x.Type.HasFlag(RoleType.Owner))
-            .Select(x => x.RoleName)
-            .ToArray();
-
-        if (_rolesWithOwnerType.Length == 0)
+        if (context.User.HasClaim(c => IsRoleClaim(c) && c.Value.Equals(_shellSettings.GetSystemAdminRoleName(), StringComparison.OrdinalIgnoreCase)))
         {
-            return;
+            context.Succeed(requirement);
         }
 
-        foreach (var role in context.User.FindAll(c => c.Type == _identityOptions.ClaimsIdentity.RoleClaimType || c.Type is "role" or ClaimTypes.Role))
-        {
-            if (_rolesWithOwnerType.Contains(role.Value, StringComparer.OrdinalIgnoreCase))
-            {
-                context.Succeed(requirement);
-
-                return;
-            }
-        }
+        return Task.CompletedTask;
     }
+
+    private bool IsRoleClaim(Claim claim)
+        => claim.Type == _identityOptions.ClaimsIdentity.RoleClaimType ||
+            (claim.Type is "role" or ClaimTypes.Role);
 }

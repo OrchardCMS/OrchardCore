@@ -1,11 +1,10 @@
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Identity;
-using OrchardCore.Infrastructure.Security;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Recipes;
 
@@ -15,10 +14,14 @@ namespace OrchardCore.Roles.Recipes;
 public sealed class RolesStep : IRecipeStepHandler
 {
     private readonly RoleManager<IRole> _roleManager;
+    private readonly ShellSettings _shellSettings;
 
-    public RolesStep(RoleManager<IRole> roleManager)
+    public RolesStep(
+        RoleManager<IRole> roleManager,
+        ShellSettings shellSettings)
     {
         _roleManager = roleManager;
+        _shellSettings = shellSettings;
     }
 
     public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -50,13 +53,15 @@ public sealed class RolesStep : IRecipeStepHandler
                 };
             }
 
-            role.Type = RoleHelper.GetRoleType(roleName, roleEntry.IsOwnerType);
-
             if (role is Role r)
             {
                 r.RoleDescription = roleEntry.Description;
                 r.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
-                r.RoleClaims.AddRange(roleEntry.Permissions.Select(p => new RoleClaim(p, Permission.ClaimType)));
+
+                if (!roleName.Equals(_shellSettings.GetSystemAdminRoleName(), StringComparison.OrdinalIgnoreCase))
+                {
+                    r.RoleClaims.AddRange(roleEntry.Permissions.Select(p => new RoleClaim(p, Permission.ClaimType)));
+                }
             }
 
             if (isNewRole)
@@ -81,8 +86,6 @@ public sealed class RolesStepRoleModel
     public string Name { get; set; }
 
     public string Description { get; set; }
-
-    public bool IsOwnerType { get; set; }
 
     public string[] Permissions { get; set; }
 }

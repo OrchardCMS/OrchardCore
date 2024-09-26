@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using OrchardCore.Infrastructure.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Security.Services;
@@ -18,8 +17,7 @@ public static class RoleServiceExtensions
     {
         var roles = await roleService.GetRolesAsync();
 
-        // Assignable roles that are either 'Standard' or 'Owner', but not 'System' alone.
-        return roles.Where(role => role.Type != RoleType.System && (role.Type.HasFlag(RoleType.Standard) || role.Type.HasFlag(RoleType.Owner)));
+        return roles.Where(role => !RoleHelper.SystemRoleNames.Contains(role.RoleName));
     }
 
     public static async Task<IEnumerable<IRole>> GetAccessibleRolesAsync(this IRoleService roleService, IAuthorizationService authorizationService, ClaimsPrincipal user, Permission permission)

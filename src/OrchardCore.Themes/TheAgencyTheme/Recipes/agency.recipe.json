@@ -75,7 +75,6 @@
       "Roles": [
         {
           "Name": "Administrator",
-          "IsOwnerType": true,
           "Permissions": []
         },
         {

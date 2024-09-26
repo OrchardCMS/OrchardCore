@@ -1,3 +1,4 @@
+using OrchardCore.Environment.Shell;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
 
@@ -9,10 +10,14 @@ public sealed class UserRolePermissions : IPermissionProvider
     public static readonly Permission AssignRoleToUsers = CommonPermissions.AssignRoleToUsers;
 
     private readonly IRoleService _roleService;
+    private readonly ShellSettings _shellSettings;
 
-    public UserRolePermissions(IRoleService roleService)
+    public UserRolePermissions(
+        IRoleService roleService,
+        ShellSettings shellSettings)
     {
         _roleService = roleService;
+        _shellSettings = shellSettings;
     }
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
@@ -26,12 +31,19 @@ public sealed class UserRolePermissions : IPermissionProvider
             .Select(role => role.RoleName)
             .OrderBy(roleName => roleName);
 
+        var adminRoleName = _shellSettings.GetSystemAdminRoleName();
+
         foreach (var roleName in roleNames)
         {
             permissions.Add(CommonPermissions.CreateListUsersInRolePermission(roleName));
             permissions.Add(CommonPermissions.CreateEditUsersInRolePermission(roleName));
             permissions.Add(CommonPermissions.CreateDeleteUsersInRolePermission(roleName));
-            permissions.Add(CommonPermissions.CreateAssignRoleToUsersPermission(roleName));
+
+            if (!roleName.Equals(adminRoleName, StringComparison.OrdinalIgnoreCase))
+            {
+                permissions.Add(CommonPermissions.CreateAssignRoleToUsersPermission(roleName));
+            }
+
             permissions.Add(CommonPermissions.CreatePermissionForManageUsersInRole(roleName));
         }
 
