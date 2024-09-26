@@ -1,0 +1,302 @@
+<Solution>
+  <Folder Name="/build/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="NuGet.config" />
+    <File Path="src\OrchardCore.Build\OrchardCore.Commons.props" />
+    <File Path="src\OrchardCore.Build\OrchardCore.Commons.targets" />
+    <File Path="src\OrchardCore.Build\TargetFrameworks.props" />
+  </Folder>
+  <Folder Name="/build/OrchardCore.Modules/">
+    <File Path="src\OrchardCore.Modules\Directory.Build.props" />
+    <File Path="src\OrchardCore.Modules\Directory.Build.targets" />
+  </Folder>
+  <Folder Name="/build/OrchardCore.Themes/">
+    <File Path="src\OrchardCore.Themes\Directory.Build.props" />
+    <File Path="src\OrchardCore.Themes\Directory.Build.targets" />
+  </Folder>
+  <Folder Name="/build/OrchardCore/">
+    <File Path="src\OrchardCore\Directory.Build.props" />
+    <File Path="src\OrchardCore\Directory.Build.targets" />
+  </Folder>
+  <Folder Name="/docs/">
+    <File Path="mkdocs.yml" />
+    <Project Path="src\docs\OrchardCore.Docs.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".coderabbit.yaml" />
+    <File Path=".editorconfig" />
+    <File Path="gulpfile.js" />
+    <File Path="package.json" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src\OrchardCore.Cms.Web\OrchardCore.Cms.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/OrchardCore.Frameworks/">
+    <Project Path="src\OrchardCore\OrchardCore.Mvc.Core\OrchardCore.Mvc.Core.csproj" />
+  </Folder>
+  <Folder Name="/src/OrchardCore.Modules.Cms/">
+    <Project Path="src\OrchardCore.Modules\OrchardCore.AdminMenu\OrchardCore.AdminMenu.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Alias\OrchardCore.Alias.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.ArchiveLater\OrchardCore.ArchiveLater.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Autoroute\OrchardCore.Autoroute.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.ContentFields\OrchardCore.ContentFields.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.ContentLocalization\OrchardCore.ContentLocalization.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.ContentPreview\OrchardCore.ContentPreview.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Contents\OrchardCore.Contents.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.ContentTypes\OrchardCore.ContentTypes.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.CustomSettings\OrchardCore.CustomSettings.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Demo\OrchardCore.Demo.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Feeds\OrchardCore.Feeds.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Flows\OrchardCore.Flows.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Forms\OrchardCore.Forms.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.HomeRoute\OrchardCore.HomeRoute.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Html\OrchardCore.Html.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Indexing\OrchardCore.Indexing.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Layers\OrchardCore.Layers.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Liquid\OrchardCore.Liquid.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Lists\OrchardCore.Lists.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Markdown\OrchardCore.Markdown.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Media.AmazonS3\OrchardCore.Media.AmazonS3.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Media.Azure\OrchardCore.Media.Azure.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Media.Indexing.OpenXML\OrchardCore.Media.Indexing.OpenXML.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Media.Indexing.Pdf\OrchardCore.Media.Indexing.Pdf.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Media\OrchardCore.Media.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Menu\OrchardCore.Menu.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Placements\OrchardCore.Placements.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.PublishLater\OrchardCore.PublishLater.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Queries\OrchardCore.Queries.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Rules\OrchardCore.Rules.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Search.AzureAI\OrchardCore.Search.AzureAI.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Search.Elasticsearch\OrchardCore.Search.Elasticsearch.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Search.Lucene\OrchardCore.Search.Lucene.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Search\OrchardCore.Search.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Seo\OrchardCore.Seo.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Shortcodes\OrchardCore.Shortcodes.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Sitemaps\OrchardCore.Sitemaps.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Spatial\OrchardCore.Spatial.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Taxonomies\OrchardCore.Taxonomies.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Templates\OrchardCore.Templates.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Title\OrchardCore.Title.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Widgets\OrchardCore.Widgets.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.XmlRpc\OrchardCore.XmlRpc.csproj" />
+  </Folder>
+  <Folder Name="/src/OrchardCore.Modules/">
+    <Project Path="src\OrchardCore.Modules\OrchardCore.AdminDashboard\OrchardCore.AdminDashboard.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Admin\OrchardCore.Admin.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Apis.GraphQL\OrchardCore.Apis.GraphQL.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.AuditTrail\OrchardCore.AuditTrail.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.AutoSetup\OrchardCore.AutoSetup.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.BackgroundTasks\OrchardCore.BackgroundTasks.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Cors\OrchardCore.Cors.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.DataProtection.Azure\OrchardCore.DataProtection.Azure.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Deployment.Remote\OrchardCore.Deployment.Remote.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Deployment\OrchardCore.Deployment.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Diagnostics\OrchardCore.Diagnostics.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.DynamicCache\OrchardCore.DynamicCache.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Email.Azure\OrchardCore.Email.Azure.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Email.Smtp\OrchardCore.Email.Smtp.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Email\OrchardCore.Email.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Facebook\OrchardCore.Facebook.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Features\OrchardCore.Features.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.GitHub\OrchardCore.GitHub.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Google\OrchardCore.Google.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.HealthChecks\OrchardCore.HealthChecks.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Https\OrchardCore.Https.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Localization\OrchardCore.Localization.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Microsoft.Authentication\OrchardCore.Microsoft.Authentication.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.MiniProfiler\OrchardCore.MiniProfiler.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Navigation\OrchardCore.Navigation.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Notifications\OrchardCore.Notifications.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.OpenId\OrchardCore.OpenId.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.ReCaptcha\OrchardCore.ReCaptcha.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Recipes\OrchardCore.Recipes.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Redis\OrchardCore.Redis.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Resources\OrchardCore.Resources.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.ResponseCompression\OrchardCore.ResponseCompression.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.ReverseProxy\OrchardCore.ReverseProxy.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Roles\OrchardCore.Roles.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Scripting\OrchardCore.Scripting.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Security\OrchardCore.Security.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Settings\OrchardCore.Settings.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Setup\OrchardCore.Setup.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Sms.Azure\OrchardCore.Sms.Azure.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Sms\OrchardCore.Sms.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Tenants\OrchardCore.Tenants.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Themes\OrchardCore.Themes.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Twitter\OrchardCore.Twitter.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Users\OrchardCore.Users.csproj" />
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Workflows\OrchardCore.Workflows.csproj" />
+  </Folder>
+  <Folder Name="/src/OrchardCore.Samples/" />
+  <Folder Name="/src/OrchardCore.Samples/OrchardCore.Mvc/">
+    <Project Path="src\OrchardCore.Mvc.Web\OrchardCore.Mvc.Web.csproj" />
+  </Folder>
+  <Folder Name="/src/OrchardCore.Samples/OrchardCore.Mvc/Modules/">
+    <Project Path="src\OrchardCore.Modules\OrchardCore.Mvc.HelloWorld\OrchardCore.Mvc.HelloWorld.csproj" />
+  </Folder>
+  <Folder Name="/src/OrchardCore.Themes/">
+    <Project Path="src\OrchardCore.Themes\SafeMode\SafeMode.csproj" />
+    <Project Path="src\OrchardCore.Themes\TheAdmin\TheAdmin.csproj" />
+    <Project Path="src\OrchardCore.Themes\TheAgencyTheme\TheAgencyTheme.csproj" />
+    <Project Path="src\OrchardCore.Themes\TheBlogTheme\TheBlogTheme.csproj" />
+    <Project Path="src\OrchardCore.Themes\TheComingSoonTheme\TheComingSoonTheme.csproj" />
+    <Project Path="src\OrchardCore.Themes\TheTheme\TheTheme.csproj" />
+  </Folder>
+  <Folder Name="/src/OrchardCore/">
+    <Project Path="src\OrchardCore\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Admin.Abstractions\OrchardCore.Admin.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.AdminMenu.Abstractions\OrchardCore.AdminMenu.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Apis.GraphQL.Abstractions\OrchardCore.Apis.GraphQL.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Apis.GraphQL.Client\OrchardCore.Apis.GraphQL.Client.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.AuditTrail.Abstractions\OrchardCore.AuditTrail.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Autoroute.Core\OrchardCore.Autoroute.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Configuration.KeyVault\OrchardCore.Configuration.KeyVault.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.ContentLocalization.Abstractions\OrchardCore.ContentLocalization.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.ContentManagement.Display\OrchardCore.ContentManagement.Display.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.ContentManagement.GraphQL\OrchardCore.ContentManagement.GraphQL.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.ContentPreview.Abstractions\OrchardCore.ContentPreview.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Contents.Core\OrchardCore.Contents.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Contents.TagHelpers\OrchardCore.Contents.TagHelpers.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.ContentTypes.Abstractions\OrchardCore.ContentTypes.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Data.YesSql.Abstractions\OrchardCore.Data.YesSql.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Data.YesSql\OrchardCore.Data.YesSql.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Data\OrchardCore.Data.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Deployment.Abstractions\OrchardCore.Deployment.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Deployment.Core\OrchardCore.Deployment.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.DisplayManagement.Abstractions\OrchardCore.DisplayManagement.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.DisplayManagement.Liquid\OrchardCore.DisplayManagement.Liquid.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.DynamicCache.Abstractions\OrchardCore.DynamicCache.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Email.Abstractions\OrchardCore.Email.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Email.Core\OrchardCore.Email.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Features.Core\OrchardCore.Features.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Feeds.Abstractions\OrchardCore.Feeds.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Feeds.Core\OrchardCore.Feeds.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.FileStorage.Abstractions\OrchardCore.FileStorage.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.FileStorage.AmazonS3\OrchardCore.FileStorage.AmazonS3.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.FileStorage.AzureBlob\OrchardCore.FileStorage.AzureBlob.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.FileStorage.FileSystem\OrchardCore.FileStorage.FileSystem.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.HealthChecks.Abstractions\OrchardCore.HealthChecks.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Indexing.Abstractions\OrchardCore.Indexing.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Infrastructure\OrchardCore.Infrastructure.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Liquid.Abstractions\OrchardCore.Liquid.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Localization.Abstractions\OrchardCore.Localization.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Localization.Core\OrchardCore.Localization.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Logging.NLog\OrchardCore.Logging.NLog.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Logging.Serilog\OrchardCore.Logging.Serilog.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Markdown.Abstractions\OrchardCore.Markdown.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Media.Abstractions\OrchardCore.Media.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Media.Core\OrchardCore.Media.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.MetaWeblog.Abstractions\OrchardCore.MetaWeblog.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Navigation.Core\OrchardCore.Navigation.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Notifications.Abstractions\OrchardCore.Notifications.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Notifications.Core\OrchardCore.Notifications.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.OpenId.Core\OrchardCore.OpenId.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Queries.Abstractions\OrchardCore.Queries.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Queries.Core\OrchardCore.Queries.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.ReCaptcha.Core\OrchardCore.ReCaptcha.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Recipes.Core\OrchardCore.Recipes.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Redis.Abstractions\OrchardCore.Redis.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.ResourceManagement.Abstractions\OrchardCore.ResourceManagement.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.ResourceManagement.Core\OrchardCore.ResourceManagement.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Roles.Core\OrchardCore.Roles.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Rules.Abstractions\OrchardCore.Rules.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Rules.Core\OrchardCore.Rules.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Scripting.JavaScript\OrchardCore.Scripting.JavaScript.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Search.Abstractions\OrchardCore.Search.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Search.AzureAI.Core\OrchardCore.Search.AzureAI.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Search.Elasticsearch.Abstractions\OrchardCore.Search.Elasticsearch.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Search.Elasticsearch.Core\OrchardCore.Search.Elasticsearch.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Search.Lucene.Abstractions\OrchardCore.Search.Lucene.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Search.Lucene.Core\OrchardCore.Search.Lucene.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Seo.Abstractions\OrchardCore.Seo.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Settings.Core\OrchardCore.Settings.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Setup.Abstractions\OrchardCore.Setup.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Setup.Core\OrchardCore.Setup.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Shells.Azure\OrchardCore.Shells.Azure.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Shortcodes.Abstractions\OrchardCore.Shortcodes.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Sitemaps.Abstractions\OrchardCore.Sitemaps.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Sms.Abstractions\OrchardCore.Sms.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Sms.Core\OrchardCore.Sms.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Users.Abstractions\OrchardCore.Users.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Users.Core\OrchardCore.Users.Core.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.XmlRpc.Abstractions\OrchardCore.XmlRpc.Abstractions.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore\OrchardCore.csproj" />
+  </Folder>
+  <Folder Name="/src/Targets/">
+    <Project Path="src\OrchardCore\OrchardCore.Application.Cms.Core.Targets\OrchardCore.Application.Cms.Core.Targets.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Application.Cms.Targets\OrchardCore.Application.Cms.Targets.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Application.Mvc.Targets\OrchardCore.Application.Mvc.Targets.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
+    <Project Path="src\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.csproj" />
+  </Folder>
+  <Folder Name="/Templates/">
+    <Project Path="src\Templates\OrchardCore.ProjectTemplates\OrchardCore.ProjectTemplates.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test\OrchardCore.Abstractions.Tests\OrchardCore.Abstractions.Tests.csproj" />
+    <Project Path="test\OrchardCore.Benchmarks\OrchardCore.Benchmarks.csproj" />
+    <Project Path="test\OrchardCore.Tests.Functional\OrchardCore.Tests.Functional.csproj" />
+    <Project Path="test\OrchardCore.Tests\OrchardCore.Tests.csproj" />
+  </Folder>
+  <Folder Name="/test/OrchardCore.Tests.Features/">
+    <Project Path="test\OrchardCore.Tests.Features\Examples.Features.AssyAttrib\Examples.Features.AssyAttrib.csproj" />
+  </Folder>
+  <Folder Name="/test/OrchardCore.Tests.Modules/">
+    <File Path="src\OrchardCore\OrchardCore.Module.Targets\Package.Build.props" />
+    <Project Path="test\OrchardCore.Tests.Modules\BaseThemeSample2\BaseThemeSample2.csproj" />
+    <Project Path="test\OrchardCore.Tests.Modules\BaseThemeSample\BaseThemeSample.csproj" />
+    <Project Path="test\OrchardCore.Tests.Modules\DerivedThemeSample2\DerivedThemeSample2.csproj" />
+    <Project Path="test\OrchardCore.Tests.Modules\DerivedThemeSample\DerivedThemeSample.csproj" />
+    <Project Path="test\OrchardCore.Tests.Modules\Errors.OrchardCoreModules.TwoPlus\Errors.OrchardCoreModules.TwoPlus.csproj">
+      <Build Project="false" />
+    </Project>
+    <Project Path="test\OrchardCore.Tests.Modules\Examples.Modules.AssyAttrib.Alpha\Examples.Modules.AssyAttrib.Alpha.csproj" />
+    <Project Path="test\OrchardCore.Tests.Modules\Examples.Modules.AssyAttrib.Bravo\Examples.Modules.AssyAttrib.Bravo.csproj" />
+    <Project Path="test\OrchardCore.Tests.Modules\Examples.Modules.AssyAttrib.Charlie\Examples.Modules.AssyAttrib.Charlie.csproj" />
+    <Project Path="test\OrchardCore.Tests.Modules\Examples.OrchardCoreModules.Alpha\Examples.OrchardCoreModules.Alpha.csproj" />
+    <Project Path="test\OrchardCore.Tests.Modules\ModuleSample\ModuleSample.csproj" />
+  </Folder>
+  <Folder Name="/test/OrchardCore.Tests.Pages/" />
+  <Folder Name="/test/OrchardCore.Tests.Pages/OrchardCore.Application.Pages/">
+    <Project Path="test\OrchardCore.Tests.Pages\OrchardCore.Application.Pages\OrchardCore.Application.Pages.csproj" />
+  </Folder>
+  <Folder Name="/test/OrchardCore.Tests.Pages/OrchardCore.Modules.Pages/">
+    <File Path="test\OrchardCore.Tests.Pages\OrchardCore.Modules.Pages\Directory.Build.props" />
+    <File Path="test\OrchardCore.Tests.Pages\OrchardCore.Modules.Pages\Directory.Build.targets" />
+    <Project Path="test\OrchardCore.Tests.Pages\OrchardCore.Modules.Pages\Module.Pages\Module.Pages.csproj" />
+  </Folder>
+  <Folder Name="/test/OrchardCore.Tests.Pages/OrchardCore.Themes.Pages/">
+    <File Path="test\OrchardCore.Tests.Pages\OrchardCore.Themes.Pages\Directory.Build.props" />
+    <File Path="test\OrchardCore.Tests.Pages\OrchardCore.Themes.Pages\Directory.Build.targets" />
+    <Project Path="test\OrchardCore.Tests.Pages\OrchardCore.Themes.Pages\Theme.Pages\Theme.Pages.csproj" />
+  </Folder>
+  <Folder Name="/test/OrchardCore.Tests.Themes/">
+    <Project Path="test\OrchardCore.Tests.Themes\Errors.OrchardCoreThemes.ThemeAndModule\Errors.OrchardCoreThemes.ThemeAndModule.csproj">
+      <Build Project="false" />
+    </Project>
+    <Project Path="test\OrchardCore.Tests.Themes\Errors.OrchardCoreThemes.TwoPlus\Errors.OrchardCoreThemes.TwoPlus.csproj">
+      <Build Project="false" />
+    </Project>
+    <Project Path="test\OrchardCore.Tests.Themes\Examples.OrchardCoreThemes.Alpha\Examples.OrchardCoreThemes.Alpha.csproj" />
+    <Project Path="test\OrchardCore.Tests.Themes\Examples.Themes.AssyAttrib.Alpha\Examples.Themes.AssyAttrib.Alpha.csproj" />
+    <Project Path="test\OrchardCore.Tests.Themes\Examples.Themes.AssyAttrib.Bravo\Examples.Themes.AssyAttrib.Bravo.csproj" />
+    <Project Path="test\OrchardCore.Tests.Themes\Examples.Themes.AssyAttrib.Charlie\Examples.Themes.AssyAttrib.Charlie.csproj" />
+  </Folder>
+  <Properties Name="Performance">
+    <Property Name="HasPerformanceSessions" Value="true" />
+  </Properties>
+  <Properties Name="Visual Studio">
+    <Property Name="OpenWith" Value="Visual Studio Version 17" />
+  </Properties>
+</Solution>
