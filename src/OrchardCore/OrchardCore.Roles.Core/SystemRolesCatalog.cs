@@ -7,7 +7,7 @@ public sealed class SystemRolesCatalog
 {
     public readonly string AdminRoleName;
 
-    public FrozenSet<string> SystemRoleNames { get; private set; }
+    public readonly FrozenSet<string> SystemRoleNames;
 
     public SystemRolesCatalog(ShellSettings shellSettings)
     {

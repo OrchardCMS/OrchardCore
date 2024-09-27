@@ -76,11 +76,7 @@ public class PermissionHandlerHelper
                 RoleName = OrchardCoreConstants.Roles.Anonymous,
                 RoleClaims =
                 [
-                    new()
-                    {
-                        ClaimType = Permission.ClaimType,
-                        ClaimValue = "Implicit2",
-                    }
+                    new("Implicit2"),
                 ]
             }
         );

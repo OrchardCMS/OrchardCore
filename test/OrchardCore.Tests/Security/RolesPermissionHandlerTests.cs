@@ -7,7 +7,7 @@ namespace OrchardCore.Tests.Security;
 public class RolesPermissionHandlerTests
 {
     [Fact]
-    public async Task OwnerRolesShouldAutoGrantPermissions()
+    public async Task HandleAsync_WhenCalled_AdminsShouldBeGrantedPermissions()
     {
         // Arrange
         var adminRolePermission = new Claim("role", "Administrator");
@@ -25,7 +25,7 @@ public class RolesPermissionHandlerTests
     }
 
     [Fact]
-    public async Task StandardRolesShouldNotGrantPermissions()
+    public async Task HandleAsync_WhenCalled_NonAdminsShouldNotBeGrantedPermissions()
     {
         // Arrange
         var adminRolePermission = new Claim("role", "Editor");
@@ -42,7 +42,7 @@ public class RolesPermissionHandlerTests
         Assert.False(context.HasSucceeded);
     }
 
-    public static RolesPermissionHandler GetRolesPermissionHandler(bool userIsAdmin)
+    private static RolesPermissionHandler GetRolesPermissionHandler(bool userIsAdmin)
     {
         var options = new Mock<IOptions<IdentityOptions>>();
 

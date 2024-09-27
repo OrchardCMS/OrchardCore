@@ -40,7 +40,6 @@ public sealed class AdminController : Controller
         ITypeFeatureProvider typeFeatureProvider,
         IShellFeaturesManager shellFeaturesManager,
         IRoleService roleService,
-        SystemRolesCatalog systemRolesCatalog,
         INotifier notifier,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
