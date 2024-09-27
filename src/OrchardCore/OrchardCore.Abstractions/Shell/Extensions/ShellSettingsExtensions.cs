@@ -96,23 +96,6 @@ public static class ShellSettingsExtensions
         return false;
     }
 
-    public static ShellSettings SetSystemAdminRoleName(this ShellSettings settings, string name)
-    {
-        if (!string.IsNullOrWhiteSpace(name))
-        {
-            settings["AdminRoleName"] = name;
-        }
-
-        return settings;
-    }
-
-    public static string GetSystemAdminRoleName(this ShellSettings settings)
-    {
-        return !string.IsNullOrEmpty(settings["AdminRoleName"])
-            ? settings["AdminRoleName"]
-            : OrchardCoreConstants.Roles.Administrator;
-    }
-
     /// <summary>
     /// As the 'Default' tenant.
     /// </summary>

@@ -17,7 +17,18 @@ public static class RoleServiceExtensions
     {
         var roles = await roleService.GetRolesAsync();
 
-        return roles.Where(role => !RoleHelper.SystemRoleNames.Contains(role.RoleName));
+        var assignableRoles = new List<IRole>();
+        foreach (var role in roles)
+        {
+            if (!await roleService.IsAdminRoleAsync(role.RoleName) && await roleService.IsSystemRoleAsync(role.RoleName))
+            {
+                continue;
+            }
+
+            assignableRoles.Add(role);
+        }
+
+        return assignableRoles;
     }
 
     public static async Task<IEnumerable<IRole>> GetAccessibleRolesAsync(this IRoleService roleService, IAuthorizationService authorizationService, ClaimsPrincipal user, Permission permission)

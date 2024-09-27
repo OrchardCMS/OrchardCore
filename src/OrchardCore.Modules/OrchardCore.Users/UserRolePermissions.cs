@@ -1,4 +1,3 @@
-using OrchardCore.Environment.Shell;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
 
@@ -10,14 +9,10 @@ public sealed class UserRolePermissions : IPermissionProvider
     public static readonly Permission AssignRoleToUsers = CommonPermissions.AssignRoleToUsers;
 
     private readonly IRoleService _roleService;
-    private readonly ShellSettings _shellSettings;
 
-    public UserRolePermissions(
-        IRoleService roleService,
-        ShellSettings shellSettings)
+    public UserRolePermissions(IRoleService roleService)
     {
         _roleService = roleService;
-        _shellSettings = shellSettings;
     }
 
     public async Task<IEnumerable<Permission>> GetPermissionsAsync()
@@ -31,16 +26,16 @@ public sealed class UserRolePermissions : IPermissionProvider
             .Select(role => role.RoleName)
             .OrderBy(roleName => roleName);
 
-        var adminRoleName = _shellSettings.GetSystemAdminRoleName();
-
         foreach (var roleName in roleNames)
         {
             permissions.Add(CommonPermissions.CreateListUsersInRolePermission(roleName));
             permissions.Add(CommonPermissions.CreateEditUsersInRolePermission(roleName));
-            permissions.Add(CommonPermissions.CreateDeleteUsersInRolePermission(roleName));
 
-            if (!roleName.Equals(adminRoleName, StringComparison.OrdinalIgnoreCase))
+            if (!await _roleService.IsAdminRoleAsync(roleName))
             {
+                // Do not create permissions for deleting or creating admins.
+                // These operations are restricted to admin users only.
+                permissions.Add(CommonPermissions.CreateDeleteUsersInRolePermission(roleName));
                 permissions.Add(CommonPermissions.CreateAssignRoleToUsersPermission(roleName));
             }
 

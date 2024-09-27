@@ -87,7 +87,7 @@ public sealed class RolesMigrations : DataMigration
                 var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
                 var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
 
-                shellSettings.SetSystemAdminRoleName(adminSystemRoleName);
+                shellSettings["AdminRoleName"] = adminSystemRoleName;
 
                 await shellHost.UpdateShellSettingsAsync(shellSettings);
                 await shellHost.ReleaseShellContextAsync(shellSettings);

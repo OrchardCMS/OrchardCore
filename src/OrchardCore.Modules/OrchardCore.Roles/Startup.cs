@@ -16,6 +16,7 @@ using OrchardCore.Roles.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
+using OrchardCore.Users.Services;
 
 namespace OrchardCore.Roles;
 
@@ -23,7 +24,9 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<IUserClaimsProvider, RoleClaimsProvider>();
         services.AddDataMigration<RolesMigrations>();
+        services.AddSingleton<SystemRolesCatalog>();
         services.AddScoped<IAuthorizationHandler, RolesPermissionHandler>();
         services.AddScoped<RoleStore>();
         services.Replace(ServiceDescriptor.Scoped<IRoleClaimStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));

@@ -45,16 +45,11 @@
 
                     @if (entry.IsSystemRole)
                     {
-                        <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["The '{0}' role cannot be deleted.", entry.Name]">
+                        <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@(entry.IsAdminRole ? T["The '{0}' role cannot be edited or deleted.", entry.Name] : T["The '{0}' role cannot be deleted.", entry.Name])">
                             <i class="fa-solid fa-shield text-secondary me-1" aria-hidden="true"></i>@T["System"]
                         </span>
                     }
-                    else if (entry.IsAdminRole)
-                    {
-                        <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["The '{0}' role cannot be edited or deleted.", entry.Name]">
-                            <i class="fa-solid fa-shield text-secondary me-1" aria-hidden="true"></i>@T["System"]
-                        </span>
-                    }
+
                     <p class="text-muted">@entry.Description</p>
                 </div>
             </li>

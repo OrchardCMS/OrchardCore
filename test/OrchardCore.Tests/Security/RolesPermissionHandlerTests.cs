@@ -1,6 +1,6 @@
-using OrchardCore.Environment.Shell;
 using OrchardCore.Roles.Core;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Security.Services;
 
 namespace OrchardCore.Tests.Security;
 
@@ -15,7 +15,7 @@ public class RolesPermissionHandlerTests
 
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required, [adminRolePermission], true);
 
-        var permissionHandler = GetRolesPermissionHandler();
+        var permissionHandler = GetRolesPermissionHandler(true);
 
         // Act
         await permissionHandler.HandleAsync(context);
@@ -33,7 +33,7 @@ public class RolesPermissionHandlerTests
 
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required, [adminRolePermission], true);
 
-        var permissionHandler = GetRolesPermissionHandler();
+        var permissionHandler = GetRolesPermissionHandler(false);
 
         // Act
         await permissionHandler.HandleAsync(context);
@@ -42,13 +42,16 @@ public class RolesPermissionHandlerTests
         Assert.False(context.HasSucceeded);
     }
 
-    public static RolesPermissionHandler GetRolesPermissionHandler()
+    public static RolesPermissionHandler GetRolesPermissionHandler(bool userIsAdmin)
     {
         var options = new Mock<IOptions<IdentityOptions>>();
 
         options.Setup(x => x.Value).Returns(new IdentityOptions());
 
-        var roleService = new Mock<ShellSettings>();
+        var roleService = new Mock<IRoleService>();
+
+        roleService.Setup(x => x.IsAdminRoleAsync(It.IsAny<string>()))
+            .ReturnsAsync(userIsAdmin);
 
         var permissionHandler = new RolesPermissionHandler(roleService.Object, options.Object);
 

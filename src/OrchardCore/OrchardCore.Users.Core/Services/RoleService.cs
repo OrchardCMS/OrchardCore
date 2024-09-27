@@ -8,10 +8,14 @@ namespace OrchardCore.Roles.Services;
 public class RoleService : IRoleService
 {
     private readonly RoleManager<IRole> _roleManager;
+    private readonly SystemRolesCatalog _systemRolesCatalog;
 
-    public RoleService(RoleManager<IRole> roleManager)
+    public RoleService(
+        RoleManager<IRole> roleManager,
+        SystemRolesCatalog systemRolesCatalog)
     {
         _roleManager = roleManager;
+        _systemRolesCatalog = systemRolesCatalog;
     }
 
     public async Task<IEnumerable<Claim>> GetRoleClaimsAsync(string role, CancellationToken cancellationToken = default)
@@ -44,4 +48,10 @@ public class RoleService : IRoleService
     {
         return Task.FromResult<IEnumerable<string>>(_roleManager.Roles.Select(a => _roleManager.NormalizeKey(a.RoleName)));
     }
+
+    public ValueTask<bool> IsAdminRoleAsync(string role)
+        => ValueTask.FromResult(_systemRolesCatalog.AdminRoleName.Equals(role, StringComparison.OrdinalIgnoreCase));
+
+    public ValueTask<bool> IsSystemRoleAsync(string role)
+        => ValueTask.FromResult(_systemRolesCatalog.SystemRoleNames.Contains(role));
 }

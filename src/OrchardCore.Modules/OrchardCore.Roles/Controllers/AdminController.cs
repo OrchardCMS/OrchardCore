@@ -27,7 +27,6 @@ public sealed class AdminController : Controller
     private readonly ITypeFeatureProvider _typeFeatureProvider;
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly IRoleService _roleService;
-    private readonly ShellSettings _shellSettings;
     private readonly INotifier _notifier;
 
     internal readonly IStringLocalizer S;
@@ -41,7 +40,7 @@ public sealed class AdminController : Controller
         ITypeFeatureProvider typeFeatureProvider,
         IShellFeaturesManager shellFeaturesManager,
         IRoleService roleService,
-        ShellSettings shellSettings,
+        SystemRolesCatalog systemRolesCatalog,
         INotifier notifier,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
@@ -53,7 +52,6 @@ public sealed class AdminController : Controller
         _typeFeatureProvider = typeFeatureProvider;
         _shellFeaturesManager = shellFeaturesManager;
         _roleService = roleService;
-        _shellSettings = shellSettings;
         _notifier = notifier;
         S = stringLocalizer;
         H = htmlLocalizer;
@@ -68,18 +66,22 @@ public sealed class AdminController : Controller
 
         var roles = await _roleService.GetRolesAsync();
 
-        var adminRoleName = _shellSettings.GetSystemAdminRoleName();
+        var entries = new List<RoleEntry>();
 
-        var model = new RolesViewModel
+        foreach (var role in roles)
         {
-            RoleEntries = roles.Select(role => new RoleEntry
+            entries.Add(new RoleEntry
             {
                 Name = role.RoleName,
                 Description = role.RoleDescription,
-                IsSystemRole = RoleHelper.SystemRoleNames.Contains(role.RoleName),
-                IsAdminRole = role.RoleName.Equals(adminRoleName, StringComparison.OrdinalIgnoreCase),
-            }).OrderBy(r => r.Name)
-            .ToList()
+                IsSystemRole = await _roleService.IsSystemRoleAsync(role.RoleName),
+                IsAdminRole = await _roleService.IsAdminRoleAsync(role.RoleName),
+            });
+        }
+
+        var model = new RolesViewModel()
+        {
+            RoleEntries = entries.OrderBy(r => r.Name).ToList()
         };
 
         return View(model);
@@ -161,7 +163,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (role.RoleName.Equals(_shellSettings.GetSystemAdminRoleName(), StringComparison.OrdinalIgnoreCase))
+        if (await _roleService.IsAdminRoleAsync(role.RoleName))
         {
             await _notifier.ErrorAsync(H["The '{0}' role cannot be edited.", role.RoleName]);
 
@@ -196,7 +198,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (role.RoleName.Equals(_shellSettings.GetSystemAdminRoleName(), StringComparison.OrdinalIgnoreCase))
+        if (await _roleService.IsAdminRoleAsync(role.RoleName))
         {
             await _notifier.ErrorAsync(H["The '{0}' role cannot be edited.", role.RoleName]);
 
@@ -241,8 +243,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (role.RoleName.Equals(_shellSettings.GetSystemAdminRoleName(), StringComparison.OrdinalIgnoreCase) ||
-            RoleHelper.SystemRoleNames.Contains(role.RoleName))
+        if (await _roleService.IsSystemRoleAsync(role.RoleName))
         {
             await _notifier.ErrorAsync(H["System roles cannot be deleted."]);
 

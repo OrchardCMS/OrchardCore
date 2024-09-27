@@ -1,8 +1,8 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Security;
+using OrchardCore.Security.Services;
 using OrchardCore.Users;
 using OrchardCore.Users.Services;
 
@@ -12,18 +12,18 @@ public class RoleClaimsProvider : IUserClaimsProvider
 {
     private readonly UserManager<IUser> _userManager;
     private readonly RoleManager<IRole> _roleManager;
-    private readonly ShellSettings _shellSettings;
+    private readonly IRoleService _roleService;
     private readonly IdentityOptions _identityOptions;
 
     public RoleClaimsProvider(
         UserManager<IUser> userManager,
         RoleManager<IRole> roleManager,
-        ShellSettings shellSettings,
+        IRoleService roleService,
         IOptions<IdentityOptions> identityOptions)
     {
         _userManager = userManager;
         _roleManager = roleManager;
-        _shellSettings = shellSettings;
+        _roleService = roleService;
         _identityOptions = identityOptions.Value;
     }
 
@@ -36,6 +36,7 @@ public class RoleClaimsProvider : IUserClaimsProvider
 
         var roleNames = await _userManager.GetRolesAsync(user);
         var roles = new List<IRole>();
+        var addClaims = true;
 
         foreach (var roleName in roleNames)
         {
@@ -53,12 +54,15 @@ public class RoleClaimsProvider : IUserClaimsProvider
                 continue;
             }
 
+            if (addClaims && await _roleService.IsAdminRoleAsync(role.RoleName))
+            {
+                addClaims = false;
+            }
+
             roles.Add(role);
         }
-        var adminRoleName = _shellSettings.GetSystemAdminRoleName();
 
-        if (roles.Count == 0 ||
-            roles.Any(role => role.RoleName.Equals(adminRoleName, StringComparison.OrdinalIgnoreCase)))
+        if (roles.Count == 0 || !addClaims)
         {
             return;
         }

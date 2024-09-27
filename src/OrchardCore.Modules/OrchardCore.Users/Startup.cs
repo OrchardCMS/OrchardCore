@@ -278,7 +278,6 @@ public sealed class RolesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IUserClaimsProvider, RoleClaimsProvider>();
         services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
         services.AddIndexProvider<UserByRoleNameIndexProvider>();
         services.AddScoped<IDisplayDriver<User>, UserRoleDisplayDriver>();
