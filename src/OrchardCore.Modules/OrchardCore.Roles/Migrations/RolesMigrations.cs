@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.BackgroundJobs;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
@@ -59,8 +60,6 @@ public sealed class RolesMigrations : DataMigration
 
                         await roleManager.UpdateAsync(r);
                     }
-
-                    continue;
                 }
 
                 if (hasSiteOwner)
@@ -69,16 +68,23 @@ public sealed class RolesMigrations : DataMigration
                 }
             }
 
-            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
-
-            foreach (var adminRole in adminRoles)
+            if (adminRoles.Count > 0)
             {
-                var users = await userManager.GetUsersInRoleAsync(adminRole.RoleName);
-
-                foreach (var user in users)
+                // Run the migration in the background to ensure that the newly added role is committed to the database first, preventing potential exceptions.
+                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("MigrateAdminUsersRoNewAdminRole", async subScope =>
                 {
-                    await userManager.AddToRoleAsync(user, adminSystemRoleName);
-                }
+                    var userManager = subScope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
+
+                    foreach (var adminRole in adminRoles)
+                    {
+                        var users = await userManager.GetUsersInRoleAsync(adminRole.RoleName);
+
+                        foreach (var user in users)
+                        {
+                            await userManager.AddToRoleAsync(user, adminSystemRoleName);
+                        }
+                    }
+                });
             }
 
             if (adminSystemRoleName != OrchardCoreConstants.Roles.Administrator)

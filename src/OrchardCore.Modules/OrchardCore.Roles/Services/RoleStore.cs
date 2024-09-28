@@ -13,6 +13,7 @@ namespace OrchardCore.Roles.Services;
 public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly SystemRolesCatalog _systemRolesCatalog;
     private readonly IDocumentManager<RolesDocument> _documentManager;
     protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
@@ -21,11 +22,13 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
 
     public RoleStore(
         IServiceProvider serviceProvider,
+        SystemRolesCatalog systemRolesCatalog,
         IDocumentManager<RolesDocument> documentManager,
         IStringLocalizer<RoleStore> stringLocalizer,
         ILogger<RoleStore> logger)
     {
         _serviceProvider = serviceProvider;
+        _systemRolesCatalog = systemRolesCatalog;
         _documentManager = documentManager;
         S = stringLocalizer;
         _logger = logger;
@@ -77,10 +80,12 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     {
         ArgumentNullException.ThrowIfNull(role);
 
-        var roleToRemove = (Role)role;
+        if (role is not Role roleToRemove)
+        {
+            return IdentityResult.Failed(new IdentityError { Description = S["Role is not of a '{0}' type.", nameof(Role)] });
+        }
 
-        if (string.Equals(roleToRemove.NormalizedRoleName, "ANONYMOUS", StringComparison.Ordinal) ||
-            string.Equals(roleToRemove.NormalizedRoleName, "AUTHENTICATED", StringComparison.Ordinal))
+        if (_systemRolesCatalog.SystemRoleNames.Contains(roleToRemove.RoleName))
         {
             return IdentityResult.Failed(new IdentityError { Description = S["Can't delete system roles."] });
         }
@@ -154,7 +159,10 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     {
         ArgumentNullException.ThrowIfNull(role);
 
-        ((Role)role).NormalizedRoleName = normalizedName;
+        if (role is Role r)
+        {
+            r.NormalizedRoleName = normalizedName;
+        }
 
         return Task.CompletedTask;
     }
@@ -163,7 +171,10 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     {
         ArgumentNullException.ThrowIfNull(role);
 
-        ((Role)role).RoleName = roleName;
+        if (role is Role r)
+        {
+            r.RoleName = roleName;
+        }
 
         return Task.CompletedTask;
     }
@@ -175,7 +186,11 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
         var roles = await LoadRolesAsync();
         var existingRole = roles.Roles.FirstOrDefault(x => string.Equals(x.RoleName, role.RoleName, StringComparison.OrdinalIgnoreCase));
         roles.Roles.Remove(existingRole);
-        roles.Roles.Add((Role)role);
+
+        if (role is Role r)
+        {
+            roles.Roles.Add(r);
+        }
 
         await UpdateRolesAsync(roles);
 
