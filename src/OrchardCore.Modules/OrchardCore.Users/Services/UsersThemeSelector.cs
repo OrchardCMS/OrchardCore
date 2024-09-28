@@ -41,6 +41,7 @@ public class UsersThemeSelector : IThemeSelector
             switch (routeValues["controller"]?.ToString())
             {
                 case "Account":
+                case "ExternalAuthentications":
                     useSiteTheme = (await _siteService.GetSettingsAsync<LoginSettings>()).UseSiteTheme;
                     break;
                 case "TwoFactorAuthentication":

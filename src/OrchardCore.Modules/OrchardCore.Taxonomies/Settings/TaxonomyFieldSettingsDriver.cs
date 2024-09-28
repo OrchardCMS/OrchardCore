@@ -13,7 +13,7 @@ public sealed class TaxonomyFieldSettingsDriver : ContentPartFieldDefinitionDisp
     {
         return Initialize<TaxonomyFieldSettings>("TaxonomyFieldSettings_Edit", model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<TaxonomyFieldSettings>();
+            var settings = partFieldDefinition.GetSettings<TaxonomyFieldSettings>();
 
             model.Hint = settings.Hint;
             model.Required = settings.Required;

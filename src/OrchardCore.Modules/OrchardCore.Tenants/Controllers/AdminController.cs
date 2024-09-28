@@ -26,6 +26,8 @@ namespace OrchardCore.Tenants.Controllers;
 [Admin("Tenants/{action}/{id?}", "Tenants{action}")]
 public sealed class AdminController : Controller
 {
+    public const string CreateAndSetupValue = "createAndSetup";
+
     private readonly IShellHost _shellHost;
     private readonly IShellSettingsManager _shellSettingsManager;
     private readonly IShellRemovalManager _shellRemovalManager;
@@ -380,7 +382,7 @@ public sealed class AdminController : Controller
 
             await _shellHost.UpdateShellSettingsAsync(shellSettings);
 
-            if (action == "createAndSetup")
+            if (action == CreateAndSetupValue)
             {
                 var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
 
