@@ -35,17 +35,12 @@ public sealed class AzureADStartup : StartupBase
         services.AddTransient<IConfigureOptions<AzureADSettings>, AzureADSettingsConfiguration>();
 
         // Register the options initializers required by the Policy Scheme, Cookie and OpenId Connect Handler.
-        services.TryAddEnumerable(new[]
-        {
-            // Orchard-specific initializers.
-            ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, AzureADOptionsConfiguration>(),
-            ServiceDescriptor.Transient<IConfigureOptions<MicrosoftIdentityOptions>, AzureADOptionsConfiguration>(),
-            ServiceDescriptor.Transient<IConfigureOptions<PolicySchemeOptions>, AzureADOptionsConfiguration>(),
-            ServiceDescriptor.Transient<IConfigureOptions<OpenIdConnectOptions>, OpenIdConnectOptionsConfiguration>(),
+        services.AddTransient<IConfigureOptions<AuthenticationOptions>, AzureADOptionsConfiguration>(),
+        services.AddTransient<IConfigureOptions<MicrosoftIdentityOptions>, AzureADOptionsConfiguration>(),
+        services.AddTransient<IConfigureOptions<PolicySchemeOptions>, AzureADOptionsConfiguration>(),
+        services.AddTransient<IConfigureOptions<OpenIdConnectOptions>, OpenIdConnectOptionsConfiguration>(),
 
-            // Built-in initializers:
-            ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>(),
-        });
+       services.AddSingleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>();
     }
 }
 
