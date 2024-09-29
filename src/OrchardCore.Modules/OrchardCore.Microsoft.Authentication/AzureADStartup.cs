@@ -34,13 +34,12 @@ public sealed class AzureADStartup : StartupBase
 
         services.AddTransient<IConfigureOptions<AzureADSettings>, AzureADSettingsConfiguration>();
 
-        // Register the options initializers required by the Policy Scheme, Cookie and OpenId Connect Handler.
-        services.AddTransient<IConfigureOptions<AuthenticationOptions>, AzureADOptionsConfiguration>(),
-        services.AddTransient<IConfigureOptions<MicrosoftIdentityOptions>, AzureADOptionsConfiguration>(),
-        services.AddTransient<IConfigureOptions<PolicySchemeOptions>, AzureADOptionsConfiguration>(),
-        services.AddTransient<IConfigureOptions<OpenIdConnectOptions>, OpenIdConnectOptionsConfiguration>(),
+        services.AddTransient<IConfigureOptions<AuthenticationOptions>, AzureADOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<MicrosoftIdentityOptions>, AzureADOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<PolicySchemeOptions>, AzureADOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<OpenIdConnectOptions>, OpenIdConnectOptionsConfiguration>();
 
-       services.AddSingleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>();
+        services.AddSingleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>();
     }
 }
 
