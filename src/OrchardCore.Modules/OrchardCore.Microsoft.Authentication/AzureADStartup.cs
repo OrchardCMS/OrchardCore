@@ -24,7 +24,7 @@ public sealed class AzureADStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.TryAddEnumerable(new ServiceDescriptor(typeof(IPermissionProvider), typeof(Permissions), ServiceLifetime.Scoped));
+        services.AddPermissionProvider<Permissions>();
 
         services.AddSingleton<IAzureADService, AzureADService>();
         services.AddRecipeExecutionStep<AzureADSettingsStep>();

@@ -6,7 +6,7 @@ using OrchardCore.Microsoft.Authentication.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Deployment;
 
-public class MicrosoftAccountDeploymentSource : IDeploymentSource
+public sealed class MicrosoftAccountDeploymentSource : IDeploymentSource
 {
     private readonly IMicrosoftAccountService _microsoftAccountService;
 
