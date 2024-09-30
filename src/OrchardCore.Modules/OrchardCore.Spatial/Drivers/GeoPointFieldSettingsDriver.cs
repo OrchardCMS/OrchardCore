@@ -14,7 +14,7 @@ public sealed class GeoPointFieldSettingsDriver : ContentPartFieldDefinitionDisp
     {
         return Initialize<GeoPointFieldSettings>("GeoPointFieldSettings_Edit", model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<GeoPointFieldSettings>();
+            var settings = partFieldDefinition.GetSettings<GeoPointFieldSettings>();
 
             model.Hint = settings.Hint;
             model.Required = settings.Required;

@@ -10,6 +10,7 @@ using OrchardCore.Autoroute.Handlers;
 using OrchardCore.Autoroute.Indexing;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.Routing;
+using OrchardCore.Autoroute.Services;
 using OrchardCore.Autoroute.Settings;
 using OrchardCore.Autoroute.Sitemaps;
 using OrchardCore.Autoroute.ViewModels;
@@ -21,6 +22,7 @@ using OrchardCore.ContentManagement.Routing;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -96,6 +98,8 @@ public sealed class Startup : StartupBase
 
         services.AddSingleton<AutorouteTransformer>();
         services.AddSingleton<IShellRouteValuesAddressScheme, AutorouteValuesAddressScheme>();
+        
+        services.AddScoped<IShapeTableProvider, AutorouteShapeTableProvider>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

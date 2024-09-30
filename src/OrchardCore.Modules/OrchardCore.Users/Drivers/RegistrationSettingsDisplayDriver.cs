@@ -65,7 +65,7 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
 
         var hasChange = model.UsersMustValidateEmail != settings.UsersMustValidateEmail
             || model.UsersAreModerated != settings.UsersAreModerated
-            || model.UseSiteTheme != model.UseSiteTheme;
+            || model.UseSiteTheme != settings.UseSiteTheme;
 
         settings.UsersMustValidateEmail = model.UsersMustValidateEmail;
         settings.UsersAreModerated = model.UsersAreModerated;
