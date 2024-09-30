@@ -1,19 +1,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Localization;
-using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Shell;
 using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.ViewModels;
-using OrchardCore.Settings;
 using OrchardCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.UrlRewriting.Services;
 using OrchardCore.UrlRewriting.Rules;
+using OrchardCore.UrlRewriting.Helpers;
 
 namespace OrchardCore.UrlRewriting.Drivers;
 
@@ -21,7 +17,6 @@ internal sealed class RewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IShellReleaseManager _shellReleaseManager;
     private readonly RewriteRulesStore _rewriteRulesStore;
 
     internal readonly IStringLocalizer S;
@@ -29,13 +24,11 @@ internal sealed class RewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
     public RewriteRuleDisplayDriver(
         IAuthorizationService authorizationService,
         IHttpContextAccessor httpContextAccessor,
-        IShellReleaseManager shellReleaseManager,
         RewriteRulesStore rewriteRulesStore,
-        IStringLocalizer<UrlRewritingSettingsDisplayDriver> stringLocalizer)
+        IStringLocalizer<RewriteRuleDisplayDriver> stringLocalizer)
     {
         _authorizationService = authorizationService;
         _httpContextAccessor = httpContextAccessor;
-        _shellReleaseManager = shellReleaseManager;
         _rewriteRulesStore = rewriteRulesStore;
         S = stringLocalizer;
     }
@@ -47,9 +40,7 @@ internal sealed class RewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
             return null;
         }
 
-        context.AddTenantReloadWarningWrapper();
-
-        return Initialize<RewriteRuleViewModel>("RewriteRuleFields_Edit", viewModel => BuildViewModel(rule, viewModel))
+        return Initialize<RewriteRuleViewModel>("RewriteRuleFields_Edit", viewModel => BuildViewModel(rule, viewModel, context.IsNew))
        .Location("Content:1");
     }
 
@@ -66,13 +57,13 @@ internal sealed class RewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
 
         var rules = await _rewriteRulesStore.LoadRewriteRulesAsync();
 
-        if (string.IsNullOrWhiteSpace(model.DisplayName))
+        if (string.IsNullOrWhiteSpace(model.Name))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(RewriteRuleViewModel.DisplayName), "The rule name is required.");
+            context.Updater.ModelState.AddModelError(Prefix, nameof(RewriteRuleViewModel.Name), "The rule name is required.");
         }
-        else if (context.IsNew && rules.Rules.Any(x => string.Equals(x.Name, model.DisplayName, StringComparison.OrdinalIgnoreCase)))
+        else if (context.IsNew && rules.Rules.Any(x => string.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(RewriteRuleViewModel.DisplayName), "The rule name already exists.");
+            context.Updater.ModelState.AddModelError(Prefix, nameof(RewriteRuleViewModel.Name), "The rule name already exists.");
         }
         if (string.IsNullOrWhiteSpace(model.Pattern))
         {
@@ -95,21 +86,19 @@ internal sealed class RewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
             }
         }
 
-        rule.Name = model.DisplayName;
+        rule.Name = model.Name;
         rule.Pattern = model.Pattern;
         rule.Substitution = model.RuleAction == RuleAction.Rewrite ? model.RewriteAction.RewriteUrl : model.RedirectAction.RedirectUrl;
-        rule.Flags = ApacheRuleBuilder.FlagsFromViewModel(model);
+        rule.Flags = ApacheRules.FlagsFromViewModel(model);
 
         return await EditAsync(rule, context);
     }
 
-    private void BuildViewModel(RewriteRule model, RewriteRuleViewModel viewModel)
+    private void BuildViewModel(RewriteRule model, RewriteRuleViewModel viewModel, bool isNew)
     {
-        var flags = model.GetFlagsCollection();
+        viewModel.FromModel(model);
 
-        viewModel.DisplayName = model.Name;
-        viewModel.Pattern = model.Pattern;
-        viewModel.IgnoreCase = flags.Contains("NC");
+        viewModel.IsNew = isNew;
 
         viewModel.AvailableActions.Add(new SelectListItem() { Text = S["Rewrite"], Value = ((int)RuleAction.Rewrite).ToString() });
         viewModel.AvailableActions.Add(new SelectListItem() { Text = S["Redirect"], Value = ((int)RuleAction.Redirect).ToString() });

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.Settings;
+using OrchardCore.Documents;
 using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.Rules;
 
@@ -9,23 +9,25 @@ namespace OrchardCore.UrlRewriting.Options;
 
 public sealed class RewriteOptionsConfiguration : IConfigureOptions<RewriteOptions>
 {
-    private readonly ISiteService _siteService;
+    private readonly IDocumentManager<RewriteRulesDocument> _documentManager;
 
     private readonly AdminOptions _adminOptions;
 
-    public RewriteOptionsConfiguration(ISiteService siteService, IOptions<AdminOptions> adminOptions)
+    public RewriteOptionsConfiguration(IDocumentManager<RewriteRulesDocument> documentManager, IOptions<AdminOptions> adminOptions)
     {
-        _siteService = siteService;
+        _documentManager = documentManager;
         _adminOptions = adminOptions.Value;
     }
 
     public void Configure(RewriteOptions options)
     {
-        var settings = _siteService.GetSettingsAsync<UrlRewritingSettings>()
+        var rules = _documentManager.GetOrCreateMutableAsync()
             .GetAwaiter()
             .GetResult();
 
-        using var apacheModRewrite = new StringReader(settings.ApacheModRewrite ?? string.Empty);
+        var apacheRules = ApacheRules.FromModels(rules.Rules);
+
+        using var apacheModRewrite = new StringReader(apacheRules);
 
         options.AddApacheModRewrite(apacheModRewrite);
 

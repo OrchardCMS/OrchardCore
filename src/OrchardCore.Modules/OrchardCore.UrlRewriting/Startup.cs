@@ -23,7 +23,6 @@ public sealed class Startup : StartupBase
     {
         services.AddScoped<RewriteRulesStore>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddSiteDisplayDriver<UrlRewritingSettingsDisplayDriver>();
         services.AddScoped<IDisplayDriver<RewriteRule>, RewriteRuleDisplayDriver>();
         services.AddPermissionProvider<UrlRewritingPermissionProvider>();
         services.AddTransient<IConfigureOptions<RewriteOptions>, RewriteOptionsConfiguration>();

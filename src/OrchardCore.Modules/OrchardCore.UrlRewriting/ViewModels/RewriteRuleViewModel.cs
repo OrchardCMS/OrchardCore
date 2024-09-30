@@ -5,7 +5,7 @@ namespace OrchardCore.UrlRewriting.ViewModels;
 
 public class RewriteRuleViewModel
 {
-    public string DisplayName { get; set; }
+    public string Name { get; set; }
 
     public string Pattern { get; set; }
 
@@ -16,6 +16,12 @@ public class RewriteRuleViewModel
     public RewriteActionViewModel RewriteAction { get; set; } = new RewriteActionViewModel();
 
     public RedirectActionViewModel RedirectAction { get; set; } = new RedirectActionViewModel();
+
+    [BindNever]
+    public string Substitution => RuleAction == RuleAction.Rewrite ? RewriteAction.RewriteUrl : RedirectAction.RedirectUrl;
+
+    [BindNever]
+    public bool IsNew { get; set; }
 
     [BindNever]
     public List<SelectListItem> AvailableActions { get; set; } = [];

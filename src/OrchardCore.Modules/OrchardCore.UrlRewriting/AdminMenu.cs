@@ -1,7 +1,5 @@
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.UrlRewriting.Drivers;
 
 namespace OrchardCore.UrlRewriting;
 
@@ -18,14 +16,12 @@ public sealed class AdminMenu : AdminNavigationProvider
     {
         builder
             .Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], settings => settings
-                   .Add(S["URL Rewriting"], S["URL Rewriting"].PrefixPosition(), rewriting => rewriting
-                       .AddClass("urlrewriting").Id("urlrewriting")
-                       .Permission(UrlRewritingPermissions.ManageUrlRewriting)
-                       .Action("Index", "Admin", "OrchardCore.UrlRewriting")
-                       .LocalNav()
-                    )
-                )
+                .Add(S["URL Rewriting"], S["URL Rewriting"].PrefixPosition(), rewriting => rewriting
+                    .AddClass("urlrewriting").Id("urlrewriting")
+                    .Permission(UrlRewritingPermissions.ManageUrlRewriting)
+                    .Action("Index", "Admin", "OrchardCore.UrlRewriting")
+                    .LocalNav()
+                 )
             );
 
         return ValueTask.CompletedTask;

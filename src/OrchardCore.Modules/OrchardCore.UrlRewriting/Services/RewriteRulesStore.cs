@@ -1,5 +1,4 @@
 using OrchardCore.Documents;
-using OrchardCore.Security;
 using OrchardCore.UrlRewriting.Models;
 
 namespace OrchardCore.UrlRewriting.Services;
@@ -7,8 +6,6 @@ namespace OrchardCore.UrlRewriting.Services;
 public class RewriteRulesStore
 {
     private readonly IDocumentManager<RewriteRulesDocument> _documentManager;
-
-    private bool _updating;
 
     public RewriteRulesStore(IDocumentManager<RewriteRulesDocument> documentManager)
     {
@@ -25,21 +22,24 @@ public class RewriteRulesStore
     /// </summary>
     public Task<RewriteRulesDocument> GetRewriteRulesAsync() => _documentManager.GetOrCreateImmutableAsync();
 
-    /// <summary>
-    /// Updates the store with the provided rewrite rules document and then updates the cache.
-    /// </summary>
-    private Task UpdateRolesAsync(RewriteRulesDocument rules)
-    {
-        _updating = true;
-
-        return _documentManager.UpdateAsync(rules);
-    }
-
-    public async Task CreateAsync(RewriteRule rule)
+    public async Task SaveAsync(RewriteRule rule)
     {
         var rules = await LoadRewriteRulesAsync();
-        rules.Rules.Add(rule);
-        await UpdateRolesAsync(rules);
+
+        var preexisting = rules.Rules.FirstOrDefault(x => string.Equals(x.Name, rule.Name, StringComparison.OrdinalIgnoreCase));
+
+        // it's new? add it
+        if (preexisting == null)
+        {
+            rules.Rules.Add(rule);
+        }
+        else // not new: replace it
+        {
+            var index = rules.Rules.IndexOf(preexisting);
+            rules.Rules[index] = rule;
+        }
+
+        await _documentManager.UpdateAsync(rules);
     }
 
     public async Task DeleteAsync(RewriteRule rule)
@@ -48,13 +48,12 @@ public class RewriteRulesStore
         var ruleToRemove = rules.Rules.FirstOrDefault(r => string.Equals(r.Name, rule.Name, StringComparison.OrdinalIgnoreCase));
         rules.Rules.Remove(ruleToRemove);
 
-        await UpdateRolesAsync(rules);
+        await _documentManager.UpdateAsync(rules);
     }
 
     public async Task<RewriteRule> FindByIdAsync(string ruleId)
     {
-        // While updating find a rule from the loaded document being mutated.
-        var rules = _updating ? await LoadRewriteRulesAsync() : await GetRewriteRulesAsync();
+        var rules = await GetRewriteRulesAsync();
 
         var rule = rules.Rules.FirstOrDefault(x => string.Equals(x.Name, ruleId, StringComparison.OrdinalIgnoreCase));
 
@@ -63,6 +62,6 @@ public class RewriteRulesStore
             return null;
         }
 
-        return _updating ? rule : rule.Clone();
+        return rule.Clone();
     }
 }

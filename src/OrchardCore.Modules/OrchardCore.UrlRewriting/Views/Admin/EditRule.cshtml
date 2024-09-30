@@ -1,0 +1,8 @@
+@model dynamic
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Rule"])</h1></zone>
+
+<form asp-action="EditRule" id="EditRule_Form" method="post" enctype="multipart/form-data" class="no-multisubmit">
+    @Html.ValidationSummary()
+    @await DisplayAsync(Model)
+</form>

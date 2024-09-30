@@ -1,14 +1,14 @@
 @model RewriteRuleViewModel
 
 <div class="mb-3">
-    <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
-    <input asp-for="DisplayName" class="form-control w-md-75 w-xl-50" autofocus />
+    <label asp-for="Name" class="form-label">@T["Name"]</label>
+    <input asp-for="Name" class="form-control w-md-75 w-xl-50" readonly="@(Model.IsNew ? null : "readonly")" autofocus="@(Model.IsNew)" />
     <span class="hint">@T["Rule name."]</span>
 </div>
 
 <div class="mb-3">
     <label asp-for="Pattern" class="form-label">@T["Pattern"]</label>
-    <input asp-for="Pattern" class="form-control w-md-75 w-xl-50" />
+    <input asp-for="Pattern" class="form-control w-md-75 w-xl-50" autofocus="@(!Model.IsNew)" />
     <span class="hint">@T["Rewrite rules use regular expression syntax for pattern matching as defined in ECMA-262."]</span>
 </div>
 
@@ -23,12 +23,12 @@
 <div class="mb-3">
     <div class="w-100 w-lg-75 w-xl-50">
         <label asp-for="RuleAction" class="form-label">@T["Action"]</label>
-        <select asp-for="RuleAction" asp-items="Model.AvailableActions" id="ActionRule_Type" class="form-select"></select>
+        <select asp-for="RuleAction" asp-items="Model.AvailableActions" id="RuleAction_Type" class="form-select"></select>
     </div>
     <span class="hint">@T["Action type for matched URL."]</span>
 </div>
 
-<div id="ActionRule_0" class="collapse">
+<div id="RuleAction_0" class="collapse">
     <div class="mb-3">
         <label asp-for="RewriteAction.RewriteUrl" class="form-label">@T["Rewrite URL"]</label>
         <input asp-for="RewriteAction.RewriteUrl" class="form-control w-md-75 w-xl-50" />
@@ -40,9 +40,16 @@
             <label class="form-check-label" asp-for="RewriteAction.AppendQueryString">@T["Append query string"]</label>
         </div>
     </div>
+
+    <div class="mb-3">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="RewriteAction.SkipFurtherRules" checked="@Model.RewriteAction.SkipFurtherRules" />
+            <label class="form-check-label" asp-for="RewriteAction.SkipFurtherRules">@T["Skip further rules"]</label>
+        </div>
+    </div>
 </div>
 
-<div id="ActionRule_1" class="collapse">
+<div id="RuleAction_1" class="collapse">
     <div class="mb-3">
         <label asp-for="RedirectAction.RedirectUrl" class="form-label">@T["Redirect URL"]</label>
         <input asp-for="RedirectAction.RedirectUrl" class="form-control w-md-75 w-xl-50" />
@@ -64,9 +71,16 @@
 </div>
 
 <div class="mb-3">
-    <button class="btn btn-primary create" type="submit">@T["Create"]</button>
+    @if(Model.IsNew)
+    {
+        <button class="btn btn-primary" type="submit">@T["Create"]</button>
+    }
+    else
+    {
+        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+    }
 
-    <a class="btn btn-secondary cancel"
+    <a class="btn btn-secondary"
        role="button"
        asp-route-action="Index"
        asp-route-controller="Admin"
@@ -75,7 +89,7 @@
 
 <script at="Foot">
     function show_panel(panel_id) {
-        var panels = document.querySelectorAll('#NewRule_Form .collapse');
+        var panels = document.querySelectorAll('#EditRule_Form .collapse');
 
         panels.forEach(function (panel) {
             panel.classList.remove('show');
@@ -87,11 +101,11 @@
         }
     }
 
-    document.getElementById('ActionRule_Type').addEventListener('change', function() {
+    document.getElementById('RuleAction_Type').addEventListener('change', function() {
         console.log('test');
-        show_panel('ActionRule_' + this.value);
+        show_panel('RuleAction_' + this.value);
     });
 
-    var currentPanel = document.getElementById('ActionRule_Type').value;
-    show_panel('ActionRule_' + currentPanel);
+    var currentPanel = document.getElementById('RuleAction_Type').value;
+    show_panel('RuleAction_' + currentPanel);
 </script>

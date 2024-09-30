@@ -1,9 +1,10 @@
+using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.ViewModels;
 using System.Text;
 
 namespace OrchardCore.UrlRewriting.Rules;
 
-public class ApacheRuleBuilder
+public class ApacheRules
 {
     public static string FlagsFromViewModel(RewriteRuleViewModel viewModel)
     {
@@ -61,6 +62,40 @@ public class ApacheRuleBuilder
         }
 
         return sbRewrite.ToString();
+    }
+
+    public static string FromModel(RewriteRule model)
+    {
+        if (string.IsNullOrWhiteSpace(model.Flags))
+        {
+            return $"RewriteRule \"{model.Pattern}\" \"{model.Substitution}\"";
+        }
+        else
+        {
+            return $"RewriteRule \"{model.Pattern}\" \"{model.Substitution}\" [{model.Flags}]";
+        }
+    }
+
+    public static string FromModels(IEnumerable<RewriteRule> models)
+    {
+        var sb = new StringBuilder();
+        foreach (var model in models)
+        {
+            sb.AppendLine(FromModel(model));
+        }
+        return sb.ToString();
+    }
+
+    public static RedirectType GetRedirectType(string flag)
+    {
+        return flag switch
+        {
+            "R=301" => RedirectType.MovedPermanently301,
+            "R=302" => RedirectType.Found302,
+            "R=307" => RedirectType.TemporaryRedirect307,
+            "R=308" => RedirectType.PernamentRedirect308,
+            _ => RedirectType.Found302
+        };
     }
 
     private static int RedirectTypeToStatusCode(RedirectType redirectType)

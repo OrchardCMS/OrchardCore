@@ -2,6 +2,13 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["URL Rewriting"])</h1></zone>
 
+<div class="alert alert-warning" style="position: sticky; bottom: 0">
+    <form>
+        <p>@T["The website needs to be restarted for any changes to the rules to take effect."]</p>
+        <a asp-action="ReloadWebsite" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Restart Website"]" data-message="@T["Are you sure you want to restart website?"]" class="btn btn-warning">@T["Restart Website"]</a>
+    </form>
+</div>
+
 <div class="card mb-3 text-bg-theme position-sticky action-bar">
     <div class="card-body">
         <div class="row gx-3">
@@ -18,35 +25,14 @@
     </div>
 </div>
 
-<form asp-action="Index" class="rules">
-    <ul class="list-group">
-        @foreach (var rule in Model.Rules)
-        {
-            var message = T["Are you sure you want to delete this rule?"];
-
-            <li class="list-group-item" data-filter-value="@rule.Name">
-                <div class="w-100">
-                    <div class="float-end">
-                        <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@rule.Name">@T["Edit"]</a>
-                        <a class="delete btn btn-danger btn-sm" asp-route-id="@rule.Name" role="button" asp-action="DeleteRule" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Delete Rule"]" data-message="@message">@T["Delete"]</a>
-                    </div>
-                    @rule.Name
-                    <code>@rule.Pattern</code><span>-></span><code>@rule.Pattern</code>
-                </div>
-            </li>
-        }
-    </ul>
-    <div id="list-alert" class="alert alert-info d-none" role="alert">
-        @T["<strong>Nothing here!</strong> Your search returned no results."]
-    </div>
-
+<form class="rules">
     <table class="table">
         <thead>
             <tr>
-                <th scope="col">#</th>
                 <th scope="col">Rule name</th>
                 <th scope="col">Pattern</th>
                 <th scope="col">Subsitution</th>
+                <th scope="col">Action</th>
                 <th scope="col" class="text-end"></th>
             </tr>
         </thead>
@@ -56,13 +42,13 @@
                 var message = T["Are you sure you want to delete this rule?"];
 
                 <tr data-filter-value="@rule.Name">
-                    <th scope="row">2</th>
-                    <td>@rule.Name</td>
+                    <td scope="row">@rule.Name</td>
                     <td><code>@rule.Pattern</code></td>
                     <td><code>@rule.Substitution</code></td>
+                    <td>Rewrite</td>
                     <td class="text-end">
                         <div>
-                            <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@rule.Name">@T["Edit"]</a>
+                            <a class="edit btn btn-primary btn-sm" role="button" asp-action="EditRule" asp-route-id="@rule.Name">@T["Edit"]</a>
                             <a class="delete btn btn-danger btn-sm" asp-route-id="@rule.Name" role="button" asp-action="DeleteRule" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Delete Rule"]" data-message="@message">@T["Delete"]</a>
                         </div>
                     </td>
@@ -70,6 +56,9 @@
             }
         </tbody>
     </table>
+    <div id="list-alert" class="alert alert-info d-none" role="alert">
+        @T["<strong>Nothing here!</strong> Your search returned no results."]
+    </div>
 </form>
 
 <script at="Foot" depends-on="jQuery">
@@ -81,7 +70,7 @@
             if (event.which == 13) {
 
                 // Edit the rule if there is a single filtered element
-                var visible = $('.rules > ul > li:visible');
+                var visible = $('.rules > table > tr:visible');
                 if (visible.length == 1) {
                     window.location = visible.find('.edit').attr('href');
                 }
@@ -98,6 +87,7 @@
             if (e.keyCode == 27 || search == '') {
                 searchBox.val('');
                 elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
+                $('#list-alert').addClass("d-none");
             }
             else {
                 elementsToFilter.each(function () {
@@ -116,62 +106,7 @@
                 elementsToFilter.filter(":not(.d-none)").last().addClass("last-child-visible");
 
                 // We display an alert if a search is not found
-                var visible = $('.rules > ul > li:visible');
-                if (visible.length == 0) {
-                    $('#list-alert').removeClass("d-none");
-                }
-                else {
-                    $('#list-alert').addClass("d-none");
-                }
-            }
-        });
-    })
-
-
-    $(function () {
-        var searchBox = $('#search-box');
-
-        // On Enter, edit the rule if there is a single one
-        searchBox.keypress(function (event) {
-            if (event.which == 13) {
-
-                // Edit the rule if there is a single filtered element
-                var visible = $('.rules > table > tr:visible');
-                if (visible.length == 1) {
-                    window.location = visible.find('.edit').attr('href');
-                }
-                return false;
-            }
-        });
-
-        // On each keypress filter the list of rules
-        searchBox.keyup(function (e) {
-            var search = $(this).val().toLowerCase();
-            var elementsToFilter = $("[data-filter-value]");
-
-            // On ESC, clear the search box and display all rules
-            if (e.keyCode == 27 || search == '') {
-                searchBox.val('');
-                elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
-            }
-            else {
-                elementsToFilter.each(function () {
-                    var text = $(this).data('filter-value').toLowerCase();
-                    var found = text.indexOf(search) > -1;
-
-                    if (found) {
-                        $(this).removeClass("d-none first-child-visible last-child-visible");
-                    }
-                    else {
-                        $(this).addClass("d-none");
-                    }
-                });
-
-                elementsToFilter.filter(":not(.d-none)").first().addClass("first-child-visible");
-                elementsToFilter.filter(":not(.d-none)").last().addClass("last-child-visible");
-
-                // We display an alert if a search is not found
-                var visible = $('.rules > table > tr:visible');
+                var visible = $('.rules > table > tbody > tr:visible');
                 if (visible.length == 0) {
                     $('#list-alert').removeClass("d-none");
                 }

@@ -7,7 +7,7 @@ public class ApacheRuleValidator
 {
     public static bool ValidateRule(RewriteRuleViewModel viewModel, out string validationError)
     {
-        var apacheRule = ApacheRuleBuilder.FromViewModel(viewModel, true);
+        var apacheRule = ApacheRules.FromViewModel(viewModel, true);
 
         try
         {

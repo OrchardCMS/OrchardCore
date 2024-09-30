@@ -1,8 +1,6 @@
-using OrchardCore.UrlRewriting.Models;
-
 namespace OrchardCore.UrlRewriting.ViewModels;
 
 public class RewriteRulesViewModel
 {
-    public List<RewriteRule> Rules { get; set; } = [];
+    public List<RewriteRuleViewModel> Rules { get; set; } = [];
 }
