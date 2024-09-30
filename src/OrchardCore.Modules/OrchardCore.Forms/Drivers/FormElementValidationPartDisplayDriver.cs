@@ -22,7 +22,7 @@ public sealed class FormElementValidationPartDisplayDriver : ContentPartDisplayD
         });
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(FormElementValidationPart part, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(FormElementValidationPart part, UpdatePartEditorContext context)
     {
         var viewModel = new FormElementValidationPartViewModel();
 

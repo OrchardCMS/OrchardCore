@@ -55,8 +55,8 @@ public class ContainedPartIndexProvider : IndexProvider<ContentItem>
                 if (containedPartIndex.DisplayText?.Length > ContainedPartIndex.MaxDisplayTextSize)
                 {
                     containedPartIndex.DisplayText = contentItem.DisplayText[..ContainedPartIndex.MaxDisplayTextSize];
-                } 
-                else 
+                }
+                else
                 {
                     containedPartIndex.DisplayText = contentItem.DisplayText;
                 }
