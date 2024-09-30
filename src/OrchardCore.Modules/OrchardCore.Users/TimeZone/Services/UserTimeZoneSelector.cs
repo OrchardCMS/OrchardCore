@@ -5,7 +5,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Users.TimeZone.Services;
 
 /// <summary>
-/// Provides the timezone defined for the currently logged-in user for the current scope (request).
+/// Provides the time zone defined for the currently logged-in user for the current scope (request).
 /// </summary>
 public class UserTimeZoneSelector : ITimeZoneSelector
 {
@@ -27,10 +27,12 @@ public class UserTimeZoneSelector : ITimeZoneSelector
     {
         var currentUser = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
 
-        return new TimeZoneSelectorResult
-        {
-            Priority = 100,
-            TimeZoneId = async () => (await _userTimeZoneService.GetAsync(currentUser)).TimeZoneId
-        };
+        return currentUser == null
+            ? null
+            : new TimeZoneSelectorResult
+            {
+                Priority = 100,
+                TimeZoneId = async () => (await _userTimeZoneService.GetAsync(currentUser))?.TimeZoneId
+            };
     }
 }

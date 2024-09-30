@@ -9,7 +9,6 @@
 @inject IUpdateModelAccessor UpdateModelAccessor
 @inject ThemeTogglerService ThemeTogglerService
 @{
-    var adminSettings = Site.As<AdminSettings>();
     // Navbar is pre-rendered to allow resource injection.
     var navbar = await DisplayAsync(await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater));
 }
