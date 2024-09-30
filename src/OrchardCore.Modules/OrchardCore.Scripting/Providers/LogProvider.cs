@@ -44,7 +44,7 @@ public class LogProvider : IGlobalMethodProvider
                 }
                 catch (Exception ex)
                 {
-                    logger.Log(LogLevel.Error, ex, "Error logging text template {text} with param {param} from Scripting Engine.", text, param);
+                    logger.Log(LogLevel.Error, ex, "Error logging text template {Text} with param {Param} from Scripting Engine.", text, param);
                 }
             }),
         };

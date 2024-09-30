@@ -23,7 +23,7 @@ public sealed class YoutubeFieldSettingsDriver : ContentPartFieldDefinitionDispl
         }).Location("Content");
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
     {
         var model = new YoutubeFieldSettings();
         await context.Updater.TryUpdateModelAsync(model, Prefix);

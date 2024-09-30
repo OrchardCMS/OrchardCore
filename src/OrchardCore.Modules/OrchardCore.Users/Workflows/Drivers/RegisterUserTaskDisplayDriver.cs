@@ -26,7 +26,7 @@ public sealed class RegisterUserTaskDisplayDriver : ActivityDisplayDriver<Regist
         model.RequireModeration = activity.RequireModeration;
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(RegisterUserTask model, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(RegisterUserTask model, UpdateEditorContext context)
     {
         var viewModel = new RegisterUserTaskViewModel();
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix);

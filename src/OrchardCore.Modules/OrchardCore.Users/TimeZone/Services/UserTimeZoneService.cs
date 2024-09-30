@@ -67,7 +67,7 @@ public class UserTimeZoneService : IUserTimeZoneService
         // The timezone is not cached yet, resolve it and store the value
         if (string.IsNullOrEmpty(timeZoneId))
         {
-            if (user is User u) 
+            if (user is User u)
             {
                 timeZoneId = u.As<UserTimeZone>()?.TimeZoneId;
             }
