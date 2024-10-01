@@ -192,7 +192,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (await _roleManager.FindByNameAsync(id) is not Role role)
+        if (await _roleManager.FindByIdAsync(id) is not Role role)
         {
             return NotFound();
         }
