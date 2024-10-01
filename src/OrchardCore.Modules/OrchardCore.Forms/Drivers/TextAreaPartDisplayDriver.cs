@@ -22,7 +22,7 @@ public sealed class TextAreaPartDisplayDriver : ContentPartDisplayDriver<TextAre
         });
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(TextAreaPart part, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(TextAreaPart part, UpdatePartEditorContext context)
     {
         var viewModel = new InputPartEditViewModel();
 
