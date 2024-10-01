@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Security;
@@ -8,14 +9,16 @@ namespace OrchardCore.Roles.Services;
 public class RoleService : IRoleService
 {
     private readonly RoleManager<IRole> _roleManager;
-    private readonly SystemRolesCatalog _systemRolesCatalog;
+    private readonly ISystemRoleNameProvider _systemRoleProvider;
+
+    private FrozenSet<string> _systemRoles;
 
     public RoleService(
         RoleManager<IRole> roleManager,
-        SystemRolesCatalog systemRolesCatalog)
+        ISystemRoleNameProvider systemRoleProvider)
     {
         _roleManager = roleManager;
-        _systemRolesCatalog = systemRolesCatalog;
+        _systemRoleProvider = systemRoleProvider;
     }
 
     public async Task<IEnumerable<Claim>> GetRoleClaimsAsync(string role, CancellationToken cancellationToken = default)
@@ -49,9 +52,13 @@ public class RoleService : IRoleService
         return Task.FromResult<IEnumerable<string>>(_roleManager.Roles.Select(a => _roleManager.NormalizeKey(a.RoleName)));
     }
 
-    public ValueTask<bool> IsAdminRoleAsync(string role)
-        => ValueTask.FromResult(_systemRolesCatalog.AdminRoleName.Equals(role, StringComparison.OrdinalIgnoreCase));
+    public async ValueTask<bool> IsAdminRoleAsync(string role)
+        => string.Equals(await _systemRoleProvider.GetAdminRoleAsync(), role, StringComparison.OrdinalIgnoreCase);
 
-    public ValueTask<bool> IsSystemRoleAsync(string role)
-        => ValueTask.FromResult(_systemRolesCatalog.SystemRoleNames.Contains(role));
+    public async ValueTask<bool> IsSystemRoleAsync(string role)
+    {
+        _systemRoles ??= await _systemRoleProvider.GetSystemRolesAsync();
+
+        return _systemRoles.Contains(role);
+    }
 }

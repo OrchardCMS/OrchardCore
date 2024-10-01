@@ -13,7 +13,7 @@ namespace OrchardCore.Roles.Services;
 public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly SystemRolesCatalog _systemRolesCatalog;
+    private readonly ISystemRoleNameProvider _systemRoleProvider;
     private readonly IDocumentManager<RolesDocument> _documentManager;
     protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
@@ -22,13 +22,13 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
 
     public RoleStore(
         IServiceProvider serviceProvider,
-        SystemRolesCatalog systemRolesCatalog,
+        ISystemRoleNameProvider systemRoleProvider,
         IDocumentManager<RolesDocument> documentManager,
         IStringLocalizer<RoleStore> stringLocalizer,
         ILogger<RoleStore> logger)
     {
         _serviceProvider = serviceProvider;
-        _systemRolesCatalog = systemRolesCatalog;
+        _systemRoleProvider = systemRoleProvider;
         _documentManager = documentManager;
         S = stringLocalizer;
         _logger = logger;
@@ -85,7 +85,9 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
             return IdentityResult.Failed(new IdentityError { Description = S["Role is not of a '{0}' type.", nameof(Role)] });
         }
 
-        if (_systemRolesCatalog.SystemRoleNames.Contains(roleToRemove.RoleName))
+        var systemRoles = await _systemRoleProvider.GetSystemRolesAsync();
+
+        if (systemRoles.Contains(roleToRemove.RoleName))
         {
             return IdentityResult.Failed(new IdentityError { Description = S["Can't delete system roles."] });
         }

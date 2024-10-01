@@ -5,7 +5,7 @@ using OrchardCore.Tests.Security;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Roles;
 
-public class PermissionHandlerHelper
+public class PermissionHandlerHelperTests
 {
     [Theory]
     [InlineData("AllowAnonymous", true, true)]
@@ -15,7 +15,7 @@ public class PermissionHandlerHelper
     public async Task GrantsRolesPermissions(string required, bool authenticated, bool success)
     {
         // Arrange
-        var context = Security.PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission(required), authenticated: authenticated);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission(required), authenticated: authenticated);
 
         var permissionHandler = CreatePermissionHandler(
             new Role
@@ -47,7 +47,7 @@ public class PermissionHandlerHelper
     public async Task DoNotRevokeExistingGrants()
     {
         // Arrange
-        var context = Security.PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Required"), ["Other"], true);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Required"), ["Other"], true);
 
         var permissionHandler = CreatePermissionHandler();
 
@@ -68,7 +68,7 @@ public class PermissionHandlerHelper
         var level1 = new Permission("Implicit1", "Foo", new[] { level2 });
         var required = new Permission("Required", "Foo", new[] { level1 });
 
-        var context = Security.PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(required);
 
         var permissionHandler = CreatePermissionHandler(
             new Role
@@ -94,7 +94,7 @@ public class PermissionHandlerHelper
     public async Task IsCaseInsensitive(string required, bool authenticated)
     {
         // Arrange
-        var context = Security.PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission(required), authenticated: authenticated);
+        var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission(required), authenticated: authenticated);
 
         var permissionHandler = CreatePermissionHandler(
             new Role

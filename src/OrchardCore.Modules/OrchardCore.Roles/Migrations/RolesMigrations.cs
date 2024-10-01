@@ -11,13 +11,7 @@ namespace OrchardCore.Roles.Migrations;
 
 public sealed class RolesMigrations : DataMigration
 {
-    private static readonly string[] _alternativeAdminRoles =
-    [
-        "Admin",
-        "SiteAdmin",
-        "SiteAdministrator",
-        "SiteOwner",
-    ];
+    private static readonly string _alternativeAdminRoleName = "SiteOwner";
 
 #pragma warning disable CA1822 // Mark members as static
     public int Create()
@@ -105,22 +99,14 @@ public sealed class RolesMigrations : DataMigration
 
     private static string GenerateNewAdminRoleName(List<IRole> roles)
     {
-        foreach (var alternativeAdminRole in _alternativeAdminRoles)
-        {
-            if (!RoleExists(roles, alternativeAdminRole))
-            {
-                return alternativeAdminRole;
-            }
-        }
-
         var counter = 1;
-        string roleName;
-        do
+        var roleName = _alternativeAdminRoleName;
+
+        while (RoleExists(roles, roleName))
         {
-            // Generate names like this Admin1, Admin2....Admin{N}
-            roleName = _alternativeAdminRoles[0] + counter++;
+            // Generate names like this SiteOwner1, SiteOwner2...SiteOwner{N}
+            roleName = _alternativeAdminRoleName + counter++;
         }
-        while (RoleExists(roles, roleName));
 
         return roleName;
     }
