@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -23,7 +22,7 @@ public sealed class YoutubeFieldSettingsDriver : ContentPartFieldDefinitionDispl
         }).Location("Content");
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
     {
         var model = new YoutubeFieldSettings();
         await context.Updater.TryUpdateModelAsync(model, Prefix);

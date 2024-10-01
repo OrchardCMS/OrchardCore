@@ -37,7 +37,7 @@ public class LuceneIndexManager : IDisposable
     private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
     private readonly SpatialContext _ctx;
     private readonly GeohashPrefixTree _grid;
-    private readonly static object _synLock = new();
+    private static readonly object _synLock = new();
 
     public LuceneIndexManager(
         IClock clock,
