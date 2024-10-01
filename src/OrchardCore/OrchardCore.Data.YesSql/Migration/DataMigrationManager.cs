@@ -205,7 +205,7 @@ public class DataMigrationManager : IDataMigrationManager
 
                     if (createMethod == null)
                     {
-                        _logger.LogWarning("The migration '{name}' for '{FeatureName}' does not contain a proper Create or CreateAsync method.", migration.GetType().FullName, featureId);
+                        _logger.LogWarning("The migration '{Name}' for '{FeatureName}' does not contain a proper Create or CreateAsync method.", migration.GetType().FullName, featureId);
                         continue;
                     }
 

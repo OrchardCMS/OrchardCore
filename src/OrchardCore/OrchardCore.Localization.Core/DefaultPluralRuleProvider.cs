@@ -9,7 +9,7 @@ namespace OrchardCore.Localization;
 /// </summary>
 public class DefaultPluralRuleProvider : IPluralRuleProvider
 {
-    private readonly static Dictionary<string, PluralizationRuleDelegate> _rules;
+    private static readonly Dictionary<string, PluralizationRuleDelegate> _rules;
 
     static DefaultPluralRuleProvider()
     {

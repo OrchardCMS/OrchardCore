@@ -111,8 +111,8 @@ public interface IFileStore
 
 public static class IFileStoreExtensions
 {
-    private readonly static char[] _pathSeparators = ['\\', '/'];
-    private readonly static char[] _trimChars = ['/', ' '];
+    private static readonly char[] _pathSeparators = ['\\', '/'];
+    private static readonly char[] _trimChars = ['/', ' '];
 
     /// <summary>
     /// Combines multiple path parts using the path delimiter semantics of the abstract virtual file store.

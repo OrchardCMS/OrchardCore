@@ -261,7 +261,7 @@ public sealed class AdminController : Controller
             catch (Exception e)
             {
                 await _notifier.ErrorAsync(H["An error occurred while creating the index."]);
-                _logger.LogError(e, "An error occurred while creating an index {indexName}.", _indexManager.GetFullIndexName(model.IndexName));
+                _logger.LogError(e, "An error occurred while creating an index {IndexName}.", _indexManager.GetFullIndexName(model.IndexName));
             }
         }
 
@@ -384,7 +384,7 @@ public sealed class AdminController : Controller
             {
                 await _notifier.ErrorAsync(H["An error occurred while updating the index."]);
 
-                _logger.LogError(e, "An error occurred while updating an index {indexName}.", _indexManager.GetFullIndexName(model.IndexName));
+                _logger.LogError(e, "An error occurred while updating an index {IndexName}.", _indexManager.GetFullIndexName(model.IndexName));
             }
         }
 

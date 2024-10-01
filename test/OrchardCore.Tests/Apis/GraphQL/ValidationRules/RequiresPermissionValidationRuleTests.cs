@@ -13,7 +13,7 @@ namespace OrchardCore.Tests.Apis.GraphQL.ValidationRules;
 
 public class RequiresPermissionValidationRuleTests
 {
-    internal readonly static Dictionary<string, Permission> _permissions = new()
+    internal static readonly Dictionary<string, Permission> _permissions = new()
     {
         { "permissionOne",  new Permission("TestPermissionOne", "TestPermissionOne") },
         { "permissionTwo",  new Permission("TestPermissionTwo", "TestPermissionTwo") }
