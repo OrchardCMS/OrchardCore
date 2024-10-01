@@ -1,4 +1,3 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.Deployment;
 using OrchardCore.Microsoft.Authentication.Services;
@@ -22,12 +21,12 @@ public sealed class MicrosoftAccountDeploymentSource : IDeploymentSource
             return;
         }
 
-        var settings = await _microsoftAccountService.GetSettingsAsync();
+        var microsoftAccountSettings = await _microsoftAccountService.GetSettingsAsync();
 
-        var obj = new JsonObject { ["name"] = nameof(MicrosoftAccountSettings) };
-
-        obj.Merge(JObject.FromObject(settings, JOptions.Default));
-
-        result.Steps.Add(obj);
+        result.Steps.Add(new JsonObject
+        {
+            ["name"] = "Settings",
+            [nameof(MicrosoftAccountSettings)] = JObject.FromObject(microsoftAccountSettings),
+        });
     }
 }
