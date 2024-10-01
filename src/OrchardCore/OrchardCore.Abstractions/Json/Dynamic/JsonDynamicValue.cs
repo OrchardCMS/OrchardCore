@@ -133,7 +133,7 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
             {
                 if (_jsonValue is null || _jsonValue.GetValueKind() == JsonValueKind.Null)
                 {
-                    if (binder.Type.IsValueType && 
+                    if (binder.Type.IsValueType &&
                         (!binder.Type.IsGenericType || binder.Type.GetGenericTypeDefinition() != typeof(Nullable<>)))
                     {
                         // Create default instance of the value type.

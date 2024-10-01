@@ -51,6 +51,42 @@ For instance, when a content item is displayed in a list, the `Summary` display 
 | `Content_Summary__BlogPost` | `Content-BlogPost.Summary.cshtml` |
 | `Content_Summary__Article` | `Content-Article.Summary.cshtml` |
 
+### `Content__Alias__[Alias]`
+
+This template is called when displaying a content item with a specific alias. It needs to have the `AliasPart` attached to it.
+
+#### Content with Alias Examples
+
+| Template                   | Filename                       |
+|----------------------------|--------------------------------|
+| `Content__Alias__example`  | `Content-Alias-example.cshtml` |
+| `Content__Alias__my__page` | `Content-Alias-my-page.cshtml` |
+
+#### Content with Alias and Display Type Examples
+
+| Template                           | Filename                               |
+|------------------------------------|----------------------------------------|
+| `Content_Summary__Alias__example`  | `Content-Alias-example.Summary.cshtml` |
+| `Content_Summary__Alias__my__page` | `Content-Alias-my-page.Summary.cshtml` |
+
+### `Content__Slug__[Slug]`
+
+This template is called when displaying a content item with a specific slug (i.e., a path is assigned to the item). It needs to have the `AutoroutePart` attached to it.
+
+#### Content with Slug Examples
+
+| Template                        | Filename                           |
+|---------------------------------|------------------------------------|
+| `Content__Slug__example`        | `Content-Slug-example.cshtml`      |
+| `Content__Slug__blog__my__post` | `Content-Slug-blog-my-post.cshtml` |
+
+#### Content with Slug and Display Type Examples
+
+| Template                          | Filename                               |
+|-----------------------------------|----------------------------------------|
+| `Content_Summary__Slug__example`  | `Content-Slug-example.Summary.cshtml` |
+| `Content_Summary__Slug__blog__my__post` | `Content-Slug-blog-my-post.Summary.cshtml` |
+
 ## Widget templates
 
 ### `Widget__[ContentType]`
