@@ -23,7 +23,7 @@ public class TimeSpanTagHelper : TagHelper
     [HtmlAttributeName(OriginAttribute)]
     public DateTime? Origin { set; get; }
 
-    public async override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+    public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
     {
         var shapeType = "TimeSpan";
         var shape = await _shapeFactory.CreateAsync(shapeType);

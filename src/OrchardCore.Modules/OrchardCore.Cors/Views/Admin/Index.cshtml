@@ -1,7 +1,7 @@
 @model CorsSettingsViewModel
 
 <script asp-name="vuejs" at="Foot"></script>
-<script depends-on="vuejs" asp-src="~/OrchardCore.Cors/Scripts/cors-admin.min.js" debug-src="~/OrchardCore.Cors/Scripts/cors-admin.js" type="text/javascript" asp-name="cors-admin" at="Foot"></script>
+<script depends-on="vuejs" asp-src="~/OrchardCore.Cors/Scripts/cors-admin.min.js" debug-src="~/OrchardCore.Cors/Scripts/cors-admin.js" asp-name="cors-admin" at="Foot"></script>
 <script depends-on="cors-admin" at="Foot">
     corsApp.policies = @Html.Raw(Json.Serialize(Model.Policies));
 </script>

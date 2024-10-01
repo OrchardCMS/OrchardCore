@@ -62,7 +62,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
         return Combine(results);
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(TActivity activity, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(TActivity activity, UpdateEditorContext context)
     {
         var model = new NotifyUserTaskActivityViewModel();
 
