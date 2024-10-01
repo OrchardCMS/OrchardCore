@@ -67,7 +67,7 @@ public class UpdateContentTask : ContentTask
         return Outcomes(S["Done"], S["Failed"]);
     }
 
-    public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         var contentItemId = (await GetContentItemIdAsync(workflowContext))
             ?? throw new InvalidOperationException($"The {nameof(UpdateContentTask)} failed to evaluate the 'ContentItemId'.");

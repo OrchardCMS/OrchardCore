@@ -14,6 +14,6 @@ public static class ShapeTableProviderExtensions
     /// <typeparam name="TShapeTableProvider">The <see cref="IShapeTableProvider"/> to be registered.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/>.</param>
     public static IServiceCollection AddShapeTableProvider<TShapeTableProvider>(this IServiceCollection services)
-        where TShapeTableProvider: class, IShapeTableProvider
+        where TShapeTableProvider : class, IShapeTableProvider
         => services.AddScoped<IShapeTableProvider, TShapeTableProvider>();
 }

@@ -352,7 +352,7 @@ public sealed class TemplateController : Controller
         {
             return Forbid();
         }
-        
+
         switch (options.BulkAction)
         {
             case ContentsBulkAction.None:
@@ -365,7 +365,7 @@ public sealed class TemplateController : Controller
                         : await _templatesManager.LoadTemplatesDocumentAsync();
                     var checkedContentItemIds = templatesDocument.Templates.Keys
                         .Intersect(itemIds, StringComparer.OrdinalIgnoreCase);
-                    
+
                     foreach (var id in checkedContentItemIds)
                     {
                         await (options.AdminTemplates

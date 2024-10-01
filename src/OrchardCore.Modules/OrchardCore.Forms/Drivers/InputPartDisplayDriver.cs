@@ -23,7 +23,7 @@ public sealed class InputPartDisplayDriver : ContentPartDisplayDriver<InputPart>
         });
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(InputPart part, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(InputPart part, UpdatePartEditorContext context)
     {
         var viewModel = new InputPartEditViewModel();
 

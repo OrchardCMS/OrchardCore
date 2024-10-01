@@ -81,15 +81,9 @@ public class CommandHandlerDescriptorBuilderTests
         }
 
         // No operator.
-        public static bool operator ==(PublicMethodsOnly _1, PublicMethodsOnly _2)
-        {
-            return false;
-        }
+        public static bool operator ==(PublicMethodsOnly _1, PublicMethodsOnly _2) => false;
 
-        public static bool operator !=(PublicMethodsOnly _1, PublicMethodsOnly _2)
-        {
-            return false;
-        }
+        public static bool operator !=(PublicMethodsOnly _1, PublicMethodsOnly _2) => false;
 
 #pragma warning disable CA1822 // Mark members as static
         public void Method()
