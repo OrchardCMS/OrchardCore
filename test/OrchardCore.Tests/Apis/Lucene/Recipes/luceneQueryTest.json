@@ -19,6 +19,7 @@
         "OrchardCore.Recipes",
         "OrchardCore.Roles",
         "OrchardCore.Users",
+        "OrchardCore.Users.AdminUser",
         "OrchardCore.Indexing",
 
         // Content Management

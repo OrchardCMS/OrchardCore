@@ -117,7 +117,6 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
 
         services.AddScoped<IMembershipService, MembershipService>();
-        services.AddScoped<ISetupEventHandler, SetupEventHandler>();
         services.AddScoped<ICommandHandler, UserCommands>();
         services.AddScoped<IExternalLoginEventHandler, ScriptExternalLoginEventHandler>();
 
@@ -589,5 +588,14 @@ public sealed class UserDeploymentStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDeployment<AllUsersDeploymentSource, AllUsersDeploymentStep, AllUsersDeploymentStepDriver>();
+    }
+}
+
+[Feature("OrchardCore.Users.AdminUser")]
+public sealed class AdminUserStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ISetupEventHandler, SetupEventHandler>();
     }
 }

@@ -52,6 +52,7 @@
         "OrchardCore.Themes",
         "OrchardCore.Title",
         "OrchardCore.Users",
+        "OrchardCore.Users.AdminUser",
         "OrchardCore.Users.Registration",
         "OrchardCore.Widgets",
         "OrchardCore.Workflows",

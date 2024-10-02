@@ -32,6 +32,7 @@
         "OrchardCore.Settings",
         "OrchardCore.Themes",
         "OrchardCore.Users",
+        "OrchardCore.Users.AdminUser",
 
         // Content Management
         "OrchardCore.Alias",

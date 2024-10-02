@@ -167,3 +167,11 @@ using OrchardCore.Users;
     ],
     Category = "Security"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Users.AdminUser",
+    Name = "Admin user setup",
+    Description = "Creates the admin user account during setup.",
+    Dependencies = [UserConstants.Features.Users],
+    Category = "Security"
+)]

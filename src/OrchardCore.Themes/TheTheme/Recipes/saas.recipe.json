@@ -28,6 +28,7 @@
         "OrchardCore.Tenants",
         "OrchardCore.Themes",
         "OrchardCore.Users",
+        "OrchardCore.Users.AdminUser",
 
         // Themes
         "TheTheme",

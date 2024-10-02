@@ -18,6 +18,7 @@
         "OrchardCore.Recipes",
         "OrchardCore.Roles",
         "OrchardCore.Users",
+        "OrchardCore.Users.AdminUser",
         "OrchardCore.Indexing",
         "OrchardCore.ContentFields",
         "OrchardCore.Apis.GraphQL",
