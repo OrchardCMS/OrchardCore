@@ -11,6 +11,9 @@ public class EditRoleViewModel
     public string RoleDescription { get; set; }
 
     [BindNever]
+    public bool IsAdminRole { get; set; }
+
+    [BindNever]
     public IDictionary<PermissionGroupKey, IEnumerable<Permission>> RoleCategoryPermissions { get; set; }
 
     [BindNever]

@@ -17,7 +17,4 @@ public class RoleEntry
 
     [BindNever]
     public bool IsSystemRole { get; set; }
-
-    [BindNever]
-    public bool IsAdminRole { get; set; }
 }

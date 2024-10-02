@@ -1,8 +1,6 @@
 using System.Collections.Frozen;
-using System.Runtime.CompilerServices;
 using OrchardCore.Environment.Shell;
 
-[assembly: InternalsVisibleTo("OrchardCore.Tests")]
 namespace OrchardCore.Roles;
 
 internal sealed class DefaultSystemRoleNameProvider : ISystemRoleNameProvider

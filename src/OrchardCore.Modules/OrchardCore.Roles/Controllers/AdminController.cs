@@ -74,7 +74,6 @@ public sealed class AdminController : Controller
                 Name = role.RoleName,
                 Description = role.RoleDescription,
                 IsSystemRole = await _roleService.IsSystemRoleAsync(role.RoleName),
-                IsAdminRole = await _roleService.IsAdminRoleAsync(role.RoleName),
             });
         }
 
@@ -162,24 +161,22 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (await _roleService.IsAdminRoleAsync(role.RoleName))
-        {
-            await _notifier.ErrorAsync(H["The '{0}' role cannot be edited.", role.RoleName]);
-
-            return RedirectToAction(nameof(Index));
-        }
-
-        var installedPermissions = await GetInstalledPermissionsAsync();
-        var allPermissions = installedPermissions.SelectMany(x => x.Value);
-
         var model = new EditRoleViewModel
         {
             Role = role,
             Name = role.RoleName,
             RoleDescription = role.RoleDescription,
-            EffectivePermissions = await GetEffectivePermissions(role, allPermissions),
-            RoleCategoryPermissions = installedPermissions
+            IsAdminRole = await _roleService.IsAdminRoleAsync(role.RoleName),
         };
+
+        if (!await _roleService.IsAdminRoleAsync(role.RoleName))
+        {
+            var installedPermissions = await GetInstalledPermissionsAsync();
+            var allPermissions = installedPermissions.SelectMany(x => x.Value);
+
+            model.EffectivePermissions = await GetEffectivePermissions(role, allPermissions);
+            model.RoleCategoryPermissions = installedPermissions;
+        }
 
         return View(model);
     }
@@ -197,28 +194,24 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (await _roleService.IsAdminRoleAsync(role.RoleName))
-        {
-            await _notifier.ErrorAsync(H["The '{0}' role cannot be edited.", role.RoleName]);
-
-            return RedirectToAction(nameof(Index));
-        }
-
         role.RoleDescription = roleDescription;
 
-        var rolePermissions = new List<RoleClaim>();
-
-        foreach (var key in Request.Form.Keys)
+        if (!await _roleService.IsAdminRoleAsync(role.RoleName))
         {
-            if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
-            {
-                var permissionName = key["Checkbox.".Length..];
-                rolePermissions.Add(RoleClaim.Create(permissionName));
-            }
-        }
+            var rolePermissions = new List<RoleClaim>();
 
-        role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
-        role.RoleClaims.AddRange(rolePermissions);
+            foreach (var key in Request.Form.Keys)
+            {
+                if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
+                {
+                    var permissionName = key["Checkbox.".Length..];
+                    rolePermissions.Add(RoleClaim.Create(permissionName));
+                }
+            }
+
+            role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
+            role.RoleClaims.AddRange(rolePermissions);
+        }
 
         await _roleManager.UpdateAsync(role);
 
