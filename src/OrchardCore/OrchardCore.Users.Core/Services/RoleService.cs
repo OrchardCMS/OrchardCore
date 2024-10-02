@@ -1,4 +1,3 @@
-using System.Collections.Frozen;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Security;
@@ -10,8 +9,6 @@ public class RoleService : IRoleService
 {
     private readonly RoleManager<IRole> _roleManager;
     private readonly ISystemRoleNameProvider _systemRoleProvider;
-
-    private FrozenSet<string> _systemRoles;
 
     public RoleService(
         RoleManager<IRole> roleManager,
@@ -52,13 +49,9 @@ public class RoleService : IRoleService
         return Task.FromResult<IEnumerable<string>>(_roleManager.Roles.Select(a => _roleManager.NormalizeKey(a.RoleName)));
     }
 
-    public async ValueTask<bool> IsAdminRoleAsync(string role)
-        => string.Equals(await _systemRoleProvider.GetAdminRoleAsync(), role, StringComparison.OrdinalIgnoreCase);
+    public ValueTask<bool> IsAdminRoleAsync(string role)
+        => _systemRoleProvider.IsAdminRoleAsync(role);
 
-    public async ValueTask<bool> IsSystemRoleAsync(string role)
-    {
-        _systemRoles ??= await _systemRoleProvider.GetSystemRolesAsync();
-
-        return _systemRoles.Contains(role);
-    }
+    public ValueTask<bool> IsSystemRoleAsync(string role)
+         => _systemRoleProvider.IsSystemRoleAsync(role);
 }

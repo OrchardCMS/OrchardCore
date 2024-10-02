@@ -91,11 +91,12 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
             });
         }
 
-        var systemRoles = await _systemRoleProvider.GetSystemRolesAsync();
-
-        if (systemRoles.Contains(roleToRemove.RoleName))
+        if (await _systemRoleProvider.IsSystemRoleAsync(roleToRemove.RoleName))
         {
-            return IdentityResult.Failed(new IdentityError { Description = S["Can't delete system roles."] });
+            return IdentityResult.Failed(new IdentityError
+            {
+                Description = S["Can't delete system roles."],
+            });
         }
 
         var roleRemovedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleRemovedEventHandler>>();
