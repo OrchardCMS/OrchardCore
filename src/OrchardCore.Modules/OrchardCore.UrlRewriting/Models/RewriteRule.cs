@@ -1,6 +1,6 @@
 namespace OrchardCore.UrlRewriting.Models;
 
-public class RewriteRule
+public sealed class RewriteRule
 {
     public string Name { get; set; }
 

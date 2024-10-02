@@ -4,7 +4,7 @@ using System.Text;
 
 namespace OrchardCore.UrlRewriting.Rules;
 
-public class ApacheRules
+public sealed class ApacheRules
 {
     public static string FlagsFromViewModel(RewriteRuleViewModel viewModel)
     {

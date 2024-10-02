@@ -3,7 +3,7 @@ using OrchardCore.UrlRewriting.ViewModels;
 
 namespace OrchardCore.UrlRewriting.Rules;
 
-public class ApacheRuleValidator
+public sealed class ApacheRuleValidator
 {
     public static bool ValidateRule(RewriteRuleViewModel viewModel, out string validationError)
     {

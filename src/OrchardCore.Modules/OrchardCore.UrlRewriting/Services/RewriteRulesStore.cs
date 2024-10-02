@@ -3,7 +3,7 @@ using OrchardCore.UrlRewriting.Models;
 
 namespace OrchardCore.UrlRewriting.Services;
 
-public class RewriteRulesStore
+public sealed class RewriteRulesStore
 {
     private readonly IDocumentManager<RewriteRulesDocument> _documentManager;
 
