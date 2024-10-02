@@ -11,6 +11,8 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.UrlRewriting.Options;
 using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.Services;
+using OrchardCore.Recipes;
+using OrchardCore.UrlRewriting.Recipes;
 
 namespace OrchardCore.UrlRewriting;
 
@@ -26,6 +28,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IDisplayDriver<RewriteRule>, RewriteRuleDisplayDriver>();
         services.AddPermissionProvider<UrlRewritingPermissionProvider>();
         services.AddTransient<IConfigureOptions<RewriteOptions>, RewriteOptionsConfiguration>();
+        services.AddRecipeExecutionStep<UrlRewritingStep>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
