@@ -65,7 +65,7 @@ public sealed class RolesMigrations : DataMigration
             if (adminRoles.Count > 0)
             {
                 // Run the migration in the background to ensure that the newly added role is committed to the database first, preventing potential exceptions.
-                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("MigrateAdminUsersRoNewAdminRole", async subScope =>
+                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("MigrateAdminUsersToNewAdminRole", async subScope =>
                 {
                     var userManager = subScope.ServiceProvider.GetRequiredService<UserManager<IUser>>();
 
