@@ -41,9 +41,15 @@ public sealed class UrlRewritingStep : IRecipeStepHandler
                 continue;
             }
 
+            if (string.IsNullOrEmpty(importedRule.Pattern))
+            {
+                context.Errors.Add(S["Unable to add or update url rewriting rule '{0}'. The rule Pattern field cannot be null or empty.", importedRule.Name]);
+                continue;
+            }
+
             if (string.IsNullOrEmpty(importedRule.Substitution))
             {
-                context.Errors.Add(S["Unable to add or update url rewriting rule '{0}'. The rule substitution cannot be null or empty.", importedRule.Name]);
+                context.Errors.Add(S["Unable to add or update url rewriting rule '{0}'. The rule Substitution field cannot be null or empty.", importedRule.Name]);
                 continue;
             }
 

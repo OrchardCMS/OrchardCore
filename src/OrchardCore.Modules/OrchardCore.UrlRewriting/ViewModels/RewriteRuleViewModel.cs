@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.UrlRewriting.ViewModels;
 
-public sealed class RewriteRuleViewModel
+public class RewriteRuleViewModel
 {
     public string Name { get; set; }
 
@@ -41,7 +41,7 @@ public enum RedirectType
     PernamentRedirect308
 }
 
-public sealed class RedirectActionViewModel
+public class RedirectActionViewModel
 {
     public string RedirectUrl { get; set; }
 
@@ -53,7 +53,7 @@ public sealed class RedirectActionViewModel
     public List<SelectListItem> AvailableRedirectTypes { get; set; } = [];
 }
 
-public sealed class RewriteActionViewModel
+public class RewriteActionViewModel
 {
     public string RewriteUrl { get; set; }
 
