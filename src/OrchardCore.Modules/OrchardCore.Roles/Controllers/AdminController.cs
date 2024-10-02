@@ -65,22 +65,20 @@ public sealed class AdminController : Controller
 
         var roles = await _roleService.GetRolesAsync();
 
-        var entries = new List<RoleEntry>();
-
-        foreach (var role in roles)
+        var model = new RolesViewModel()
         {
-            entries.Add(new RoleEntry
+            RoleEntries = [],
+        };
+
+        foreach (var role in roles.OrderBy(r => r.RoleName))
+        {
+            model.RoleEntries.Add(new RoleEntry
             {
                 Name = role.RoleName,
                 Description = role.RoleDescription,
                 IsSystemRole = await _roleService.IsSystemRoleAsync(role.RoleName),
             });
         }
-
-        var model = new RolesViewModel()
-        {
-            RoleEntries = entries.OrderBy(r => r.Name).ToList()
-        };
 
         return View(model);
     }
