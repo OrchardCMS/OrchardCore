@@ -45,7 +45,7 @@
                     <td scope="row">@rule.Name</td>
                     <td><code>@rule.Pattern</code></td>
                     <td><code>@rule.Substitution</code></td>
-                    <td>Rewrite</td>
+                    <td>@(rule.RuleAction == RuleAction.Rewrite ? T["Rewrite"] : T["Redirect"])</td>
                     <td class="text-end">
                         <div>
                             <a class="edit btn btn-primary btn-sm" role="button" asp-action="EditRule" asp-route-id="@rule.Name">@T["Edit"]</a>
