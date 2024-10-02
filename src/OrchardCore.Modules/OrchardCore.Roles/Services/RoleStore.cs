@@ -221,7 +221,7 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
 
         if (role is Role r)
         {
-            r.RoleClaims.Add(new RoleClaim(value: claim.Value, type: claim.Type));
+            r.RoleClaims.Add(new RoleClaim(type: claim.Type, value: claim.Value));
         }
 
         return Task.CompletedTask;

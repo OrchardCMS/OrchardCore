@@ -219,7 +219,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
         {
             logger.LogDebug("Default role '{RoleName}' granted permission '{PermissionName}'.", role.RoleName, permission);
 
-            role.RoleClaims.Add(new RoleClaim(permission));
+            role.RoleClaims.Add(RoleClaim.Create(permission));
         }
 
         return true;

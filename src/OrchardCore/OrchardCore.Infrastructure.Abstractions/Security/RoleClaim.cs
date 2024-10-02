@@ -22,16 +22,15 @@ public class RoleClaim
     {
     }
 
-    public RoleClaim(string value)
-    {
-        ClaimType = Permission.ClaimType;
-        ClaimValue = value;
-    }
-
-    public RoleClaim(string value, string type)
+    public RoleClaim(string type, string value)
     {
         ClaimType = type;
         ClaimValue = value;
+    }
+
+    public static RoleClaim Create(string value)
+    {
+        return new RoleClaim(type: Permission.ClaimType, value: value);
     }
 
     public Claim ToClaim()
@@ -41,7 +40,7 @@ public class RoleClaim
 
     public RoleClaim Clone()
     {
-        return new RoleClaim(value: ClaimValue, type: ClaimType);
+        return new RoleClaim(type: ClaimType, value: ClaimValue);
     }
 
     public static implicit operator Claim(RoleClaim claim)

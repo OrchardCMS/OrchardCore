@@ -60,7 +60,7 @@ public sealed class RolesStep : IRecipeStepHandler
 
                 if (!await _roleService.IsAdminRoleAsync(roleName))
                 {
-                    r.RoleClaims.AddRange(roleEntry.Permissions.Select(p => new RoleClaim(p, Permission.ClaimType)));
+                    r.RoleClaims.AddRange(roleEntry.Permissions.Select(RoleClaim.Create));
                 }
             }
 

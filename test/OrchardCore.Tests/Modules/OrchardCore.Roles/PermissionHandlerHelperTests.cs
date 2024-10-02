@@ -23,7 +23,7 @@ public class PermissionHandlerHelperTests
                 RoleName = OrchardCoreConstants.Roles.Anonymous,
                 RoleClaims =
                 [
-                    new("AllowAnonymous"),
+                    RoleClaim.Create("AllowAnonymous"),
                 ]
             },
             new Role
@@ -31,7 +31,7 @@ public class PermissionHandlerHelperTests
                 RoleName = OrchardCoreConstants.Roles.Authenticated,
                 RoleClaims =
                 [
-                    new("AllowAuthenticated"),
+                    RoleClaim.Create("AllowAuthenticated"),
                 ]
             }
         );
@@ -76,7 +76,7 @@ public class PermissionHandlerHelperTests
                 RoleName = OrchardCoreConstants.Roles.Anonymous,
                 RoleClaims =
                 [
-                    new("Implicit2"),
+                    RoleClaim.Create("Implicit2"),
                 ]
             }
         );
@@ -102,7 +102,7 @@ public class PermissionHandlerHelperTests
                 RoleName = OrchardCoreConstants.Roles.Anonymous,
                 RoleClaims =
                 [
-                    new("aLlOwAnOnYmOuS"),
+                    RoleClaim.Create("aLlOwAnOnYmOuS"),
                 ]
             },
             new Role
@@ -110,7 +110,7 @@ public class PermissionHandlerHelperTests
                 RoleName = OrchardCoreConstants.Roles.Authenticated,
                 RoleClaims =
                 [
-                    new("aLlOwAuThEnTiCaTeD"),
+                    RoleClaim.Create("aLlOwAuThEnTiCaTeD"),
                 ]
             }
         );

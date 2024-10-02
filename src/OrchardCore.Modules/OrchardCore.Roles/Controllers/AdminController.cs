@@ -213,7 +213,7 @@ public sealed class AdminController : Controller
             if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
             {
                 var permissionName = key["Checkbox.".Length..];
-                rolePermissions.Add(new RoleClaim(permissionName, Permission.ClaimType));
+                rolePermissions.Add(RoleClaim.Create(permissionName));
             }
         }
 
