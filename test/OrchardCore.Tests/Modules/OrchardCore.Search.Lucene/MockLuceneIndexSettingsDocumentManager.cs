@@ -8,7 +8,7 @@ public class MockLuceneIndexSettingsDocumentManager : IDocumentManager<LuceneInd
     public Task<LuceneIndexSettingsDocument> GetOrCreateImmutableAsync(Func<Task<LuceneIndexSettingsDocument>> factoryAsync = null)
     {
         return Task.FromResult(new LuceneIndexSettingsDocument
-        {            
+        {
             LuceneIndexSettings = new Dictionary<string, LuceneIndexSettings>()
                 {
                     { "idx1", new LuceneIndexSettings { IndexName = "idx1" } },

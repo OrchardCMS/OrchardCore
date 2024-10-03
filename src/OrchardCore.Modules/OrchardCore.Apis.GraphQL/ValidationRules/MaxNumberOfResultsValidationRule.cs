@@ -60,7 +60,7 @@ public class MaxNumberOfResultsValidationRule : IValidationRule
                     }
                     else
                     {
-                        _logger.LogInformation("'{value}' exceeds the maximum number of results for '{name}' ({total})", value.Value, arg.Name, _maxNumberOfResults);
+                        _logger.LogInformation("'{Value}' exceeds the maximum number of results for '{Name}' ({Total})", value.Value, arg.Name, _maxNumberOfResults);
 
                         arg = new GraphQLArgument(arg.Name, new GraphQLIntValue(_maxNumberOfResults)); // if disabled mode we just log info and override the arg to be maxvalue
                     }
