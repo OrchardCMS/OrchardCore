@@ -35,7 +35,7 @@ jobs:
         git config user.email "github-actions@github.com"
         git checkout -b outdated
         git commit -a -m "Update NuGet packages"
-        gh pr create -B main -H outdated --title 'Update NuGet packages' --body 'Created by Github action'
+        gh pr create -B origin/main -H outdated --title 'Update NuGet packages' --body 'Created by Github action'
 
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
