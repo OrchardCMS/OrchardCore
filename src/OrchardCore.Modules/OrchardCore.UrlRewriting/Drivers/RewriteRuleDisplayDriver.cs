@@ -40,6 +40,8 @@ internal sealed class RewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
             return null;
         }
 
+        context.AddTenantReloadWarningWrapper();
+
         return Initialize<RewriteRuleViewModel>("RewriteRuleFields_Edit", model =>
         {
             model.FromModel(rule);
