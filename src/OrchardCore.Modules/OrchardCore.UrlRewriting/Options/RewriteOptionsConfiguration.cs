@@ -13,7 +13,9 @@ public sealed class RewriteOptionsConfiguration : IConfigureOptions<RewriteOptio
 
     private readonly AdminOptions _adminOptions;
 
-    public RewriteOptionsConfiguration(IDocumentManager<RewriteRulesDocument> documentManager, IOptions<AdminOptions> adminOptions)
+    public RewriteOptionsConfiguration(
+        IDocumentManager<RewriteRulesDocument> documentManager,
+        IOptions<AdminOptions> adminOptions)
     {
         _documentManager = documentManager;
         _adminOptions = adminOptions.Value;
@@ -25,7 +27,7 @@ public sealed class RewriteOptionsConfiguration : IConfigureOptions<RewriteOptio
             .GetAwaiter()
             .GetResult();
 
-        var apacheRules = ApacheRules.FromModels(rules.Rules);
+        var apacheRules = ApacheRules.FromModels(rules.Rules.Values);
 
         using var apacheModRewrite = new StringReader(apacheRules);
 

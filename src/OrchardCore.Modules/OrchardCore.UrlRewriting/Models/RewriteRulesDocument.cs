@@ -4,5 +4,5 @@ namespace OrchardCore.UrlRewriting.Models;
 
 public sealed class RewriteRulesDocument : Document
 {
-    public List<RewriteRule> Rules { get; set; } = [];
+    public Dictionary<string, RewriteRule> Rules { get; set; } = [];
 }

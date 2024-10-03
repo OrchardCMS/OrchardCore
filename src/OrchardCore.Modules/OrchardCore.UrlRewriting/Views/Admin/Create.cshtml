@@ -2,7 +2,9 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["New Rule"])</h1></zone>
 
-<form asp-action="CreateRule" id="EditRule_Form" method="post" enctype="multipart/form-data" class="no-multisubmit">
+<form method="post" enctype="multipart/form-data" class="no-multisubmit">
     @Html.ValidationSummary()
     @await DisplayAsync(Model)
+
+    <button class="btn btn-primary" type="submit">@T["Save"]</button>
 </form>

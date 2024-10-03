@@ -27,6 +27,7 @@ public sealed class ApacheRuleValidator
         }
 
         validationError = null;
+
         return true;
     }
 }

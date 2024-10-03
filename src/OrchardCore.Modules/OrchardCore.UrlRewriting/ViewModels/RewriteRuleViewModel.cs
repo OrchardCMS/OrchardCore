@@ -5,6 +5,8 @@ namespace OrchardCore.UrlRewriting.ViewModels;
 
 public class RewriteRuleViewModel
 {
+    public string Id { get; set; }
+
     public string Name { get; set; }
 
     public string Pattern { get; set; }
@@ -18,10 +20,9 @@ public class RewriteRuleViewModel
     public RedirectActionViewModel RedirectAction { get; set; } = new RedirectActionViewModel();
 
     [BindNever]
-    public string Substitution => RuleAction == RuleAction.Rewrite ? RewriteAction.RewriteUrl : RedirectAction.RedirectUrl;
-
-    [BindNever]
-    public bool IsNew { get; set; }
+    public string Substitution => RuleAction == RuleAction.Rewrite
+        ? RewriteAction.RewriteUrl
+        : RedirectAction.RedirectUrl;
 
     [BindNever]
     public List<SelectListItem> AvailableActions { get; set; } = [];
@@ -30,7 +31,7 @@ public class RewriteRuleViewModel
 public enum RuleAction
 {
     Rewrite,
-    Redirect
+    Redirect,
 }
 
 public enum RedirectType
@@ -38,7 +39,7 @@ public enum RedirectType
     MovedPermanently301,
     Found302,
     TemporaryRedirect307,
-    PernamentRedirect308
+    PermanentRedirect308,
 }
 
 public class RedirectActionViewModel

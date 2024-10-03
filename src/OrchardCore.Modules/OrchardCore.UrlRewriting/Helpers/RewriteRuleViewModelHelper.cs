@@ -9,8 +9,10 @@ internal static class RewriteRuleViewModelHelper
     public static void FromModel(this RewriteRuleViewModel viewModel, RewriteRule model)
     {
         var flags = model.GetFlagsCollection();
-        bool isRedirect = flags.Where(f => f.StartsWith("R=")).Any();
 
+        var isRedirect = flags.Where(f => f.StartsWith("R=")).Any();
+
+        viewModel.Id = model.Id;
         viewModel.Name = model.Name;
         viewModel.Pattern = model.Pattern;
         viewModel.IgnoreCase = flags.Contains("NC");
@@ -18,7 +20,7 @@ internal static class RewriteRuleViewModelHelper
 
         if (isRedirect)
         {
-            var redirectFlag = flags.Where(f => f.StartsWith("R=")).FirstOrDefault() ?? "";
+            var redirectFlag = flags.Where(f => f.StartsWith("R=")).FirstOrDefault() ?? string.Empty;
 
             viewModel.RedirectAction.RedirectUrl = model.Substitution;
             viewModel.RedirectAction.AppendQueryString = flags.Contains("QSA");

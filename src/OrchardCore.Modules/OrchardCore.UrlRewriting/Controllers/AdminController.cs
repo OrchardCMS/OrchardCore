@@ -58,16 +58,15 @@ public sealed class AdminController : Controller
 
         var model = new RewriteRulesViewModel
         {
-            Rules = rules.Rules
+            Rules = rules.Rules.Values
                 .Select(BuildViewModel)
-                .ToList()
+                .ToArray()
         };
 
         return View(model);
     }
 
-    [Admin("UrlRewriting/CreateRule", nameof(CreateRule))]
-    public async Task<ActionResult> CreateRule()
+    public async Task<ActionResult> Create()
     {
         if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
         {
@@ -76,13 +75,14 @@ public sealed class AdminController : Controller
 
         var rule = new RewriteRule();
 
-        var shape = await _rewriteRuleDisplayManager.BuildEditorAsync(rule, updater: _updateModelAccessor.ModelUpdater, isNew: true);
+        var shape = await _rewriteRuleDisplayManager.BuildEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: true);
 
         return View(shape);
     }
 
-    [HttpPost, ActionName(nameof(CreateRule))]
-    public async Task<ActionResult> CreateRulePOST()
+    [HttpPost]
+    [ActionName(nameof(Create))]
+    public async Task<ActionResult> CreatePOST()
     {
         if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
         {
@@ -91,104 +91,98 @@ public sealed class AdminController : Controller
 
         var rule = new RewriteRule();
 
-        var shape = await _rewriteRuleDisplayManager.UpdateEditorAsync(rule, updater: _updateModelAccessor.ModelUpdater, isNew: true);
-
-        if (!ModelState.IsValid)
-        {
-            return View(shape);
-        }
-
-        await _rewriteRulesStore.SaveAsync(rule);
-
-        await _notifier.SuccessAsync(H["Rule created successfully."]);
-
-        return RedirectToAction(nameof(Index));
-    }
-
-    public async Task<ActionResult> EditRule(string id)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
-        {
-            return Forbid();
-        }
-
-        var currentRule = await _rewriteRulesStore.FindByIdAsync(id);
-
-        if (currentRule == null)
-        {
-            return NotFound();
-        }
-
-        var shape = await _rewriteRuleDisplayManager.BuildEditorAsync(currentRule, updater: _updateModelAccessor.ModelUpdater, isNew: false);
-
-        return View(shape);
-    }
-
-    [HttpPost, ActionName(nameof(EditRule))]
-    public async Task<ActionResult> EditRulePOST(string id)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
-        {
-            return Forbid();
-        }
-
-        var currentRule = await _rewriteRulesStore.FindByIdAsync(id);
-
-        if (currentRule == null)
-        {
-            return NotFound();
-        }
-
-        var shape = await _rewriteRuleDisplayManager.UpdateEditorAsync(currentRule, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+        var shape = await _rewriteRuleDisplayManager.UpdateEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (ModelState.IsValid)
         {
-            await _rewriteRulesStore.SaveAsync(currentRule);
+            rule.Id = IdGenerator.GenerateId();
+
+            await _rewriteRulesStore.SaveAsync(rule);
+
+            await _notifier.SuccessAsync(H["Rule created successfully."]);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        _shellReleaseManager.SuspendReleaseRequest();
+
+        return View(shape);
+    }
+
+    public async Task<ActionResult> Edit(string id)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
+        {
+            return Forbid();
+        }
+
+        var rule = await _rewriteRulesStore.FindByIdAsync(id);
+
+        if (rule == null)
+        {
+            return NotFound();
+        }
+
+        var shape = await _rewriteRuleDisplayManager.BuildEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: false);
+
+        return View(shape);
+    }
+
+    [HttpPost, ActionName(nameof(Edit))]
+    public async Task<ActionResult> EditPOST(string id)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
+        {
+            return Forbid();
+        }
+
+        var rule = await _rewriteRulesStore.FindByIdAsync(id);
+
+        if (rule == null)
+        {
+            return NotFound();
+        }
+
+        var shape = await _rewriteRuleDisplayManager.UpdateEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: false);
+
+        if (ModelState.IsValid)
+        {
+            await _rewriteRulesStore.SaveAsync(rule);
 
             await _notifier.SuccessAsync(H["Rule updated successfully."]);
 
             return RedirectToAction(nameof(Index));
         }
 
+        _shellReleaseManager.SuspendReleaseRequest();
+
         return View(shape);
     }
 
     [HttpPost]
-    public async Task<IActionResult> DeleteRule(string id)
+    public async Task<IActionResult> Delete(string id)
     {
         if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
         {
             return Forbid();
         }
 
-        var currentRule = await _rewriteRulesStore.FindByIdAsync(id);
+        var rule = await _rewriteRulesStore.FindByIdAsync(id);
 
-        if (currentRule == null)
+        if (rule == null)
         {
             return NotFound();
         }
 
-        await _rewriteRulesStore.DeleteAsync(currentRule);
+        await _rewriteRulesStore.DeleteAsync(rule);
+
+        _shellReleaseManager.RequestRelease();
 
         await _notifier.SuccessAsync(H["Rule deleted successfully."]);
 
         return RedirectToAction(nameof(Index));
     }
 
-    [HttpPost]
-    public async Task<IActionResult> ReloadWebsite()
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
-        {
-            return Forbid();
-        }
-
-        _shellReleaseManager.RequestRelease();
-
-        return RedirectToAction(nameof(Index));
-    }
-
-    
     private static RewriteRuleViewModel BuildViewModel(RewriteRule rule)
     {
         var viewModel = new RewriteRuleViewModel();

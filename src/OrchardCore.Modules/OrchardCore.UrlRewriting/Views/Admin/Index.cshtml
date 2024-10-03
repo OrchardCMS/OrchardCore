@@ -2,13 +2,6 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["URL Rewriting"])</h1></zone>
 
-<div class="alert alert-warning" style="position: sticky; bottom: 0">
-    <form>
-        <p>@T["The website needs to be restarted for any changes to the rules to take effect."]</p>
-        <a asp-action="ReloadWebsite" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Restart Website"]" data-message="@T["Are you sure you want to restart website?"]" class="btn btn-warning">@T["Restart Website"]</a>
-    </form>
-</div>
-
 <div class="card mb-3 text-bg-theme position-sticky action-bar">
     <div class="card-body">
         <div class="row gx-3">
@@ -19,28 +12,30 @@
                 </div>
             </div>
             <div class="col-auto">
-                <a asp-route-action="CreateRule" id="btnCreate" class="btn btn-secondary create" role="button">@T["Create Rule"]</a>
+                <a asp-route-action="Create" class="btn btn-secondary create" role="button">@T["Create Rule"]</a>
             </div>
         </div>
     </div>
 </div>
 
-<form class="rules">
+@if (Model.Rules.Count > 0)
+{
     <table class="table">
         <thead>
             <tr>
-                <th scope="col">Rule name</th>
-                <th scope="col">Pattern</th>
-                <th scope="col">Subsitution</th>
-                <th scope="col">Action</th>
+                <th scope="col">@T["Rule name"]</th>
+                <th scope="col">@T["Pattern"]</th>
+                <th scope="col">@T["Substitution"]</th>
+                <th scope="col">@T["Action"]</th>
                 <th scope="col" class="text-end"></th>
             </tr>
         </thead>
         <tbody>
+            @{
+                var message = T["Are you sure you want to delete this rule?"];
+            }
             @foreach (var rule in Model.Rules)
             {
-                var message = T["Are you sure you want to delete this rule?"];
-
                 <tr data-filter-value="@rule.Name">
                     <td scope="row">@rule.Name</td>
                     <td><code>@rule.Pattern</code></td>
@@ -48,18 +43,19 @@
                     <td>@(rule.RuleAction == RuleAction.Rewrite ? T["Rewrite"] : T["Redirect"])</td>
                     <td class="text-end">
                         <div>
-                            <a class="edit btn btn-primary btn-sm" role="button" asp-action="EditRule" asp-route-id="@rule.Name">@T["Edit"]</a>
-                            <a class="delete btn btn-danger btn-sm" asp-route-id="@rule.Name" role="button" asp-action="DeleteRule" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Delete Rule"]" data-message="@message">@T["Delete"]</a>
+                            <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@rule.Id">@T["Edit"]</a>
+                            <a class="delete btn btn-danger btn-sm" asp-route-id="@rule.Id" role="button" asp-action="Delete" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Delete Rule"]" data-message="@message">@T["Delete"]</a>
                         </div>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-    <div id="list-alert" class="alert alert-info d-none" role="alert">
-        @T["<strong>Nothing here!</strong> Your search returned no results."]
-    </div>
-</form>
+}
+
+<div id="list-alert" class="alert alert-info d-none" role="alert">
+    @T["<strong>Nothing here!</strong> Your search returned no results."]
+</div>
 
 <script at="Foot" depends-on="jQuery">
     $(function () {

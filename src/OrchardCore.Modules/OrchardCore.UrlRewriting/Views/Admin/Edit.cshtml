@@ -1,0 +1,10 @@
+@model dynamic
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Rule"])</h1></zone>
+
+<form method="post" asp-route-id="@ViewContext.HttpContext.Request.RouteValues["id"]" enctype="multipart/form-data" class="no-multisubmit">
+    @Html.ValidationSummary()
+    @await DisplayAsync(Model)
+
+    <button class="btn btn-primary" type="submit">@T["Save"]</button>
+</form>
