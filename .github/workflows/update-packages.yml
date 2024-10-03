@@ -1,7 +1,6 @@
 name: Update NuGet packages
 
 on:
-  push:
   workflow_dispatch:
   schedule:
     # Every Sunday at 8am
@@ -34,7 +33,6 @@ jobs:
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
-        git checkout main
         git checkout -b outdated
         git commit -a -m "Update NuGet packages"
         gh pr create -B main -H outdated --title 'Update NuGet packages' --body 'Created by Github action'
