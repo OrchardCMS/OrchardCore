@@ -1,5 +1,7 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.UrlRewriting.Models;
@@ -11,15 +13,17 @@ namespace OrchardCore.UrlRewriting.Recipes;
 /// </summary>
 public sealed class UrlRewritingStep : IRecipeStepHandler
 {
-    private readonly IRewriteRulesStore _rewriteRulesStore;
-
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly IRewriteRulesManager _rewriteRulesManager;
     internal readonly IStringLocalizer S;
 
     public UrlRewritingStep(
-        IRewriteRulesStore rewriteRulesStore,
+        IRewriteRulesManager rewriteRulesManager,
+        IOptions<JsonSerializerOptions> jsonSerializerOptions,
         IStringLocalizer<UrlRewritingStep> stringLocalizer)
     {
-        _rewriteRulesStore = rewriteRulesStore;
+        _rewriteRulesManager = rewriteRulesManager;
+        _jsonSerializerOptions = jsonSerializerOptions.Value;
         S = stringLocalizer;
     }
 
@@ -30,34 +34,38 @@ public sealed class UrlRewritingStep : IRecipeStepHandler
             return;
         }
 
-        var model = context.Step.ToObject<UrlRewritingStepModel>();
+        var model = context.Step.ToObject<UrlRewritingStepModel>(_jsonSerializerOptions);
 
-        foreach (var importedRule in model.Rules)
+        var rules = new List<RewriteRule>();
+
+        foreach (var token in model.Rules.Cast<JsonObject>())
         {
-            if (string.IsNullOrWhiteSpace(importedRule.Name))
+            var name = token[nameof(RewriteRule.Name)]?.GetValue<string>();
+
+            if (string.IsNullOrEmpty(name))
             {
-                context.Errors.Add(S["Unable to add or update url rewriting rule. The rule name cannot be null or empty."]);
+                context.Errors.Add(S["Rule name is missing or empty. The query will not be imported."]);
+
                 continue;
             }
 
-            if (string.IsNullOrEmpty(importedRule.Pattern))
+            var sourceName = token[nameof(RewriteRule.Source)]?.GetValue<string>();
+
+            if (string.IsNullOrEmpty(sourceName))
             {
-                context.Errors.Add(S["Unable to add or update url rewriting rule '{0}'. The rule Pattern field cannot be null or empty.", importedRule.Name]);
+                context.Errors.Add(S["Could not find rule source value. The rule '{0}' will not be imported.", name]);
+
                 continue;
             }
 
-            if (string.IsNullOrEmpty(importedRule.Substitution))
-            {
-                context.Errors.Add(S["Unable to add or update url rewriting rule '{0}'. The rule Substitution field cannot be null or empty.", importedRule.Name]);
-                continue;
-            }
+            var rule = await _rewriteRulesManager.NewAsync(sourceName, token);
 
-            await _rewriteRulesStore.SaveAsync(importedRule);
+            rules.Add(rule);
         }
     }
 }
 
 public sealed class UrlRewritingStepModel
 {
-    public RewriteRule[] Rules { get; set; }
+    public JsonArray Rules { get; set; }
 }

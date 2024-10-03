@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
@@ -39,7 +40,7 @@ public class RewriteRulesManager : IRewriteRulesManager
         return rule;
     }
 
-    public async Task<RewriteRule> NewAsync(string source)
+    public async Task<RewriteRule> NewAsync(string source, JsonNode data = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(source);
 
@@ -61,11 +62,18 @@ public class RewriteRulesManager : IRewriteRulesManager
         var initializingContext = new InitializingRewriteRuleContext(rule);
         await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.InitializingAsync(ctx), initializingContext, _logger);
 
+        if (data != null)
+        {
+            rule.Name = data[nameof(RewriteRule.Name)]?.GetValue<string>();
+            rule.SkipFurtherRules = data[nameof(RewriteRule.SkipFurtherRules)]?.GetValue<bool>() ?? false;
+        }
+
         var initializedContext = new InitializedRewriteRuleContext(rule);
         await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.InitializedAsync(ctx), initializedContext, _logger);
 
         // Set the source again after calling handlers to prevent handlers from updating the source during initialization.
         rule.Source = source;
+        rule.Id ??= IdGenerator.GenerateId();
 
         return rule;
     }
