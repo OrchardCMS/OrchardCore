@@ -1,4 +1,5 @@
 using System.Collections.Frozen;
+using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Roles;
@@ -9,9 +10,16 @@ internal sealed class DefaultSystemRoleNameProvider : ISystemRoleNameProvider
 
     private readonly FrozenSet<string> _systemRoleNames;
 
-    public DefaultSystemRoleNameProvider(ShellSettings shellSettings)
+    public DefaultSystemRoleNameProvider(
+        ShellSettings shellSettings,
+        IOptions<SystemRoleOptions> options)
     {
         _adminRoleName = shellSettings["AdminRoleName"];
+
+        if (string.IsNullOrWhiteSpace(_adminRoleName))
+        {
+            _adminRoleName = options.Value.SystemAdminRoleName;
+        }
 
         if (string.IsNullOrWhiteSpace(_adminRoleName))
         {

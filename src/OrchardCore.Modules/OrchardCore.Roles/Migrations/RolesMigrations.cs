@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
@@ -13,6 +14,13 @@ public sealed class RolesMigrations : DataMigration
 {
     private static readonly string _alternativeAdminRoleName = "SiteOwner";
 
+    private SystemRoleOptions _systemRoleOptions;
+
+    public RolesMigrations(IOptions<SystemRoleOptions> systemRoleOptions)
+    {
+        _systemRoleOptions = systemRoleOptions.Value;
+    }
+
 #pragma warning disable CA1822 // Mark members as static
     public int Create()
 #pragma warning restore CA1822 // Mark members as static
@@ -24,7 +32,7 @@ public sealed class RolesMigrations : DataMigration
             var roles = roleManager.Roles.ToList();
 
             var adminRoles = new List<Role>();
-            var adminSystemRoleName = OrchardCoreConstants.Roles.Administrator;
+            var adminSystemRoleName = _systemRoleOptions.SystemAdminRoleName;
 
             foreach (var role in roles)
             {
@@ -33,7 +41,10 @@ public sealed class RolesMigrations : DataMigration
                     continue;
                 }
 
-                var hasSiteOwner = r.RoleClaims.Any(x => x.ClaimValue == "SiteOwner");
+                // When a new tenant is created, the RoleClaims will be empty for Admin roles.
+                var hasSiteOwner = r.RoleClaims is null ||
+                r.RoleClaims.Count == 0 ||
+                r.RoleClaims.Any(x => x.ClaimValue == "SiteOwner");
 
                 if (r.RoleName.Equals(OrchardCoreConstants.Roles.Administrator, StringComparison.OrdinalIgnoreCase))
                 {

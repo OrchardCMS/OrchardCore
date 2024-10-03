@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
@@ -22,6 +24,13 @@ namespace OrchardCore.Roles;
 
 public sealed class Startup : StartupBase
 {
+    private readonly IShellConfiguration _shellConfiguration;
+
+    public Startup(IShellConfiguration shellConfiguration)
+    {
+        _shellConfiguration = shellConfiguration;
+    }
+
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IUserClaimsProvider, RoleClaimsProvider>();
@@ -34,6 +43,19 @@ public sealed class Startup : StartupBase
         services.AddScoped<IAuthorizationHandler, RolesPermissionsHandler>();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
+        services.Configure<SystemRoleOptions>(options =>
+        {
+            var adminRoleName = _shellConfiguration.GetSection("OrchardCore_Roles").GetValue<string>("AdminRoleName");
+
+            if (!string.IsNullOrWhiteSpace(adminRoleName))
+            {
+                options.SystemAdminRoleName = adminRoleName;
+            }
+            else
+            {
+                options.SystemAdminRoleName = OrchardCoreConstants.Roles.Administrator;
+            }
+        });
     }
 }
 

@@ -11,7 +11,10 @@ public class DefaultSystemRoleNameProviderTests
         // Arrange
         var shellSettings = new ShellSettings();
 
-        var provider = new DefaultSystemRoleNameProvider(shellSettings);
+        var options = new Mock<IOptions<SystemRoleOptions>>();
+        options.Setup(x => x.Value).Returns(new SystemRoleOptions());
+
+        var provider = new DefaultSystemRoleNameProvider(shellSettings, options.Object);
 
         // Assert
         var roles = await provider.GetSystemRolesAsync();
@@ -20,13 +23,38 @@ public class DefaultSystemRoleNameProviderTests
     }
 
     [Fact]
+    public async Task SystemRoleNamesContains_WhenConstructed_ContainsConfiguredAdminRole()
+    {
+        // Arrange
+        var shellSettings = new ShellSettings();
+        var configureSystemAdminRoleName = "SystemAdmin";
+
+        var options = new Mock<IOptions<SystemRoleOptions>>();
+        options.Setup(x => x.Value).Returns(new SystemRoleOptions
+        {
+            SystemAdminRoleName = configureSystemAdminRoleName,
+        });
+
+        var provider = new DefaultSystemRoleNameProvider(shellSettings, options.Object);
+
+        // Assert
+        var roles = await provider.GetSystemRolesAsync();
+
+        Assert.Contains(configureSystemAdminRoleName, roles as IEnumerable<string>);
+        Assert.DoesNotContain(OrchardCoreConstants.Roles.Administrator, roles as IEnumerable<string>);
+    }
+
+    [Fact]
     public async Task SystemRoleNamesContains_WhenConstructed_ContainsAppSettingsRole()
     {
         // Arrange
         var shellSettings = new ShellSettings();
         shellSettings["AdminRoleName"] = "Foo";
-        var provider = new DefaultSystemRoleNameProvider(shellSettings);
 
+        var options = new Mock<IOptions<SystemRoleOptions>>();
+        options.Setup(x => x.Value).Returns(new SystemRoleOptions());
+
+        var provider = new DefaultSystemRoleNameProvider(shellSettings, options.Object);
         // Assert
         var roles = await provider.GetSystemRolesAsync();
 
@@ -41,7 +69,10 @@ public class DefaultSystemRoleNameProviderTests
         var shellSettings = new ShellSettings();
         shellSettings["AdminRoleName"] = "Foo";
 
-        var provider = new DefaultSystemRoleNameProvider(shellSettings);
+        var options = new Mock<IOptions<SystemRoleOptions>>();
+        options.Setup(x => x.Value).Returns(new SystemRoleOptions());
+
+        var provider = new DefaultSystemRoleNameProvider(shellSettings, options.Object);
 
         // Assert
         var roles = await provider.GetSystemRolesAsync();
