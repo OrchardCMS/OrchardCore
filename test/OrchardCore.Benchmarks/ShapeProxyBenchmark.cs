@@ -26,7 +26,7 @@ namespace OrchardCore.Benchmark;
     Justification = "BenchmarkDotNet needs all benchmark methods to be instance-level.")]
 public class ShapeProxyBenchmark
 {
-    private static ConcurrentDictionary<Type, Type> _proxyTypesCache = [];
+    private static readonly ConcurrentDictionary<Type, Type> _proxyTypesCache = [];
     private static readonly ProxyGenerator _proxyGenerator = new();
     private static readonly Type _proxyType;
 
@@ -55,7 +55,7 @@ public class ShapeProxyBenchmark
     [Benchmark]
     public object CreateCachedProxy()
     {
-        if (_proxyTypesCache.TryGetValue(typeof(MenuItem), out var proxyType))
+        if (_proxyTypesCache.TryGetValue(typeof(MenuItem), out var _))
         {
             var model = new ShapeViewModel();
             return (IShape)Activator.CreateInstance(_proxyType, model, model, Array.Empty<IInterceptor>());

@@ -98,7 +98,7 @@ public sealed class Startup : StartupBase
 
         services.AddSingleton<AutorouteTransformer>();
         services.AddSingleton<IShellRouteValuesAddressScheme, AutorouteValuesAddressScheme>();
-        
+
         services.AddScoped<IShapeTableProvider, AutorouteShapeTableProvider>();
     }
 
