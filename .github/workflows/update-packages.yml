@@ -1,0 +1,42 @@
+name: Update NuGet packages
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Every Sunday at 8am
+    - cron: '0 8 * * Sun'
+
+permissions:
+  issues: write
+  pull-requests: write
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    name: Setup
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run dotnet outdated
+      run: |
+        dotnet tool install --global dotnet-outdated-tool
+        OUTPUT=$(dotnet outdated --version-lock minor --upgrade)
+        if [[ $OUTPUT =~ "No outdated dependencies were detected" ]]; then
+            echo "::set-output name=updated::false"
+        else
+            echo "::set-output name=updated::true"
+        fi
+      shell: bash
+    - name: Create pull request
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git checkout main
+        git checkout -b outdated
+        git commit -a -m "Update NuGet packages"
+        gh pr create -B main -H outdated --title 'Update NuGet packages' --body 'Created by Github action'
+
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
