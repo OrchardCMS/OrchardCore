@@ -1,42 +1,48 @@
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.Documents;
-using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.Rules;
 
 namespace OrchardCore.UrlRewriting.Options;
 
 public sealed class RewriteOptionsConfiguration : IConfigureOptions<RewriteOptions>
 {
-    private readonly IDocumentManager<RewriteRulesDocument> _documentManager;
-
+    private readonly IRewriteRulesStore _rewriteRulesStore;
+    private readonly IEnumerable<IUrlRewriteRuleSource> _sources;
     private readonly AdminOptions _adminOptions;
 
     public RewriteOptionsConfiguration(
-        IDocumentManager<RewriteRulesDocument> documentManager,
+        IRewriteRulesStore rewriteRulesStore,
+        IEnumerable<IUrlRewriteRuleSource> sources,
         IOptions<AdminOptions> adminOptions)
     {
-        _documentManager = documentManager;
+        _rewriteRulesStore = rewriteRulesStore;
+        _sources = sources;
         _adminOptions = adminOptions.Value;
     }
 
     public void Configure(RewriteOptions options)
     {
-        var rules = _documentManager.GetOrCreateMutableAsync()
+        var rules = _rewriteRulesStore.GetAllAsync()
             .GetAwaiter()
             .GetResult();
 
-        var apacheRules = ApacheRules.FromModels(rules.Rules.Values);
+        foreach (var rule in rules)
+        {
+            var source = _sources.FirstOrDefault(x => x.Name == rule.Source);
 
-        using var apacheModRewrite = new StringReader(apacheRules);
+            if (source == null)
+            {
+                continue;
+            }
 
-        options.AddApacheModRewrite(apacheModRewrite);
+            source.Configure(options, rule);
+        }
 
         if (options.Rules.Count > 0)
         {
             // Exclude admin ui requests to prevent accidental access bricking by provided rules
-            options.Rules.Insert(0, new ExcludeAdminUIRule(_adminOptions.AdminUrlPrefix));
+            options.Rules.Insert(0, new ExcludeAdminUrlPrefixRule(_adminOptions.AdminUrlPrefix));
         }
     }
 }

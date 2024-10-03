@@ -1,15 +1,18 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
-using OrchardCore.UrlRewriting.Helpers;
+using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using OrchardCore.UrlRewriting.Models;
-using OrchardCore.UrlRewriting.Services;
 using OrchardCore.UrlRewriting.ViewModels;
 
 namespace OrchardCore.UrlRewriting.Controllers;
@@ -17,12 +20,15 @@ namespace OrchardCore.UrlRewriting.Controllers;
 [Admin("UrlRewriting/{action}/{id?}", "UrlRewriting{action}")]
 public sealed class AdminController : Controller
 {
+    private const string _optionsSearch = "Options.Search";
+
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
-    private readonly RewriteRulesStore _rewriteRulesStore;
     private readonly IDisplayManager<RewriteRule> _rewriteRuleDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IEnumerable<IUrlRewriteRuleSource> _urlRewritingRuleSources;
+    private readonly IRewriteRulesManager _rewriteRulesManager;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -30,50 +36,93 @@ public sealed class AdminController : Controller
     public AdminController(
         IDisplayManager<RewriteRule> rewriteRuleDisplayManager,
         IAuthorizationService authorizationService,
-        RewriteRulesStore rewriteRulesStore,
         INotifier notifier,
         IShellReleaseManager shellReleaseManager,
+        IEnumerable<IUrlRewriteRuleSource> urlRewritingRuleSources,
+        IRewriteRulesManager rewriteRulesManager,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer,
         IUpdateModelAccessor updateModelAccessor)
     {
         _rewriteRuleDisplayManager = rewriteRuleDisplayManager;
         _authorizationService = authorizationService;
-        _rewriteRulesStore = rewriteRulesStore;
         _notifier = notifier;
         _shellReleaseManager = shellReleaseManager;
+        _urlRewritingRuleSources = urlRewritingRuleSources;
+        _rewriteRulesManager = rewriteRulesManager;
         _updateModelAccessor = updateModelAccessor;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(
+        RewriteRuleOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IShapeFactory shapeFactory,
+        [FromServices] IOptions<PagerOptions> pagerOptions)
     {
         if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
         {
             return Forbid();
         }
 
-        var rules = await _rewriteRulesStore.GetRewriteRulesAsync();
+        var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
 
-        var model = new RewriteRulesViewModel
+        // Maintain previous route data when generating page links.
+        var routeData = new RouteData();
+
+        if (!string.IsNullOrEmpty(options.Search))
         {
-            Rules = rules.Rules.Values
-                .Select(BuildViewModel)
-                .ToArray()
+            routeData.Values.TryAdd(_optionsSearch, options.Search);
+        }
+
+        var result = await _rewriteRulesManager.PageQueriesAsync(pager.Page, pager.PageSize, new RewriteRulesQueryContext()
+        {
+            Name = options.Search,
+        });
+
+        var model = new ListRewriteRuleViewModel
+        {
+            Rules = [],
+            Options = options,
+            Pager = await shapeFactory.PagerAsync(pager, result.Count, routeData),
+            SourceNames = _urlRewritingRuleSources.Select(x => x.Name),
         };
+
+        foreach (var rule in result.Records)
+        {
+            model.Rules.Add(new RewriteRuleEntry
+            {
+                Rule = rule,
+                Shape = await _rewriteRuleDisplayManager.BuildDisplayAsync(rule, _updateModelAccessor.ModelUpdater, "SummaryAdmin")
+            });
+        }
+
+        model.Options.BulkActions =
+        [
+            new SelectListItem(S["Delete"], nameof(RewriteRuleAction.Remove)),
+        ];
 
         return View(model);
     }
 
-    public async Task<ActionResult> Create()
+    [HttpPost]
+    [ActionName(nameof(Index))]
+    [FormValueRequired("submit.Filter")]
+    public ActionResult IndexFilterPOST(ListRewriteRuleViewModel model)
+       => RedirectToAction(nameof(Index), new RouteValueDictionary
+       {
+            { _optionsSearch, model.Options.Search }
+       });
+
+    public async Task<ActionResult> Create(string id)
     {
         if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
         {
             return Forbid();
         }
 
-        var rule = new RewriteRule();
+        var rule = await _rewriteRulesManager.NewAsync(id);
 
         var shape = await _rewriteRuleDisplayManager.BuildEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: true);
 
@@ -82,22 +131,20 @@ public sealed class AdminController : Controller
 
     [HttpPost]
     [ActionName(nameof(Create))]
-    public async Task<ActionResult> CreatePOST()
+    public async Task<ActionResult> CreatePOST(string id)
     {
         if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
         {
             return Forbid();
         }
 
-        var rule = new RewriteRule();
+        var rule = await _rewriteRulesManager.NewAsync(id);
 
         var shape = await _rewriteRuleDisplayManager.UpdateEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: true);
 
         if (ModelState.IsValid)
         {
-            rule.Id = IdGenerator.GenerateId();
-
-            await _rewriteRulesStore.SaveAsync(rule);
+            await _rewriteRulesManager.SaveAsync(rule);
 
             await _notifier.SuccessAsync(H["Rule created successfully."]);
 
@@ -116,7 +163,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var rule = await _rewriteRulesStore.FindByIdAsync(id);
+        var rule = await _rewriteRulesManager.FindByIdAsync(id);
 
         if (rule == null)
         {
@@ -137,7 +184,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var rule = await _rewriteRulesStore.FindByIdAsync(id);
+        var rule = await _rewriteRulesManager.FindByIdAsync(id);
 
         if (rule == null)
         {
@@ -148,7 +195,7 @@ public sealed class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            await _rewriteRulesStore.SaveAsync(rule);
+            await _rewriteRulesManager.SaveAsync(rule);
 
             await _notifier.SuccessAsync(H["Rule updated successfully."]);
 
@@ -168,28 +215,19 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var rule = await _rewriteRulesStore.FindByIdAsync(id);
+        var rule = await _rewriteRulesManager.FindByIdAsync(id);
 
         if (rule == null)
         {
             return NotFound();
         }
 
-        await _rewriteRulesStore.DeleteAsync(rule);
+        await _rewriteRulesManager.DeleteAsync(rule);
 
         _shellReleaseManager.RequestRelease();
 
         await _notifier.SuccessAsync(H["Rule deleted successfully."]);
 
         return RedirectToAction(nameof(Index));
-    }
-
-    private static RewriteRuleViewModel BuildViewModel(RewriteRule rule)
-    {
-        var viewModel = new RewriteRuleViewModel();
-
-        viewModel.FromModel(rule);
-
-        return viewModel;
     }
 }

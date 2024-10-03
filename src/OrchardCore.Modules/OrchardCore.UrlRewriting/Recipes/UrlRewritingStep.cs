@@ -3,7 +3,6 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.UrlRewriting.Models;
-using OrchardCore.UrlRewriting.Services;
 
 namespace OrchardCore.UrlRewriting.Recipes;
 
@@ -12,12 +11,12 @@ namespace OrchardCore.UrlRewriting.Recipes;
 /// </summary>
 public sealed class UrlRewritingStep : IRecipeStepHandler
 {
-    private readonly RewriteRulesStore _rewriteRulesStore;
+    private readonly IRewriteRulesStore _rewriteRulesStore;
 
     internal readonly IStringLocalizer S;
 
     public UrlRewritingStep(
-        RewriteRulesStore rewriteRulesStore,
+        IRewriteRulesStore rewriteRulesStore,
         IStringLocalizer<UrlRewritingStep> stringLocalizer)
     {
         _rewriteRulesStore = rewriteRulesStore;

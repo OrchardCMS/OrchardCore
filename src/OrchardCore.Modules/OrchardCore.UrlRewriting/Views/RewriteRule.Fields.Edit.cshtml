@@ -1,0 +1,16 @@
+@model EditRewriteRuleViewModel
+
+<div class="mb-3" asp-validation-class-for="Name">
+    <label asp-for="Name" class="form-label">@T["Name"]</label>
+    <input asp-for="Name" class="form-control text-muted" autofocus />
+    <span asp-validation-for="Name"></span>
+    <span class="hint">@T["A name of the rule."]</span>
+    <input asp-for="Source" type="hidden" />
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="SkipFurtherRules" checked="@Model.SkipFurtherRules" />
+        <label class="form-check-label" asp-for="SkipFurtherRules">@T["Skip Further Rules"]</label>
+    </div>
+</div>

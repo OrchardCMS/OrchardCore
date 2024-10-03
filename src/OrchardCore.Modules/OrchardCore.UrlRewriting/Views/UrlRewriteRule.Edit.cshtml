@@ -1,0 +1,27 @@
+@model UrlRewriteRuleViewModel
+
+<div class="mb-3">
+    <label asp-for="Pattern" class="form-label">@T["Pattern"]</label>
+    <input asp-for="Pattern" class="form-control" />
+    <span class="hint">@T["Rewrite rules use regular expression syntax for pattern matching as defined in ECMA-262."]</span>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="IgnoreCase" checked="@Model.IgnoreCase" />
+        <label class="form-check-label" asp-for="IgnoreCase">@T["Ignore case"]</label>
+        <span class="hint dashed">@T["When checked, the pattern will be case insensitive."]</span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Url" class="form-label">@T["Rewrite URL"]</label>
+    <input asp-for="Url" class="form-control" />
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="AppendQueryString" checked="@Model.AppendQueryString" />
+        <label class="form-check-label" asp-for="AppendQueryString">@T["Append query string"]</label>
+    </div>
+</div>

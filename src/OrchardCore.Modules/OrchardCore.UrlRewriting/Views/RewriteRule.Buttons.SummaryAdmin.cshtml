@@ -1,0 +1,12 @@
+@model dynamic
+
+<a asp-action="Edit"
+    asp-controller="Admin"
+    asp-route-id="@Model.Name"
+    class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+<a asp-action="Delete"
+    asp-controller="Admin"
+    asp-route-id="@Model.Name"
+    class="btn btn-danger btn-sm"
+    data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>

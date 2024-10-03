@@ -1,115 +1,178 @@
-@model RewriteRulesViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@model ListRewriteRuleViewModel
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["URL Rewriting"])</h1></zone>
 
-<div class="card mb-3 text-bg-theme position-sticky action-bar">
-    <div class="card-body">
-        <div class="row gx-3">
-            <div class="col">
-                <div class="has-search">
-                    <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                    <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+@* the form is necessary to generate an antiforgery token for the delete and toggle actions *@
+<form asp-action="Index" method="post" class="no-multisubmit">
+    <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
+    <input asp-for="Options.BulkAction" type="hidden" />
+    <input type="submit" name="submit.BulkAction" class="visually-hidden" />
+
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
+        <div class="card-body">
+            <div class="row gx-3">
+                <div class="col">
+                    <div class="has-search">
+                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                        <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                    </div>
                 </div>
-            </div>
-            <div class="col-auto">
-                <a asp-route-action="Create" class="btn btn-secondary create" role="button">@T["Create Rule"]</a>
+                <div class="col-auto">
+                    <button type="button" class="btn btn-secondary create" role="button" data-bs-toggle="modal" data-bs-target="#modalAddRule">@T["Add Query"]</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-@if (Model.Rules.Count > 0)
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">@T["Rule name"]</th>
-                <th scope="col">@T["Pattern"]</th>
-                <th scope="col">@T["Substitution"]</th>
-                <th scope="col">@T["Action"]</th>
-                <th scope="col" class="text-end"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @{
-                var message = T["Are you sure you want to delete this rule?"];
-            }
-            @foreach (var rule in Model.Rules)
-            {
-                <tr data-filter-value="@rule.Name">
-                    <td scope="row">@rule.Name</td>
-                    <td><code>@rule.Pattern</code></td>
-                    <td><code>@rule.Substitution</code></td>
-                    <td>@(rule.RuleAction == RuleAction.Rewrite ? T["Rewrite"] : T["Redirect"])</td>
-                    <td class="text-end">
-                        <div>
-                            <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@rule.Id">@T["Edit"]</a>
-                            <a class="delete btn btn-danger btn-sm" asp-route-id="@rule.Id" role="button" asp-action="Delete" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Delete Rule"]" data-message="@message">@T["Delete"]</a>
+    <ul class="list-group with-checkbox">
+        @if (Model.Rules.Any())
+        {
+            int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
+            int endIndex = startIndex + Model.Rules.Count - 1;
+
+            <li class="list-group-item text-bg-theme">
+                <div class="row gx-3">
+                    <div class="col">
+                        <div class="form-check my-1">
+                            <input type="checkbox" class="form-check-input" id="select-all">
+                            <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+                            <label id="items" for="select-all">@T.Plural(Model.Rules.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                            <label id="selected-items" class="text-muted" for="select-all"></label>
                         </div>
-                    </td>
-                </tr>
+                    </div>
+                    <div class="col-auto">
+                        <div class="dropdown" style="display:none" id="actions">
+                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @T["Actions"]
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
+                                @foreach (var item in Model.Options.BulkActions)
+                                {
+                                    <li>
+                                        <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            @foreach (var entry in Model.Rules)
+            {
+                <li class="list-group-item">
+                    <div class="form-check float-start">
+                        <input type="checkbox" class="form-check-input" value="@entry.Rule.Id" name="itemIds" id="itemIds-@entry.Rule.Id">
+                        <label class="form-check-label" for="itemIds-@entry.Rule.Id">&nbsp;</label>
+                    </div>
+                    @await DisplayAsync(entry.Shape)
+                </li>
             }
-        </tbody>
-    </table>
-}
+        }
+        else
+        {
+            <li class="list-group-item">
+                <div class="alert alert-info mb-0" role="alert">
+                    @T["<strong>Nothing here!</strong> There are no rewrite rules at the moment."]
+                </div>
+            </li>
+        }
+    </ul>
 
-<div id="list-alert" class="alert alert-info d-none" role="alert">
-    @T["<strong>Nothing here!</strong> Your search returned no results."]
-</div>
+    <div id="list-alert" class="alert alert-info d-none" role="alert">
+        @T["<strong>Nothing here!</strong> Your search returned no results."]
+    </div>
 
-<script at="Foot" depends-on="jQuery">
+    <!-- Modal -->
+    <div class="modal fade" id="modalAddRule" tabindex="-1" role="dialog" aria-labelledby="available-rule-types-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="available-rule-types-title">@T["Available Rule Types"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @if (!Model.SourceNames.Any())
+                    {
+                        <p class="p-3 mb-2 bg-warning text-white">@T["You need to enable a feature which provides a rewrite rule source."]</p>
+                    }
+                    else
+                    {
+                        <div class="row row-cols-1 row-cols-md-3 g-2">
+                            @foreach (var source in Model.SourceNames)
+                            {
+                                OrchardCore.DisplayManagement.IShape shape = await New.RewriteRule_Link(Name: source);
+                                shape.Metadata.Alternates.Add("RewriteRule_Link__" + source);
+                                shape.Properties["Source"] = source;
+
+                                @await DisplayAsync(shape)
+                            }
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script at="Foot">
     $(function () {
-        var searchBox = $('#search-box');
+        var actions = $("#actions");
+        var items = $("#items");
+        var filters = $(".filter");
+        var selectAllCtrl = $("#select-all");
+        var selectedItems = $("#selected-items");
+        var itemsCheckboxes = $(":checkbox[name='itemIds']");
 
-        // On Enter, edit the rule if there is a single one
-        searchBox.keypress(function (event) {
-            if (event.which == 13) {
+        function displayActionsOrFilters() {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                actions.show();
+                filters.hide();
+                selectedItems.show();
+                items.hide();
+            }
+            else {
+                actions.hide();
+                filters.show();
+                selectedItems.hide();
+                items.show();
+            }
+        }
 
-                // Edit the rule if there is a single filtered element
-                var visible = $('.rules > table > tr:visible');
-                if (visible.length == 1) {
-                    window.location = visible.find('.edit').attr('href');
-                }
-                return false;
+        $(".dropdown-menu .dropdown-item").filter(function () {
+            return $(this).data("action");
+        }).on("click", function () {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                var $this = $(this);
+                confirmDialog({
+                    ...$this.data(), callback: function (r) {
+                        if (r) {
+                            $("[name='Options.BulkAction']").val($this.data("action"));
+                            $("[name='submit.BulkAction']").click();
+                        }
+                    }
+                });
             }
         });
 
-        // On each keypress filter the list of rules
-        searchBox.keyup(function (e) {
-            var search = $(this).val().toLowerCase();
-            var elementsToFilter = $("[data-filter-value]");
+        selectAllCtrl.click(function () {
+            itemsCheckboxes.not(this).prop("checked", this.checked);
+            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+            displayActionsOrFilters();
+        });
 
-            // On ESC, clear the search box and display all rules
-            if (e.keyCode == 27 || search == '') {
-                searchBox.val('');
-                elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
-                $('#list-alert').addClass("d-none");
-            }
-            else {
-                elementsToFilter.each(function () {
-                    var text = $(this).data('filter-value').toLowerCase();
-                    var found = text.indexOf(search) > -1;
+        itemsCheckboxes.on("click", function () {
+            var itemsCount = $(":checkbox[name='itemIds']").length;
+            var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
 
-                    if (found) {
-                        $(this).removeClass("d-none first-child-visible last-child-visible");
-                    }
-                    else {
-                        $(this).addClass("d-none");
-                    }
-                });
+            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
+            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
 
-                elementsToFilter.filter(":not(.d-none)").first().addClass("first-child-visible");
-                elementsToFilter.filter(":not(.d-none)").last().addClass("last-child-visible");
-
-                // We display an alert if a search is not found
-                var visible = $('.rules > table > tbody > tr:visible');
-                if (visible.length == 0) {
-                    $('#list-alert').removeClass("d-none");
-                }
-                else {
-                    $('#list-alert').addClass("d-none");
-                }
-            }
+            selectedItems.text(selectedItemsCount + ' @T["selected"]');
+            displayActionsOrFilters();
         });
     })
 </script>

@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Rewrite;
 
 namespace OrchardCore.UrlRewriting.Rules;
 
-internal sealed class ExcludeAdminUIRule : IRule
+internal sealed class ExcludeAdminUrlPrefixRule : IRule
 {
     private readonly PathString _adminUrlPrefix;
 
-    public ExcludeAdminUIRule(string adminUrlPrefix)
+    public ExcludeAdminUrlPrefixRule(string adminUrlPrefix)
     {
         _adminUrlPrefix = new PathString("/" + adminUrlPrefix);
     }
