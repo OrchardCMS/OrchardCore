@@ -151,13 +151,13 @@ public class GraphQLMiddleware : IMiddleware
             options.Variables = request.Variables;
             options.UserContext = _settings.BuildUserContext?.Invoke(context);
             options.ValidationRules = DocumentValidator.CoreRules
-                .Concat(context.RequestServices.GetServices<IValidationRule>())
-                .Append(new ComplexityValidationRule(new ComplexityConfiguration
-                {
-                    MaxDepth = _settings.MaxDepth,
-                    MaxComplexity = _settings.MaxComplexity,
-                    FieldImpact = _settings.FieldImpact
-                }));
+            .Concat(context.RequestServices.GetServices<IValidationRule>())
+            .Append(new ComplexityValidationRule(new ComplexityOptions
+            {
+                MaxDepth = _settings.MaxDepth,
+                MaxComplexity = _settings.MaxComplexity,
+                DefaultObjectImpact = _settings.FieldImpact ?? 0,
+            }));
             options.Listeners.Add(dataLoaderDocumentListener);
             options.RequestServices = context.RequestServices;
         });

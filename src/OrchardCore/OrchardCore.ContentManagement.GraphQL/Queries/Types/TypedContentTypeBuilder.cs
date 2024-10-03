@@ -100,14 +100,14 @@ public class TypedContentTypeBuilder : IContentTypeBuilder
                         Description = queryGraphType.Description,
                     };
                     contentItemType.Field(partFieldName, queryGraphType.GetType())
-                                   .Description(queryGraphType.Description)
-                                   .Resolve(context =>
-                                   {
-                                       var nameToResolve = partName;
-                                       var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
+                        .Description(queryGraphType.Description)
+                        .Resolve(context =>
+                        {
+                            var nameToResolve = partName;
+                            var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
 
-                                       return context.Source.Get(typeToResolve, nameToResolve);
-                                   });
+                            return context.Source.Get(typeToResolve, nameToResolve);
+                        });
                 }
             }
 

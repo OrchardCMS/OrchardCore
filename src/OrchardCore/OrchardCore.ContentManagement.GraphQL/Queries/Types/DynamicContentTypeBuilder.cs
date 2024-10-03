@@ -15,9 +15,11 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
     protected readonly IHttpContextAccessor _httpContextAccessor;
     protected readonly GraphQLContentOptions _contentOptions;
     protected readonly IStringLocalizer S;
+
     private readonly Dictionary<string, FieldType> _dynamicPartFields;
 
-    protected DynamicContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
+    protected DynamicContentTypeBuilder(
+        IHttpContextAccessor httpContextAccessor,
         IOptions<GraphQLContentOptions> contentOptionsAccessor,
         IStringLocalizer<DynamicContentTypeBuilder> localizer)
     {
@@ -36,9 +38,8 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
         {
             return;
         }
-
         var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
-        var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
+        var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToArray();
 
         foreach (var part in contentTypeDefinition.Parts)
         {
@@ -184,7 +185,7 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
                     Name = partFieldName,
                     Description = S["Represents a {0}.", part.PartDefinition.Name],
                     Type = typeof(DynamicPartGraphType),
-                    ResolvedType = new DynamicPartGraphType(part),
+                    ResolvedType = new DynamicPartGraphType(part, contentFieldProviders, schema),
                     Resolver = new FuncFieldResolver<ContentElement, object>(context =>
                     {
                         var nameToResolve = partName;

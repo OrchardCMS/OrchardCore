@@ -1,4 +1,4 @@
-using GraphQL.DataLoader;
+using GraphQL;
 using GraphQL.Types;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentFields.Fields;
@@ -29,7 +29,7 @@ public class ContentPickerFieldQueryObjectType : ObjectGraphType<ContentPickerFi
             {
                 var contentItemLoader = x.GetOrAddPublishedContentItemByIdDataLoader();
 
-                return (contentItemLoader.LoadAsync(x.Page(x.Source.ContentItemIds))).Then(itemResultSet =>
+                return contentItemLoader.LoadAsync(x.Page(x.Source.ContentItemIds)).Then(itemResultSet =>
                 {
                     return itemResultSet.SelectMany(x => x);
                 });

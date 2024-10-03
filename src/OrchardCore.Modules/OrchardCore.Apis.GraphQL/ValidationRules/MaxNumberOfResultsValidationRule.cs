@@ -25,7 +25,7 @@ public class MaxNumberOfResultsValidationRule : IValidationRule
         _logger = logger;
     }
 
-    public ValueTask<INodeVisitor> ValidateAsync(ValidationContext validationContext)
+    public ValueTask<INodeVisitor> GetPreNodeVisitorAsync(ValidationContext validationContext)
     {
         return ValueTask.FromResult((INodeVisitor)new NodeVisitors(
         new MatchingNodeVisitor<GraphQLArgument>((arg, visitorContext) =>
@@ -68,4 +68,10 @@ public class MaxNumberOfResultsValidationRule : IValidationRule
             }
         })));
     }
+
+    public ValueTask<IVariableVisitor> GetVariableVisitorAsync(ValidationContext context)
+        => ValueTask.FromResult<IVariableVisitor>(null);
+
+    public ValueTask<INodeVisitor> GetPostNodeVisitorAsync(ValidationContext context)
+        => ValueTask.FromResult<INodeVisitor>(null);
 }

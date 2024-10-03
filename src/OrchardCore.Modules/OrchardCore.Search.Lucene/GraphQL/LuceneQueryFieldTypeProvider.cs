@@ -114,6 +114,7 @@ public class LuceneQueryFieldTypeProvider : ISchemaBuilder
                     Name = nameLower,
                     Description = description,
                     Type = typeof(StringGraphType),
+                    ResolvedType = new StringGraphType(),
                     Resolver = new FuncFieldResolver<JsonObject, string>(context =>
                     {
                         var source = context.Source;
@@ -130,6 +131,7 @@ public class LuceneQueryFieldTypeProvider : ISchemaBuilder
                     Name = nameLower,
                     Description = description,
                     Type = typeof(IntGraphType),
+                    ResolvedType = new IntGraphType(),
                     Resolver = new FuncFieldResolver<JsonObject, int?>(context =>
                     {
                         var source = context.Source;
