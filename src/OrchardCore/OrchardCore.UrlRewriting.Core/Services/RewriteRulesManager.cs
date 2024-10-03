@@ -99,9 +99,7 @@ public class RewriteRulesManager : IRewriteRulesManager
     }
 
     public Task SaveAsync(RewriteRule rule)
-    {
-        throw new NotImplementedException();
-    }
+        => _store.SaveAsync(rule);
 
     private Task LoadAsync(RewriteRule rule)
     {
