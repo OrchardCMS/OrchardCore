@@ -128,7 +128,8 @@ public sealed class AdminController : Controller
         return View(shape);
     }
 
-    [HttpPost, ActionName(nameof(Edit))]
+    [HttpPost]
+    [ActionName(nameof(Edit))]
     public async Task<ActionResult> EditPOST(string id)
     {
         if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
