@@ -78,7 +78,11 @@ public sealed class RedisCacheStartup : StartupBase
     {
         if (services.Any(d => d.ServiceType == typeof(IRedisService)))
         {
-            services.AddSingleton<IDistributedCache, RedisCacheWrapper>();
+            services.AddSingleton<IDistributedCache, RedisCacheWrapper>(sp =>
+            {
+                var optionsAccessor = sp.GetRequiredService<IOptions<RedisCacheOptions>>();
+                return new RedisCacheWrapper(new RedisCache(optionsAccessor));
+            });
             services.AddTransient<IConfigureOptions<RedisCacheOptions>, RedisCacheOptionsSetup>();
             services.AddScoped<ITagCache, RedisTagCache>();
         }
