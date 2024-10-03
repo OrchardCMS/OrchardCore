@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
-using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
 namespace OrchardCore.Redis.Services;
@@ -11,21 +10,21 @@ namespace OrchardCore.Redis.Services;
 /// <remarks>
 /// This is done by not disposing the `RedisCache` instance which would otherwise close the redis connection.
 /// </remarks>
-public sealed class RedisCacheWrapper : IDistributedCache
+internal sealed class RedisCacheWrapper : IDistributedCache
 {
-    private readonly RedisCache _cache;
+    private readonly IDistributedCache _cache;
 
-    public RedisCacheWrapper(IOptions<RedisCacheOptions> optionsAccessor) => _cache = new RedisCache(optionsAccessor);
+    public RedisCacheWrapper(IDistributedCache cache) => _cache = cache ?? throw new ArgumentNullException(nameof(cache));
 
     public byte[] Get(string key) => _cache.Get(key);
 
     public Task<byte[]> GetAsync(string key, CancellationToken token = default) => _cache.GetAsync(key, token);
 
-    public void Refresh(string key) => _cache?.Refresh(key);
+    public void Refresh(string key) => _cache.Refresh(key);
 
     public Task RefreshAsync(string key, CancellationToken token = default) => _cache.RefreshAsync(key, token);
 
-    public void Remove(string key) => _cache!.Remove(key);
+    public void Remove(string key) => _cache.Remove(key);
 
     public Task RemoveAsync(string key, CancellationToken token = default) => _cache.RemoveAsync(key, token);
 
