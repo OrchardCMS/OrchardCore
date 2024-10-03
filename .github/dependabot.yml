@@ -1,54 +1,11 @@
 version: 2
 updates:
-  # Dependabot can handle at most 150 "manifests", so for NuGet, csprojs referencing packages (see docs:
-  # https://docs.github.com/en/enterprise-cloud@latest/code-security/supply-chain-security/understanding-your-software-supply-chain/troubleshooting-the-dependency-graph#are-there-limits-which-affect-the-dependency-graph-data).
-  # We're grouping updates per directories to have smaller batches.
-  # /src/OrchardCore
-  - package-ecosystem: "nuget"
-    directory: "/src/OrchardCore"
+  - package-ecosystem: "nuget" # See documentation for possible values
+    directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
     groups:
-       all-dependencies:
-          patterns:
-            - "*"
-  # /src/OrchardCore.Modules
-  - package-ecosystem: "nuget"
-    directory: "/src/OrchardCore.Modules"
-    schedule:
-      interval: "weekly"
-    groups:
-       all-dependencies:
-          patterns:
-            - "*"
-  # /src/OrchardCore.Themes
-  - package-ecosystem: "nuget"
-    directory: "/src/OrchardCore.Themes"
-    schedule:
-      interval: "weekly"
-    groups:
-       all-dependencies:
-          patterns:
-            - "*"
-  # All other folders under src/.
-  - package-ecosystem: "nuget"
-    directories: 
-      - "/src/OrchardCore.Build"
-      - "/src/OrchardCore.Cms.Web"
-      - "/src/OrchardCore.Mvc.Web"
-      - "/src/Templates**"
-    schedule:
-      interval: "weekly"
-    groups:
-       all-dependencies:
-          patterns:
-            - "*"
-  # /test
-  - package-ecosystem: "nuget"
-    directory: "/test"
-    schedule:
-      interval: "weekly"
-    groups:
+       # Grouped version updates configuration
        all-dependencies:
           patterns:
             - "*"
