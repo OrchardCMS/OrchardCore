@@ -31,7 +31,7 @@ jobs:
       shell: bash
     - name: Create pull request
       run: |
-        git checkout origin/main
+        git checkout main
         git pull
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
@@ -39,7 +39,7 @@ jobs:
         git checkout -b outdated
         git commit -a -m "Update NuGet packages"
         git push -f
-        gh pr create -B origin/main -H outdated --title 'Update NuGet packages' --body 'Created by Github action'
+        gh pr create -B main -H outdated --title 'Update NuGet packages' --body 'Created by Github action'
 
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
