@@ -55,7 +55,7 @@ public class AutoSetupService : IAutoSetupService
             stringBuilder.AppendLine($"{error.Key} : '{error.Value}'");
         }
 
-        _logger.LogError("AutoSetup failed installing the site '{SiteName}' with errors: {Errors}", setupOptions.SiteName, stringBuilder);
+        _logger.LogError("The AutoSetup failed installing the site '{SiteName}' with errors: {Errors}.", setupOptions.SiteName, stringBuilder);
 
         return false;
     }
