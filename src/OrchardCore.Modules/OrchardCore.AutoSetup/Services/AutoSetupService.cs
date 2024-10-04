@@ -1,0 +1,146 @@
+using System.Text;
+using Microsoft.Extensions.Logging;
+using OrchardCore.Abstractions.Setup;
+using OrchardCore.AutoSetup.Options;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Setup.Services;
+
+namespace OrchardCore.AutoSetup.Services;
+public class AutoSetupService : IAutoSetupService
+{
+    /// <summary>
+    /// The shell host.
+    /// </summary>
+    private readonly IShellHost _shellHost;
+
+    /// <summary>
+    /// The shell settings manager.
+    /// </summary>
+    private readonly IShellSettingsManager _shellSettingsManager;
+
+    /// <summary>
+    /// The setup service.
+    /// </summary>
+    private readonly ISetupService _setupService;
+
+    /// <summary>
+    /// The logger.
+    /// </summary>
+    private readonly ILogger _logger;
+
+    public AutoSetupService(
+        IShellHost shellHost,
+        IShellSettingsManager shellSettingsManager,
+        ISetupService setupService,
+        ILogger<AutoSetupService> logger
+        )
+    {
+        _shellHost = shellHost;
+        _shellSettingsManager = shellSettingsManager;
+        _setupService = setupService;
+        _logger = logger;
+    }
+
+    /// <summary>
+    /// Sets up a tenant.
+    /// </summary>    
+    /// <param name="setupOptions">The tenant setup options.</param>
+    /// <param name="shellSettings">The tenant shell settings.</param>
+    /// <returns>
+    /// Returns <c>true</c> if successfully setup.
+    /// </returns>
+    public async Task<bool> SetupTenantAsync(TenantSetupOptions setupOptions, ShellSettings shellSettings)
+    {
+        var setupContext = await GetSetupContextAsync(setupOptions, shellSettings);
+
+        _logger.LogInformation("AutoSetup is initializing the site");
+
+        await _setupService.SetupAsync(setupContext);
+
+        if (setupContext.Errors.Count == 0)
+        {
+            _logger.LogInformation("AutoSetup successfully provisioned the site '{SiteName}'.", setupOptions.SiteName);
+
+            return true;
+        }
+
+        var stringBuilder = new StringBuilder();
+        foreach (var error in setupContext.Errors)
+        {
+            stringBuilder.AppendLine($"{error.Key} : '{error.Value}'");
+        }
+
+        _logger.LogError("AutoSetup failed installing the site '{SiteName}' with errors: {Errors}", setupOptions.SiteName, stringBuilder);
+
+        return false;
+    }
+
+    /// <summary>
+    /// Creates a tenant shell settings.
+    /// </summary>
+    /// <param name="setupOptions">The setup options.</param>
+    /// <returns>The <see cref="ShellSettings"/>.</returns>
+    public async Task<ShellSettings> CreateTenantSettingsAsync(TenantSetupOptions setupOptions)
+    {
+        using var shellSettings = _shellSettingsManager
+            .CreateDefaultSettings()
+            .AsUninitialized()
+            .AsDisposable();
+
+        shellSettings.Name = setupOptions.ShellName;
+        shellSettings.RequestUrlHost = setupOptions.RequestUrlHost;
+        shellSettings.RequestUrlPrefix = setupOptions.RequestUrlPrefix;
+
+        shellSettings["ConnectionString"] = setupOptions.DatabaseConnectionString;
+        shellSettings["TablePrefix"] = setupOptions.DatabaseTablePrefix;
+        shellSettings["Schema"] = setupOptions.DatabaseSchema;
+        shellSettings["DatabaseProvider"] = setupOptions.DatabaseProvider;
+        shellSettings["Secret"] = Guid.NewGuid().ToString();
+        shellSettings["RecipeName"] = setupOptions.RecipeName;
+        shellSettings["FeatureProfile"] = setupOptions.FeatureProfile;
+
+        await _shellHost.UpdateShellSettingsAsync(shellSettings);
+
+        return shellSettings;
+    }
+
+    /// <summary>
+    /// Gets a setup context from the configuration.
+    /// </summary>
+    /// <param name="options">The tenant setup options.</param>    
+    /// <param name="shellSettings">The tenant shell settings.</param>
+    /// <returns> The <see cref="SetupContext"/> used to setup the site.</returns>
+    public async Task<SetupContext> GetSetupContextAsync(TenantSetupOptions options, ShellSettings shellSettings)
+    {
+        var recipes = await _setupService.GetSetupRecipesAsync();
+
+        var recipe = recipes.SingleOrDefault(r => r.Name == options.RecipeName);
+
+        var setupContext = new SetupContext
+        {
+            Recipe = recipe,
+            ShellSettings = shellSettings,
+            Errors = new Dictionary<string, string>()
+        };
+
+        if (shellSettings.IsDefaultShell())
+        {
+            // The 'Default' shell is first created by the infrastructure,
+            // so the following 'Autosetup' options need to be passed.
+            shellSettings.RequestUrlHost = options.RequestUrlHost;
+            shellSettings.RequestUrlPrefix = options.RequestUrlPrefix;
+        }
+
+        setupContext.Properties[SetupConstants.AdminEmail] = options.AdminEmail;
+        setupContext.Properties[SetupConstants.AdminPassword] = options.AdminPassword;
+        setupContext.Properties[SetupConstants.AdminUsername] = options.AdminUsername;
+        setupContext.Properties[SetupConstants.DatabaseConnectionString] = options.DatabaseConnectionString;
+        setupContext.Properties[SetupConstants.DatabaseProvider] = options.DatabaseProvider;
+        setupContext.Properties[SetupConstants.DatabaseTablePrefix] = options.DatabaseTablePrefix;
+        setupContext.Properties[SetupConstants.DatabaseSchema] = options.DatabaseSchema;
+        setupContext.Properties[SetupConstants.SiteName] = options.SiteName;
+        setupContext.Properties[SetupConstants.SiteTimeZone] = options.SiteTimeZone;
+
+        return setupContext;
+    }
+}
