@@ -75,7 +75,6 @@ public class AutoSetupService : IAutoSetupService
         shellSettings.Name = setupOptions.ShellName;
         shellSettings.RequestUrlHost = setupOptions.RequestUrlHost;
         shellSettings.RequestUrlPrefix = setupOptions.RequestUrlPrefix;
-
         shellSettings["ConnectionString"] = setupOptions.DatabaseConnectionString;
         shellSettings["TablePrefix"] = setupOptions.DatabaseTablePrefix;
         shellSettings["Schema"] = setupOptions.DatabaseSchema;
