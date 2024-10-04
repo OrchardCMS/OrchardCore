@@ -44,7 +44,7 @@ public class AutoSetupService : IAutoSetupService
 
         if (setupContext.Errors.Count == 0)
         {
-            _logger.LogInformation("AutoSetup successfully provisioned the site '{SiteName}'.", setupOptions.SiteName);
+            _logger.LogInformation("The AutoSetup successfully provisioned the site '{SiteName}'.", setupOptions.SiteName);
 
             return true;
         }
