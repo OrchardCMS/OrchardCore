@@ -1,28 +1,43 @@
 using System.Text;
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Entities;
 using OrchardCore.UrlRewriting.Models;
 
 namespace OrchardCore.UrlRewriting.Services;
 
-public class UrlRewriteRuleSource : IUrlRewriteRuleSource
+public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
 {
     public const string SourceName = "Rewrite";
 
-    public string Name => SourceName;
+    internal IStringLocalizer S;
 
+    public UrlRewriteRuleSource(IStringLocalizer<UrlRedirectRuleSource> stringLocalizer)
+    {
+        S = stringLocalizer;
+
+        Description = S["Rewrite Rule"];
+    }
+    public string Name
+        => SourceName;
+
+    public LocalizedString Description { get; }
     public void Configure(RewriteOptions options, RewriteRule rule)
     {
-        using var apacheModRewrite = new StringReader(GetRewriteRule(rule));
+        if (!rule.TryGet<UrlRedirectSourceMetadata>(out var metadata))
+        {
+            return;
+        }
+
+        using var apacheModRewrite = new StringReader(GetRewriteRule(rule, metadata));
 
         options.AddApacheModRewrite(apacheModRewrite);
     }
 
-    private static string GetRewriteRule(RewriteRule rule)
+    private static string GetRewriteRule(RewriteRule rule, UrlRedirectSourceMetadata metadata)
     {
-        var metadata = rule.As<UrlRedirectSourceMetadata>();
-
         var flags = GetFlags(rule, metadata);
+
         if (flags.Length > 0)
         {
             return $"RewriteRule \"{metadata.Pattern}\" \"{metadata.Url}\"";

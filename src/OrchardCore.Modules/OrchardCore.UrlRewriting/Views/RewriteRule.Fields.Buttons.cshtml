@@ -1,4 +1,7 @@
-@model EditRewriteRuleViewModel
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.UrlRewriting.Models
+
+@model ShapeViewModel<RewriteRule>
 
 <div class="mb-3">
     <button type="submit" class="btn btn-primary save">@T["Save"]</button>

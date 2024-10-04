@@ -1,3 +1,6 @@
-@model dynamic
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.UrlRewriting.Models
 
-<h5>@Model.Name</h5>
+@model ShapeViewModel<RewriteRule>
+
+<h5>@Model.Value.Name</h5>

@@ -18,21 +18,6 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Display(RewriteRule rule, BuildDisplayContext context)
-    {
-        if (rule.Source != UrlRewriteRuleSource.SourceName)
-        {
-            return null;
-        }
-
-        return Combine(
-            Dynamic("UrlRewriteRule_SummaryAdmin", model =>
-            {
-                model.Query = rule;
-            }).Location("Content:5")
-        );
-    }
-
     public override IDisplayResult Edit(RewriteRule rule, BuildEditorContext context)
     {
         if (rule.Source != UrlRewriteRuleSource.SourceName)
@@ -42,7 +27,7 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
 
         return Initialize<UrlRewriteRuleViewModel>("UrlRewriteRule_Edit", model =>
         {
-            var metadata = rule.As<UrlRedirectSourceMetadata>();
+            var metadata = rule.As<UrlRewriteSourceMetadata>();
             model.Url = metadata.Url;
             model.Pattern = metadata.Pattern;
             model.IgnoreCase = metadata.IgnoreCase;
@@ -63,6 +48,11 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
             m => m.AppendQueryString,
             m => m.Pattern,
             m => m.IgnoreCase);
+
+        if (string.IsNullOrWhiteSpace(model.Pattern))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), "The url match pattern is required.");
+        }
 
         if (string.IsNullOrWhiteSpace(model.Url))
         {

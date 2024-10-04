@@ -10,8 +10,8 @@ using OrchardCore.Queries.Drivers;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.UrlRewriting.Drivers;
+using OrchardCore.UrlRewriting.Handler;
 using OrchardCore.UrlRewriting.Models;
-using OrchardCore.UrlRewriting.Options;
 using OrchardCore.UrlRewriting.Recipes;
 using OrchardCore.UrlRewriting.Services;
 
@@ -32,7 +32,7 @@ public sealed class Startup : StartupBase
         services.AddTransient<IConfigureOptions<RewriteOptions>, RewriteOptionsConfiguration>();
         services.AddRecipeExecutionStep<UrlRewritingStep>();
         services.AddScoped<IRewriteRulesManager, RewriteRulesManager>();
-
+        services.AddScoped<IRewriteRuleHandler, UpdateRewriteRuleHandler>();
         services.AddRewriteRuleSource<UrlRedirectRuleSource>(UrlRedirectRuleSource.SourceName)
             .AddScoped<IDisplayDriver<RewriteRule>, UrlRedirectRuleDisplayDriver>();
 

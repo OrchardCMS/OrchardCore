@@ -129,7 +129,8 @@ public class RewriteRulesManager : IRewriteRulesManager
 
         if (context.Sorted)
         {
-            rules = rules.OrderBy(x => x.Name);
+            rules = rules.OrderBy(x => x.Order)
+                .ThenBy(x => x.CreatedUtc);
         }
 
         return rules;

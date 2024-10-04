@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.UrlRewriting.Rules;
 
-namespace OrchardCore.UrlRewriting.Options;
+namespace OrchardCore.UrlRewriting.Services;
 
 public sealed class RewriteOptionsConfiguration : IConfigureOptions<RewriteOptions>
 {
@@ -27,7 +27,7 @@ public sealed class RewriteOptionsConfiguration : IConfigureOptions<RewriteOptio
             .GetAwaiter()
             .GetResult();
 
-        foreach (var rule in rules)
+        foreach (var rule in rules.OrderBy(r => r.Order).ThenBy(r => r.CreatedUtc))
         {
             var source = _sources.FirstOrDefault(x => x.Name == rule.Source);
 
@@ -37,6 +37,11 @@ public sealed class RewriteOptionsConfiguration : IConfigureOptions<RewriteOptio
             }
 
             source.Configure(options, rule);
+
+            if (rule.SkipFurtherRules)
+            {
+                break;
+            }
         }
 
         if (options.Rules.Count > 0)

@@ -25,18 +25,10 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
     public override Task<IDisplayResult> DisplayAsync(RewriteRule rule, BuildDisplayContext context)
     {
         return CombineAsync(
-            Dynamic("RewriteRule_Fields_SummaryAdmin", model =>
-            {
-                model.Name = rule.Name;
-                model.Source = rule.Source;
-                model.Rule = rule;
-            }).Location("Content:1"),
-            Dynamic("RewriteRule_Buttons_SummaryAdmin", model =>
-            {
-                model.Name = rule.Name;
-                model.Source = rule.Source;
-                model.Rule = rule;
-            }).Location("Actions:5")
+            View("RewriteRule_Fields_SummaryAdmin", rule).Location("Content:1"),
+            View("RewriteRule_Buttons_SummaryAdmin", rule).Location("Actions:5"),
+            View("RewriteRule_DefaultTags_SummaryAdmin", rule).Location("Tags:5"),
+            View("RewriteRule_DefaultMeta_SummaryAdmin", rule).Location("Meta:5")
         );
     }
 
@@ -48,15 +40,10 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
                 model.Name = rule.Name;
                 model.SkipFurtherRules = rule.SkipFurtherRules;
                 model.Source = rule.Source;
+                model.Order = rule.Order;
                 model.Rule = rule;
             }).Location("Content:1"),
-            Initialize<EditRewriteRuleViewModel>("RewriteRule_Fields_Buttons", model =>
-            {
-                model.Name = rule.Name;
-                model.Source = rule.Source;
-                model.SkipFurtherRules = rule.SkipFurtherRules;
-                model.Rule = rule;
-            }).Location("Actions:5")
+            View("RewriteRule_Fields_Buttons", rule).Location("Actions:5")
         );
     }
 
@@ -65,7 +52,8 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
         await context.Updater.TryUpdateModelAsync(rule, Prefix,
             m => m.Name,
             m => m.SkipFurtherRules,
-            m => m.Source);
+            m => m.Source,
+            m => m.Order);
 
         if (string.IsNullOrEmpty(rule.Name))
         {

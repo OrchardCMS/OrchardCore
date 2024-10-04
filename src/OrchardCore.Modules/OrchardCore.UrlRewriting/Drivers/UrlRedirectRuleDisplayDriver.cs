@@ -18,21 +18,6 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Display(RewriteRule rule, BuildDisplayContext context)
-    {
-        if (rule.Source != UrlRedirectRuleSource.SourceName)
-        {
-            return null;
-        }
-
-        return Combine(
-            Dynamic("UrlRedirectRule_SummaryAdmin", model =>
-            {
-                model.Query = rule;
-            }).Location("Content:5")
-        );
-    }
-
     public override IDisplayResult Edit(RewriteRule rule, BuildEditorContext context)
     {
         if (rule.Source != UrlRedirectRuleSource.SourceName)
@@ -66,6 +51,7 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
         }
 
         var model = new UrlRedirectRuleViewModel();
+
         await context.Updater.TryUpdateModelAsync(model, Prefix,
             m => m.Pattern,
             m => m.IgnoreCase,

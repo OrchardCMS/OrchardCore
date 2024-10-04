@@ -11,6 +11,8 @@ public class EditRewriteRuleViewModel
 
     public bool SkipFurtherRules { get; set; }
 
+    public int Order { get; set; }
+
     [BindNever]
     public RewriteRule Rule { get; set; }
 }

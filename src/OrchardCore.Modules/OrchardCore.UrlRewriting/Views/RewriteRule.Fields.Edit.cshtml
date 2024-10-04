@@ -2,10 +2,18 @@
 
 <div class="mb-3" asp-validation-class-for="Name">
     <label asp-for="Name" class="form-label">@T["Name"]</label>
-    <input asp-for="Name" class="form-control text-muted" autofocus />
+    <input type="text" asp-for="Name" class="form-control text-muted" autofocus />
     <span asp-validation-for="Name"></span>
     <span class="hint">@T["A name of the rule."]</span>
     <input asp-for="Source" type="hidden" />
+</div>
+
+<div class="mb-3" asp-validation-class-for="Name">
+    <label asp-for="Order" class="form-label">@T["Order"]</label>
+    <input asp-for="Order" type="number" class="form-control text-muted" />
+    <span asp-validation-for="Order"></span>
+    <span class="hint">@T["The execution order number of this rule."]</span>
+    <input asp-for="Order" type="hidden" />
 </div>
 
 <div class="mb-3">
