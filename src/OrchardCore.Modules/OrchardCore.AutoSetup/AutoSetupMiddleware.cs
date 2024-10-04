@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.AutoSetup.Extensions;
 using OrchardCore.AutoSetup.Options;
@@ -46,11 +45,6 @@ public class AutoSetupMiddleware
     private readonly AutoSetupOptions _options;
 
     /// <summary>
-    /// The logger.
-    /// </summary>
-    private readonly ILogger _logger;
-
-    /// <summary>
     /// The auto setup lock options.
     /// </summary>
     private readonly LockOptions _lockOptions;
@@ -68,16 +62,14 @@ public class AutoSetupMiddleware
     /// <param name="shellSettings">The shell settings.</param>
     /// <param name="shellSettingsManager">The shell settings manager.</param>
     /// <param name="distributedLock">The distributed lock.</param>
-    /// <param name="options">The auto setup options.</param>
-    /// <param name="logger">The logger.</param>
+    /// <param name="options">The auto setup options.</param>    
     public AutoSetupMiddleware(
         RequestDelegate next,
         IShellHost shellHost,
         ShellSettings shellSettings,
         IShellSettingsManager shellSettingsManager,
         IDistributedLock distributedLock,
-        IOptions<AutoSetupOptions> options,
-        ILogger<AutoSetupMiddleware> logger)
+        IOptions<AutoSetupOptions> options)
     {
         _next = next;
         _shellHost = shellHost;
@@ -85,8 +77,6 @@ public class AutoSetupMiddleware
         _shellSettingsManager = shellSettingsManager;
         _distributedLock = distributedLock;
         _options = options.Value;
-        _logger = logger;
-
         _lockOptions = _options.LockOptions;
         _setupOptions = _options.Tenants.FirstOrDefault(options => _shellSettings.Name == options.ShellName);
     }
