@@ -4,17 +4,20 @@ Enabling the `OrchardCore.Roles` module will allow you to manage the user roles.
 
 ## Predefined Roles
 
-Orchard Core come up with the following predefined permission stereotypes:
+Orchard Core defines the following predefined permission stereotypes:
 
 | Name | Description |
 | --- | --- |
-| `Administrator` | Contains all the administrator users. |
-| `Anonymous` | Contains all the non authenticated users. |
-| `Authenticated` | Contains all the authenticated users. |
-| `Author` | Contains all the users who have the ability to author contents. |
-| `Contributor` | Contains all the users who have the ability to contribute to the contents. |
-| `Editor` | Contains all the users who have the ability to edit the contents. |
-| `Moderator` | Contains all the users who have the ability to moderate the contents. |
+| `Administrator` | A **system role** that grants all permissions to the assigned users. |
+| `Anonymous` | A **system role** representing all non-authenticated users. |
+| `Authenticated` | A **system role** representing all authenticated users. |
+| `Author` | Grants users the ability to create content. |
+| `Contributor` | Grants users the ability to contribute content. |
+| `Editor` | Grants users the ability to edit existing content. |
+| `Moderator` | Grants users the ability to moderate content. |
+
+!!! note
+    System roles cannot be deleted, and the `Administrator` role cannot be edited.
 
 ## Roles Configuration
 
@@ -28,12 +31,14 @@ A sample of a roles configuration step:
     "Roles": [
         {
             "Name": "Journalist",
-            "Permissions": [ "PublishContent", "EditContent" ]
+            "Description" "Journalist Role",
+            "Permissions": ["PublishContent", "EditContent"]
         },
         {
             "Name": "Subscriber",
-            "Permissions": [ ]
-        },
+            "Description" "Subscriber Role",
+            "Permissions": []
+        }
     ]
 }
 ```

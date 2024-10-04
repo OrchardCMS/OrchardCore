@@ -75,37 +75,37 @@
       "Roles": [
         {
           "Name": "Administrator",
-          "Description": "Administrator",
+          "Description": "A system role that grants all permissions to the assigned users.",
           "Permissions": []
         },
         {
           "Name": "Moderator",
-          "Description": "Moderator",
+          "Description": "Grants users the ability to moderate content.",
           "Permissions": []
         },
         {
           "Name": "Editor",
-          "Description": "Editor",
+          "Description": "Grants users the ability to edit existing content.",
           "Permissions": []
         },
         {
           "Name": "Author",
-          "Description": "Author",
+          "Description": "Grants users the ability to create content.",
           "Permissions": []
         },
         {
           "Name": "Contributor",
-          "Description": "Contributor",
+          "Description": "Grants users the ability to contribute content.",
           "Permissions": []
         },
         {
           "Name": "Authenticated",
-          "Description": "Authenticated",
+          "Description": "A system role representing all authenticated users.",
           "Permissions": []
         },
         {
           "Name": "Anonymous",
-          "Description": "Anonymous",
+          "Description": "A system role representing all non-authenticated users.",
           "Permissions": []
         }
       ]

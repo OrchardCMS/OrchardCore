@@ -26,7 +26,6 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [Lucene.Net](https://github.com/apache/lucenenet) | .NET full-text search engine. | [Apache-2.0](https://github.com/apache/lucenenet/blob/master/LICENSE.txt) |
 | [MailKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
 | [Markdig](https://github.com/lunet-io/markdig) | .NET Markdown engine. | [BSD-2-Clause](https://github.com/lunet-io/markdig/blob/master/license.txt) |
-| [MessagePack](https://github.com/neuecc/MessagePack-CSharp) | Extremely Fast MessagePack Serializer for C# | [MIT](https://github.com/neuecc/MessagePack-CSharp/blob/master/LICENSE) |
 | [Microsoft.Extensions.Http.Resilience](https://github.com/dotnet/extensions/tree/main/src/Libraries/Microsoft.Extensions.Http.Resilience) | Resilience mechanisms for HttpClient built on the Polly framework. | [MIT](https://github.com/dotnet/extensions/blob/main/LICENSE) |
 | [Microsoft.Identity.Web](https://github.com/AzureAD/microsoft-identity-web) | Helps creating protected web apps and web APIs with Microsoft identity platform and Azure AD B2C. | [MIT](https://github.com/AzureAD/microsoft-identity-web/blob/master/LICENSE) |
 | [Microsoft.SourceLink.GitHub](https://github.com/dotnet/sourcelink) | Source Link enables a great source debugging experience. | [MIT](https://github.com/dotnet/sourcelink/blob/main/License.txt) |
