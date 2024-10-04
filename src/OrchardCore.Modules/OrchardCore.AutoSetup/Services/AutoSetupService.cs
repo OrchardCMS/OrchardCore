@@ -38,7 +38,7 @@ public class AutoSetupService : IAutoSetupService
     {
         var setupContext = await GetSetupContextAsync(setupOptions, shellSettings);
 
-        _logger.LogInformation("AutoSetup is initializing the site");
+        _logger.LogInformation("The AutoSetup is initializing the site.");
 
         await _setupService.SetupAsync(setupContext);
 
