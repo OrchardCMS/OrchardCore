@@ -25,15 +25,7 @@ public class AutoSetupService : IAutoSetupService
         _setupService = setupService;
         _logger = logger;
     }
-
-    /// <summary>
-    /// Sets up a tenant.
-    /// </summary>    
-    /// <param name="setupOptions">The tenant setup options.</param>
-    /// <param name="shellSettings">The tenant shell settings.</param>
-    /// <returns>
-    /// Returns <c>true</c> if successfully setup.
-    /// </returns>
+    
     public async Task<bool> SetupTenantAsync(TenantSetupOptions setupOptions, ShellSettings shellSettings)
     {
         var setupContext = await GetSetupContextAsync(setupOptions, shellSettings);
@@ -59,12 +51,7 @@ public class AutoSetupService : IAutoSetupService
 
         return false;
     }
-
-    /// <summary>
-    /// Creates a tenant shell settings.
-    /// </summary>
-    /// <param name="setupOptions">The setup options.</param>
-    /// <returns>The <see cref="ShellSettings"/>.</returns>
+   
     public async Task<ShellSettings> CreateTenantSettingsAsync(TenantSetupOptions setupOptions)
     {
         using var shellSettings = _shellSettingsManager
@@ -87,13 +74,7 @@ public class AutoSetupService : IAutoSetupService
 
         return shellSettings;
     }
-
-    /// <summary>
-    /// Gets a setup context from the configuration.
-    /// </summary>
-    /// <param name="options">The tenant setup options.</param>    
-    /// <param name="shellSettings">The tenant shell settings.</param>
-    /// <returns> The <see cref="SetupContext"/> used to setup the site.</returns>
+    
     public async Task<SetupContext> GetSetupContextAsync(TenantSetupOptions options, ShellSettings shellSettings)
     {
         var recipes = await _setupService.GetSetupRecipesAsync();
