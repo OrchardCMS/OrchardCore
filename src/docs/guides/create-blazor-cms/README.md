@@ -732,7 +732,7 @@ One of the key features of Orchard Core is its multi-tenancy support. In this se
 
 > !!! NOTE
 > 
-> Orchard Core listens for requests, also on '/' (e.g. when a site needs to be configured). So having our Blazor app listening to '/' as well, can pose a problem.
+> Orchard Core listens for requests, also on '/' (e.g. when a site needs to be configured). So having our Blazor app listening to '/' as well can pose a problem.
 > A solution is to replace `@page "/"` with `@page "/home"` in our `home.razor` file (and update our `navmenu.razor`), so Blazor (the app) will listen to `/home` while Orchard Core is not hindered by that.
 
 === "Home.razor"
