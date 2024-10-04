@@ -119,7 +119,7 @@ public class AutoSetupMiddleware
                 if (!settings.IsUninitialized())
                 {
                     await _shellHost.ReloadShellContextAsync(_shellSettings, eventSource: false);
-                    httpContext.Response.StatusCode = 409;
+                    httpContext.Response.StatusCode = 503;
 
                     return;
                 }
