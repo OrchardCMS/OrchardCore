@@ -730,10 +730,9 @@ Run the application. Click on the `Orchard Core` link on the Left Nav will load 
 # Add multitenancy to the Blazor App
 One of the key features of Orchard Core is its multi-tenancy support. In this section, we will add multi-tenancy support to our Blazor application.
 
-> !!! NOTE
-> 
-> Orchard Core listens for requests, also on '/' (e.g. when a site needs to be configured). So having our Blazor app listening to '/' as well can pose a problem.
-> A solution is to replace `@page "/"` with `@page "/home"` in our `home.razor` file (and update our `navmenu.razor`), so Blazor (the app) will listen to `/home` while Orchard Core is not hindered by that.
+!!! note
+    Orchard Core listens for requests, also on '/' (e.g. when a site needs to be configured). So having our Blazor app listening to '/' as well can pose a problem.
+    A solution is to replace `@page "/"` with `@page "/home"` in our `home.razor` file (and update our `navmenu.razor`), so Blazor (the app) will listen to `/home` while Orchard Core is not hindered by that.
 
 === "Home.razor"
 
