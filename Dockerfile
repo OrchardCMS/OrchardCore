@@ -4,12 +4,13 @@ ARG TARGETOS
 LABEL stage=build-env
 WORKDIR /source
 
-# copy files to /app (update .dockerignore when this list is changed)
+# copy required files for building
+# .dockerignore excludes App_Data and binaries from these
 COPY ./src ./src
 COPY Directory.Build.props .
 COPY Directory.Packages.props .
 
-# build
+# build, results are placed in /app
 RUN dotnet publish src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -c Release -o /app --framework net8.0 /p:RunAnalyzers=false
 
 # build runtime image
