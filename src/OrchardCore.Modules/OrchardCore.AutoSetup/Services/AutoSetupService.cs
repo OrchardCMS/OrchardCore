@@ -8,24 +8,9 @@ using OrchardCore.Setup.Services;
 namespace OrchardCore.AutoSetup.Services;
 public class AutoSetupService : IAutoSetupService
 {
-    /// <summary>
-    /// The shell host.
-    /// </summary>
     private readonly IShellHost _shellHost;
-
-    /// <summary>
-    /// The shell settings manager.
-    /// </summary>
     private readonly IShellSettingsManager _shellSettingsManager;
-
-    /// <summary>
-    /// The setup service.
-    /// </summary>
     private readonly ISetupService _setupService;
-
-    /// <summary>
-    /// The logger.
-    /// </summary>
     private readonly ILogger _logger;
 
     public AutoSetupService(
