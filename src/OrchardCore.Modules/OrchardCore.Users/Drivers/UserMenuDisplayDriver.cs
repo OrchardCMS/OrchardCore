@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
@@ -8,13 +10,17 @@ namespace OrchardCore.Users.Drivers;
 public sealed class UserMenuDisplayDriver : DisplayDriver<UserMenu>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
 
-    public UserMenuDisplayDriver(IHttpContextAccessor httpContextAccessor)
+    public UserMenuDisplayDriver(
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService)
     {
         _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
     }
 
-    public override Task<IDisplayResult> DisplayAsync(UserMenu model, BuildDisplayContext context)
+    public override async Task<IDisplayResult> DisplayAsync(UserMenu model, BuildDisplayContext context)
     {
         var results = new List<IDisplayResult>
         {
@@ -38,13 +44,13 @@ public sealed class UserMenuDisplayDriver : DisplayDriver<UserMenu>
             .Differentiator("SignOut"),
         };
 
-        if (_httpContextAccessor.HttpContext.User.HasClaim("Permission", "AccessAdminPanel"))
+        if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AdminPermissions.AccessAdminPanel))
         {
             results.Add(View("UserMenuItems__Dashboard", model)
                 .Location("Detail", "Content:1.1")
                 .Differentiator("Dashboard"));
         }
 
-        return CombineAsync(results);
+        return Combine(results);
     }
 }

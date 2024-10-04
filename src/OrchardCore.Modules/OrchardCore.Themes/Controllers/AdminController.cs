@@ -7,7 +7,6 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules.Manifest;
-using OrchardCore.Security;
 using OrchardCore.Themes.Models;
 using OrchardCore.Themes.Services;
 
@@ -44,7 +43,7 @@ public sealed class AdminController : Controller
     [Admin("Themes", "Themes.Index")]
     public async Task<ActionResult> Index()
     {
-        var installThemes = await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner); // only site owners
+        var installThemes = await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme);
 
         if (!installThemes)
         {
