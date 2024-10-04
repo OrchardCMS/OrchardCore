@@ -148,8 +148,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICalendarSelector, DefaultCalendarSelector>();
 
         services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
-
-        services.AddTransient<IConfigureOptions<Microsoft.AspNetCore.Http.Json.JsonOptions>, JsonOptionsConfigurations>();
         services.AddTransient<IConfigureOptions<DocumentJsonSerializerOptions>, DocumentJsonSerializerOptionsConfiguration>();
 
         services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
