@@ -27,7 +27,7 @@ public interface IAutoSetupService
     /// <param name="setupOptions">The tenant setup options.</param>
     /// <param name="shellSettings">The tenant shell settings.</param>
     /// <returns>
-    /// Returns <c>true</c> if successfully setup.
+    /// Returns <see langword="true" /> if successfully setup.
     /// </returns>
     Task<bool> SetupTenantAsync(TenantSetupOptions setupOptions, ShellSettings shellSettings);
 }
