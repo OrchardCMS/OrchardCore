@@ -6,6 +6,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Setup.Services;
 
 namespace OrchardCore.AutoSetup.Services;
+
 public class AutoSetupService : IAutoSetupService
 {
     private readonly IShellHost _shellHost;
