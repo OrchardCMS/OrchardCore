@@ -108,7 +108,7 @@ public class CacheTag
             // No need to optimize this code as it will be used for debugging purpose.
             var debugContent = new StringWriter();
             debugContent.WriteLine();
-            debugContent.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Guid.NewGuid()})");
+            debugContent.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Ulid.NewUlid().ToGuid()})");
             debugContent.WriteLine($"         VARY BY: {string.Join(", ", cacheContext.Contexts)}");
             debugContent.WriteLine($"    DEPENDENCIES: {string.Join(", ", cacheContext.Tags)}");
             debugContent.WriteLine($"      EXPIRES ON: {cacheContext.ExpiresOn}");

@@ -14,14 +14,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlSanitizer" />
-    <PackageReference Include="MimeKit" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\OrchardCore\OrchardCore.csproj" />
     <ProjectReference Include="..\OrchardCore.Data.YesSql\OrchardCore.Data.YesSql.csproj" />
     <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="HtmlSanitizer" />
+    <PackageReference Include="MimeKit" />
+    <PackageReference Include="Ulid" />
   </ItemGroup>
 
 </Project>

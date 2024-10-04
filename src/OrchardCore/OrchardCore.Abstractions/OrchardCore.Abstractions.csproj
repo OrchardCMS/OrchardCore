@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="JsonPath.Net" />
+    <PackageReference Include="Ulid" />
     <PackageReference Include="ZString" />
   </ItemGroup>
 

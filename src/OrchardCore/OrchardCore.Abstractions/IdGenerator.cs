@@ -7,7 +7,7 @@ public static class IdGenerator
 
     public static string GenerateId()
     {
-        var guid = Guid.NewGuid().ToByteArray();
+        var guid = Ulid.NewUlid().ToGuid().ToByteArray();
 
         return string.Create(26, guid, (buffer, guid) =>
         {

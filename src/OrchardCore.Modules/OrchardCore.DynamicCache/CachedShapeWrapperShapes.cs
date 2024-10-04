@@ -19,7 +19,7 @@ public class CachedShapeWrapperShapes : IShapeAttributeProvider
         var cache = metadata.Cache();
 
         contentBuilder.AppendLine();
-        contentBuilder.AppendHtmlLine($"<!-- CACHED SHAPE: {cache.CacheId} ({Guid.NewGuid()})");
+        contentBuilder.AppendHtmlLine($"<!-- CACHED SHAPE: {cache.CacheId} ({Ulid.NewUlid().ToGuid()})");
         contentBuilder.AppendHtmlLine($"          VARY BY: {string.Join(", ", cache.Contexts)}");
         contentBuilder.AppendHtmlLine($"     DEPENDENCIES: {string.Join(", ", cache.Tags)}");
         contentBuilder.AppendHtmlLine($"       EXPIRES ON: {cache.ExpiresOn}");

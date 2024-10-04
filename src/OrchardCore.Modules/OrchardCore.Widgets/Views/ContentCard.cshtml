@@ -20,13 +20,14 @@
             //Assign prefix
             if (string.IsNullOrEmpty(Model.PrefixValue))
             {
-                Model.PrefixValue = Guid.NewGuid().ToString("n");
+                Model.PrefixValue = Ulid.NewUlid().ToGuid().ToString("n");
             }
 
             //Build Editor for Content Item
             // AJAX request is new request and will not have CollectionShape.
             var isNew = Model.CollectionShape == null ? true : false;
-            IShape contentItemEditor = await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, isNew, string.Empty, Model.PrefixValue);
+            IShape contentItemEditor = await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, isNew, string.Empty,
+            Model.PrefixValue);
 
             //We don't show Actions and Side bar the parent editor has its own buttons.
             contentItemEditor.Properties["Actions"] = null;
@@ -49,7 +50,8 @@
         else
         {
             //Just Create Preview
-            Model.ContentPreview = await ContentItemDisplayManager.BuildDisplayAsync(contentItem, updater, Model.DisplayType ?? "Detail");
+            Model.ContentPreview = await ContentItemDisplayManager.BuildDisplayAsync(contentItem, updater, Model.DisplayType ??
+            "Detail");
 
             //Hide the Delete
             Model.CanDelete = false;

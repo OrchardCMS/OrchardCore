@@ -51,7 +51,7 @@ public class ScriptsMiddleware
                     var script = $@"[{filters}].forEach(value=>{{if(!liquidFilters.includes(value)){{ liquidFilters.push(value);}}}});
                                 [{tags}].forEach(value=>{{if(!liquidTags.includes(value)){{ liquidTags.push(value);}}}});";
 
-                    _etag = Guid.NewGuid().ToString("n");
+                    _etag = Ulid.NewUlid().ToGuid().ToString("n");
                     _bytes = Encoding.UTF8.GetBytes(script);
                 }
 

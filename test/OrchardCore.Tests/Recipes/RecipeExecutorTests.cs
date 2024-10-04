@@ -45,7 +45,7 @@ public class RecipeExecutorTests
                 localizerMock.Object);
 
             // Act
-            var executionId = Guid.NewGuid().ToString("n");
+            var executionId = Ulid.NewUlid().ToGuid().ToString("n");
             var recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo(recipeName) };
             await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
 
@@ -65,7 +65,7 @@ public class RecipeExecutorTests
         {
             var recipeExecutor = scope.ServiceProvider.GetRequiredService<IRecipeExecutor>();
             // Act
-            var executionId = Guid.NewGuid().ToString("n");
+            var executionId = Ulid.NewUlid().ToGuid().ToString("n");
             var recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo("recipe6") };
 
             var exception = await Assert.ThrowsAsync<RecipeExecutionException>(async () =>

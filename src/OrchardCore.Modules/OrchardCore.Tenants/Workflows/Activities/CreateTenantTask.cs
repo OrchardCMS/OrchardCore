@@ -169,7 +169,7 @@ public class CreateTenantTask : TenantTask
             shellSettings["FeatureProfile"] = featureProfile;
         }
 
-        shellSettings["Secret"] = Guid.NewGuid().ToString();
+        shellSettings["Secret"] = Ulid.NewUlid().ToGuid().ToString();
 
         await ShellHost.UpdateShellSettingsAsync(shellSettings);
         var reloadedSettings = ShellHost.GetSettings(shellSettings.Name);

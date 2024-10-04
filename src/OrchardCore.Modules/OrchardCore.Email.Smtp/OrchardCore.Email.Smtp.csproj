@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <PackageReference Include="MailKit" />
+    <PackageReference Include="Ulid" />
   </ItemGroup>
 
 </Project>

@@ -63,7 +63,7 @@ public class RemoteClientService
 
         var remoteClient = new RemoteClient
         {
-            Id = Guid.NewGuid().ToString("n"),
+            Id = Ulid.NewUlid().ToGuid().ToString("n"),
             ClientName = clientName,
             ProtectedApiKey = _dataProtector.Protect(Encoding.UTF8.GetBytes(apiKey)),
         };

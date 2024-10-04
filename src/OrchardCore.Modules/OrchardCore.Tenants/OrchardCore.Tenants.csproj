@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <PackageReference Include="NJsonSchema" />
+    <PackageReference Include="Ulid" />
   </ItemGroup>
 
 </Project>

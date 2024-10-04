@@ -116,7 +116,7 @@ public sealed class TenantApiController : ControllerBase
                 shellSettings["TablePrefix"] = model.TablePrefix;
                 shellSettings["Schema"] = model.Schema;
                 shellSettings["DatabaseProvider"] = model.DatabaseProvider;
-                shellSettings["Secret"] = Guid.NewGuid().ToString();
+                shellSettings["Secret"] = Ulid.NewUlid().ToGuid().ToString();
                 shellSettings["RecipeName"] = model.RecipeName;
                 shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? []);
 
@@ -179,7 +179,7 @@ public sealed class TenantApiController : ControllerBase
                 shellSettings["Schema"] = model.Schema;
                 shellSettings["ConnectionString"] = model.ConnectionString;
                 shellSettings["RecipeName"] = model.RecipeName;
-                shellSettings["Secret"] = Guid.NewGuid().ToString();
+                shellSettings["Secret"] = Ulid.NewUlid().ToGuid().ToString();
             }
 
             await _shellHost.UpdateShellSettingsAsync(shellSettings);

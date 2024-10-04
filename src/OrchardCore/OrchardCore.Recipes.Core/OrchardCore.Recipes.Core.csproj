@@ -20,4 +20,8 @@
     <ProjectReference Include="..\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Ulid" />
+  </ItemGroup>
+
 </Project>

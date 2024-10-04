@@ -36,6 +36,7 @@
     <PackageReference Include="OpenIddict.Validation.AspNetCore" />
     <PackageReference Include="OpenIddict.Validation.DataProtection" />
     <PackageReference Include="OpenIddict.Validation.SystemNetHttp" />
+    <PackageReference Include="Ulid" />
   </ItemGroup>
 
 </Project>

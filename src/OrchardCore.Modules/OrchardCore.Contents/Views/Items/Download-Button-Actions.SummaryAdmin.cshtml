@@ -4,9 +4,9 @@
     ContentItem contentItem = Model.ContentItem;
     var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
     var hasDraft = contentItem.HasDraft();
-    var exportId = Guid.NewGuid().ToString("n");
-    var exportPublishedId = Guid.NewGuid().ToString("n");
-    var exportDraftId = Guid.NewGuid().ToString("n");
+    var exportId = Ulid.NewUlid().ToGuid().ToString("n");
+    var exportPublishedId = Ulid.NewUlid().ToGuid().ToString("n");
+    var exportDraftId = Ulid.NewUlid().ToGuid().ToString("n");
 }
 
 <div class="dropdown-divider"></div>

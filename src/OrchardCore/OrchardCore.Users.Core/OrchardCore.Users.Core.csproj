@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <PackageReference Include="YesSql.Filters.Query" />
+    <PackageReference Include="Ulid" />
   </ItemGroup>
 
 </Project>

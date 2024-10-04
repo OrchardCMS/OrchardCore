@@ -30,7 +30,7 @@ public class RecipeDeploymentTargetHandler : IDeploymentTargetHandler
 
     public async Task ImportFromFileAsync(IFileProvider fileProvider)
     {
-        var executionId = Guid.NewGuid().ToString("n");
+        var executionId = Ulid.NewUlid().ToGuid().ToString("n");
         var recipeDescriptor = new RecipeDescriptor
         {
             FileProvider = fileProvider,

@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="OpenIddict.Core" />
+    <PackageReference Include="Ulid" />
   </ItemGroup>
 
 </Project>

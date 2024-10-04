@@ -131,7 +131,7 @@ public class RecipeExecutor : IRecipeExecutor
                             {
                                 foreach (var descriptor in recipeStep.InnerRecipes)
                                 {
-                                    var innerExecutionId = Guid.NewGuid().ToString();
+                                    var innerExecutionId = Ulid.NewUlid().ToGuid().ToString();
                                     descriptor.RequireNewScope = recipeDescriptor.RequireNewScope;
                                     await ExecuteAsync(innerExecutionId, descriptor, environment, cancellationToken);
                                 }
