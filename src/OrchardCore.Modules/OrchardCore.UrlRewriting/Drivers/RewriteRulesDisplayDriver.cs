@@ -10,15 +10,10 @@ namespace OrchardCore.Queries.Drivers;
 
 public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
 {
-    private readonly IRewriteRulesManager _rulesManager;
-
     internal readonly IStringLocalizer S;
 
-    public RewriteRulesDisplayDriver(
-        IRewriteRulesManager rulesManager,
-        IStringLocalizer<RewriteRulesDisplayDriver> stringLocalizer)
+    public RewriteRulesDisplayDriver(IStringLocalizer<RewriteRulesDisplayDriver> stringLocalizer)
     {
-        _rulesManager = rulesManager;
         S = stringLocalizer;
     }
 
