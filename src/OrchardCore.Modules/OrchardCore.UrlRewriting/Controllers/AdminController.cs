@@ -79,6 +79,7 @@ public sealed class AdminController : Controller
         var result = await _rewriteRulesManager.PageQueriesAsync(pager.Page, pager.PageSize, new RewriteRulesQueryContext()
         {
             Name = options.Search,
+            Sorted = true,
         });
 
         var model = new ListRewriteRuleViewModel

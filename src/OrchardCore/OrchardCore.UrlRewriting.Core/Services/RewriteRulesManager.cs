@@ -25,8 +25,16 @@ public class RewriteRulesManager : IRewriteRulesManager
         _logger = logger;
     }
 
-    public Task DeleteAsync(RewriteRule rule)
-        => _store.DeleteAsync(rule);
+    public async Task DeleteAsync(RewriteRule rule)
+    {
+        var deletingContext = new DeletingRewriteRuleContext(rule);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.DeletingAsync(ctx), deletingContext, _logger);
+
+        await _store.DeleteAsync(rule);
+
+        var deletedContext = new DeletedRewriteRuleContext(rule);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.DeletedAsync(ctx), deletedContext, _logger);
+    }
 
     public async Task<RewriteRule> FindByIdAsync(string id)
     {
@@ -98,8 +106,16 @@ public class RewriteRulesManager : IRewriteRulesManager
         return result;
     }
 
-    public Task SaveAsync(RewriteRule rule)
-        => _store.SaveAsync(rule);
+    public async Task SaveAsync(RewriteRule rule)
+    {
+        var savingContext = new SavingRewriteRuleContext(rule);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.SavingAsync(ctx), savingContext, _logger);
+
+        await _store.SaveAsync(rule);
+
+        var savedContext = new SavedRewriteRuleContext(rule);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.SavedAsync(ctx), savedContext, _logger);
+    }
 
     private Task LoadAsync(RewriteRule rule)
     {
