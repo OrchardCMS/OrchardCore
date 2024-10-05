@@ -143,6 +143,12 @@ public class AutoSetupMiddleware
 
                     return;
                 }
+                else
+                {
+                    httpContext.Response.StatusCode = 503;
+
+                    return;
+                }
             }
         }
 
