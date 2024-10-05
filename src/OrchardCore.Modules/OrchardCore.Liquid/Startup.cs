@@ -21,6 +21,7 @@ using OrchardCore.Liquid.Services;
 using OrchardCore.Liquid.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
+using OrchardCore.Liquid.Endpoints.Api;
 
 namespace OrchardCore.Liquid;
 
@@ -28,11 +29,12 @@ public sealed class Startup : StartupBase
 {
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        app.UseMiddleware<ScriptsMiddleware>();
+        routes.AddGetIntellisenseEndpoint();
     }
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddMemoryCache();
         services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
 
         services.Configure<TemplateOptions>(options =>
