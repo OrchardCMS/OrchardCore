@@ -21,21 +21,40 @@
 </div>
 
 <form asp-action="Index" class="roles">
+    @{
+        var message = T["Are you sure you want to delete this role?"];
+    }
     <ul class="list-group">
         @for (var i = 0; i < Model.RoleEntries.Count; i++)
         {
-            var message = T["Are you sure you want to delete this role?"];
+            var entry = Model.RoleEntries[i];
 
-            <li class="list-group-item" data-filter-value="@Model.RoleEntries[i].Name">
-                <div class="w-100">
-                    <div class="float-end">
-                        <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@Model.RoleEntries[i].Name">@T["Edit"]</a>
-                        <a class="delete btn btn-danger btn-sm" asp-route-id="@Model.RoleEntries[i].Name" role="button" asp-action="Delete" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Delete Role"]" data-message="@message">@T["Delete"]</a>
+            <li class="list-group-item" data-filter-value="@entry.Name">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <span>@entry.Name</span>
+
+                        @if (entry.IsSystemRole)
+                        {
+                            <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["The '{0}' role cannot be deleted.", entry.Name])">
+                                <i class="fa-solid fa-shield text-secondary me-1" aria-hidden="true"></i>@T["System"]
+                            </span>
+                        }
                     </div>
-                    @*<input asp-for="RoleEntries[i].Selected" type="checkbox">*@
-                    @Model.RoleEntries[i].Name
-                    <p class="text-muted">@Model.RoleEntries[i].Description</p>
+         
+                    <div>
+                        <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@entry.Name">@T["Edit"]</a>
+
+                        @if (!entry.IsSystemRole)
+                        {
+                            <a class="delete btn btn-danger btn-sm" asp-route-id="@entry.Name" role="button" asp-action="Delete" data-url-af="UnsafeUrl RemoveUrl" data-title="@T["Delete Role"]" data-message="@message">@T["Delete"]</a>
+                        }
+                    </div>
                 </div>
+                @if (!string.IsNullOrWhiteSpace(entry.Description))
+                {
+                    <p class="text-muted mb-0">@entry.Description</p>
+                }
             </li>
         }
     </ul>
