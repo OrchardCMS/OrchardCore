@@ -30,7 +30,7 @@
     <PackageVersion Include="JsonPath.Net" Version="1.1.6" />
     <PackageVersion Include="HtmlSanitizer" Version="8.2.871-beta" />
     <PackageVersion Include="Irony" Version="1.5.3" />
-    <PackageVersion Include="libphonenumber-csharp" Version="8.13.46" />
+    <PackageVersion Include="libphonenumber-csharp" Version="8.13.47" />
     <PackageVersion Include="Lorem.Universal.NET" Version="4.0.80" />
     <PackageVersion Include="Lucene.Net" Version="4.8.0-beta00016" />
     <PackageVersion Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
