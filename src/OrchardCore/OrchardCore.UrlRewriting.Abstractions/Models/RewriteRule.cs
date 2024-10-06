@@ -12,8 +12,6 @@ public sealed class RewriteRule : Entity
 
     public int Order { get; set; }
 
-    public bool SkipFurtherRules { get; set; }
-
     public DateTime CreatedUtc { get; set; }
 
     public string OwnerId { get; set; }

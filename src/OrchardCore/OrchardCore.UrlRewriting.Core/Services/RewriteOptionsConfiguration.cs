@@ -37,11 +37,6 @@ public sealed class RewriteOptionsConfiguration : IConfigureOptions<RewriteOptio
             }
 
             source.Configure(options, rule);
-
-            if (rule.SkipFurtherRules)
-            {
-                break;
-            }
         }
 
         if (options.Rules.Count > 0)

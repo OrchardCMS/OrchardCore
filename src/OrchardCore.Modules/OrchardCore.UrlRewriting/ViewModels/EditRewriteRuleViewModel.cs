@@ -9,8 +9,6 @@ public class EditRewriteRuleViewModel
 
     public string Source { get; set; }
 
-    public bool SkipFurtherRules { get; set; }
-
     public int Order { get; set; }
 
     [BindNever]

@@ -9,4 +9,6 @@ public class UrlRewriteRuleViewModel
     public string Pattern { get; set; }
 
     public bool IgnoreCase { get; set; }
+
+    public bool SkipFurtherRules { get; set; }
 }

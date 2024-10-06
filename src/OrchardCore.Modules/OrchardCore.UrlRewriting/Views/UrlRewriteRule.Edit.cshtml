@@ -25,3 +25,10 @@
         <label class="form-check-label" asp-for="AppendQueryString">@T["Append query string"]</label>
     </div>
 </div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="SkipFurtherRules" checked="@Model.SkipFurtherRules" />
+        <label class="form-check-label" asp-for="SkipFurtherRules">@T["Skip Further Rules"]</label>
+    </div>
+</div>

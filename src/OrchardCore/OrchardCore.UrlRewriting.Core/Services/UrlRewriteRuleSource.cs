@@ -64,7 +64,7 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
             sbFlags.Append("QSA");
         }
 
-        if (rule.SkipFurtherRules == true)
+        if (metadata.SkipFurtherRules)
         {
             if (sbFlags.Length > 0)
             {

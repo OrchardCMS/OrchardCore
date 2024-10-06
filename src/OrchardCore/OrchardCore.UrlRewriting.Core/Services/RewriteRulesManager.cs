@@ -73,7 +73,6 @@ public class RewriteRulesManager : IRewriteRulesManager
         if (data != null)
         {
             rule.Name = data[nameof(RewriteRule.Name)]?.GetValue<string>();
-            rule.SkipFurtherRules = data[nameof(RewriteRule.SkipFurtherRules)]?.GetValue<bool>() ?? false;
         }
 
         var initializedContext = new InitializedRewriteRuleContext(rule);

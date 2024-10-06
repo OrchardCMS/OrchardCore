@@ -33,7 +33,6 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
             Initialize<EditRewriteRuleViewModel>("RewriteRule_Fields_Edit", model =>
             {
                 model.Name = rule.Name;
-                model.SkipFurtherRules = rule.SkipFurtherRules;
                 model.Source = rule.Source;
                 model.Order = rule.Order;
                 model.Rule = rule;
@@ -46,7 +45,6 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
     {
         await context.Updater.TryUpdateModelAsync(rule, Prefix,
             m => m.Name,
-            m => m.SkipFurtherRules,
             m => m.Source,
             m => m.Order);
 

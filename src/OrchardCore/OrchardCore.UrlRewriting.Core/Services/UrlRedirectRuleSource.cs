@@ -68,16 +68,6 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
             sbFlags.Append(RedirectTypeToStatusCode(metadata.RedirectType));
         }
 
-        if (rule.SkipFurtherRules == true)
-        {
-            if (sbFlags.Length > 0)
-            {
-                sbFlags.Append(',');
-            }
-
-            sbFlags.Append('L');
-        }
-
         return sbFlags;
     }
 

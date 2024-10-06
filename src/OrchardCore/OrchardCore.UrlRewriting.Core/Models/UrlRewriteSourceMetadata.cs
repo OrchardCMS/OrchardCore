@@ -9,4 +9,6 @@ public class UrlRewriteSourceMetadata
     public string Url { get; set; }
 
     public bool AppendQueryString { get; set; }
+
+    public bool SkipFurtherRules { get; set; }
 }

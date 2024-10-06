@@ -15,10 +15,3 @@
     <span class="hint">@T["The execution order number of this rule."]</span>
     <input asp-for="Order" type="hidden" />
 </div>
-
-<div class="mb-3">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="SkipFurtherRules" checked="@Model.SkipFurtherRules" />
-        <label class="form-check-label" asp-for="SkipFurtherRules">@T["Skip Further Rules"]</label>
-    </div>
-</div>

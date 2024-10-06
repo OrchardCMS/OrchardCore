@@ -32,6 +32,7 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
             model.Pattern = metadata.Pattern;
             model.IgnoreCase = metadata.IgnoreCase;
             model.AppendQueryString = context.IsNew || metadata.AppendQueryString;
+            model.SkipFurtherRules = metadata.SkipFurtherRules;
         }).Location("Content:5");
     }
 
@@ -47,7 +48,8 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
             m => m.Url,
             m => m.AppendQueryString,
             m => m.Pattern,
-            m => m.IgnoreCase);
+            m => m.IgnoreCase,
+            m => m.SkipFurtherRules);
 
         if (string.IsNullOrWhiteSpace(model.Pattern))
         {
@@ -65,6 +67,7 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
             IgnoreCase = model.IgnoreCase,
             Url = model.Url,
             AppendQueryString = model.AppendQueryString,
+            SkipFurtherRules = model.SkipFurtherRules
         });
 
         return Edit(rule, context);
