@@ -63,10 +63,10 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
                 sbFlags.Append(',');
             }
             sbFlags.Append("QSA,");
-
-            sbFlags.Append($"R=");
-            sbFlags.Append(RedirectTypeToStatusCode(metadata.RedirectType));
         }
+
+        sbFlags.Append($"R=");
+        sbFlags.Append(RedirectTypeToStatusCode(metadata.RedirectType));
 
         return sbFlags;
     }
