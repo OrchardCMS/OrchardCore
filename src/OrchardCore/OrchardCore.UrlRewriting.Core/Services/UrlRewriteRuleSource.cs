@@ -12,7 +12,7 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
 
     internal IStringLocalizer S;
 
-    public UrlRewriteRuleSource(IStringLocalizer<UrlRedirectRuleSource> stringLocalizer)
+    public UrlRewriteRuleSource(IStringLocalizer<UrlRewriteRuleSource> stringLocalizer)
     {
         S = stringLocalizer;
 
@@ -24,7 +24,7 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
     public LocalizedString Description { get; }
     public void Configure(RewriteOptions options, RewriteRule rule)
     {
-        if (!rule.TryGet<UrlRedirectSourceMetadata>(out var metadata))
+        if (!rule.TryGet<UrlRewriteSourceMetadata>(out var metadata))
         {
             return;
         }
@@ -34,7 +34,7 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
         options.AddApacheModRewrite(apacheModRewrite);
     }
 
-    private static string GetRewriteRule(RewriteRule rule, UrlRedirectSourceMetadata metadata)
+    private static string GetRewriteRule(RewriteRule rule, UrlRewriteSourceMetadata metadata)
     {
         var flags = GetFlags(rule, metadata);
 
@@ -46,7 +46,7 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
         return $"RewriteRule \"{metadata.Pattern}\" \"{metadata.Url}\"";
     }
 
-    private static StringBuilder GetFlags(RewriteRule rule, UrlRedirectSourceMetadata metadata)
+    private static StringBuilder GetFlags(RewriteRule rule, UrlRewriteSourceMetadata metadata)
     {
         var sbFlags = new StringBuilder();
 
