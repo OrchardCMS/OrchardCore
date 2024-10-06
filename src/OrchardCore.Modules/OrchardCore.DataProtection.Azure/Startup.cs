@@ -44,5 +44,7 @@ public sealed class Startup : StartupBase
         {
             _logger.LogCritical("No connection string was supplied for OrchardCore.DataProtection.Azure. Ensure that an application setting containing a valid Azure Storage connection string is available at `Modules:OrchardCore.DataProtection.Azure:ConnectionString`.");
         }
+
+        services.AddSingleton<IModularTenantEvents, BlobModularTenantEvents>();
     }
 }
