@@ -16,7 +16,7 @@ public class OpenIdServerDeploymentSource
         _openIdServerService = openIdServerService;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         var settings = await _openIdServerService.GetSettingsAsync();
 

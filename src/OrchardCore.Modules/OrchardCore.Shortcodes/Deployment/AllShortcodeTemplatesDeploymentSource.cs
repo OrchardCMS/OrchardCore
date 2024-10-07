@@ -14,7 +14,7 @@ public class AllShortcodeTemplatesDeploymentSource
         _templatesManager = templatesManager;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         var templateObjects = new JsonObject();
         var templates = await _templatesManager.GetShortcodeTemplatesDocumentAsync();

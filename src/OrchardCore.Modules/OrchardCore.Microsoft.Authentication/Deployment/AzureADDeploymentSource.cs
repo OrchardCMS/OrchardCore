@@ -14,7 +14,7 @@ public class AzureADDeploymentSource : DeploymentSourceBase<AzureADDeploymentSte
         _azureADService = azureADService;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         var azureADSettings = await _azureADService.GetSettingsAsync();
 

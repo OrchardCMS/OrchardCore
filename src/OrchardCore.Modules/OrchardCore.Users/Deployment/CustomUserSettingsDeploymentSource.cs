@@ -20,7 +20,7 @@ public class CustomUserSettingsDeploymentSource
         _session = session;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         var settingsTypes = DeploymentStep.IncludeAll
             ? (await _customUserSettingsService.GetAllSettingsTypesAsync()).ToArray()

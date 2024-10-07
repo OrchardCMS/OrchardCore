@@ -14,7 +14,7 @@ public class AllFeatureProfilesDeploymentSource
         _featureProfilesManager = featureProfilesManager;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         var featureProfileObjects = new JsonObject();
         var featureProfiles = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();

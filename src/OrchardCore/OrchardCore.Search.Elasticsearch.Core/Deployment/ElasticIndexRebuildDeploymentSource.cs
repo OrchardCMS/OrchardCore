@@ -6,7 +6,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 public class ElasticIndexRebuildDeploymentSource
     : DeploymentSourceBase<ElasticIndexRebuildDeploymentStep>
 {
-    public override Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override Task ProcessAsync(DeploymentPlanResult result)
     {
         var indicesToRebuild = DeploymentStep.IncludeAll ? [] : DeploymentStep.Indices;
 

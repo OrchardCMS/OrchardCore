@@ -22,7 +22,7 @@ public class DeploymentPlanDeploymentSource
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         if (!await _deploymentPlanService.DoesUserHavePermissionsAsync())
         {

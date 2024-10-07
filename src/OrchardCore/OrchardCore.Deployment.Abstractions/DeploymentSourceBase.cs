@@ -12,15 +12,15 @@ public abstract class DeploymentSourceBase<TDeploymentStep>
     /// <inheritdoc/>
     public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not TDeploymentStep)
+        if (step is not TDeploymentStep deploymentStep)
         {
             return;
         }
 
-        DeploymentStep = step as TDeploymentStep;
+        DeploymentStep = deploymentStep;
 
-        await ProcessDeploymentStepAsync(result);
+        await ProcessAsync(result);
     }
 
-    public abstract Task ProcessDeploymentStepAsync(DeploymentPlanResult result);
+    protected abstract Task ProcessAsync(DeploymentPlanResult result);
 }

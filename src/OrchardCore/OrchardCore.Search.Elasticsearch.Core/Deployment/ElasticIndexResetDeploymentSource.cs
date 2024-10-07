@@ -6,7 +6,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 public class ElasticIndexResetDeploymentSource
     : DeploymentSourceBase<ElasticIndexResetDeploymentStep>
 {
-    public override Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override Task ProcessAsync(DeploymentPlanResult result)
     {
         var indicesToReset = DeploymentStep.IncludeAll ? [] : DeploymentStep.Indices;
 

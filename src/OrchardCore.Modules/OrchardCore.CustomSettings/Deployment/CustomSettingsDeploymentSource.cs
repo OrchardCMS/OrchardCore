@@ -14,7 +14,7 @@ public class CustomSettingsDeploymentSource
         _customSettingsService = customSettingsService;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         var settingsList = new List<KeyValuePair<string, JsonNode>>
         {

@@ -14,7 +14,7 @@ public class LuceneIndexDeploymentSource
         _luceneIndexSettingsService = luceneIndexSettingsService;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         var indexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
 

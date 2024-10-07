@@ -13,7 +13,7 @@ public class SiteSettingsDeploymentSource
         _siteService = siteService;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         var site = await _siteService.GetSiteSettingsAsync();
 

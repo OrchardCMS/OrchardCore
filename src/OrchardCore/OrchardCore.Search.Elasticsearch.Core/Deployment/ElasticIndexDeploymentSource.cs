@@ -15,7 +15,7 @@ public class ElasticIndexDeploymentSource
         _elasticIndexSettingsService = elasticIndexSettingsService;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         var indexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
 

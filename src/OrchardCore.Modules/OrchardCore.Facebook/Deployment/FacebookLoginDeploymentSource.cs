@@ -14,7 +14,7 @@ public class FacebookLoginDeploymentSource
         _facebookService = facebookService;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         var settings = await _facebookService.GetSettingsAsync();
 

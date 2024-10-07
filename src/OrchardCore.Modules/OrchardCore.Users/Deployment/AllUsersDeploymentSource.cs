@@ -15,7 +15,7 @@ public class AllUsersDeploymentSource
         _session = session;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         var allUsers = await _session.Query<User>().ListAsync();
         var users = new JsonArray();

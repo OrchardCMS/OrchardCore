@@ -13,7 +13,7 @@ public class LuceneSettingsDeploymentSource
         _luceneIndexingService = luceneIndexingService;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
 

@@ -5,7 +5,7 @@ namespace OrchardCore.Deployment.Steps;
 public class JsonRecipeDeploymentSource
     : DeploymentSourceBase<JsonRecipeDeploymentStep>
 {
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         result.Steps.Add(JObject.Parse(DeploymentStep.Json));
 

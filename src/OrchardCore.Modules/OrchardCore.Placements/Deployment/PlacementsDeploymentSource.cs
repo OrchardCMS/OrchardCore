@@ -21,7 +21,7 @@ public class PlacementsDeploymentSource
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         var placementObjects = new JsonObject();
         var placements = await _placementsManager.ListShapePlacementsAsync();

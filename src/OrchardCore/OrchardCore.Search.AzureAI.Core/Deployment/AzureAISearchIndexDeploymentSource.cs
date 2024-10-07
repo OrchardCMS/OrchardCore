@@ -16,7 +16,7 @@ public class AzureAISearchIndexDeploymentSource
         _indexSettingsService = indexSettingsService;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         var indexSettings = await _indexSettingsService.GetSettingsAsync();
 

@@ -15,7 +15,7 @@ public class OpenIdValidationDeploymentSource
         _openIdValidationService = openIdValidationService;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         var validationSettings = await _openIdValidationService.GetSettingsAsync();
 

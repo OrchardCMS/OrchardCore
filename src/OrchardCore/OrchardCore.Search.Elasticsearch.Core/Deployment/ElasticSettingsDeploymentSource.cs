@@ -14,11 +14,10 @@ public class ElasticSettingsDeploymentSource
         _elasticIndexingService = elasticIndexingService;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         var elasticSettings = await _elasticIndexingService.GetElasticSettingsAsync();
 
-        // Adding Elasticsearch settings
         result.Steps.Add(new JsonObject
         {
             ["name"] = "Settings",

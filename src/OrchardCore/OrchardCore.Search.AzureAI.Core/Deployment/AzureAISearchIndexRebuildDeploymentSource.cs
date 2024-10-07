@@ -8,7 +8,7 @@ public class AzureAISearchIndexRebuildDeploymentSource
 {
     public const string Name = "azureai-index-rebuild";
 
-    public override Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override Task ProcessAsync(DeploymentPlanResult result)
     {
         var indicesToRebuild = DeploymentStep.IncludeAll
             ? []

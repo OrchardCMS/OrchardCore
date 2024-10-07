@@ -18,7 +18,7 @@ public class ThemesDeploymentSource
         _adminThemeService = adminThemeService;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         result.Steps.Add(new JsonObject
         {

@@ -16,7 +16,7 @@ public class AllContentDeploymentSource
         _session = session;
     }
 
-    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanResult result)
     {
         var data = new JsonArray();
         result.Steps.Add(new JsonObject
