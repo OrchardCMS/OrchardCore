@@ -5,7 +5,7 @@ namespace OrchardCore.Deployment;
 /// </summary>
 /// <typeparam name="TDeploymentStep">The deployment step type.</typeparam>
 public abstract class DeploymentSourceBase<TDeploymentStep>
-    : IDeploymentSource<TDeploymentStep> where TDeploymentStep : DeploymentStep
+    : IDeploymentSource where TDeploymentStep : DeploymentStep
 {
     public TDeploymentStep DeploymentStep { get; private set; }
 
