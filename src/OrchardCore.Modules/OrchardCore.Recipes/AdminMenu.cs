@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.Security;
 
 namespace OrchardCore.Recipes;
 
@@ -20,7 +19,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 .Add(S["Recipes"], S["Recipes"].PrefixPosition(), recipes => recipes
                     .AddClass("recipes")
                     .Id("recipes")
-                    .Permission(StandardPermissions.SiteOwner)
+                    .Permission(RecipePermissions.ManageRecipes)
                     .Action("Index", "Admin", "OrchardCore.Recipes")
                     .LocalNav()
                 )

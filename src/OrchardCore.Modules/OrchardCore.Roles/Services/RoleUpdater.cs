@@ -15,6 +15,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
     private readonly ShellDescriptor _shellDescriptor;
     private readonly IExtensionManager _extensionManager;
     private readonly IDocumentManager<RolesDocument> _documentManager;
+    private readonly ISystemRoleNameProvider _systemRoleNameProvider;
     private readonly IEnumerable<IPermissionProvider> _permissionProviders;
     private readonly ITypeFeatureProvider _typeFeatureProvider;
     private readonly ILogger _logger;
@@ -25,6 +26,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
         ShellDescriptor shellDescriptor,
         IExtensionManager extensionManager,
         IDocumentManager<RolesDocument> documentManager,
+        ISystemRoleNameProvider systemRoleNameProvider,
         IEnumerable<IPermissionProvider> permissionProviders,
         ITypeFeatureProvider typeFeatureProvider,
         ILogger<RoleUpdater> logger)
@@ -32,18 +34,23 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
         _shellDescriptor = shellDescriptor;
         _extensionManager = extensionManager;
         _documentManager = documentManager;
+        _systemRoleNameProvider = systemRoleNameProvider;
         _permissionProviders = permissionProviders;
         _typeFeatureProvider = typeFeatureProvider;
         _logger = logger;
     }
 
-    public override Task InstalledAsync(IFeatureInfo feature) => UpdateRolesForInstalledFeatureAsync(feature);
+    public override Task InstalledAsync(IFeatureInfo feature)
+        => UpdateRolesForInstalledFeatureAsync(feature);
 
-    public override Task EnabledAsync(IFeatureInfo feature) => UpdateRolesForEnabledFeatureAsync(feature);
+    public override Task EnabledAsync(IFeatureInfo feature)
+        => UpdateRolesForEnabledFeatureAsync(feature);
 
-    public Task RoleCreatedAsync(string roleName) => UpdateRoleForInstalledFeaturesAsync(roleName);
+    public Task RoleCreatedAsync(string roleName)
+        => UpdateRoleForInstalledFeaturesAsync(roleName);
 
-    public Task RoleRemovedAsync(string roleName) => RemoveRoleForMissingFeaturesAsync(roleName);
+    public Task RoleRemovedAsync(string roleName)
+        => RemoveRoleForMissingFeaturesAsync(roleName);
 
     private async Task UpdateRolesForInstalledFeatureAsync(IFeatureInfo feature)
     {
@@ -73,7 +80,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
                 var permissions = (stereotype.Permissions ?? [])
                     .Select(stereotype => stereotype.Name);
 
-                if (UpdateRole(role, permissions, _logger))
+                if (await UpdatePermissionsAsync(role, permissions))
                 {
                     updated = true;
                 }
@@ -114,7 +121,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
             updated = true;
 
             missingFeatures.Remove(feature.Id);
-            UpdateRolesForEnabledFeature(role, providers, _logger);
+            await UpdateRolesForEnabledFeatureAsync(role, providers);
         }
 
         if (updated)
@@ -159,7 +166,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
             .SelectMany(stereotype => stereotype.Permissions ?? [])
             .Select(stereotype => stereotype.Name);
 
-        UpdateRole(role, permissions, _logger);
+        await UpdatePermissionsAsync(role, permissions);
     }
 
     private async Task RemoveRoleForMissingFeaturesAsync(string roleName)
@@ -172,7 +179,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
         }
     }
 
-    private static bool UpdateRolesForEnabledFeature(Role role, IEnumerable<IPermissionProvider> providers, ILogger logger)
+    private Task<bool> UpdateRolesForEnabledFeatureAsync(Role role, IEnumerable<IPermissionProvider> providers)
     {
         var stereotypes = providers
             .SelectMany(provider => provider.GetDefaultStereotypes())
@@ -180,7 +187,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
 
         if (!stereotypes.Any())
         {
-            return false;
+            return Task.FromResult(false);
         }
 
         var permissions = stereotypes
@@ -189,23 +196,29 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
 
         if (!permissions.Any())
         {
-            return false;
+            return Task.FromResult(false);
         }
 
-        return UpdateRole(role, permissions, logger);
+        return UpdatePermissionsAsync(role, permissions);
     }
 
-    private static bool UpdateRole(Role role, IEnumerable<string> permissions, ILogger logger)
+    private async Task<bool> UpdatePermissionsAsync(Role role, IEnumerable<string> permissions)
     {
+        if (await _systemRoleNameProvider.IsAdminRoleAsync(role.RoleName))
+        {
+            // Don't update claims for admin role.
+            return true;
+        }
+
         var currentPermissions = role.RoleClaims
             .Where(roleClaim => roleClaim.ClaimType == Permission.ClaimType)
             .Select(roleClaim => roleClaim.ClaimValue);
 
-        var distinctPermissions = currentPermissions
+        var additionalPermissions = currentPermissions
             .Union(permissions)
-            .Distinct();
+            .Distinct()
+            .Except(currentPermissions);
 
-        var additionalPermissions = distinctPermissions.Except(currentPermissions);
         if (!additionalPermissions.Any())
         {
             return false;
@@ -213,12 +226,9 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
 
         foreach (var permission in additionalPermissions)
         {
-            if (logger.IsEnabled(LogLevel.Debug))
-            {
-                logger.LogDebug("Default role '{RoleName}' granted permission '{PermissionName}'.", role.RoleName, permission);
-            }
+            _logger.LogDebug("Default role '{RoleName}' granted permission '{PermissionName}'.", role.RoleName, permission);
 
-            role.RoleClaims.Add(new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = permission });
+            role.RoleClaims.Add(RoleClaim.Create(permission));
         }
 
         return true;

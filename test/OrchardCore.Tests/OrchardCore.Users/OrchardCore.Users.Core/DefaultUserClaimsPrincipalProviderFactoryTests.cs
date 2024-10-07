@@ -1,4 +1,3 @@
-using OrchardCore.Security;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -24,8 +23,6 @@ public class DefaultUserClaimsPrincipalProviderFactoryTests
             userManager.Setup(m => m.IsEmailConfirmedAsync(user)).ReturnsAsync(emailVerified);
         }
 
-        var roleManager = UsersMockHelper.MockRoleManager<IRole>().Object;
-
         var options = new Mock<IOptions<IdentityOptions>>();
         options.Setup(a => a.Value).Returns(new IdentityOptions());
 
@@ -34,7 +31,7 @@ public class DefaultUserClaimsPrincipalProviderFactoryTests
             new EmailClaimsProvider(userManager.Object)
         };
 
-        var factory = new DefaultUserClaimsPrincipalProviderFactory(userManager.Object, roleManager, options.Object, claimsProviders, null);
+        var factory = new DefaultUserClaimsPrincipalProviderFactory(userManager.Object, options.Object, claimsProviders, null);
 
         //Act
         var principal = await factory.CreateAsync(user);
