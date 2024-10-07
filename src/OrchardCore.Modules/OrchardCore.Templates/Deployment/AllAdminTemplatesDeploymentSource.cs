@@ -6,7 +6,8 @@ using OrchardCore.Templates.Services;
 
 namespace OrchardCore.Templates.Deployment;
 
-public class AllAdminTemplatesDeploymentSource : IDeploymentSource
+public class AllAdminTemplatesDeploymentSource
+    : DeploymentSourceBase<AllAdminTemplatesDeploymentStep>
 {
     private readonly AdminTemplatesManager _templatesManager;
 
@@ -15,17 +16,12 @@ public class AllAdminTemplatesDeploymentSource : IDeploymentSource
         _templatesManager = templatesManager;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-        if (step is not AllAdminTemplatesDeploymentStep allTemplatesStep)
-        {
-            return;
-        }
-
         var templateObjects = new JsonObject();
         var templates = await _templatesManager.GetTemplatesDocumentAsync();
 
-        if (allTemplatesStep.ExportAsFiles)
+        if (DeploymentStep.ExportAsFiles)
         {
             foreach (var template in templates.Templates)
             {

@@ -4,7 +4,8 @@ using OrchardCore.Tenants.Services;
 
 namespace OrchardCore.Tenants.Deployment;
 
-public class AllFeatureProfilesDeploymentSource : IDeploymentSource
+public class AllFeatureProfilesDeploymentSource
+    : DeploymentSourceBase<AllFeatureProfilesDeploymentStep>
 {
     private readonly FeatureProfilesManager _featureProfilesManager;
 
@@ -13,13 +14,8 @@ public class AllFeatureProfilesDeploymentSource : IDeploymentSource
         _featureProfilesManager = featureProfilesManager;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-        if (step is not AllFeatureProfilesDeploymentStep)
-        {
-            return;
-        }
-
         var featureProfileObjects = new JsonObject();
         var featureProfiles = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
 

@@ -7,7 +7,8 @@ using OrchardCore.Json;
 
 namespace OrchardCore.AdminMenu.Deployment;
 
-public class AdminMenuDeploymentSource : IDeploymentSource
+public class AdminMenuDeploymentSource
+    : DeploymentSourceBase<AdminMenuDeploymentStep>
 {
     private readonly IAdminMenuService _adminMenuService;
     private readonly JsonSerializerOptions _serializationOptions;
@@ -19,15 +20,8 @@ public class AdminMenuDeploymentSource : IDeploymentSource
         _serializationOptions = serializationOptions.Value.SerializerOptions;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-        var adminMenuStep = step as AdminMenuDeploymentStep;
-
-        if (adminMenuStep == null)
-        {
-            return;
-        }
-
         var data = new JsonArray();
         result.Steps.Add(new JsonObject
         {

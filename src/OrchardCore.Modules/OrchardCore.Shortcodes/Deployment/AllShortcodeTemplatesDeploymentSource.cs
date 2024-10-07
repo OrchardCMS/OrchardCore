@@ -4,7 +4,8 @@ using OrchardCore.Shortcodes.Services;
 
 namespace OrchardCore.Shortcodes.Deployment;
 
-public class AllShortcodeTemplatesDeploymentSource : IDeploymentSource
+public class AllShortcodeTemplatesDeploymentSource
+    : DeploymentSourceBase<AllShortcodeTemplatesDeploymentStep>
 {
     private readonly ShortcodeTemplatesManager _templatesManager;
 
@@ -13,13 +14,8 @@ public class AllShortcodeTemplatesDeploymentSource : IDeploymentSource
         _templatesManager = templatesManager;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-        if (step is not AllShortcodeTemplatesDeploymentStep)
-        {
-            return;
-        }
-
         var templateObjects = new JsonObject();
         var templates = await _templatesManager.GetShortcodeTemplatesDocumentAsync();
 

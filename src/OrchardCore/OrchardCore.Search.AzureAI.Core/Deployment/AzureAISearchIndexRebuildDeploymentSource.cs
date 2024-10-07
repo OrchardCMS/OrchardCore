@@ -3,23 +3,21 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.AzureAI.Deployment;
 
-public class AzureAISearchIndexRebuildDeploymentSource : IDeploymentSource
+public class AzureAISearchIndexRebuildDeploymentSource
+    : DeploymentSourceBase<AzureAISearchIndexRebuildDeploymentStep>
 {
     public const string Name = "azureai-index-rebuild";
 
-    public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public override Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-        if (step is not AzureAISearchIndexRebuildDeploymentStep rebuildStep)
-        {
-            return Task.CompletedTask;
-        }
-
-        var indicesToRebuild = rebuildStep.IncludeAll ? [] : rebuildStep.Indices;
+        var indicesToRebuild = DeploymentStep.IncludeAll
+            ? []
+            : DeploymentStep.Indices;
 
         result.Steps.Add(new JsonObject
         {
             ["name"] = Name,
-            ["includeAll"] = rebuildStep.IncludeAll,
+            ["includeAll"] = DeploymentStep.IncludeAll,
             ["Indices"] = JArray.FromObject(indicesToRebuild),
         });
 

@@ -5,7 +5,8 @@ using OrchardCore.Search.Elasticsearch.Core.Services;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 
-public class ElasticIndexDeploymentSource : IDeploymentSource
+public class ElasticIndexDeploymentSource
+    : DeploymentSourceBase<ElasticIndexDeploymentStep>
 {
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
 
@@ -14,17 +15,14 @@ public class ElasticIndexDeploymentSource : IDeploymentSource
         _elasticIndexSettingsService = elasticIndexSettingsService;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-        if (step is not ElasticIndexDeploymentStep elasticIndexStep)
-        {
-            return;
-        }
-
         var indexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
 
         var data = new JsonArray();
-        var indicesToAdd = elasticIndexStep.IncludeAll ? indexSettings.Select(x => x.IndexName).ToArray() : elasticIndexStep.IndexNames;
+        var indicesToAdd = DeploymentStep.IncludeAll
+            ? indexSettings.Select(x => x.IndexName).ToArray()
+            : DeploymentStep.IndexNames;
 
         foreach (var index in indexSettings)
         {

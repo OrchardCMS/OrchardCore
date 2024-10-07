@@ -5,17 +5,13 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Deployment;
 
-public class AzureAISearchSettingsDeploymentSource(ISiteService siteService) : IDeploymentSource
+public class AzureAISearchSettingsDeploymentSource(ISiteService siteService)
+    : DeploymentSourceBase<AzureAISearchSettingsDeploymentStep>
 {
     private readonly ISiteService _siteService = siteService;
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-        if (step is not AzureAISearchSettingsDeploymentStep)
-        {
-            return;
-        }
-
         var settings = await _siteService.GetSettingsAsync<AzureAISearchSettings>();
 
         result.Steps.Add(new JsonObject

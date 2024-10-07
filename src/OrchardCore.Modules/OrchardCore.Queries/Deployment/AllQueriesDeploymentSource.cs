@@ -6,7 +6,8 @@ using OrchardCore.Json;
 
 namespace OrchardCore.Queries.Deployment;
 
-public class AllQueriesDeploymentSource : IDeploymentSource
+public class AllQueriesDeploymentSource
+    : DeploymentSourceBase<AllQueriesDeploymentStep>
 {
     private readonly IQueryManager _queryManager;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
@@ -19,15 +20,8 @@ public class AllQueriesDeploymentSource : IDeploymentSource
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-        var allQueriesStep = step as AllQueriesDeploymentStep;
-
-        if (allQueriesStep == null)
-        {
-            return;
-        }
-
         var queries = await _queryManager.ListQueriesAsync();
 
         result.Steps.Add(new JsonObject

@@ -4,7 +4,8 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.CustomSettings.Deployment;
 
-public class CustomSettingsDeploymentSource : IDeploymentSource
+public class CustomSettingsDeploymentSource
+    : DeploymentSourceBase<CustomSettingsDeploymentStep>
 {
     private readonly CustomSettingsService _customSettingsService;
 
@@ -13,22 +14,16 @@ public class CustomSettingsDeploymentSource : IDeploymentSource
         _customSettingsService = customSettingsService;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-        var customSettingsStep = step as CustomSettingsDeploymentStep;
-        if (customSettingsStep == null)
-        {
-            return;
-        }
-
         var settingsList = new List<KeyValuePair<string, JsonNode>>
         {
             new("name", "custom-settings"),
         };
 
-        var settingsTypes = customSettingsStep.IncludeAll
+        var settingsTypes = DeploymentStep.IncludeAll
             ? (await _customSettingsService.GetAllSettingsTypesAsync()).ToArray()
-            : (await _customSettingsService.GetSettingsTypesAsync(customSettingsStep.SettingsTypeNames)).ToArray();
+            : (await _customSettingsService.GetSettingsTypesAsync(DeploymentStep.SettingsTypeNames)).ToArray();
 
         foreach (var settingsType in settingsTypes)
         {

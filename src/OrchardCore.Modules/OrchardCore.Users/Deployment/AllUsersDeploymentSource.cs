@@ -5,7 +5,8 @@ using YesSql;
 
 namespace OrchardCore.Users.Deployment;
 
-public class AllUsersDeploymentSource : IDeploymentSource
+public class AllUsersDeploymentSource
+    : DeploymentSourceBase<AllUsersDeploymentStep>
 {
     private readonly ISession _session;
 
@@ -14,13 +15,8 @@ public class AllUsersDeploymentSource : IDeploymentSource
         _session = session;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-        if (step is not AllUsersDeploymentStep)
-        {
-            return;
-        }
-
         var allUsers = await _session.Query<User>().ListAsync();
         var users = new JsonArray();
 

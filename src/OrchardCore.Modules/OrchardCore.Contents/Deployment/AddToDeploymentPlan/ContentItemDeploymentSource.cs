@@ -4,7 +4,8 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 
-public class ContentItemDeploymentSource : IDeploymentSource
+public class ContentItemDeploymentSource
+    : DeploymentSourceBase<ContentItemDeploymentStep>
 {
     private readonly IContentManager _contentManager;
 
@@ -13,16 +14,14 @@ public class ContentItemDeploymentSource : IDeploymentSource
         _contentManager = contentManager;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-        var contentItemDeploymentStep = step as ContentItemDeploymentStep;
-
-        if (contentItemDeploymentStep == null || contentItemDeploymentStep.ContentItemId == null)
+        if (DeploymentStep.ContentItemId == null)
         {
             return;
         }
 
-        var contentItem = await _contentManager.GetAsync(contentItemDeploymentStep.ContentItemId);
+        var contentItem = await _contentManager.GetAsync(DeploymentStep.ContentItemId);
 
         if (contentItem == null)
         {

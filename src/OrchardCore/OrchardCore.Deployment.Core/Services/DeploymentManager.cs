@@ -25,7 +25,14 @@ public class DeploymentManager : IDeploymentManager
         {
             foreach (var source in _deploymentSources)
             {
-                await source.ProcessDeploymentStepAsync(step, result);
+                if (source is DeploymentSourceBase<DeploymentStep> deploymentSource)
+                {
+                    await deploymentSource.ProcessDeploymentStepAsync(result);
+                }
+                else
+                {
+                    await source.ProcessDeploymentStepAsync(step, result);
+                }
             }
         }
 

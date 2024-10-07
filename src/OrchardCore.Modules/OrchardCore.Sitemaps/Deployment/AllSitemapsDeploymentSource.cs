@@ -6,7 +6,8 @@ using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Sitemaps.Deployment;
 
-public sealed class AllSitemapsDeploymentSource : IDeploymentSource
+public sealed class AllSitemapsDeploymentSource
+    : DeploymentSourceBase<AllSitemapsDeploymentStep>
 {
     private readonly ISitemapManager _sitemapManager;
     private readonly DocumentJsonSerializerOptions _documentJsonSerializerOptions;
@@ -19,13 +20,8 @@ public sealed class AllSitemapsDeploymentSource : IDeploymentSource
         _documentJsonSerializerOptions = documentJsonSerializerOptions.Value;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-        if (step is not AllSitemapsDeploymentStep)
-        {
-            return;
-        }
-
         var sitemaps = await _sitemapManager.GetSitemapsAsync();
 
         var jArray = JArray.FromObject(sitemaps, _documentJsonSerializerOptions.SerializerOptions);

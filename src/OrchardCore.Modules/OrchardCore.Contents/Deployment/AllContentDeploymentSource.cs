@@ -6,7 +6,8 @@ using YesSql;
 
 namespace OrchardCore.Contents.Deployment;
 
-public class AllContentDeploymentSource : IDeploymentSource
+public class AllContentDeploymentSource
+    : DeploymentSourceBase<AllContentDeploymentStep>
 {
     private readonly ISession _session;
 
@@ -15,15 +16,8 @@ public class AllContentDeploymentSource : IDeploymentSource
         _session = session;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-        var allContentStep = step as AllContentDeploymentStep;
-
-        if (allContentStep == null)
-        {
-            return;
-        }
-
         var data = new JsonArray();
         result.Steps.Add(new JsonObject
         {
@@ -38,7 +32,7 @@ public class AllContentDeploymentSource : IDeploymentSource
             // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
             objectData.Remove(nameof(ContentItem.Id));
 
-            if (allContentStep.ExportAsSetupRecipe)
+            if (DeploymentStep.ExportAsSetupRecipe)
             {
                 objectData[nameof(ContentItem.Owner)] = "[js: parameters('AdminUserId')]";
                 objectData[nameof(ContentItem.Author)] = "[js: parameters('AdminUsername')]";

@@ -3,27 +3,17 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 
-public class ElasticIndexResetDeploymentSource : IDeploymentSource
+public class ElasticIndexResetDeploymentSource
+    : DeploymentSourceBase<ElasticIndexResetDeploymentStep>
 {
-    public ElasticIndexResetDeploymentSource()
+    public override Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-    }
-
-    public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-    {
-        var elasticIndexResetStep = step as ElasticIndexResetDeploymentStep;
-
-        if (elasticIndexResetStep == null)
-        {
-            return Task.CompletedTask;
-        }
-
-        var indicesToReset = elasticIndexResetStep.IncludeAll ? [] : elasticIndexResetStep.Indices;
+        var indicesToReset = DeploymentStep.IncludeAll ? [] : DeploymentStep.Indices;
 
         result.Steps.Add(new JsonObject
         {
             ["name"] = "lucene-index-reset",
-            ["includeAll"] = elasticIndexResetStep.IncludeAll,
+            ["includeAll"] = DeploymentStep.IncludeAll,
             ["Indices"] = JArray.FromObject(indicesToReset),
         });
 

@@ -3,23 +3,19 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.Lucene.Deployment;
 
-public class LuceneIndexRebuildDeploymentSource : IDeploymentSource
+public class LuceneIndexRebuildDeploymentSource
+    : DeploymentSourceBase<LuceneIndexRebuildDeploymentStep>
 {
-    public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public override Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-        var luceneIndexRebuildStep = step as LuceneIndexRebuildDeploymentStep;
-
-        if (luceneIndexRebuildStep == null)
-        {
-            return Task.CompletedTask;
-        }
-
-        var indicesToRebuild = luceneIndexRebuildStep.IncludeAll ? [] : luceneIndexRebuildStep.IndexNames;
+        var indicesToRebuild = DeploymentStep.IncludeAll
+            ? []
+            : DeploymentStep.IndexNames;
 
         result.Steps.Add(new JsonObject
         {
             ["name"] = "lucene-index-rebuild",
-            ["includeAll"] = luceneIndexRebuildStep.IncludeAll,
+            ["includeAll"] = DeploymentStep.IncludeAll,
             ["Indices"] = JArray.FromObject(indicesToRebuild),
         });
 

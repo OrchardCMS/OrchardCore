@@ -6,7 +6,8 @@ using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Deployment;
 
-public class AzureAISearchIndexDeploymentSource : IDeploymentSource
+public class AzureAISearchIndexDeploymentSource
+    : DeploymentSourceBase<AzureAISearchIndexDeploymentStep>
 {
     private readonly AzureAISearchIndexSettingsService _indexSettingsService;
 
@@ -15,20 +16,15 @@ public class AzureAISearchIndexDeploymentSource : IDeploymentSource
         _indexSettingsService = indexSettingsService;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-        if (step is not AzureAISearchIndexDeploymentStep indexStep)
-        {
-            return;
-        }
-
         var indexSettings = await _indexSettingsService.GetSettingsAsync();
 
         var data = new JsonArray();
 
-        var indicesToAdd = indexStep.IncludeAll
+        var indicesToAdd = DeploymentStep.IncludeAll
             ? indexSettings.Select(x => x.IndexName).ToArray()
-            : indexStep.IndexNames;
+            : DeploymentStep.IndexNames;
 
         foreach (var index in indexSettings)
         {
@@ -44,7 +40,7 @@ public class AzureAISearchIndexDeploymentSource : IDeploymentSource
 
         result.Steps.Add(new JsonObject
         {
-            ["name"] = step.Name,
+            ["name"] = DeploymentStep.Name,
             ["Indices"] = data,
         });
     }
