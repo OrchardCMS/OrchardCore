@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Rewrite;
 
 namespace OrchardCore.UrlRewriting.Rules;
 
-internal sealed class ExcludeAdminUrlPrefixRule : IRule
+internal sealed class ExcludeUrlPrefixRule : IRule
 {
     private readonly PathString _adminUrlPrefix;
 
-    public ExcludeAdminUrlPrefixRule(string adminUrlPrefix)
+    public ExcludeUrlPrefixRule(string prefix)
     {
-        _adminUrlPrefix = new PathString("/" + adminUrlPrefix);
+        ArgumentException.ThrowIfNullOrEmpty(prefix);
+
+        _adminUrlPrefix = new PathString('/' + prefix.TrimStart('/'));
     }
 
     public void ApplyRule(RewriteContext context)
@@ -17,10 +19,10 @@ internal sealed class ExcludeAdminUrlPrefixRule : IRule
         if (context.HttpContext.Request.Path.StartsWithSegments(_adminUrlPrefix))
         {
             context.Result = RuleResult.SkipRemainingRules;
+
+            return;
         }
-        else
-        {
-            context.Result = RuleResult.ContinueRules;
-        }
+
+        context.Result = RuleResult.ContinueRules;
     }
 }

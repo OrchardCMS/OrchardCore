@@ -41,8 +41,8 @@ public sealed class RewriteOptionsConfiguration : IConfigureOptions<RewriteOptio
 
         if (options.Rules.Count > 0)
         {
-            // Exclude admin ui requests to prevent accidental access bricking by provided rules
-            options.Rules.Insert(0, new ExcludeAdminUrlPrefixRule(_adminOptions.AdminUrlPrefix));
+            // Exclude URIs prefixed with 'admin' to prevent accidental access restrictions caused by the provided rules.
+            options.Rules.Insert(0, new ExcludeUrlPrefixRule(_adminOptions.AdminUrlPrefix));
         }
     }
 }

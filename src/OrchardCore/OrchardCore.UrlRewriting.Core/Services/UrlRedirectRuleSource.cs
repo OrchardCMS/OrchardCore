@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Entities;
+using OrchardCore.Modules.Extensions;
 using OrchardCore.UrlRewriting.Models;
 
 namespace OrchardCore.UrlRewriting.Services;
@@ -53,20 +54,16 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
 
         if (metadata.IgnoreCase)
         {
-            builder.Append("NC");
+            builder.AppendCommaSeparatedValues("NC");
         };
 
         if (metadata.AppendQueryString)
         {
-            if (builder.Length > 0)
-            {
-                builder.Append(',');
-            }
-            builder.Append("QSA,");
+            builder.AppendCommaSeparatedValues("QSA");
         }
 
-        builder.Append($"R=");
-        builder.Append(RedirectTypeToStatusCode(metadata.RedirectType));
+        builder.AppendCommaSeparatedValues("R=")
+            .Append(RedirectTypeToStatusCode(metadata.RedirectType));
 
         return builder;
     }
