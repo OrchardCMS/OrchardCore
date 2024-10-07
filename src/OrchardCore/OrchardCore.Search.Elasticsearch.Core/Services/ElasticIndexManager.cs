@@ -92,7 +92,7 @@ public sealed class ElasticIndexManager
         "word_delimiter_graph",
         "word_delimiter"
     };
-    private record TokenFilterBuildingInfo(ITokenFilter TokenFilter, Func<TokenFiltersDescriptor, ITokenFilter, string, TokenFiltersDescriptor> AddTokenFilter);
+    private sealed record TokenFilterBuildingInfo(ITokenFilter TokenFilter, Func<TokenFiltersDescriptor, ITokenFilter, string, TokenFiltersDescriptor> AddTokenFilter);
     private readonly Dictionary<string, TokenFilterBuildingInfo> _tokenFilterBuildingInfoGetter = new(StringComparer.OrdinalIgnoreCase)
     {
         {
