@@ -30,14 +30,14 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
             return;
         }
 
-        using var apacheModRewrite = new StringReader(GetRewriteRule(rule, metadata));
+        using var reader = new StringReader(GetRewriteRule(metadata));
 
-        options.AddApacheModRewrite(apacheModRewrite);
+        options.AddApacheModRewrite(reader);
     }
 
-    private static string GetRewriteRule(RewriteRule rule, UrlRedirectSourceMetadata metadata)
+    private static string GetRewriteRule(UrlRedirectSourceMetadata metadata)
     {
-        var flags = GetFlags(rule, metadata);
+        var flags = GetFlags(metadata);
 
         if (flags.Length > 0)
         {
@@ -47,28 +47,28 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
         return $"RewriteRule \"{metadata.Pattern}\" \"{metadata.Url}\"";
     }
 
-    private static StringBuilder GetFlags(RewriteRule rule, UrlRedirectSourceMetadata metadata)
+    private static StringBuilder GetFlags(UrlRedirectSourceMetadata metadata)
     {
-        var sbFlags = new StringBuilder();
+        var builder = new StringBuilder();
 
         if (metadata.IgnoreCase)
         {
-            sbFlags.Append("NC");
+            builder.Append("NC");
         };
 
         if (metadata.AppendQueryString)
         {
-            if (sbFlags.Length > 0)
+            if (builder.Length > 0)
             {
-                sbFlags.Append(',');
+                builder.Append(',');
             }
-            sbFlags.Append("QSA,");
+            builder.Append("QSA,");
         }
 
-        sbFlags.Append($"R=");
-        sbFlags.Append(RedirectTypeToStatusCode(metadata.RedirectType));
+        builder.Append($"R=");
+        builder.Append(RedirectTypeToStatusCode(metadata.RedirectType));
 
-        return sbFlags;
+        return builder;
     }
 
     public static RedirectType GetRedirectType(string flag)

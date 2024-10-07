@@ -29,14 +29,14 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
             return;
         }
 
-        using var apacheModRewrite = new StringReader(GetRewriteRule(rule, metadata));
+        using var reader = new StringReader(GetRewriteRule(metadata));
 
-        options.AddApacheModRewrite(apacheModRewrite);
+        options.AddApacheModRewrite(reader);
     }
 
-    private static string GetRewriteRule(RewriteRule rule, UrlRewriteSourceMetadata metadata)
+    private static string GetRewriteRule(UrlRewriteSourceMetadata metadata)
     {
-        var flags = GetFlags(rule, metadata);
+        var flags = GetFlags(metadata);
 
         if (flags.Length > 0)
         {
@@ -46,35 +46,35 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
         return $"RewriteRule \"{metadata.Pattern}\" \"{metadata.Url}\"";
     }
 
-    private static StringBuilder GetFlags(RewriteRule rule, UrlRewriteSourceMetadata metadata)
+    private static StringBuilder GetFlags(UrlRewriteSourceMetadata metadata)
     {
-        var sbFlags = new StringBuilder();
+        var builder = new StringBuilder();
 
         if (metadata.IgnoreCase)
         {
-            sbFlags.Append("NC");
+            builder.Append("NC");
         };
 
         if (metadata.AppendQueryString)
         {
-            if (sbFlags.Length > 0)
+            if (builder.Length > 0)
             {
-                sbFlags.Append(',');
+                builder.Append(',');
             }
-            sbFlags.Append("QSA");
+            builder.Append("QSA");
         }
 
         if (metadata.SkipFurtherRules)
         {
-            if (sbFlags.Length > 0)
+            if (builder.Length > 0)
             {
-                sbFlags.Append(',');
+                builder.Append(',');
             }
 
-            sbFlags.Append('L');
+            builder.Append('L');
         }
 
-        return sbFlags;
+        return builder;
     }
 
 }

@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.UrlRewriting.Models;
+namespace OrchardCore.UrlRewriting.Models;
 
 public abstract class RewriteRuleContextBase
 {
@@ -6,6 +6,8 @@ public abstract class RewriteRuleContextBase
 
     public RewriteRuleContextBase(RewriteRule rule)
     {
+        ArgumentNullException.ThrowIfNull(rule);
+
         Rule = rule;
     }
 }
