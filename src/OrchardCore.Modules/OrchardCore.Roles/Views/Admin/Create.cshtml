@@ -4,16 +4,18 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Create Role"])</h1></zone>
 
 <div asp-validation-summary="ModelOnly"></div>
+
 <form asp-action="Create" method="post" class="no-multisubmit">
     <div class="mb-3" asp-validation-class-for="RoleName">
-        <label asp-for="RoleName" class="form-label">@T["Role name"]</label>
+        <label asp-for="RoleName" class="form-label">@T["Name"]</label>
         <input asp-for="RoleName" class="form-control" autofocus />
         <span asp-validation-for="RoleName" class="text-danger"></span>
     </div>
 
     <div class="mb-3" asp-validation-class-for="RoleDescription">
-        <label asp-for="RoleDescription" class="form-label">@T["Role description"]</label>
-        <input asp-for="RoleDescription" class="form-control" autofocus />
+        <label asp-for="RoleDescription" class="form-label">@T["Description"]</label>
+        <textarea asp-for="RoleDescription" class="form-control"></textarea>
+        <span asp-validation-for="RoleDescription" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
