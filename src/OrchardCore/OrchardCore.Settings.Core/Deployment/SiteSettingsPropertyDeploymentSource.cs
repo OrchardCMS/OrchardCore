@@ -3,7 +3,8 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Settings.Deployment;
 
-public class SiteSettingsPropertyDeploymentSource<TModel> : IDeploymentSource where TModel : class, new()
+public class SiteSettingsPropertyDeploymentSource<TModel>
+    : DeploymentSourceBase<SiteSettingsPropertyDeploymentStep<TModel>> where TModel : class, new()
 {
     private readonly ISiteService _siteService;
 
@@ -12,13 +13,8 @@ public class SiteSettingsPropertyDeploymentSource<TModel> : IDeploymentSource wh
         _siteService = siteService;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-        if (step is not SiteSettingsPropertyDeploymentStep<TModel> settingsStep)
-        {
-            return;
-        }
-
         var settingJPropertyName = typeof(TModel).Name;
         var settingJPropertyValue = JObject.FromObject(await _siteService.GetSettingsAsync<TModel>());
 
