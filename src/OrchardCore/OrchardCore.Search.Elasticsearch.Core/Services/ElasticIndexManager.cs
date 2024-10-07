@@ -449,7 +449,7 @@ public sealed class ElasticIndexManager
                 var filterCollection = JsonSerializer.Deserialize<IEnumerable<string>>(filterResult);
 
                 var existingFilters = filterCollection.Where(f => _tokenFilterNames.Contains(f));
-                analysisDescriptor.Analyzers(a => a.Custom(analyzerName, c => c.Filters(existingFilters)));
+                analysisDescriptor.Analyzers(a => a.Custom("default", c => c.Tokenizer("standard").Filters(existingFilters)));
             }
             else
             {
@@ -588,12 +588,16 @@ public sealed class ElasticIndexManager
                         if (filterProperty.Value is JsonArray)
                         {
                             var propertyValue = JsonSerializer.Deserialize<IEnumerable<string>>(filterProperty.Value);
-
                             property.SetValue(tokenFilterBuildingInfo.TokenFilter, new StopWords(propertyValue));
-
-                            tokenFilterBuildingInfo.AddTokenFilter(descriptor, tokenFilterBuildingInfo.TokenFilter, filterName);
-                            _tokenFilterNames.Add(filterName);
                         }
+                        else
+                        {
+                            var propertyValue = JsonSerializer.Deserialize<string>(filterProperty.Value);
+                            property.SetValue(tokenFilterBuildingInfo.TokenFilter, new StopWords(propertyValue));
+                        }
+
+                        tokenFilterBuildingInfo.AddTokenFilter(descriptor, tokenFilterBuildingInfo.TokenFilter, filterName);
+                        _tokenFilterNames.Add(filterName);
 
                         continue;
                     }
@@ -703,6 +707,30 @@ public sealed class ElasticIndexManager
         if (!response.Success)
         {
             _logger.LogWarning("There were issues retrieving index mappings from Elasticsearch. {OriginalException}", response.OriginalException);
+        }
+
+        return response.Body;
+    }
+
+    public async Task<string> GetIndexSettings(string indexName)
+    {
+        var response = await _elasticClient.LowLevel.Indices.GetSettingsAsync<StringResponse>(GetFullIndexName(indexName));
+
+        if (!response.Success)
+        {
+            _logger.LogWarning("There were issues retrieving index settings from Elasticsearch. {OriginalException}", response.OriginalException);
+        }
+
+        return response.Body;
+    }
+
+    public async Task<string> GetIndexInfo(string indexName)
+    {
+        var response = await _elasticClient.LowLevel.Indices.GetAsync<StringResponse>(GetFullIndexName(indexName));
+
+        if (!response.Success)
+        {
+            _logger.LogWarning("There were issues retrieving index info from Elasticsearch. {OriginalException}", response.OriginalException);
         }
 
         return response.Body;

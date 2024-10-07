@@ -434,8 +434,11 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> Mappings(string indexName)
     {
-        var mappings = await _elasticIndexManager.GetIndexMappings(indexName);
-        var formattedJson = JNode.Parse(mappings).ToJsonString(JOptions.Indented);
+        //var mappings = await _elasticIndexManager.GetIndexMappings(indexName);
+        //var settings = await _elasticIndexManager.GetIndexSettings(indexName);
+        var info = await _elasticIndexManager.GetIndexInfo(indexName);
+
+        var formattedJson = JNode.Parse(info).ToJsonString(JOptions.Indented);
         return View(new MappingsViewModel
         {
             IndexName = _elasticIndexManager.GetFullIndexName(indexName),
