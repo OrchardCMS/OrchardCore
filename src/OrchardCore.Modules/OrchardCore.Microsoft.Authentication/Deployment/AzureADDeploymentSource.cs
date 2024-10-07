@@ -1,4 +1,3 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.Deployment;
 using OrchardCore.Microsoft.Authentication.Services;
@@ -17,12 +16,12 @@ public class AzureADDeploymentSource : DeploymentSourceBase<AzureADDeploymentSte
 
     public override async Task ProcessDeploymentStepAsync(DeploymentPlanResult result)
     {
-        var settings = await _azureADService.GetSettingsAsync();
+        var azureADSettings = await _azureADService.GetSettingsAsync();
 
-        var obj = new JsonObject { ["name"] = nameof(AzureADSettings) };
-
-        obj.Merge(JObject.FromObject(settings, JOptions.Default));
-
-        result.Steps.Add(obj);
+        result.Steps.Add(new JsonObject
+        {
+            ["name"] = "Settings",
+            [nameof(AzureADSettings)] = JObject.FromObject(azureADSettings),
+        });
     }
 }
