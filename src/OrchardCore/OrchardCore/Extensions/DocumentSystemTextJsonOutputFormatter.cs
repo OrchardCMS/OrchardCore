@@ -5,7 +5,7 @@ using OrchardCore.Entities;
 
 namespace OrchardCore.Json;
 
-public class DocumentSystemTextJsonOutputFormatter : SystemTextJsonOutputFormatter
+public sealed class DocumentSystemTextJsonOutputFormatter : SystemTextJsonOutputFormatter
 {
     public DocumentSystemTextJsonOutputFormatter(JsonSerializerOptions jsonSerializerOptions)
         : base(jsonSerializerOptions)

@@ -4,7 +4,7 @@ using OrchardCore.Json;
 
 namespace OrchardCore.Extensions;
 
-public sealed class MvcOptionsConfiguration : IConfigureOptions<MvcOptions>
+internal sealed class MvcOptionsConfiguration : IConfigureOptions<MvcOptions>
 {
     private readonly DocumentJsonSerializerOptions _documentOptions;
 
