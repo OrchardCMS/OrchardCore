@@ -61,10 +61,13 @@ public class RewriteRulesManager : IRewriteRulesManager
             return null;
         }
 
+        var order = await GenerateNextAvaliableOrderNumber();
+
         var rule = new RewriteRule()
         {
             Id = IdGenerator.GenerateId(),
             Source = source,
+            Order = order
         };
 
         var initializingContext = new InitializingRewriteRuleContext(rule);
@@ -81,6 +84,7 @@ public class RewriteRulesManager : IRewriteRulesManager
         // Set the source again after calling handlers to prevent handlers from updating the source during initialization.
         rule.Source = source;
         rule.Id ??= IdGenerator.GenerateId();
+        rule.Order = order;
 
         return rule;
     }
@@ -149,5 +153,12 @@ public class RewriteRulesManager : IRewriteRulesManager
         }
 
         return rules;
+    }
+
+    private async Task<int> GenerateNextAvaliableOrderNumber()
+    {
+        var rules = await LocateRulesAsync(new RewriteRulesQueryContext() { Sorted = true });
+
+        return rules.LastOrDefault()?.Order + 1 ?? 0;
     }
 }
