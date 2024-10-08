@@ -12,7 +12,6 @@ using OrchardCore.ContentLocalization.Security;
 using OrchardCore.ContentLocalization.Services;
 using OrchardCore.ContentLocalization.Sitemaps;
 using OrchardCore.ContentLocalization.ViewModels;
-using OrchardCore.Contents.Core;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
