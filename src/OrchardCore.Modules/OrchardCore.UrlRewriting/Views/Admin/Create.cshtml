@@ -7,4 +7,10 @@
     @await DisplayAsync(Model)
 
     <button class="btn btn-primary" type="submit">@T["Save"]</button>
+
+    <a class="btn btn-secondary cancel"
+       role="button"
+       asp-route-action="Index"
+       asp-route-controller="Admin"
+       asp-route-area="OrchardCore.UrlRewriting">@T["Cancel"]</a>
 </form>

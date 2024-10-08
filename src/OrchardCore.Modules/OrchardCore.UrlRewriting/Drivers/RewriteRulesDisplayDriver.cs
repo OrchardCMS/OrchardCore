@@ -2,7 +2,6 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
-using OrchardCore.UrlRewriting;
 using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.ViewModels;
 
@@ -27,17 +26,16 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
         );
     }
 
-    public override Task<IDisplayResult> EditAsync(RewriteRule rule, BuildEditorContext context)
+    public override IDisplayResult Edit(RewriteRule rule, BuildEditorContext context)
     {
-        return CombineAsync(
+        return Combine(
             Initialize<EditRewriteRuleViewModel>("RewriteRule_Fields_Edit", model =>
             {
                 model.Name = rule.Name;
                 model.Source = rule.Source;
                 model.Order = rule.Order;
                 model.Rule = rule;
-            }).Location("Content:1"),
-            View("RewriteRule_Fields_Buttons", rule).Location("Actions:5")
+            }).Location("Content:1")
         );
     }
 
