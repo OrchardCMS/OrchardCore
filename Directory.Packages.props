@@ -39,7 +39,7 @@
     <PackageVersion Include="MailKit" Version="4.8.0" />
     <PackageVersion Include="Markdig" Version="0.37.0" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.7.5" />
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.9.1" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="3.2.0" />
     <!--
       Important: the version of the Microsoft.IdentityModel.Protocols.OpenIdConnect package MUST
