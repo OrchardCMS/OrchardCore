@@ -12,18 +12,32 @@ public class DefaultClientIPAddressAccessor : IClientIPAddressAccessor
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public Task<IPAddress> GetIPAddressAsync()
+    public Task<string> GetIPAddressAsync()
     {
-        var address = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress;
-
-        if (address != null)
+        string ip = null;
+        // Check for X-Forwarded-For header
+        var forwardedFor = _httpContextAccessor.HttpContext?.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+        if (!string.IsNullOrEmpty(forwardedFor))
         {
-            if (IPAddress.IsLoopback(address))
+            // The client IP will be the first IP in the list
+            ip = forwardedFor.Split(',')[0].Trim();
+        }
+        else
+        {
+            // If X-Forwarded-For is not available, use the remote IP address
+            var address = _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress;
+
+            if (address != null)
             {
-                address = IPAddress.Loopback;
+                if (IPAddress.IsLoopback(address))
+                {
+                    address = IPAddress.Loopback;
+                }
+
+                ip = address.ToString();
             }
         }
-
-        return Task.FromResult(address);
+        
+        return Task.FromResult(ip);
     }
 }

@@ -161,7 +161,7 @@ public class AuditTrailManager : IAuditTrailManager
             return null;
         }
 
-        return (await _clientIPAddressAccessor.GetIPAddressAsync())?.ToString();
+        return (await _clientIPAddressAccessor.GetIPAddressAsync());
     }
 
     private async Task<AuditTrailSettings> GetAuditTrailSettingsAsync() =>
