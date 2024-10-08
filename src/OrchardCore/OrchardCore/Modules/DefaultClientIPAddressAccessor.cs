@@ -14,7 +14,7 @@ public class DefaultClientIPAddressAccessor : IClientIPAddressAccessor
 
     public Task<string> GetIPAddressAsync()
     {
-        string ip = null;
+        string ip = string.Empty;
         // Check for X-Forwarded-For header
         var forwardedFor = _httpContextAccessor.HttpContext?.Request.Headers["X-Forwarded-For"].FirstOrDefault();
         if (!string.IsNullOrEmpty(forwardedFor))
