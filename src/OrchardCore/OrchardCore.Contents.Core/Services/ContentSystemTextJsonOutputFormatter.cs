@@ -12,7 +12,5 @@ public sealed class ContentSystemTextJsonOutputFormatter : SystemTextJsonOutputF
     }
 
     protected override bool CanWriteType(Type type)
-    {
-        return typeof(IContent).IsAssignableFrom(type);
-    }
+        => typeof(IContent).IsAssignableFrom(type);
 }

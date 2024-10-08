@@ -13,8 +13,6 @@ public sealed class DocumentSystemTextJsonOutputFormatter : SystemTextJsonOutput
     }
 
     protected override bool CanWriteType(Type type)
-    {
-        return typeof(IDocument).IsAssignableFrom(type) ||
-            typeof(IEntity).IsAssignableFrom(type);
-    }
+        => typeof(IDocument).IsAssignableFrom(type) || 
+        typeof(IEntity).IsAssignableFrom(type);
 }
