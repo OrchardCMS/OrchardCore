@@ -32,16 +32,9 @@ public sealed class MicrosoftAccountStartup : StartupBase
         services.AddRecipeExecutionStep<MicrosoftAccountSettingsStep>();
 
         services.AddTransient<IConfigureOptions<MicrosoftAccountSettings>, MicrosoftAccountSettingsConfiguration>();
-
-        // Register the options initializers required by the Microsoft Account Handler.
-        services.TryAddEnumerable(new[]
-        {
-            // Orchard-specific initializers:
-            ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, MicrosoftAccountOptionsConfiguration>(),
-            ServiceDescriptor.Transient<IConfigureOptions<MicrosoftAccountOptions>, MicrosoftAccountOptionsConfiguration>(),
-            // Built-in initializers:
-            ServiceDescriptor.Transient<IPostConfigureOptions<MicrosoftAccountOptions>, OAuthPostConfigureOptions<MicrosoftAccountOptions, MicrosoftAccountHandler>>()
-        });
+        services.AddTransient<IConfigureOptions<AuthenticationOptions>, MicrosoftAccountOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<MicrosoftAccountOptions>, MicrosoftAccountOptionsConfiguration>();
+        services.AddTransient<IPostConfigureOptions<MicrosoftAccountOptions>, OAuthPostConfigureOptions<MicrosoftAccountOptions, MicrosoftAccountHandler>>();
     }
 }
 
