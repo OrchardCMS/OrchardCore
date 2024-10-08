@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
-using OrchardCore.Queries.Drivers;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.UrlRewriting.Drivers;

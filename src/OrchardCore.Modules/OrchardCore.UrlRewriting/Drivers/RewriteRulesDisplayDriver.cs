@@ -5,7 +5,7 @@ using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.ViewModels;
 
-namespace OrchardCore.Queries.Drivers;
+namespace OrchardCore.UrlRewriting.Drivers;
 
 public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
 {
