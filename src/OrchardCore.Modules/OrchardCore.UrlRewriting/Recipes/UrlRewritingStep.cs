@@ -44,7 +44,7 @@ public sealed class UrlRewritingStep : IRecipeStepHandler
 
             if (string.IsNullOrEmpty(name))
             {
-                context.Errors.Add(S["Rule name is missing or empty. The query will not be imported."]);
+                context.Errors.Add(S["Rule name is missing or empty. The rule will not be imported."]);
 
                 continue;
             }

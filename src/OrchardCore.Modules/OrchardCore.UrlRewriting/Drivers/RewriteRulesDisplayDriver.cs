@@ -2,11 +2,10 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
-using OrchardCore.UrlRewriting;
 using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.ViewModels;
 
-namespace OrchardCore.Queries.Drivers;
+namespace OrchardCore.UrlRewriting.Drivers;
 
 public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
 {
