@@ -22,7 +22,7 @@ public class AllWorkflowTypeDeploymentSource
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
 
-    protected override async Task ProcessAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
         => ProcessWorkflowType(result, await _workflowTypeStore.ListAsync(), _jsonSerializerOptions);
 
     public static void ProcessWorkflowType(DeploymentPlanResult result, IEnumerable<WorkflowType> workflowTypes, JsonSerializerOptions jsonSerializerOptions)

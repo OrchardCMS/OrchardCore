@@ -6,7 +6,7 @@ namespace OrchardCore.Search.Lucene.Deployment;
 public class LuceneIndexRebuildDeploymentSource
     : DeploymentSourceBase<LuceneIndexRebuildDeploymentStep>
 {
-    protected override Task ProcessAsync(DeploymentPlanResult result)
+    protected override Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
     {
         var indicesToRebuild = DeploymentStep.IncludeAll
             ? []

@@ -16,7 +16,7 @@ public class AllTemplatesDeploymentSource
         _templatesManager = templatesManager;
     }
 
-    protected override async Task ProcessAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
     {
         var templateObjects = new JsonObject();
         var templates = await _templatesManager.GetTemplatesDocumentAsync();

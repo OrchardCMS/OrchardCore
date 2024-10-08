@@ -8,7 +8,7 @@ public class AzureAISearchIndexResetDeploymentSource
 {
     public const string Name = "azureai-index-reset";
 
-    protected override Task ProcessAsync(DeploymentPlanResult result)
+    protected override Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
     {
         var indicesToReset = DeploymentStep.IncludeAll
             ? []

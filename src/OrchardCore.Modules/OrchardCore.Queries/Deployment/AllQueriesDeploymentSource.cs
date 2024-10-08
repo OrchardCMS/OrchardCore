@@ -20,7 +20,7 @@ public class AllQueriesDeploymentSource
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
 
-    protected override async Task ProcessAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
     {
         var queries = await _queryManager.ListQueriesAsync();
 

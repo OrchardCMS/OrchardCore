@@ -6,7 +6,7 @@ namespace OrchardCore.ContentTypes.Deployment;
 public class DeleteContentDefinitionDeploymentSource
     : DeploymentSourceBase<DeleteContentDefinitionDeploymentStep>
 {
-    protected override async Task ProcessAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
     {
         result.Steps.Add(new JsonObject
         {

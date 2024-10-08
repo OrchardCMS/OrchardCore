@@ -14,7 +14,7 @@ public class ContentDefinitionDeploymentSource
         _contentDefinitionStore = contentDefinitionStore;
     }
 
-    protected override async Task ProcessAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
     {
         var contentTypeDefinitionRecord = await _contentDefinitionStore.LoadContentDefinitionAsync();
 

@@ -14,7 +14,7 @@ public class ContentItemDeploymentSource
         _contentManager = contentManager;
     }
 
-    protected override async Task ProcessAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
     {
         if (DeploymentStep.ContentItemId == null)
         {

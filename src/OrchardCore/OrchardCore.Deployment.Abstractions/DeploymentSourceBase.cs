@@ -17,10 +17,8 @@ public abstract class DeploymentSourceBase<TDeploymentStep>
             return;
         }
 
-        DeploymentStep = deploymentStep;
-
-        await ProcessAsync(result);
+        await ProcessAsync(deploymentStep, result);
     }
 
-    protected abstract Task ProcessAsync(DeploymentPlanResult result);
+    protected abstract Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result);
 }

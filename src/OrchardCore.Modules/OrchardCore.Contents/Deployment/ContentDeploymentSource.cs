@@ -17,7 +17,7 @@ public class ContentDeploymentSource
         _session = session;
     }
 
-    protected override async Task ProcessAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
     {
         // TODO: Batch and create separate content files in the result.
         var data = new JsonArray();

@@ -6,7 +6,7 @@ namespace OrchardCore.Search.Lucene.Deployment;
 public class LuceneIndexResetDeploymentSource
     : DeploymentSourceBase<LuceneIndexResetDeploymentStep>
 {
-    protected override Task ProcessAsync(DeploymentPlanResult result)
+    protected override Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
     {
         var indicesToReset = DeploymentStep.IncludeAll
             ? []

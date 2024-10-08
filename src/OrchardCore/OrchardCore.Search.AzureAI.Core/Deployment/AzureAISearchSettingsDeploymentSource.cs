@@ -10,7 +10,7 @@ public class AzureAISearchSettingsDeploymentSource(ISiteService siteService)
 {
     private readonly ISiteService _siteService = siteService;
 
-    protected override async Task ProcessAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
     {
         var settings = await _siteService.GetSettingsAsync<AzureAISearchSettings>();
 

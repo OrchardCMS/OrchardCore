@@ -14,7 +14,7 @@ public sealed class MicrosoftAccountDeploymentSource : DeploymentSourceBase<Micr
         _microsoftAccountService = microsoftAccountService;
     }
 
-    protected override async Task ProcessAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
     {
         var microsoftAccountSettings = await _microsoftAccountService.GetSettingsAsync();
 

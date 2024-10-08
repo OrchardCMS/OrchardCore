@@ -13,7 +13,7 @@ public class MediaDeploymentSource
         _mediaFileStore = mediaFileStore;
     }
 
-    protected override async Task ProcessAsync(DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
     {
         IAsyncEnumerable<string> paths = null;
 
