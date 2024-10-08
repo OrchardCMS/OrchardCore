@@ -85,9 +85,9 @@ public class RewriteRulesManager : IRewriteRulesManager
         return rule;
     }
 
-    public async Task<ListRewriteRuleResult> PageQueriesAsync(int page, int pageSize, RewriteRulesQueryContext context = null)
+    public async Task<ListRewriteRuleResult> PageRulesAsync(int page, int pageSize, RewriteRulesQueryContext context = null)
     {
-        var records = await LocateQueriesAsync(context);
+        var records = await LocateRulesAsync(context);
 
         var skip = (page - 1) * pageSize;
 
@@ -123,7 +123,7 @@ public class RewriteRulesManager : IRewriteRulesManager
         return _rewriteRuleHandlers.InvokeAsync((handler, context) => handler.LoadedAsync(context), loadedContext, _logger);
     }
 
-    private async Task<IEnumerable<RewriteRule>> LocateQueriesAsync(RewriteRulesQueryContext context)
+    private async Task<IEnumerable<RewriteRule>> LocateRulesAsync(RewriteRulesQueryContext context)
     {
         var rules = await _store.GetAllAsync();
 

@@ -76,7 +76,7 @@ public sealed class AdminController : Controller
             routeData.Values.TryAdd(_optionsSearch, options.Search);
         }
 
-        var result = await _rewriteRulesManager.PageQueriesAsync(pager.Page, pager.PageSize, new RewriteRulesQueryContext()
+        var result = await _rewriteRulesManager.PageRulesAsync(pager.Page, pager.PageSize, new RewriteRulesQueryContext()
         {
             Name = options.Search,
             Sorted = true,
