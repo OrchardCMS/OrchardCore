@@ -40,7 +40,7 @@ public class RewriteRulesManager : IRewriteRulesManager
     {
         var rule = await _store.FindByIdAsync(id);
 
-        if (rule == null)
+        if (rule != null)
         {
             await LoadAsync(rule);
         }
@@ -61,13 +61,11 @@ public class RewriteRulesManager : IRewriteRulesManager
             return null;
         }
 
-        var order = await GenerateNextAvaliableOrderNumber();
-
         var rule = new RewriteRule()
         {
             Id = IdGenerator.GenerateId(),
             Source = source,
-            Order = order
+            Order = await GetNextOrderSequence()
         };
 
         var initializingContext = new InitializingRewriteRuleContext(rule);
@@ -84,12 +82,11 @@ public class RewriteRulesManager : IRewriteRulesManager
         // Set the source again after calling handlers to prevent handlers from updating the source during initialization.
         rule.Source = source;
         rule.Id ??= IdGenerator.GenerateId();
-        rule.Order = order;
 
         return rule;
     }
 
-    public async Task<ListRewriteRuleResult> PageRulesAsync(int page, int pageSize, RewriteRulesQueryContext context = null)
+    public async Task<ListRewriteRuleResult> PageAsync(int page, int pageSize, RewriteRulesQueryContext context = null)
     {
         var records = await LocateRulesAsync(context);
 
@@ -98,7 +95,7 @@ public class RewriteRulesManager : IRewriteRulesManager
         var result = new ListRewriteRuleResult
         {
             Count = records.Count(),
-            Records = records.Skip(skip).Take(pageSize).ToArray()
+            Records = records.Skip(skip).Take(pageSize),
         };
 
         foreach (var record in result.Records)
@@ -155,10 +152,10 @@ public class RewriteRulesManager : IRewriteRulesManager
         return rules;
     }
 
-    private async Task<int> GenerateNextAvaliableOrderNumber()
+    private async Task<int> GetNextOrderSequence()
     {
-        var rules = await LocateRulesAsync(new RewriteRulesQueryContext() { Sorted = true });
+        var rules = await _store.GetAllAsync();
 
-        return rules.LastOrDefault()?.Order + 1 ?? 0;
+        return rules.Max(x => x.Order) + 1;
     }
 }

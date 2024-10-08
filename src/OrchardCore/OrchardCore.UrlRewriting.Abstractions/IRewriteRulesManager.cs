@@ -11,7 +11,7 @@ public interface IRewriteRulesManager
 
     Task<RewriteRule> NewAsync(string source, JsonNode data = null);
 
-    Task<ListRewriteRuleResult> PageRulesAsync(int page, int pageSize, RewriteRulesQueryContext context = null);
+    Task<ListRewriteRuleResult> PageAsync(int page, int pageSize, RewriteRulesQueryContext context = null);
 
     Task SaveAsync(RewriteRule rule);
 }

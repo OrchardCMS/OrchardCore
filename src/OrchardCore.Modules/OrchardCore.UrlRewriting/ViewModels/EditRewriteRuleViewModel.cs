@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using OrchardCore.UrlRewriting.Models;
-
 namespace OrchardCore.UrlRewriting.ViewModels;
 
 public class EditRewriteRuleViewModel
@@ -10,7 +7,4 @@ public class EditRewriteRuleViewModel
     public string Source { get; set; }
 
     public int Order { get; set; }
-
-    [BindNever]
-    public RewriteRule Rule { get; set; }
 }

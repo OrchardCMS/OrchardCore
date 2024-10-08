@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.ViewModels;
@@ -10,10 +11,14 @@ namespace OrchardCore.UrlRewriting.Drivers;
 public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
 {
     internal readonly IStringLocalizer S;
+    private readonly IShellReleaseManager _shellReleaseManager;
 
-    public RewriteRulesDisplayDriver(IStringLocalizer<RewriteRulesDisplayDriver> stringLocalizer)
+    public RewriteRulesDisplayDriver(
+        IStringLocalizer<RewriteRulesDisplayDriver> stringLocalizer,
+        IShellReleaseManager shellReleaseManager)
     {
         S = stringLocalizer;
+        _shellReleaseManager = shellReleaseManager;
     }
 
     public override Task<IDisplayResult> DisplayAsync(RewriteRule rule, BuildDisplayContext context)
@@ -28,15 +33,14 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
 
     public override IDisplayResult Edit(RewriteRule rule, BuildEditorContext context)
     {
-        return Combine(
-            Initialize<EditRewriteRuleViewModel>("RewriteRule_Fields_Edit", model =>
-            {
-                model.Name = rule.Name;
-                model.Source = rule.Source;
-                model.Order = rule.Order;
-                model.Rule = rule;
-            }).Location("Content:1")
-        );
+        context.AddTenantReloadWarningWrapper();
+
+        return Initialize<EditRewriteRuleViewModel>("RewriteRule_Fields_Edit", model =>
+        {
+            model.Name = rule.Name;
+            model.Source = rule.Source;
+            model.Order = rule.Order;
+        }).Location("Content:1");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RewriteRule rule, UpdateEditorContext context)
@@ -51,6 +55,8 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
             context.Updater.ModelState.AddModelError(Prefix, nameof(rule.Name), S["Name is required"]);
         }
 
-        return await EditAsync(rule, context);
+        _shellReleaseManager.RequestRelease();
+
+        return Edit(rule, context);
     }
 }

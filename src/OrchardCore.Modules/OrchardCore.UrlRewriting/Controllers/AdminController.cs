@@ -40,9 +40,10 @@ public sealed class AdminController : Controller
         IShellReleaseManager shellReleaseManager,
         IEnumerable<IUrlRewriteRuleSource> urlRewritingRuleSources,
         IRewriteRulesManager rewriteRulesManager,
+        IUpdateModelAccessor updateModelAccessor,
         IStringLocalizer<AdminController> stringLocalizer,
-        IHtmlLocalizer<AdminController> htmlLocalizer,
-        IUpdateModelAccessor updateModelAccessor)
+        IHtmlLocalizer<AdminController> htmlLocalizer
+        )
     {
         _rewriteRuleDisplayManager = rewriteRuleDisplayManager;
         _authorizationService = authorizationService;
@@ -76,7 +77,7 @@ public sealed class AdminController : Controller
             routeData.Values.TryAdd(_optionsSearch, options.Search);
         }
 
-        var result = await _rewriteRulesManager.PageRulesAsync(pager.Page, pager.PageSize, new RewriteRulesQueryContext()
+        var result = await _rewriteRulesManager.PageAsync(pager.Page, pager.PageSize, new RewriteRulesQueryContext()
         {
             Name = options.Search,
             Sorted = true,
@@ -228,6 +229,45 @@ public sealed class AdminController : Controller
         _shellReleaseManager.RequestRelease();
 
         await _notifier.SuccessAsync(H["Rule deleted successfully."]);
+
+        return RedirectToAction(nameof(Index));
+    }
+
+
+    [HttpPost]
+    [ActionName(nameof(Index))]
+    [FormValueRequired("submit.BulkAction")]
+    public async Task<ActionResult> IndexPost(RewriteRuleOptions options, IEnumerable<string> ruleIds)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
+        {
+            return Forbid();
+        }
+
+        if (ruleIds?.Count() > 0)
+        {
+            switch (options.BulkAction)
+            {
+                case RewriteRuleAction.None:
+                    break;
+                case RewriteRuleAction.Remove:
+                    foreach (var id in ruleIds)
+                    {
+                        var rule = await _rewriteRulesManager.FindByIdAsync(id);
+
+                        if (rule == null)
+                        {
+                            continue;
+                        }
+
+                        await _rewriteRulesManager.DeleteAsync(rule);
+                    }
+                    await _notifier.SuccessAsync(H["Rules removed successfully."]);
+                    break;
+                default:
+                    return BadRequest();
+            }
+        }
 
         return RedirectToAction(nameof(Index));
     }
