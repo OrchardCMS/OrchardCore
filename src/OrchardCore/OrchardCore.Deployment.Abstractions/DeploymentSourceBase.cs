@@ -10,7 +10,7 @@ public abstract class DeploymentSourceBase<TStep> : IDeploymentSource
     /// <inheritdoc/>
     public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not TDeploymentStep deploymentStep)
+        if (step is not TStep deploymentStep)
         {
             return Task.CompletedTask;
         }
