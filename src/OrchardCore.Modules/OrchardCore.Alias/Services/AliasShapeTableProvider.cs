@@ -2,6 +2,7 @@ using OrchardCore.Alias.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Alias.Services;
@@ -11,44 +12,29 @@ public class AliasShapeTableProvider : ShapeTableProvider
     public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
         builder.Describe("Content")
-            .OnDisplaying(displaying =>
-            {
-                var shape = displaying.Shape;
-                var contentItem = shape.GetProperty<ContentItem>("ContentItem");
-
-                var aliasPart = contentItem?.As<AliasPart>();
-
-                if (aliasPart != null)
-                {
-                    var encodedAlias = aliasPart.Alias.EncodeAlternateElement();
-
-                    // Content__Alias__[Alias] e.g. Content-Alias-example, Content-Alias-my-page
-                    displaying.Shape.Metadata.Alternates.Add("Content__Alias__" + encodedAlias);
-
-                    // Content_[DisplayType]__Alias__[Alias] e.g. Content-Alias-example.Summary, Content-Alias-my-page.Summary
-                    displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__Alias__" + encodedAlias);
-                }
-            });
+            .OnDisplaying(displaying => AddAlternates(displaying, "Content"));
         builder.Describe("Widget")
-            .OnDisplaying(displaying =>
-            {
-                var shape = displaying.Shape;
-                var contentItem = shape.GetProperty<ContentItem>("ContentItem");
-
-                var aliasPart = contentItem?.As<AliasPart>();
-
-                if (aliasPart != null)
-                {
-                    var encodedAlias = aliasPart.Alias.EncodeAlternateElement();
-
-                    // Widget__Alias__[Alias] e.g. Widget-Alias-example, Widget-Alias-my-page
-                    displaying.Shape.Metadata.Alternates.Add("Widget__Alias__" + encodedAlias);
-
-                    // Widget_[DisplayType]__Alias__[Alias] e.g. Widget-Alias-example.Summary, Widget-Alias-my-page.Summary
-                    displaying.Shape.Metadata.Alternates.Add("Widget_" + displaying.Shape.Metadata.DisplayType + "__Alias__" + encodedAlias);
-                }
-            });
+            .OnDisplaying(displaying => AddAlternates(displaying, "Widget"));
 
         return ValueTask.CompletedTask;
+    }
+
+    private static void AddAlternates(ShapeDisplayContext displaying, string shapeType)
+    {
+        var shape = displaying.Shape;
+        var contentItem = shape.GetProperty<ContentItem>("ContentItem");
+
+        var aliasPart = contentItem?.As<AliasPart>();
+
+        if (aliasPart != null)
+        {
+            var encodedAlias = aliasPart.Alias.EncodeAlternateElement();
+
+            // shapeType__Alias__[Alias] e.g. Content-Alias-example, Widget-Alias-example
+            displaying.Shape.Metadata.Alternates.Add($"{shapeType}__Alias__" + encodedAlias);
+
+            // shapeType_[DisplayType]__Alias__[Alias] e.g. Content-Alias-example.Summary, Widget-Alias-example.Summary
+            displaying.Shape.Metadata.Alternates.Add($"{shapeType}_" + displaying.Shape.Metadata.DisplayType + "__Alias__" + encodedAlias);
+        }
     }
 }
