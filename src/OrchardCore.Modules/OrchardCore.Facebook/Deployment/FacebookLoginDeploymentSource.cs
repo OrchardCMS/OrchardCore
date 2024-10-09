@@ -4,7 +4,8 @@ using OrchardCore.Facebook.Services;
 
 namespace OrchardCore.Facebook.Deployment;
 
-public class FacebookLoginDeploymentSource : IDeploymentSource
+public class FacebookLoginDeploymentSource
+    : DeploymentSourceBase<FacebookLoginDeploymentStep>
 {
     private readonly IFacebookService _facebookService;
 
@@ -13,15 +14,8 @@ public class FacebookLoginDeploymentSource : IDeploymentSource
         _facebookService = facebookService;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(FacebookLoginDeploymentStep step, DeploymentPlanResult result)
     {
-        var facebookLoginStep = step as FacebookLoginDeploymentStep;
-
-        if (facebookLoginStep == null)
-        {
-            return;
-        }
-
         var settings = await _facebookService.GetSettingsAsync();
 
         // The 'name' property should match the related recipe step name.

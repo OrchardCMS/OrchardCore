@@ -7,7 +7,8 @@ using YesSql.Services;
 
 namespace OrchardCore.Contents.Deployment;
 
-public class ContentDeploymentSource : IDeploymentSource
+public class ContentDeploymentSource
+    : DeploymentSourceBase<ContentDeploymentStep>
 {
     private readonly ISession _session;
 
@@ -16,27 +17,19 @@ public class ContentDeploymentSource : IDeploymentSource
         _session = session;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(ContentDeploymentStep step, DeploymentPlanResult result)
     {
         // TODO: Batch and create separate content files in the result.
-
-        var contentStep = step as ContentDeploymentStep;
-
-        if (contentStep == null)
-        {
-            return;
-        }
-
         var data = new JsonArray();
 
-        foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published && x.ContentType.IsIn(contentStep.ContentTypes)).ListAsync())
+        foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published && x.ContentType.IsIn(step.ContentTypes)).ListAsync())
         {
             var objectData = JObject.FromObject(contentItem);
 
             // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql.
             objectData.Remove(nameof(ContentItem.Id));
 
-            if (contentStep.ExportAsSetupRecipe)
+            if (step.ExportAsSetupRecipe)
             {
                 objectData[nameof(ContentItem.Owner)] = "[js: parameters('AdminUserId')]";
                 objectData[nameof(ContentItem.Author)] = "[js: parameters('AdminUsername')]";
