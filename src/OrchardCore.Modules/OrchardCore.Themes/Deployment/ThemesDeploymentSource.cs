@@ -23,8 +23,8 @@ public class ThemesDeploymentSource
         result.Steps.Add(new JsonObject
         {
             ["name"] = "Themes",
-            [nameof(ThemeStepModel.Site)] = await _siteThemeService.GetSiteThemeNameAsync(),
-            [nameof(ThemeStepModel.Admin)] = await _adminThemeService.GetAdminThemeNameAsync(),
+            ["Site"] = await _siteThemeService.GetSiteThemeNameAsync(),
+            ["Admin"] = await _adminThemeService.GetAdminThemeNameAsync(),
         });
     }
 }

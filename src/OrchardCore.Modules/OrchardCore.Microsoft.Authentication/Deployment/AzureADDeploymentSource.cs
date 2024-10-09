@@ -22,7 +22,7 @@ public class AzureADDeploymentSource
         result.Steps.Add(new JsonObject
         {
             ["name"] = "Settings",
-            [nameof(AzureADSettings)] = JObject.FromObject(azureADSettings),
+            ["AzureADSettings"] = JObject.FromObject(azureADSettings),
         });
     }
 }

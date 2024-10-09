@@ -29,7 +29,7 @@ public class AllContentDeploymentSource
         {
             var objectData = JObject.FromObject(contentItem);
 
-            // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
+            // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql.
             objectData.Remove(nameof(ContentItem.Id));
 
             if (step.ExportAsSetupRecipe)
@@ -45,7 +45,5 @@ public class AllContentDeploymentSource
 
             data.Add(objectData);
         }
-
-        return;
     }
 }

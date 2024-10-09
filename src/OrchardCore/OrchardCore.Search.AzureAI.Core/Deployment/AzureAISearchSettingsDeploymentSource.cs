@@ -17,7 +17,7 @@ public class AzureAISearchSettingsDeploymentSource(ISiteService siteService)
         result.Steps.Add(new JsonObject
         {
             ["name"] = "Settings",
-            [nameof(AzureAISearchSettings)] = JObject.FromObject(settings),
+            ["AzureAISearchSettings"] = JObject.FromObject(settings),
         });
     }
 }

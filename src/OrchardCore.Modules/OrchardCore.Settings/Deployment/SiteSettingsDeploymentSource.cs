@@ -93,7 +93,5 @@ public class SiteSettingsDeploymentSource
         }
 
         result.Steps.Add(data);
-
-        return;
     }
 }

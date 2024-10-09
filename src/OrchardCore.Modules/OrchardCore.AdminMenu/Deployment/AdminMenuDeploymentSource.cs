@@ -34,7 +34,5 @@ public class AdminMenuDeploymentSource
             var objectData = JObject.FromObject(adminMenu, _serializationOptions);
             data.Add(objectData);
         }
-
-        return;
     }
 }
