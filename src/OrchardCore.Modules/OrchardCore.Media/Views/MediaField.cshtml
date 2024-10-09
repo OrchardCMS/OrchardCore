@@ -15,10 +15,11 @@
             var path = paths[i];
             var url = Orchard.AssetUrl(path);
             var text = !string.IsNullOrEmpty(mediaTexts.ElementAtOrDefault(i)) ? mediaTexts[i] : path;
+            var alt = !string.IsNullOrEmpty(mediaTexts.ElementAtOrDefault(i)) ? mediaTexts[i] : string.Empty;
 
             if (Orchard.IsImageFile(path))
             {
-                <img src="@url" alt="@text">
+                <img src="@url" alt="@alt">
             }
             else
             {
