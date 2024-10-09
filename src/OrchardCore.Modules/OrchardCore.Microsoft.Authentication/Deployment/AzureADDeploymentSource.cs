@@ -5,7 +5,8 @@ using OrchardCore.Microsoft.Authentication.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Deployment;
 
-public class AzureADDeploymentSource : DeploymentSourceBase<AzureADDeploymentStep>
+public class AzureADDeploymentSource
+    : DeploymentSourceBase<AzureADDeploymentStep>
 {
     private readonly IAzureADService _azureADService;
 
@@ -14,7 +15,7 @@ public class AzureADDeploymentSource : DeploymentSourceBase<AzureADDeploymentSte
         _azureADService = azureADService;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(AzureADDeploymentStep step, DeploymentPlanResult result)
     {
         var azureADSettings = await _azureADService.GetSettingsAsync();
 

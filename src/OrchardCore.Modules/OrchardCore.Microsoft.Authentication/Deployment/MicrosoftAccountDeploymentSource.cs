@@ -5,7 +5,8 @@ using OrchardCore.Microsoft.Authentication.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Deployment;
 
-public sealed class MicrosoftAccountDeploymentSource : DeploymentSourceBase<MicrosoftAccountDeploymentStep>
+public sealed class MicrosoftAccountDeploymentSource
+    : DeploymentSourceBase<MicrosoftAccountDeploymentStep>
 {
     private readonly IMicrosoftAccountService _microsoftAccountService;
 
@@ -14,7 +15,7 @@ public sealed class MicrosoftAccountDeploymentSource : DeploymentSourceBase<Micr
         _microsoftAccountService = microsoftAccountService;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(MicrosoftAccountDeploymentStep step, DeploymentPlanResult result)
     {
         var microsoftAccountSettings = await _microsoftAccountService.GetSettingsAsync();
 

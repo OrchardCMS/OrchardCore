@@ -6,16 +6,16 @@ namespace OrchardCore.Search.Lucene.Deployment;
 public class LuceneIndexRebuildDeploymentSource
     : DeploymentSourceBase<LuceneIndexRebuildDeploymentStep>
 {
-    protected override Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override Task ProcessAsync(LuceneIndexRebuildDeploymentStep step, DeploymentPlanResult result)
     {
-        var indicesToRebuild = DeploymentStep.IncludeAll
+        var indicesToRebuild = step.IncludeAll
             ? []
-            : DeploymentStep.IndexNames;
+            : step.IndexNames;
 
         result.Steps.Add(new JsonObject
         {
             ["name"] = "lucene-index-rebuild",
-            ["includeAll"] = DeploymentStep.IncludeAll,
+            ["includeAll"] = step.IncludeAll,
             ["Indices"] = JArray.FromObject(indicesToRebuild),
         });
 

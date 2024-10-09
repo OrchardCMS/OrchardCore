@@ -15,11 +15,11 @@ public class QueryBasedContentDeploymentSource
         _queryManager = queryManager;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(QueryBasedContentDeploymentStep step, DeploymentPlanResult result)
     {
         var data = new JsonArray();
 
-        var query = await _queryManager.GetQueryAsync(DeploymentStep.QueryName);
+        var query = await _queryManager.GetQueryAsync(step.QueryName);
 
         if (query == null)
         {
@@ -31,7 +31,7 @@ public class QueryBasedContentDeploymentSource
             return;
         }
 
-        if (!TryDeserializeParameters(DeploymentStep.QueryParameters ?? "{ }", out var parameters))
+        if (!TryDeserializeParameters(step.QueryParameters ?? "{ }", out var parameters))
         {
             return;
         }
@@ -45,7 +45,7 @@ public class QueryBasedContentDeploymentSource
             // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql.
             objectData.Remove(nameof(ContentItem.Id));
 
-            if (DeploymentStep.ExportAsSetupRecipe)
+            if (step.ExportAsSetupRecipe)
             {
                 objectData[nameof(ContentItem.Owner)] = "[js: parameters('AdminUserId')]";
                 objectData[nameof(ContentItem.Author)] = "[js: parameters('AdminUsername')]";

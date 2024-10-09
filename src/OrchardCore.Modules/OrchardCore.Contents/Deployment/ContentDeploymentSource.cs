@@ -17,19 +17,19 @@ public class ContentDeploymentSource
         _session = session;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(ContentDeploymentStep step, DeploymentPlanResult result)
     {
         // TODO: Batch and create separate content files in the result.
         var data = new JsonArray();
 
-        foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published && x.ContentType.IsIn(DeploymentStep.ContentTypes)).ListAsync())
+        foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published && x.ContentType.IsIn(step.ContentTypes)).ListAsync())
         {
             var objectData = JObject.FromObject(contentItem);
 
             // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql.
             objectData.Remove(nameof(ContentItem.Id));
 
-            if (DeploymentStep.ExportAsSetupRecipe)
+            if (step.ExportAsSetupRecipe)
             {
                 objectData[nameof(ContentItem.Owner)] = "[js: parameters('AdminUserId')]";
                 objectData[nameof(ContentItem.Author)] = "[js: parameters('AdminUsername')]";

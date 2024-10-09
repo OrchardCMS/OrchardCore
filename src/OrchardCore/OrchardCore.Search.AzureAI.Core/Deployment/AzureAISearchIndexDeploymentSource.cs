@@ -16,15 +16,15 @@ public class AzureAISearchIndexDeploymentSource
         _indexSettingsService = indexSettingsService;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(AzureAISearchIndexDeploymentStep step, DeploymentPlanResult result)
     {
         var indexSettings = await _indexSettingsService.GetSettingsAsync();
 
         var data = new JsonArray();
 
-        var indicesToAdd = DeploymentStep.IncludeAll
+        var indicesToAdd = step.IncludeAll
             ? indexSettings.Select(x => x.IndexName).ToArray()
-            : DeploymentStep.IndexNames;
+            : step.IndexNames;
 
         foreach (var index in indexSettings)
         {
@@ -40,7 +40,7 @@ public class AzureAISearchIndexDeploymentSource
 
         result.Steps.Add(new JsonObject
         {
-            ["name"] = DeploymentStep.Name,
+            ["name"] = step.Name,
             ["Indices"] = data,
         });
     }

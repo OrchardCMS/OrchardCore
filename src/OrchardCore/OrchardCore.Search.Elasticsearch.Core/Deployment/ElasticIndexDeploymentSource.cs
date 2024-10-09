@@ -15,14 +15,14 @@ public class ElasticIndexDeploymentSource
         _elasticIndexSettingsService = elasticIndexSettingsService;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(ElasticIndexDeploymentStep step, DeploymentPlanResult result)
     {
         var indexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
 
         var data = new JsonArray();
-        var indicesToAdd = DeploymentStep.IncludeAll
+        var indicesToAdd = step.IncludeAll
             ? indexSettings.Select(x => x.IndexName).ToArray()
-            : DeploymentStep.IndexNames;
+            : step.IndexNames;
 
         foreach (var index in indexSettings)
         {

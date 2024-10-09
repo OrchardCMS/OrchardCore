@@ -16,7 +16,7 @@ public class AllContentDeploymentSource
         _session = session;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(AllContentDeploymentStep step, DeploymentPlanResult result)
     {
         var data = new JsonArray();
         result.Steps.Add(new JsonObject
@@ -32,7 +32,7 @@ public class AllContentDeploymentSource
             // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
             objectData.Remove(nameof(ContentItem.Id));
 
-            if (DeploymentStep.ExportAsSetupRecipe)
+            if (step.ExportAsSetupRecipe)
             {
                 objectData[nameof(ContentItem.Owner)] = "[js: parameters('AdminUserId')]";
                 objectData[nameof(ContentItem.Author)] = "[js: parameters('AdminUsername')]";

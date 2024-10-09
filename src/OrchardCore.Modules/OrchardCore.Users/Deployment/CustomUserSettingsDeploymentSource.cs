@@ -20,11 +20,11 @@ public class CustomUserSettingsDeploymentSource
         _session = session;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(CustomUserSettingsDeploymentStep step, DeploymentPlanResult result)
     {
-        var settingsTypes = DeploymentStep.IncludeAll
+        var settingsTypes = step.IncludeAll
             ? (await _customUserSettingsService.GetAllSettingsTypesAsync()).ToArray()
-            : (await _customUserSettingsService.GetSettingsTypesAsync(DeploymentStep.SettingsTypeNames)).ToArray();
+            : (await _customUserSettingsService.GetSettingsTypesAsync(step.SettingsTypeNames)).ToArray();
 
         // Todo: check permissions for each settings type
         var userData = new JsonArray();

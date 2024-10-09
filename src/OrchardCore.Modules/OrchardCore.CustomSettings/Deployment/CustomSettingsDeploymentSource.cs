@@ -14,16 +14,16 @@ public class CustomSettingsDeploymentSource
         _customSettingsService = customSettingsService;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(CustomSettingsDeploymentStep step, DeploymentPlanResult result)
     {
         var settingsList = new List<KeyValuePair<string, JsonNode>>
         {
             new("name", "custom-settings"),
         };
 
-        var settingsTypes = DeploymentStep.IncludeAll
+        var settingsTypes = step.IncludeAll
             ? (await _customSettingsService.GetAllSettingsTypesAsync()).ToArray()
-            : (await _customSettingsService.GetSettingsTypesAsync(DeploymentStep.SettingsTypeNames)).ToArray();
+            : (await _customSettingsService.GetSettingsTypesAsync(step.SettingsTypeNames)).ToArray();
 
         foreach (var settingsType in settingsTypes)
         {

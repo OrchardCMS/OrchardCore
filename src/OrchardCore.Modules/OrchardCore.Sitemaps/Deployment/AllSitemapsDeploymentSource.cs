@@ -20,7 +20,7 @@ public sealed class AllSitemapsDeploymentSource
         _documentJsonSerializerOptions = documentJsonSerializerOptions.Value;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(AllSitemapsDeploymentStep step, DeploymentPlanResult result)
     {
         var sitemaps = await _sitemapManager.GetSitemapsAsync();
 

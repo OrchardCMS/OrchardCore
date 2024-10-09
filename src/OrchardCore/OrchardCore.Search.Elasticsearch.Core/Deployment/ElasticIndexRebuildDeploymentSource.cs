@@ -6,14 +6,14 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 public class ElasticIndexRebuildDeploymentSource
     : DeploymentSourceBase<ElasticIndexRebuildDeploymentStep>
 {
-    protected override Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override Task ProcessAsync(ElasticIndexRebuildDeploymentStep step, DeploymentPlanResult result)
     {
-        var indicesToRebuild = DeploymentStep.IncludeAll ? [] : DeploymentStep.Indices;
+        var indicesToRebuild = step.IncludeAll ? [] : step.Indices;
 
         result.Steps.Add(new JsonObject
         {
             ["name"] = "elastic-index-rebuild",
-            ["includeAll"] = DeploymentStep.IncludeAll,
+            ["includeAll"] = step.IncludeAll,
             ["Indices"] = JArray.FromObject(indicesToRebuild),
         });
 

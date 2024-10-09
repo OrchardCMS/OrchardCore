@@ -6,14 +6,14 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 public class ElasticIndexResetDeploymentSource
     : DeploymentSourceBase<ElasticIndexResetDeploymentStep>
 {
-    protected override Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override Task ProcessAsync(ElasticIndexResetDeploymentStep step, DeploymentPlanResult result)
     {
-        var indicesToReset = DeploymentStep.IncludeAll ? [] : DeploymentStep.Indices;
+        var indicesToReset = step.IncludeAll ? [] : step.Indices;
 
         result.Steps.Add(new JsonObject
         {
             ["name"] = "lucene-index-reset",
-            ["includeAll"] = DeploymentStep.IncludeAll,
+            ["includeAll"] = step.IncludeAll,
             ["Indices"] = JArray.FromObject(indicesToReset),
         });
 

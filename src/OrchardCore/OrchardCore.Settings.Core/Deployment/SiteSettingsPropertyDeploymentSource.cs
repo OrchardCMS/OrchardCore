@@ -13,7 +13,7 @@ public class SiteSettingsPropertyDeploymentSource<TModel>
         _siteService = siteService;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(SiteSettingsPropertyDeploymentStep<TModel> step, DeploymentPlanResult result)
     {
         var settingJPropertyName = typeof(TModel).Name;
         var settingJPropertyValue = JObject.FromObject(await _siteService.GetSettingsAsync<TModel>());

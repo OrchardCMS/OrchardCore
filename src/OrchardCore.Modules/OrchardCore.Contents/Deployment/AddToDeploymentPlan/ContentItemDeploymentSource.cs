@@ -14,14 +14,14 @@ public class ContentItemDeploymentSource
         _contentManager = contentManager;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(ContentItemDeploymentStep step, DeploymentPlanResult result)
     {
-        if (DeploymentStep.ContentItemId == null)
+        if (step.ContentItemId == null)
         {
             return;
         }
 
-        var contentItem = await _contentManager.GetAsync(DeploymentStep.ContentItemId);
+        var contentItem = await _contentManager.GetAsync(step.ContentItemId);
 
         if (contentItem == null)
         {

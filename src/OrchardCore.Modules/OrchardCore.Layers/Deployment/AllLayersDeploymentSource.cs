@@ -26,7 +26,7 @@ public class AllLayersDeploymentSource
         _jsonSerializerOptions = serializationOptions.Value.SerializerOptions;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(AllLayersDeploymentStep step, DeploymentPlanResult result)
     {
         var layers = await _layerService.GetLayersAsync();
 

@@ -13,13 +13,13 @@ public class SiteSettingsDeploymentSource
         _siteService = siteService;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(SiteSettingsDeploymentStep step, DeploymentPlanResult result)
     {
         var site = await _siteService.GetSiteSettingsAsync();
 
         var data = new JsonObject { ["name"] = "Settings" };
 
-        foreach (var settingName in DeploymentStep.Settings)
+        foreach (var settingName in step.Settings)
         {
             switch (settingName)
             {

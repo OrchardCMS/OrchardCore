@@ -22,7 +22,7 @@ public class AllRolesDeploymentSource
         _roleService = roleService;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(AllRolesDeploymentStep step, DeploymentPlanResult result)
     {
         // Get all roles
         var allRoles = await _roleService.GetRolesAsync();

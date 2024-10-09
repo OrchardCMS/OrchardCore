@@ -7,8 +7,6 @@ namespace OrchardCore.Deployment;
 public abstract class DeploymentSourceBase<TDeploymentStep>
     : IDeploymentSource where TDeploymentStep : DeploymentStep
 {
-    protected TDeploymentStep DeploymentStep { get; private set; }
-
     /// <inheritdoc/>
     public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
@@ -20,5 +18,5 @@ public abstract class DeploymentSourceBase<TDeploymentStep>
         await ProcessAsync(deploymentStep, result);
     }
 
-    protected abstract Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result);
+    protected abstract Task ProcessAsync(TDeploymentStep step, DeploymentPlanResult result);
 }

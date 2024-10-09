@@ -14,7 +14,7 @@ public class AllFeaturesDeploymentSource
         _moduleService = moduleService;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(AllFeaturesDeploymentStep step, DeploymentPlanResult result)
     {
         var features = await _moduleService.GetAvailableFeaturesAsync();
         var featureStep = new JsonObject
@@ -23,7 +23,7 @@ public class AllFeaturesDeploymentSource
             ["enable"] = JNode.FromObject(features.Where(f => f.IsEnabled).Select(f => f.Descriptor.Id).ToArray()),
         };
 
-        if (!DeploymentStep.IgnoreDisabledFeatures)
+        if (!step.IgnoreDisabledFeatures)
         {
             featureStep.Add("disable", JNode.FromObject(features.Where(f => !f.IsEnabled).Select(f => f.Descriptor.Id).ToArray()));
         }

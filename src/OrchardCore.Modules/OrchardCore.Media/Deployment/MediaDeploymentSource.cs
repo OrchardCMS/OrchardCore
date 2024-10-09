@@ -13,19 +13,19 @@ public class MediaDeploymentSource
         _mediaFileStore = mediaFileStore;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(MediaDeploymentStep step, DeploymentPlanResult result)
     {
         IAsyncEnumerable<string> paths = null;
 
-        if (DeploymentStep.IncludeAll)
+        if (step.IncludeAll)
         {
             paths = _mediaFileStore.GetDirectoryContentAsync(null, true).Where(e => !e.IsDirectory).Select(e => e.Path);
         }
         else
         {
-            paths = new List<string>(DeploymentStep.FilePaths ?? []).ToAsyncEnumerable();
+            paths = new List<string>(step.FilePaths ?? []).ToAsyncEnumerable();
 
-            foreach (var directoryPath in DeploymentStep.DirectoryPaths ?? [])
+            foreach (var directoryPath in step.DirectoryPaths ?? [])
             {
                 paths = paths.Concat(_mediaFileStore.GetDirectoryContentAsync(directoryPath, true).Where(e => !e.IsDirectory).Select(e => e.Path));
             }

@@ -14,7 +14,7 @@ public class AllMediaProfilesDeploymentSource
         _mediaProfilesManager = mediaProfilesManager;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(AllMediaProfilesDeploymentStep step, DeploymentPlanResult result)
     {
         var mediaProfiles = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
 

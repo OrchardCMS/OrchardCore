@@ -15,7 +15,7 @@ public class SearchSettingsDeploymentSource
         _siteService = site;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(SearchSettingsDeploymentStep step, DeploymentPlanResult result)
     {
         var searchSettings = await _siteService.GetSettingsAsync<SearchSettings>();
 

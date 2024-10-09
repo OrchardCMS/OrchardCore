@@ -16,12 +16,12 @@ public class AllTemplatesDeploymentSource
         _templatesManager = templatesManager;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(AllTemplatesDeploymentStep step, DeploymentPlanResult result)
     {
         var templateObjects = new JsonObject();
         var templates = await _templatesManager.GetTemplatesDocumentAsync();
 
-        if (DeploymentStep.ExportAsFiles)
+        if (step.ExportAsFiles)
         {
             foreach (var template in templates.Templates)
             {

@@ -22,7 +22,7 @@ public class DeploymentPlanDeploymentSource
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanDeploymentStep step, DeploymentPlanResult result)
     {
         if (!await _deploymentPlanService.DoesUserHavePermissionsAsync())
         {
@@ -31,9 +31,9 @@ public class DeploymentPlanDeploymentSource
 
         var deploymentStepFactories = _deploymentStepFactories.ToDictionary(f => f.Name);
 
-        var deploymentPlans = DeploymentStep.IncludeAll
+        var deploymentPlans = step.IncludeAll
             ? (await _deploymentPlanService.GetAllDeploymentPlansAsync()).ToArray()
-            : (await _deploymentPlanService.GetDeploymentPlansAsync(DeploymentStep.DeploymentPlanNames)).ToArray();
+            : (await _deploymentPlanService.GetDeploymentPlansAsync(step.DeploymentPlanNames)).ToArray();
 
         var plans = (from plan in deploymentPlans
                      select new

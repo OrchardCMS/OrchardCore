@@ -14,14 +14,14 @@ public class LuceneIndexDeploymentSource
         _luceneIndexSettingsService = luceneIndexSettingsService;
     }
 
-    protected override async Task ProcessAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(LuceneIndexDeploymentStep step, DeploymentPlanResult result)
     {
         var indexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
 
         var data = new JsonArray();
-        var indicesToAdd = DeploymentStep.IncludeAll
+        var indicesToAdd = step.IncludeAll
             ? indexSettings.Select(x => x.IndexName).ToArray()
-            : DeploymentStep.IndexNames;
+            : step.IndexNames;
 
         foreach (var index in indexSettings)
         {
