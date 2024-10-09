@@ -3,26 +3,17 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 
-public class ElasticIndexRebuildDeploymentSource : IDeploymentSource
+public class ElasticIndexRebuildDeploymentSource
+    : DeploymentSourceBase<ElasticIndexRebuildDeploymentStep>
 {
-    public ElasticIndexRebuildDeploymentSource()
+    protected override Task ProcessAsync(ElasticIndexRebuildDeploymentStep step, DeploymentPlanResult result)
     {
-    }
-
-    public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-    {
-        var elasticIndexRebuildStep = step as ElasticIndexRebuildDeploymentStep;
-        if (elasticIndexRebuildStep == null)
-        {
-            return Task.CompletedTask;
-        }
-
-        var indicesToRebuild = elasticIndexRebuildStep.IncludeAll ? [] : elasticIndexRebuildStep.Indices;
+        var indicesToRebuild = step.IncludeAll ? [] : step.Indices;
 
         result.Steps.Add(new JsonObject
         {
             ["name"] = "elastic-index-rebuild",
-            ["includeAll"] = elasticIndexRebuildStep.IncludeAll,
+            ["includeAll"] = step.IncludeAll,
             ["Indices"] = JArray.FromObject(indicesToRebuild),
         });
 

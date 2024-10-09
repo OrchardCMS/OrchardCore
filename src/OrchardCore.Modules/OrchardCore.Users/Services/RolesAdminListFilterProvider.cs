@@ -27,7 +27,7 @@ public class RolesAdminListFilterProvider : IUsersAdminListFilterProvider
                         if (user != null && !await authorizationService.AuthorizeAsync(user, CommonPermissions.ListUsers))
                         {
                             // At this point the user cannot see all users, so lets see what role does he have access too and filter by them.
-                            var accessibleRoles = await roleService.GetAccessibleRoleNamesAsync(authorizationService, user, CommonPermissions.ListUsers);
+                            var accessibleRoles = (await roleService.GetAssignableRolesAsync()).Select(x => x.RoleName);
 
                             query.With<UserByRoleNameIndex>(index => index.RoleName.IsIn(accessibleRoles));
                         }

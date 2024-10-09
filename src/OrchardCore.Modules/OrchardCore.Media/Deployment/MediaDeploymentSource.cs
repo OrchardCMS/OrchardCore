@@ -3,7 +3,8 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Media.Deployment;
 
-public class MediaDeploymentSource : IDeploymentSource
+public class MediaDeploymentSource
+    : DeploymentSourceBase<MediaDeploymentStep>
 {
     private readonly IMediaFileStore _mediaFileStore;
 
@@ -12,24 +13,19 @@ public class MediaDeploymentSource : IDeploymentSource
         _mediaFileStore = mediaFileStore;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(MediaDeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not MediaDeploymentStep mediaStep)
-        {
-            return;
-        }
-
         IAsyncEnumerable<string> paths = null;
 
-        if (mediaStep.IncludeAll)
+        if (step.IncludeAll)
         {
             paths = _mediaFileStore.GetDirectoryContentAsync(null, true).Where(e => !e.IsDirectory).Select(e => e.Path);
         }
         else
         {
-            paths = new List<string>(mediaStep.FilePaths ?? []).ToAsyncEnumerable();
+            paths = new List<string>(step.FilePaths ?? []).ToAsyncEnumerable();
 
-            foreach (var directoryPath in mediaStep.DirectoryPaths ?? [])
+            foreach (var directoryPath in step.DirectoryPaths ?? [])
             {
                 paths = paths.Concat(_mediaFileStore.GetDirectoryContentAsync(directoryPath, true).Where(e => !e.IsDirectory).Select(e => e.Path));
             }

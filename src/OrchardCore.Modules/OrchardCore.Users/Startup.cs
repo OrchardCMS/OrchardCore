@@ -31,6 +31,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
 using OrchardCore.ResourceManagement;
+using OrchardCore.Roles;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;

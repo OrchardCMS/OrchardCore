@@ -23,7 +23,7 @@ public class PermissionHandlerTests
     }
 
     [Fact]
-    public async Task DontRevokeExistingGrants()
+    public async Task DoNotRevokeExistingGrants()
     {
         // Arrange
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Required"), ["Other"], true);
@@ -39,7 +39,7 @@ public class PermissionHandlerTests
     }
 
     [Fact]
-    public async Task DontHandleNonAuthenticated()
+    public async Task DoNotHandleNonAuthenticated()
     {
         // Arrange
         var context = PermissionHandlerHelper.CreateTestAuthorizationHandlerContext(new Permission("Allowed"), ["Allowed"]);

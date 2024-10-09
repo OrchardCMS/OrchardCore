@@ -14,6 +14,7 @@ using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Contents.Controllers;
+using OrchardCore.Contents.Core;
 using OrchardCore.Contents.Deployment;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Endpoints.Api;
@@ -59,6 +60,7 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddContentServices();
         services.AddSingleton<IAnchorTag, ContentAnchorTag>();
 
         services.Configure<LiquidViewOptions>(o =>

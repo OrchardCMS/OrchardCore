@@ -4,7 +4,8 @@ using OrchardCore.Features.Services;
 
 namespace OrchardCore.Features.Deployment;
 
-public class AllFeaturesDeploymentSource : IDeploymentSource
+public class AllFeaturesDeploymentSource
+    : DeploymentSourceBase<AllFeaturesDeploymentStep>
 {
     private readonly IModuleService _moduleService;
 
@@ -13,13 +14,8 @@ public class AllFeaturesDeploymentSource : IDeploymentSource
         _moduleService = moduleService;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(AllFeaturesDeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not AllFeaturesDeploymentStep allFeaturesStep)
-        {
-            return;
-        }
-
         var features = await _moduleService.GetAvailableFeaturesAsync();
         var featureStep = new JsonObject
         {
@@ -27,7 +23,7 @@ public class AllFeaturesDeploymentSource : IDeploymentSource
             ["enable"] = JNode.FromObject(features.Where(f => f.IsEnabled).Select(f => f.Descriptor.Id).ToArray()),
         };
 
-        if (!allFeaturesStep.IgnoreDisabledFeatures)
+        if (!step.IgnoreDisabledFeatures)
         {
             featureStep.Add("disable", JNode.FromObject(features.Where(f => !f.IsEnabled).Select(f => f.Descriptor.Id).ToArray()));
         }
