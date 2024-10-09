@@ -8,14 +8,14 @@ public abstract class DeploymentSourceBase<TDeploymentStep>
     : IDeploymentSource where TDeploymentStep : DeploymentStep
 {
     /// <inheritdoc/>
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
     {
         if (step is not TDeploymentStep deploymentStep)
         {
-            return;
+            return Task.CompletedTask;
         }
 
-        await ProcessAsync(deploymentStep, result);
+        return ProcessAsync(deploymentStep, result);
     }
 
     protected abstract Task ProcessAsync(TDeploymentStep step, DeploymentPlanResult result);
