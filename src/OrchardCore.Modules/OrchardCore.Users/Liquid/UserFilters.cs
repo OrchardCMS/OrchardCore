@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Liquid;
 using OrchardCore.Roles;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Users.Liquid;
 
@@ -30,17 +31,20 @@ public static class UserFilters
                     return BooleanValue.True;
                 }
 
-                var systemRoleNameProvider = context.Services.GetService<ISystemRoleNameProvider>();
-
-                if (systemRoleNameProvider != null)
+                if (string.Equals(claimType, Permission.ClaimType, StringComparison.OrdinalIgnoreCase))
                 {
-                    // Administrator users do not register individual permissions during login.
-                    // However, they are designed to automatically have all application permissions granted.
-                    var identityOptions = context.Services.GetRequiredService<IOptions<IdentityOptions>>().Value;
+                    var systemRoleNameProvider = context.Services.GetService<ISystemRoleNameProvider>();
 
-                    if (user.HasClaim(identityOptions.ClaimsIdentity.RoleClaimType, await systemRoleNameProvider.GetAdminRoleAsync()))
+                    if (systemRoleNameProvider != null)
                     {
-                        return BooleanValue.True;
+                        // Administrator users do not register individual permissions during login.
+                        // However, they are designed to automatically have all application permissions granted.
+                        var identityOptions = context.Services.GetRequiredService<IOptions<IdentityOptions>>().Value;
+
+                        if (user.HasClaim(identityOptions.ClaimsIdentity.RoleClaimType, await systemRoleNameProvider.GetAdminRoleAsync()))
+                        {
+                            return BooleanValue.True;
+                        }
                     }
                 }
             }
