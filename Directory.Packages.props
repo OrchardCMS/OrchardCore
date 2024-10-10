@@ -129,7 +129,7 @@
     -->
     <PackageVersion Include="System.Runtime.Caching" Version="8.0.1" />
 
-    <PackageReference Include="System.Private.Uri" Version="4.3.2" />
+    <PackageVersion Include="System.Private.Uri" Version="4.3.2" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'" >
