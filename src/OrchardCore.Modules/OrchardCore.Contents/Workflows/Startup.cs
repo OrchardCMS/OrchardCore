@@ -27,7 +27,7 @@ public sealed class Startup : StartupBase
         services.AddActivity<CreateContentTask, CreateContentTaskDisplayDriver>();
         services.AddActivity<RetrieveContentTask, RetrieveContentTaskDisplayDriver>();
         services.AddActivity<UpdateContentTask, UpdateContentTaskDisplayDriver>();
-
+        services.AddActivity<ContentForEachTask, ContentForEachTaskDisplayDriver>();
         services.AddScoped<IContentHandler, ContentsHandler>();
         services.AddScoped<IWorkflowValueSerializer, ContentItemSerializer>();
     }

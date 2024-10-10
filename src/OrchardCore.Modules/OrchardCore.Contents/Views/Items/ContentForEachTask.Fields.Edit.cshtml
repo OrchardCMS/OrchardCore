@@ -1,0 +1,107 @@
+@model ContentForEachTaskViewModel
+@if (Model.QueriesEnabled)
+{
+    <div class="mb-3" asp-validation-class-for="UseQuery">
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" asp-for="UseQuery" />
+            <label class="form-check-label" asp-for="UseQuery">@T["Use query?"]</label>
+            <span class="hint dashed">@T["Check to use (I.e. lucene, elastic or SQL) query instead of selecting all of one content type."]</span>
+        </div>
+    </div>
+    <div class="collapse" id="queryInputs">
+        <div class="card card-body mb-3">
+            <div class="mb-3" asp-validation-class-for="QuerySource">
+                <label asp-for="QuerySource">@T["Query Source"]</label>
+                <select asp-for="QuerySource" class="form-control">
+                    <option value="">@T["Select a query source"]</option>
+                    @foreach (var source in Model.QuerySources)
+                    {
+                        <option value="@source.Value">@source.Text</option>
+                    }
+                </select>
+                <span asp-validation-for="QuerySource"></span>
+            </div>
+            <div class="mb-3" asp-validation-class-for="Query">
+                <label asp-for="Query">@T["Query"]</label>
+                <select asp-for="Query" class="form-control">
+                    <option value="">@T["Select a query"]</option>
+                </select>
+                <span asp-validation-for="Query"></span>
+            </div>
+            <div class="mb-3" asp-validation-class-for="Parameters">
+                <label asp-for="Parameters">@T["Parameters"]</label>
+                <textarea asp-for="Parameters" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Parameters"></span>
+                <span class="hint">@T[@"Enter the query parameters as a JSON object. I.e. {{ 'example' : 'parameter' }} - allows liquid expressions."]</span>
+            </div>
+        </div>
+    </div>
+}
+
+<div id="contentInputs">
+    <div class="card card-body mb-3">
+        <div class="mb-3" asp-validation-class-for="ContentType">
+            <label asp-for="ContentType">@T["Content Type"]</label>
+            <select asp-for="ContentType" asp-items="@Model.AvailableContentTypes" class="form-select" asp-validation-class-for="ContentType"></select>
+            <span asp-validation-for="ContentType"></span>
+            <span class="hint">@T["Select the type of content to loop."]</span>
+        </div>
+        <div class="mb-3" asp-validation-class-for="PublishedOnly">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="PublishedOnly" />
+                <label class="form-check-label" asp-for="PublishedOnly">@T["Published Only?"]</label>
+                <span class="hint dashed">@T["Check if you only want to return published items. Leave unchecked to return latest (Includes published and draft)."]</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mb-3" asp-validation-class-for="PageSize">
+    <label asp-for="PageSize">@T["Take"]</label>
+    <input type="text" asp-for="PageSize" class="form-control code" />
+    <span asp-validation-for="PageSize"></span>
+    <span class="hint">@T["How many to take per call. Automatically overrides size and from parameters in query if they exist, 0 to disable"]</span>
+</div>
+
+<script at="Foot">
+    $(function () {
+        var initialQuery = '@Model.Query';
+        var useQuery = $('#@Html.IdFor(x => x.UseQuery)');
+
+        if (useQuery.is(':checked')) {
+            $('#queryInputs').slideDown('fast');
+            $('#contentInputs').slideUp('fast');
+        } else {
+            $('#queryInputs').slideUp('fast');
+            $('#contentInputs').slideDown('fast');
+        }
+
+        useQuery.on('click', function () {
+            $('#contentInputs').slideToggle('fast');
+            $('#queryInputs').slideToggle('fast');
+        });
+
+        var queriesBySource = @Html.Raw(Json.Serialize(Model.QueriesBySource));
+        var querySourceSelect = $('#@Html.IdFor(m => m.QuerySource)');
+        var querySelect = $('#@Html.IdFor(m => m.Query)');
+
+        function updateQueries() {
+            var source = querySourceSelect.val();
+            querySelect.empty().append($('<option></option>').val('').text('@T["Select a query"]'));
+
+            if (source && queriesBySource[source]) {
+                $.each(queriesBySource[source], function (i, query) {
+                    querySelect.append($('<option></option>').val(query.value).text(query.text));
+                });
+                console.log('Queries loaded for source:', source);
+            } else {
+                console.log('No queries found for source:', source);
+            }
+        }
+        querySourceSelect.on('change', updateQueries);
+
+        updateQueries();
+        querySelect.val(initialQuery)
+
+    });
+</script>
