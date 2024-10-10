@@ -5,7 +5,8 @@ using OrchardCore.Microsoft.Authentication.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Deployment;
 
-public sealed class MicrosoftAccountDeploymentSource : IDeploymentSource
+public sealed class MicrosoftAccountDeploymentSource
+    : DeploymentSourceBase<MicrosoftAccountDeploymentStep>
 {
     private readonly IMicrosoftAccountService _microsoftAccountService;
 
@@ -14,19 +15,14 @@ public sealed class MicrosoftAccountDeploymentSource : IDeploymentSource
         _microsoftAccountService = microsoftAccountService;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(MicrosoftAccountDeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not MicrosoftAccountDeploymentStep)
-        {
-            return;
-        }
-
         var microsoftAccountSettings = await _microsoftAccountService.GetSettingsAsync();
 
         result.Steps.Add(new JsonObject
         {
             ["name"] = "Settings",
-            [nameof(MicrosoftAccountSettings)] = JObject.FromObject(microsoftAccountSettings),
+            ["MicrosoftAccountSettings"] = JObject.FromObject(microsoftAccountSettings),
         });
     }
 }

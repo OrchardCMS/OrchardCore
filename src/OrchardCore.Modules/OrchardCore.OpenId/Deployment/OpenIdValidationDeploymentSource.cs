@@ -5,7 +5,8 @@ using OrchardCore.OpenId.Settings;
 
 namespace OrchardCore.OpenId.Deployment;
 
-public class OpenIdValidationDeploymentSource : IDeploymentSource
+public class OpenIdValidationDeploymentSource
+    : DeploymentSourceBase<OpenIdValidationDeploymentStep>
 {
     private readonly IOpenIdValidationService _openIdValidationService;
 
@@ -14,15 +15,8 @@ public class OpenIdValidationDeploymentSource : IDeploymentSource
         _openIdValidationService = openIdValidationService;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(OpenIdValidationDeploymentStep step, DeploymentPlanResult result)
     {
-        var openIdValidationStep = step as OpenIdValidationDeploymentStep;
-
-        if (openIdValidationStep == null)
-        {
-            return;
-        }
-
         var validationSettings = await _openIdValidationService.GetSettingsAsync();
 
         // The 'name' property should match the related recipe step name.
