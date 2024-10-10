@@ -83,7 +83,6 @@ public static class OrchardCoreBuilderExtensions
                         var databaseFolder = SqliteHelper.GetDatabaseFolder(shellOptions, shellSettings.Name);
                         Directory.CreateDirectory(databaseFolder);
 
-                        // Only allow creating a file DB when a tenant is in the Initializing state
                         var connectionString = SqliteHelper.GetConnectionString(sqliteOptions, databaseFolder, shellSettings);
 
                         storeConfiguration
