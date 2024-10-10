@@ -57,7 +57,7 @@ public class OpenIdServerDeploymentSource
 
         result.Steps.Add(new JsonObject
         {
-            ["name"] = "Settings",
+            ["name"] = "OpenIdServerSettings",
             ["OpenIdServerSettings"] = JObject.FromObject(settingsModel),
         });
     }
