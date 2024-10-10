@@ -158,15 +158,15 @@
 
   <!-- 'Microsoft.AspNetCore' packages that are not included in the ASP.NET Core shared framework -->
   <ItemGroup>
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(AspNetCorePackagesVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="$(AspNetCorePackagesVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="$(AspNetCorePackagesVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetCorePackagesVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="$(AspNetCorePackagesVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="$(AspNetCorePackagesVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCorePackagesVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCorePackagesVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="$(AspNetCorePackagesVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(MicrosoftExtensionsPackagesVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="$(MicrosoftExtensionsPackagesVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="$(MicrosoftExtensionsPackagesVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(MicrosoftExtensionsPackagesVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="$(MicrosoftExtensionsPackagesVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="$(MicrosoftExtensionsPackagesVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(MicrosoftExtensionsPackagesVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(MicrosoftExtensionsPackagesVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="$(MicrosoftExtensionsPackagesVersion)" />
   </ItemGroup>
   <!-- 'Microsoft.Extensions' packages that are not included in the ASP.NET Core shared framework -->
   <ItemGroup>
