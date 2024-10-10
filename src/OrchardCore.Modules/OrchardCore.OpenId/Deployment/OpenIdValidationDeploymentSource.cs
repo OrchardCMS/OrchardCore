@@ -21,7 +21,7 @@ public class OpenIdValidationDeploymentSource
 
         result.Steps.Add(new JsonObject
         {
-            ["name"] = nameof(OpenIdValidationSettings),
+            ["name"] = "Settings",
             ["OpenIdValidationSettings"] = JObject.FromObject(validationSettings),
         });
     }
