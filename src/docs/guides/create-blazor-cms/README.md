@@ -157,7 +157,7 @@ In this section, we will create a .NET Blazor application, as Razor Class librar
 - You can run the following commands to create a new Razor class library project.
 
 ```dotnetcli
-dotnet new razorclasslib -f net8.0 -o OCBlazorLib
+dotnet new razorclasslib -f net9.0 -o OCBlazorLib
 dotnet sln add ./OCBlazorLib
 dotnet add ./BlazorCms/BlazorCms.csproj reference ./OCBlazorLib/OCBlazorLib.csproj
 ```

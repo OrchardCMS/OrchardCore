@@ -8,7 +8,7 @@ In the [`OrchardCore.Benchmarks` project](https://github.com/OrchardCMS/OrchardC
 
 ### Running `OrchardCore.Benchmarks` benchmarks
 
-The project is a console application. Build the whole solution in Release mode, then run `OrchardCore.Benchmarks` (it'll be under `test/OrchardCore.Benchmarks/bin/Release/net8.0/OrchardCore.Benchmarks.exe`): You'll see a CLI menu to select which benchmark to run. Alternatively, you can use one of BenchmarkDotNet's [console arguments](https://benchmarkdotnet.org/articles/guides/console-args.html).
+The project is a console application. Build the whole solution in Release mode, then run `OrchardCore.Benchmarks` (it'll be under `test/OrchardCore.Benchmarks/bin/Release/net9.0/OrchardCore.Benchmarks.exe`): You'll see a CLI menu to select which benchmark to run. Alternatively, you can use one of BenchmarkDotNet's [console arguments](https://benchmarkdotnet.org/articles/guides/console-args.html).
 
 ## ASP.NET Core Benchmarks
 

@@ -6,7 +6,7 @@
     <IsPackable>false</IsPackable>
     <OutputType>Exe</OutputType>
     <!-- Remove the underscores from member name -->
-    <NoWarn>$(NoWarn);CA1707</NoWarn>
+    <NoWarn>$(NoWarn);CA1707;EnableGenerateDocumentationFile</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

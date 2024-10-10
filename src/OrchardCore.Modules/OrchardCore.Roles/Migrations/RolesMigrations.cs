@@ -14,7 +14,7 @@ public sealed class RolesMigrations : DataMigration
 {
     private static readonly string _alternativeAdminRoleName = "SiteOwner";
 
-    private SystemRoleOptions _systemRoleOptions;
+    private readonly SystemRoleOptions _systemRoleOptions;
 
     public RolesMigrations(IOptions<SystemRoleOptions> systemRoleOptions)
     {
