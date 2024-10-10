@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Localization;
+using OrchardCore.Localization.Data;
 using OrchardCore.Localization.DataAnnotations;
 using OrchardCore.Localization.PortableObject;
 
@@ -55,6 +56,27 @@ public static class LocalizationServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddSingleton<IConfigureOptions<MvcOptions>, LocalizedDataAnnotationsMvcOptions>();
+
+        return services;
+    }
+       
+    /// <summary>
+    /// Registers the services to enable localization using data storage.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    public static IServiceCollection AddDataLocalization(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services.AddSingleton<IDataTranslationProvider, NullDataTranslationProvider>();
+        services.AddTransient<DataResourceManager>();
+        services.AddSingleton<IDataLocalizerFactory, DataLocalizerFactory>();
+
+        services.AddTransient(sp => 
+        {
+            var dataLocalizerFactory = sp.GetService<IDataLocalizerFactory>();
+            return dataLocalizerFactory.Create();
+        });
 
         return services;
     }
