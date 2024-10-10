@@ -11,15 +11,15 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
 /// <summary>
 /// This recipe step rebuilds an Elasticsearch index.
 /// </summary>
-public sealed class ElasticIndexRebuildStep : IRecipeStepHandler
+public sealed class ElasticIndexRebuildStep : NamedRecipeStepHandler
 {
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    public ElasticIndexRebuildStep()
+        : base("elastic-index-rebuild")
     {
-        if (!string.Equals(context.Name, "elastic-index-rebuild", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
+    }
 
+    protected override async Task HandleAsync(RecipeExecutionContext context)
+    {
         var model = context.Step.ToObject<ElasticIndexRebuildDeploymentStep>();
 
         if (model != null && (model.IncludeAll || model.Indices.Length > 0))

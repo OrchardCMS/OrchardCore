@@ -10,26 +10,22 @@ namespace OrchardCore.Roles.Recipes;
 /// <summary>
 /// This recipe step creates a set of roles.
 /// </summary>
-public sealed class RolesStep : IRecipeStepHandler
+public sealed class RolesStep : NamedRecipeStepHandler
 {
     private readonly RoleManager<IRole> _roleManager;
     private readonly ISystemRoleNameProvider _systemRoleNameProvider;
 
     public RolesStep(
         RoleManager<IRole> roleManager,
-        ISystemRoleNameProvider systemRoleNameProvider)
+        ISystemRoleNameProvider systemRoleNameProvider))
+        : base("Roles")
     {
         _roleManager = roleManager;
         _systemRoleNameProvider = systemRoleNameProvider;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "Roles", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var model = context.Step.ToObject<RolesStepModel>();
 
         foreach (var roleEntry in model.Roles)

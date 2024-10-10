@@ -5,7 +5,7 @@ using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.OpenId.Recipes;
 
-public sealed class OpenIdApplicationStep : IRecipeStepHandler
+public sealed class OpenIdApplicationStep : NamedRecipeStepHandler
 {
     private readonly IOpenIdApplicationManager _applicationManager;
 
@@ -13,17 +13,13 @@ public sealed class OpenIdApplicationStep : IRecipeStepHandler
     /// This recipe step adds an OpenID Connect app.
     /// </summary>
     public OpenIdApplicationStep(IOpenIdApplicationManager applicationManager)
+        : base("OpenIdApplication")
     {
         _applicationManager = applicationManager;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "OpenIdApplication", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var model = context.Step.ToObject<OpenIdApplicationStepModel>();
         var app = await _applicationManager.FindByClientIdAsync(model.ClientId);
 

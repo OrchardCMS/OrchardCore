@@ -29,6 +29,7 @@ using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Services.Handlers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.Tasks;
+using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -71,9 +72,9 @@ public sealed class ClientStartup : StartupBase
         services.TryAddEnumerable(new[]
         {
             ServiceDescriptor.Scoped<IDisplayDriver<ISite>, OpenIdClientSettingsDisplayDriver>(),
-            ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdClientSettingsStep>()
         });
 
+        services.AddRecipeExecutionStep<OpenIdClientSettingsStep>();
         // Register the options initializers required by the OpenID Connect client handler.
         services.TryAddEnumerable(new[]
         {
@@ -107,12 +108,13 @@ public sealed class ServerStartup : StartupBase
         {
             ServiceDescriptor.Scoped<IRoleRemovedEventHandler, OpenIdApplicationRoleRemovedEventHandler>(),
             ServiceDescriptor.Scoped<IDisplayDriver<OpenIdServerSettings>, OpenIdServerSettingsDisplayDriver>(),
-            ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdServerSettingsStep>(),
-            ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdApplicationStep>(),
-            ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdScopeStep>(),
 
             ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>()
         });
+
+        services.AddRecipeExecutionStep<OpenIdServerSettingsStep>()
+            .AddRecipeExecutionStep<OpenIdApplicationStep>()
+            .AddRecipeExecutionStep<OpenIdScopeStep>();
 
         // Note: the OpenIddict ASP.NET host adds an authentication options initializer that takes care of
         // registering the server ASP.NET Core handler. Yet, it MUST NOT be registered at this stage
@@ -223,8 +225,9 @@ public sealed class ValidationStartup : StartupBase
         services.TryAddEnumerable(new[]
         {
             ServiceDescriptor.Scoped<IDisplayDriver<OpenIdValidationSettings>, OpenIdValidationSettingsDisplayDriver>(),
-            ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdValidationSettingsStep>()
         });
+
+        services.AddRecipeExecutionStep<OpenIdValidationSettingsStep>();
 
         // Note: the OpenIddict ASP.NET host adds an authentication options initializer that takes care of
         // registering the validation handler. Yet, it MUST NOT be registered at this stage as it is
