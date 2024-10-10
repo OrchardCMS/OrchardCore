@@ -82,6 +82,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             connection is SqliteConnection sqliteConnection &&
             !File.Exists(sqliteConnection.DataSource))
         {
+            SqliteConnection.ClearPool(sqliteConnection);
             return DbConnectionValidatorResult.DocumentTableNotFound;
         }
 

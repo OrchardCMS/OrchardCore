@@ -157,9 +157,24 @@ public class SetupService : ISetupService
             shellSettings["Schema"] = context.Properties.TryGetValue(SetupConstants.DatabaseSchema, out var schema) ? schema?.ToString() : null;
         }
 
-        if (shellSettings["DatabaseProvider"] == DatabaseProviderValue.Sqlite && string.IsNullOrEmpty(shellSettings["DatabaseName"]))
+        // When using SQLite, during setup a connection string with ReadWriteCreate SqliteOpenMode (to create the
+        // database file) is used. When using connection pooling, this would cause a connection pool to remain after
+        // setup, even though we'll never use such a connection again.
+        // To prevent this needless connection pool remaining in memory, as well as it locking the database file (and
+        // thus fail tenant deletion), we disable connection pooling just for setup.
+        var sqlLiteConnectionPoolingConfigurationSection =
+            shellSettings.ShellConfiguration.GetSection($"{shellSettings.Name}:OrchardCore_Data_Sqlite:UseConnectionPooling");
+        string sqlLiteConnectionPoolingConfigurationValue = null;
+
+        if (shellSettings["DatabaseProvider"] == DatabaseProviderValue.Sqlite)
         {
-            shellSettings["DatabaseName"] = context.Properties.TryGetValue(SetupConstants.DatabaseName, out var dbName) ? dbName?.ToString() : "OrchardCore.db";
+            if (string.IsNullOrEmpty(shellSettings["DatabaseName"]))
+            {
+                shellSettings["DatabaseName"] = context.Properties.TryGetValue(SetupConstants.DatabaseName, out var dbName) ? dbName?.ToString() : "OrchardCore.db";
+            }
+
+            sqlLiteConnectionPoolingConfigurationValue = sqlLiteConnectionPoolingConfigurationSection.Value;
+            sqlLiteConnectionPoolingConfigurationSection.Value = "false";
         }
 
         var validationContext = new DbConnectionValidatorContext(shellSettings);
@@ -258,6 +273,11 @@ public class SetupService : ISetupService
         if (context.Errors.Count > 0)
         {
             return executionId;
+        }
+
+        if (shellSettings["DatabaseProvider"] == DatabaseProviderValue.Sqlite)
+        {
+            sqlLiteConnectionPoolingConfigurationSection.Value = sqlLiteConnectionPoolingConfigurationValue;
         }
 
         // Update the shell state.
