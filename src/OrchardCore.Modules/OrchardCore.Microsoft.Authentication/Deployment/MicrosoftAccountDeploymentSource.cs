@@ -21,8 +21,8 @@ public sealed class MicrosoftAccountDeploymentSource
 
         result.Steps.Add(new JsonObject
         {
-            ["name"] = "Settings",
-            ["MicrosoftAccountSettings"] = JObject.FromObject(microsoftAccountSettings),
+            ["name"] = nameof(MicrosoftAccountSettings),
+            [nameof(MicrosoftAccountSettings)] = JObject.FromObject(microsoftAccountSettings),
         });
     }
 }

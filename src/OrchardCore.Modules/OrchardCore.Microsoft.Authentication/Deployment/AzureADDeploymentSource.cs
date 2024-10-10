@@ -21,8 +21,8 @@ public class AzureADDeploymentSource
 
         result.Steps.Add(new JsonObject
         {
-            ["name"] = "Settings",
-            ["AzureADSettings"] = JObject.FromObject(azureADSettings),
+            ["name"] = nameof(AzureADSettings),
+            [nameof(AzureADSettings)] = JObject.FromObject(azureADSettings),
         });
     }
 }
