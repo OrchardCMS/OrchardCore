@@ -32,7 +32,7 @@ public class IPAddressRobotDetector : IDetectRobots
     {
         var address = _clientIpAddressAccessor.GetIPAddressAsync().GetAwaiter().GetResult();
 
-        return $"{IpAddressAbuseDetectorCacheKey}:{address?.ToString() ?? string.Empty}";
+        return $"{IpAddressAbuseDetectorCacheKey}:{address ?? string.Empty}";
     }
 
     public RobotDetectionResult DetectRobot()
