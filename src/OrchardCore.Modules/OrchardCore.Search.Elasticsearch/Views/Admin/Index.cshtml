@@ -69,7 +69,7 @@
                             <p>@entry.AnalyzerName</p>
                         </div>
                         <div class="float-end">
-                            <a asp-action="Mappings" asp-route-IndexName="@entry.Name" class="btn btn-primary btn-sm">@T["Mappings"]</a>
+                            <a asp-action="IndexInfo" asp-route-IndexName="@entry.Name" class="btn btn-primary btn-sm">@T["Index Info"]</a>
                             <a asp-action="Query" asp-route-IndexName="@entry.Name" class="btn btn-success btn-sm">@T["Query"]</a>
                             <a asp-action="Reset" asp-route-id="@entry.Name" class="btn btn-primary btn-sm" data-title="@T["Reset Index"]" data-message="@T["This will restart the indexing of all content items. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" data-url-af="UnsafeUrl">@T["Reset"]</a>
                             <a asp-action="Rebuild" asp-route-id="@entry.Name" class="btn btn-warning btn-sm" data-title="@T["Rebuild Index"]" data-message="@T["Your index will be rebuilt, which might alter some services during the process. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl">@T["Rebuild"]</a>
