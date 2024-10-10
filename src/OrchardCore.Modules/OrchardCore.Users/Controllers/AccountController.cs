@@ -215,6 +215,32 @@ public sealed class AccountController : AccountBaseController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> LogOff(string returnUrl = null)
     {
+        var user = await _signInManager.UserManager.GetUserAsync(User);
+        var userLogins = await _signInManager.UserManager.GetLoginsAsync(user);
+
+        var providerClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.AuthenticationMethod || c.Type == "LoginProvider");
+
+        if (providerClaim != null && userLogins.Any(userInfo => userInfo.LoginProvider == providerClaim.Value))
+        {
+            // The user logged in using an external provider.
+            var properties = new Dictionary<string, string>();
+
+            await _externalLoginHandlers.InvokeAsync(handler => handler.SetLogoutAsync(providerClaim.Value, properties), _logger);
+
+            if (properties.Count > 0)
+            {
+                var schema = HttpContext.Features.Get<IAuthenticateResultFeature>()
+                    .AuthenticateResult
+                    ?.Ticket
+                    ?.AuthenticationScheme;
+
+                await _signInManager.SignOutAsync();
+                _logger.LogInformation(4, "User logged out.");
+
+                return SignOut(new AuthenticationProperties(properties), schema);
+            }
+        }
+
         await _signInManager.SignOutAsync();
         _logger.LogInformation(4, "User logged out.");
 
