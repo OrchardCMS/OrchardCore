@@ -429,7 +429,7 @@ public class AccountControllerTests
                 var recipe = recipeCollections.SelectMany(recipeCollection => recipeCollection)
                     .FirstOrDefault(recipe => recipe.Name == "UserSettingsTest");
 
-                var executionId = Guid.NewGuid().ToString("n");
+                var executionId = Ulid.NewUlid().ToGuid().ToString("n");
 
                 await recipeExecutor.ExecuteAsync(
                     executionId,

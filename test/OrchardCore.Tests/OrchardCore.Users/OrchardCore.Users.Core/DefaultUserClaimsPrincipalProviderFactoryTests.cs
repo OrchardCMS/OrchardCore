@@ -13,7 +13,7 @@ public class DefaultUserClaimsPrincipalProviderFactoryTests
     {
         //Arrange
         var userManager = UsersMockHelper.MockUserManager<IUser>();
-        var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo", Email = "foo@foo.com" };
+        var user = new User { UserId = Ulid.NewUlid().ToGuid().ToString("n"), UserName = "Foo", Email = "foo@foo.com" };
         userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
         userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
         userManager.Setup(m => m.GetEmailAsync(user)).ReturnsAsync(user.Email);

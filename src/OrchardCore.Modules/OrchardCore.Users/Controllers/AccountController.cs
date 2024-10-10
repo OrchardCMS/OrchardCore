@@ -104,7 +104,7 @@ public sealed class AccountController : AccountBaseController
                 var dataProtector = _dataProtectionProvider.CreateProtector(ExternalAuthenticationsController.DefaultExternalLoginProtector)
                     .ToTimeLimitedDataProtector();
 
-                var token = Guid.NewGuid();
+                var token = Ulid.NewUlid().ToGuid();
                 var expiration = new TimeSpan(0, 0, 5);
                 var protectedToken = dataProtector.Protect(token.ToString(), _clock.UtcNow.Add(expiration));
                 await _distributedCache.SetAsync(token.ToString(), token.ToByteArray(), new DistributedCacheEntryOptions()

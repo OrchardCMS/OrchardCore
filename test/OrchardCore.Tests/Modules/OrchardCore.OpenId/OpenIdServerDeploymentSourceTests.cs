@@ -32,11 +32,11 @@ public class OpenIdServerDeploymentSourceTests
 
             result.EncryptionCertificateStoreLocation = StoreLocation.LocalMachine;
             result.EncryptionCertificateStoreName = StoreName.My;
-            result.EncryptionCertificateThumbprint = Guid.NewGuid().ToString();
+            result.EncryptionCertificateThumbprint = Ulid.NewUlid().ToGuid().ToString();
 
             result.SigningCertificateStoreLocation = StoreLocation.LocalMachine;
             result.SigningCertificateStoreName = StoreName.My;
-            result.SigningCertificateThumbprint = Guid.NewGuid().ToString();
+            result.SigningCertificateThumbprint = Ulid.NewUlid().ToGuid().ToString();
 
             result.AllowAuthorizationCodeFlow = true;
             result.AllowClientCredentialsFlow = true;

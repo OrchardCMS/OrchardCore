@@ -10,7 +10,7 @@ public class UserValidatorTests
     {
         // Arrange
         var userManager = UsersMockHelper.MockUserManager<IUser>();
-        var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo", Email = "foo@foo.com" };
+        var user = new User { UserId = Ulid.NewUlid().ToGuid().ToString("n"), UserName = "Foo", Email = "foo@foo.com" };
         userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
         userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
         userManager.Setup(m => m.GetEmailAsync(user)).ReturnsAsync(user.Email);
@@ -29,7 +29,7 @@ public class UserValidatorTests
         // Arrange
         var describer = new IdentityErrorDescriber();
         var userManager = UsersMockHelper.MockUserManager<IUser>();
-        var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo" };
+        var user = new User { UserId = Ulid.NewUlid().ToGuid().ToString("n"), UserName = "Foo" };
         userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
         userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
         userManager.Setup(m => m.GetEmailAsync(user)).ReturnsAsync(user.Email);
@@ -49,7 +49,7 @@ public class UserValidatorTests
         // Arrange
         var describer = new IdentityErrorDescriber();
         var userManager = UsersMockHelper.MockUserManager<IUser>();
-        var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo", Email = "foo" };
+        var user = new User { UserId = Ulid.NewUlid().ToGuid().ToString("n"), UserName = "Foo", Email = "foo" };
         userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
         userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
         userManager.Setup(m => m.GetEmailAsync(user)).ReturnsAsync(user.Email);
@@ -69,14 +69,14 @@ public class UserValidatorTests
         // Arrange
         var describer = new IdentityErrorDescriber();
         var userManager = UsersMockHelper.MockUserManager<IUser>();
-        var existingUser = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo", Email = "foo@foo.com" };
+        var existingUser = new User { UserId = Ulid.NewUlid().ToGuid().ToString("n"), UserName = "Foo", Email = "foo@foo.com" };
         userManager.Setup(m => m.GetUserIdAsync(existingUser)).ReturnsAsync(existingUser.UserId);
         userManager.Setup(m => m.GetUserNameAsync(existingUser)).ReturnsAsync(existingUser.UserName);
         userManager.Setup(m => m.GetEmailAsync(existingUser)).ReturnsAsync(existingUser.Email);
         userManager.Setup(m => m.FindByEmailAsync(existingUser.Email)).ReturnsAsync(existingUser);
         userManager.Setup(m => m.FindByNameAsync(existingUser.UserName)).ReturnsAsync(existingUser);
 
-        var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Bar", Email = "foo@foo.com" };
+        var user = new User { UserId = Ulid.NewUlid().ToGuid().ToString("n"), UserName = "Bar", Email = "foo@foo.com" };
         userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
         userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
         userManager.Setup(m => m.GetEmailAsync(user)).ReturnsAsync(user.Email);
@@ -96,7 +96,7 @@ public class UserValidatorTests
         // Arrange
         var describer = new IdentityErrorDescriber();
         var userManager = UsersMockHelper.MockUserManager<IUser>();
-        var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "foo@foo.com", Email = "foo" };
+        var user = new User { UserId = Ulid.NewUlid().ToGuid().ToString("n"), UserName = "foo@foo.com", Email = "foo" };
         userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
         userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
         userManager.Setup(m => m.GetEmailAsync(user)).ReturnsAsync(user.Email);
@@ -116,14 +116,14 @@ public class UserValidatorTests
         // Arrange
         var describer = new IdentityErrorDescriber();
         var userManager = UsersMockHelper.MockUserManager<IUser>();
-        var existingUser = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo", Email = "bar@bar.com" };
+        var existingUser = new User { UserId = Ulid.NewUlid().ToGuid().ToString("n"), UserName = "Foo", Email = "bar@bar.com" };
         userManager.Setup(m => m.GetUserIdAsync(existingUser)).ReturnsAsync(existingUser.UserId);
         userManager.Setup(m => m.GetUserNameAsync(existingUser)).ReturnsAsync(existingUser.UserName);
         userManager.Setup(m => m.GetEmailAsync(existingUser)).ReturnsAsync(existingUser.Email);
         userManager.Setup(m => m.FindByEmailAsync(existingUser.Email)).ReturnsAsync(existingUser);
         userManager.Setup(m => m.FindByNameAsync(existingUser.UserName)).ReturnsAsync(existingUser);
 
-        var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo", Email = "foo@foo.com" };
+        var user = new User { UserId = Ulid.NewUlid().ToGuid().ToString("n"), UserName = "Foo", Email = "foo@foo.com" };
         userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
         userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
         userManager.Setup(m => m.GetEmailAsync(user)).ReturnsAsync(user.Email);

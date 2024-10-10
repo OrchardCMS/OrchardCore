@@ -293,7 +293,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
     /// <inheritdoc/>
     public virtual ValueTask<TToken> InstantiateAsync(CancellationToken cancellationToken)
-        => new(new TToken { TokenId = Guid.NewGuid().ToString("n") });
+        => new(new TToken { TokenId = Ulid.NewUlid().ToGuid().ToString("n") });
 
     /// <inheritdoc/>
     public virtual IAsyncEnumerable<TToken> ListAsync(int? count, int? offset, CancellationToken cancellationToken)

@@ -62,7 +62,7 @@ public sealed class StepController : Controller
             return NotFound();
         }
 
-        step.Id = Guid.NewGuid().ToString("n");
+        step.Id = Ulid.NewUlid().ToGuid().ToString("n");
 
         var model = new EditDeploymentPlanStepViewModel
         {
