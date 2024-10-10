@@ -131,15 +131,18 @@
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework) == 'net8.0'" >
+    <!-- Several transitive dependencies on 8.0.4 which is vulnerable -->
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
 
   <ItemGroup Condition="$(TargetFramework) == 'net9.0'" >
+    <!-- Several transitive dependencies on 8.0.4 which is vulnerable -->
     <PackageVersion Include="System.Text.Json" Version="9.0.0-rc.2.24473.5" />
   </ItemGroup>
+
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
   <!-- Versions are preset for the default TFM (there may be no TFM in an evaluation phase) -->
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
     <AspNetCorePackagesVersion>9.0.0-rc.2.24474.3</AspNetCorePackagesVersion>
     <MicrosoftExtensionsPackagesVersion>9.0.0-rc.2.24474.3</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
