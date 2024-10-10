@@ -2,7 +2,6 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
@@ -79,22 +78,6 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
             {
                 // Clear the pool to unlock the file and remove it.
                 SqliteConnection.ClearPool(sqliteConnection);
-
-                // If the app wasn't restarted since the tenant was set up, there will be a connection pool group for
-                // the connection string used during setup too, locking the file. Removing it too.
-                // We can't check for the existence of the pool group, so we need to assume it exists (ironically, if
-                // it doesn't, creating the connection below will be the one creating the pool group).
-                var shellOptions = shellContext.ServiceProvider.GetRequiredService<IOptions<ShellOptions>>().Value;
-                var setupConnectionString = SqliteHelper.GetConnectionString(
-                    // Deliberately not using the options from the container, since we need pooling enabled here even
-                    // if otherwise it's disabled.
-                    new SqliteOptions(),
-                    SqliteHelper.GetDatabaseFolder(shellOptions, shellSettings.Name),
-                    shellSettings["DatabaseName"],
-                    SqliteOpenMode.ReadWriteCreate);
-                using var setupConnection = new SqliteConnection(setupConnectionString);
-                SqliteConnection.ClearPool(setupConnection);
-
                 File.Delete(connection.DataSource);
             }
             else
