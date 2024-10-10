@@ -260,7 +260,6 @@ public sealed class AccountController : AccountBaseController
     /// This action is retained for backward compatibility.
     /// Both this action and <see cref="ExternalAuthenticationsStartupFilter"/> are scheduled for removal in version 3.
     /// </summary>
-    /// <returns></returns>
     [HttpPost]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
