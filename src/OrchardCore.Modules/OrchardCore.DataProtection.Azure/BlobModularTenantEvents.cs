@@ -25,7 +25,7 @@ public class BlobModularTenantEvents : ModularTenantEvents
     /// Removes the data protection blob from the container when a tenant is deleted.
     /// </summary>
     /// <param name="context">The <see cref="ShellRemovingContext"/></param>
-    public async override Task RemovingAsync(ShellRemovingContext context)
+    public override async Task RemovingAsync(ShellRemovingContext context)
     {
         var blobClient = new BlobClient(
             _blobOptions.ConnectionString,
