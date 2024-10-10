@@ -71,6 +71,9 @@ public static class OrchardCoreConstants
 
         public const int AdminPages = 1000;
 
+        // The UrlRewriting module should be registered before any other module that deals with URLs.
+        public const int UrlRewriting = InfrastructureService + 100;
+
         // Services that should always be registered before everything else.
         public const int InfrastructureService = int.MinValue + 100;
     }
