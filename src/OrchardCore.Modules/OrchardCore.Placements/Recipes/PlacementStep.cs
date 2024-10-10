@@ -9,22 +9,18 @@ namespace OrchardCore.Placements.Recipes;
 /// <summary>
 /// This recipe step creates a set of placements.
 /// </summary>
-public sealed class PlacementStep : IRecipeStepHandler
+public sealed class PlacementStep : NamedRecipeStepHandler
 {
     private readonly PlacementsManager _placementsManager;
 
     public PlacementStep(PlacementsManager placementsManager)
+        : base("Placements")
     {
         _placementsManager = placementsManager;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "Placements", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         if (context.Step.TryGetPropertyValue("Placements", out var jsonNode) && jsonNode is JsonObject templates)
         {
             foreach (var property in templates)
