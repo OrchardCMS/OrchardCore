@@ -96,7 +96,7 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.ManageLuceneIndexes))
         {
             return Forbid();
         }
@@ -155,7 +155,7 @@ public sealed class AdminController : Controller
         var IsCreate = string.IsNullOrWhiteSpace(indexName);
         var settings = new LuceneIndexSettings();
 
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.ManageLuceneIndexes))
         {
             return Forbid();
         }
@@ -192,7 +192,7 @@ public sealed class AdminController : Controller
     [HttpPost, ActionName(nameof(Edit))]
     public async Task<ActionResult> EditPost(LuceneIndexSettingsViewModel model, string[] indexedContentTypes)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.ManageLuceneIndexes))
         {
             return Forbid();
         }
@@ -272,7 +272,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<ActionResult> Reset(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.ManageLuceneIndexes))
         {
             return Forbid();
         }
@@ -301,7 +301,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<ActionResult> Rebuild(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.ManageLuceneIndexes))
         {
             return Forbid();
         }
@@ -326,7 +326,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<ActionResult> Delete(LuceneIndexSettingsViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.ManageLuceneIndexes))
         {
             return Forbid();
         }
@@ -362,7 +362,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Query(AdminQueryViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.ManageLuceneIndexes))
         {
             return Forbid();
         }
@@ -435,7 +435,7 @@ public sealed class AdminController : Controller
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLuceneIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, LuceneSearchPermissions.ManageLuceneIndexes))
         {
             return Forbid();
         }

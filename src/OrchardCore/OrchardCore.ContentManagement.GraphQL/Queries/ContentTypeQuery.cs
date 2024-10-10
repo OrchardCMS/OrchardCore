@@ -65,7 +65,7 @@ public class ContentTypeQuery : ISchemaBuilder
                 ResolvedType = new ListGraphType(typeType)
             };
 
-            query.RequirePermission(CommonPermissions.ExecuteGraphQL);
+            query.RequirePermission(GraphQLPermissions.ExecuteGraphQL);
             query.RequirePermission(Contents.CommonPermissions.ViewOwnContent, typeDefinition.Name);
 
             foreach (var builder in contentTypeBuilders)

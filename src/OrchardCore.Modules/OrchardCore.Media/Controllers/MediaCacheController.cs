@@ -36,7 +36,7 @@ public sealed class MediaCacheController : Controller
     [Admin("MediaCache", "MediaCache.Index")]
     public async Task<IActionResult> Index()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, MediaCachePermissions.ManageAssetCache))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageAssetCache))
         {
             return Forbid();
         }
@@ -51,7 +51,7 @@ public sealed class MediaCacheController : Controller
     [HttpPost]
     public async Task<IActionResult> Purge()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, MediaCachePermissions.ManageAssetCache))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageAssetCache))
         {
             return Forbid();
         }

@@ -57,7 +57,7 @@ public sealed class MediaProfilesController : Controller
     [Admin("MediaProfiles", "MediaProfiles.Index")]
     public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaProfiles))
         {
             return Forbid();
         }
@@ -113,7 +113,7 @@ public sealed class MediaProfilesController : Controller
 
     public async Task<IActionResult> Create()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaProfiles))
         {
             return Forbid();
         }
@@ -128,7 +128,7 @@ public sealed class MediaProfilesController : Controller
     [HttpPost, ActionName(nameof(Create))]
     public async Task<IActionResult> CreatePost(MediaProfileViewModel model, string submit)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaProfiles))
         {
             return Forbid();
         }
@@ -186,7 +186,7 @@ public sealed class MediaProfilesController : Controller
 
     public async Task<IActionResult> Edit(string name)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaProfiles))
         {
             return Forbid();
         }
@@ -224,7 +224,7 @@ public sealed class MediaProfilesController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(string sourceName, MediaProfileViewModel model, string submit)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaProfiles))
         {
             return Forbid();
         }
@@ -282,7 +282,7 @@ public sealed class MediaProfilesController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string name)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaProfiles))
         {
             return Forbid();
         }
@@ -305,7 +305,7 @@ public sealed class MediaProfilesController : Controller
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaProfiles))
         {
             return Forbid();
         }

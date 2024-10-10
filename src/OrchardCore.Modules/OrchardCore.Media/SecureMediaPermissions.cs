@@ -9,19 +9,13 @@ namespace OrchardCore.Media;
 
 public sealed class SecureMediaPermissions : IPermissionProvider
 {
-    // Note: The ManageMediaFolder permission grants all access, so viewing must be implied by it too.
-    public static readonly Permission ViewMedia = new("ViewMediaContent", "View media content in all folders", new[] { Permissions.ManageMediaFolder });
-    public static readonly Permission ViewRootMedia = new("ViewRootMediaContent", "View media content in the root folder", new[] { ViewMedia });
-    public static readonly Permission ViewOthersMedia = new("ViewOthersMediaContent", "View others media content", new[] { Permissions.ManageMediaFolder });
-    public static readonly Permission ViewOwnMedia = new("ViewOwnMediaContent", "View own media content", new[] { ViewOthersMedia });
-
-    private static readonly Permission _viewMediaTemplate = new("ViewMediaContent_{0}", "View media content in folder '{0}'", new[] { ViewMedia });
+    private static readonly Permission _viewMediaTemplate = new("ViewMediaContent_{0}", "View media content in folder '{0}'", new[] { MediaPermissions.ViewMedia });
 
     private static Dictionary<ValueTuple<string, string>, Permission> _permissionsByFolder = new();
     private static readonly char[] _trimSecurePathChars = ['/', '\\', ' '];
     private static readonly ReadOnlyDictionary<string, Permission> _permissionTemplates = new(new Dictionary<string, Permission>()
     {
-        { ViewMedia.Name, _viewMediaTemplate },
+        { MediaPermissions.ViewMedia.Name, _viewMediaTemplate },
     });
 
     private readonly MediaOptions _mediaOptions;
@@ -67,8 +61,8 @@ public sealed class SecureMediaPermissions : IPermissionProvider
                 Name = "Administrator",
                 Permissions = new[]
                 {
-                    ViewMedia,
-                    ViewOthersMedia
+                    MediaPermissions.ViewMedia,
+                    MediaPermissions.ViewOthersMedia
                 }
             },
             new PermissionStereotype
@@ -76,7 +70,7 @@ public sealed class SecureMediaPermissions : IPermissionProvider
                 Name = "Authenticated",
                 Permissions = new[]
                 {
-                    ViewOwnMedia
+                    MediaPermissions.ViewOwnMedia
                 }
             },
             new PermissionStereotype
@@ -84,7 +78,7 @@ public sealed class SecureMediaPermissions : IPermissionProvider
                 Name = "Anonymous",
                 Permissions = new[]
                 {
-                    ViewMedia
+                    MediaPermissions.ViewMedia
                 }
             }
         };
@@ -127,13 +121,13 @@ public sealed class SecureMediaPermissions : IPermissionProvider
     private async Task<IEnumerable<Permission>> GetPermissionsInternalAsync()
     {
         // The ViewRootMedia permission must be implied by any subfolder permission.
-        var viewRootImpliedBy = new List<Permission>(ViewRootMedia.ImpliedBy);
+        var viewRootImpliedBy = new List<Permission>(MediaPermissions.ViewRootMedia.ImpliedBy);
         var result = new List<Permission>()
         {
-            ViewMedia,
-            new (ViewRootMedia.Name, ViewRootMedia.Description, viewRootImpliedBy),
-            ViewOthersMedia,
-            ViewOwnMedia
+            MediaPermissions.ViewMedia,
+            new (MediaPermissions.ViewRootMedia.Name, MediaPermissions.ViewRootMedia.Description, viewRootImpliedBy),
+            MediaPermissions.ViewOthersMedia,
+            MediaPermissions.ViewOwnMedia
         };
 
         await foreach (var entry in _fileStore.GetDirectoryContentAsync())
