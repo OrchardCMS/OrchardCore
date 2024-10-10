@@ -17,7 +17,7 @@ public sealed class RolesStep : NamedRecipeStepHandler
 
     public RolesStep(
         RoleManager<IRole> roleManager,
-        ISystemRoleNameProvider systemRoleNameProvider))
+        ISystemRoleNameProvider systemRoleNameProvider)
         : base("Roles")
     {
         _roleManager = roleManager;
