@@ -10,7 +10,7 @@ namespace OrchardCore.Media.Recipes;
 /// <summary>
 /// This recipe step creates a set of queries.
 /// </summary>
-public sealed class MediaStep : IRecipeStepHandler
+public sealed class MediaStep : NamedRecipeStepHandler
 {
     private readonly IMediaFileStore _mediaFileStore;
     private readonly HashSet<string> _allowedFileExtensions;
@@ -23,6 +23,7 @@ public sealed class MediaStep : IRecipeStepHandler
         IOptions<MediaOptions> options,
         IHttpClientFactory httpClientFactory,
         IStringLocalizer<MediaStep> stringLocalizer)
+        : base("media")
     {
         _mediaFileStore = mediaFileStore;
         _allowedFileExtensions = options.Value.AllowedFileExtensions;
@@ -30,13 +31,8 @@ public sealed class MediaStep : IRecipeStepHandler
         S = stringLocalizer;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "media", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var model = context.Step.ToObject<MediaStepModel>();
 
         foreach (var file in model.Files)

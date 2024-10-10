@@ -11,7 +11,7 @@ namespace OrchardCore.Sitemaps.Recipes;
 /// <summary>
 /// This recipe step creates a set of sitemaps.
 /// </summary>
-public sealed class SitemapsStep : IRecipeStepHandler
+public sealed class SitemapsStep : NamedRecipeStepHandler
 {
     private readonly ISitemapManager _sitemapManager;
     private readonly DocumentJsonSerializerOptions _documentJsonSerializerOptions;
@@ -19,18 +19,14 @@ public sealed class SitemapsStep : IRecipeStepHandler
     public SitemapsStep(
         ISitemapManager sitemapManager,
         IOptions<DocumentJsonSerializerOptions> documentJsonSerializerOptions)
+        : base("Sitemaps")
     {
         _sitemapManager = sitemapManager;
         _documentJsonSerializerOptions = documentJsonSerializerOptions.Value;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "Sitemaps", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var model = context.Step.ToObject<SitemapStepModel>();
 
         foreach (var token in model.Data.Cast<JsonObject>())
