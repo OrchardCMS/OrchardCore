@@ -2,7 +2,6 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using OrchardCore.Security;
-using OrchardCore.Security.Services;
 using OrchardCore.Users;
 using OrchardCore.Users.Services;
 
@@ -12,18 +11,18 @@ public class RoleClaimsProvider : IUserClaimsProvider
 {
     private readonly UserManager<IUser> _userManager;
     private readonly RoleManager<IRole> _roleManager;
-    private readonly IRoleService _roleService;
+    private readonly ISystemRoleNameProvider _systemRoleNameProvider;
     private readonly IdentityOptions _identityOptions;
 
     public RoleClaimsProvider(
         UserManager<IUser> userManager,
         RoleManager<IRole> roleManager,
-        IRoleService roleService,
+        ISystemRoleNameProvider systemRoleNameProvider,
         IOptions<IdentityOptions> identityOptions)
     {
         _userManager = userManager;
         _roleManager = roleManager;
-        _roleService = roleService;
+        _systemRoleNameProvider = systemRoleNameProvider;
         _identityOptions = identityOptions.Value;
     }
 
@@ -33,16 +32,24 @@ public class RoleClaimsProvider : IUserClaimsProvider
         {
             return;
         }
+        var adminRoleName = await _systemRoleNameProvider.GetAdminRoleAsync();
+
+        var isAdministrator = false;
+
+        if (await _userManager.IsInRoleAsync(user, adminRoleName))
+        {
+            claims.AddClaim(StandardPermissions.SiteOwnerClaim);
+
+            isAdministrator = true;
+        }
 
         var roleNames = await _userManager.GetRolesAsync(user);
-        var roles = new List<IRole>();
-        var addClaims = true;
 
         foreach (var roleName in roleNames)
         {
             claims.AddClaim(new Claim(_identityOptions.ClaimsIdentity.RoleClaimType, roleName));
 
-            if (!_roleManager.SupportsRoleClaims)
+            if (isAdministrator || !_roleManager.SupportsRoleClaims)
             {
                 continue;
             }
@@ -54,21 +61,6 @@ public class RoleClaimsProvider : IUserClaimsProvider
                 continue;
             }
 
-            if (addClaims && await _roleService.IsAdminRoleAsync(role.RoleName))
-            {
-                addClaims = false;
-            }
-
-            roles.Add(role);
-        }
-
-        if (roles.Count == 0 || !addClaims)
-        {
-            return;
-        }
-
-        foreach (var role in roles)
-        {
             claims.AddClaims(await _roleManager.GetClaimsAsync(role));
         }
     }

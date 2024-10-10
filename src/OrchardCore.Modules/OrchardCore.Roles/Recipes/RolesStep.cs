@@ -4,7 +4,6 @@ using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Recipes;
 
@@ -14,14 +13,14 @@ namespace OrchardCore.Roles.Recipes;
 public sealed class RolesStep : IRecipeStepHandler
 {
     private readonly RoleManager<IRole> _roleManager;
-    private readonly IRoleService _roleService;
+    private readonly ISystemRoleNameProvider _systemRoleNameProvider;
 
     public RolesStep(
         RoleManager<IRole> roleManager,
-        IRoleService roleService)
+        ISystemRoleNameProvider systemRoleNameProvider)
     {
         _roleManager = roleManager;
-        _roleService = roleService;
+        _systemRoleNameProvider = systemRoleNameProvider;
     }
 
     public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -58,7 +57,7 @@ public sealed class RolesStep : IRecipeStepHandler
                 r.RoleDescription = roleEntry.Description;
                 r.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
 
-                if (!await _roleService.IsAdminRoleAsync(roleName))
+                if (!await _systemRoleNameProvider.IsAdminRoleAsync(roleName))
                 {
                     r.RoleClaims.AddRange(roleEntry.Permissions.Select(RoleClaim.Create));
                 }
