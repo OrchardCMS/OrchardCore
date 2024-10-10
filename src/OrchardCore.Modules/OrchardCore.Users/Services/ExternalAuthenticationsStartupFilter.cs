@@ -42,5 +42,4 @@ internal sealed class ExternalAuthenticationsStartupFilter : IStartupFilter
             next(builder);
         };
     }
-
 }
