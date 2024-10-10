@@ -19,12 +19,10 @@ public class OpenIdValidationDeploymentSource
     {
         var validationSettings = await _openIdValidationService.GetSettingsAsync();
 
-        // The 'name' property should match the related recipe step name.
-        var jObject = new JsonObject { ["name"] = nameof(OpenIdValidationSettings) };
-
-        // Merge settings as the recipe step doesn't use a child property.
-        jObject.Merge(JObject.FromObject(validationSettings));
-
-        result.Steps.Add(jObject);
+        result.Steps.Add(new JsonObject
+        {
+            ["name"] = nameof(OpenIdValidationSettings),
+            ["OpenIdValidationSettings"] = JObject.FromObject(validationSettings),
+        });
     }
 }

@@ -55,15 +55,10 @@ public class OpenIdServerDeploymentSource
             RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange,
         };
 
-        // Use nameof(OpenIdServerSettings) as name,
-        // to match the recipe step.
-        var obj = new JsonObject
+        result.Steps.Add(new JsonObject
         {
             ["name"] = nameof(OpenIdServerSettings),
-        };
-
-        obj.Merge(JObject.FromObject(settingsModel));
-
-        result.Steps.Add(obj);
+            ["OpenIdServerSettings"] = JObject.FromObject(settingsModel),
+        });
     }
 }
