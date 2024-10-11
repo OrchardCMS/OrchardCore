@@ -37,7 +37,7 @@ public class RoleClaimsProvider : IUserClaimsProvider
 
         if (await _userManager.IsInRoleAsync(user, await _systemRoleNameProvider.GetAdminRoleAsync()))
         {
-            claims.AddClaim(StandardPermissions.SiteOwnerClaim);
+            claims.AddClaim(StandardClaims.SiteOwner);
 
             isAdministrator = true;
         }

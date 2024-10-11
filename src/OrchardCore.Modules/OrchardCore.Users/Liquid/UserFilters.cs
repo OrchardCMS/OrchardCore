@@ -29,8 +29,22 @@ public static class UserFilters
                     return BooleanValue.True;
                 }
 
+                // The following if condition was added in 2.1 for backward compatibility. It should be removed in v3 and documented as a breaking change.
+                // The change log should state the following:
+                // The `Administrator` role no longer registers permission-based claims by default during login. This means that directly checking for specific claims in Liquid, such as:
+                //
+                // ```liquid
+                // {% assign isAuthorized = User | has_claim: "Permission", "AccessAdminPanel" %}
+                // ```
+                //
+                // will return `false` for administrators, even though they still have full access. Non-admin users, however, may return `true` if they have the claim. 
+                // it's important to use the `has_permission` filter for permission checks going forward:
+                //
+                // ```liquid
+                // {% assign isAuthorized = User | has_permission: "AccessAdminPanel" %}
+                // ```
                 if (string.Equals(claimType, Permission.ClaimType, StringComparison.OrdinalIgnoreCase) &&
-                    user.HasClaim(StandardPermissions.SiteOwnerClaim.Type, StandardPermissions.SiteOwnerClaim.Value))
+                    user.HasClaim(StandardClaims.SiteOwner.Type, StandardClaims.SiteOwner.Value))
                 {
                     return BooleanValue.True;
                 }

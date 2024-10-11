@@ -25,7 +25,7 @@ public class SuperUserHandler : IAuthorizationHandler
             return;
         }
 
-        if (user.HasClaim(StandardPermissions.SiteOwnerClaim.Type, StandardPermissions.SiteOwnerClaim.Value))
+        if (user.HasClaim(StandardClaims.SiteOwner.Type, StandardClaims.SiteOwner.Value))
         {
             SucceedAllRequirements(context);
 
