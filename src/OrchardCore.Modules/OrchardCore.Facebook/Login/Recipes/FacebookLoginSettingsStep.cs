@@ -9,22 +9,18 @@ namespace OrchardCore.Facebook.Login.Recipes;
 /// <summary>
 /// This recipe step sets general Facebook Login settings.
 /// </summary>
-public sealed class FacebookLoginSettingsStep : IRecipeStepHandler
+public sealed class FacebookLoginSettingsStep : NamedRecipeStepHandler
 {
     private readonly IFacebookLoginService _loginService;
 
     public FacebookLoginSettingsStep(IFacebookLoginService loginService)
+        : base(nameof(FacebookLoginSettings))
     {
         _loginService = loginService;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, nameof(FacebookLoginSettings), StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var model = context.Step.ToObject<FacebookLoginSettingsStepModel>();
         var settings = await _loginService.LoadSettingsAsync();
 

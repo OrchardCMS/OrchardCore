@@ -11,7 +11,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps;
 /// <summary>
 /// This recipe step creates content definitions.
 /// </summary>
-public sealed class ContentDefinitionStep : IRecipeStepHandler
+public sealed class ContentDefinitionStep : NamedRecipeStepHandler
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -20,18 +20,14 @@ public sealed class ContentDefinitionStep : IRecipeStepHandler
     public ContentDefinitionStep(
         IContentDefinitionManager contentDefinitionManager,
         IStringLocalizer<ContentDefinitionStep> stringLocalizer)
+         : base("ContentDefinition")
     {
         _contentDefinitionManager = contentDefinitionManager;
         S = stringLocalizer;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "ContentDefinition", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var step = context.Step.ToObject<ContentDefinitionStepModel>();
 
         foreach (var contentType in step.ContentTypes)

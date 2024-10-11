@@ -9,23 +9,18 @@ namespace OrchardCore.Templates.Recipes;
 /// <summary>
 /// This recipe step creates a set of templates.
 /// </summary>
-public sealed class TemplateStep : IRecipeStepHandler
+public sealed class TemplateStep : NamedRecipeStepHandler
 {
     private readonly TemplatesManager _templatesManager;
 
-    public TemplateStep(
-        TemplatesManager templatesManager)
+    public TemplateStep(TemplatesManager templatesManager)
+        : base("Templates")
     {
         _templatesManager = templatesManager;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "Templates", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         if (context.Step.TryGetPropertyValue("Templates", out var jsonNode) && jsonNode is JsonObject templates)
         {
             foreach (var property in templates)
