@@ -156,6 +156,6 @@ public class RewriteRulesManager : IRewriteRulesManager
     {
         var rules = await _store.GetAllAsync();
 
-        return rules.Max(x => x.Order) + 1;
+        return rules.Any() ? rules.Max(x => x.Order) + 1 : 0;
     }
 }
