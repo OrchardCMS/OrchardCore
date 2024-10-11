@@ -31,7 +31,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
 using OrchardCore.ResourceManagement;
-using OrchardCore.Roles;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
@@ -95,6 +94,7 @@ public sealed class Startup : StartupBase
         // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
         services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
 
+        services.AddSingleton<Microsoft.AspNetCore.Hosting.IStartupFilter, ExternalAuthenticationsStartupFilter>();
         services.AddUsers();
 
         services.ConfigureApplicationCookie(options =>
@@ -111,6 +111,7 @@ public sealed class Startup : StartupBase
             options.LogoutPath = "/" + userOptions.Value.LogoffPath;
             options.AccessDeniedPath = "/Error/403";
         });
+
         services.AddTransient<IPostConfigureOptions<SecurityStampValidatorOptions>, ConfigureSecurityStampOptions>();
         services.AddDataMigration<Migrations>();
 
