@@ -2,7 +2,7 @@ namespace OrchardCore.UrlRewriting.ViewModels;
 
 public class UrlRewriteRuleViewModel
 {
-    public string Url { get; set; }
+    public string SubstitutionUrl { get; set; }
 
     public bool AppendQueryString { get; set; }
 

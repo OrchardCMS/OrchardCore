@@ -28,7 +28,7 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
         return Initialize<UrlRewriteRuleViewModel>("UrlRewriteRule_Edit", model =>
         {
             var metadata = rule.As<UrlRewriteSourceMetadata>();
-            model.Url = metadata.Url;
+            model.SubstitutionUrl = metadata.SubstitutionUrl;
             model.Pattern = metadata.Pattern;
             model.IgnoreCase = metadata.IgnoreCase;
             model.AppendQueryString = context.IsNew || metadata.AppendQueryString;
@@ -45,7 +45,7 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
 
         var model = new UrlRewriteRuleViewModel();
         await context.Updater.TryUpdateModelAsync(model, Prefix,
-            m => m.Url,
+            m => m.SubstitutionUrl,
             m => m.AppendQueryString,
             m => m.Pattern,
             m => m.IgnoreCase,
@@ -56,16 +56,16 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), "The url match pattern is required.");
         }
 
-        if (string.IsNullOrWhiteSpace(model.Url))
+        if (string.IsNullOrWhiteSpace(model.SubstitutionUrl))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Url), S["The rewrite URL is required"]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionUrl), S["The rewrite URL is required"]);
         }
 
         rule.Put(new UrlRewriteSourceMetadata()
         {
             Pattern = model.Pattern,
             IgnoreCase = model.IgnoreCase,
-            Url = model.Url,
+            SubstitutionUrl = model.SubstitutionUrl,
             AppendQueryString = model.AppendQueryString,
             SkipFurtherRules = model.SkipFurtherRules
         });

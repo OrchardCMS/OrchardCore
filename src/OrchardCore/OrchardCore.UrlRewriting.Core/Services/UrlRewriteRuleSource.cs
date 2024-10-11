@@ -41,10 +41,10 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
 
         if (flags.Length > 0)
         {
-            return $"RewriteRule \"{metadata.Pattern}\" \"{metadata.Url}\" [{flags}]";
+            return $"RewriteRule \"{metadata.Pattern}\" \"{metadata.SubstitutionUrl}\" [{flags}]";
         }
 
-        return $"RewriteRule \"{metadata.Pattern}\" \"{metadata.Url}\"";
+        return $"RewriteRule \"{metadata.Pattern}\" \"{metadata.SubstitutionUrl}\"";
     }
 
     private static StringBuilder GetFlags(UrlRewriteSourceMetadata metadata)

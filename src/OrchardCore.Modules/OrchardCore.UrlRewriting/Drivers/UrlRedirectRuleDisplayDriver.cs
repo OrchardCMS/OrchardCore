@@ -28,7 +28,7 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
         return Initialize<UrlRedirectRuleViewModel>("UrlRedirectRule_Edit", model =>
         {
             var metadata = rule.As<UrlRedirectSourceMetadata>();
-            model.Url = metadata.Url;
+            model.SubstitutionUrl = metadata.Url;
             model.AppendQueryString = context.IsNew || metadata.AppendQueryString;
             model.Pattern = metadata.Pattern;
             model.IgnoreCase = metadata.IgnoreCase;
@@ -55,7 +55,7 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
         await context.Updater.TryUpdateModelAsync(model, Prefix,
             m => m.Pattern,
             m => m.IgnoreCase,
-            m => m.Url,
+            m => m.SubstitutionUrl,
             m => m.AppendQueryString,
             m => m.RedirectType);
 
@@ -64,16 +64,16 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), "The url match pattern is required.");
         }
 
-        if (string.IsNullOrWhiteSpace(model.Url))
+        if (string.IsNullOrWhiteSpace(model.SubstitutionUrl))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Url), S["The redirect URL is required"]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionUrl), S["The redirect URL is required"]);
         }
 
         rule.Put(new UrlRedirectSourceMetadata()
         {
             Pattern = model.Pattern,
             IgnoreCase = model.IgnoreCase,
-            Url = model.Url,
+            Url = model.SubstitutionUrl,
             AppendQueryString = model.AppendQueryString,
             RedirectType = model.RedirectType,
         });
