@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
@@ -13,6 +14,7 @@ using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Setup.Events;
+using YesSql;
 
 namespace OrchardCore.Setup.Services;
 
@@ -157,24 +159,9 @@ public class SetupService : ISetupService
             shellSettings["Schema"] = context.Properties.TryGetValue(SetupConstants.DatabaseSchema, out var schema) ? schema?.ToString() : null;
         }
 
-        // When using SQLite, during setup a connection string with ReadWriteCreate SqliteOpenMode (to create the
-        // database file) is used. When using connection pooling, this would cause a connection pool to remain after
-        // setup, even though we'll never use such a connection again.
-        // To prevent this needless connection pool remaining in memory, as well as it locking the database file (and
-        // thus fail tenant deletion), we disable connection pooling just for setup.
-        var sqlLiteConnectionPoolingConfigurationSection =
-            shellSettings.ShellConfiguration.GetSection($"{shellSettings.Name}:OrchardCore_Data_Sqlite:UseConnectionPooling");
-        string sqlLiteConnectionPoolingConfigurationValue = null;
-
-        if (shellSettings["DatabaseProvider"] == DatabaseProviderValue.Sqlite)
+        if (shellSettings["DatabaseProvider"] == DatabaseProviderValue.Sqlite && string.IsNullOrEmpty(shellSettings["DatabaseName"]))
         {
-            if (string.IsNullOrEmpty(shellSettings["DatabaseName"]))
-            {
-                shellSettings["DatabaseName"] = context.Properties.TryGetValue(SetupConstants.DatabaseName, out var dbName) ? dbName?.ToString() : "OrchardCore.db";
-            }
-
-            sqlLiteConnectionPoolingConfigurationValue = sqlLiteConnectionPoolingConfigurationSection.Value;
-            sqlLiteConnectionPoolingConfigurationSection.Value = "false";
+            shellSettings["DatabaseName"] = context.Properties.TryGetValue(SetupConstants.DatabaseName, out var dbName) ? dbName?.ToString() : "OrchardCore.db";
         }
 
         var validationContext = new DbConnectionValidatorContext(shellSettings);
@@ -275,9 +262,17 @@ public class SetupService : ISetupService
             return executionId;
         }
 
+        // When using SQLite, clearing the connection pool with ReadWriteCreate SqliteOpenMode, used when the shell was
+        // still initializing, to unlock the database file (and thus also allow it to be deleted).
         if (shellSettings["DatabaseProvider"] == DatabaseProviderValue.Sqlite)
         {
-            sqlLiteConnectionPoolingConfigurationSection.Value = sqlLiteConnectionPoolingConfigurationValue;
+            await using var shellContext = await _shellContextFactory.CreateMinimumContextAsync(shellSettings);
+            var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
+            await using var connection = store.Configuration.ConnectionFactory.CreateConnection();
+            if (connection is SqliteConnection sqliteConnection)
+            {
+                SqliteConnection.ClearPool(sqliteConnection);
+            }
         }
 
         // Update the shell state.
