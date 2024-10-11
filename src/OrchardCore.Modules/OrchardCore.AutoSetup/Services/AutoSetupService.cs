@@ -27,7 +27,7 @@ public class AutoSetupService : IAutoSetupService
         _logger = logger;
     }
     
-    public async Task<bool> SetupTenantAsync(TenantSetupOptions setupOptions, ShellSettings shellSettings)
+    public async Task<(SetupContext, bool)> SetupTenantAsync(TenantSetupOptions setupOptions, ShellSettings shellSettings)
     {
         var setupContext = await GetSetupContextAsync(setupOptions, shellSettings);
 
@@ -39,7 +39,7 @@ public class AutoSetupService : IAutoSetupService
         {
             _logger.LogInformation("The AutoSetup successfully provisioned the site '{SiteName}'.", setupOptions.SiteName);
 
-            return true;
+            return (setupContext,true);
         }
 
         var stringBuilder = new StringBuilder();
@@ -50,7 +50,7 @@ public class AutoSetupService : IAutoSetupService
 
         _logger.LogError("The AutoSetup failed installing the site '{SiteName}' with errors: {Errors}.", setupOptions.SiteName, stringBuilder);
 
-        return false;
+        return (setupContext, false);
     }
    
     public async Task<ShellSettings> CreateTenantSettingsAsync(TenantSetupOptions setupOptions)

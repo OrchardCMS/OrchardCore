@@ -29,5 +29,5 @@ public interface IAutoSetupService
     /// <returns>
     /// Returns <see langword="true" /> if successfully setup.
     /// </returns>
-    Task<bool> SetupTenantAsync(TenantSetupOptions setupOptions, ShellSettings shellSettings);
+    Task<(SetupContext, bool)> SetupTenantAsync(TenantSetupOptions setupOptions, ShellSettings shellSettings);
 }

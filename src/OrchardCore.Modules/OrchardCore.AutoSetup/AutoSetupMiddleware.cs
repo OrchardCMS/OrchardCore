@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -119,13 +120,14 @@ public class AutoSetupMiddleware
                 if (!settings.IsUninitialized())
                 {
                     await _shellHost.ReloadShellContextAsync(_shellSettings, eventSource: false);
-                    httpContext.Response.StatusCode = 503;
-
+                    httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                    await httpContext.Response.WriteAsync("The requested tenant is not initialized.");
                     return;
                 }
 
                 var autoSetupService = httpContext.RequestServices.GetRequiredService<IAutoSetupService>();
-                if (await autoSetupService.SetupTenantAsync(_setupOptions, _shellSettings))
+                (var setupContext, var isSuccess)  = await autoSetupService.SetupTenantAsync(_setupOptions, _shellSettings);
+                if (isSuccess)
                 {
                     if (_setupOptions.IsDefault)
                     {
@@ -145,8 +147,14 @@ public class AutoSetupMiddleware
                 }
                 else
                 {
-                    httpContext.Response.StatusCode = 503;
+                    httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                    var stringBuilder = new StringBuilder();
+                    foreach (var error in setupContext.Errors)
+                    {
+                        stringBuilder.AppendLine($"{error.Key} : '{error.Value}'");
+                    }
 
+                    await httpContext.Response.WriteAsync($"The AutoSetup failed installing the site '{_setupOptions.SiteName}' with errors: {stringBuilder}.");
                     return;
                 }
             }
