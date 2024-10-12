@@ -19,7 +19,7 @@ public class SiteSettingsPropertyDeploymentStepDriver<TModel>
 
     public override IDisplayResult Edit(SiteSettingsPropertyDeploymentStep<TModel> step, BuildEditorContext context)
     {
-        return Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Edit", model =>
+        return Initialize<SiteSettingsPropertyDeploymentStepViewModel>(EditShape, model =>
         {
             model.Title = _title;
             model.Description = _description;

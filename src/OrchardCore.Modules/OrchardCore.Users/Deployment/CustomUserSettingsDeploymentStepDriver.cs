@@ -19,7 +19,7 @@ public sealed class CustomUserSettingsDeploymentStepDriver
 
     public override IDisplayResult Edit(CustomUserSettingsDeploymentStep step, BuildEditorContext context)
     {
-        return Initialize<CustomUserSettingsDeploymentStepViewModel>("CustomUserSettingsDeploymentStep_Fields_Edit", async model =>
+        return Initialize<CustomUserSettingsDeploymentStepViewModel>(EditShape, async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.SettingsTypeNames = step.SettingsTypeNames;

@@ -9,7 +9,7 @@ public sealed class CustomFileDeploymentStepDriver
 {
     public override IDisplayResult Edit(CustomFileDeploymentStep step, BuildEditorContext context)
     {
-        return Initialize<CustomFileDeploymentStepViewModel>("CustomFileDeploymentStep_Fields_Edit", model =>
+        return Initialize<CustomFileDeploymentStepViewModel>(EditShape, model =>
         {
             model.FileContent = step.FileContent;
             model.FileName = step.FileName;

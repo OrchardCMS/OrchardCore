@@ -14,7 +14,7 @@ public sealed class ContentDefinitionDeploymentStepDriver
 
     public override IDisplayResult Edit(ContentDefinitionDeploymentStep step, BuildEditorContext context)
     {
-        return Initialize<ContentDefinitionStepViewModel>("ContentDefinitionDeploymentStep_Fields_Edit", model =>
+        return Initialize<ContentDefinitionStepViewModel>(EditShape, model =>
         {
             model.ContentParts = step.ContentParts;
             model.ContentTypes = step.ContentTypes;

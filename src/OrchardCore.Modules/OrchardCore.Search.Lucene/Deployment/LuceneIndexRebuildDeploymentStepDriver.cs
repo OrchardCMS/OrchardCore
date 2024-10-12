@@ -18,7 +18,7 @@ public sealed class LuceneIndexRebuildDeploymentStepDriver
 
     public override IDisplayResult Edit(LuceneIndexRebuildDeploymentStep step, BuildEditorContext context)
     {
-        return Initialize<LuceneIndexRebuildDeploymentStepViewModel>("LuceneIndexRebuildDeploymentStep_Fields_Edit", async model =>
+        return Initialize<LuceneIndexRebuildDeploymentStepViewModel>(EditShape, async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.IndexNames;

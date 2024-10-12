@@ -19,7 +19,7 @@ public sealed class ElasticIndexResetDeploymentStepDriver
 
     public override IDisplayResult Edit(ElasticIndexResetDeploymentStep step, BuildEditorContext context)
     {
-        return Initialize<ElasticIndexResetDeploymentStepViewModel>("ElasticIndexResetDeploymentStep_Fields_Edit", async model =>
+        return Initialize<ElasticIndexResetDeploymentStepViewModel>(EditShape, async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indices;

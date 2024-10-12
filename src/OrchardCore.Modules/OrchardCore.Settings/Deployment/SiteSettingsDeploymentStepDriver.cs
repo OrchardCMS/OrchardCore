@@ -14,7 +14,7 @@ public sealed class SiteSettingsDeploymentStepDriver
 
     public override IDisplayResult Edit(SiteSettingsDeploymentStep step, BuildEditorContext context)
     {
-        return Initialize<SiteSettingsDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Edit", model =>
+        return Initialize<SiteSettingsDeploymentStepViewModel>(EditShape, model =>
         {
             model.Settings = step.Settings;
         }).Location("Content");

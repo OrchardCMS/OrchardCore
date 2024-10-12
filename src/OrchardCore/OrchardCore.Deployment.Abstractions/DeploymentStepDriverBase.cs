@@ -6,17 +6,27 @@ namespace OrchardCore.Deployment;
 public abstract class DeploymentStepDriverBase<TStep>
     : DisplayDriver<DeploymentStep, TStep> where TStep : DeploymentStep
 {
-    private readonly string _stepName = typeof(TStep).Name;
+    protected readonly string DisplaySummaryShape;
+    protected readonly string DisplayThumbnailShape;
+    protected readonly string EditShape;
+
+    protected DeploymentStepDriverBase()
+    {
+        var stepName = typeof(TStep).Name;
+        DisplaySummaryShape = $"{stepName}_Summary";
+        DisplayThumbnailShape = $"{stepName}_Thumbnail";
+        EditShape = $"{stepName}_Edit";
+    }
 
     public override Task<IDisplayResult> DisplayAsync(TStep step, BuildDisplayContext context)
     {
         return
             CombineAsync(
-                View($"{_stepName}_Summary", step).Location("Summary", "Content"),
-                View($"{_stepName}_Thumbnail", step).Location("Thumbnail", "Content")
+                View(DisplaySummaryShape, step).Location("Summary", "Content"),
+                View(DisplayThumbnailShape, step).Location("Thumbnail", "Content")
             );
     }
 
     public override IDisplayResult Edit(TStep step, BuildEditorContext context)
-        => View($"{_stepName}_Edit", step).Location("Content");
+        => View(EditShape, step).Location("Content");
 }

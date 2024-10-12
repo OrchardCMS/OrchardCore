@@ -19,7 +19,7 @@ public sealed class AzureAISearchIndexRebuildDeploymentStepDriver
     }
 
     public override IDisplayResult Edit(AzureAISearchIndexRebuildDeploymentStep step, BuildEditorContext context)
-        => Initialize<AzureAISearchIndexRebuildDeploymentStepViewModel>("AzureAISearchIndexRebuildDeploymentStep_Fields_Edit", async model =>
+        => Initialize<AzureAISearchIndexRebuildDeploymentStepViewModel>(EditShape, async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indices;

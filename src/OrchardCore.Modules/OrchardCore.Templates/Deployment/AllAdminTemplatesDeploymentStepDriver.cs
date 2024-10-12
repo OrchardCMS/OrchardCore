@@ -10,7 +10,7 @@ public sealed class AllAdminTemplatesDeploymentStepDriver
 {
     public override IDisplayResult Edit(AllAdminTemplatesDeploymentStep step, BuildEditorContext context)
     {
-        return Initialize<AllAdminTemplatesDeploymentStepViewModel>("AllAdminTemplatesDeploymentStep_Fields_Edit", model =>
+        return Initialize<AllAdminTemplatesDeploymentStepViewModel>(EditShape, model =>
         {
             model.ExportAsFiles = step.ExportAsFiles;
         }).Location("Content");
