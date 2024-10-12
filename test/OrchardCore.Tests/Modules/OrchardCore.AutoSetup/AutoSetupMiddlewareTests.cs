@@ -103,6 +103,28 @@ public class AutoSetupMiddlewareTests
         Assert.Equal(StatusCodes.Status503ServiceUnavailable, httpContext.Response.StatusCode);
     }
 
+    [Fact]
+    public async Task InvokeAsync_FailedLockAcquisition_ThrowsTimeoutException()
+    {
+        // Arrange
+        _shellSettings.State = TenantState.Uninitialized;
+
+        SetupDistributedLockMock(false);
+
+        var httpContext = new DefaultHttpContext();
+
+        var middleware = new AutoSetupMiddleware(
+            next: (innerHttpContext) => Task.CompletedTask,
+            _mockShellHost.Object,
+            _shellSettings,
+            _mockShellSettingsManager.Object,
+            _mockDistributedLock.Object,
+            _mockOptions.Object);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<TimeoutException>(() => middleware.InvokeAsync(httpContext));
+    }
+
     private void SetupDistributedLockMock(bool acquireLock)
     {
         var mockLocker = new Mock<ILocker>();
