@@ -5,17 +5,9 @@ using OrchardCore.Templates.ViewModels;
 
 namespace OrchardCore.Templates.Deployment;
 
-public sealed class AllTemplatesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllTemplatesDeploymentStep>
+public sealed class AllTemplatesDeploymentStepDriver
+    : DeploymentStepDriverBase<AllTemplatesDeploymentStep>
 {
-    public override Task<IDisplayResult> DisplayAsync(AllTemplatesDeploymentStep step, BuildDisplayContext context)
-    {
-        return
-            CombineAsync(
-                View("AllTemplatesDeploymentStep_Summary", step).Location("Summary", "Content"),
-                View("AllTemplatesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
-
     public override IDisplayResult Edit(AllTemplatesDeploymentStep step, BuildEditorContext context)
     {
         return Initialize<AllTemplatesDeploymentStepViewModel>("AllTemplatesDeploymentStep_Fields_Edit", model =>

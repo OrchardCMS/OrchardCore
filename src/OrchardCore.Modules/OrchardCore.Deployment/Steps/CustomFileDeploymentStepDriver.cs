@@ -4,17 +4,9 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Deployment.Steps;
 
-public sealed class CustomFileDeploymentStepDriver : DisplayDriver<DeploymentStep, CustomFileDeploymentStep>
+public sealed class CustomFileDeploymentStepDriver
+    : DeploymentStepDriverBase<CustomFileDeploymentStep>
 {
-    public override Task<IDisplayResult> DisplayAsync(CustomFileDeploymentStep step, BuildDisplayContext context)
-    {
-        return
-            CombineAsync(
-                View("CustomFileDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("CustomFileDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
-
     public override IDisplayResult Edit(CustomFileDeploymentStep step, BuildEditorContext context)
     {
         return Initialize<CustomFileDeploymentStepViewModel>("CustomFileDeploymentStep_Fields_Edit", model =>
