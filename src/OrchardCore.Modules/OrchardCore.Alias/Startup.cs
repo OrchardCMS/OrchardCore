@@ -72,6 +72,14 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentPartIndexHandler, AliasPartIndexHandler>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, AliasPartSettingsDisplayDriver>();
 
+    }
+}
+
+[RequireFeatures("OrchardCore.Contents")]
+public sealed class ContentAliasStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
         services.AddScoped<IShapeTableProvider, ContentAliasShapeTableProvider>();
     }
 }
