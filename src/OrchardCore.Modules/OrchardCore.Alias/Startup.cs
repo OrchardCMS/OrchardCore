@@ -15,6 +15,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
@@ -71,7 +72,6 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IContentPartIndexHandler, AliasPartIndexHandler>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, AliasPartSettingsDisplayDriver>();
-
     }
 }
 
@@ -80,7 +80,7 @@ public sealed class ContentAliasStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IShapeTableProvider, ContentAliasShapeTableProvider>();
+        services.AddShapeTableProvider<ContentAliasShapeTableProvider>();
     }
 }
 
@@ -89,6 +89,6 @@ public sealed class WidgetAliasStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IShapeTableProvider, WidgetAliasShapeTableProvider>();
+        services.AddShapeTableProvider<WidgetAliasShapeTableProvider>();
     }
 }

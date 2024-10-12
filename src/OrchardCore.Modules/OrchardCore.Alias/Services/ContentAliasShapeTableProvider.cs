@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Alias.Services;
 
-public class ContentAliasShapeTableProvider : ShapeTableProvider
+public sealed class ContentAliasShapeTableProvider : ShapeTableProvider
 {
     public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {

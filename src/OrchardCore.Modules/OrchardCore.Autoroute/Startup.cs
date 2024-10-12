@@ -22,6 +22,7 @@ using OrchardCore.ContentManagement.Routing;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
@@ -54,7 +55,7 @@ public sealed class Startup : StartupBase
 
                     if (!slug.StartsWith('/'))
                     {
-                        slug = "/" + slug;
+                        slug = '/' + slug;
                     }
 
                     (var found, var entry) = await autorouteEntries.TryGetEntryByPathAsync(slug);
@@ -98,7 +99,6 @@ public sealed class Startup : StartupBase
 
         services.AddSingleton<AutorouteTransformer>();
         services.AddSingleton<IShellRouteValuesAddressScheme, AutorouteValuesAddressScheme>();
-        
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -122,7 +122,7 @@ public sealed class ContentAutourouteStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IShapeTableProvider, ContentAutorouteShapeTableProvider>();
+        services.AddShapeTableProvider<ContentAutorouteShapeTableProvider>();
     }
 }
 
@@ -131,6 +131,6 @@ public sealed class WidgetAutourouteStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IShapeTableProvider, WidgetAutorouteShapeTableProvider>();
+        services.AddShapeTableProvider<WidgetAutorouteShapeTableProvider>();
     }
 }
