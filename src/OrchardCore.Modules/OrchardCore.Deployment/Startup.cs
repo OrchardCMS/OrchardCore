@@ -25,10 +25,10 @@ public sealed class Startup : StartupBase
         services.AddSingleton<IDeploymentTargetProvider, FileDownloadDeploymentTargetProvider>();
 
         // Custom File deployment step
-        services.AddDeployment<CustomFileDeploymentSource, CustomFileDeploymentStep, CustomFileDeploymentStepDriver>();
+        services.AddDeployment<CustomFileDeploymentSource, CustomFileDeploymentStep, CustomFileDeploymentStepFieldsDriver>();
 
         // Recipe File deployment step
-        services.AddDeploymentWithoutSource<RecipeFileDeploymentStep, RecipeFileDeploymentStepDriver>();
+        services.AddDeploymentWithoutSource<RecipeFileDeploymentStep, RecipeFileDeploymentStepFieldsDriver>();
 
         services.AddIndexProvider<DeploymentPlanIndexProvider>();
         services.AddDataMigration<Migrations>();

@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
         {
             // Do not name this S, it should not be collected up by the po extractor.
             var stringLocalizer = sp.GetService<IStringLocalizer<TLocalizer>>();
-            return new SiteSettingsPropertyDeploymentStepDriver<TModel>(title(stringLocalizer), description(stringLocalizer));
+            return new SiteSettingsPropertyDeploymentStepDriver<TModel>(title(stringLocalizer), description(stringLocalizer), sp);
         });
 
         services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<TModel>());
