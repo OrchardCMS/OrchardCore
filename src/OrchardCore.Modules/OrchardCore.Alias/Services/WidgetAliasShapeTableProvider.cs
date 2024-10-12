@@ -22,7 +22,7 @@ public class WidgetAliasShapeTableProvider : ShapeTableProvider
                 {
                     var encodedAlias = aliasPart.Alias.EncodeAlternateElement();
 
-                    // Widget__Alias__[Alias] e.g. Widget-Alias-example, Content-Alias-my-page
+                    // Widget__Alias__[Alias] e.g. Widget-Alias-example, Widget-Alias-my-page
                     displaying.Shape.Metadata.Alternates.Add("Widget__Alias__" + encodedAlias);
 
                     // Widget_[DisplayType]__Alias__[Alias] e.g. Widget-Alias-example.Summary, Widget-Alias-my-page.Summary
