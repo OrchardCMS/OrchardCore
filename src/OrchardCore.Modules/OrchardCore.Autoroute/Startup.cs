@@ -99,7 +99,7 @@ public sealed class Startup : StartupBase
         services.AddSingleton<AutorouteTransformer>();
         services.AddSingleton<IShellRouteValuesAddressScheme, AutorouteValuesAddressScheme>();
 
-        services.AddScoped<IShapeTableProvider, AutorouteShapeTableProvider>();
+        services.AddScoped<IShapeTableProvider, ContentAutorouteShapeTableProvider>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -115,5 +115,14 @@ public class SitemapStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IRouteableContentTypeProvider, AutorouteContentTypeProvider>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Widgets")]
+public sealed class WidgetAutourouteStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IShapeTableProvider, WidgetAutorouteShapeTableProvider>();
     }
 }

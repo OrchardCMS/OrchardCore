@@ -72,6 +72,15 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentPartIndexHandler, AliasPartIndexHandler>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, AliasPartSettingsDisplayDriver>();
 
-        services.AddScoped<IShapeTableProvider, AliasShapeTableProvider>();
+        services.AddScoped<IShapeTableProvider, ContentAliasShapeTableProvider>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Widgets")]
+public sealed class WidgetAliasStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IShapeTableProvider, WidgetAliasShapeTableProvider>();
     }
 }
