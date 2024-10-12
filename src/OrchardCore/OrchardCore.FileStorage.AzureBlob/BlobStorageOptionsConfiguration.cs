@@ -73,4 +73,3 @@ public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOpti
     {
     }
 }
-
