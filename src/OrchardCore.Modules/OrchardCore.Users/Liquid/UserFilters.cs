@@ -2,18 +2,16 @@ using System.Security.Claims;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.Liquid;
-using OrchardCore.Roles;
+using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Users.Liquid;
 
 public static class UserFilters
 {
-    public static async ValueTask<FluidValue> HasClaim(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+    public static ValueTask<FluidValue> HasClaim(FluidValue input, FilterArguments arguments, TemplateContext ctx)
     {
         if (input.ToObjectValue() is LiquidUserAccessor)
         {
@@ -31,21 +29,24 @@ public static class UserFilters
                     return BooleanValue.True;
                 }
 
-                if (string.Equals(claimType, Permission.ClaimType, StringComparison.OrdinalIgnoreCase))
+                // The following if condition was added in 2.1 for backward compatibility. It should be removed in v3 and documented as a breaking change.
+                // The change log should state the following:
+                // The `Administrator` role no longer registers permission-based claims by default during login. This means that directly checking for specific claims in Liquid, such as:
+                //
+                // ```liquid
+                // {% assign isAuthorized = User | has_claim: "Permission", "AccessAdminPanel" %}
+                // ```
+                //
+                // will return `false` for administrators, even though they still have full access. Non-admin users, however, may return `true` if they have the claim. 
+                // it's important to use the `has_permission` filter for permission checks going forward:
+                //
+                // ```liquid
+                // {% assign isAuthorized = User | has_permission: "AccessAdminPanel" %}
+                // ```
+                if (string.Equals(claimType, Permission.ClaimType, StringComparison.OrdinalIgnoreCase) &&
+                    user.HasClaim(StandardClaims.SiteOwner.Type, StandardClaims.SiteOwner.Value))
                 {
-                    var systemRoleNameProvider = context.Services.GetService<ISystemRoleNameProvider>();
-
-                    if (systemRoleNameProvider != null)
-                    {
-                        // Administrator users do not register individual permissions during login.
-                        // However, they are designed to automatically have all application permissions granted.
-                        var identityOptions = context.Services.GetRequiredService<IOptions<IdentityOptions>>().Value;
-
-                        if (user.HasClaim(identityOptions.ClaimsIdentity.RoleClaimType, await systemRoleNameProvider.GetAdminRoleAsync()))
-                        {
-                            return BooleanValue.True;
-                        }
-                    }
+                    return BooleanValue.True;
                 }
             }
         }

@@ -10,7 +10,6 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.Roles.Core;
 using OrchardCore.Roles.Deployment;
 using OrchardCore.Roles.Migrations;
 using OrchardCore.Roles.Recipes;
@@ -35,7 +34,6 @@ public sealed class Startup : StartupBase
     {
         services.AddScoped<IUserClaimsProvider, RoleClaimsProvider>();
         services.AddDataMigration<RolesMigrations>();
-        services.AddScoped<IAuthorizationHandler, RolesPermissionHandler>();
         services.AddScoped<RoleStore>();
         services.Replace(ServiceDescriptor.Scoped<IRoleClaimStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));
         services.Replace(ServiceDescriptor.Scoped<IRoleStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));
