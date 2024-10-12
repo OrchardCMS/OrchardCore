@@ -1,25 +1,18 @@
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Deployment.Deployment;
 
-public sealed class DeploymentPlanDeploymentStepDriver : DisplayDriver<DeploymentStep, DeploymentPlanDeploymentStep>
+public sealed class DeploymentPlanDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<DeploymentPlanDeploymentStep>
 {
     private readonly IDeploymentPlanService _deploymentPlanService;
 
-    public DeploymentPlanDeploymentStepDriver(IDeploymentPlanService deploymentPlanService)
+    public DeploymentPlanDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _deploymentPlanService = deploymentPlanService;
-    }
-
-    public override Task<IDisplayResult> DisplayAsync(DeploymentPlanDeploymentStep step, BuildDisplayContext context)
-    {
-        return
-            CombineAsync(
-                View("DeploymentPlanDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("DeploymentPlanDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
+        _deploymentPlanService = serviceProvider.GetService<IDeploymentPlanService>();
     }
 
     public override IDisplayResult Edit(DeploymentPlanDeploymentStep step, BuildEditorContext context)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -6,20 +7,14 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Deployment;
 
-public sealed class CustomUserSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, CustomUserSettingsDeploymentStep>
+public sealed class CustomUserSettingsDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<CustomUserSettingsDeploymentStep>
 {
     private readonly CustomUserSettingsService _customUserSettingsService;
 
-    public CustomUserSettingsDeploymentStepDriver(CustomUserSettingsService customUserSettingsService)
+    public CustomUserSettingsDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _customUserSettingsService = customUserSettingsService;
-    }
-
-    public override Task<IDisplayResult> DisplayAsync(CustomUserSettingsDeploymentStep step, BuildDisplayContext context)
-    {
-        return CombineAsync(
-                View("CustomUserSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("CustomUserSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content"));
+        _customUserSettingsService = serviceProvider.GetService<CustomUserSettingsService>();
     }
 
     public override IDisplayResult Edit(CustomUserSettingsDeploymentStep step, BuildEditorContext context)

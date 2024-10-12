@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -6,22 +7,14 @@ using OrchardCore.Search.Elasticsearch.ViewModels;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 
-public sealed class ElasticIndexRebuildDeploymentStepDriver : DisplayDriver<DeploymentStep, ElasticIndexRebuildDeploymentStep>
+public sealed class ElasticIndexRebuildDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<ElasticIndexRebuildDeploymentStep>
 {
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
 
-    public ElasticIndexRebuildDeploymentStepDriver(ElasticIndexSettingsService elasticIndexSettingsService)
+    public ElasticIndexRebuildDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _elasticIndexSettingsService = elasticIndexSettingsService;
-    }
-
-    public override Task<IDisplayResult> DisplayAsync(ElasticIndexRebuildDeploymentStep step, BuildDisplayContext context)
-    {
-        return
-            CombineAsync(
-                View("ElasticIndexRebuildDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("ElasticIndexRebuildDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
+        _elasticIndexSettingsService = serviceProvider.GetService<ElasticIndexSettingsService>();
     }
 
     public override IDisplayResult Edit(ElasticIndexRebuildDeploymentStep step, BuildEditorContext context)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -5,22 +6,14 @@ using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Deployment;
 
-public sealed class MediaDeploymentStepDriver : DisplayDriver<DeploymentStep, MediaDeploymentStep>
+public sealed class MediaDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<MediaDeploymentStep>
 {
     private readonly IMediaFileStore _mediaFileStore;
 
-    public MediaDeploymentStepDriver(IMediaFileStore mediaFileStore)
+    public MediaDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _mediaFileStore = mediaFileStore;
-    }
-
-    public override Task<IDisplayResult> DisplayAsync(MediaDeploymentStep step, BuildDisplayContext context)
-    {
-        return
-            CombineAsync(
-                View("MediaDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("MediaDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
+        _mediaFileStore = serviceProvider.GetService<IMediaFileStore>();
     }
 
     public override IDisplayResult Edit(MediaDeploymentStep step, BuildEditorContext context)

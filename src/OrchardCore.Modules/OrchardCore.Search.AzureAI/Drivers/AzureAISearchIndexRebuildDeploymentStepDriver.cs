@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -7,16 +8,15 @@ using OrchardCore.Search.AzureAI.ViewModels;
 
 namespace OrchardCore.Search.AzureAI.Drivers;
 
-public sealed class AzureAISearchIndexRebuildDeploymentStepDriver(AzureAISearchIndexSettingsService indexSettingsService)
-    : DisplayDriver<DeploymentStep, AzureAISearchIndexRebuildDeploymentStep>
+public sealed class AzureAISearchIndexRebuildDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<AzureAISearchIndexRebuildDeploymentStep>
 {
-    private readonly AzureAISearchIndexSettingsService _indexSettingsService = indexSettingsService;
+    private readonly AzureAISearchIndexSettingsService _indexSettingsService;
 
-    public override Task<IDisplayResult> DisplayAsync(AzureAISearchIndexRebuildDeploymentStep step, BuildDisplayContext context)
-        => CombineAsync(
-            View("AzureAISearchIndexRebuildDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-            View("AzureAISearchIndexRebuildDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-        );
+    public AzureAISearchIndexRebuildDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
+    {
+        _indexSettingsService = serviceProvider.GetService<AzureAISearchIndexSettingsService>();
+    }
 
     public override IDisplayResult Edit(AzureAISearchIndexRebuildDeploymentStep step, BuildEditorContext context)
         => Initialize<AzureAISearchIndexRebuildDeploymentStepViewModel>("AzureAISearchIndexRebuildDeploymentStep_Fields_Edit", async model =>

@@ -5,15 +5,11 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.Deployment;
 
-public sealed class ContentDeploymentStepDriver : DisplayDriver<DeploymentStep, ContentDeploymentStep>
+public sealed class ContentDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<ContentDeploymentStep>
 {
-    public override Task<IDisplayResult> DisplayAsync(ContentDeploymentStep step, BuildDisplayContext context)
+    public ContentDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        return
-            CombineAsync(
-                View("ContentDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("ContentDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
     }
 
     public override IDisplayResult Edit(ContentDeploymentStep step, BuildEditorContext context)

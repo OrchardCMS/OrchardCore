@@ -5,17 +5,13 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.Deployment;
 
-public sealed class DeleteContentDefinitionDeploymentStepDriver : DisplayDriver<DeploymentStep, DeleteContentDefinitionDeploymentStep>
+public sealed class DeleteContentDefinitionDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<DeleteContentDefinitionDeploymentStep>
 {
     private static readonly char[] _separator = [' ', ','];
 
-    public override Task<IDisplayResult> DisplayAsync(DeleteContentDefinitionDeploymentStep step, BuildDisplayContext context)
+    public DeleteContentDefinitionDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        return
-            CombineAsync(
-                View("DeleteContentDefinitionDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("DeleteContentDefinitionDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
     }
 
     public override IDisplayResult Edit(DeleteContentDefinitionDeploymentStep step, BuildEditorContext context)

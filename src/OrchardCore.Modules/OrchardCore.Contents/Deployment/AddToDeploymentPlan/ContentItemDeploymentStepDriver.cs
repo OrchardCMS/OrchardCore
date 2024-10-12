@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
@@ -7,26 +8,17 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 
-public sealed class ContentItemDeploymentStepDriver : DisplayDriver<DeploymentStep, ContentItemDeploymentStep>
+public sealed class ContentItemDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<ContentItemDeploymentStep>
 {
     private readonly IContentManager _contentManager;
 
     internal readonly IStringLocalizer S;
 
-    public ContentItemDeploymentStepDriver(IContentManager contentManager,
-        IStringLocalizer<ContentItemDeploymentStepDriver> stringLocalizer)
+    public ContentItemDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _contentManager = contentManager;
-        S = stringLocalizer;
-    }
-
-    public override Task<IDisplayResult> DisplayAsync(ContentItemDeploymentStep step, BuildDisplayContext context)
-    {
-        return
-            CombineAsync(
-                View("ContentItemDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("ContentItemDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
+        _contentManager = serviceProvider.GetService<IContentManager>();
+        S = serviceProvider.GetService<IStringLocalizer<ContentItemDeploymentStepDriver>>();
     }
 
     public override IDisplayResult Edit(ContentItemDeploymentStep step, BuildEditorContext context)

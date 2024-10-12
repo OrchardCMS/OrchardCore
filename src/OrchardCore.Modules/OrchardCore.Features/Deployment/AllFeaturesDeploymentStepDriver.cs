@@ -5,15 +5,12 @@ using OrchardCore.Features.ViewModels;
 
 namespace OrchardCore.Features.Deployment;
 
-public sealed class AllFeaturesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllFeaturesDeploymentStep>
+public sealed class AllFeaturesDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<AllFeaturesDeploymentStep>
 {
-    public override Task<IDisplayResult> DisplayAsync(AllFeaturesDeploymentStep step, BuildDisplayContext context)
+    public AllFeaturesDeploymentStepDriver(IServiceProvider serviceProvider)
+        : base(serviceProvider)
     {
-        return
-            CombineAsync(
-                View("AllFeaturesDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("AllFeaturesDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
     }
 
     public override IDisplayResult Edit(AllFeaturesDeploymentStep step, BuildEditorContext context)

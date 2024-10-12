@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -5,22 +6,14 @@ using OrchardCore.Search.Lucene.ViewModels;
 
 namespace OrchardCore.Search.Lucene.Deployment;
 
-public sealed class LuceneIndexRebuildDeploymentStepDriver : DisplayDriver<DeploymentStep, LuceneIndexRebuildDeploymentStep>
+public sealed class LuceneIndexRebuildDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<LuceneIndexRebuildDeploymentStep>
 {
     private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 
-    public LuceneIndexRebuildDeploymentStepDriver(LuceneIndexSettingsService luceneIndexSettingsService)
+    public LuceneIndexRebuildDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _luceneIndexSettingsService = luceneIndexSettingsService;
-    }
-
-    public override Task<IDisplayResult> DisplayAsync(LuceneIndexRebuildDeploymentStep step, BuildDisplayContext context)
-    {
-        return
-            CombineAsync(
-                View("LuceneIndexRebuildDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("LuceneIndexRebuildDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
+        _luceneIndexSettingsService = serviceProvider.GetService<LuceneIndexSettingsService>();
     }
 
     public override IDisplayResult Edit(LuceneIndexRebuildDeploymentStep step, BuildEditorContext context)
