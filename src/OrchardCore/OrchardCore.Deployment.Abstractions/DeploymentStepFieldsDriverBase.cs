@@ -13,7 +13,11 @@ public abstract class DeploymentStepFieldsDriverBase<TStep>
 
     protected DeploymentStepFieldsDriverBase(IServiceProvider serviceProvider)
     {
-        var stepName = typeof(TStep).Name;
+        var stepType = typeof(TStep);
+        // Strip the generic type name, e.g. "MyStep`1" -> "MyStep"
+        var stepName = stepType.IsGenericType
+            ? stepType.Name.Substring(0, stepType.Name.IndexOf('`'))
+            : typeof(TStep).Name;
         ServiceProvider = serviceProvider;
         DisplaySummaryShape = $"{stepName}_Fields_Summary";
         DisplayThumbnailShape = $"{stepName}_Fields_Thumbnail";

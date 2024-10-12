@@ -12,7 +12,11 @@ public abstract class DeploymentStepDriverBase<TStep>
 
     protected DeploymentStepDriverBase()
     {
-        var stepName = typeof(TStep).Name;
+        var stepType = typeof(TStep);
+        // Strip the generic type name, e.g. "MyStep`1" -> "MyStep"
+        var stepName = stepType.IsGenericType
+            ? stepType.Name.Substring(0, stepType.Name.IndexOf('`'))
+            : typeof(TStep).Name;
         DisplaySummaryShape = $"{stepName}_Summary";
         DisplayThumbnailShape = $"{stepName}_Thumbnail";
         EditShape = $"{stepName}_Edit";

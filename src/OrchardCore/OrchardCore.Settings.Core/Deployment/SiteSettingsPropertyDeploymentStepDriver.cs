@@ -11,18 +11,32 @@ public class SiteSettingsPropertyDeploymentStepDriver<TModel>
     private readonly string _title;
     private readonly string _description;
 
-    public SiteSettingsPropertyDeploymentStepDriver(string title, string description) : base(null)
+    public SiteSettingsPropertyDeploymentStepDriver(string title, string description, IServiceProvider serviceProvider)
+        : base(serviceProvider)
     {
         _title = title;
         _description = description;
     }
 
-    public override IDisplayResult Edit(SiteSettingsPropertyDeploymentStep<TModel> step, Action<SiteSettingsPropertyDeploymentStepViewModel> intializeAction)
+    public override Task<IDisplayResult> DisplayAsync(SiteSettingsPropertyDeploymentStep<TModel> step, BuildDisplayContext context)
     {
-        return base.Edit(step, model =>
-        {
-            model.Title = _title;
-            model.Description = _description;
-        });
+        return CombineAsync(
+            Initialize<SiteSettingsPropertyDeploymentStepViewModel>(DisplaySummaryShape, m => BuildViewModel(m))
+                    .Location("Summary", "Content"),
+                Initialize<SiteSettingsPropertyDeploymentStepViewModel>(DisplayThumbnailShape, m => BuildViewModel(m))
+                    .Location("Thumbnail", "Content")
+            );
+    }
+
+    public override IDisplayResult Edit(SiteSettingsPropertyDeploymentStep<TModel> step, BuildEditorContext context)
+    {
+        return Initialize<SiteSettingsPropertyDeploymentStepViewModel>(EditShape, BuildViewModel)
+            .Location("Content");
+    }
+
+    private void BuildViewModel(SiteSettingsPropertyDeploymentStepViewModel model)
+    {
+        model.Title = _title;
+        model.Description = _description;
     }
 }
