@@ -10,7 +10,7 @@ using OrchardCore.Queries.ViewModels;
 namespace OrchardCore.Queries.Deployment;
 
 public sealed class QueryBasedContentDeploymentStepDriver
-    : DeploymentStepFieldsDriverBase<QueryBasedContentDeploymentStep>
+    : DeploymentStepFieldsDriverBase<QueryBasedContentDeploymentStep, QueryBasedContentDeploymentStepViewModel>
 {
     private readonly IQueryManager _queryManager;
 
@@ -22,15 +22,15 @@ public sealed class QueryBasedContentDeploymentStepDriver
         S = serviceProvider.GetService<IStringLocalizer<QueryBasedContentDeploymentStepDriver>>();
     }
 
-    public override IDisplayResult Edit(QueryBasedContentDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(QueryBasedContentDeploymentStep step, Action<QueryBasedContentDeploymentStepViewModel> intializeAction)
     {
-        return Initialize<QueryBasedContentDeploymentStepViewModel>("QueryBasedContentDeploymentStep_Fields_Edit", async model =>
+        return base.Edit(step, async model =>
         {
             model.QueryName = step.QueryName;
             model.QueryParameters = step.QueryParameters;
             model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
             model.Queries = await _queryManager.ListQueriesAsync(true);
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(QueryBasedContentDeploymentStep step, UpdateEditorContext context)

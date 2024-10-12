@@ -7,7 +7,7 @@ using OrchardCore.Media.ViewModels;
 namespace OrchardCore.Media.Deployment;
 
 public sealed class MediaDeploymentStepDriver
-    : DeploymentStepFieldsDriverBase<MediaDeploymentStep>
+    : DeploymentStepFieldsDriverBase<MediaDeploymentStep, MediaDeploymentStepViewModel>
 {
     private readonly IMediaFileStore _mediaFileStore;
 
@@ -16,15 +16,15 @@ public sealed class MediaDeploymentStepDriver
         _mediaFileStore = serviceProvider.GetService<IMediaFileStore>();
     }
 
-    public override IDisplayResult Edit(MediaDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(MediaDeploymentStep step, Action<MediaDeploymentStepViewModel> intializeAction)
     {
-        return Initialize<MediaDeploymentStepViewModel>("MediaDeploymentStep_Fields_Edit", async model =>
+        return base.Edit(step, async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.FilePaths = step.FilePaths;
             model.DirectoryPaths = step.DirectoryPaths;
             model.Entries = await GetMediaStoreEntries();
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(MediaDeploymentStep step, UpdateEditorContext context)

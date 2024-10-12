@@ -8,7 +8,7 @@ using OrchardCore.Users.ViewModels;
 namespace OrchardCore.Users.Deployment;
 
 public sealed class CustomUserSettingsDeploymentStepDriver
-    : DeploymentStepFieldsDriverBase<CustomUserSettingsDeploymentStep>
+    : DeploymentStepFieldsDriverBase<CustomUserSettingsDeploymentStep, CustomUserSettingsDeploymentStepViewModel>
 {
     private readonly CustomUserSettingsService _customUserSettingsService;
 
@@ -17,14 +17,14 @@ public sealed class CustomUserSettingsDeploymentStepDriver
         _customUserSettingsService = serviceProvider.GetService<CustomUserSettingsService>();
     }
 
-    public override IDisplayResult Edit(CustomUserSettingsDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(CustomUserSettingsDeploymentStep step, Action<CustomUserSettingsDeploymentStepViewModel> intializeAction)
     {
-        return Initialize<CustomUserSettingsDeploymentStepViewModel>(EditShape, async model =>
+        return base.Edit(step, async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.SettingsTypeNames = step.SettingsTypeNames;
             model.AllSettingsTypeNames = (await _customUserSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(CustomUserSettingsDeploymentStep step, UpdateEditorContext context)

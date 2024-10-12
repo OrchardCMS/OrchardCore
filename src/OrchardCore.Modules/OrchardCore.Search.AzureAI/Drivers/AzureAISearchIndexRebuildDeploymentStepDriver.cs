@@ -9,7 +9,7 @@ using OrchardCore.Search.AzureAI.ViewModels;
 namespace OrchardCore.Search.AzureAI.Drivers;
 
 public sealed class AzureAISearchIndexRebuildDeploymentStepDriver
-    : DeploymentStepFieldsDriverBase<AzureAISearchIndexRebuildDeploymentStep>
+    : DeploymentStepFieldsDriverBase<AzureAISearchIndexRebuildDeploymentStep, AzureAISearchIndexRebuildDeploymentStepViewModel>
 {
     private readonly AzureAISearchIndexSettingsService _indexSettingsService;
 
@@ -18,13 +18,15 @@ public sealed class AzureAISearchIndexRebuildDeploymentStepDriver
         _indexSettingsService = serviceProvider.GetService<AzureAISearchIndexSettingsService>();
     }
 
-    public override IDisplayResult Edit(AzureAISearchIndexRebuildDeploymentStep step, BuildEditorContext context)
-        => Initialize<AzureAISearchIndexRebuildDeploymentStepViewModel>(EditShape, async model =>
+    public override IDisplayResult Edit(AzureAISearchIndexRebuildDeploymentStep step, Action<AzureAISearchIndexRebuildDeploymentStepViewModel> intializeAction)
+    {
+        return base.Edit(step, async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indices;
             model.AllIndexNames = (await _indexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-        }).Location("Content");
+        });
+    }
 
     public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexRebuildDeploymentStep step, UpdateEditorContext context)
     {

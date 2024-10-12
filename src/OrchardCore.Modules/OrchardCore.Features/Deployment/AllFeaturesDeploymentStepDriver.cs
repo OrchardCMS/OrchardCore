@@ -6,19 +6,19 @@ using OrchardCore.Features.ViewModels;
 namespace OrchardCore.Features.Deployment;
 
 public sealed class AllFeaturesDeploymentStepDriver
-    : DeploymentStepFieldsDriverBase<AllFeaturesDeploymentStep>
+    : DeploymentStepFieldsDriverBase<AllFeaturesDeploymentStep, AllFeaturesDeploymentStepViewModel>
 {
     public AllFeaturesDeploymentStepDriver(IServiceProvider serviceProvider)
         : base(serviceProvider)
     {
     }
 
-    public override IDisplayResult Edit(AllFeaturesDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(AllFeaturesDeploymentStep step, Action<AllFeaturesDeploymentStepViewModel> intializeAction)
     {
-        return Initialize<AllFeaturesDeploymentStepViewModel>("AllFeaturesDeploymentStep_Fields_Edit", model =>
+        return base.Edit(step, model =>
         {
             model.IgnoreDisabledFeatures = step.IgnoreDisabledFeatures;
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(AllFeaturesDeploymentStep step, UpdateEditorContext context)

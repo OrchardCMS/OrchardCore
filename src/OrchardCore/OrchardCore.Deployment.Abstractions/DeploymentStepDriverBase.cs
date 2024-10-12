@@ -30,3 +30,10 @@ public abstract class DeploymentStepDriverBase<TStep>
     public override IDisplayResult Edit(TStep step, BuildEditorContext context)
         => View(EditShape, step).Location("Content");
 }
+
+public abstract class DeploymentStepDriverBase<TStep, TStepViewlModel>
+    : DeploymentStepDriverBase<TStep> where TStep : DeploymentStep where TStepViewlModel : class
+{
+    public virtual IDisplayResult Edit(TStep step, Action<TStepViewlModel> intializeAction)
+        => Initialize(EditShape, intializeAction).Location("Content");
+}

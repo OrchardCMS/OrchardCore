@@ -8,7 +8,7 @@ using OrchardCore.DisplayManagement.Views;
 namespace OrchardCore.CustomSettings.Deployment;
 
 public sealed class CustomSettingsDeploymentStepDriver
-    : DeploymentStepFieldsDriverBase<CustomSettingsDeploymentStep>
+    : DeploymentStepFieldsDriverBase<CustomSettingsDeploymentStep, CustomSettingsDeploymentStepViewModel>
 {
     private readonly CustomSettingsService _customSettingsService;
 
@@ -16,14 +16,15 @@ public sealed class CustomSettingsDeploymentStepDriver
     {
         _customSettingsService = serviceProvider.GetService<CustomSettingsService>();
     }
-    public override IDisplayResult Edit(CustomSettingsDeploymentStep step, BuildEditorContext context)
+
+    public override IDisplayResult Edit(CustomSettingsDeploymentStep step, Action<CustomSettingsDeploymentStepViewModel> intializeAction)
     {
-        return Initialize<CustomSettingsDeploymentStepViewModel>("CustomSettingsDeploymentStep_Fields_Edit", async model =>
+        return base.Edit(step, async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.SettingsTypeNames = step.SettingsTypeNames;
             model.AllSettingsTypeNames = (await _customSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(CustomSettingsDeploymentStep step, UpdateEditorContext context)

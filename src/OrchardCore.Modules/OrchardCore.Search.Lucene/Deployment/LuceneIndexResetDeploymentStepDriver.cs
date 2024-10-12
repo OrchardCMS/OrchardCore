@@ -7,7 +7,7 @@ using OrchardCore.Search.Lucene.ViewModels;
 namespace OrchardCore.Search.Lucene.Deployment;
 
 public sealed class LuceneIndexResetDeploymentStepDriver
-    : DeploymentStepFieldsDriverBase<LuceneIndexResetDeploymentStep>
+    : DeploymentStepFieldsDriverBase<LuceneIndexResetDeploymentStep, LuceneIndexResetDeploymentStepViewModel>
 {
     private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 
@@ -16,14 +16,14 @@ public sealed class LuceneIndexResetDeploymentStepDriver
         _luceneIndexSettingsService= serviceProvider.GetService<LuceneIndexSettingsService>();
     }
 
-    public override IDisplayResult Edit(LuceneIndexResetDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(LuceneIndexResetDeploymentStep step, Action<LuceneIndexResetDeploymentStepViewModel> intializeAction)
     {
-        return Initialize<LuceneIndexResetDeploymentStepViewModel>(EditShape, async model =>
+        return base.Edit(step, async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.IndexNames;
             model.AllIndexNames = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(LuceneIndexResetDeploymentStep resetIndexStep, UpdateEditorContext context)

@@ -8,7 +8,7 @@ using OrchardCore.Search.Elasticsearch.ViewModels;
 namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 
 public sealed class ElasticIndexResetDeploymentStepDriver
-    : DeploymentStepFieldsDriverBase<ElasticIndexResetDeploymentStep>
+    : DeploymentStepFieldsDriverBase<ElasticIndexResetDeploymentStep, ElasticIndexResetDeploymentStepViewModel>
 {
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
 
@@ -17,14 +17,14 @@ public sealed class ElasticIndexResetDeploymentStepDriver
         _elasticIndexSettingsService = serviceProvider.GetService<ElasticIndexSettingsService>();
     }
 
-    public override IDisplayResult Edit(ElasticIndexResetDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(ElasticIndexResetDeploymentStep step, Action<ElasticIndexResetDeploymentStepViewModel> intializeAction)
     {
-        return Initialize<ElasticIndexResetDeploymentStepViewModel>(EditShape, async model =>
+        return base.Edit(step, async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indices;
             model.AllIndexNames = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ElasticIndexResetDeploymentStep resetIndexStep, UpdateEditorContext context)

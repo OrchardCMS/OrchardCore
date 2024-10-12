@@ -6,7 +6,7 @@ using OrchardCore.Settings.ViewModels;
 namespace OrchardCore.Settings.Deployment;
 
 public class SiteSettingsPropertyDeploymentStepDriver<TModel>
-    : DeploymentStepFieldsDriverBase<SiteSettingsPropertyDeploymentStep<TModel>> where TModel : class, new()
+    : DeploymentStepFieldsDriverBase<SiteSettingsPropertyDeploymentStep<TModel>, SiteSettingsPropertyDeploymentStepViewModel> where TModel : class, new()
 {
     private readonly string _title;
     private readonly string _description;
@@ -17,12 +17,12 @@ public class SiteSettingsPropertyDeploymentStepDriver<TModel>
         _description = description;
     }
 
-    public override IDisplayResult Edit(SiteSettingsPropertyDeploymentStep<TModel> step, BuildEditorContext context)
+    public override IDisplayResult Edit(SiteSettingsPropertyDeploymentStep<TModel> step, Action<SiteSettingsPropertyDeploymentStepViewModel> intializeAction)
     {
-        return Initialize<SiteSettingsPropertyDeploymentStepViewModel>(EditShape, model =>
+        return base.Edit(step, model =>
         {
             model.Title = _title;
             model.Description = _description;
-        }).Location("Content");
+        });
     }
 }

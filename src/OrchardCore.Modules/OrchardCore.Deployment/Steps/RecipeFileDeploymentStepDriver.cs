@@ -5,11 +5,11 @@ using OrchardCore.DisplayManagement.Views;
 namespace OrchardCore.Deployment.Steps;
 
 public sealed class RecipeFileDeploymentStepDriver
-    : DeploymentStepDriverBase<RecipeFileDeploymentStep>
+    : DeploymentStepDriverBase<RecipeFileDeploymentStep, RecipeFileDeploymentStepViewModel>
 {
-    public override IDisplayResult Edit(RecipeFileDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(RecipeFileDeploymentStep step, Action<RecipeFileDeploymentStepViewModel> initializeAction)
     {
-        return Initialize<RecipeFileDeploymentStepViewModel>("RecipeFileDeploymentStep_Fields_Edit", model =>
+        return base.Edit(step, model =>
         {
             model.RecipeName = step.RecipeName;
             model.DisplayName = step.DisplayName;
@@ -20,7 +20,7 @@ public sealed class RecipeFileDeploymentStepDriver
             model.IsSetupRecipe = step.IsSetupRecipe;
             model.Categories = step.Categories;
             model.Tags = step.Tags;
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RecipeFileDeploymentStep step, UpdateEditorContext context)

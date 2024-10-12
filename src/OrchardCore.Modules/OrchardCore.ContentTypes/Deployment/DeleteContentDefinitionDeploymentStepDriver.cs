@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement.Views;
 namespace OrchardCore.ContentTypes.Deployment;
 
 public sealed class DeleteContentDefinitionDeploymentStepDriver
-    : DeploymentStepFieldsDriverBase<DeleteContentDefinitionDeploymentStep>
+    : DeploymentStepFieldsDriverBase<DeleteContentDefinitionDeploymentStep, DeleteContentDefinitionStepViewModel>
 {
     private static readonly char[] _separator = [' ', ','];
 
@@ -14,13 +14,13 @@ public sealed class DeleteContentDefinitionDeploymentStepDriver
     {
     }
 
-    public override IDisplayResult Edit(DeleteContentDefinitionDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(DeleteContentDefinitionDeploymentStep step, Action<DeleteContentDefinitionStepViewModel> intializeAction)
     {
-        return Initialize<DeleteContentDefinitionStepViewModel>("DeleteContentDefinitionDeploymentStep_Fields_Edit", model =>
+        return base.Edit(step, model =>
         {
             model.ContentParts = string.Join(", ", step.ContentParts);
             model.ContentTypes = string.Join(", ", step.ContentTypes);
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(DeleteContentDefinitionDeploymentStep step, UpdateEditorContext context)

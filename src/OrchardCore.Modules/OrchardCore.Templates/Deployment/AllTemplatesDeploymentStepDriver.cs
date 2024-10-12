@@ -6,19 +6,20 @@ using OrchardCore.Templates.ViewModels;
 namespace OrchardCore.Templates.Deployment;
 
 public sealed class AllTemplatesDeploymentStepDriver
-    : DeploymentStepFieldsDriverBase<AllTemplatesDeploymentStep>
+    : DeploymentStepFieldsDriverBase<AllTemplatesDeploymentStep, AllTemplatesDeploymentStepViewModel>
 {
     public AllTemplatesDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
-    public override IDisplayResult Edit(AllTemplatesDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(AllTemplatesDeploymentStep step, Action<AllTemplatesDeploymentStepViewModel> intializeAction)
     {
-        return Initialize<AllTemplatesDeploymentStepViewModel>(EditShape, model =>
+        return base.Edit(step, model =>
         {
             model.ExportAsFiles = step.ExportAsFiles;
-        }).Location("Content");
+        });
     }
+
     public override async Task<IDisplayResult> UpdateAsync(AllTemplatesDeploymentStep step, UpdateEditorContext context)
     {
         await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.ExportAsFiles);

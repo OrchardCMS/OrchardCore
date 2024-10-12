@@ -9,7 +9,7 @@ using OrchardCore.Mvc.ModelBinding;
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 
 public sealed class ContentItemDeploymentStepDriver
-    : DeploymentStepFieldsDriverBase<ContentItemDeploymentStep>
+    : DeploymentStepFieldsDriverBase<ContentItemDeploymentStep, ContentItemDeploymentStepViewModel>
 {
     private readonly IContentManager _contentManager;
 
@@ -21,12 +21,12 @@ public sealed class ContentItemDeploymentStepDriver
         S = serviceProvider.GetService<IStringLocalizer<ContentItemDeploymentStepDriver>>();
     }
 
-    public override IDisplayResult Edit(ContentItemDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(ContentItemDeploymentStep step, Action<ContentItemDeploymentStepViewModel> intializeAction)
     {
-        return Initialize<ContentItemDeploymentStepViewModel>("ContentItemDeploymentStep_Fields_Edit", model =>
+        return base.Edit(step, model =>
         {
             model.ContentItemId = step.ContentItemId;
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentItemDeploymentStep step, UpdateEditorContext context)

@@ -9,7 +9,7 @@ using OrchardCore.Mvc.ModelBinding;
 namespace OrchardCore.Deployment.Steps;
 
 public sealed class JsonRecipeDeploymentStepDriver
-    : DeploymentStepFieldsDriverBase<JsonRecipeDeploymentStep>
+    : DeploymentStepFieldsDriverBase<JsonRecipeDeploymentStep, JsonRecipeDeploymentStepViewModel>
 {
     /// <summary>
     /// A limited schema for recipe steps. Does not include any step data.
@@ -37,13 +37,13 @@ public sealed class JsonRecipeDeploymentStepDriver
         S = serviceProvider.GetService<IStringLocalizer<JsonRecipeDeploymentStepDriver>>();
     }
 
-    public override IDisplayResult Edit(JsonRecipeDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(JsonRecipeDeploymentStep step, Action<JsonRecipeDeploymentStepViewModel> intializeAction)
     {
-        return Initialize<JsonRecipeDeploymentStepViewModel>("JsonRecipeDeploymentStep_Fields_Edit", model =>
+        return base.Edit(step, model =>
         {
             model.Json = step.Json;
             model.Schema = Schema;
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(JsonRecipeDeploymentStep step, UpdateEditorContext context)

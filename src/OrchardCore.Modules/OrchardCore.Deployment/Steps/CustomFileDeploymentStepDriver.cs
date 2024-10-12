@@ -5,15 +5,15 @@ using OrchardCore.DisplayManagement.Views;
 namespace OrchardCore.Deployment.Steps;
 
 public sealed class CustomFileDeploymentStepDriver
-    : DeploymentStepDriverBase<CustomFileDeploymentStep>
+    : DeploymentStepDriverBase<CustomFileDeploymentStep, CustomFileDeploymentStepViewModel>
 {
-    public override IDisplayResult Edit(CustomFileDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(CustomFileDeploymentStep step, Action<CustomFileDeploymentStepViewModel> initializeAction)
     {
-        return Initialize<CustomFileDeploymentStepViewModel>(EditShape, model =>
+        return base.Edit(step, model =>
         {
-            model.FileContent = step.FileContent;
             model.FileName = step.FileName;
-        }).Location("Content");
+            model.FileContent = step.FileContent;
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(CustomFileDeploymentStep step, UpdateEditorContext context)

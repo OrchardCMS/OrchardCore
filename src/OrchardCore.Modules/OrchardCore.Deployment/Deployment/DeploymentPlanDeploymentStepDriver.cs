@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement.Views;
 namespace OrchardCore.Deployment.Deployment;
 
 public sealed class DeploymentPlanDeploymentStepDriver
-    : DeploymentStepFieldsDriverBase<DeploymentPlanDeploymentStep>
+    : DeploymentStepFieldsDriverBase<DeploymentPlanDeploymentStep, DeploymentPlanDeploymentStepViewModel>
 {
     private readonly IDeploymentPlanService _deploymentPlanService;
 
@@ -15,14 +15,14 @@ public sealed class DeploymentPlanDeploymentStepDriver
         _deploymentPlanService = serviceProvider.GetService<IDeploymentPlanService>();
     }
 
-    public override IDisplayResult Edit(DeploymentPlanDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(DeploymentPlanDeploymentStep step, Action<DeploymentPlanDeploymentStepViewModel> intializeAction)
     {
-        return Initialize<DeploymentPlanDeploymentStepViewModel>("DeploymentPlanDeploymentStep_Fields_Edit", async model =>
+        return base.Edit(step, async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.DeploymentPlanNames = step.DeploymentPlanNames;
             model.AllDeploymentPlanNames = (await _deploymentPlanService.GetAllDeploymentPlanNamesAsync()).ToArray();
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(DeploymentPlanDeploymentStep step, UpdateEditorContext context)

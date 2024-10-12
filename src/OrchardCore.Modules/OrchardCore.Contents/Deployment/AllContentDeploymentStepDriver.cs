@@ -6,18 +6,18 @@ using OrchardCore.DisplayManagement.Views;
 namespace OrchardCore.Contents.Deployment;
 
 public sealed class AllContentDeploymentStepDriver
-    : DeploymentStepFieldsDriverBase<AllContentDeploymentStep>
+    : DeploymentStepFieldsDriverBase<AllContentDeploymentStep, AllContentDeploymentStepViewModel>
 {
     public AllContentDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
     }
 
-    public override IDisplayResult Edit(AllContentDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(AllContentDeploymentStep step, Action<AllContentDeploymentStepViewModel> intializeAction)
     {
-        return Initialize<AllContentDeploymentStepViewModel>("AllContentDeploymentStep_Fields_Edit", model =>
+        return base.Edit(step, model =>
         {
             model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(AllContentDeploymentStep step, UpdateEditorContext context)
