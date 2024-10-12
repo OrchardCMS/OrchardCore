@@ -104,6 +104,39 @@ public class AutoSetupMiddlewareTests
     }
 
     [Fact]
+    public async Task InvokeAsync_UnInitializedShell_PerformsSetup()
+    {
+        // Arrange
+        _shellSettings.State = TenantState.Uninitialized;
+
+        SetupDistributedLockMock(true);
+
+        var setupContext = new SetupContext();
+        _mockAutoSetupService.Setup(s => s.SetupTenantAsync(It.IsAny<TenantSetupOptions>(), It.IsAny<ShellSettings>()))
+            .ReturnsAsync((setupContext, true));
+
+        var httpContext = new DefaultHttpContext();
+        httpContext.RequestServices = new ServiceCollection()
+            .AddSingleton(_mockAutoSetupService.Object)
+            .BuildServiceProvider();
+
+        var middleware = new AutoSetupMiddleware(
+            next: (innerHttpContext) => Task.CompletedTask,
+            _mockShellHost.Object,
+            _shellSettings,
+            _mockShellSettingsManager.Object,
+            _mockDistributedLock.Object,
+            _mockOptions.Object);
+
+        // Act
+        await middleware.InvokeAsync(httpContext);
+
+        // Assert
+        Assert.Equal(StatusCodes.Status302Found, httpContext.Response.StatusCode); // Redirect
+        _mockAutoSetupService.Verify(s => s.SetupTenantAsync(It.IsAny<TenantSetupOptions>(), It.IsAny<ShellSettings>()), Times.Once);
+    }
+
+    [Fact]
     public async Task InvokeAsync_FailedLockAcquisition_ThrowsTimeoutException()
     {
         // Arrange
