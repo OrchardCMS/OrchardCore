@@ -4,9 +4,13 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Deployment.Steps;
 
-public sealed class CustomFileDeploymentStepDriver
-    : DeploymentStepDriverBase<CustomFileDeploymentStep, CustomFileDeploymentStepViewModel>
+public sealed class CustomFileDeploymentStepFieldsDriver
+    : DeploymentStepFieldsDriverBase<CustomFileDeploymentStep, CustomFileDeploymentStepViewModel>
 {
+    public CustomFileDeploymentStepFieldsDriver(IServiceProvider serviceProvider) : base(serviceProvider)
+    {
+    }
+
     public override IDisplayResult Edit(CustomFileDeploymentStep step, Action<CustomFileDeploymentStepViewModel> initializeAction)
     {
         return base.Edit(step, model =>

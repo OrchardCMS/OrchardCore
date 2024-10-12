@@ -6,12 +6,8 @@ using OrchardCore.Templates.ViewModels;
 namespace OrchardCore.Templates.Deployment;
 
 public sealed class AllTemplatesDeploymentStepDriver
-    : DeploymentStepFieldsDriverBase<AllTemplatesDeploymentStep, AllTemplatesDeploymentStepViewModel>
+    : DeploymentStepDriverBase<AllTemplatesDeploymentStep, AllTemplatesDeploymentStepViewModel>
 {
-    public AllTemplatesDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
-    {
-    }
-
     public override IDisplayResult Edit(AllTemplatesDeploymentStep step, Action<AllTemplatesDeploymentStepViewModel> intializeAction)
     {
         return base.Edit(step, model =>

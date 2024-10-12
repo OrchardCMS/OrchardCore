@@ -4,9 +4,13 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Deployment.Steps;
 
-public sealed class RecipeFileDeploymentStepDriver
-    : DeploymentStepDriverBase<RecipeFileDeploymentStep, RecipeFileDeploymentStepViewModel>
+public sealed class RecipeFileDeploymentStepFieldsDriver
+    : DeploymentStepFieldsDriverBase<RecipeFileDeploymentStep, RecipeFileDeploymentStepViewModel>
 {
+    public RecipeFileDeploymentStepFieldsDriver(IServiceProvider serviceProvider) : base(serviceProvider)
+    {
+    }
+
     public override IDisplayResult Edit(RecipeFileDeploymentStep step, Action<RecipeFileDeploymentStepViewModel> initializeAction)
     {
         return base.Edit(step, model =>
