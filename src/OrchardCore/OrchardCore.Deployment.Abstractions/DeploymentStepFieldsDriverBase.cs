@@ -21,7 +21,7 @@ public abstract class DeploymentStepFieldsDriverBase<TStep>
         ServiceProvider = serviceProvider;
         DisplaySummaryShape = $"{stepName}_Fields_Summary";
         DisplayThumbnailShape = $"{stepName}_Fields_Thumbnail";
-        EditShape = $"{stepName}_Edit";
+        EditShape = $"{stepName}_Fields_Edit";
     }
 
     public override Task<IDisplayResult> DisplayAsync(TStep step, BuildDisplayContext context)
