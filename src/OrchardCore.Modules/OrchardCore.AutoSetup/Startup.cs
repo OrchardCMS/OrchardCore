@@ -69,7 +69,7 @@ public sealed class Startup : StartupBase
             services.Configure<AutoSetupOptions>(o => o.ConfigurationExists = true);
         }
 
-        services.AddScoped<IAutoSetupService, AutoSetupService>();
+        services.AddSingleton<IAutoSetupService, AutoSetupService>();
     }
 
     /// <summary>

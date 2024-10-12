@@ -113,20 +113,22 @@ public class AutoSetupMiddleware
                 }
 
                 // Check if the tenant was installed by another instance.
-                using var settings = (await _shellSettingsManager
-                    .LoadSettingsAsync(_shellSettings.Name))
-                    .AsDisposable();
+                using var settings = await _shellSettingsManager.LoadSettingsAsync(_shellSettings.Name);
 
-                if (!settings.IsUninitialized())
+                if (settings != null)
                 {
-                    await _shellHost.ReloadShellContextAsync(_shellSettings, eventSource: false);
-                    httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-                    await httpContext.Response.WriteAsync("The requested tenant is not initialized.");
-                    return;
+                    settings.AsDisposable();
+                    if (!settings.IsUninitialized())
+                    {
+                        await _shellHost.ReloadShellContextAsync(_shellSettings, eventSource: false);
+                        httpContext.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                        await httpContext.Response.WriteAsync("The requested tenant is not initialized.");
+                        return;
+                    }
                 }
 
                 var autoSetupService = httpContext.RequestServices.GetRequiredService<IAutoSetupService>();
-                (var setupContext, var isSuccess)  = await autoSetupService.SetupTenantAsync(_setupOptions, _shellSettings);
+                (var setupContext, var isSuccess) = await autoSetupService.SetupTenantAsync(_setupOptions, _shellSettings);
                 if (isSuccess)
                 {
                     if (_setupOptions.IsDefault)

@@ -28,8 +28,9 @@ public class AutoSetupMiddlewareTests
 
     public AutoSetupMiddlewareTests()
     {
-        _mockShellHost = new Mock<IShellHost>();
         _shellSettings = new ShellSettings();
+        _shellSettings.AsDefaultShell();
+        _mockShellHost = new Mock<IShellHost>();        
         _mockShellSettingsManager = new Mock<IShellSettingsManager>();
         _mockDistributedLock = new Mock<IDistributedLock>();
         _mockOptions = new Mock<IOptions<AutoSetupOptions>>();
@@ -42,7 +43,7 @@ public class AutoSetupMiddlewareTests
                 {
                     new TenantSetupOptions { ShellName = ShellSettings.DefaultShellName }
                 }
-        });
+        });        
     }    
 
     [Fact]
@@ -68,6 +69,46 @@ public class AutoSetupMiddlewareTests
         // Assert
         Assert.True(nextCalled);
         _mockAutoSetupService.Verify(s => s.SetupTenantAsync(It.IsAny<TenantSetupOptions>(), It.IsAny<ShellSettings>()), Times.Never);
-    }    
+    }
+
+    [Fact]
+    public async Task InvokeAsync_FailedSetup_ReturnsServiceUnavailable()
+    {
+        // Arrange
+        _shellSettings.State = TenantState.Uninitialized;
+
+        SetupDistributedLockMock(true);
+
+        var setupContext = new SetupContext { Errors = new Dictionary<string, string> { { "Error", "Test error" } } };
+        _mockAutoSetupService.Setup(s => s.SetupTenantAsync(It.IsAny<TenantSetupOptions>(), It.IsAny<ShellSettings>()))
+            .ReturnsAsync((setupContext, false));
+
+        var httpContext = new DefaultHttpContext();
+        httpContext.RequestServices = new ServiceCollection()
+            .AddSingleton(_mockAutoSetupService.Object)
+            .BuildServiceProvider();
+
+        var middleware = new AutoSetupMiddleware(
+            next: (innerHttpContext) => Task.CompletedTask,
+            _mockShellHost.Object,
+            _shellSettings,
+            _mockShellSettingsManager.Object,
+            _mockDistributedLock.Object,
+            _mockOptions.Object);
+
+        // Act
+        await middleware.InvokeAsync(httpContext);
+
+        // Assert
+        Assert.Equal(StatusCodes.Status503ServiceUnavailable, httpContext.Response.StatusCode);
+    }
+
+    private void SetupDistributedLockMock(bool acquireLock)
+    {
+        var mockLocker = new Mock<ILocker>();
+        _mockDistributedLock
+            .Setup(d => d.TryAcquireLockAsync(It.IsAny<string>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()))
+            .ReturnsAsync((mockLocker.Object, acquireLock));
+    }
 }
 
