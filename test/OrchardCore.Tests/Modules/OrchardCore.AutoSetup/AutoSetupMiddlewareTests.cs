@@ -22,7 +22,7 @@ public class AutoSetupMiddlewareTests
     {
         _shellSettings = new ShellSettings();
         _shellSettings.AsDefaultShell();
-        _mockShellHost = new Mock<IShellHost>();        
+        _mockShellHost = new Mock<IShellHost>();
         _mockShellSettingsManager = new Mock<IShellSettingsManager>();
         _mockDistributedLock = new Mock<IDistributedLock>();
         _mockOptions = new Mock<IOptions<AutoSetupOptions>>();
@@ -35,8 +35,8 @@ public class AutoSetupMiddlewareTests
                 {
                     new TenantSetupOptions { ShellName = ShellSettings.DefaultShellName }
                 }
-        });        
-    }    
+        });
+    }
 
     [Fact]
     public async Task InvokeAsync_InitializedShell_SkipsSetup()
