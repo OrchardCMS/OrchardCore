@@ -1,19 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
-using Moq;
+using OrchardCore.AutoSetup;
 using OrchardCore.AutoSetup.Options;
 using OrchardCore.AutoSetup.Services;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Setup.Services;
-using Xunit;
-using OrchardCore.AutoSetup;
-using OrchardCore.AutoSetup.Extensions;
-using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.AutoSetup;
 
