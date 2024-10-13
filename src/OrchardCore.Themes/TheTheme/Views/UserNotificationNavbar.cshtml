@@ -14,7 +14,7 @@
 @model UserNotificationNavbarViewModel
 
 <li class="nav-item dropdown text-end">
-    <a type="button" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+    <a type="button" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" aria-label="@T["Notifications"]">
         @if (Model.TotalUnread > 0)
         {
             LocalizedHtmlString title;
