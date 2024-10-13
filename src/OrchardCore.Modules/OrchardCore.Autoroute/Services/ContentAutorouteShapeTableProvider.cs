@@ -6,7 +6,7 @@ using OrchardCore.DisplayManagement.Utilities;
 
 namespace OrchardCore.Autoroute.Services;
 
-public class AutorouteShapeTableProvider : ShapeTableProvider
+public sealed class ContentAutorouteShapeTableProvider : ShapeTableProvider
 {
     public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
