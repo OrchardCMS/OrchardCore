@@ -34,43 +34,40 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
             return;
         }
 
-        using var reader = new StringReader(GetRewriteRule(metadata));
-
-        options.AddApacheModRewrite(reader);
-    }
-
-    private static string GetRewriteRule(UrlRewriteSourceMetadata metadata)
-    {
-        var flags = GetFlags(metadata);
-
-        if (flags.Length > 0)
-        {
-            return $"RewriteRule \"{metadata.Pattern}\" \"{metadata.SubstitutionUrl}\" [{flags}]";
-        }
-
-        return $"RewriteRule \"{metadata.Pattern}\" \"{metadata.SubstitutionUrl}\"";
-    }
-
-    private static StringBuilder GetFlags(UrlRewriteSourceMetadata metadata)
-    {
         var builder = new StringBuilder();
+
+        builder.Append("RewriteRule \"");
+        builder.Append(metadata.Pattern);
+        builder.Append("\" \"");
+        builder.Append(metadata.SubstitutionUrl);
+        builder.Append("\" [");
+
+        var builderFlags = new StringBuilder();
 
         if (metadata.IgnoreCase)
         {
-            builder.AppendCommaSeparatedValues("NC");
+            builderFlags.AppendCommaSeparatedValues("NC");
         };
 
         if (metadata.AppendQueryString)
         {
-            builder.AppendCommaSeparatedValues("QSA");
+            builderFlags.AppendCommaSeparatedValues("QSA");
+        }
+        else
+        {
+            builderFlags.AppendCommaSeparatedValues("QSD");
         }
 
         if (metadata.SkipFurtherRules)
         {
-            builder.AppendCommaSeparatedValues('L');
+            builderFlags.AppendCommaSeparatedValues('L');
         }
 
-        return builder;
-    }
+        builder.Append(builderFlags);
+        builder.Append(']');
 
+        using var reader = new StringReader(builder.ToString());
+
+        options.AddApacheModRewrite(reader);
+    }
 }

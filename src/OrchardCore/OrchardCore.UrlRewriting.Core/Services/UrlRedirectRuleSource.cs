@@ -42,36 +42,26 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
         builder.Append(metadata.SubstitutionUrl);
         builder.Append("\" [");
 
-        var containFlags = false;
+        var builderFlags = new StringBuilder();
+
         if (metadata.IgnoreCase)
         {
-            builder.Append("NC");
-            containFlags = true;
+            builderFlags.AppendCommaSeparatedValues("NC");
         };
 
         if (metadata.AppendQueryString)
         {
-            if (containFlags)
-            {
-                builder.AppendCommaSeparatedValues("QSA");
-            }
-            else
-            {
-                builder.Append("QSA");
-                containFlags = true;
-            }
-        }
-
-        if (containFlags)
-        {
-            builder.AppendCommaSeparatedValues("R=");
+            builderFlags.AppendCommaSeparatedValues("QSA");
         }
         else
         {
-            builder.Append("R=");
+            builderFlags.AppendCommaSeparatedValues("QSD");
         }
 
-        builder.Append(RedirectTypeToStatusCode(metadata.RedirectType));
+        builderFlags.AppendCommaSeparatedValues("R=");
+        builderFlags.Append(RedirectTypeToStatusCode(metadata.RedirectType));
+
+        builder.Append(builderFlags);
         builder.Append(']');
 
         using var reader = new StringReader(builder.ToString());
