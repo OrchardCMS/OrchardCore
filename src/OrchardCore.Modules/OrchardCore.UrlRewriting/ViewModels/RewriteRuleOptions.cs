@@ -16,5 +16,5 @@ public class RewriteRuleOptions
 public enum RewriteRuleAction
 {
     None,
-    Remove
+    Remove,
 }
