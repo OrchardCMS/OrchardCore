@@ -19,13 +19,17 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
 
         Description = S["URL Rewrite Rule"];
     }
+
     public string Name
         => SourceName;
 
     public LocalizedString Description { get; }
+
     public void Configure(RewriteOptions options, RewriteRule rule)
     {
-        if (!rule.TryGet<UrlRewriteSourceMetadata>(out var metadata))
+        if (!rule.TryGet<UrlRewriteSourceMetadata>(out var metadata) ||
+            string.IsNullOrEmpty(metadata.Pattern) ||
+            string.IsNullOrEmpty(metadata.SubstitutionUrl))
         {
             return;
         }

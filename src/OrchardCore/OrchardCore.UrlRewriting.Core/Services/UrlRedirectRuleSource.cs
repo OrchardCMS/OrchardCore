@@ -19,6 +19,7 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
 
         Description = S["URL Redirect Rule"];
     }
+
     public string Name
         => SourceName;
 
@@ -26,46 +27,56 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
 
     public void Configure(RewriteOptions options, RewriteRule rule)
     {
-        if (!rule.TryGet<UrlRedirectSourceMetadata>(out var metadata))
+        if (!rule.TryGet<UrlRedirectSourceMetadata>(out var metadata) ||
+            string.IsNullOrEmpty(metadata.Pattern) ||
+            string.IsNullOrEmpty(metadata.Url))
         {
             return;
         }
 
-        using var reader = new StringReader(GetRewriteRule(metadata));
-
-        options.AddApacheModRewrite(reader);
-    }
-
-    private static string GetRewriteRule(UrlRedirectSourceMetadata metadata)
-    {
-        var flags = GetFlags(metadata);
-
-        if (flags.Length > 0)
-        {
-            return $"RewriteRule \"{metadata.Pattern}\" \"{metadata.Url}\" [{flags}]";
-        }
-
-        return $"RewriteRule \"{metadata.Pattern}\" \"{metadata.Url}\"";
-    }
-
-    private static StringBuilder GetFlags(UrlRedirectSourceMetadata metadata)
-    {
         var builder = new StringBuilder();
 
+        builder.Append("RewriteRule \"");
+        builder.Append(metadata.Pattern);
+        builder.Append("\" \"");
+        builder.Append(metadata.Url);
+        builder.Append("\" [");
+
+        var containFlags = false;
         if (metadata.IgnoreCase)
         {
-            builder.AppendCommaSeparatedValues("NC");
+            builder.Append("NC");
+            containFlags = true;
         };
 
         if (metadata.AppendQueryString)
         {
-            builder.AppendCommaSeparatedValues("QSA");
+            if (containFlags)
+            {
+                builder.AppendCommaSeparatedValues("QSA");
+            }
+            else
+            {
+                builder.Append("QSA");
+                containFlags = true;
+            }
         }
 
-        builder.AppendCommaSeparatedValues("R=")
-            .Append(RedirectTypeToStatusCode(metadata.RedirectType));
+        if (containFlags)
+        {
+            builder.AppendCommaSeparatedValues("R=");
+        }
+        else
+        {
+            builder.Append("R=");
+        }
 
-        return builder;
+        builder.Append(RedirectTypeToStatusCode(metadata.RedirectType));
+        builder.Append(']');
+
+        using var reader = new StringReader(builder.ToString());
+
+        options.AddApacheModRewrite(reader);
     }
 
     public static RedirectType GetRedirectType(string flag)
