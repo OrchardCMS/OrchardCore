@@ -17,7 +17,7 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
     {
         S = stringLocalizer;
 
-        Description = S["Rewrite Rule"];
+        Description = S["URL Rewrite Rule"];
     }
     public string Name
         => SourceName;
