@@ -233,7 +233,6 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-
     [HttpPost]
     [ActionName(nameof(Index))]
     [FormValueRequired("submit.BulkAction")]

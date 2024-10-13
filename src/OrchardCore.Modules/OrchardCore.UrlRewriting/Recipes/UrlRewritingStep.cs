@@ -11,7 +11,7 @@ namespace OrchardCore.UrlRewriting.Recipes;
 /// <summary>
 /// This recipe step creates a set of url rewrites.
 /// </summary>
-public sealed class UrlRewritingStep : IRecipeStepHandler
+public sealed class UrlRewritingStep : NamedRecipeStepHandler
 {
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly IRewriteRulesManager _rewriteRulesManager;
@@ -21,19 +21,15 @@ public sealed class UrlRewritingStep : IRecipeStepHandler
         IRewriteRulesManager rewriteRulesManager,
         IOptions<JsonSerializerOptions> jsonSerializerOptions,
         IStringLocalizer<UrlRewritingStep> stringLocalizer)
+        : base("UrlRewriting")
     {
         _rewriteRulesManager = rewriteRulesManager;
         _jsonSerializerOptions = jsonSerializerOptions.Value;
         S = stringLocalizer;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "UrlRewriting", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var model = context.Step.ToObject<UrlRewritingStepModel>(_jsonSerializerOptions);
 
         var rules = new List<RewriteRule>();

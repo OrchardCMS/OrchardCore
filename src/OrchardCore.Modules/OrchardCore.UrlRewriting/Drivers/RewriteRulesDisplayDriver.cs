@@ -11,14 +11,16 @@ namespace OrchardCore.UrlRewriting.Drivers;
 public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
 {
     internal readonly IStringLocalizer S;
+
     private readonly IShellReleaseManager _shellReleaseManager;
 
     public RewriteRulesDisplayDriver(
-        IStringLocalizer<RewriteRulesDisplayDriver> stringLocalizer,
-        IShellReleaseManager shellReleaseManager)
+        IShellReleaseManager shellReleaseManager,
+        IStringLocalizer<RewriteRulesDisplayDriver> stringLocalizer
+        )
     {
-        S = stringLocalizer;
         _shellReleaseManager = shellReleaseManager;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(RewriteRule rule, BuildDisplayContext context)
