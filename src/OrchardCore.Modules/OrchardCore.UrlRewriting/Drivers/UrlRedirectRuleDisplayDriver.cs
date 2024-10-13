@@ -28,7 +28,7 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
         return Initialize<UrlRedirectRuleViewModel>("UrlRedirectRule_Edit", model =>
         {
             var metadata = rule.As<UrlRedirectSourceMetadata>();
-            model.SubstitutionUrl = metadata.Url;
+            model.SubstitutionUrl = metadata.SubstitutionUrl;
             model.AppendQueryString = context.IsNew || metadata.AppendQueryString;
             model.Pattern = metadata.Pattern;
             model.IgnoreCase = metadata.IgnoreCase;
@@ -73,7 +73,7 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
         {
             Pattern = model.Pattern,
             IgnoreCase = model.IgnoreCase,
-            Url = model.SubstitutionUrl,
+            SubstitutionUrl = model.SubstitutionUrl,
             AppendQueryString = model.AppendQueryString,
             RedirectType = model.RedirectType,
         });

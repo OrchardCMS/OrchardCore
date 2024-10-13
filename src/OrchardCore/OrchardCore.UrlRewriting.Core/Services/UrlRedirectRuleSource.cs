@@ -29,7 +29,7 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
     {
         if (!rule.TryGet<UrlRedirectSourceMetadata>(out var metadata) ||
             string.IsNullOrEmpty(metadata.Pattern) ||
-            string.IsNullOrEmpty(metadata.Url))
+            string.IsNullOrEmpty(metadata.SubstitutionUrl))
         {
             return;
         }
@@ -39,7 +39,7 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
         builder.Append("RewriteRule \"");
         builder.Append(metadata.Pattern);
         builder.Append("\" \"");
-        builder.Append(metadata.Url);
+        builder.Append(metadata.SubstitutionUrl);
         builder.Append("\" [");
 
         var containFlags = false;
