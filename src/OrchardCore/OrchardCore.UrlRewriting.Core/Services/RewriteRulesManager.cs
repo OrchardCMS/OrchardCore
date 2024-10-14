@@ -36,6 +36,17 @@ public class RewriteRulesManager : IRewriteRulesManager
         await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.DeletedAsync(ctx), deletedContext, _logger);
     }
 
+    public async Task<RewriteValidateResult> ValidateAsync(RewriteRule rule)
+    {
+        var validatingContext = new ValidatingRewriteRuleContext(rule);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.ValidatingAsync(ctx), validatingContext, _logger);
+
+        var validatedContext = new ValidatedRewriteRuleContext(rule, validatingContext.Result);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.ValidatedAsync(ctx), validatedContext, _logger);
+
+        return validatingContext.Result;
+    }
+
     public async Task<RewriteRule> FindByIdAsync(string id)
     {
         var rule = await _store.FindByIdAsync(id);
@@ -61,27 +72,28 @@ public class RewriteRulesManager : IRewriteRulesManager
             return null;
         }
 
+        var id = IdGenerator.GenerateId();
+
         var rule = new RewriteRule()
         {
-            Id = IdGenerator.GenerateId(),
+            Id = id,
             Source = source,
             Order = await GetNextOrderSequence()
         };
 
-        var initializingContext = new InitializingRewriteRuleContext(rule);
+        var initializingContext = new InitializingRewriteRuleContext(rule, data);
         await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.InitializingAsync(ctx), initializingContext, _logger);
-
-        if (data != null)
-        {
-            rule.Name = data[nameof(RewriteRule.Name)]?.GetValue<string>();
-        }
 
         var initializedContext = new InitializedRewriteRuleContext(rule);
         await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.InitializedAsync(ctx), initializedContext, _logger);
 
         // Set the source again after calling handlers to prevent handlers from updating the source during initialization.
         rule.Source = source;
-        rule.Id ??= IdGenerator.GenerateId();
+
+        if (string.IsNullOrEmpty(rule.Id))
+        {
+            rule.Id = id;
+        }
 
         return rule;
     }

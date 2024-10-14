@@ -1,11 +1,10 @@
 @model EditRewriteRuleViewModel
 
 <div class="mb-3" asp-validation-class-for="Name">
-    <label asp-for="Name" class="form-label">@T["Name"]</label>
+    <label asp-for="Name" class="form-label">@T["Display Name"]</label>
     <input type="text" asp-for="Name" class="form-control text-muted" autofocus />
     <span asp-validation-for="Name"></span>
-    <span class="hint">@T["A name of the rule."]</span>
-    <input asp-for="Source" type="hidden" />
+    <span class="hint">@T["A display name for the rule."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="Name">

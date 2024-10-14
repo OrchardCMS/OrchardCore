@@ -40,22 +40,25 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
         return Initialize<EditRewriteRuleViewModel>("RewriteRule_Fields_Edit", model =>
         {
             model.Name = rule.Name;
-            model.Source = rule.Source;
             model.Order = rule.Order;
         }).Location("Content:1");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RewriteRule rule, UpdateEditorContext context)
     {
-        await context.Updater.TryUpdateModelAsync(rule, Prefix,
+        var model = new EditRewriteRuleViewModel();
+
+        await context.Updater.TryUpdateModelAsync(model, Prefix,
             m => m.Name,
-            m => m.Source,
             m => m.Order);
 
-        if (string.IsNullOrEmpty(rule.Name))
+        if (string.IsNullOrEmpty(model.Name))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(rule.Name), S["Name is required"]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Name), S["Name is required"]);
         }
+
+        rule.Name = model.Name;
+        rule.Order = model.Order;
 
         _shellReleaseManager.RequestRelease();
 

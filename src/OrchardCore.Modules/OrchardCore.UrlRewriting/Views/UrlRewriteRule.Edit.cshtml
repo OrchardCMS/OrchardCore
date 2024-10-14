@@ -7,16 +7,16 @@
 </div>
 
 <div class="mb-3">
+    <label asp-for="SubstitutionUrl" class="form-label">@T["Rewrite URL"]</label>
+    <input asp-for="SubstitutionUrl" class="form-control" />
+</div>
+
+<div class="mb-3">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="IgnoreCase" checked="@Model.IgnoreCase" />
         <label class="form-check-label" asp-for="IgnoreCase">@T["Ignore case"]</label>
         <span class="hint dashed">@T["When checked, the pattern will be case insensitive."]</span>
     </div>
-</div>
-
-<div class="mb-3">
-    <label asp-for="SubstitutionUrl" class="form-label">@T["Rewrite URL"]</label>
-    <input asp-for="SubstitutionUrl" class="form-control" />
 </div>
 
 <div class="mb-3">

@@ -126,6 +126,13 @@ public sealed class AdminController : Controller
 
         var rule = await _rewriteRulesManager.NewAsync(id);
 
+        if (rule == null)
+        {
+            await _notifier.ErrorAsync(H["Invalid rule source."]);
+
+            return RedirectToAction(nameof(Index));
+        }
+
         var shape = await _rewriteRuleDisplayManager.BuildEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: true);
 
         return View(shape);
@@ -141,6 +148,13 @@ public sealed class AdminController : Controller
         }
 
         var rule = await _rewriteRulesManager.NewAsync(id);
+
+        if (rule == null)
+        {
+            await _notifier.ErrorAsync(H["Invalid rule source."]);
+
+            return RedirectToAction(nameof(Index));
+        }
 
         var shape = await _rewriteRuleDisplayManager.UpdateEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: true);
 

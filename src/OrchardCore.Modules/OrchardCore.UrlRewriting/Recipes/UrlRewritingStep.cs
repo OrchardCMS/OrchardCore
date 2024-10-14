@@ -32,31 +32,39 @@ public sealed class UrlRewritingStep : NamedRecipeStepHandler
     {
         var model = context.Step.ToObject<UrlRewritingStepModel>(_jsonSerializerOptions);
 
-        var rules = new List<RewriteRule>();
-
         foreach (var token in model.Rules.Cast<JsonObject>())
         {
-            var name = token[nameof(RewriteRule.Name)]?.GetValue<string>();
-
-            if (string.IsNullOrEmpty(name))
-            {
-                context.Errors.Add(S["Rule name is missing or empty. The rule will not be imported."]);
-
-                continue;
-            }
-
             var sourceName = token[nameof(RewriteRule.Source)]?.GetValue<string>();
 
             if (string.IsNullOrEmpty(sourceName))
             {
-                context.Errors.Add(S["Could not find rule source value. The rule '{0}' will not be imported.", name]);
+                context.Errors.Add(S["Could not find rule source value. The rule will not be imported"]);
 
                 continue;
             }
 
             var rule = await _rewriteRulesManager.NewAsync(sourceName, token);
 
-            rules.Add(rule);
+            if (rule == null)
+            {
+                context.Errors.Add(S["Unable to find a rule-source that can handle the source '{Source}'.", sourceName]);
+
+                continue;
+            }
+
+            var validationResult = await _rewriteRulesManager.ValidateAsync(rule);
+
+            if (!validationResult.Succeeded)
+            {
+                foreach (var error in validationResult.Errors)
+                {
+                    context.Errors.Add(error.ErrorMessage);
+                }
+
+                continue;
+            }
+
+            await _rewriteRulesManager.SaveAsync(rule);
         }
     }
 }

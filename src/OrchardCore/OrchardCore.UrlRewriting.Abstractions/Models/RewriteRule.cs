@@ -6,9 +6,9 @@ public sealed class RewriteRule : Entity
 {
     public string Id { get; set; }
 
-    public string Name { get; set; }
-
     public string Source { get; set; }
+
+    public string Name { get; set; }
 
     public int Order { get; set; }
 

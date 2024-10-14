@@ -1,11 +1,9 @@
 namespace OrchardCore.UrlRewriting.Models;
 
-public class LoadedRewriteRuleContext
+public sealed class LoadedRewriteRuleContext : RewriteRuleContextBase
 {
-    public RewriteRule Rule { get; }
-
     public LoadedRewriteRuleContext(RewriteRule rule)
+        : base(rule)
     {
-        Rule = rule;
     }
 }

@@ -6,13 +6,13 @@ namespace OrchardCore.UrlRewriting.ViewModels;
 
 public class UrlRedirectRuleViewModel
 {
-    public string SubstitutionUrl { get; set; }
-
-    public bool AppendQueryString { get; set; }
-
     public string Pattern { get; set; }
 
+    public string SubstitutionUrl { get; set; }
+
     public bool IgnoreCase { get; set; }
+
+    public bool AppendQueryString { get; set; }
 
     public RedirectType RedirectType { get; set; }
 

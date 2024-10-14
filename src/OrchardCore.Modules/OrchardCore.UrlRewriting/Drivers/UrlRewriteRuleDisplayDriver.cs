@@ -28,8 +28,8 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
         return Initialize<UrlRewriteRuleViewModel>("UrlRewriteRule_Edit", model =>
         {
             var metadata = rule.As<UrlRewriteSourceMetadata>();
-            model.SubstitutionUrl = metadata.SubstitutionUrl;
             model.Pattern = metadata.Pattern;
+            model.SubstitutionUrl = metadata.SubstitutionUrl;
             model.IgnoreCase = metadata.IgnoreCase;
             model.AppendQueryString = context.IsNew || metadata.AppendQueryString;
             model.SkipFurtherRules = metadata.SkipFurtherRules;
@@ -44,11 +44,12 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
         }
 
         var model = new UrlRewriteRuleViewModel();
+
         await context.Updater.TryUpdateModelAsync(model, Prefix,
-            m => m.SubstitutionUrl,
-            m => m.AppendQueryString,
             m => m.Pattern,
+            m => m.SubstitutionUrl,
             m => m.IgnoreCase,
+            m => m.AppendQueryString,
             m => m.SkipFurtherRules);
 
         if (string.IsNullOrWhiteSpace(model.Pattern))
@@ -58,14 +59,18 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
 
         if (string.IsNullOrWhiteSpace(model.SubstitutionUrl))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionUrl), S["The rewrite URL is required"]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionUrl), S["The Rewrite URL is required"]);
+        }
+        else if (!Uri.TryCreate(model.SubstitutionUrl, UriKind.RelativeOrAbsolute, out var _))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionUrl), S["The Rewrite URL is invalid."]);
         }
 
         rule.Put(new UrlRewriteSourceMetadata()
         {
             Pattern = model.Pattern,
-            IgnoreCase = model.IgnoreCase,
             SubstitutionUrl = model.SubstitutionUrl,
+            IgnoreCase = model.IgnoreCase,
             AppendQueryString = model.AppendQueryString,
             SkipFurtherRules = model.SkipFurtherRules
         });

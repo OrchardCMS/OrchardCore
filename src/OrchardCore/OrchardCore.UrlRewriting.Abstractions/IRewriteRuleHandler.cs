@@ -23,6 +23,18 @@ public interface IRewriteRuleHandler
     Task LoadedAsync(LoadedRewriteRuleContext context);
 
     /// <summary>
+    /// This method in invoked during rule validating.
+    /// </summary>
+    /// <param name="context">An instance of <see cref="ValidatingRewriteRuleContext"/>.</param>
+    Task ValidatingAsync(ValidatingRewriteRuleContext context);
+
+    /// <summary>
+    /// This method in invoked after the rule was validated.
+    /// </summary>
+    /// <param name="context">An instance of <see cref="ValidatedRewriteRuleContext"/>.</param>
+    Task ValidatedAsync(ValidatedRewriteRuleContext context);
+
+    /// <summary>
     /// This method in invoked during rule removing.
     /// </summary>
     /// <param name="context">An instance of <see cref="DeletingRewriteRuleContext"/>.</param>

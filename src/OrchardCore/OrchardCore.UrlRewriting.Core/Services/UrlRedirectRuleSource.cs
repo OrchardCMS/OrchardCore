@@ -80,30 +80,6 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
         }
 
         FlagAppend(builder, "R=");
-        builder.Append(RedirectTypeToStatusCode(metadata.RedirectType));
-    }
-
-    public static RedirectType GetRedirectType(string flag)
-    {
-        return flag switch
-        {
-            "R=301" => RedirectType.MovedPermanently301,
-            "R=302" => RedirectType.Found302,
-            "R=307" => RedirectType.TemporaryRedirect307,
-            "R=308" => RedirectType.PermanentRedirect308,
-            _ => RedirectType.Found302
-        };
-    }
-
-    private static int RedirectTypeToStatusCode(RedirectType redirectType)
-    {
-        return redirectType switch
-        {
-            RedirectType.MovedPermanently301 => 301,
-            RedirectType.Found302 => 302,
-            RedirectType.TemporaryRedirect307 => 307,
-            RedirectType.PermanentRedirect308 => 308,
-            _ => 302,
-        };
+        builder.Append((int)metadata.RedirectType);
     }
 }

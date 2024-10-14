@@ -1,8 +1,8 @@
 using OrchardCore.UrlRewriting.Models;
 
-namespace OrchardCore.UrlRewriting.Handler;
+namespace OrchardCore.UrlRewriting.Handlers;
 
-public abstract class RewriteRuleHandler : IRewriteRuleHandler
+public abstract class RewriteRuleHandlerBase : IRewriteRuleHandler
 {
     public virtual Task DeletedAsync(DeletedRewriteRuleContext context)
         => Task.CompletedTask;
@@ -23,5 +23,11 @@ public abstract class RewriteRuleHandler : IRewriteRuleHandler
         => Task.CompletedTask;
 
     public virtual Task SavingAsync(SavingRewriteRuleContext context)
+        => Task.CompletedTask;
+
+    public virtual Task ValidatedAsync(ValidatedRewriteRuleContext context)
+        => Task.CompletedTask;
+
+    public virtual Task ValidatingAsync(ValidatingRewriteRuleContext context)
         => Task.CompletedTask;
 }
