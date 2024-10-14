@@ -65,7 +65,7 @@ public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOpti
     }
 
     /// <summary>
-    /// Allows you to configure addition options.
+    /// Allows you to configure additional options in an inherited class.
     /// </summary>
     /// <param name="rawOptions">The options as returned by <see cref="GetRawOptions"/></param>
     /// <param name="options">The options to configure.</param>
