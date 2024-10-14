@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
@@ -9,54 +6,55 @@ using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Elasticsearch.Core.Deployment;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 
-namespace OrchardCore.Search.Elasticsearch.Core.Recipes
+namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
+
+/// <summary>
+/// This recipe step rebuilds an Elasticsearch index.
+/// </summary>
+public sealed class ElasticIndexRebuildStep : NamedRecipeStepHandler
 {
-    /// <summary>
-    /// This recipe step rebuilds an Elasticsearch index.
-    /// </summary>
-    public class ElasticIndexRebuildStep : IRecipeStepHandler
+    public ElasticIndexRebuildStep()
+        : base("elastic-index-rebuild")
     {
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+    }
+
+    protected override async Task HandleAsync(RecipeExecutionContext context)
+    {
+        var model = context.Step.ToObject<ElasticIndexRebuildDeploymentStep>();
+
+        if (model != null && (model.IncludeAll || model.Indices.Length > 0))
         {
-            if (!string.Equals(context.Name, "elastic-index-rebuild", StringComparison.OrdinalIgnoreCase))
+            await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-rebuild", async scope =>
             {
-                return;
-            }
+                var elasticIndexingService = scope.ServiceProvider.GetService<ElasticIndexingService>();
+                var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticIndexSettingsService>();
+                var elasticIndexManager = scope.ServiceProvider.GetRequiredService<ElasticIndexManager>();
 
-            var model = context.Step.ToObject<ElasticIndexRebuildDeploymentStep>();
+                var indexNames = model.IncludeAll
+                ? (await elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray()
+                : model.Indices;
 
-            if (model != null && (model.IncludeAll || model.Indices.Length > 0))
-            {
-                await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-rebuild", async scope =>
+                foreach (var indexName in indexNames)
                 {
-                    var elasticIndexingService = scope.ServiceProvider.GetService<ElasticIndexingService>();
-                    var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticIndexSettingsService>();
-                    var elasticIndexManager = scope.ServiceProvider.GetRequiredService<ElasticIndexManager>();
+                    var elasticIndexSettings = await elasticIndexSettingsService.GetSettingsAsync(indexName);
 
-                    var indexNames = model.IncludeAll ? (await elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray() : model.Indices;
-
-                    foreach (var indexName in indexNames)
+                    if (elasticIndexSettings == null)
                     {
-                        var elasticIndexSettings = await elasticIndexSettingsService.GetSettingsAsync(indexName);
-
-                        if (elasticIndexSettings == null)
-                        {
-                            continue;
-                        }
-
-                        if (!await elasticIndexManager.ExistsAsync(indexName))
-                        {
-                            await elasticIndexingService.CreateIndexAsync(elasticIndexSettings);
-                        }
-                        else
-                        {
-                            await elasticIndexingService.RebuildIndexAsync(elasticIndexSettings);
-                        }
+                        continue;
                     }
 
-                    await elasticIndexingService.ProcessContentItemsAsync(indexNames);
-                });
-            }
+                    if (!await elasticIndexManager.ExistsAsync(indexName))
+                    {
+                        await elasticIndexingService.CreateIndexAsync(elasticIndexSettings);
+                    }
+                    else
+                    {
+                        await elasticIndexingService.RebuildIndexAsync(elasticIndexSettings);
+                    }
+                }
+
+                await elasticIndexingService.ProcessContentItemsAsync(indexNames);
+            });
         }
     }
 }

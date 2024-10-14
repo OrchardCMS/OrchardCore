@@ -398,7 +398,7 @@ The resulting object has access to the following properties:
 | `UserName` | `admin` | The name of the authenticated user. |
 | `NormalizedUserName` | `ADMIN` | The normailzed name of the authenticated user. |
 | `Email` | `admin@gmail.com` | The email of the authenticated user. |
-| `NormailizedEmail` | `ADMIN@GMAIL>COM` | The normalized email of the authenticated user. |
+| `NormailizedEmail` | `ADMIN@GMAIL.COM` | The normalized email of the authenticated user. |
 | `EmailConfirmed` | `true` | True if the user has confirmed his email or if the email confirmation is not required |
 | `IsEnabled` | `true` | True if the user is enabled |
 | `RoleNames` | `[Editor,Contributor]`  | An array of role names assigned to the user |
@@ -410,7 +410,6 @@ You can use this filter to load the user information of the current authenticate
 {% assign user = User | user_id | users_by_id %}
 
 {{ user.UserName }} - {{ user.Email }}
-
 ```
 
 You can use this filter with the UserPicker field to load the picked user's information.
@@ -421,7 +420,6 @@ You can use this filter with the UserPicker field to load the picked user's info
 {% for user in users %}
   {{ user.UserName }} - {{ user.Email }}
 {% endfor %}
-
 ```
 
 #### User has_permission filter
@@ -429,7 +427,7 @@ You can use this filter with the UserPicker field to load the picked user's info
 Checks if the User has permission clearance, optionally on a resource
 
 ```liquid
-{{ User | has_permission:"EditContent",Model.ContentItem }}
+{{ User | has_permission: "EditContent", Model.ContentItem }}
 ```
 
 #### User is_in_role filter
@@ -437,7 +435,7 @@ Checks if the User has permission clearance, optionally on a resource
 Checks if the user is in role
 
 ```liquid
-{{ User | is_in_role:"Administrator" }}
+{{ User | is_in_role: "Administrator" }}
 ```
 
 #### User has_claim filter
@@ -445,9 +443,11 @@ Checks if the user is in role
 Checks if the user has a claim of the specified type
 
 ```liquid
-{{ User | has_claim:"email_verified","true" }}
-{{ User | has_claim:"Permission","ManageSettings" }}
+{{ User | has_claim: "email_verified", "true" }}
 ```
+
+!!! warning
+    To avoid false negatives for Administrator users, ensure you use the `has_permission` filter instead of `has_claim` when checking if a user has a permission. This ensures accurate permission evaluation, especially for administrators who may not have explicit claims but still possess full access rights.
 
 ### Site
 

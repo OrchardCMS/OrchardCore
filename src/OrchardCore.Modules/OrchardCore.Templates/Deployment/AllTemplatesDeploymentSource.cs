@@ -1,56 +1,48 @@
 using System.Text;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Templates.Models;
 using OrchardCore.Templates.Services;
 
-namespace OrchardCore.Templates.Deployment
+namespace OrchardCore.Templates.Deployment;
+
+public class AllTemplatesDeploymentSource
+    : DeploymentSourceBase<AllTemplatesDeploymentStep>
 {
-    public class AllTemplatesDeploymentSource : IDeploymentSource
+    private readonly TemplatesManager _templatesManager;
+
+    public AllTemplatesDeploymentSource(TemplatesManager templatesManager)
     {
-        private readonly TemplatesManager _templatesManager;
+        _templatesManager = templatesManager;
+    }
 
-        public AllTemplatesDeploymentSource(TemplatesManager templatesManager)
+    protected override async Task ProcessAsync(AllTemplatesDeploymentStep step, DeploymentPlanResult result)
+    {
+        var templateObjects = new JsonObject();
+        var templates = await _templatesManager.GetTemplatesDocumentAsync();
+
+        if (step.ExportAsFiles)
         {
-            _templatesManager = templatesManager;
+            foreach (var template in templates.Templates)
+            {
+                var fileName = "Templates/" + template.Key.Replace("__", "-").Replace("_", ".") + ".liquid";
+                var templateValue = new Template { Description = template.Value.Description, Content = $"[file:text('{fileName}')]" };
+                await result.FileBuilder.SetFileAsync(fileName, Encoding.UTF8.GetBytes(template.Value.Content));
+                templateObjects[template.Key] = JObject.FromObject(templateValue);
+            }
+        }
+        else
+        {
+            foreach (var template in templates.Templates)
+            {
+                templateObjects[template.Key] = JObject.FromObject(template.Value);
+            }
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        result.Steps.Add(new JsonObject
         {
-            var allTemplatesStep = step as AllTemplatesDeploymentStep;
-
-            if (allTemplatesStep == null)
-            {
-                return;
-            }
-
-            var templateObjects = new JsonObject();
-            var templates = await _templatesManager.GetTemplatesDocumentAsync();
-
-            if (allTemplatesStep.ExportAsFiles)
-            {
-                foreach (var template in templates.Templates)
-                {
-                    var fileName = "Templates/" + template.Key.Replace("__", "-").Replace("_", ".") + ".liquid";
-                    var templateValue = new Template { Description = template.Value.Description, Content = $"[file:text('{fileName}')]" };
-                    await result.FileBuilder.SetFileAsync(fileName, Encoding.UTF8.GetBytes(template.Value.Content));
-                    templateObjects[template.Key] = JObject.FromObject(templateValue);
-                }
-            }
-            else
-            {
-                foreach (var template in templates.Templates)
-                {
-                    templateObjects[template.Key] = JObject.FromObject(template.Value);
-                }
-            }
-
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Templates",
-                ["Templates"] = templateObjects,
-            });
-        }
+            ["name"] = "Templates",
+            ["Templates"] = templateObjects,
+        });
     }
 }

@@ -1,33 +1,22 @@
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Search.Elasticsearch.Core.Deployment
+namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
+
+public class ElasticIndexRebuildDeploymentSource
+    : DeploymentSourceBase<ElasticIndexRebuildDeploymentStep>
 {
-    public class ElasticIndexRebuildDeploymentSource : IDeploymentSource
+    protected override Task ProcessAsync(ElasticIndexRebuildDeploymentStep step, DeploymentPlanResult result)
     {
-        public ElasticIndexRebuildDeploymentSource()
+        var indicesToRebuild = step.IncludeAll ? [] : step.Indices;
+
+        result.Steps.Add(new JsonObject
         {
-        }
+            ["name"] = "elastic-index-rebuild",
+            ["includeAll"] = step.IncludeAll,
+            ["Indices"] = JArray.FromObject(indicesToRebuild),
+        });
 
-        public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-        {
-            var elasticIndexRebuildStep = step as ElasticIndexRebuildDeploymentStep;
-            if (elasticIndexRebuildStep == null)
-            {
-                return Task.CompletedTask;
-            }
-
-            var indicesToRebuild = elasticIndexRebuildStep.IncludeAll ? [] : elasticIndexRebuildStep.Indices;
-
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "elastic-index-rebuild",
-                ["includeAll"] = elasticIndexRebuildStep.IncludeAll,
-                ["Indices"] = JArray.FromObject(indicesToRebuild),
-            });
-
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

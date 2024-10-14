@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis.GraphQL.Queries;

@@ -1,48 +1,43 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+namespace OrchardCore.ContentManagement.GraphQL.Options;
 
-namespace OrchardCore.ContentManagement.GraphQL.Options
+public class GraphQLContentTypeOption
 {
-    public class GraphQLContentTypeOption
+    public GraphQLContentTypeOption(string contentType)
     {
-        public GraphQLContentTypeOption(string contentType)
-        {
-            ArgumentException.ThrowIfNullOrEmpty(contentType);
+        ArgumentException.ThrowIfNullOrEmpty(contentType);
 
-            ContentType = contentType;
-        }
+        ContentType = contentType;
+    }
 
-        public string ContentType { get; }
+    public string ContentType { get; }
 
-        public bool Collapse { get; set; }
+    public bool Collapse { get; set; }
 
-        public bool Hidden { get; set; }
+    public bool Hidden { get; set; }
 
-        public IEnumerable<GraphQLContentPartOption> PartOptions { get; set; }
-            = [];
+    public IEnumerable<GraphQLContentPartOption> PartOptions { get; set; }
+        = [];
 
-        public GraphQLContentTypeOption ConfigurePart<TContentPart>(Action<GraphQLContentPartOption> action)
-            where TContentPart : ContentPart
-        {
-            var option = new GraphQLContentPartOption<TContentPart>();
+    public GraphQLContentTypeOption ConfigurePart<TContentPart>(Action<GraphQLContentPartOption> action)
+        where TContentPart : ContentPart
+    {
+        var option = new GraphQLContentPartOption<TContentPart>();
 
-            action(option);
+        action(option);
 
-            PartOptions = PartOptions.Union(new[] { option });
+        PartOptions = PartOptions.Union(new[] { option });
 
-            return this;
-        }
+        return this;
+    }
 
-        public GraphQLContentTypeOption ConfigurePart(string partName, Action<GraphQLContentPartOption> action)
-        {
-            var option = new GraphQLContentPartOption(partName);
+    public GraphQLContentTypeOption ConfigurePart(string partName, Action<GraphQLContentPartOption> action)
+    {
+        var option = new GraphQLContentPartOption(partName);
 
-            action(option);
+        action(option);
 
-            PartOptions = PartOptions.Union(new[] { option });
+        PartOptions = PartOptions.Union(new[] { option });
 
-            return this;
-        }
+        return this;
     }
 }

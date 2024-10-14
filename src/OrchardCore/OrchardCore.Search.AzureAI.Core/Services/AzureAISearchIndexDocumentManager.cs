@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Azure.Search.Documents;
 using Azure.Search.Documents.Models;
 using Microsoft.Extensions.Logging;
@@ -10,7 +6,7 @@ using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Search.AzureAI.Models;
-using static OrchardCore.Indexing.DocumentIndex;
+using static OrchardCore.Indexing.DocumentIndexBase;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
@@ -134,7 +130,7 @@ public class AzureAIIndexDocumentManager
         await DeleteDocumentsAsync(indexName, contentItemIds);
     }
 
-    public async Task<bool> MergeOrUploadDocumentsAsync(string indexName, IList<DocumentIndex> indexDocuments, AzureAISearchIndexSettings indexSettings)
+    public async Task<bool> MergeOrUploadDocumentsAsync(string indexName, IList<DocumentIndexBase> indexDocuments, AzureAISearchIndexSettings indexSettings)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
         ArgumentNullException.ThrowIfNull(indexDocuments);
@@ -248,7 +244,7 @@ public class AzureAIIndexDocumentManager
         indexMappings.Add(indexMap);
     }
 
-    private static IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndex> indexDocuments, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappings)
+    private static IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndexBase> indexDocuments, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappings)
     {
         foreach (var indexDocument in indexDocuments)
         {
@@ -256,13 +252,15 @@ public class AzureAIIndexDocumentManager
         }
     }
 
-    private static SearchDocument CreateSearchDocument(DocumentIndex documentIndex, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappingDictionary)
+    private static SearchDocument CreateSearchDocument(DocumentIndexBase documentIndex, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappingDictionary)
     {
-        var doc = new SearchDocument()
+        var doc = new SearchDocument();
+
+        if (documentIndex is DocumentIndex index)
         {
-            { IndexingConstants.ContentItemIdKey, documentIndex.ContentItemId },
-            { IndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId },
-        };
+            doc.Add(IndexingConstants.ContentItemIdKey, index.ContentItemId);
+            doc.Add(IndexingConstants.ContentItemVersionIdKey, index.ContentItemVersionId);
+        }
 
         foreach (var entry in documentIndex.Entries)
         {
@@ -280,7 +278,7 @@ public class AzureAIIndexDocumentManager
 
             switch (entry.Type)
             {
-                case Types.Boolean:
+                case DocumentIndexBase.Types.Boolean:
                     if (entry.Value is bool boolValue)
                     {
                         doc.TryAdd(map.AzureFieldKey, boolValue);

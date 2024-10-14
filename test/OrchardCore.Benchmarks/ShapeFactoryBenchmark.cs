@@ -15,62 +15,61 @@ using OrchardCore.Environment.Extensions.Manifests;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Tests.Stubs;
 
-namespace OrchardCore.Benchmark
+namespace OrchardCore.Benchmark;
+
+[MemoryDiagnoser]
+public class ShapeFactoryBenchmark
 {
-    [MemoryDiagnoser]
-    public class ShapeFactoryBenchmark
+    private static readonly FilterArguments _filterArguments = new FilterArguments().Add("utc", new DateTimeValue(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
+    private static readonly FluidValue _input = StringValue.Create("DateTime");
+    private static readonly TemplateContext _templateContext;
+
+    static ShapeFactoryBenchmark()
     {
-        private static readonly FilterArguments _filterArguments = new FilterArguments().Add("utc", new DateTimeValue(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
-        private static readonly FluidValue _input = StringValue.Create("DateTime");
-        private static readonly TemplateContext _templateContext;
+        _templateContext = new TemplateContext();
+        var defaultShapeTable = new ShapeTable
+        (
+            new Dictionary<string, ShapeDescriptor>(),
+            new Dictionary<string, ShapeBinding>()
+        );
 
-        static ShapeFactoryBenchmark()
-        {
-            _templateContext = new TemplateContext();
-            var defaultShapeTable = new ShapeTable
-            (
-                new Dictionary<string, ShapeDescriptor>(),
-                new Dictionary<string, ShapeBinding>()
-            );
+        var shapeFactory = new DefaultShapeFactory(
+            serviceProvider: new ServiceCollection().BuildServiceProvider(),
+            events: [],
+            shapeTableManager: new TestShapeTableManager(defaultShapeTable),
+            themeManager: new MockThemeManager(new ExtensionInfo("path", new ManifestInfo(new ModuleAttribute()), (x, y) => [])));
 
-            var shapeFactory = new DefaultShapeFactory(
-                serviceProvider: new ServiceCollection().BuildServiceProvider(),
-                events: [],
-                shapeTableManager: new TestShapeTableManager(defaultShapeTable),
-                themeManager: new MockThemeManager(new ExtensionInfo("path", new ManifestInfo(new ModuleAttribute()), (x, y) => [])));
+        _templateContext.AmbientValues["DisplayHelper"] = new DisplayHelper(null, shapeFactory, null);
+    }
 
-            _templateContext.AmbientValues["DisplayHelper"] = new DisplayHelper(null, shapeFactory, null);
-        }
-
-        // TODO this benchmark is meaningless as the benchmark noops as the input is not a shape.
-        [Benchmark(Baseline = true)]
+    // TODO this benchmark is meaningless as the benchmark noops as the input is not a shape.
+    [Benchmark(Baseline = true)]
 #pragma warning disable CA1822 // Mark members as static
-        public async Task OriginalShapeRender()
+    public async Task OriginalShapeRender()
 #pragma warning restore CA1822 // Mark members as static
+    {
+        await ShapeRenderOriginal(_input, _filterArguments, _templateContext);
+    }
+
+
+    // [Benchmark]
+    // public async Task NewShapeRender()
+    // {
+    //     await LiquidViewFilters.ShapeRender(input, _filterArguments, _templateContext);
+    // }
+
+    private static async ValueTask<FluidValue> ShapeRenderOriginal(FluidValue input, FilterArguments _, TemplateContext context)
+    {
+        if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
         {
-            await ShapeRenderOriginal(_input, _filterArguments, _templateContext);
+            throw new ArgumentException("DisplayHelper missing while invoking 'shape_render'");
         }
 
-
-        // [Benchmark]
-        // public async Task NewShapeRender()
-        // {
-        //     await LiquidViewFilters.ShapeRender(input, _filterArguments, _templateContext);
-        // }
-
-        private static async ValueTask<FluidValue> ShapeRenderOriginal(FluidValue input, FilterArguments _, TemplateContext context)
+        if (input.ToObjectValue() is IShape shape)
         {
-            if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
-            {
-                throw new ArgumentException("DisplayHelper missing while invoking 'shape_render'");
-            }
-
-            if (input.ToObjectValue() is IShape shape)
-            {
-                return new HtmlContentValue(await (Task<IHtmlContent>)displayHelper(shape));
-            }
-
-            return NilValue.Instance;
+            return new HtmlContentValue(await (Task<IHtmlContent>)displayHelper(shape));
         }
+
+        return NilValue.Instance;
     }
 }

@@ -1,34 +1,27 @@
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 
-namespace OrchardCore.Search.Elasticsearch.Core.Deployment
+namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
+
+public class ElasticSettingsDeploymentSource
+    : DeploymentSourceBase<ElasticSettingsDeploymentStep>
 {
-    public class ElasticSettingsDeploymentSource : IDeploymentSource
+    private readonly ElasticIndexingService _elasticIndexingService;
+
+    public ElasticSettingsDeploymentSource(ElasticIndexingService elasticIndexingService)
     {
-        private readonly ElasticIndexingService _elasticIndexingService;
+        _elasticIndexingService = elasticIndexingService;
+    }
 
-        public ElasticSettingsDeploymentSource(ElasticIndexingService elasticIndexingService)
+    protected override async Task ProcessAsync(ElasticSettingsDeploymentStep step, DeploymentPlanResult result)
+    {
+        var elasticSettings = await _elasticIndexingService.GetElasticSettingsAsync();
+
+        result.Steps.Add(new JsonObject
         {
-            _elasticIndexingService = elasticIndexingService;
-        }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-        {
-            if (step is not ElasticSettingsDeploymentStep)
-            {
-                return;
-            }
-
-            var elasticSettings = await _elasticIndexingService.GetElasticSettingsAsync();
-
-            // Adding Elasticsearch settings
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Settings",
-                ["ElasticSettings"] = JObject.FromObject(elasticSettings),
-            });
-        }
+            ["name"] = "Settings",
+            ["ElasticSettings"] = JObject.FromObject(elasticSettings),
+        });
     }
 }

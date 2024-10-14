@@ -1,73 +1,71 @@
-using System.Threading.Tasks;
 using GraphQL.Validation;
 using GraphQLParser.AST;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.Apis.GraphQL.ValidationRules
+namespace OrchardCore.Apis.GraphQL.ValidationRules;
+
+public class MaxNumberOfResultsValidationRule : IValidationRule
 {
-    public class MaxNumberOfResultsValidationRule : IValidationRule
+    private readonly int _maxNumberOfResults;
+    private readonly MaxNumberOfResultsValidationMode _maxNumberOfResultsValidationMode;
+    protected readonly IStringLocalizer S;
+    private readonly ILogger _logger;
+
+    public MaxNumberOfResultsValidationRule(
+        IOptions<GraphQLSettings> options,
+        IStringLocalizer<MaxNumberOfResultsValidationRule> localizer,
+        ILogger<MaxNumberOfResultsValidationRule> logger)
     {
-        private readonly int _maxNumberOfResults;
-        private readonly MaxNumberOfResultsValidationMode _maxNumberOfResultsValidationMode;
-        protected readonly IStringLocalizer S;
-        private readonly ILogger _logger;
+        var settings = options.Value;
+        _maxNumberOfResults = settings.MaxNumberOfResults;
+        _maxNumberOfResultsValidationMode = settings.MaxNumberOfResultsValidationMode;
+        S = localizer;
+        _logger = logger;
+    }
 
-        public MaxNumberOfResultsValidationRule(
-            IOptions<GraphQLSettings> options,
-            IStringLocalizer<MaxNumberOfResultsValidationRule> localizer,
-            ILogger<MaxNumberOfResultsValidationRule> logger)
+    public ValueTask<INodeVisitor> ValidateAsync(ValidationContext validationContext)
+    {
+        return ValueTask.FromResult((INodeVisitor)new NodeVisitors(
+        new MatchingNodeVisitor<GraphQLArgument>((arg, visitorContext) =>
         {
-            var settings = options.Value;
-            _maxNumberOfResults = settings.MaxNumberOfResults;
-            _maxNumberOfResultsValidationMode = settings.MaxNumberOfResultsValidationMode;
-            S = localizer;
-            _logger = logger;
-        }
-
-        public ValueTask<INodeVisitor> ValidateAsync(ValidationContext validationContext)
-        {
-            return ValueTask.FromResult((INodeVisitor)new NodeVisitors(
-            new MatchingNodeVisitor<GraphQLArgument>((arg, visitorContext) =>
+            if ((arg.Name == "first" || arg.Name == "last") && arg.Value != null)
             {
-                if ((arg.Name == "first" || arg.Name == "last") && arg.Value != null)
+                var context = (GraphQLUserContext)validationContext.UserContext;
+
+                int? value = null;
+
+                if (arg.Value is GraphQLIntValue)
                 {
-                    var context = (GraphQLUserContext)validationContext.UserContext;
-
-                    int? value = null;
-
-                    if (arg.Value is GraphQLIntValue)
+                    value = int.Parse((arg.Value as GraphQLIntValue).Value);
+                }
+                else
+                {
+                    if (validationContext.Variables.TryGetValue(arg.Value.ToString(), out var input))
                     {
-                        value = int.Parse((arg.Value as GraphQLIntValue).Value);
+                        value = (int?)input;
+                    }
+                }
+
+                if (value.HasValue && value > _maxNumberOfResults)
+                {
+                    if (_maxNumberOfResultsValidationMode == MaxNumberOfResultsValidationMode.Enabled)
+                    {
+                        validationContext.ReportError(new ValidationError(
+                            validationContext.Document.Source,
+                            "ArgumentInputError",
+                            S["'{0}' exceeds the maximum number of results for '{1}' ({2})", value.Value, arg.Name, _maxNumberOfResults],
+                            arg));
                     }
                     else
                     {
-                        if (validationContext.Variables.TryGetValue(arg.Value.ToString(), out var input))
-                        {
-                            value = (int?)input;
-                        }
-                    }
+                        _logger.LogInformation("'{Value}' exceeds the maximum number of results for '{Name}' ({Total})", value.Value, arg.Name, _maxNumberOfResults);
 
-                    if (value.HasValue && value > _maxNumberOfResults)
-                    {
-                        if (_maxNumberOfResultsValidationMode == MaxNumberOfResultsValidationMode.Enabled)
-                        {
-                            validationContext.ReportError(new ValidationError(
-                                validationContext.Document.Source,
-                                "ArgumentInputError",
-                                S["'{0}' exceeds the maximum number of results for '{1}' ({2})", value.Value, arg.Name, _maxNumberOfResults],
-                                arg));
-                        }
-                        else
-                        {
-                            _logger.LogInformation("'{value}' exceeds the maximum number of results for '{name}' ({total})", value.Value, arg.Name, _maxNumberOfResults);
-
-                            arg = new GraphQLArgument(arg.Name, new GraphQLIntValue(_maxNumberOfResults)); // if disabled mode we just log info and override the arg to be maxvalue
-                        }
+                        arg = new GraphQLArgument(arg.Name, new GraphQLIntValue(_maxNumberOfResults)); // if disabled mode we just log info and override the arg to be maxvalue
                     }
                 }
-            })));
-        }
+            }
+        })));
     }
 }

@@ -1,6 +1,5 @@
-namespace OrchardCore.Users.AuditTrail.ViewModels
+namespace OrchardCore.Users.AuditTrail.ViewModels;
+
+public class AuditTrailUserEventDetailViewModel : AuditTrailUserEventViewModel
 {
-    public class AuditTrailUserEventDetailViewModel : AuditTrailUserEventViewModel
-    {
-    }
 }

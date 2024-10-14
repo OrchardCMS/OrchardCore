@@ -17,7 +17,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient<IConfigureOptions<AzureAISearchDefaultOptions>, AzureAISearchDefaultOptionsConfigurations>();
         services.AddAzureClientsCore();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<IContentHandler, AzureAISearchIndexingContentHandler>();
         services.AddScoped<AzureAISearchIndexManager>();
         services.AddScoped<AzureAIIndexDocumentManager>();

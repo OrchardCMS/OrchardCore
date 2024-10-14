@@ -11,35 +11,34 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Deployment
+namespace OrchardCore.Deployment;
+
+public sealed class Startup : StartupBase
 {
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDeploymentServices();
+        services.AddDeploymentServices();
 
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddPermissionProvider<Permissions>();
 
-            services.AddSingleton<IDeploymentTargetProvider, FileDownloadDeploymentTargetProvider>();
+        services.AddSingleton<IDeploymentTargetProvider, FileDownloadDeploymentTargetProvider>();
 
-            // Custom File deployment step
-            services.AddDeployment<CustomFileDeploymentSource, CustomFileDeploymentStep, CustomFileDeploymentStepDriver>();
+        // Custom File deployment step
+        services.AddDeployment<CustomFileDeploymentSource, CustomFileDeploymentStep, CustomFileDeploymentStepDriver>();
 
-            // Recipe File deployment step
-            services.AddDeploymentWithoutSource<RecipeFileDeploymentStep, RecipeFileDeploymentStepDriver>();
+        // Recipe File deployment step
+        services.AddDeploymentWithoutSource<RecipeFileDeploymentStep, RecipeFileDeploymentStepDriver>();
 
-            services.AddIndexProvider<DeploymentPlanIndexProvider>();
-            services.AddDataMigration<Migrations>();
+        services.AddIndexProvider<DeploymentPlanIndexProvider>();
+        services.AddDataMigration<Migrations>();
 
-            services.AddScoped<IDeploymentPlanService, DeploymentPlanService>();
+        services.AddScoped<IDeploymentPlanService, DeploymentPlanService>();
 
-            services.AddRecipeExecutionStep<DeploymentPlansRecipeStep>();
+        services.AddRecipeExecutionStep<DeploymentPlansRecipeStep>();
 
-            services.AddDeployment<DeploymentPlanDeploymentSource, DeploymentPlanDeploymentStep, DeploymentPlanDeploymentStepDriver>();
+        services.AddDeployment<DeploymentPlanDeploymentSource, DeploymentPlanDeploymentStep, DeploymentPlanDeploymentStepDriver>();
 
-            services.AddDeployment<JsonRecipeDeploymentSource, JsonRecipeDeploymentStep, JsonRecipeDeploymentStepDriver>();
-        }
+        services.AddDeployment<JsonRecipeDeploymentSource, JsonRecipeDeploymentStep, JsonRecipeDeploymentStepDriver>();
     }
 }

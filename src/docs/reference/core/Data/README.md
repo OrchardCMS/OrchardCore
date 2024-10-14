@@ -102,7 +102,7 @@ using Dapper;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell
 
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IDbConnectionAccessor _dbAccessor;
     private readonly IStore _store;

@@ -1,7 +1,6 @@
-namespace OrchardCore.Modules
+namespace OrchardCore.Modules;
+
+public class BackgroundServiceOptions
 {
-    public class BackgroundServiceOptions
-    {
-        public bool ShellWarmup { get; set; }
-    }
+    public bool ShellWarmup { get; set; }
 }

@@ -1,6 +1,4 @@
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -8,7 +6,8 @@ using YesSql;
 
 namespace OrchardCore.Users.Deployment;
 
-public class CustomUserSettingsDeploymentSource : IDeploymentSource
+public class CustomUserSettingsDeploymentSource
+    : DeploymentSourceBase<CustomUserSettingsDeploymentStep>
 {
     private readonly CustomUserSettingsService _customUserSettingsService;
     private readonly ISession _session;
@@ -21,16 +20,11 @@ public class CustomUserSettingsDeploymentSource : IDeploymentSource
         _session = session;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(CustomUserSettingsDeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not CustomUserSettingsDeploymentStep customUserSettingsStep)
-        {
-            return;
-        }
-
-        var settingsTypes = customUserSettingsStep.IncludeAll
+        var settingsTypes = step.IncludeAll
             ? (await _customUserSettingsService.GetAllSettingsTypesAsync()).ToArray()
-            : (await _customUserSettingsService.GetSettingsTypesAsync(customUserSettingsStep.SettingsTypeNames)).ToArray();
+            : (await _customUserSettingsService.GetSettingsTypesAsync(step.SettingsTypeNames)).ToArray();
 
         // Todo: check permissions for each settings type
         var userData = new JsonArray();

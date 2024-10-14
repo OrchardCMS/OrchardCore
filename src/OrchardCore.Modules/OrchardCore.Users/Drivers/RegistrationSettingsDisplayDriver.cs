@@ -1,67 +1,81 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
-namespace OrchardCore.Users.Drivers
+namespace OrchardCore.Users.Drivers;
+
+public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<RegistrationSettings>
 {
-    public class RegistrationSettingsDisplayDriver : SectionDisplayDriver<ISite, RegistrationSettings>
+    public const string GroupId = "userRegistration";
+
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IShellReleaseManager _shellReleaseManager;
+
+    public RegistrationSettingsDisplayDriver(
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService,
+        IShellReleaseManager shellReleaseManager)
     {
-        public const string GroupId = "userRegistration";
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+        _shellReleaseManager = shellReleaseManager;
+    }
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IAuthorizationService _authorizationService;
+    protected override string SettingsGroupId
+        => GroupId;
 
-        public RegistrationSettingsDisplayDriver(
-            IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService)
+    public override async Task<IDisplayResult> EditAsync(ISite site, RegistrationSettings settings, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+
+        if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
         {
-            _httpContextAccessor = httpContextAccessor;
-            _authorizationService = authorizationService;
-        }
-        public override async Task<IDisplayResult> EditAsync(RegistrationSettings settings, BuildEditorContext context)
-        {
-            var user = _httpContextAccessor.HttpContext?.User;
-
-            if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
-            {
-                return null;
-            }
-
-            return Initialize<RegistrationSettings>("RegistrationSettings_Edit", model =>
-            {
-                model.UsersCanRegister = settings.UsersCanRegister;
-                model.UsersMustValidateEmail = settings.UsersMustValidateEmail;
-                model.UsersAreModerated = settings.UsersAreModerated;
-                model.UseSiteTheme = settings.UseSiteTheme;
-                model.NoPasswordForExternalUsers = settings.NoPasswordForExternalUsers;
-                model.NoUsernameForExternalUsers = settings.NoUsernameForExternalUsers;
-                model.NoEmailForExternalUsers = settings.NoEmailForExternalUsers;
-                model.UseScriptToGenerateUsername = settings.UseScriptToGenerateUsername;
-                model.GenerateUsernameScript = settings.GenerateUsernameScript;
-            }).Location("Content:5").OnGroup(GroupId);
+            return null;
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(RegistrationSettings section, UpdateEditorContext context)
+        context.AddTenantReloadWarningWrapper();
+
+        return Initialize<RegistrationSettings>("RegistrationSettings_Edit", model =>
         {
-            var user = _httpContextAccessor.HttpContext?.User;
+            model.UsersMustValidateEmail = settings.UsersMustValidateEmail;
+            model.UsersAreModerated = settings.UsersAreModerated;
+            model.UseSiteTheme = settings.UseSiteTheme;
+        }).Location("Content:5")
+        .OnGroup(SettingsGroupId);
+    }
 
-            if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
-            {
-                return null;
-            }
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, RegistrationSettings settings, UpdateEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
 
-            if (context.GroupId.Equals(GroupId, StringComparison.OrdinalIgnoreCase))
-            {
-                await context.Updater.TryUpdateModelAsync(section, Prefix);
-            }
-
-            return await EditAsync(section, context);
+        if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
+        {
+            return null;
         }
+
+        var model = new RegistrationSettings();
+
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        var hasChange = model.UsersMustValidateEmail != settings.UsersMustValidateEmail
+            || model.UsersAreModerated != settings.UsersAreModerated
+            || model.UseSiteTheme != settings.UseSiteTheme;
+
+        settings.UsersMustValidateEmail = model.UsersMustValidateEmail;
+        settings.UsersAreModerated = model.UsersAreModerated;
+        settings.UseSiteTheme = model.UseSiteTheme;
+
+        if (hasChange)
+        {
+            _shellReleaseManager.RequestRelease();
+        }
+
+        return await EditAsync(site, settings, context);
     }
 }

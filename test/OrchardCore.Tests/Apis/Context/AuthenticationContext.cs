@@ -1,107 +1,103 @@
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Tests.Apis.Context
+namespace OrchardCore.Tests.Apis.Context;
+
+internal sealed class PermissionContextAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
-    internal sealed class PermissionContextAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+    private readonly PermissionsContext _permissionsContext;
+
+    // Used for http based graphql tests, marries a permission context to a request
+    public PermissionContextAuthorizationHandler(IHttpContextAccessor httpContextAccessor, IDictionary<string, PermissionsContext> permissionsContexts)
     {
-        private readonly PermissionsContext _permissionsContext;
+        _permissionsContext = new PermissionsContext();
 
-        // Used for http based graphql tests, marries a permission context to a request
-        public PermissionContextAuthorizationHandler(IHttpContextAccessor httpContextAccessor, IDictionary<string, PermissionsContext> permissionsContexts)
+        if (httpContextAccessor.HttpContext == null)
         {
-            _permissionsContext = new PermissionsContext();
-
-            if (httpContextAccessor.HttpContext == null)
-            {
-                return;
-            }
-
-            var requestContext = httpContextAccessor.HttpContext.Request;
-
-            if (requestContext?.Headers.ContainsKey("PermissionsContext") == true &&
-                permissionsContexts.TryGetValue(requestContext.Headers["PermissionsContext"], out var permissionsContext))
-            {
-                _permissionsContext = permissionsContext;
-            }
+            return;
         }
 
-        // Used for static graphql test; passes a permissionsContext directly
-        public PermissionContextAuthorizationHandler(PermissionsContext permissionsContext)
+        var requestContext = httpContextAccessor.HttpContext.Request;
+
+        if (requestContext?.Headers.ContainsKey("PermissionsContext") == true &&
+            permissionsContexts.TryGetValue(requestContext.Headers["PermissionsContext"], out var permissionsContext))
         {
             _permissionsContext = permissionsContext;
         }
+    }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
+    // Used for static graphql test; passes a permissionsContext directly
+    public PermissionContextAuthorizationHandler(PermissionsContext permissionsContext)
+    {
+        _permissionsContext = permissionsContext;
+    }
+
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
+    {
+        var permissions = (_permissionsContext.AuthorizedPermissions ?? []).ToList();
+
+        if (!_permissionsContext.UsePermissionsContext)
         {
-            var permissions = (_permissionsContext.AuthorizedPermissions ?? []).ToList();
+            context.Succeed(requirement);
+        }
+        else if (permissions.Contains(requirement.Permission))
+        {
+            context.Succeed(requirement);
+        }
+        else
+        {
+            var grantingNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            if (!_permissionsContext.UsePermissionsContext)
-            {
-                context.Succeed(requirement);
-            }
-            else if (permissions.Contains(requirement.Permission))
+            GetGrantingNamesInternal(requirement.Permission, grantingNames);
+
+            if (permissions.Any(p => grantingNames.Contains(p.Name)))
             {
                 context.Succeed(requirement);
             }
             else
             {
-                var grantingNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-                GetGrantingNamesInternal(requirement.Permission, grantingNames);
-
-                // SiteOwner permission grants them all
-                grantingNames.Add(StandardPermissions.SiteOwner.Name);
-
-                if (permissions.Any(p => grantingNames.Contains(p.Name)))
-                {
-                    context.Succeed(requirement);
-                }
-                else
-                {
-                    context.Fail();
-                }
+                context.Fail();
             }
-
-            return Task.CompletedTask;
         }
 
-        private static void GetGrantingNamesInternal(Permission permission, HashSet<string> stack)
+        return Task.CompletedTask;
+    }
+
+    private static void GetGrantingNamesInternal(Permission permission, HashSet<string> stack)
+    {
+        // The given name is tested
+        stack.Add(permission.Name);
+
+        // Iterate implied permissions to grant, it present
+        if (permission.ImpliedBy != null && permission.ImpliedBy.Any())
         {
-            // The given name is tested
-            stack.Add(permission.Name);
-
-            // Iterate implied permissions to grant, it present
-            if (permission.ImpliedBy != null && permission.ImpliedBy.Any())
+            foreach (var impliedBy in permission.ImpliedBy)
             {
-                foreach (var impliedBy in permission.ImpliedBy)
+                // Avoid potential recursion
+                if (impliedBy == null || stack.Contains(impliedBy.Name))
                 {
-                    // Avoid potential recursion
-                    if (impliedBy == null || stack.Contains(impliedBy.Name))
-                    {
-                        continue;
-                    }
-
-                    // Otherwise accumulate the implied permission names recursively
-                    GetGrantingNamesInternal(impliedBy, stack);
+                    continue;
                 }
+
+                // Otherwise accumulate the implied permission names recursively
+                GetGrantingNamesInternal(impliedBy, stack);
             }
         }
     }
+}
 
-    public class PermissionsContext
-    {
-        public IEnumerable<Permission> AuthorizedPermissions { get; set; } = [];
+public class PermissionsContext
+{
+    public IEnumerable<Permission> AuthorizedPermissions { get; set; } = [];
 
-        public bool UsePermissionsContext { get; set; }
-    }
+    public bool UsePermissionsContext { get; set; }
+}
 
-    internal sealed class StubIdentity : IIdentity
-    {
-        public string AuthenticationType => "TEST TEST";
+internal sealed class StubIdentity : IIdentity
+{
+    public string AuthenticationType => "TEST TEST";
 
-        public bool IsAuthenticated => true;
+    public bool IsAuthenticated => true;
 
-        public string Name => "Mr Robot";
-    }
+    public string Name => "Mr Robot";
 }

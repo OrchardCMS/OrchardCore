@@ -2,7 +2,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Json;
-using OrchardCore.Json.Serialization;
 
 namespace OrchardCore.Extensions;
 
@@ -17,15 +16,20 @@ public sealed class DocumentJsonSerializerOptionsConfiguration : IConfigureOptio
 
     public void Configure(DocumentJsonSerializerOptions options)
     {
+        // Do not use the 'Merge' extension to avoid populating unwanted properties (e.g., Encoder, NumberHandling, TypeInfoResolver).
         options.SerializerOptions.DefaultIgnoreCondition = JOptions.Base.DefaultIgnoreCondition;
         options.SerializerOptions.ReferenceHandler = JOptions.Base.ReferenceHandler;
         options.SerializerOptions.ReadCommentHandling = JOptions.Base.ReadCommentHandling;
         options.SerializerOptions.PropertyNameCaseInsensitive = JOptions.Base.PropertyNameCaseInsensitive;
         options.SerializerOptions.AllowTrailingCommas = JOptions.Base.AllowTrailingCommas;
         options.SerializerOptions.WriteIndented = JOptions.Base.WriteIndented;
+        options.SerializerOptions.PreferredObjectCreationHandling = JOptions.Base.PreferredObjectCreationHandling;
 
         options.SerializerOptions.TypeInfoResolverChain.Add(new PolymorphicJsonTypeInfoResolver(_derivedTypesOptions));
-        options.SerializerOptions.Converters.Add(DynamicJsonConverter.Instance);
-        options.SerializerOptions.Converters.Add(PathStringJsonConverter.Instance);
+
+        foreach (var converter in JOptions.KnownConverters)
+        {
+            options.SerializerOptions.Converters.Add(converter);
+        }
     }
 }

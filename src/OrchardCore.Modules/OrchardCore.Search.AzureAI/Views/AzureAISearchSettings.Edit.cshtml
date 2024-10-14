@@ -28,7 +28,7 @@
     return;
 }
 
-@if (Model.SearchIndexes == null || Model.SearchIndexes?.Count == 0)
+@if (Model.SearchIndexes == null || Model.SearchIndexes.Count == 0)
 {
     <div class="alert alert-warning" role="alert">
         @T["No indices exist! Please create at least one index to configure Azure AI Search service."]

@@ -19,8 +19,8 @@ There are different ways to create sites and modules for Orchard Core. You can l
 
 You can install the latest released templates using this command:
 
-```dotnet new install OrchardCore.ProjectTemplates::1.8.3-*```
- 
+```dotnet new install OrchardCore.ProjectTemplates::2.0.2-*```
+
 !!! note
     To use the development branch of the template add `--nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json`
 
@@ -40,10 +40,10 @@ The next step is to reference the module from the application, by adding a proje
 
 We also need a reference to the `OrchardCore.Admin` package in order to be able to implement the required interfaces:
 
-```dotnet add .\MyModule\MyModule.csproj package OrchardCore.Admin --version 1.8.3-*```
+```dotnet add .\MyModule\MyModule.csproj package OrchardCore.Admin --version 2.0.2-*```
 
 !!! note
-    To use the development branch of the template add ` --source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --version 1.8.3-*`
+    To use the development branch of the template add ` --source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --version 2.0.2-*`
 
 ## Adding our controller and views
 
@@ -62,20 +62,19 @@ using System.Text;
 using System.Threading.Tasks;
 using OrchardCore.Admin;
 
-namespace MyModule.Controllers
-{
-    [Admin]
-    public class DemoNavController : Controller
-    {
-        public ActionResult ChildOne()
-        {
-            return View();
-        }
+namespace MyModule.Controllers;
 
-        public ActionResult ChildTwo()
-        {
-            return View();
-        }
+[Admin]
+public sealed class DemoNavController : Controller
+{
+    public ActionResult ChildOne()
+    {
+        return View();
+    }
+
+    public ActionResult ChildTwo()
+    {
+        return View();
     }
 }
 ```
@@ -113,36 +112,35 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace MyModule
+namespace MyModule;
+
+public sealed class AdminMenu : INavigationProvider
 {
-    public sealed class AdminMenu : INavigationProvider
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
     {
-        internal readonly IStringLocalizer S;
+        S = localizer;
+    }
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
+    {
+        // We want to add our menus to the "admin" menu only.
+        if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
         {
-            S = localizer;
+            return ValueTask.CompletedTask;
         }
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            // We want to add our menus to the "admin" menu only.
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
+        // Adding our menu items to the builder.
+        // The builder represents the full admin menu tree.
+        builder
+            .Add(S["My Root View"], S["My Root View"].PrefixPosition(),  rootView => rootView               
+                .Add(S["Child One"], S["Child One"].PrefixPosition(), childOne => childOne
+                    .Action("ChildOne", "DemoNav", new { area = "MyModule"}))
+                .Add(S["Child Two"], S["Child Two"].PrefixPosition(), childTwo => childTwo
+                    .Action("ChildTwo", "DemoNav", new { area = "MyModule"})));
 
-            // Adding our menu items to the builder.
-            // The builder represents the full admin menu tree.
-            builder
-                .Add(S["My Root View"], S["My Root View"].PrefixPosition(),  rootView => rootView               
-                    .Add(S["Child One"], S["Child One"].PrefixPosition(), childOne => childOne
-                        .Action("ChildOne", "DemoNav", new { area = "MyModule"}))
-                    .Add(S["Child Two"], S["Child Two"].PrefixPosition(), childTwo => childTwo
-                        .Action("ChildTwo", "DemoNav", new { area = "MyModule"})));
-
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }
 ```
@@ -161,7 +159,7 @@ using OrchardCore.Navigation;
 Add this line to the `ConfigureServices()` method:
 
 ```csharp
-services.AddScoped<INavigationProvider, AdminMenu>();
+services.AddNavigationProvider<AdminMenu>();
 ```
 
 ## Testing the resulting application

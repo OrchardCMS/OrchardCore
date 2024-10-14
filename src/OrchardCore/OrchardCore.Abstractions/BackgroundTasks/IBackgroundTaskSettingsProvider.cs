@@ -1,11 +1,9 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 
-namespace OrchardCore.BackgroundTasks
+namespace OrchardCore.BackgroundTasks;
+
+public interface IBackgroundTaskSettingsProvider
 {
-    public interface IBackgroundTaskSettingsProvider
-    {
-        IChangeToken ChangeToken { get; }
-        Task<BackgroundTaskSettings> GetSettingsAsync(IBackgroundTask task);
-    }
+    IChangeToken ChangeToken { get; }
+    Task<BackgroundTaskSettings> GetSettingsAsync(IBackgroundTask task);
 }

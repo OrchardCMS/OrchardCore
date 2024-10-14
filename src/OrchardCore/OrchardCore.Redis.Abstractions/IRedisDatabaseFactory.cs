@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using StackExchange.Redis;
 
 namespace OrchardCore.Redis;

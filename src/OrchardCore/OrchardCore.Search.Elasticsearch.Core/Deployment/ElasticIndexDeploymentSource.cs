@@ -1,53 +1,47 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 
-namespace OrchardCore.Search.Elasticsearch.Core.Deployment
+namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
+
+public class ElasticIndexDeploymentSource
+    : DeploymentSourceBase<ElasticIndexDeploymentStep>
 {
-    public class ElasticIndexDeploymentSource : IDeploymentSource
+    private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+
+    public ElasticIndexDeploymentSource(ElasticIndexSettingsService elasticIndexSettingsService)
     {
-        private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+        _elasticIndexSettingsService = elasticIndexSettingsService;
+    }
 
-        public ElasticIndexDeploymentSource(ElasticIndexSettingsService elasticIndexSettingsService)
+    protected override async Task ProcessAsync(ElasticIndexDeploymentStep step, DeploymentPlanResult result)
+    {
+        var indexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
+
+        var data = new JsonArray();
+        var indicesToAdd = step.IncludeAll
+            ? indexSettings.Select(x => x.IndexName).ToArray()
+            : step.IndexNames;
+
+        foreach (var index in indexSettings)
         {
-            _elasticIndexSettingsService = elasticIndexSettingsService;
-        }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-        {
-            if (step is not ElasticIndexDeploymentStep elasticIndexStep)
+            if (indicesToAdd.Contains(index.IndexName))
             {
-                return;
-            }
-
-            var indexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
-
-            var data = new JsonArray();
-            var indicesToAdd = elasticIndexStep.IncludeAll ? indexSettings.Select(x => x.IndexName).ToArray() : elasticIndexStep.IndexNames;
-
-            foreach (var index in indexSettings)
-            {
-                if (indicesToAdd.Contains(index.IndexName))
+                var indexSettingsDict = new Dictionary<string, ElasticIndexSettings>
                 {
-                    var indexSettingsDict = new Dictionary<string, ElasticIndexSettings>
-                    {
-                        { index.IndexName, index },
-                    };
+                    { index.IndexName, index },
+                };
 
-                    data.Add(JObject.FromObject(indexSettingsDict));
-                }
+                data.Add(JObject.FromObject(indexSettingsDict));
             }
-
-            // Adding Elasticsearch settings.
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "ElasticIndexSettings",
-                ["Indices"] = data,
-            });
         }
+
+        // Adding Elasticsearch settings.
+        result.Steps.Add(new JsonObject
+        {
+            ["name"] = "ElasticIndexSettings",
+            ["Indices"] = data,
+        });
     }
 }

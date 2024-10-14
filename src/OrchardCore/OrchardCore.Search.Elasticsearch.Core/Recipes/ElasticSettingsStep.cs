@@ -1,39 +1,31 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 
-namespace OrchardCore.Search.Elasticsearch.Core.Recipes
+namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
+
+/// <summary>
+/// This recipe step is used to sync Elasticsearch and Lucene settings.
+/// </summary>
+public sealed class ElasticSettingsStep : NamedRecipeStepHandler
 {
-    /// <summary>
-    /// This recipe step is used to sync Elasticsearch and Lucene settings.
-    /// </summary>
-    public class ElasticSettingsStep : IRecipeStepHandler
+    private readonly ElasticIndexingService _elasticIndexingService;
+
+    public ElasticSettingsStep(ElasticIndexingService elasticIndexingService)
+        : base("Settings")
     {
-        private readonly ElasticIndexingService _elasticIndexingService;
+        _elasticIndexingService = elasticIndexingService;
+    }
 
-        public ElasticSettingsStep(ElasticIndexingService elasticIndexingService)
+    protected override Task HandleAsync(RecipeExecutionContext context)
+    {
+        var step = context.Step["ElasticSettings"];
+
+        if (step != null && step["SyncWithLucene"] != null && step["SyncWithLucene"].GetValue<bool>())
         {
-            _elasticIndexingService = elasticIndexingService;
+            return _elasticIndexingService.SyncSettings();
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
-        {
-            if (!string.Equals(context.Name, "Settings", StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
-            var step = context.Step["ElasticSettings"];
-
-            if (step != null)
-            {
-                if (step["SyncWithLucene"] != null && (bool)step["SyncWithLucene"])
-                {
-                    await _elasticIndexingService.SyncSettings();
-                }
-            }
-        }
+        return Task.CompletedTask;
     }
 }

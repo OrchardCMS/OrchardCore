@@ -3,18 +3,17 @@ using OrchardCore.Apis.GraphQL;
 using OrchardCore.Modules;
 using OrchardCore.Queries.Sql.GraphQL.Queries;
 
-namespace OrchardCore.Queries.Sql.GraphQL
+namespace OrchardCore.Queries.Sql.GraphQL;
+
+/// <summary>
+/// These services are registered on the tenant service collection.
+/// </summary>
+[Feature("OrchardCore.Queries.Sql")]
+[RequireFeatures("OrchardCore.Apis.GraphQL")]
+public sealed class Startup : StartupBase
 {
-    /// <summary>
-    /// These services are registered on the tenant service collection.
-    /// </summary>
-    [Feature("OrchardCore.Queries.Sql")]
-    [RequireFeatures("OrchardCore.Apis.GraphQL")]
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSingleton<ISchemaBuilder, SqlQueryFieldTypeProvider>();
-        }
+        services.AddSingleton<ISchemaBuilder, SqlQueryFieldTypeProvider>();
     }
 }

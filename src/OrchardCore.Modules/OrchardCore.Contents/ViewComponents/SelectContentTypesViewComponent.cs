@@ -1,43 +1,38 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents.ViewModels;
 
-namespace OrchardCore.Contents.ViewComponents
+namespace OrchardCore.Contents.ViewComponents;
+
+public class SelectContentTypesViewComponent : ViewComponent
 {
-    public class SelectContentTypesViewComponent : ViewComponent
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+
+    public SelectContentTypesViewComponent(IContentDefinitionManager contentDefinitionManager)
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        _contentDefinitionManager = contentDefinitionManager;
+    }
 
-        public SelectContentTypesViewComponent(IContentDefinitionManager contentDefinitionManager)
+    public async Task<IViewComponentResult> InvokeAsync(IEnumerable<string> selectedContentTypes, string htmlName, string stereotype)
+    {
+        selectedContentTypes ??= Array.Empty<string>();
+
+        var contentTypes = await ContentTypeSelection.BuildAsync(_contentDefinitionManager, selectedContentTypes);
+
+        if (!string.IsNullOrEmpty(stereotype))
         {
-            _contentDefinitionManager = contentDefinitionManager;
+            contentTypes = contentTypes
+                .Where(x => x.ContentTypeDefinition.GetStereotype() == stereotype)
+                .ToArray();
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(IEnumerable<string> selectedContentTypes, string htmlName, string stereotype)
+        var model = new SelectContentTypesViewModel
         {
-            selectedContentTypes ??= Array.Empty<string>();
+            HtmlName = htmlName,
+            ContentTypeSelections = contentTypes
+        };
 
-            var contentTypes = await ContentTypeSelection.BuildAsync(_contentDefinitionManager, selectedContentTypes);
-
-            if (!string.IsNullOrEmpty(stereotype))
-            {
-                contentTypes = contentTypes
-                    .Where(x => x.ContentTypeDefinition.GetStereotype() == stereotype)
-                    .ToArray();
-            }
-
-            var model = new SelectContentTypesViewModel
-            {
-                HtmlName = htmlName,
-                ContentTypeSelections = contentTypes
-            };
-
-            return View(model);
-        }
+        return View(model);
     }
 }

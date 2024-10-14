@@ -1,26 +1,23 @@
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.AzureAI.Deployment;
 
-public class AzureAISearchIndexRebuildDeploymentSource : IDeploymentSource
+public class AzureAISearchIndexRebuildDeploymentSource
+    : DeploymentSourceBase<AzureAISearchIndexRebuildDeploymentStep>
 {
     public const string Name = "azureai-index-rebuild";
 
-    public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override Task ProcessAsync(AzureAISearchIndexRebuildDeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not AzureAISearchIndexRebuildDeploymentStep rebuildStep)
-        {
-            return Task.CompletedTask;
-        }
-
-        var indicesToRebuild = rebuildStep.IncludeAll ? [] : rebuildStep.Indices;
+        var indicesToRebuild = step.IncludeAll
+            ? []
+            : step.Indices;
 
         result.Steps.Add(new JsonObject
         {
             ["name"] = Name,
-            ["includeAll"] = rebuildStep.IncludeAll,
+            ["includeAll"] = step.IncludeAll,
             ["Indices"] = JArray.FromObject(indicesToRebuild),
         });
 

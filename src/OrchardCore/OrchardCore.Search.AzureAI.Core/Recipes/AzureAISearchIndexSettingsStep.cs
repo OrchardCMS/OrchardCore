@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Localization;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -14,34 +11,31 @@ using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Recipes;
 
-public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
+public sealed class AzureAISearchIndexSettingsStep : NamedRecipeStepHandler
 {
     public const string Name = "azureai-index-create";
 
     private readonly AzureAISearchIndexManager _indexManager;
     private readonly AzureAIIndexDocumentManager _azureAIIndexDocumentManager;
     private readonly AzureAISearchIndexSettingsService _azureAISearchIndexSettingsService;
-    private readonly ILogger _logger;
+
+    internal IStringLocalizer S;
 
     public AzureAISearchIndexSettingsStep(
         AzureAISearchIndexManager indexManager,
         AzureAIIndexDocumentManager azureAIIndexDocumentManager,
         AzureAISearchIndexSettingsService azureAISearchIndexSettingsService,
-        ILogger<AzureAISearchIndexSettingsStep> logger)
+        IStringLocalizer<AzureAISearchIndexSettingsStep> stringLocalizer)
+        : base(Name)
     {
         _indexManager = indexManager;
         _azureAIIndexDocumentManager = azureAIIndexDocumentManager;
         _azureAISearchIndexSettingsService = azureAISearchIndexSettingsService;
-        _logger = logger;
+        S = stringLocalizer;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, Name, StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         if (context.Step["Indices"] is not JsonArray indexes)
         {
             return;
@@ -55,21 +49,21 @@ public class AzureAISearchIndexSettingsStep : IRecipeStepHandler
 
             if (string.IsNullOrWhiteSpace(indexInfo.IndexName))
             {
-                _logger.LogError("No index name was provided in the '{Name}' recipe step.", Name);
+                context.Errors.Add(S["No index name was provided in the '{0}' recipe step.", Name]);
 
                 continue;
             }
 
             if (!AzureAISearchIndexNamingHelper.TryGetSafeIndexName(indexInfo.IndexName, out var indexName))
             {
-                _logger.LogError("Invalid index name was provided in the recipe step. IndexName: {IndexName}.", indexInfo.IndexName);
+                context.Errors.Add(S["Invalid index name was provided in the recipe step. IndexName: {0}.", indexInfo.IndexName]);
 
                 continue;
             }
 
-            if (indexInfo.IndexedContentTypes?.Length == 0)
+            if (indexInfo.IndexedContentTypes == null || indexInfo.IndexedContentTypes.Length == 0)
             {
-                _logger.LogError("No {IndexedContentTypes} were provided in the recipe step. IndexName: {IndexName}.", nameof(indexInfo.IndexedContentTypes), indexInfo.IndexName);
+                context.Errors.Add(S["No {0} were provided in the recipe step. IndexName: {1}.", nameof(indexInfo.IndexedContentTypes), indexInfo.IndexName]);
 
                 continue;
             }

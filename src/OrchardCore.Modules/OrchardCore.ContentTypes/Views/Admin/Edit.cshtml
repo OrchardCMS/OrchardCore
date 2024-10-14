@@ -156,10 +156,19 @@
         <button class="btn btn-danger delete" type="submit" name="submit.Delete" value="Delete" data-url-af="RemoveUrl">@T["Delete"]</button>
     </div>
 </form>
-
-<script at="Foot">
+<script asp-name="Sortable" at="Foot"></script>
+<script at="Foot" depends-on="jquery-resizable">
     document.addEventListener('DOMContentLoaded', function () {
-        Sortable.create(document.getElementById("fields"));
-        Sortable.create(document.getElementById("parts"));
+        const fields = document.getElementById("fields");
+
+        if (fields) {
+            Sortable.create(document.getElementById("fields"));
+        }
+
+        const parts = document.getElementById("parts");
+
+        if (parts) {
+            Sortable.create(document.getElementById("parts"));
+        }
     });
 </script>

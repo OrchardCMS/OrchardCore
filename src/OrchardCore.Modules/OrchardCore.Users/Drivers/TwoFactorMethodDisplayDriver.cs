@@ -1,17 +1,16 @@
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class TwoFactorMethodDisplayDriver : DisplayDriver<TwoFactorMethod>
+public sealed class TwoFactorMethodDisplayDriver : DisplayDriver<TwoFactorMethod>
 {
-    public override Task<IDisplayResult> DisplayAsync(TwoFactorMethod model, BuildDisplayContext context)
+    public override IDisplayResult Display(TwoFactorMethod model, BuildDisplayContext context)
     {
         if (string.IsNullOrEmpty(model.Provider))
         {
-            return Task.FromResult<IDisplayResult>(null);
+            return null;
         }
 
         var icon = Initialize<TwoFactorMethod>($"TwoFactorMethod_{model.Provider}_Icon", vm =>
@@ -32,6 +31,6 @@ public class TwoFactorMethodDisplayDriver : DisplayDriver<TwoFactorMethod>
             vm.IsEnabled = model.IsEnabled;
         }).Location("SummaryAdmin", "Actions");
 
-        return Task.FromResult<IDisplayResult>(Combine(icon, content, actions));
+        return Combine(icon, content, actions);
     }
 }

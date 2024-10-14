@@ -1,9 +1,8 @@
 using OrchardCore.DisplayManagement.Shapes;
 
-namespace OrchardCore.Demo.Models
+namespace OrchardCore.Demo.Models;
+
+public class TestContentPartAShape : Shape
 {
-    public class TestContentPartAShape : Shape
-    {
-        public string Line { get; set; }
-    }
+    public string Line { get; set; }
 }

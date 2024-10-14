@@ -1,7 +1,6 @@
-namespace OrchardCore.Workflows.ViewModels
+namespace OrchardCore.Workflows.ViewModels;
+
+public class ForkTaskViewModel
 {
-    public class ForkTaskViewModel
-    {
-        public string Forks { get; set; }
-    }
+    public string Forks { get; set; }
 }

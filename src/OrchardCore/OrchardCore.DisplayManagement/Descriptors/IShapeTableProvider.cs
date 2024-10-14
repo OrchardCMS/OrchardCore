@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.DisplayManagement.Descriptors;
 
 public interface IShapeTableProvider

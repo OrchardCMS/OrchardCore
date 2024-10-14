@@ -1,18 +1,17 @@
 using GraphQL.Types;
 using OrchardCore.Menu.Models;
 
-namespace OrchardCore.Menu.GraphQL
+namespace OrchardCore.Menu.GraphQL;
+
+public class MenuItemsListQueryObjectType : ObjectGraphType<MenuItemsListPart>
 {
-    public class MenuItemsListQueryObjectType : ObjectGraphType<MenuItemsListPart>
+    public MenuItemsListQueryObjectType()
     {
-        public MenuItemsListQueryObjectType()
-        {
-            Name = "MenuItemsListPart";
+        Name = "MenuItemsListPart";
 
-            Field<ListGraphType<MenuItemInterface>>("menuItems")
-               .Description("The menu items.")
-                .Resolve(context => context.Source.MenuItems);
+        Field<ListGraphType<MenuItemInterface>>("menuItems")
+            .Description("The menu items.")
+            .Resolve(context => context.Source.MenuItems);
 
-        }
     }
 }

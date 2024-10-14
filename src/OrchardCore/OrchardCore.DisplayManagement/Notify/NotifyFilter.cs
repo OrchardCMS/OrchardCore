@@ -1,8 +1,6 @@
-using System.Linq;
 using System.Net;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,210 +10,209 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Layout;
 
-namespace OrchardCore.DisplayManagement.Notify
+namespace OrchardCore.DisplayManagement.Notify;
+
+public sealed class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilter
 {
-    public sealed class NotifyFilter : IActionFilter, IAsyncResultFilter, IPageFilter
+    public const string CookiePrefix = "orch_notify";
+
+    private readonly INotifier _notifier;
+    private readonly IShapeFactory _shapeFactory;
+    private readonly ILayoutAccessor _layoutAccessor;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly HtmlEncoder _htmlEncoder;
+    private readonly IOptions<NotifyJsonSerializerOptions> _notifyJsonSerializerOptions;
+    private readonly ILogger _logger;
+
+    private NotifyEntry[] _existingEntries = [];
+    private bool _shouldDeleteCookie;
+
+    public NotifyFilter(
+        INotifier notifier,
+        IShapeFactory shapeFactory,
+        ILayoutAccessor layoutAccessor,
+        IDataProtectionProvider dataProtectionProvider,
+        HtmlEncoder htmlEncoder,
+        IOptions<NotifyJsonSerializerOptions> notifyJsonSerializerOptions,
+        ILogger<NotifyFilter> logger)
     {
-        public const string CookiePrefix = "orch_notify";
+        _notifier = notifier;
+        _shapeFactory = shapeFactory;
+        _layoutAccessor = layoutAccessor;
+        _dataProtectionProvider = dataProtectionProvider;
+        _htmlEncoder = htmlEncoder;
+        _notifyJsonSerializerOptions = notifyJsonSerializerOptions;
+        _logger = logger;
+    }
 
-        private readonly INotifier _notifier;
-        private readonly IShapeFactory _shapeFactory;
-        private readonly ILayoutAccessor _layoutAccessor;
-        private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly HtmlEncoder _htmlEncoder;
-        private readonly IOptions<NotifyJsonSerializerOptions> _notifyJsonSerializerOptions;
-        private readonly ILogger _logger;
-
-        private NotifyEntry[] _existingEntries = [];
-        private bool _shouldDeleteCookie;
-
-        public NotifyFilter(
-            INotifier notifier,
-            IShapeFactory shapeFactory,
-            ILayoutAccessor layoutAccessor,
-            IDataProtectionProvider dataProtectionProvider,
-            HtmlEncoder htmlEncoder,
-            IOptions<NotifyJsonSerializerOptions> notifyJsonSerializerOptions,
-            ILogger<NotifyFilter> logger)
+    private void OnHandlerExecuting(FilterContext filterContext)
+    {
+        if (!filterContext.HttpContext.Request.Cookies.TryGetValue(CookiePrefix, out var messages))
         {
-            _notifier = notifier;
-            _shapeFactory = shapeFactory;
-            _layoutAccessor = layoutAccessor;
-            _dataProtectionProvider = dataProtectionProvider;
-            _htmlEncoder = htmlEncoder;
-            _notifyJsonSerializerOptions = notifyJsonSerializerOptions;
-            _logger = logger;
+            return;
         }
 
-        private void OnHandlerExecuting(FilterContext filterContext)
+        if (string.IsNullOrEmpty(messages))
         {
-            if (!filterContext.HttpContext.Request.Cookies.TryGetValue(CookiePrefix, out var messages))
-            {
-                return;
-            }
-
-            if (string.IsNullOrEmpty(messages))
-            {
-                return;
-            }
-
-            DeserializeNotifyEntries(messages, out var messageEntries);
-
-            if (messageEntries == null)
-            {
-                // An error occurred during deserialization.
-                _shouldDeleteCookie = true;
-                return;
-            }
-
-            if (messageEntries.Length == 0)
-            {
-                return;
-            }
-
-            // Make the notifications available for the rest of the current request.
-            _existingEntries = messageEntries;
+            return;
         }
 
-        private void OnHandlerExecuted(FilterContext filterContext)
+        DeserializeNotifyEntries(messages, out var messageEntries);
+
+        if (messageEntries == null)
         {
-            var messageEntries = _notifier.List();
-
-            // Don't touch temp data if there's no work to perform.
-            if (messageEntries.Count == 0 && _existingEntries.Length == 0)
-            {
-                return;
-            }
-
-            // Assign values to the Items collection instead of TempData and
-            // combine any existing entries added by the previous request with new ones.
-
-            _existingEntries = messageEntries.Concat(_existingEntries).Distinct(new NotifyEntryComparer(_htmlEncoder)).ToArray();
-            object result = filterContext is ActionExecutedContext ace ? ace.Result : ((PageHandlerExecutedContext)filterContext).Result;
-            // Result is not a view, so assume a redirect and assign values to TemData.
-            // String data type used instead of complex array to be session-friendly.
-            if (result is not ViewResult && result is not PageResult && _existingEntries.Length > 0)
-            {
-                filterContext.HttpContext.Response.Cookies.Append(CookiePrefix, SerializeNotifyEntry(_existingEntries), GetCookieOptions(filterContext.HttpContext));
-            }
+            // An error occurred during deserialization.
+            _shouldDeleteCookie = true;
+            return;
         }
 
-        #region Interface wrappers
-
-        public void OnActionExecuting(ActionExecutingContext filterContext)
+        if (messageEntries.Length == 0)
         {
-            OnHandlerExecuting(filterContext);
+            return;
         }
 
-        public void OnActionExecuted(ActionExecutedContext filterContext)
+        // Make the notifications available for the rest of the current request.
+        _existingEntries = messageEntries;
+    }
+
+    private void OnHandlerExecuted(FilterContext filterContext)
+    {
+        var messageEntries = _notifier.List();
+
+        // Don't touch temp data if there's no work to perform.
+        if (messageEntries.Count == 0 && _existingEntries.Length == 0)
         {
-            OnHandlerExecuted(filterContext);
+            return;
         }
 
-        public void OnPageHandlerSelected(PageHandlerSelectedContext context)
+        // Assign values to the Items collection instead of TempData and
+        // combine any existing entries added by the previous request with new ones.
+
+        _existingEntries = messageEntries.Concat(_existingEntries).Distinct(new NotifyEntryComparer(_htmlEncoder)).ToArray();
+        object result = filterContext is ActionExecutedContext ace ? ace.Result : ((PageHandlerExecutedContext)filterContext).Result;
+        // Result is not a view, so assume a redirect and assign values to TemData.
+        // String data type used instead of complex array to be session-friendly.
+        if (result is not ViewResult && result is not PageResult && _existingEntries.Length > 0)
         {
+            filterContext.HttpContext.Response.Cookies.Append(CookiePrefix, SerializeNotifyEntry(_existingEntries), GetCookieOptions(filterContext.HttpContext));
         }
+    }
 
-        public void OnPageHandlerExecuting(PageHandlerExecutingContext filterContext)
+    #region Interface wrappers
+
+    public void OnActionExecuting(ActionExecutingContext filterContext)
+    {
+        OnHandlerExecuting(filterContext);
+    }
+
+    public void OnActionExecuted(ActionExecutedContext filterContext)
+    {
+        OnHandlerExecuted(filterContext);
+    }
+
+    public void OnPageHandlerSelected(PageHandlerSelectedContext context)
+    {
+    }
+
+    public void OnPageHandlerExecuting(PageHandlerExecutingContext filterContext)
+    {
+        OnHandlerExecuting(filterContext);
+    }
+
+    public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
+    {
+        OnHandlerExecuted(context);
+    }
+
+    #endregion
+
+    public async Task OnResultExecutionAsync(ResultExecutingContext filterContext, ResultExecutionDelegate next)
+    {
+        if (_shouldDeleteCookie)
         {
-            OnHandlerExecuting(filterContext);
-        }
-
-        public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
-        {
-            OnHandlerExecuted(context);
-        }
-
-        #endregion
-
-        public async Task OnResultExecutionAsync(ResultExecutingContext filterContext, ResultExecutionDelegate next)
-        {
-            if (_shouldDeleteCookie)
-            {
-                DeleteCookies(filterContext);
-
-                await next();
-                return;
-            }
-
-            if (!filterContext.IsViewOrPageResult())
-            {
-                await next();
-                return;
-            }
-
-            if (_existingEntries.Length == 0)
-            {
-                await next();
-                return;
-            }
-
-            var layout = await _layoutAccessor.GetLayoutAsync();
-
-            var messagesZone = layout.Zones["Messages"];
-
-            if (messagesZone is IShape zone)
-            {
-                foreach (var messageEntry in _existingEntries)
-                {
-                    // Also retrieve the actual zone in case it was only a temporary empty zone created on demand.
-                    zone = await zone.AddAsync(await _shapeFactory.CreateAsync("Message", Arguments.From(messageEntry)));
-                }
-            }
-
             DeleteCookies(filterContext);
 
             await next();
+            return;
         }
 
-        private static void DeleteCookies(ResultExecutingContext filterContext)
+        if (!filterContext.IsViewOrPageResult())
         {
-            filterContext.HttpContext.Response.Cookies.Delete(CookiePrefix, GetCookieOptions(filterContext.HttpContext));
+            await next();
+            return;
         }
 
-        private string SerializeNotifyEntry(NotifyEntry[] notifyEntries)
+        if (_existingEntries.Length == 0)
         {
-            try
-            {
-                var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
-                var signed = protector.Protect(JConvert.SerializeObject(notifyEntries, _notifyJsonSerializerOptions.Value.SerializerOptions));
-                return WebUtility.UrlEncode(signed);
-            }
-            catch
-            {
-                return null;
-            }
+            await next();
+            return;
         }
 
-        private void DeserializeNotifyEntries(string value, out NotifyEntry[] messageEntries)
+        var layout = await _layoutAccessor.GetLayoutAsync();
+
+        var messagesZone = layout.Zones["Messages"];
+
+        if (messagesZone is IShape zone)
         {
-            try
+            foreach (var messageEntry in _existingEntries)
             {
-                var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
-                var decoded = protector.Unprotect(WebUtility.UrlDecode(value));
-                messageEntries = JConvert.DeserializeObject<NotifyEntry[]>(decoded, _notifyJsonSerializerOptions.Value.SerializerOptions);
-            }
-            catch
-            {
-                messageEntries = null;
-
-                _logger.LogWarning("The notification entries could not be decrypted");
+                // Also retrieve the actual zone in case it was only a temporary empty zone created on demand.
+                zone = await zone.AddAsync(await _shapeFactory.CreateAsync("Message", Arguments.From(messageEntry)));
             }
         }
 
-        private static CookieOptions GetCookieOptions(HttpContext httpContext)
+        DeleteCookies(filterContext);
+
+        await next();
+    }
+
+    private static void DeleteCookies(ResultExecutingContext filterContext)
+    {
+        filterContext.HttpContext.Response.Cookies.Delete(CookiePrefix, GetCookieOptions(filterContext.HttpContext));
+    }
+
+    private string SerializeNotifyEntry(NotifyEntry[] notifyEntries)
+    {
+        try
         {
-            var cookieOptions = new CookieOptions
-            {
-                HttpOnly = true
-            };
-
-            if (httpContext.Request.PathBase.HasValue)
-            {
-                cookieOptions.Path = httpContext.Request.PathBase;
-            }
-
-            return cookieOptions;
+            var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
+            var signed = protector.Protect(JConvert.SerializeObject(notifyEntries, _notifyJsonSerializerOptions.Value.SerializerOptions));
+            return WebUtility.UrlEncode(signed);
         }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private void DeserializeNotifyEntries(string value, out NotifyEntry[] messageEntries)
+    {
+        try
+        {
+            var protector = _dataProtectionProvider.CreateProtector(nameof(NotifyFilter));
+            var decoded = protector.Unprotect(WebUtility.UrlDecode(value));
+            messageEntries = JConvert.DeserializeObject<NotifyEntry[]>(decoded, _notifyJsonSerializerOptions.Value.SerializerOptions);
+        }
+        catch
+        {
+            messageEntries = null;
+
+            _logger.LogWarning("The notification entries could not be decrypted");
+        }
+    }
+
+    private static CookieOptions GetCookieOptions(HttpContext httpContext)
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true
+        };
+
+        if (httpContext.Request.PathBase.HasValue)
+        {
+            cookieOptions.Path = httpContext.Request.PathBase;
+        }
+
+        return cookieOptions;
     }
 }

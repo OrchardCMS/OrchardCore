@@ -4,31 +4,31 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes.RecipeSteps;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Recipes
+namespace OrchardCore.Recipes;
+
+/// <summary>
+/// These services are registered on the tenant service collection.
+/// </summary>
+public sealed class Startup : StartupBase
 {
-    /// <summary>
-    /// These services are registered on the tenant service collection.
-    /// </summary>
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddPermissionProvider<RecipesPermissionProvider>();
+        services.AddRecipeExecutionStep<CommandStep>();
+        services.AddRecipeExecutionStep<RecipesStep>();
 
-            services.AddRecipeExecutionStep<CommandStep>();
-            services.AddRecipeExecutionStep<RecipesStep>();
-
-            services.AddDeploymentTargetHandler<RecipeDeploymentTargetHandler>();
-        }
+        services.AddDeploymentTargetHandler<RecipeDeploymentTargetHandler>();
     }
+}
 
-    [Feature("OrchardCore.Recipes.Core")]
-    public sealed class RecipesCoreStartup : StartupBase
+[Feature("OrchardCore.Recipes.Core")]
+public sealed class RecipesCoreStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRecipes();
-        }
+        services.AddRecipes();
     }
 }

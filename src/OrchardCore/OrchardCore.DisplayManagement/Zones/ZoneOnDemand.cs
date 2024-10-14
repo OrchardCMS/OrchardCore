@@ -1,133 +1,126 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Shapes;
 
-namespace OrchardCore.DisplayManagement.Zones
+namespace OrchardCore.DisplayManagement.Zones;
+
+/// <remarks>
+/// InterfaceProxyBehavior().
+/// NilBehavior() => return Nil on GetMember and GetIndex in all cases.
+/// ZoneOnDemandBehavior(_zoneFactory, _parent, name) => when a zone (Shape) is
+/// created, replace itself with the zone so that Layout.ZoneName is no more equal to Nil.
+/// </remarks>
+public class ZoneOnDemand : Shape
 {
-    /// <remarks>
-    /// InterfaceProxyBehavior().
-    /// NilBehavior() => return Nil on GetMember and GetIndex in all cases.
-    /// ZoneOnDemandBehavior(_zoneFactory, _parent, name) => when a zone (Shape) is
-    /// created, replace itself with the zone so that Layout.ZoneName is no more equal to Nil.
-    /// </remarks>
-    public class ZoneOnDemand : Shape
+    private readonly Func<ValueTask<IShape>> _zoneFactory;
+    private readonly ZoneHolding _parent;
+    private readonly string _potentialZoneName;
+    private IShape _zone;
+
+    public ZoneOnDemand(Func<ValueTask<IShape>> zoneFactory, ZoneHolding parent, string potentialZoneName)
     {
-        private readonly Func<ValueTask<IShape>> _zoneFactory;
-        private readonly ZoneHolding _parent;
-        private readonly string _potentialZoneName;
-        private IShape _zone;
+        _zoneFactory = zoneFactory;
+        _parent = parent;
+        _potentialZoneName = potentialZoneName;
+    }
 
-        public ZoneOnDemand(Func<ValueTask<IShape>> zoneFactory, ZoneHolding parent, string potentialZoneName)
-        {
-            _zoneFactory = zoneFactory;
-            _parent = parent;
-            _potentialZoneName = potentialZoneName;
-        }
+    public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)
+    {
+        // NilBehavior.
+        result = Nil.Instance;
+        return true;
+    }
 
-        public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)
+    public override bool TryGetIndex(System.Dynamic.GetIndexBinder binder, object[] indexes, out object result)
+    {
+        // NilBehavior.
+        result = Nil.Instance;
+        return true;
+    }
+
+    public override bool TryInvokeMember(System.Dynamic.InvokeMemberBinder binder, object[] args, out object result)
+    {
+        var name = binder.Name;
+
+        // NilBehavior.
+        if (args.Length == 0 && name != "ToString")
         {
-            // NilBehavior.
             result = Nil.Instance;
             return true;
         }
 
-        public override bool TryGetIndex(System.Dynamic.GetIndexBinder binder, object[] indexes, out object result)
+        return base.TryInvokeMember(binder, args, out result);
+    }
+
+    public override string ToString()
+    {
+        return string.Empty;
+    }
+
+    public override bool TryConvert(System.Dynamic.ConvertBinder binder, out object result)
+    {
+        if (binder.ReturnType == typeof(string))
         {
-            // NilBehavior.
-            result = Nil.Instance;
+            result = null;
+        }
+        else if (binder.ReturnType.IsValueType)
+        {
+            result = Activator.CreateInstance(binder.ReturnType);
+        }
+        else
+        {
+            result = null;
+        }
+
+        return true;
+    }
+
+    public static bool operator ==(ZoneOnDemand _, object b) =>
+        // If ZoneOnDemand is compared to null it must return true.
+        b == null || ReferenceEquals(b, Nil.Instance);
+
+    public static bool operator !=(ZoneOnDemand a, object b) =>
+        // If ZoneOnDemand is compared to null it must return true.
+        !(a == b);
+
+    public override bool Equals(object obj)
+    {
+        if (obj is null)
+        {
             return true;
         }
 
-        public override bool TryInvokeMember(System.Dynamic.InvokeMemberBinder binder, object[] args, out object result)
+        if (ReferenceEquals(this, obj))
         {
-            var name = binder.Name;
-
-            // NilBehavior.
-            if (args.Length == 0 && name != "ToString")
-            {
-                result = Nil.Instance;
-                return true;
-            }
-
-            return base.TryInvokeMember(binder, args, out result);
-        }
-
-        public override string ToString()
-        {
-            return string.Empty;
-        }
-
-        public override bool TryConvert(System.Dynamic.ConvertBinder binder, out object result)
-        {
-            if (binder.ReturnType == typeof(string))
-            {
-                result = null;
-            }
-            else if (binder.ReturnType.IsValueType)
-            {
-                result = Activator.CreateInstance(binder.ReturnType);
-            }
-            else
-            {
-                result = null;
-            }
-
             return true;
         }
 
-        public static bool operator ==(ZoneOnDemand _, object b)
-        {
-            // If ZoneOnDemand is compared to null it must return true.
-            return b == null || ReferenceEquals(b, Nil.Instance);
-        }
+        return false;
+    }
 
-        public static bool operator !=(ZoneOnDemand a, object b)
-        {
-            // If ZoneOnDemand is compared to null it must return true.
-            return !(a == b);
-        }
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_parent, _potentialZoneName);
+    }
 
-        public override bool Equals(object obj)
+    public override async ValueTask<IShape> AddAsync(object item, string position)
+    {
+        if (item == null)
         {
-            if (obj is null)
+            if (_zone != null)
             {
-                return true;
+                return _zone;
             }
 
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            return false;
+            return this;
         }
 
-        public override int GetHashCode()
+        if (_zone == null)
         {
-            return HashCode.Combine(_parent, _potentialZoneName);
+            _zone = await _zoneFactory();
+            _zone.Properties["Parent"] = _parent;
+            _zone.Properties["ZoneName"] = _potentialZoneName;
+            _parent.Properties[_potentialZoneName] = _zone;
         }
 
-        public override async ValueTask<IShape> AddAsync(object item, string position)
-        {
-            if (item == null)
-            {
-                if (_zone != null)
-                {
-                    return _zone;
-                }
-
-                return this;
-            }
-
-            if (_zone == null)
-            {
-                _zone = await _zoneFactory();
-                _zone.Properties["Parent"] = _parent;
-                _zone.Properties["ZoneName"] = _potentialZoneName;
-                _parent.Properties[_potentialZoneName] = _zone;
-            }
-
-            return _zone = await _zone.AddAsync(item, position);
-        }
+        return _zone = await _zone.AddAsync(item, position);
     }
 }

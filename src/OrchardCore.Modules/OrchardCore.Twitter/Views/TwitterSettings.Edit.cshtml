@@ -1,0 +1,50 @@
+@using OrchardCore.Twitter.ViewModels
+@model TwitterSettingsViewModel
+
+<p class="alert alert-warning" role="alert">
+    @T["The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."]
+    <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/X/#x-twitter-integration" target="_blank">@T["See documentation"]</a>
+</p>
+
+@if (Model.HasDecryptionError)
+{
+    <p class="alert alert-danger">@T["An error occurred while decrypting a setting. Please apply and save."]</p>
+}
+
+<h3>@T["X (Twitter) Integration Settings"]</h3>
+
+<div class="mb-3 row" asp-validation-class-for="APIKey">
+    <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
+        <label asp-for="APIKey" class="form-label">@T["API key"]</label>
+        <input asp-for="APIKey" class="form-control" autocomplete="off" />
+        <span asp-validation-for="APIKey"></span>
+        <span class="hint">@T["The API key defined in the Keys and tokens tab of X (Twitter) app dashboard."]</span>
+    </div>
+</div>
+
+<div class="mb-3 row" asp-validation-class-for="APISecretKey">
+    <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
+        <label asp-for="APISecretKey" class="form-label">@T["API secret key"]</label>
+        <input asp-for="APISecretKey" class="form-control" type="password" value="@Model.APISecretKey" autocomplete="off" />
+        <span asp-validation-for="APISecretKey"></span>
+        <span class="hint">@T["The API secret defined in the Keys and tokens tab of X (Twitter) app dashboard."]</span>
+    </div>
+</div>
+
+<div class="mb-3 row" asp-validation-class-for="AccessToken">
+    <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
+        <label asp-for="AccessToken" class="form-label">@T["Access Token"]</label>
+        <input asp-for="AccessToken" class="form-control" autocomplete="off" />
+        <span asp-validation-for="AccessToken"></span>
+        <span class="hint">@T["The Access Token defined in the Keys and tokens tab of X (Twitter) app dashboard."]</span>
+    </div>
+</div>
+
+<div class="mb-3 row" asp-validation-class-for="AccessTokenSecret">
+    <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
+        <label asp-for="AccessTokenSecret" class="form-label">@T["Access Token Secret"]</label>
+        <input asp-for="AccessTokenSecret" class="form-control" type="password" value="@Model.AccessTokenSecret" autocomplete="off" />
+        <span asp-validation-for="AccessTokenSecret"></span>
+        <span class="hint">@T["The Access Token Secret in the Keys and tokens tab of X (Twitter) app dashboard."]</span>
+    </div>
+</div>

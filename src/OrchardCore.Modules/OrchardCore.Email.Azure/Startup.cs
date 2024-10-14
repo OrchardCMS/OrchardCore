@@ -8,7 +8,6 @@ using OrchardCore.Email.Azure.Services;
 using OrchardCore.Email.Core;
 using OrchardCore.Email.Services;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Azure;
 
@@ -26,10 +25,13 @@ public sealed class Startup
         services.AddTransient<IConfigureOptions<AzureEmailOptions>, AzureEmailOptionsConfiguration>();
 
         services.AddEmailProviderOptionsConfiguration<AzureEmailProviderOptionsConfigurations>()
-            .AddScoped<IDisplayDriver<ISite>, AzureEmailSettingsDisplayDriver>();
+            .AddSiteDisplayDriver<AzureEmailSettingsDisplayDriver>();
 
         services.Configure<DefaultAzureEmailOptions>(options =>
         {
+            _shellConfiguration.GetSection("OrchardCore_Email_AzureCommunicationServices").Bind(options);
+
+            // The 'OrchardCore_Email_Azure' key can be removed in version 3. 
             _shellConfiguration.GetSection("OrchardCore_Email_Azure").Bind(options);
 
             options.IsEnabled = options.ConfigurationExists();

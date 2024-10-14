@@ -1,8 +1,4 @@
-using System;
 using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
@@ -41,7 +37,7 @@ public sealed class RedisDatabaseFactory : IRedisDatabaseFactory, IDisposable
             {
                 if (_logger.IsEnabled(LogLevel.Debug))
                 {
-                    _logger.LogDebug("Creating a new instance of '{name}'. A single instance per configuration should be created across tenants. Total instances prior creating is '{count}'.", nameof(ConnectionMultiplexer), _factories.Count);
+                    _logger.LogDebug("Creating a new instance of '{Name}'. A single instance per configuration should be created across tenants. Total instances prior creating is '{Count}'.", nameof(ConnectionMultiplexer), _factories.Count);
                 }
 
                 return (await ConnectionMultiplexer.ConnectAsync(options.ConfigurationOptions)).GetDatabase();

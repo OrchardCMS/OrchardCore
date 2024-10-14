@@ -18,6 +18,8 @@ public static class UserConstants
 
         public const string UserRegistration = "OrchardCore.Users.Registration";
 
+        public const string ExternalAuthentication = "OrchardCore.Users.ExternalAuthentication";
+
         public const string ResetPassword = "OrchardCore.Users.ResetPassword";
     }
 }

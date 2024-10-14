@@ -44,19 +44,10 @@
   {
     "inputs": [
       "Assets/js/header/global/*.js",
-      "Assets/js/header/theme/*.js"
-    ],
-    "watch": [
-      "Assets/js/header/global/*.js",
-      "Assets/js/header/theme/*.js"
-    ],
-    "output": "wwwroot/js/TheAdmin-header.js"
-  },
-  {
-    "inputs": [
       "Assets/js/header/main/*.js"
     ],
     "watch": [
+      "Assets/js/header/global/*.js",
       "Assets/js/header/main/*.js"
     ],
     "output": "wwwroot/js/TheAdmin-main.js"

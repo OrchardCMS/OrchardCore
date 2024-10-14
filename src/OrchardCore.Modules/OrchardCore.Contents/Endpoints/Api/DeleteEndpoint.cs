@@ -1,9 +1,10 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
+using OrchardCore.Json;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.Endpoints.Api;
@@ -24,7 +25,8 @@ public static class DeleteEndpoint
         string contentItemId,
         IContentManager contentManager,
         IAuthorizationService authorizationService,
-        HttpContext httpContext)
+        HttpContext httpContext,
+        IOptions<DocumentJsonSerializerOptions> options)
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi))
         {
@@ -45,6 +47,6 @@ public static class DeleteEndpoint
 
         await contentManager.RemoveAsync(contentItem);
 
-        return TypedResults.Ok(contentItem);
+        return Results.Json(contentItem, options.Value.SerializerOptions);
     }
 }

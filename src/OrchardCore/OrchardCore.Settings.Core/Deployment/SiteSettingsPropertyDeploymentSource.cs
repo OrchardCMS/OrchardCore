@@ -1,42 +1,35 @@
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Settings.Deployment
+namespace OrchardCore.Settings.Deployment;
+
+public class SiteSettingsPropertyDeploymentSource<TModel>
+    : DeploymentSourceBase<SiteSettingsPropertyDeploymentStep<TModel>> where TModel : class, new()
 {
-    public class SiteSettingsPropertyDeploymentSource<TModel> : IDeploymentSource where TModel : class, new()
+    private readonly ISiteService _siteService;
+
+    public SiteSettingsPropertyDeploymentSource(ISiteService siteService)
     {
-        private readonly ISiteService _siteService;
+        _siteService = siteService;
+    }
 
-        public SiteSettingsPropertyDeploymentSource(ISiteService siteService)
+    protected override async Task ProcessAsync(SiteSettingsPropertyDeploymentStep<TModel> step, DeploymentPlanResult result)
+    {
+        var settingJPropertyName = typeof(TModel).Name;
+        var settingJPropertyValue = JObject.FromObject(await _siteService.GetSettingsAsync<TModel>());
+
+        var settingsStepJObject = result.Steps.FirstOrDefault(s => s["name"]?.ToString() == "Settings");
+        if (settingsStepJObject != null)
         {
-            _siteService = siteService;
+            settingsStepJObject.Add(settingJPropertyName, settingJPropertyValue);
         }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        else
         {
-            if (step is not SiteSettingsPropertyDeploymentStep<TModel> settingsStep)
+            result.Steps.Add(new JsonObject
             {
-                return;
-            }
-
-            var settingJPropertyName = typeof(TModel).Name;
-            var settingJPropertyValue = JObject.FromObject(await _siteService.GetSettingsAsync<TModel>());
-
-            var settingsStepJObject = result.Steps.FirstOrDefault(s => s["name"]?.ToString() == "Settings");
-            if (settingsStepJObject != null)
-            {
-                settingsStepJObject.Add(settingJPropertyName, settingJPropertyValue);
-            }
-            else
-            {
-                result.Steps.Add(new JsonObject
-                {
-                    ["name"] = "Settings",
-                    [settingJPropertyName] = settingJPropertyValue,
-                });
-            }
+                ["name"] = "Settings",
+                [settingJPropertyName] = settingJPropertyValue,
+            });
         }
     }
 }

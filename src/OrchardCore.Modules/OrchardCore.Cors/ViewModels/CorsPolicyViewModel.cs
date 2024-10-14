@@ -1,25 +1,24 @@
-namespace OrchardCore.Cors.ViewModels
+namespace OrchardCore.Cors.ViewModels;
+
+public class CorsPolicyViewModel
 {
-    public class CorsPolicyViewModel
-    {
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public bool AllowAnyOrigin { get; set; }
+    public bool AllowAnyOrigin { get; set; }
 
-        public string[] AllowedOrigins { get; set; }
+    public string[] AllowedOrigins { get; set; }
 
-        public bool AllowAnyHeader { get; set; }
+    public bool AllowAnyHeader { get; set; }
 
-        public string[] AllowedHeaders { get; set; }
+    public string[] AllowedHeaders { get; set; }
 
-        public bool AllowAnyMethod { get; set; }
+    public bool AllowAnyMethod { get; set; }
 
-        public string[] AllowedMethods { get; set; }
+    public string[] AllowedMethods { get; set; }
 
-        public bool AllowCredentials { get; set; }
+    public bool AllowCredentials { get; set; }
 
-        public bool IsDefaultPolicy { get; set; }
+    public bool IsDefaultPolicy { get; set; }
 
-        public string[] ExposedHeaders { get; set; }
-    }
+    public string[] ExposedHeaders { get; set; }
 }

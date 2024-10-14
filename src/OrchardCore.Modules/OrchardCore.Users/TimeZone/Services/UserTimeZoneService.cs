@@ -1,9 +1,4 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Users.Models;
@@ -11,30 +6,30 @@ using OrchardCore.Users.TimeZone.Models;
 
 namespace OrchardCore.Users.TimeZone.Services;
 
-public class UserTimeZoneService
+public class UserTimeZoneService : IUserTimeZoneService
 {
-    private const string EmptyTimeZone = "empty";
     private const string CacheKey = "UserTimeZone/";
+    private const string EmptyTimeZone = "empty";
+
     private static readonly DistributedCacheEntryOptions _slidingExpiration = new() { SlidingExpiration = TimeSpan.FromHours(1) };
 
     private readonly IClock _clock;
     private readonly IDistributedCache _distributedCache;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public UserTimeZoneService(
         IClock clock,
-        IDistributedCache distributedCache,
-        IHttpContextAccessor httpContextAccessor
-    )
+        IDistributedCache distributedCache)
     {
         _clock = clock;
         _distributedCache = distributedCache;
-        _httpContextAccessor = httpContextAccessor;
     }
 
-    public async ValueTask<ITimeZone> GetUserTimeZoneAsync()
+    /// <inheritdoc/>
+    public async ValueTask<ITimeZone> GetAsync(IUser user)
     {
-        var currentTimeZoneId = await GetCurrentUserTimeZoneIdAsync();
+        ArgumentNullException.ThrowIfNull(user);
+
+        var currentTimeZoneId = await GetTimeZoneIdAsync(user);
 
         if (string.IsNullOrEmpty(currentTimeZoneId))
         {
@@ -44,37 +39,38 @@ public class UserTimeZoneService
         return _clock.GetTimeZone(currentTimeZoneId);
     }
 
-    public async ValueTask UpdateUserTimeZoneAsync(IUser user)
+    /// <inheritdoc/>
+    public async ValueTask UpdateAsync(IUser user)
     {
-        var userName = user?.UserName;
+        ArgumentNullException.ThrowIfNull(user);
 
-        if (!string.IsNullOrEmpty(userName))
+        if (string.IsNullOrEmpty(user.UserName))
         {
-            await _distributedCache.RemoveAsync(GetCacheKey(userName));
+            return;
         }
 
-        return;
+        await _distributedCache.RemoveAsync(GetCacheKey(user.UserName));
     }
 
-    public async ValueTask<string> GetCurrentUserTimeZoneIdAsync()
+    /// <inheritdoc/>
+    private async ValueTask<string> GetTimeZoneIdAsync(IUser user)
     {
-        var userName = _httpContextAccessor.HttpContext?.User?.Identity?.Name;
-
-        if (string.IsNullOrEmpty(userName))
+        if (string.IsNullOrEmpty(user.UserName))
         {
             return null;
         }
 
-        var key = GetCacheKey(userName);
+        var key = GetCacheKey(user.UserName);
+
         var timeZoneId = await _distributedCache.GetStringAsync(key);
 
         // The timezone is not cached yet, resolve it and store the value
         if (string.IsNullOrEmpty(timeZoneId))
         {
-            // Delay-loading UserManager since it is registered as scoped
-            var userManager = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<UserManager<IUser>>();
-            var user = await userManager.FindByNameAsync(userName) as User;
-            timeZoneId = user.As<UserTimeZone>()?.TimeZoneId;
+            if (user is User u)
+            {
+                timeZoneId = u.As<UserTimeZone>()?.TimeZoneId;
+            }
 
             // We store a special string to remember there is no specific value for this user.
             // And actual distributed cache implementation might not be able to store null values.
@@ -83,11 +79,7 @@ public class UserTimeZoneService
                 timeZoneId = EmptyTimeZone;
             }
 
-            await _distributedCache.SetStringAsync(
-                key,
-                timeZoneId,
-                _slidingExpiration
-            );
+            await _distributedCache.SetStringAsync(key, timeZoneId, _slidingExpiration);
         }
 
         // Do we know this user doesn't have a configured value?

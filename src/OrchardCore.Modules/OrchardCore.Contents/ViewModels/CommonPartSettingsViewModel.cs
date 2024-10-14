@@ -1,8 +1,7 @@
-namespace OrchardCore.Contents.ViewModels
+namespace OrchardCore.Contents.ViewModels;
+
+public class CommonPartSettingsViewModel
 {
-    public class CommonPartSettingsViewModel
-    {
-        public bool DisplayDateEditor { get; set; }
-        public bool DisplayOwnerEditor { get; set; }
-    }
+    public bool DisplayDateEditor { get; set; }
+    public bool DisplayOwnerEditor { get; set; }
 }

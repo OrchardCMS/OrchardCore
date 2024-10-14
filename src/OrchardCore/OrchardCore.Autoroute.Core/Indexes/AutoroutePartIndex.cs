@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
@@ -12,186 +8,185 @@ using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Data;
 using YesSql.Indexes;
 
-namespace OrchardCore.Autoroute.Core.Indexes
+namespace OrchardCore.Autoroute.Core.Indexes;
+
+public class AutoroutePartIndex : MapIndex
 {
-    public class AutoroutePartIndex : MapIndex
+    /// <summary>
+    /// The id of the document.
+    /// </summary>
+    public long DocumentId { get; set; }
+
+    /// <summary>
+    /// The container content item id.
+    /// </summary>
+    public string ContentItemId { get; set; }
+
+    /// <summary>
+    /// Route path.
+    /// </summary>
+    public string Path { get; set; }
+
+    /// <summary>
+    /// Whether this content item is published.
+    /// </summary>
+    public bool Published { get; set; }
+
+    /// <summary>
+    /// Whether this content item is latest.
+    /// </summary>
+    public bool Latest { get; set; }
+
+    /// <summary>
+    /// Only used if content item is contained in a container.
+    /// </summary>
+    public string ContainedContentItemId { get; set; }
+
+    /// <summary>
+    /// Only used if the content item is contained in a container.
+    /// </summary>
+    public string JsonPath { get; set; }
+}
+
+public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
+{
+    private readonly IServiceProvider _serviceProvider;
+    private readonly HashSet<ContentItem> _itemRemoved = [];
+    private readonly HashSet<string> _partRemoved = [];
+    private IContentDefinitionManager _contentDefinitionManager;
+    private IContentManager _contentManager;
+
+    public AutoroutePartIndexProvider(IServiceProvider serviceProvider)
     {
-        /// <summary>
-        /// The id of the document.
-        /// </summary>
-        public long DocumentId { get; set; }
-
-        /// <summary>
-        /// The container content item id.
-        /// </summary>
-        public string ContentItemId { get; set; }
-
-        /// <summary>
-        /// Route path.
-        /// </summary>
-        public string Path { get; set; }
-
-        /// <summary>
-        /// Whether this content item is published.
-        /// </summary>
-        public bool Published { get; set; }
-
-        /// <summary>
-        /// Whether this content item is latest.
-        /// </summary>
-        public bool Latest { get; set; }
-
-        /// <summary>
-        /// Only used if content item is contained in a container.
-        /// </summary>
-        public string ContainedContentItemId { get; set; }
-
-        /// <summary>
-        /// Only used if the content item is contained in a container.
-        /// </summary>
-        public string JsonPath { get; set; }
+        _serviceProvider = serviceProvider;
     }
 
-    public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
+    public override Task RemovedAsync(RemoveContentContext context)
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly HashSet<ContentItem> _itemRemoved = [];
-        private readonly HashSet<string> _partRemoved = [];
-        private IContentDefinitionManager _contentDefinitionManager;
-        private IContentManager _contentManager;
-
-        public AutoroutePartIndexProvider(IServiceProvider serviceProvider)
-        {
-            _serviceProvider = serviceProvider;
-        }
-
-        public override Task RemovedAsync(RemoveContentContext context)
-        {
-            if (context.NoActiveVersionLeft)
-            {
-                var part = context.ContentItem.As<AutoroutePart>();
-
-                if (part != null)
-                {
-                    _itemRemoved.Add(context.ContentItem);
-                }
-            }
-
-            return Task.CompletedTask;
-        }
-
-        public override async Task PublishedAsync(PublishContentContext context)
+        if (context.NoActiveVersionLeft)
         {
             var part = context.ContentItem.As<AutoroutePart>();
 
-            // Validate that the content definition contains this part, this prevents indexing parts
-            // that have been removed from the type definition, but are still present in the elements.            
             if (part != null)
             {
-                // Lazy initialization because of ISession cyclic dependency.
-                _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
-
-                // Search for this part.
-                var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
-                if (contentTypeDefinition != null && !contentTypeDefinition.Parts.Any(ctd => ctd.Name == nameof(AutoroutePart)))
-                {
-                    context.ContentItem.Remove<AutoroutePart>();
-                    _partRemoved.Add(context.ContentItem.ContentItemId);
-
-                    // When the part has been removed enlist an update for after the session has been committed.
-                    var autorouteEntries = _serviceProvider.GetRequiredService<IAutorouteEntries>();
-                    await autorouteEntries.UpdateEntriesAsync();
-                }
+                _itemRemoved.Add(context.ContentItem);
             }
         }
 
-        public string CollectionName { get; set; }
-        public Type ForType() => typeof(ContentItem);
-        public void Describe(IDescriptor context) => Describe((DescribeContext<ContentItem>)context);
+        return Task.CompletedTask;
+    }
 
-        public void Describe(DescribeContext<ContentItem> context)
+    public override async Task PublishedAsync(PublishContentContext context)
+    {
+        var part = context.ContentItem.As<AutoroutePart>();
+
+        // Validate that the content definition contains this part, this prevents indexing parts
+        // that have been removed from the type definition, but are still present in the elements.            
+        if (part != null)
         {
-            context.For<AutoroutePartIndex>()
-                .When(contentItem => contentItem.Has<AutoroutePart>() || _partRemoved.Contains(contentItem.ContentItemId))
-                .Map(async contentItem =>
-                {
-                    // If the content item was removed, a record is still added.
-                    var itemRemoved = _itemRemoved.Contains(contentItem);
-                    if (!contentItem.Published && !contentItem.Latest && !itemRemoved)
-                    {
-                        return null;
-                    }
+            // Lazy initialization because of ISession cyclic dependency.
+            _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-                    // If the part was removed from the type definition, a record is still added.
-                    var partRemoved = _partRemoved.Contains(contentItem.ContentItemId);
-
-                    var part = contentItem.As<AutoroutePart>();
-                    if (!partRemoved && string.IsNullOrEmpty(part?.Path))
-                    {
-                        return null;
-                    }
-
-                    var results = new List<AutoroutePartIndex>
-                    {
-                        // If the part is disabled or was removed, a record is still added but with a null path.
-                        new() {
-                            ContentItemId = contentItem.ContentItemId,
-                            Path = !partRemoved && !part.Disabled ? part.Path : null,
-                            Published = contentItem.Published,
-                            Latest = contentItem.Latest
-                        }
-                    };
-
-                    if (partRemoved || !part.RouteContainedItems || part.Disabled || itemRemoved)
-                    {
-                        return results;
-                    }
-
-                    _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
-
-                    var containedContentItemsAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
-
-                    await PopulateContainedContentItemIndexesAsync(results, contentItem, containedContentItemsAspect, (JsonObject)contentItem.Content, part.Path);
-
-                    return results;
-                });
-        }
-
-        private async Task PopulateContainedContentItemIndexesAsync(List<AutoroutePartIndex> results, ContentItem containerContentItem, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
-        {
-            foreach (var accessor in containedContentItemsAspect.Accessors)
+            // Search for this part.
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+            if (contentTypeDefinition != null && !contentTypeDefinition.Parts.Any(ctd => ctd.Name == nameof(AutoroutePart)))
             {
-                var items = accessor.Invoke(content);
+                context.ContentItem.Remove<AutoroutePart>();
+                _partRemoved.Add(context.ContentItem.ContentItemId);
 
-                foreach (var jItem in items.Cast<JsonObject>())
+                // When the part has been removed enlist an update for after the session has been committed.
+                var autorouteEntries = _serviceProvider.GetRequiredService<IAutorouteEntries>();
+                await autorouteEntries.UpdateEntriesAsync();
+            }
+        }
+    }
+
+    public string CollectionName { get; set; }
+    public Type ForType() => typeof(ContentItem);
+    public void Describe(IDescriptor context) => Describe((DescribeContext<ContentItem>)context);
+
+    public void Describe(DescribeContext<ContentItem> context)
+    {
+        context.For<AutoroutePartIndex>()
+            .When(contentItem => contentItem.Has<AutoroutePart>() || _partRemoved.Contains(contentItem.ContentItemId))
+            .Map(async contentItem =>
+            {
+                // If the content item was removed, a record is still added.
+                var itemRemoved = _itemRemoved.Contains(contentItem);
+                if (!contentItem.Published && !contentItem.Latest && !itemRemoved)
                 {
-                    var contentItem = jItem.ToObject<ContentItem>();
-                    var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
+                    return null;
+                }
 
-                    if (!handlerAspect.Disabled)
+                // If the part was removed from the type definition, a record is still added.
+                var partRemoved = _partRemoved.Contains(contentItem.ContentItemId);
+
+                var part = contentItem.As<AutoroutePart>();
+                if (!partRemoved && string.IsNullOrEmpty(part?.Path))
+                {
+                    return null;
+                }
+
+                var results = new List<AutoroutePartIndex>
+                {
+                    // If the part is disabled or was removed, a record is still added but with a null path.
+                    new() {
+                        ContentItemId = contentItem.ContentItemId,
+                        Path = !partRemoved && !part.Disabled ? part.Path : null,
+                        Published = contentItem.Published,
+                        Latest = contentItem.Latest
+                    }
+                };
+
+                if (partRemoved || !part.RouteContainedItems || part.Disabled || itemRemoved)
+                {
+                    return results;
+                }
+
+                _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
+
+                var containedContentItemsAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
+
+                await PopulateContainedContentItemIndexesAsync(results, contentItem, containedContentItemsAspect, (JsonObject)contentItem.Content, part.Path);
+
+                return results;
+            });
+    }
+
+    private async Task PopulateContainedContentItemIndexesAsync(List<AutoroutePartIndex> results, ContentItem containerContentItem, ContainedContentItemsAspect containedContentItemsAspect, JsonObject content, string basePath)
+    {
+        foreach (var accessor in containedContentItemsAspect.Accessors)
+        {
+            var items = accessor.Invoke(content);
+
+            foreach (var jItem in items.Cast<JsonObject>())
+            {
+                var contentItem = jItem.ToObject<ContentItem>();
+                var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
+
+                if (!handlerAspect.Disabled)
+                {
+                    var path = handlerAspect.Path;
+                    if (!handlerAspect.Absolute)
                     {
-                        var path = handlerAspect.Path;
-                        if (!handlerAspect.Absolute)
-                        {
-                            path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
-                        }
-
-                        results.Add(new AutoroutePartIndex
-                        {
-                            ContentItemId = containerContentItem.ContentItemId,
-                            Path = path,
-                            Published = containerContentItem.Published,
-                            Latest = containerContentItem.Latest,
-                            ContainedContentItemId = contentItem.ContentItemId,
-                            JsonPath = jItem.GetNormalizedPath(),
-                        });
+                        path = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
                     }
 
-                    var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
-                    var childrenAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
-
-                    await PopulateContainedContentItemIndexesAsync(results, containerContentItem, childrenAspect, jItem, itemBasePath);
+                    results.Add(new AutoroutePartIndex
+                    {
+                        ContentItemId = containerContentItem.ContentItemId,
+                        Path = path,
+                        Published = containerContentItem.Published,
+                        Latest = containerContentItem.Latest,
+                        ContainedContentItemId = contentItem.ContentItemId,
+                        JsonPath = jItem.GetNormalizedPath(),
+                    });
                 }
+
+                var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path.TrimStart('/');
+                var childrenAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
+
+                await PopulateContainedContentItemIndexesAsync(results, containerContentItem, childrenAspect, jItem, itemBasePath);
             }
         }
     }

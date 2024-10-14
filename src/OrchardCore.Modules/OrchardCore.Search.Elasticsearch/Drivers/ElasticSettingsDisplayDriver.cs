@@ -1,10 +1,6 @@
-using System;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -13,7 +9,6 @@ using Nest;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
@@ -22,7 +17,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Elasticsearch.Drivers;
 
-public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticSettings>
+public sealed class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSettings>
 {
     private static readonly char[] _separator = [',', ' '];
 
@@ -32,7 +27,10 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
     private readonly ElasticConnectionOptions _elasticConnectionOptions;
     private readonly IElasticClient _elasticClient;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
+
+    protected override string SettingsGroupId
+        => SearchConstants.SearchSettingsGroupId;
 
     public ElasticSettingsDisplayDriver(
         ElasticIndexSettingsService elasticIndexSettingsService,
@@ -51,7 +49,7 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(ElasticSettings settings)
+    public override IDisplayResult Edit(ISite site, ElasticSettings settings, BuildEditorContext context)
         => Initialize<ElasticSettingsViewModel>("ElasticSettings_Edit", async model =>
         {
             model.SearchIndex = settings.SearchIndex;
@@ -66,15 +64,10 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
             ];
         }).Location("Content:2#Elasticsearch;10")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
-        .OnGroup(SearchConstants.SearchSettingsGroupId);
+        .OnGroup(SettingsGroupId);
 
-    public override async Task<IDisplayResult> UpdateAsync(ElasticSettings section, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, ElasticSettings section, UpdateEditorContext context)
     {
-        if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
-        {
-            return null;
-        }
-
         if (!_elasticConnectionOptions.FileConfigurationExists())
         {
             return null;
@@ -118,6 +111,6 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
             }
         }
 
-        return await EditAsync(section, context);
+        return Edit(site, section, context);
     }
 }

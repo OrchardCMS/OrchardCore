@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Deployment;
@@ -10,72 +6,65 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using YesSql;
 using YesSql.Services;
 
-namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
+namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
+
+public class ExportContentToDeploymentTargetDeploymentSource
+    : DeploymentSourceBase<ExportContentToDeploymentTargetDeploymentStep>
 {
-    public class ExportContentToDeploymentTargetDeploymentSource : IDeploymentSource
+    private readonly IContentManager _contentManager;
+    private readonly ISession _session;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
+
+    public ExportContentToDeploymentTargetDeploymentSource(
+        IContentManager contentManager,
+        ISession session,
+        IUpdateModelAccessor updateModelAccessor)
     {
-        private readonly IContentManager _contentManager;
-        private readonly ISession _session;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
+        _contentManager = contentManager;
+        _session = session;
+        _updateModelAccessor = updateModelAccessor;
+    }
 
-        public ExportContentToDeploymentTargetDeploymentSource(
-            IContentManager contentManager,
-            ISession session,
-            IUpdateModelAccessor updateModelAccessor)
+    protected override async Task ProcessAsync(ExportContentToDeploymentTargetDeploymentStep step, DeploymentPlanResult result)
+    {
+        var data = new JsonArray();
+        result.Steps.Add(new JsonObject
         {
-            _contentManager = contentManager;
-            _session = session;
-            _updateModelAccessor = updateModelAccessor;
-        }
+            ["name"] = "Content",
+            ["data"] = data,
+        });
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        var model = new ExportContentToDeploymentTargetModel();
+        await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(model, "ExportContentToDeploymentTarget", m => m.ItemIds, m => m.Latest, m => m.ContentItemId);
+
+        if (!string.IsNullOrEmpty(model.ContentItemId))
         {
-            var exportContentToDeploymentTargetContentDeploymentStep = step as ExportContentToDeploymentTargetDeploymentStep;
-
-            if (exportContentToDeploymentTargetContentDeploymentStep == null)
+            var contentItem = await _contentManager.GetAsync(model.ContentItemId, model.Latest ? VersionOptions.Latest : VersionOptions.Published);
+            if (contentItem != null)
             {
-                return;
-            }
-
-            var data = new JsonArray();
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Content",
-                ["data"] = data,
-            });
-
-            var model = new ExportContentToDeploymentTargetModel();
-            await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(model, "ExportContentToDeploymentTarget", m => m.ItemIds, m => m.Latest, m => m.ContentItemId);
-
-            if (!string.IsNullOrEmpty(model.ContentItemId))
-            {
-                var contentItem = await _contentManager.GetAsync(model.ContentItemId, model.Latest ? VersionOptions.Latest : VersionOptions.Published);
-                if (contentItem != null)
-                {
-                    var objectData = JObject.FromObject(contentItem);
-                    objectData.Remove(nameof(ContentItem.Id));
-                    data.Add(objectData);
-                }
-            }
-
-            if (model.ItemIds?.Count() > 0)
-            {
-                var checkedContentItems = await _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(model.ItemIds) && x.Published).ListAsync();
-
-                foreach (var contentItem in checkedContentItems)
-                {
-                    var objectData = JObject.FromObject(contentItem);
-                    objectData.Remove(nameof(ContentItem.Id));
-                    data.Add(objectData);
-                }
+                var objectData = JObject.FromObject(contentItem);
+                objectData.Remove(nameof(ContentItem.Id));
+                data.Add(objectData);
             }
         }
 
-        public class ExportContentToDeploymentTargetModel
+        if (model.ItemIds?.Count() > 0)
         {
-            public IEnumerable<long> ItemIds { get; set; }
-            public string ContentItemId { get; set; }
-            public bool Latest { get; set; }
+            var checkedContentItems = await _session.Query<ContentItem, ContentItemIndex>().Where(x => x.DocumentId.IsIn(model.ItemIds) && x.Published).ListAsync();
+
+            foreach (var contentItem in checkedContentItems)
+            {
+                var objectData = JObject.FromObject(contentItem);
+                objectData.Remove(nameof(ContentItem.Id));
+                data.Add(objectData);
+            }
         }
+    }
+
+    public class ExportContentToDeploymentTargetModel
+    {
+        public IEnumerable<long> ItemIds { get; set; }
+        public string ContentItemId { get; set; }
+        public bool Latest { get; set; }
     }
 }

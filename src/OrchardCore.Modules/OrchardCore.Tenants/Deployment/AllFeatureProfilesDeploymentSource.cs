@@ -1,39 +1,33 @@
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Tenants.Services;
 
-namespace OrchardCore.Tenants.Deployment
+namespace OrchardCore.Tenants.Deployment;
+
+public class AllFeatureProfilesDeploymentSource
+    : DeploymentSourceBase<AllFeatureProfilesDeploymentStep>
 {
-    public class AllFeatureProfilesDeploymentSource : IDeploymentSource
+    private readonly FeatureProfilesManager _featureProfilesManager;
+
+    public AllFeatureProfilesDeploymentSource(FeatureProfilesManager featureProfilesManager)
     {
-        private readonly FeatureProfilesManager _featureProfilesManager;
+        _featureProfilesManager = featureProfilesManager;
+    }
 
-        public AllFeatureProfilesDeploymentSource(FeatureProfilesManager featureProfilesManager)
+    protected override async Task ProcessAsync(AllFeatureProfilesDeploymentStep step, DeploymentPlanResult result)
+    {
+        var featureProfileObjects = new JsonObject();
+        var featureProfiles = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
+
+        foreach (var featureProfile in featureProfiles.FeatureProfiles)
         {
-            _featureProfilesManager = featureProfilesManager;
+            featureProfileObjects[featureProfile.Key] = JObject.FromObject(featureProfile.Value);
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        result.Steps.Add(new JsonObject
         {
-            if (step is not AllFeatureProfilesDeploymentStep)
-            {
-                return;
-            }
-
-            var featureProfileObjects = new JsonObject();
-            var featureProfiles = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
-
-            foreach (var featureProfile in featureProfiles.FeatureProfiles)
-            {
-                featureProfileObjects[featureProfile.Key] = JObject.FromObject(featureProfile.Value);
-            }
-
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "FeatureProfiles",
-                ["FeatureProfiles"] = featureProfileObjects,
-            });
-        }
+            ["name"] = "FeatureProfiles",
+            ["FeatureProfiles"] = featureProfileObjects,
+        });
     }
 }

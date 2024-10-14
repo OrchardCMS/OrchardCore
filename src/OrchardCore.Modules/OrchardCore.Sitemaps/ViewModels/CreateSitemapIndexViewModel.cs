@@ -1,25 +1,24 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Sitemaps.ViewModels
+namespace OrchardCore.Sitemaps.ViewModels;
+
+public class CreateSitemapIndexViewModel
 {
-    public class CreateSitemapIndexViewModel
-    {
-        [Required]
-        public string Name { get; set; }
+    [Required]
+    public string Name { get; set; }
 
-        [Required]
-        public string Path { get; set; }
+    [Required]
+    public string Path { get; set; }
 
-        public bool Enabled { get; set; }
+    public bool Enabled { get; set; }
 
-        public ContainableSitemapEntryViewModel[] ContainableSitemaps { get; set; } = [];
+    public ContainableSitemapEntryViewModel[] ContainableSitemaps { get; set; } = [];
 
-    }
+}
 
-    public class ContainableSitemapEntryViewModel
-    {
-        public bool IsChecked { get; set; }
-        public string SitemapId { get; set; }
-        public string Name { get; set; }
-    }
+public class ContainableSitemapEntryViewModel
+{
+    public bool IsChecked { get; set; }
+    public string SitemapId { get; set; }
+    public string Name { get; set; }
 }

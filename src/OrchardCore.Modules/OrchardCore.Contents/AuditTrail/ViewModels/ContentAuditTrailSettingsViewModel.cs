@@ -1,7 +1,6 @@
-namespace OrchardCore.Contents.AuditTrail.ViewModels
+namespace OrchardCore.Contents.AuditTrail.ViewModels;
+
+public class ContentAuditTrailSettingsViewModel
 {
-    public class ContentAuditTrailSettingsViewModel
-    {
-        public string[] AllowedContentTypes { get; set; } = [];
-    }
+    public string[] AllowedContentTypes { get; set; } = [];
 }

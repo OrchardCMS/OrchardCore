@@ -16199,6 +16199,7 @@ function togglePasswordVisibility(passwordCtl, togglePasswordCtl) {
     var number = new RegExp('[0-9]');
     var specialchar = new RegExp('[^A-Za-z0-9]');
     var valid = false;
+    var $this = $(this);
     createProgressBar(0, '');
     function getPercentage(a, b) {
       return (b / a * 100).toFixed(0);
@@ -16233,13 +16234,14 @@ function togglePasswordVisibility(passwordCtl, togglePasswordCtl) {
       target.empty();
       target.append(el);
     }
-    this.bind('keyup keydown', function (event) {
-      checkStrength($(this).val());
+    this.bind('keyup keydown change', function (event) {
+      checkStrength($this.val());
     });
     this.bind('drop', function (event) {
       checkStrength(event.originalEvent.dataTransfer.getData("text"));
     });
     this.parents('form').on('submit', function () {
+      checkStrength($this.val());
       if (!valid) {
         event.preventDefault();
       }

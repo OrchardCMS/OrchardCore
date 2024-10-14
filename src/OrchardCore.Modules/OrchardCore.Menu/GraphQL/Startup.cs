@@ -4,17 +4,16 @@ using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.Menu.Models;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Menu.GraphQL
+namespace OrchardCore.Menu.GraphQL;
+
+[RequireFeatures("OrchardCore.Apis.GraphQL")]
+public sealed class Startup : StartupBase
 {
-    [RequireFeatures("OrchardCore.Apis.GraphQL")]
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddObjectGraphType<MenuItemsListPart, MenuItemsListQueryObjectType>();
-            services.AddObjectGraphType<LinkMenuItemPart, LinkMenuItemQueryObjectType>();
-            services.AddObjectGraphType<HtmlMenuItemPart, HtmlMenuItemQueryObjectType>();
-            services.AddScoped<IContentTypeBuilder, MenuItemContentTypeBuilder>();
-        }
+        services.AddObjectGraphType<MenuItemsListPart, MenuItemsListQueryObjectType>();
+        services.AddObjectGraphType<LinkMenuItemPart, LinkMenuItemQueryObjectType>();
+        services.AddObjectGraphType<HtmlMenuItemPart, HtmlMenuItemQueryObjectType>();
+        services.AddScoped<IContentTypeBuilder, MenuItemContentTypeBuilder>();
     }
 }

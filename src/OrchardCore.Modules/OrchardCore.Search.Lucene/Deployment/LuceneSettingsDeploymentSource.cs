@@ -1,33 +1,27 @@
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 
-namespace OrchardCore.Search.Lucene.Deployment
+namespace OrchardCore.Search.Lucene.Deployment;
+
+public class LuceneSettingsDeploymentSource
+    : DeploymentSourceBase<LuceneSettingsDeploymentStep>
 {
-    public class LuceneSettingsDeploymentSource : IDeploymentSource
+    private readonly LuceneIndexingService _luceneIndexingService;
+
+    public LuceneSettingsDeploymentSource(LuceneIndexingService luceneIndexingService)
     {
-        private readonly LuceneIndexingService _luceneIndexingService;
+        _luceneIndexingService = luceneIndexingService;
+    }
 
-        public LuceneSettingsDeploymentSource(LuceneIndexingService luceneIndexingService)
+    protected override async Task ProcessAsync(LuceneSettingsDeploymentStep step, DeploymentPlanResult result)
+    {
+        var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
+
+        // Adding Lucene settings
+        result.Steps.Add(new JsonObject
         {
-            _luceneIndexingService = luceneIndexingService;
-        }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-        {
-            if (step is not LuceneSettingsDeploymentStep)
-            {
-                return;
-            }
-
-            var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
-
-            // Adding Lucene settings
-            result.Steps.Add(new JsonObject
-            {
-                ["name"] = "Settings",
-                ["LuceneSettings"] = JObject.FromObject(luceneSettings),
-            });
-        }
+            ["name"] = "Settings",
+            ["LuceneSettings"] = JObject.FromObject(luceneSettings),
+        });
     }
 }

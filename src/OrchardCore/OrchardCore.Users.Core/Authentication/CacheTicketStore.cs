@@ -1,7 +1,5 @@
 #nullable enable
 
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
@@ -53,7 +51,7 @@ public class CacheTicketStore : ITicketStore
         catch (Exception e)
         {
             // Data Protection Error
-            _logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(RenewAsync), cacheKey);
+            _logger.LogError(e, "{MethodName} failed  for '{Key}'.", nameof(RenewAsync), cacheKey);
         }
     }
 
@@ -75,7 +73,7 @@ public class CacheTicketStore : ITicketStore
         catch (Exception e)
         {
             // Data Protection Error
-            _logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(RetrieveAsync), cacheKey);
+            _logger.LogError(e, "{MethodName} failed  for '{Key}'.", nameof(RetrieveAsync), cacheKey);
             return null;
         }
     }
@@ -95,10 +93,8 @@ public class CacheTicketStore : ITicketStore
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(StoreAsync), cacheKey);
-#pragma warning disable CS8603 // Possible null reference return.
-            return null;
-#pragma warning restore CS8603 // Possible null reference return.
+            _logger.LogError(e, "{MethodName} failed  for '{Key}'.", nameof(StoreAsync), cacheKey);
+            throw;
         }
     }
 

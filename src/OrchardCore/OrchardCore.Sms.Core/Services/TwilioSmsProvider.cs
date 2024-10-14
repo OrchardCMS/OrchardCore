@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -85,7 +81,7 @@ public class TwilioSmsProvider : ISmsProvider
                     return SmsResult.Success;
                 }
 
-                _logger.LogError("Twilio service was unable to send SMS messages. Error, code: {errorCode}, message: {errorMessage}", result.ErrorCode, result.ErrorMessage);
+                _logger.LogError("Twilio service was unable to send SMS messages. Error, code: {ErrorCode}, message: {ErrorMessage}", result.ErrorCode, result.ErrorMessage);
             }
 
             return SmsResult.Failed(S["SMS message was not send."]);

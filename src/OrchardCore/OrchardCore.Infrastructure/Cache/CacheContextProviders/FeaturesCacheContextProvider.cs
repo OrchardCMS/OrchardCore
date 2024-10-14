@@ -1,40 +1,35 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Environment.Extensions.Features;
 
-namespace OrchardCore.Environment.Cache.CacheContextProviders
+namespace OrchardCore.Environment.Cache.CacheContextProviders;
+
+public class FeaturesCacheContextProvider : ICacheContextProvider
 {
-    public class FeaturesCacheContextProvider : ICacheContextProvider
+    private const string FeaturesPrefix = "features:";
+
+    private readonly IFeatureHash _featureHash;
+
+    public FeaturesCacheContextProvider(IFeatureHash featureHash)
     {
-        private const string FeaturesPrefix = "features:";
+        _featureHash = featureHash;
+    }
 
-        private readonly IFeatureHash _featureHash;
-
-        public FeaturesCacheContextProvider(IFeatureHash featureHash)
+    public async Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
+    {
+        if (contexts.Any(ctx => string.Equals(ctx, "features", StringComparison.OrdinalIgnoreCase)))
         {
-            _featureHash = featureHash;
+            // Add a hash of the enabled features.
+            var hash = await _featureHash.GetFeatureHashAsync();
+            entries.Add(new CacheContextEntry("features", hash.ToString(CultureInfo.InvariantCulture)));
         }
-
-        public async Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
+        else
         {
-            if (contexts.Any(ctx => string.Equals(ctx, "features", StringComparison.OrdinalIgnoreCase)))
+            foreach (var context in contexts.Where(ctx => ctx.StartsWith(FeaturesPrefix, StringComparison.OrdinalIgnoreCase)))
             {
-                // Add a hash of the enabled features.
-                var hash = await _featureHash.GetFeatureHashAsync();
-                entries.Add(new CacheContextEntry("features", hash.ToString(CultureInfo.InvariantCulture)));
-            }
-            else
-            {
-                foreach (var context in contexts.Where(ctx => ctx.StartsWith(FeaturesPrefix, StringComparison.OrdinalIgnoreCase)))
-                {
-                    var featureName = context[FeaturesPrefix.Length..];
-                    var hash = await _featureHash.GetFeatureHashAsync(featureName);
+                var featureName = context[FeaturesPrefix.Length..];
+                var hash = await _featureHash.GetFeatureHashAsync(featureName);
 
-                    entries.Add(new CacheContextEntry("features", hash.ToString(CultureInfo.InvariantCulture)));
-                }
+                entries.Add(new CacheContextEntry("features", hash.ToString(CultureInfo.InvariantCulture)));
             }
         }
     }

@@ -1,15 +1,15 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Settings;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.GraphQL.ViewModels;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.GraphQL.Drivers;
 
-public class GraphQLContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
+public sealed class GraphQLContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
 {
     private readonly GraphQLContentOptions _contentOptions;
 
@@ -18,7 +18,7 @@ public class GraphQLContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
         _contentOptions = optionsAccessor.Value;
     }
 
-    public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition)
+    public override IDisplayResult Edit(ContentTypeDefinition contentTypeDefinition, BuildEditorContext context)
     {
         return Initialize<GraphQLContentTypeSettingsViewModel>("GraphQLContentTypeSettings_Edit", model =>
         {
@@ -36,6 +36,6 @@ public class GraphQLContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
 
         context.Builder.WithSettings(model.Settings);
 
-        return Edit(contentTypeDefinition);
+        return Edit(contentTypeDefinition, context);
     }
 }

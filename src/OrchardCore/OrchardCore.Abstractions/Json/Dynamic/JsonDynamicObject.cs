@@ -1,8 +1,8 @@
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Reflection;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 using System.Text.Json.Settings;
 
 #nullable enable
@@ -10,10 +10,10 @@ using System.Text.Json.Settings;
 namespace System.Text.Json.Dynamic;
 
 [DebuggerDisplay("JsonDynamicObject[{Count}]")]
-public class JsonDynamicObject : DynamicObject
+[JsonConverter(typeof(JsonDynamicJsonConverter<JsonDynamicObject>))]
+public sealed class JsonDynamicObject : JsonDynamicBase
 {
     private readonly JsonObject _jsonObject;
-
     private readonly Dictionary<string, object?> _dictionary = [];
 
     public JsonDynamicObject()
@@ -28,15 +28,17 @@ public class JsonDynamicObject : DynamicObject
 
     public int Count => _jsonObject.Count;
 
-    public void Merge(JsonNode? content, JsonMergeSettings? settings = null)
-    {
-        _jsonObject.Merge(content, settings);
-    }
+    public override JsonNode Node => _jsonObject;
 
     public object? this[string key]
     {
         get => GetValue(key);
         set => SetValue(key, value);
+    }
+
+    public void Merge(JsonNode? content, JsonMergeSettings? settings = null)
+    {
+        _jsonObject.Merge(content, settings);
     }
 
     public override bool TryGetMember(GetMemberBinder binder, out object? result)
