@@ -17,53 +17,10 @@ public sealed class UrlRedirectRuleHandler : RewriteRuleHandlerBase
     }
 
     public override Task InitializingAsync(InitializingRewriteRuleContext context)
-    {
-        if (context.Rule.Source != UrlRedirectRuleSource.SourceName)
-        {
-            return Task.CompletedTask;
-        }
+        => PopulateAsync(context.Rule, context.Data);
 
-        var metadata = context.Rule.As<UrlRedirectSourceMetadata>();
-
-        var pattern = context.Data[nameof(UrlRedirectSourceMetadata.Pattern)]?.GetValue<string>();
-
-        if (!string.IsNullOrEmpty(pattern))
-        {
-            metadata.Pattern = pattern;
-        }
-
-        var ignoreCase = context.Data[nameof(UrlRedirectSourceMetadata.IgnoreCase)]?.GetValue<bool>();
-
-        if (ignoreCase.HasValue)
-        {
-            metadata.IgnoreCase = ignoreCase.Value;
-        }
-
-        var url = context.Data[nameof(UrlRedirectSourceMetadata.SubstitutionUrl)]?.GetValue<string>();
-
-        if (!string.IsNullOrEmpty(url) && Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var _))
-        {
-            metadata.SubstitutionUrl = url;
-        }
-
-        var appendQueryString = context.Data[nameof(UrlRedirectSourceMetadata.AppendQueryString)]?.GetValue<bool>();
-
-        if (appendQueryString.HasValue)
-        {
-            metadata.AppendQueryString = appendQueryString.Value;
-        }
-
-        var redirectType = context.Data[nameof(UrlRedirectSourceMetadata.RedirectType)]?.GetEnumValue<RedirectType>();
-
-        if (redirectType.HasValue)
-        {
-            metadata.RedirectType = redirectType.Value;
-        }
-
-        context.Rule.Put(metadata);
-
-        return Task.CompletedTask;
-    }
+    public override Task UpdatingAsync(UpdatingRewriteRuleContext context)
+        => PopulateAsync(context.Rule, context.Data);
 
     public override Task ValidatingAsync(ValidatingRewriteRuleContext context)
     {
@@ -82,6 +39,55 @@ public sealed class UrlRedirectRuleHandler : RewriteRuleHandlerBase
         {
             context.Result.Fail(new ValidationResult(S["The Redirect URL is invalid."], [nameof(UrlRedirectSourceMetadata.SubstitutionUrl)]));
         }
+
+        return Task.CompletedTask;
+    }
+
+    private static Task PopulateAsync(RewriteRule rule, JsonNode data)
+    {
+        if (rule.Source != UrlRedirectRuleSource.SourceName)
+        {
+            return Task.CompletedTask;
+        }
+
+        var metadata = rule.As<UrlRedirectSourceMetadata>();
+
+        var pattern = data[nameof(UrlRedirectSourceMetadata.Pattern)]?.GetValue<string>();
+
+        if (!string.IsNullOrEmpty(pattern))
+        {
+            metadata.Pattern = pattern;
+        }
+
+        var ignoreCase = data[nameof(UrlRedirectSourceMetadata.IgnoreCase)]?.GetValue<bool>();
+
+        if (ignoreCase.HasValue)
+        {
+            metadata.IgnoreCase = ignoreCase.Value;
+        }
+
+        var url = data[nameof(UrlRedirectSourceMetadata.SubstitutionUrl)]?.GetValue<string>();
+
+        if (!string.IsNullOrEmpty(url) && Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var _))
+        {
+            metadata.SubstitutionUrl = url;
+        }
+
+        var appendQueryString = data[nameof(UrlRedirectSourceMetadata.AppendQueryString)]?.GetValue<bool>();
+
+        if (appendQueryString.HasValue)
+        {
+            metadata.AppendQueryString = appendQueryString.Value;
+        }
+
+        var redirectType = data[nameof(UrlRedirectSourceMetadata.RedirectType)]?.GetEnumValue<RedirectType>();
+
+        if (redirectType.HasValue)
+        {
+            metadata.RedirectType = redirectType.Value;
+        }
+
+        rule.Put(metadata);
 
         return Task.CompletedTask;
     }

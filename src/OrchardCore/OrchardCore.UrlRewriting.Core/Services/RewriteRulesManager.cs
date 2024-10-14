@@ -118,6 +118,15 @@ public class RewriteRulesManager : IRewriteRulesManager
         return result;
     }
 
+    public async Task UpdateAsync(RewriteRule rule, JsonNode data = null)
+    {
+        var updatingContext = new UpdatingRewriteRuleContext(rule, data);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.UpdatingAsync(ctx), updatingContext, _logger);
+
+        var updatedContext = new UpdatedRewriteRuleContext(rule);
+        await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.UpdatedAsync(ctx), updatedContext, _logger);
+    }
+
     public async Task SaveAsync(RewriteRule rule)
     {
         var savingContext = new SavingRewriteRuleContext(rule);

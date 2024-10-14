@@ -16,4 +16,6 @@ public interface IRewriteRulesManager
     Task SaveAsync(RewriteRule rule);
 
     Task DeleteAsync(RewriteRule rule);
+
+    Task UpdateAsync(RewriteRule rule, JsonNode data = null);
 }

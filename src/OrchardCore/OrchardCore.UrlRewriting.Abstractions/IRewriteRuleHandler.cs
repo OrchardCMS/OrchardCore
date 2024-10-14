@@ -47,6 +47,18 @@ public interface IRewriteRuleHandler
     Task DeletedAsync(DeletedRewriteRuleContext context);
 
     /// <summary>
+    /// This method in invoked during rule updating.
+    /// </summary>
+    /// <param name="context">An instance of <see cref="UpdatingRewriteRuleContext"/>.</param>
+    Task UpdatingAsync(UpdatingRewriteRuleContext context);
+
+    /// <summary>
+    /// This method in invoked after the rule was updated.
+    /// </summary>
+    /// <param name="context">An instance of <see cref="UpdatedRewriteRuleContext"/>.</param>
+    Task UpdatedAsync(UpdatedRewriteRuleContext context);
+
+    /// <summary>
     /// This method in invoked during rule saving.
     /// </summary>
     /// <param name="context">An instance of <see cref="SavingRewriteRuleContext"/>.</param>

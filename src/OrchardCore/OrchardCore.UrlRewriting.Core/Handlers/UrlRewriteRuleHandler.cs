@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Entities;
 using OrchardCore.UrlRewriting.Models;
@@ -16,53 +17,10 @@ public sealed class UrlRewriteRuleHandler : RewriteRuleHandlerBase
     }
 
     public override Task InitializingAsync(InitializingRewriteRuleContext context)
-    {
-        if (context.Rule.Source != UrlRedirectRuleSource.SourceName)
-        {
-            return Task.CompletedTask;
-        }
+        => PopulateAsync(context.Rule, context.Data);
 
-        var metadata = context.Rule.As<UrlRewriteSourceMetadata>();
-
-        var pattern = context.Data[nameof(UrlRewriteSourceMetadata.Pattern)]?.GetValue<string>();
-
-        if (!string.IsNullOrEmpty(pattern))
-        {
-            metadata.Pattern = pattern;
-        }
-
-        var url = context.Data[nameof(UrlRewriteSourceMetadata.SubstitutionUrl)]?.GetValue<string>();
-
-        if (!string.IsNullOrEmpty(url) && Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var _))
-        {
-            metadata.SubstitutionUrl = url;
-        }
-
-        var ignoreCase = context.Data[nameof(UrlRewriteSourceMetadata.IgnoreCase)]?.GetValue<bool>();
-
-        if (ignoreCase.HasValue)
-        {
-            metadata.IgnoreCase = ignoreCase.Value;
-        }
-
-        var appendQueryString = context.Data[nameof(UrlRewriteSourceMetadata.AppendQueryString)]?.GetValue<bool>();
-
-        if (appendQueryString.HasValue)
-        {
-            metadata.AppendQueryString = appendQueryString.Value;
-        }
-
-        var skipFurtherRules = context.Data[nameof(UrlRewriteSourceMetadata.SkipFurtherRules)]?.GetValue<bool>();
-
-        if (skipFurtherRules.HasValue)
-        {
-            metadata.SkipFurtherRules = skipFurtherRules.Value;
-        }
-
-        context.Rule.Put(metadata);
-
-        return Task.CompletedTask;
-    }
+    public override Task UpdatingAsync(UpdatingRewriteRuleContext context)
+        => PopulateAsync(context.Rule, context.Data);
 
     public override Task ValidatingAsync(ValidatingRewriteRuleContext context)
     {
@@ -81,6 +39,55 @@ public sealed class UrlRewriteRuleHandler : RewriteRuleHandlerBase
         {
             context.Result.Fail(new ValidationResult(S["The Rewrite URL is invalid."], [nameof(UrlRewriteSourceMetadata.SubstitutionUrl)]));
         }
+
+        return Task.CompletedTask;
+    }
+
+    private static Task PopulateAsync(RewriteRule rule, JsonNode data)
+    {
+        if (rule.Source != UrlRedirectRuleSource.SourceName)
+        {
+            return Task.CompletedTask;
+        }
+
+        var metadata = rule.As<UrlRewriteSourceMetadata>();
+
+        var pattern = data[nameof(UrlRewriteSourceMetadata.Pattern)]?.GetValue<string>();
+
+        if (!string.IsNullOrEmpty(pattern))
+        {
+            metadata.Pattern = pattern;
+        }
+
+        var url = data[nameof(UrlRewriteSourceMetadata.SubstitutionUrl)]?.GetValue<string>();
+
+        if (!string.IsNullOrEmpty(url) && Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var _))
+        {
+            metadata.SubstitutionUrl = url;
+        }
+
+        var ignoreCase = data[nameof(UrlRewriteSourceMetadata.IgnoreCase)]?.GetValue<bool>();
+
+        if (ignoreCase.HasValue)
+        {
+            metadata.IgnoreCase = ignoreCase.Value;
+        }
+
+        var appendQueryString = data[nameof(UrlRewriteSourceMetadata.AppendQueryString)]?.GetValue<bool>();
+
+        if (appendQueryString.HasValue)
+        {
+            metadata.AppendQueryString = appendQueryString.Value;
+        }
+
+        var skipFurtherRules = data[nameof(UrlRewriteSourceMetadata.SkipFurtherRules)]?.GetValue<bool>();
+
+        if (skipFurtherRules.HasValue)
+        {
+            metadata.SkipFurtherRules = skipFurtherRules.Value;
+        }
+
+        rule.Put(metadata);
 
         return Task.CompletedTask;
     }

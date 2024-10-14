@@ -15,6 +15,7 @@ public sealed class UrlRewritingStep : NamedRecipeStepHandler
 {
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly IRewriteRulesManager _rewriteRulesManager;
+
     internal readonly IStringLocalizer S;
 
     public UrlRewritingStep(
@@ -34,22 +35,39 @@ public sealed class UrlRewritingStep : NamedRecipeStepHandler
 
         foreach (var token in model.Rules.Cast<JsonObject>())
         {
-            var sourceName = token[nameof(RewriteRule.Source)]?.GetValue<string>();
+            RewriteRule rule = null;
 
-            if (string.IsNullOrEmpty(sourceName))
+            var id = token[nameof(RewriteRule.Id)]?.GetValue<string>();
+
+            if (!string.IsNullOrEmpty(id))
             {
-                context.Errors.Add(S["Could not find rule source value. The rule will not be imported"]);
+                rule = await _rewriteRulesManager.FindByIdAsync(id);
 
-                continue;
+                if (rule != null)
+                {
+                    await _rewriteRulesManager.UpdateAsync(rule, token);
+                }
             }
-
-            var rule = await _rewriteRulesManager.NewAsync(sourceName, token);
 
             if (rule == null)
             {
-                context.Errors.Add(S["Unable to find a rule-source that can handle the source '{Source}'.", sourceName]);
+                var sourceName = token[nameof(RewriteRule.Source)]?.GetValue<string>();
 
-                continue;
+                if (string.IsNullOrEmpty(sourceName))
+                {
+                    context.Errors.Add(S["Could not find rule source value. The rule will not be imported"]);
+
+                    continue;
+                }
+
+                rule = await _rewriteRulesManager.NewAsync(sourceName, token);
+
+                if (rule == null)
+                {
+                    context.Errors.Add(S["Unable to find a rule-source that can handle the source '{Source}'.", sourceName]);
+
+                    continue;
+                }
             }
 
             var validationResult = await _rewriteRulesManager.ValidateAsync(rule);

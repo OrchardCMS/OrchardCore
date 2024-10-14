@@ -25,6 +25,12 @@ public abstract class RewriteRuleHandlerBase : IRewriteRuleHandler
     public virtual Task SavingAsync(SavingRewriteRuleContext context)
         => Task.CompletedTask;
 
+    public virtual Task UpdatedAsync(UpdatedRewriteRuleContext context)
+        => Task.CompletedTask;
+
+    public virtual Task UpdatingAsync(UpdatingRewriteRuleContext context)
+        => Task.CompletedTask;
+
     public virtual Task ValidatedAsync(ValidatedRewriteRuleContext context)
         => Task.CompletedTask;
 

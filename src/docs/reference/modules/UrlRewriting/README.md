@@ -14,3 +14,40 @@ services.AddRewriteRuleSource<CustomRuleSource>(CustomRuleSource.SourceName)
 ```
 
 In this example, `CustomRuleSource` is your implementation of `IUrlRewriteRuleSource`, and `CustomRuleDisplayDriver` provides a UI to configure the rule in the admin interface.
+
+## Recipes
+
+### Recipe for Creating a Rewrite Rule
+
+The `UrlRewriting` step allows you to create or update URL rewrite rules. The example below demonstrates how to create a new rule that permanently redirects users from `/about-us` to `/about`.
+
+```json
+{
+  "steps": [
+    {
+      "name": "UrlRewriting",
+      "Rules": [
+        {
+          "Source": "Redirect",
+          "Name": "Redirect about-us to about",
+          "Pattern": "^/about-us$",
+          "SubstitutionUrl": "/about",
+          "IgnoreCase": true,
+          "AppendQueryString": false,
+          "RedirectType": "MovedPermanently"
+        }
+      ]
+    }
+  ]
+}
+```
+
+#### Explanation of the Rule Properties
+
+- **Id**: The unique identifier for the rewrite rule. If the specified Id matches an existing rule, that rule will be updated with the provided properties. To create a new rule, either leave the Id property empty or specify a new unique value that does not match any existing rule.
+- **Name**: A descriptive name for the rule, e.g., `"Redirect about-us to about"`.
+- **Pattern**: The URL pattern to match. Here, `^/about-us$` ensures an exact match.
+- **SubstitutionUrl**: The target URL to redirect to, `/about`.
+- **IgnoreCase**: If set to `true`, the matching is case-insensitive.
+- **AppendQueryString**: If `false`, the original query string won't be included in the redirect.
+- **RedirectType**: Specifies the HTTP status code for the redirect. `MovedPermanently` (HTTP 301) indicates a permanent redirect.
