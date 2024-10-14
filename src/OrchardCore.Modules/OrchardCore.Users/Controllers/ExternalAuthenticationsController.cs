@@ -24,8 +24,6 @@ namespace OrchardCore.Users.Controllers;
 [Feature(UserConstants.Features.ExternalAuthentication)]
 public sealed class ExternalAuthenticationsController : AccountBaseController
 {
-    public const string DefaultExternalLoginProtector = "DefaultExternalLogin";
-
     private readonly SignInManager<IUser> _signInManager;
     private readonly UserManager<IUser> _userManager;
     private readonly ILogger _logger;

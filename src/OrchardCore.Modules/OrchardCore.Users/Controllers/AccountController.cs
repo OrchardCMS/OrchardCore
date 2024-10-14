@@ -23,8 +23,8 @@ namespace OrchardCore.Users.Controllers;
 [Authorize]
 public sealed class AccountController : AccountBaseController
 {
-    [Obsolete("This property will be removed in v3. Instead use ExternalAuthenticationController.DefaultExternalLoginProtector")]
-    public const string DefaultExternalLoginProtector = ExternalAuthenticationsController.DefaultExternalLoginProtector;
+    [Obsolete("This property is no longer used and will be removed in v3.")]
+    public const string DefaultExternalLoginProtector = "DefaultExternalLogin";
 
     private readonly IUserService _userService;
     private readonly SignInManager<IUser> _signInManager;
