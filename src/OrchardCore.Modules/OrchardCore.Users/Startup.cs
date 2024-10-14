@@ -250,7 +250,6 @@ public sealed class ExternalAuthenticationStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton<Microsoft.AspNetCore.Hosting.IStartupFilter, DefaultExternalAuthenticationsStartupFilter>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
         services.AddScoped<IDisplayDriver<UserMenu>, ExternalAuthenticationUserMenuDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalRegistrationSettingsDisplayDriver>();
@@ -260,6 +259,8 @@ public sealed class ExternalAuthenticationStartup : StartupBase
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
+        builder.UseMiddleware<DefaultExternalAuthenticationsMiddleware>();
+
         _userOptions ??= serviceProvider.GetRequiredService<IOptions<UserOptions>>().Value;
 
         routes.MapAreaControllerRoute(
