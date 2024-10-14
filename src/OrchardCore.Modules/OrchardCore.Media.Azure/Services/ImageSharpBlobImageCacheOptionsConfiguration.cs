@@ -19,7 +19,7 @@ internal sealed class ImageSharpBlobImageCacheOptionsConfiguration : BlobStorage
         _shellConfiguration = shellConfiguration;
     }
 
-    protected override void Configure(ImageSharpBlobImageCacheOptions rawOptions, ImageSharpBlobImageCacheOptions options)
+    protected override void FurtherConfigure(ImageSharpBlobImageCacheOptions rawOptions, ImageSharpBlobImageCacheOptions options)
     {
         options.CreateContainer = rawOptions.CreateContainer;
         options.RemoveContainer = rawOptions.RemoveContainer;
