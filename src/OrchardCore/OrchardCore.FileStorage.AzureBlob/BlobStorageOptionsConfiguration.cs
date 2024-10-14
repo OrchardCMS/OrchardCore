@@ -61,7 +61,7 @@ public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOpti
             }
         }
 
-        Configure(rawOptions, options);
+        FurtherConfigure(rawOptions, options);
     }
 
     /// <summary>
@@ -69,7 +69,7 @@ public abstract class BlobStorageOptionsConfiguration<TOptions> : IConfigureOpti
     /// </summary>
     /// <param name="rawOptions">The options as returned by <see cref="GetRawOptions"/></param>
     /// <param name="options">The options to configure.</param>
-    protected virtual void Configure(TOptions rawOptions, TOptions options)
+    protected virtual void FurtherConfigure(TOptions rawOptions, TOptions options)
     {
     }
 }
