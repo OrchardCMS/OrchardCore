@@ -191,7 +191,7 @@ public sealed class ElasticIndexManager
                     )
                 )
             );
-        //DynamicTemplates mapping for Geo fields, the index adds a Location item by default when its a geofield.
+        // DynamicTemplates mapping for Geo fields, the GeoPointFieldIndexHandler adds a Location index by default.
         await _elasticClient.MapAsync<object>(p => p
             .Index(fullIndexName)
             .DynamicTemplates(d => d
