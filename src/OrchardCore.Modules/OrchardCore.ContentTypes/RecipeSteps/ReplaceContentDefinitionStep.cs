@@ -9,22 +9,18 @@ namespace OrchardCore.ContentTypes.RecipeSteps;
 /// <summary>
 /// This recipe step replaces content definition records.
 /// </summary>
-public sealed class ReplaceContentDefinitionStep : IRecipeStepHandler
+public sealed class ReplaceContentDefinitionStep : NamedRecipeStepHandler
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
     public ReplaceContentDefinitionStep(IContentDefinitionManager contentDefinitionManager)
+        : base("ReplaceContentDefinition")
     {
         _contentDefinitionManager = contentDefinitionManager;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "ReplaceContentDefinition", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var step = context.Step.ToObject<ReplaceContentDefinitionStepModel>();
 
         // Delete existing parts first, as deleting them later will clear any imported content types using them.

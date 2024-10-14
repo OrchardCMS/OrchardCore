@@ -9,7 +9,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
 /// <summary>
 /// This recipe step creates a Elasticsearch index.
 /// </summary>
-public sealed class ElasticIndexStep : IRecipeStepHandler
+public sealed class ElasticIndexStep : NamedRecipeStepHandler
 {
     private readonly ElasticIndexingService _elasticIndexingService;
     private readonly ElasticIndexManager _elasticIndexManager;
@@ -18,18 +18,14 @@ public sealed class ElasticIndexStep : IRecipeStepHandler
         ElasticIndexingService elasticIndexingService,
         ElasticIndexManager elasticIndexManager
         )
+        : base("ElasticIndexSettings")
     {
         _elasticIndexManager = elasticIndexManager;
         _elasticIndexingService = elasticIndexingService;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "ElasticIndexSettings", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         if (context.Step["Indices"] is not JsonArray jsonArray)
         {
             return;

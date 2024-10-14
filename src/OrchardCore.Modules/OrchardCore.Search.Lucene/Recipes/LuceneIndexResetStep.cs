@@ -7,17 +7,17 @@ using OrchardCore.Recipes.Services;
 namespace OrchardCore.Search.Lucene.Recipes;
 
 /// <summary>
-/// This recipe step resets a lucene index.
+/// This recipe step resets a Lucene index.
 /// </summary>
-public sealed class LuceneIndexResetStep : IRecipeStepHandler
+public sealed class LuceneIndexResetStep : NamedRecipeStepHandler
 {
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    public LuceneIndexResetStep()
+        : base("lucene-index-reset")
     {
-        if (!string.Equals(context.Name, "lucene-index-reset", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
+    }
 
+    protected override async Task HandleAsync(RecipeExecutionContext context)
+    {
         var model = context.Step.ToObject<LuceneIndexResetStepModel>();
 
         if (model.IncludeAll || model.Indices.Length > 0)

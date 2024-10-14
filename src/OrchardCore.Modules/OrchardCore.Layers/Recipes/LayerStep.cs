@@ -15,7 +15,7 @@ namespace OrchardCore.Layers.Recipes;
 /// <summary>
 /// This recipe step creates or updates a layer.
 /// </summary>
-public sealed class LayerStep : IRecipeStepHandler
+public sealed class LayerStep : NamedRecipeStepHandler
 {
     private readonly ILayerService _layerService;
     private readonly IConditionIdGenerator _conditionIdGenerator;
@@ -30,6 +30,7 @@ public sealed class LayerStep : IRecipeStepHandler
         IEnumerable<IConditionFactory> factories,
         IOptions<DocumentJsonSerializerOptions> serializationOptions,
         IStringLocalizer<LayerStep> stringLocalizer)
+        : base("Layers")
     {
         _layerService = layerService;
         _conditionIdGenerator = conditionIdGenerator;
@@ -38,14 +39,9 @@ public sealed class LayerStep : IRecipeStepHandler
         S = stringLocalizer;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "Layers", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
-        // The recipe step contains polymorphic types which need to be resolved
+        // The recipe step contains polymorphic types which need to be resolved.
         var model = context.Step.ToObject<LayersStepModel>(_serializationOptions);
 
         var allLayers = await _layerService.LoadLayersAsync();
