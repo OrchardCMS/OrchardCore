@@ -27,3 +27,8 @@
         <label class="form-check-label" asp-for="SkipFurtherRules">@T["Stop Processing of Subsequent Rules"]</label>
     </div>
 </div>
+
+<div class="mb-3">
+    <label asp-for="SubstitutionPattern" class="form-label">@T["The Rewrite URL Pattern"]</label>
+    <input asp-for="SubstitutionPattern" class="form-control" />
+</div>

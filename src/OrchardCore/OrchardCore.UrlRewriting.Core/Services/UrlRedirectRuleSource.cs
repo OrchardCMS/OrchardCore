@@ -36,11 +36,11 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
 
         var builder = new StringBuilder();
 
-        builder.Append("RewriteRule \"");
+        builder.Append("RewriteRule ");
         builder.Append(metadata.Pattern);
-        builder.Append("\" \"");
+        builder.Append(' ');
         builder.Append(metadata.SubstitutionPattern);
-        builder.Append("\" [");
+        builder.Append(" [");
 
         AppendFlags(builder, metadata);
 
