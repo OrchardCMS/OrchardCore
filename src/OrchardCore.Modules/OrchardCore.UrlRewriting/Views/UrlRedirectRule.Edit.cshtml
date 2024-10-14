@@ -1,20 +1,15 @@
 @model UrlRedirectRuleViewModel
 
 <div class="mb-3">
-    <label asp-for="Pattern" class="form-label">@T["Pattern"]</label>
+    <label asp-for="Pattern" class="form-label">@T["Match URL Pattern"]</label>
     <input asp-for="Pattern" class="form-control" />
     <span class="hint">@T["Rewrite rules use regular expression syntax for pattern matching as defined in ECMA-262."]</span>
 </div>
 
 <div class="mb-3">
-    <label asp-for="SubstitutionUrl" class="form-label">@T["Redirect URL"]</label>
-    <input asp-for="SubstitutionUrl" class="form-control" />
-</div>
-
-<div class="mb-3">
     <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="IgnoreCase" checked="@Model.IgnoreCase" />
-        <label class="form-check-label" asp-for="IgnoreCase">@T["Ignore case"]</label>
+        <input type="checkbox" class="form-check-input" asp-for="IsCaseInsensitive" checked="@Model.IsCaseInsensitive" />
+        <label class="form-check-label" asp-for="IsCaseInsensitive">@T["Case Insensitive"]</label>
         <span class="hint dashed">@T["When checked, the pattern will be case insensitive."]</span>
     </div>
 </div>
@@ -22,11 +17,16 @@
 <div class="mb-3">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="AppendQueryString" checked="@Model.AppendQueryString" />
-        <label class="form-check-label" asp-for="AppendQueryString">@T["Append query string"]</label>
+        <label class="form-check-label" asp-for="AppendQueryString">@T["Append Query String"]</label>
     </div>
 </div>
 
 <div class="mb-3">
-    <label asp-for="RedirectType" class="form-label">@T["Redirect type"]</label>
+    <label asp-for="RedirectType" class="form-label">@T["Redirect Type"]</label>
     <select asp-for="RedirectType" asp-items="Model.RedirectTypes" class="form-select"></select>
+</div>
+
+<div class="mb-3">
+    <label asp-for="SubstitutionPattern" class="form-label">@T["The Redirect URL Pattern"]</label>
+    <input asp-for="SubstitutionPattern" class="form-control" />
 </div>

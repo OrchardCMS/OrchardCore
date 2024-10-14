@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Modules;
@@ -25,30 +26,10 @@ public sealed class RewriteRuleHandler : RewriteRuleHandlerBase
     }
 
     public override Task InitializingAsync(InitializingRewriteRuleContext context)
-    {
-        var id = context.Data[nameof(RewriteRule.Id)]?.GetValue<string>();
+        => PopulateAsync(context.Rule, context.Data);
 
-        if (!string.IsNullOrEmpty(id))
-        {
-            context.Rule.Id = id;
-        }
-
-        var name = context.Data[nameof(RewriteRule.Name)]?.GetValue<string>();
-
-        if (!string.IsNullOrEmpty(name))
-        {
-            context.Rule.Name = name;
-        }
-
-        var order = context.Data[nameof(RewriteRule.Order)]?.GetValue<int>();
-
-        if (order.HasValue)
-        {
-            context.Rule.Order = order.Value;
-        }
-
-        return Task.CompletedTask;
-    }
+    public override Task UpdatingAsync(UpdatingRewriteRuleContext context)
+        => PopulateAsync(context.Rule, context.Data);
 
     public override Task ValidatingAsync(ValidatingRewriteRuleContext context)
     {
@@ -75,6 +56,25 @@ public sealed class RewriteRuleHandler : RewriteRuleHandlerBase
         {
             context.Rule.OwnerId = user.FindFirstValue(ClaimTypes.NameIdentifier);
             context.Rule.Author = user.Identity.Name;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private static Task PopulateAsync(RewriteRule rule, JsonNode data)
+    {
+        var name = data[nameof(RewriteRule.Name)]?.GetValue<string>();
+
+        if (!string.IsNullOrEmpty(name))
+        {
+            rule.Name = name;
+        }
+
+        var order = data[nameof(RewriteRule.Order)]?.GetValue<int>();
+
+        if (order.HasValue)
+        {
+            rule.Order = order.Value;
         }
 
         return Task.CompletedTask;

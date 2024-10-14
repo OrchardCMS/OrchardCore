@@ -30,15 +30,18 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
             var metadata = rule.As<UrlRedirectSourceMetadata>();
 
             model.Pattern = metadata.Pattern;
-            model.SubstitutionUrl = metadata.SubstitutionUrl;
-            model.IgnoreCase = metadata.IgnoreCase;
+            model.SubstitutionPattern = metadata.SubstitutionPattern;
+            model.IsCaseInsensitive = metadata.IsCaseInsensitive;
             model.AppendQueryString = context.IsNew || metadata.AppendQueryString;
-            model.RedirectType = metadata.RedirectType;
+            model.RedirectType = Enum.IsDefined(typeof(RedirectType), metadata.RedirectType)
+            ? metadata.RedirectType
+            : RedirectType.Found;
+
             model.RedirectTypes =
             [
+                new(S["Found (302)"], nameof(RedirectType.Found)),
                 new(S["Moved Permanently (301)"], nameof(RedirectType.MovedPermanently)),
                 new(S["Temporary Redirect (307)"], nameof(RedirectType.TemporaryRedirect)),
-                new(S["Found (302)"], nameof(RedirectType.Found)),
                 new(S["Permanent Redirect (308)"], nameof(RedirectType.PermanentRedirect))
             ];
         }).Location("Content:5");
@@ -55,30 +58,26 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
 
         await context.Updater.TryUpdateModelAsync(model, Prefix,
             m => m.Pattern,
-            m => m.SubstitutionUrl,
-            m => m.IgnoreCase,
+            m => m.SubstitutionPattern,
+            m => m.IsCaseInsensitive,
             m => m.AppendQueryString,
             m => m.RedirectType);
 
         if (string.IsNullOrWhiteSpace(model.Pattern))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["The url match pattern is required."]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["The Match URL Pattern is required."]);
         }
 
-        if (string.IsNullOrWhiteSpace(model.SubstitutionUrl))
+        if (string.IsNullOrWhiteSpace(model.SubstitutionPattern))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionUrl), S["The Redirect URL is required."]);
-        }
-        else if (!Uri.TryCreate(model.SubstitutionUrl, UriKind.RelativeOrAbsolute, out var _))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionUrl), S["The Redirect URL is invalid."]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["The Redirect URL Pattern is required."]);
         }
 
         rule.Put(new UrlRedirectSourceMetadata()
         {
             Pattern = model.Pattern,
-            SubstitutionUrl = model.SubstitutionUrl,
-            IgnoreCase = model.IgnoreCase,
+            SubstitutionPattern = model.SubstitutionPattern,
+            IsCaseInsensitive = model.IsCaseInsensitive,
             AppendQueryString = model.AppendQueryString,
             RedirectType = model.RedirectType,
         });

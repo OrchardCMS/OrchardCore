@@ -8,9 +8,9 @@ public class UrlRedirectRuleViewModel
 {
     public string Pattern { get; set; }
 
-    public string SubstitutionUrl { get; set; }
+    public string SubstitutionPattern { get; set; }
 
-    public bool IgnoreCase { get; set; }
+    public bool IsCaseInsensitive { get; set; }
 
     public bool AppendQueryString { get; set; }
 

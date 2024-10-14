@@ -29,8 +29,8 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
         {
             var metadata = rule.As<UrlRewriteSourceMetadata>();
             model.Pattern = metadata.Pattern;
-            model.SubstitutionUrl = metadata.SubstitutionUrl;
-            model.IgnoreCase = metadata.IgnoreCase;
+            model.SubstitutionPattern = metadata.SubstitutionPattern;
+            model.IsCaseInsensitive = metadata.IsCaseInsensitive;
             model.AppendQueryString = context.IsNew || metadata.AppendQueryString;
             model.SkipFurtherRules = metadata.SkipFurtherRules;
         }).Location("Content:5");
@@ -47,30 +47,30 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
 
         await context.Updater.TryUpdateModelAsync(model, Prefix,
             m => m.Pattern,
-            m => m.SubstitutionUrl,
-            m => m.IgnoreCase,
+            m => m.SubstitutionPattern,
+            m => m.IsCaseInsensitive,
             m => m.AppendQueryString,
             m => m.SkipFurtherRules);
 
         if (string.IsNullOrWhiteSpace(model.Pattern))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), "The url match pattern is required.");
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), "The Match URL Pattern is required.");
         }
 
-        if (string.IsNullOrWhiteSpace(model.SubstitutionUrl))
+        if (string.IsNullOrWhiteSpace(model.SubstitutionPattern))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionUrl), S["The Rewrite URL is required"]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["The Rewrite URL Pattern is required"]);
         }
-        else if (!Uri.TryCreate(model.SubstitutionUrl, UriKind.RelativeOrAbsolute, out var _))
+        else if (!Uri.TryCreate(model.SubstitutionPattern, UriKind.RelativeOrAbsolute, out var _))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionUrl), S["The Rewrite URL is invalid."]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["The Rewrite URL Pattern is invalid."]);
         }
 
         rule.Put(new UrlRewriteSourceMetadata()
         {
             Pattern = model.Pattern,
-            SubstitutionUrl = model.SubstitutionUrl,
-            IgnoreCase = model.IgnoreCase,
+            SubstitutionPattern = model.SubstitutionPattern,
+            IsCaseInsensitive = model.IsCaseInsensitive,
             AppendQueryString = model.AppendQueryString,
             SkipFurtherRules = model.SkipFurtherRules
         });

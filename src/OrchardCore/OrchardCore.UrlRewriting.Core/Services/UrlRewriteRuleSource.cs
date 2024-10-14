@@ -29,7 +29,7 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
     {
         if (!rule.TryGet<UrlRewriteSourceMetadata>(out var metadata) ||
             string.IsNullOrEmpty(metadata.Pattern) ||
-            string.IsNullOrEmpty(metadata.SubstitutionUrl))
+            string.IsNullOrEmpty(metadata.SubstitutionPattern))
         {
             return;
         }
@@ -39,7 +39,7 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
         builder.Append("RewriteRule \"");
         builder.Append(metadata.Pattern);
         builder.Append("\" \"");
-        builder.Append(metadata.SubstitutionUrl);
+        builder.Append(metadata.SubstitutionPattern);
         builder.Append("\" [");
 
         AppendFlags(builder, metadata);
@@ -65,7 +65,7 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
             builder.Append(flag);
         }
 
-        if (metadata.IgnoreCase)
+        if (metadata.IsCaseInsensitive)
         {
             FlagAppend(builder, "NC");
         };

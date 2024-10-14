@@ -28,16 +28,12 @@ public sealed class UrlRedirectRuleHandler : RewriteRuleHandlerBase
 
         if (string.IsNullOrWhiteSpace(metadata.Pattern))
         {
-            context.Result.Fail(new ValidationResult(S["The url match pattern is required."], [nameof(UrlRedirectSourceMetadata.Pattern)]));
+            context.Result.Fail(new ValidationResult(S["The Match URL Pattern is required."], [nameof(UrlRedirectSourceMetadata.Pattern)]));
         }
 
-        if (string.IsNullOrWhiteSpace(metadata.SubstitutionUrl))
+        if (string.IsNullOrWhiteSpace(metadata.SubstitutionPattern))
         {
-            context.Result.Fail(new ValidationResult(S["The Redirect URL is required."], [nameof(UrlRedirectSourceMetadata.SubstitutionUrl)]));
-        }
-        else if (!Uri.TryCreate(metadata.SubstitutionUrl, UriKind.RelativeOrAbsolute, out var _))
-        {
-            context.Result.Fail(new ValidationResult(S["The Redirect URL is invalid."], [nameof(UrlRedirectSourceMetadata.SubstitutionUrl)]));
+            context.Result.Fail(new ValidationResult(S["The Redirect URL Pattern is required."], [nameof(UrlRedirectSourceMetadata.SubstitutionPattern)]));
         }
 
         return Task.CompletedTask;
@@ -59,18 +55,18 @@ public sealed class UrlRedirectRuleHandler : RewriteRuleHandlerBase
             metadata.Pattern = pattern;
         }
 
-        var ignoreCase = data[nameof(UrlRedirectSourceMetadata.IgnoreCase)]?.GetValue<bool>();
+        var ignoreCase = data[nameof(UrlRedirectSourceMetadata.IsCaseInsensitive)]?.GetValue<bool>();
 
         if (ignoreCase.HasValue)
         {
-            metadata.IgnoreCase = ignoreCase.Value;
+            metadata.IsCaseInsensitive = ignoreCase.Value;
         }
 
-        var url = data[nameof(UrlRedirectSourceMetadata.SubstitutionUrl)]?.GetValue<string>();
+        var substitutionPattern = data[nameof(UrlRedirectSourceMetadata.SubstitutionPattern)]?.GetValue<string>();
 
-        if (!string.IsNullOrEmpty(url) && Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var _))
+        if (!string.IsNullOrEmpty(substitutionPattern))
         {
-            metadata.SubstitutionUrl = url;
+            metadata.SubstitutionPattern = substitutionPattern;
         }
 
         var appendQueryString = data[nameof(UrlRedirectSourceMetadata.AppendQueryString)]?.GetValue<bool>();
@@ -85,6 +81,10 @@ public sealed class UrlRedirectRuleHandler : RewriteRuleHandlerBase
         if (redirectType.HasValue)
         {
             metadata.RedirectType = redirectType.Value;
+        }
+        else if (!Enum.IsDefined(typeof(RedirectType), metadata.RedirectType))
+        {
+            metadata.RedirectType = RedirectType.Found;
         }
 
         rule.Put(metadata);

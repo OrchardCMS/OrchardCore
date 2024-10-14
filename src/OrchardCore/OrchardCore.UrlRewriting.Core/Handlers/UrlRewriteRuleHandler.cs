@@ -28,16 +28,12 @@ public sealed class UrlRewriteRuleHandler : RewriteRuleHandlerBase
 
         if (string.IsNullOrWhiteSpace(metadata.Pattern))
         {
-            context.Result.Fail(new ValidationResult(S["The url match pattern is required."], [nameof(UrlRewriteSourceMetadata.Pattern)]));
+            context.Result.Fail(new ValidationResult(S["The Match URL pattern is required."], [nameof(UrlRewriteSourceMetadata.Pattern)]));
         }
 
-        if (string.IsNullOrWhiteSpace(metadata.SubstitutionUrl))
+        if (string.IsNullOrWhiteSpace(metadata.SubstitutionPattern))
         {
-            context.Result.Fail(new ValidationResult(S["The Rewrite URL is required."], [nameof(UrlRewriteSourceMetadata.SubstitutionUrl)]));
-        }
-        else if (!Uri.TryCreate(metadata.SubstitutionUrl, UriKind.RelativeOrAbsolute, out var _))
-        {
-            context.Result.Fail(new ValidationResult(S["The Rewrite URL is invalid."], [nameof(UrlRewriteSourceMetadata.SubstitutionUrl)]));
+            context.Result.Fail(new ValidationResult(S["The Rewrite URL Pattern is required."], [nameof(UrlRewriteSourceMetadata.SubstitutionPattern)]));
         }
 
         return Task.CompletedTask;
@@ -59,18 +55,18 @@ public sealed class UrlRewriteRuleHandler : RewriteRuleHandlerBase
             metadata.Pattern = pattern;
         }
 
-        var url = data[nameof(UrlRewriteSourceMetadata.SubstitutionUrl)]?.GetValue<string>();
+        var substitutionPattern = data[nameof(UrlRewriteSourceMetadata.SubstitutionPattern)]?.GetValue<string>();
 
-        if (!string.IsNullOrEmpty(url) && Uri.TryCreate(url, UriKind.RelativeOrAbsolute, out var _))
+        if (!string.IsNullOrEmpty(substitutionPattern))
         {
-            metadata.SubstitutionUrl = url;
+            metadata.SubstitutionPattern = substitutionPattern;
         }
 
-        var ignoreCase = data[nameof(UrlRewriteSourceMetadata.IgnoreCase)]?.GetValue<bool>();
+        var ignoreCase = data[nameof(UrlRewriteSourceMetadata.IsCaseInsensitive)]?.GetValue<bool>();
 
         if (ignoreCase.HasValue)
         {
-            metadata.IgnoreCase = ignoreCase.Value;
+            metadata.IsCaseInsensitive = ignoreCase.Value;
         }
 
         var appendQueryString = data[nameof(UrlRewriteSourceMetadata.AppendQueryString)]?.GetValue<bool>();
