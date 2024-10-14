@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Entities;
@@ -42,31 +43,45 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
         builder.Append(metadata.SubstitutionUrl);
         builder.Append("\" [");
 
-        var builderFlags = new StringBuilder();
+        AppendFlags(builder, metadata);
 
-        if (metadata.IgnoreCase)
-        {
-            builderFlags.AppendCommaSeparatedValues("NC");
-        };
-
-        if (metadata.AppendQueryString)
-        {
-            builderFlags.AppendCommaSeparatedValues("QSA");
-        }
-        else
-        {
-            builderFlags.AppendCommaSeparatedValues("QSD");
-        }
-
-        builderFlags.AppendCommaSeparatedValues("R=");
-        builderFlags.Append(RedirectTypeToStatusCode(metadata.RedirectType));
-
-        builder.Append(builderFlags);
         builder.Append(']');
 
         using var reader = new StringReader(builder.ToString());
 
         options.AddApacheModRewrite(reader);
+    }
+
+    private static void AppendFlags(StringBuilder builder, UrlRedirectSourceMetadata metadata)
+    {
+        var initialLength = builder.Length;
+
+        void FlagAppend(StringBuilder builder, string flag)
+        {
+            if (builder.Length > initialLength)
+            {
+                builder.AppendComma();
+            }
+
+            builder.Append(flag);
+        }
+
+        if (metadata.IgnoreCase)
+        {
+            FlagAppend(builder, "NC");
+        };
+
+        if (metadata.AppendQueryString)
+        {
+            FlagAppend(builder, "QSA");
+        }
+        else
+        {
+            FlagAppend(builder, "QSD");
+        }
+
+        FlagAppend(builder, "R=");
+        builder.Append(RedirectTypeToStatusCode(metadata.RedirectType));
     }
 
     public static RedirectType GetRedirectType(string flag)

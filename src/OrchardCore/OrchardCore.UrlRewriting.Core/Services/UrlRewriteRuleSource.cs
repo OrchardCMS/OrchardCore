@@ -42,32 +42,46 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
         builder.Append(metadata.SubstitutionUrl);
         builder.Append("\" [");
 
-        var builderFlags = new StringBuilder();
+        AppendFlags(builder, metadata);
 
-        if (metadata.IgnoreCase)
-        {
-            builderFlags.AppendCommaSeparatedValues("NC");
-        };
-
-        if (metadata.AppendQueryString)
-        {
-            builderFlags.AppendCommaSeparatedValues("QSA");
-        }
-        else
-        {
-            builderFlags.AppendCommaSeparatedValues("QSD");
-        }
-
-        if (metadata.SkipFurtherRules)
-        {
-            builderFlags.AppendCommaSeparatedValues('L');
-        }
-
-        builder.Append(builderFlags);
         builder.Append(']');
 
         using var reader = new StringReader(builder.ToString());
 
         options.AddApacheModRewrite(reader);
+    }
+
+    private static void AppendFlags(StringBuilder builder, UrlRewriteSourceMetadata metadata)
+    {
+        var initialLength = builder.Length;
+
+        void FlagAppend(StringBuilder builder, string flag)
+        {
+            if (builder.Length > initialLength)
+            {
+                builder.AppendComma();
+            }
+
+            builder.Append(flag);
+        }
+
+        if (metadata.IgnoreCase)
+        {
+            FlagAppend(builder, "NC");
+        };
+
+        if (metadata.AppendQueryString)
+        {
+            FlagAppend(builder, "QSA");
+        }
+        else
+        {
+            FlagAppend(builder, "QSD");
+        }
+
+        if (metadata.SkipFurtherRules)
+        {
+            FlagAppend(builder, "L");
+        }
     }
 }
