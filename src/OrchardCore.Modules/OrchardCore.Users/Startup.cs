@@ -250,6 +250,7 @@ public sealed class ExternalAuthenticationStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<Microsoft.AspNetCore.Hosting.IStartupFilter, DefaultExternalAuthenticationsStartupFilter>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
         services.AddScoped<IDisplayDriver<UserMenu>, ExternalAuthenticationUserMenuDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalRegistrationSettingsDisplayDriver>();
