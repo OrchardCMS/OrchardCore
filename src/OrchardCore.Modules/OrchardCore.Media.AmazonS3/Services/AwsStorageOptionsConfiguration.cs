@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage.AmazonS3;
-using OrchardCore.Media.AmazonS3.Helpers;
+using OrchardCore.Liquid.Abstractions;
 
 namespace OrchardCore.Media.AmazonS3.Services;
 
@@ -27,11 +27,11 @@ internal sealed class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStor
     {
         options.BindConfiguration(AmazonS3Constants.ConfigSections.AmazonS3, _shellConfiguration, _logger);
 
-        var fluidParserHelper = new OptionsFluidParserHelper<AwsStorageOptions>(_shellSettings);
+        var parser = new FluidOptionsParser<AwsStorageOptions>(_shellSettings);
 
         try
         {
-            options.BucketName = fluidParserHelper.ParseAndFormat(options.BucketName);
+            options.BucketName = parser.ParseAndFormat(options.BucketName);
         }
         catch (Exception e)
         {
@@ -40,7 +40,7 @@ internal sealed class AwsStorageOptionsConfiguration : IConfigureOptions<AwsStor
 
         try
         {
-            options.BasePath = fluidParserHelper.ParseAndFormat(options.BasePath);
+            options.BasePath = parser.ParseAndFormat(options.BasePath);
         }
         catch (Exception e)
         {

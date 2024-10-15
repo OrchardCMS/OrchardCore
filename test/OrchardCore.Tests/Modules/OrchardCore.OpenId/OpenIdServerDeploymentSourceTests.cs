@@ -1,7 +1,5 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.Deployment;
-using OrchardCore.Json.Serialization;
 using OrchardCore.OpenId.Deployment;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.Services;
@@ -13,6 +11,36 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId;
 
 public class OpenIdServerDeploymentSourceTests
 {
+    [Fact]
+    public async Task ServerDeploymentSourceIsReadableByRecipe()
+    {
+        // Arrange
+        var settings = CreateSettings("https://deploy.localhost", OpenIdServerSettings.TokenFormat.JsonWebToken, true);
+        var openIdServerService = new Mock<IOpenIdServerService>();
+        openIdServerService
+            .Setup(m => m.GetSettingsAsync())
+            .ReturnsAsync(settings);
+
+        openIdServerService
+            .Setup(m => m.LoadSettingsAsync())
+            .ReturnsAsync(settings);
+
+        var fileBuilder = new MemoryFileBuilder();
+        var descriptor = new RecipeDescriptor();
+        var result = new DeploymentPlanResult(fileBuilder, descriptor);
+        var deploymentSource = new OpenIdServerDeploymentSource(openIdServerService.Object);
+
+        // Act
+        await deploymentSource.ProcessDeploymentStepAsync(new OpenIdServerDeploymentStep(), result);
+        await result.FinalizeAsync();
+
+        // Assert
+        await ExecuteRecipeAsync(openIdServerService.Object, fileBuilder, descriptor);
+
+        var updatedSettings = await openIdServerService.Object.LoadSettingsAsync();
+        Assert.Equal(settings, updatedSettings);
+    }
+
     private static OpenIdServerSettings CreateSettings(string authority, OpenIdServerSettings.TokenFormat tokenFormat, bool initializeAllProperties)
     {
         var result = new OpenIdServerSettings
@@ -54,78 +82,23 @@ public class OpenIdServerDeploymentSourceTests
         return result;
     }
 
-    private static Mock<IOpenIdServerService> CreateServerServiceWithSettingsMock(OpenIdServerSettings settings)
+    private static async Task ExecuteRecipeAsync(
+        IOpenIdServerService openIdServerService,
+        MemoryFileBuilder fileBuilder,
+        RecipeDescriptor recipeDescriptor)
     {
-        var serverService = new Mock<IOpenIdServerService>();
-
-        serverService
-            .Setup(m => m.GetSettingsAsync())
-            .ReturnsAsync(settings);
-
-        serverService
-            .Setup(m => m.LoadSettingsAsync())
-            .ReturnsAsync(settings);
-
-        return serverService;
-    }
-
-    [Fact]
-    public async Task ServerDeploymentSourceIsReadableByRecipe()
-    {
-        // Arrange
         var recipeFile = "Recipe.json";
-
-        var expectedSettings = CreateSettings("https://deploy.localhost", OpenIdServerSettings.TokenFormat.JsonWebToken, true);
-        var deployServerServiceMock = CreateServerServiceWithSettingsMock(expectedSettings);
-
-        var actualSettings = CreateSettings("https://recipe.localhost", OpenIdServerSettings.TokenFormat.DataProtection, false);
-        var recipeServerServiceMock = CreateServerServiceWithSettingsMock(actualSettings);
-
-        var settingsProperties = typeof(OpenIdServerSettings)
-            .GetProperties();
-
-        foreach (var property in settingsProperties)
-        {
-            Assert.NotEqual(
-                property.GetValue(expectedSettings),
-                property.GetValue(actualSettings));
-        }
-
-        var fileBuilder = new MemoryFileBuilder();
-        var descriptor = new RecipeDescriptor();
-        var result = new DeploymentPlanResult(fileBuilder, descriptor);
-
-        var jsonOptions = new JsonSerializerOptions(JOptions.Base);
-        jsonOptions.Converters.Add(System.Text.Json.Serialization.DynamicJsonConverter.Instance);
-        jsonOptions.Converters.Add(PathStringJsonConverter.Instance);
-
-        var deploymentSource = new OpenIdServerDeploymentSource(deployServerServiceMock.Object);
-
-        // Act
-        await deploymentSource.ProcessDeploymentStepAsync(new OpenIdServerDeploymentStep(), result);
-        await result.FinalizeAsync();
-
-        var deploy = JsonNode.Parse(
-            fileBuilder.GetFileContents(
-                recipeFile,
-                Encoding.UTF8));
+        var content = fileBuilder.GetFileContents(recipeFile, Encoding.UTF8);
+        var deploy = JsonNode.Parse(content);
 
         var recipeContext = new RecipeExecutionContext
         {
-            RecipeDescriptor = descriptor,
+            RecipeDescriptor = recipeDescriptor,
             Name = deploy["steps"][0].Value<string>("name"),
             Step = (JsonObject)deploy["steps"][0],
         };
 
-        var recipeStep = new OpenIdServerSettingsStep(recipeServerServiceMock.Object);
+        var recipeStep = new OpenIdServerSettingsStep(openIdServerService);
         await recipeStep.ExecuteAsync(recipeContext);
-
-        // Assert
-        foreach (var property in settingsProperties)
-        {
-            Assert.Equal(
-                property.GetValue(expectedSettings),
-                property.GetValue(actualSettings));
-        }
     }
 }

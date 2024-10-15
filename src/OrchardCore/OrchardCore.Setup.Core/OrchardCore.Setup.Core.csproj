@@ -22,5 +22,6 @@
 
   <ItemGroup>
     <PackageReference Include="Ulid" />
+    <PackageReference Include="YesSql" />
   </ItemGroup>
 </Project>

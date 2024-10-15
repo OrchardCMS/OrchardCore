@@ -1,18 +1,17 @@
 using Fluid;
 using OrchardCore.Environment.Shell;
 
-namespace OrchardCore.Media.AmazonS3.Helpers;
+namespace OrchardCore.Liquid.Abstractions;
 
-// This is almost the same as in OrchardCore.Media.Azure but there isn't really a good common place for it.
-internal sealed class OptionsFluidParserHelper<TOptions> where TOptions : class
+public sealed class FluidOptionsParser<TOptions> where TOptions : class
 {
-    // Local instance since it can be discarded once the startup is over.
+    // Local instance since it can be discarded once the parsing is over.
     private readonly FluidParser _fluidParser = new();
     private readonly ShellSettings _shellSettings;
 
     private TemplateContext _templateContext;
 
-    public OptionsFluidParserHelper(ShellSettings shellSettings)
+    public FluidOptionsParser(ShellSettings shellSettings)
     {
         _shellSettings = shellSettings;
     }

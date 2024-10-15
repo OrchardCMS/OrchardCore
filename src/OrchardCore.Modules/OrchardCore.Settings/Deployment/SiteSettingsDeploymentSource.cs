@@ -3,7 +3,8 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Settings.Deployment;
 
-public class SiteSettingsDeploymentSource : IDeploymentSource
+public class SiteSettingsDeploymentSource
+    : DeploymentSourceBase<SiteSettingsDeploymentStep>
 {
     private readonly ISiteService _siteService;
 
@@ -12,18 +13,13 @@ public class SiteSettingsDeploymentSource : IDeploymentSource
         _siteService = siteService;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(SiteSettingsDeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not SiteSettingsDeploymentStep settingsStep)
-        {
-            return;
-        }
-
         var site = await _siteService.GetSiteSettingsAsync();
 
         var data = new JsonObject { ["name"] = "Settings" };
 
-        foreach (var settingName in settingsStep.Settings)
+        foreach (var settingName in step.Settings)
         {
             switch (settingName)
             {
@@ -97,7 +93,5 @@ public class SiteSettingsDeploymentSource : IDeploymentSource
         }
 
         result.Steps.Add(data);
-
-        return;
     }
 }
