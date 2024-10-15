@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Azure;
 using Azure.Communication.Email;
 using Microsoft.Extensions.Localization;
@@ -161,19 +162,19 @@ public abstract class AzureEmailProviderBase : IEmailProvider
         List<EmailAddress> toRecipients = null;
         if (recipients.To.Count > 0)
         {
-            toRecipients = [.. recipients.To.Select(r => new EmailAddress(r))];
+            toRecipients = [.. recipients.To.Select(ToAzureEmailAddress)];
         }
 
         List<EmailAddress> ccRecipients = null;
         if (recipients.Cc.Count > 0)
         {
-            ccRecipients = [.. recipients.Cc.Select(r => new EmailAddress(r))];
+            ccRecipients = [.. recipients.Cc.Select(ToAzureEmailAddress)];
         }
 
         List<EmailAddress> bccRecipients = null;
         if (recipients.Bcc.Count > 0)
         {
-            bccRecipients = [.. recipients.Bcc.Select(r => new EmailAddress(r))];
+            bccRecipients = [.. recipients.Bcc.Select(ToAzureEmailAddress)];
         }
 
         var content = new EmailContent(message.Subject);
@@ -187,13 +188,14 @@ public abstract class AzureEmailProviderBase : IEmailProvider
         }
 
         var emailMessage = new EmailMessage(
-            message.From,
+            // For compatibility with configuration for other providers that allow a sender with display name.
+            ParseEmailAddressWithDisplayName(message.From).EmailAddress,
             new EmailRecipients(toRecipients, ccRecipients, bccRecipients),
             content);
 
         foreach (var address in message.GetReplyTo())
         {
-            emailMessage.ReplyTo.Add(new EmailAddress(address));
+            emailMessage.ReplyTo.Add(ToAzureEmailAddress(address));
         }
 
         foreach (var attachment in message.Attachments)
@@ -224,4 +226,33 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
         return emailMessage;
     }
+
+    private static EmailAddress ToAzureEmailAddress(string emailWithDisplayName)
+    {
+        var (displayName, emailAddress) = ParseEmailAddressWithDisplayName(emailWithDisplayName);
+
+        return new EmailAddress(emailAddress, displayName);
+    }
+
+    private static (string DisplayName, string EmailAddress) ParseEmailAddressWithDisplayName(string emailWithDisplayName)
+    {
+        var match = AzureEmailProviderBaseRegexes.ParseEmailAddressWithDisplayNameRegex().Match(emailWithDisplayName);
+
+        if (match.Success)
+        {
+            var displayName = match.Groups["displayName"].Value.Trim();
+            var emailAddress = match.Groups["emailAddress"].Value.Trim();
+
+            return (displayName, emailAddress);
+        }
+
+        return (string.Empty, emailWithDisplayName);
+    }
+}
+
+// The regex needs to be in a partial class due to the generated source.
+public partial class AzureEmailProviderBaseRegexes
+{
+    [GeneratedRegex(@"^(?:(?<displayName>[^<]*)\s)?<(?<emailAddress>[^>]+)>$")]
+    public static partial Regex ParseEmailAddressWithDisplayNameRegex();
 }
