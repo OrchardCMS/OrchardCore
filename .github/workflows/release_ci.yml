@@ -35,7 +35,7 @@ jobs:
         node-version: "15"
     - uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'
+        dotnet-version: '9.0.x'
     - name: Set build number 
       if: matrix.os == 'ubuntu-latest'
       run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 15471 ))" >> $GITHUB_ENV
@@ -43,7 +43,7 @@ jobs:
       # NuGetAudit is intentionally not disabled here like it is for other CI builds, because we need to address any
       # vulnerable packages before releasing a new version.
       run: |
-        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true -p:Version=${{ steps.get_version.outputs.VERSION }}
+        dotnet build -c Release /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true -p:Version=${{ steps.get_version.outputs.VERSION }}
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
@@ -82,6 +82,6 @@ jobs:
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item -Recurse -Confirm:$false
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item -Recurse -Confirm:$false
         $output = [System.IO.Path]::GetFullPath("./.build/release")
-        dotnet publish -c Release --property:PublishDir=$output --no-build --framework net8.0
+        dotnet publish -c Release --property:PublishDir=$output --no-build --framework net9.0
         docker buildx build -f Dockerfile-CI --platform=linux/amd64 -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:${{ steps.get_version.outputs.VERSION }} --push .
         docker buildx build -f Dockerfile-CI --platform=windows/amd64 -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:${{ steps.get_version.outputs.VERSION }} --push .

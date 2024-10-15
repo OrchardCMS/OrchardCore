@@ -1,7 +1,6 @@
 using System.Text.Json.Nodes;
 using OrchardCore.Admin;
 using OrchardCore.Deployment;
-using OrchardCore.Themes.Recipes;
 using OrchardCore.Themes.Services;
 
 namespace OrchardCore.Themes.Deployment;

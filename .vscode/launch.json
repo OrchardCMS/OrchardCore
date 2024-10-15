@@ -2,11 +2,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": ".NET Core Launch (console debug) - net8.0",
+      "name": ".NET Core Launch (console debug) - net9.0",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "dotnet build (debug) - net8.0",
-      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/net8.0/OrchardCore.Cms.Web.dll",
+      "preLaunchTask": "dotnet build (debug) - net9.0",
+      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/net9.0/OrchardCore.Cms.Web.dll",
       "args": [],
       "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
       "env": {
@@ -15,12 +15,12 @@
       "stopAtEntry": false
     },
     {
-      "name": ".NET Core Launch (web debug) - net8.0",
+      "name": ".NET Core Launch (web debug) - net9.0",
       "type": "coreclr",
       "request": "launch",
       "internalConsoleOptions": "openOnSessionStart",
-      "preLaunchTask": "dotnet build (debug) - net8.0",
-      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/net8.0/OrchardCore.Cms.Web.dll",
+      "preLaunchTask": "dotnet build (debug) - net9.0",
+      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Debug/net9.0/OrchardCore.Cms.Web.dll",
       "args": [],
       "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
       "env": {
@@ -33,11 +33,11 @@
       }
     },
     {
-      "name": ".NET Core Launch (web release) - net8.0",
+      "name": ".NET Core Launch (web release) - net9.0",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "dotnet build (release) - net8.0",
-      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Release/net8.0/OrchardCore.Cms.Web.dll",
+      "preLaunchTask": "dotnet build (release) - net9.0",
+      "program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Release/net9.0/OrchardCore.Cms.Web.dll",
       "args": [],
       "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
       "env": {
@@ -50,10 +50,10 @@
       }
     },
     {
-      "name": ".NET Core Launch (web debug) - dotnet watch - net8.0",
+      "name": ".NET Core Launch (web debug) - dotnet watch - net9.0",
       "type": "dotnetwatchattach",
       "request": "launch",
-      "task": "dotnet watch - net8.0",
+      "task": "dotnet watch - net9.0",
       "program": "OrchardCore.Cms.Web.exe",
       "args": {
         "env": {

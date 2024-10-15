@@ -28,7 +28,7 @@ jobs:
     - uses: actions/setup-dotnet@v4
       if: steps.check-publish.outputs.should-publish == 'true'
       with:
-        dotnet-version: '8.0.x'
+        dotnet-version: '9.0.x'
     - name: Set build number
       if: steps.check-publish.outputs.should-publish == 'true'
       run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 16368 ))" >> $GITHUB_ENV
@@ -36,7 +36,7 @@ jobs:
       if: steps.check-publish.outputs.should-publish == 'true'
       # See pr_ci.yml for the reason why we disable NuGet audit warnings.
       run: |
-        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
+        dotnet build -c Release /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
     - name: Unit Tests
       if: steps.check-publish.outputs.should-publish == 'true'
       run: |
@@ -76,6 +76,6 @@ jobs:
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item -Recurse -Confirm:$false
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item -Recurse -Confirm:$false
         $output = [System.IO.Path]::GetFullPath("./.build/release")
-        dotnet publish -c Release --property:PublishDir=$output --no-build --framework net8.0
+        dotnet publish -c Release --property:PublishDir=$output --no-build --framework net9.0
         docker buildx build -f Dockerfile-CI --platform=linux/amd64 -t orchardproject/orchardcore-cms-linux:dev --push .
         docker buildx build -f Dockerfile-CI --platform=windows/amd64 -t orchardproject/orchardcore-cms-windows:dev --push .

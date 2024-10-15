@@ -24,7 +24,7 @@
   },
   "tasks": [
     {
-      "label": "dotnet watch - net8.0",
+      "label": "dotnet watch - net9.0",
       "type": "process",
       "command": "dotnet",
       "args": [
@@ -32,7 +32,7 @@
         "run",
         "${workspaceRoot}/src/OrchardCore.Cms.Web",
         "-f",
-        "net8.0"
+        "net9.0"
       ],
       "options": {
         "cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web"
@@ -48,7 +48,7 @@
         "--project",
         "${workspaceRoot}\\src\\OrchardCore.Cms.Web\\OrchardCore.Cms.Web.csproj",
         "-f",
-        "net8.0"
+        "net9.0"
       ]
     },
     {
@@ -89,7 +89,7 @@
       ]
     },
     {
-      "label": "dotnet build (debug) - net8.0",
+      "label": "dotnet build (debug) - net9.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -98,12 +98,12 @@
         "-c",
         "Debug",
         "-f",
-        "net8.0"
+        "net9.0"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "dotnet build (release) - net8.0",
+      "label": "dotnet build (release) - net9.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -112,12 +112,12 @@
         "-c",
         "Release",
         "-f",
-        "net8.0"
+        "net9.0"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "dotnet rebuild (debug) - net8.0",
+      "label": "dotnet rebuild (debug) - net9.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -127,12 +127,12 @@
         "-c",
         "Debug",
         "-f",
-        "net8.0"
+        "net9.0"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "dotnet rebuild (release) - net8.0",
+      "label": "dotnet rebuild (release) - net9.0",
       "type": "shell",
       "command": "dotnet",
       "args": [
@@ -142,7 +142,7 @@
         "-c",
         "Release",
         "-f",
-        "net8.0"
+        "net9.0"
       ],
       "problemMatcher": "$msCompile"
     },
@@ -163,7 +163,7 @@
       ]
     },
     {
-      "label": "dotnet publish (self-contained) - release - net8.0",
+      "label": "dotnet publish (self-contained) - release - net9.0",
       "type": "shell",
       "command": "dotnet",
       "windows": {
@@ -177,7 +177,7 @@
           "win-x64",
           "--self-contained",
           "--framework",
-          "net8.0",
+          "net9.0",
           "--output",
           ".\\.build\\release"
         ]
@@ -191,14 +191,14 @@
         "linux-x64",
         "--self-contained",
         "--framework",
-        "net8.0",
+        "net9.0",
         "--output",
         "./.build/release"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "dotnet publish (framework dependent) - release - net8.0",
+      "label": "dotnet publish (framework dependent) - release - net9.0",
       "type": "shell",
       "command": "dotnet",
       "windows": {
@@ -213,7 +213,7 @@
           "--self-contained",
           "false",
           "--framework",
-          "net8.0",
+          "net9.0",
           "--output",
           ".\\.build\\release"
         ]
@@ -228,24 +228,24 @@
         "--self-contained",
         "false",
         "--framework",
-        "net8.0",
+        "net9.0",
         "--output",
         "./.build/release"
       ],
       "problemMatcher": "$msCompile"
     },
     {
-      "label": "tasks: dotnet publish release (self-contained) - net8.0",
+      "label": "tasks: dotnet publish release (self-contained) - net9.0",
       "dependsOn": [
         "cleanup publish folder",
-        "dotnet publish (self-contained) - net8.0"
+        "dotnet publish (self-contained) - net9.0"
       ]
     },
     {
-      "label": "tasks: dotnet publish release (framework dependent) - net8.0",
+      "label": "tasks: dotnet publish release (framework dependent) - net9.0",
       "dependsOn": [
         "cleanup publish folder",
-        "dotnet publish (framework dependent) - net8.0"
+        "dotnet publish (framework dependent) - net9.0"
       ]
     },
     {
