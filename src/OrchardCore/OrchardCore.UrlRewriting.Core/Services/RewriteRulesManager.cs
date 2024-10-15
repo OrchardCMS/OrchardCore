@@ -177,6 +177,12 @@ public class RewriteRulesManager : IRewriteRulesManager
     {
         var rules = await _store.GetAllAsync();
 
-        return rules.Any() ? rules.Max(x => x.Order) + 1 : 0;
+        // When importing multiple rules using a recipe, the rules collection will not include the newly added rule.
+        // To address this, we maintain an internal counter managed by this scoped service.
+        return rules.Any()
+            ? rules.Max(x => x.Order) + ++_counter
+            : _counter++;
     }
+
+    private int _counter;
 }
