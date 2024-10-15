@@ -31,10 +31,19 @@ The `UrlRewriting` step allows you to create or update URL rewrite rules. The ex
           "Source": "Redirect",
           "Name": "Redirect about-us to about",
           "Pattern": "^/about-us$",
-          "SubstitutionUrl": "/about",
+          "SubstitutionPattern": "/about",
           "IgnoreCase": true,
           "AppendQueryString": false,
           "RedirectType": "MovedPermanently"
+        },
+        {
+          "Source": "Rewrite",
+          "Name": "Serve media URLs to from img",
+          "Pattern": "^/img/(.*)$",
+          "SubstitutionPattern": "/media/$1",
+          "IgnoreCase": true,
+          "IgnoreQueryString": false,
+          "SkipFurtherRules": true
         }
       ]
     }
@@ -47,7 +56,7 @@ The `UrlRewriting` step allows you to create or update URL rewrite rules. The ex
 - **Id**: The unique identifier for the rewrite rule. If the specified Id matches an existing rule, that rule will be updated with the provided properties. To create a new rule, either leave the Id property empty or specify a new unique value that does not match any existing rule.
 - **Name**: A descriptive name for the rule, e.g., `"Redirect about-us to about"`.
 - **Pattern**: The URL pattern to match. Here, `^/about-us$` ensures an exact match.
-- **SubstitutionUrl**: The target URL to redirect to, `/about`.
+- **SubstitutionPattern**: The target Pattern to redirect to, `/about`.
 - **IgnoreCase**: If set to `true`, the matching is case-insensitive.
 - **AppendQueryString**: If `false`, the original query string won't be included in the redirect.
 - **RedirectType**: Specifies the HTTP status code for the redirect. `MovedPermanently` (HTTP 301) indicates a permanent redirect.

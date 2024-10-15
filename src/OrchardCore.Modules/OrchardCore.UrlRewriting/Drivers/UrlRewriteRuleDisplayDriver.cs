@@ -31,7 +31,7 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
             model.Pattern = metadata.Pattern;
             model.SubstitutionPattern = metadata.SubstitutionPattern;
             model.IsCaseInsensitive = metadata.IsCaseInsensitive;
-            model.AppendQueryString = context.IsNew || metadata.AppendQueryString;
+            model.IgnoreQueryString = metadata.IgnoreQueryString;
             model.SkipFurtherRules = metadata.SkipFurtherRules;
         }).Location("Content:5");
     }
@@ -49,21 +49,25 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
             m => m.Pattern,
             m => m.SubstitutionPattern,
             m => m.IsCaseInsensitive,
-            m => m.AppendQueryString,
+            m => m.IgnoreQueryString,
             m => m.SkipFurtherRules);
 
         if (string.IsNullOrWhiteSpace(model.Pattern))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), "The Match URL Pattern is required.");
         }
+        else if (!PatternHelper.IsValidRegex(model.Pattern))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["A valid Match URL Pattern is required."]);
+        }
 
         if (string.IsNullOrWhiteSpace(model.SubstitutionPattern))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["The Rewrite URL Pattern is required"]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["The Substitution URL Pattern is required."]);
         }
-        else if (!Uri.TryCreate(model.SubstitutionPattern, UriKind.RelativeOrAbsolute, out var _))
+        else if (!PatternHelper.IsValidRegex(model.SubstitutionPattern))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["The Rewrite URL Pattern is invalid."]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["A valid Substitution URL Pattern is required."]);
         }
 
         rule.Put(new UrlRewriteSourceMetadata()
@@ -71,7 +75,7 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
             Pattern = model.Pattern,
             SubstitutionPattern = model.SubstitutionPattern,
             IsCaseInsensitive = model.IsCaseInsensitive,
-            AppendQueryString = model.AppendQueryString,
+            IgnoreQueryString = model.IgnoreQueryString,
             SkipFurtherRules = model.SkipFurtherRules
         });
 

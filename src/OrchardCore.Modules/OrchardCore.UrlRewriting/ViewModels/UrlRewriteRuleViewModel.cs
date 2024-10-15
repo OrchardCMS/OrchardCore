@@ -8,7 +8,7 @@ public class UrlRewriteRuleViewModel
 
     public bool IsCaseInsensitive { get; set; }
 
-    public bool AppendQueryString { get; set; }
+    public bool IgnoreQueryString { get; set; }
 
     public bool SkipFurtherRules { get; set; }
 }

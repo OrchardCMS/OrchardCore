@@ -8,7 +8,7 @@ public class UrlRewriteSourceMetadata
 
     public string SubstitutionPattern { get; set; }
 
-    public bool AppendQueryString { get; set; }
+    public bool IgnoreQueryString { get; set; }
 
     public bool SkipFurtherRules { get; set; }
 }

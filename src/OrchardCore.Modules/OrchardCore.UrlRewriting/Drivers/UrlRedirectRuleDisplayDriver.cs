@@ -67,16 +67,24 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["The Match URL Pattern is required."]);
         }
+        else if (!PatternHelper.IsValidRegex(model.Pattern))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Pattern), S["A valid Match URL Pattern is required."]);
+        }
 
         if (string.IsNullOrWhiteSpace(model.SubstitutionPattern))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["The Redirect URL Pattern is required."]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["The Substitution URL Pattern is required."]);
+        }
+        else if (!PatternHelper.IsValidRegex(model.SubstitutionPattern))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SubstitutionPattern), S["A valid Substitution URL Pattern is required."]);
         }
 
         rule.Put(new UrlRedirectSourceMetadata()
         {
-            Pattern = model.Pattern,
-            SubstitutionPattern = model.SubstitutionPattern,
+            Pattern = model.Pattern?.Trim(),
+            SubstitutionPattern = model.SubstitutionPattern?.Trim(),
             IsCaseInsensitive = model.IsCaseInsensitive,
             AppendQueryString = model.AppendQueryString,
             RedirectType = model.RedirectType,

@@ -28,12 +28,20 @@ public sealed class UrlRewriteRuleHandler : RewriteRuleHandlerBase
 
         if (string.IsNullOrWhiteSpace(metadata.Pattern))
         {
-            context.Result.Fail(new ValidationResult(S["The Match URL pattern is required."], [nameof(UrlRewriteSourceMetadata.Pattern)]));
+            context.Result.Fail(new ValidationResult(S["The Match URL Pattern is required."], [nameof(UrlRedirectSourceMetadata.Pattern)]));
+        }
+        else if (!PatternHelper.IsValidRegex(metadata.Pattern))
+        {
+            context.Result.Fail(new ValidationResult(S["A valid Match URL Pattern is required."], [nameof(UrlRedirectSourceMetadata.Pattern)]));
         }
 
         if (string.IsNullOrWhiteSpace(metadata.SubstitutionPattern))
         {
-            context.Result.Fail(new ValidationResult(S["The Rewrite URL Pattern is required."], [nameof(UrlRewriteSourceMetadata.SubstitutionPattern)]));
+            context.Result.Fail(new ValidationResult(S["The Substitution URL Pattern is required."], [nameof(UrlRedirectSourceMetadata.SubstitutionPattern)]));
+        }
+        else if (!PatternHelper.IsValidRegex(metadata.SubstitutionPattern))
+        {
+            context.Result.Fail(new ValidationResult(S["A valid Substitution URL Pattern is required."], [nameof(UrlRedirectSourceMetadata.SubstitutionPattern)]));
         }
 
         return Task.CompletedTask;
@@ -69,11 +77,11 @@ public sealed class UrlRewriteRuleHandler : RewriteRuleHandlerBase
             metadata.IsCaseInsensitive = ignoreCase.Value;
         }
 
-        var appendQueryString = data[nameof(UrlRewriteSourceMetadata.AppendQueryString)]?.GetValue<bool>();
+        var appendQueryString = data[nameof(UrlRewriteSourceMetadata.IgnoreQueryString)]?.GetValue<bool>();
 
         if (appendQueryString.HasValue)
         {
-            metadata.AppendQueryString = appendQueryString.Value;
+            metadata.IgnoreQueryString = appendQueryString.Value;
         }
 
         var skipFurtherRules = data[nameof(UrlRewriteSourceMetadata.SkipFurtherRules)]?.GetValue<bool>();

@@ -70,13 +70,13 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
             FlagAppend(builder, "NC");
         };
 
-        if (metadata.AppendQueryString)
+        if (metadata.IgnoreQueryString)
         {
-            FlagAppend(builder, "QSA");
+            FlagAppend(builder, "QSD");
         }
         else
         {
-            FlagAppend(builder, "QSD");
+            FlagAppend(builder, "QSA");
         }
 
         if (metadata.SkipFurtherRules)
