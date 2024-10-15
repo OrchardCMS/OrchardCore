@@ -25,7 +25,8 @@
 <div class="mb-3">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="SkipFurtherRules" checked="@Model.SkipFurtherRules" />
-        <label class="form-check-label" asp-for="SkipFurtherRules">@T["Stop Evaluation of Subsequent Rules."]</label>
+        <label class="form-check-label" asp-for="SkipFurtherRules">@T["Stop Evaluation of Subsequent Rules"]</label>
+        <span class="hint dashed">@T["When selected, subsequent rules will be ignored if this rule is matched."]</span>
     </div>
 </div>
 
