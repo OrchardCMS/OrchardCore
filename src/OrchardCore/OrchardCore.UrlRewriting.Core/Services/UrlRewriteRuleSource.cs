@@ -54,7 +54,7 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
     {
         var initialLength = builder.Length;
 
-        void FlagAppend(StringBuilder builder, string flag)
+        StringBuilder AppendFlag(StringBuilder builder, string flag)
         {
             if (builder.Length > initialLength)
             {
@@ -62,25 +62,27 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
             }
 
             builder.Append(flag);
+
+            return builder;
         }
 
         if (metadata.IsCaseInsensitive)
         {
-            FlagAppend(builder, "NC");
+            AppendFlag(builder, "NC");
         };
 
         if (metadata.IgnoreQueryString)
         {
-            FlagAppend(builder, "QSD");
+            AppendFlag(builder, "QSD");
         }
         else
         {
-            FlagAppend(builder, "QSA");
+            AppendFlag(builder, "QSA");
         }
 
         if (metadata.SkipFurtherRules)
         {
-            FlagAppend(builder, "L");
+            AppendFlag(builder, "L");
         }
     }
 }

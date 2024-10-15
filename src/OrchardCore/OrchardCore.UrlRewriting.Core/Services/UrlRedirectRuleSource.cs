@@ -54,7 +54,7 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
     {
         var initialLength = builder.Length;
 
-        void AppendFlag(StringBuilder builder, string flag)
+        StringBuilder AppendFlag(StringBuilder builder, string flag)
         {
             if (builder.Length > initialLength)
             {
@@ -62,6 +62,8 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
             }
 
             builder.Append(flag);
+
+            return builder;
         }
 
         if (metadata.IsCaseInsensitive)
@@ -78,7 +80,7 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
             AppendFlag(builder, "QSD");
         }
 
-        AppendFlag(builder, "R=");
-        builder.Append((int)metadata.RedirectType);
+        AppendFlag(builder, "R=")
+            .Append((int)metadata.RedirectType);
     }
 }
