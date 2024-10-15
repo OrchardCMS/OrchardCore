@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+using System.Net.Mail;
 using Azure;
 using Azure.Communication.Email;
 using Microsoft.Extensions.Localization;
@@ -189,7 +189,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
         var emailMessage = new EmailMessage(
             // For compatibility with configuration for other providers that allow a sender with display name.
-            ParseEmailAddressWithDisplayName(message.From).EmailAddress,
+            TryCreateMailAddressOrFail(message.From).EmailAddress,
             new EmailRecipients(toRecipients, ccRecipients, bccRecipients),
             content);
 
@@ -229,30 +229,18 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
     private static EmailAddress ConvertEmailAddressToAzureEmailAddress(string emailWithDisplayName)
     {
-        var (displayName, emailAddress) = ParseEmailAddressWithDisplayName(emailWithDisplayName);
+        var (displayName, emailAddress) = TryCreateMailAddressOrFail(emailWithDisplayName);
 
         return new EmailAddress(emailAddress, displayName);
     }
 
-    private static (string DisplayName, string EmailAddress) ParseEmailAddressWithDisplayName(string emailWithDisplayName)
+    private static (string DisplayName, string EmailAddress) TryCreateMailAddressOrFail(string email)
     {
-        var match = AzureEmailProviderBaseRegexes.ParseEmailAddressWithDisplayNameRegex().Match(emailWithDisplayName);
-
-        if (match.Success)
+        if (MailAddress.TryCreate(email, out var mailAddress))
         {
-            var displayName = match.Groups["displayName"].Value.Trim();
-            var emailAddress = match.Groups["emailAddress"].Value.Trim();
-
-            return (displayName, emailAddress);
+            return (mailAddress.DisplayName, mailAddress.Address);
         }
 
-        return (string.Empty, emailWithDisplayName);
+        throw new ArgumentException($"The email address '{email}' is invalid.");
     }
-}
-
-// The regex needs to be in a partial class due to the generated source.
-public partial class AzureEmailProviderBaseRegexes
-{
-    [GeneratedRegex(@"^(?:(?<displayName>[^<]*)\s)?<(?<emailAddress>[^>]+)>$")]
-    public static partial Regex ParseEmailAddressWithDisplayNameRegex();
 }
