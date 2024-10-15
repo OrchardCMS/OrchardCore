@@ -29,6 +29,13 @@ internal sealed class DefaultExternalAuthenticationsMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
+        if (context.Response.HasStarted)
+        {
+            await _next(context);
+
+            return;
+        }
+
         if (_externalLoginOptions.UseExternalProviderIfOnlyOneDefined &&
         context.Request.Method == HttpMethods.Get &&
         IsLoginRequest(context))
