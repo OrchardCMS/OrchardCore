@@ -8,7 +8,7 @@ namespace OrchardCore.DataProtection.Azure;
 /// <summary>
 /// A tenant event that deletes data protection blobs from a container when a tenant is deleted.
 /// </summary>
-internal class BlobModularTenantEvents : ModularTenantEvents
+internal sealed class BlobModularTenantEvents : ModularTenantEvents
 {
     private readonly BlobOptions _blobOptions;
     private readonly ILogger _logger;
