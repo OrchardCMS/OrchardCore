@@ -103,17 +103,7 @@ public sealed class AccessController : Controller
                 var identity = new ClaimsIdentity(result.Principal.Claims, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
                 identity.AddClaim(new Claim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User));
 
-                // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
-                // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
-                // subject claim is correctly populated (and avoid an InvalidOperationException), it's manually added here.
-                if (string.IsNullOrEmpty(result.Principal.FindFirst(Claims.Subject)?.Value))
-                {
-                    identity.AddClaim(new Claim(Claims.Subject, result.Principal.GetUserIdentifier()));
-                }
-                if (string.IsNullOrEmpty(result.Principal.FindFirst(Claims.Name)?.Value))
-                {
-                    identity.AddClaim(new Claim(Claims.Name, result.Principal.GetUserName()));
-                }
+                PopulateIdentityClaims(result.Principal, identity);
 
                 identity.SetScopes(request.GetScopes());
                 identity.SetResources(await GetResourcesAsync(request.GetScopes()));
@@ -179,6 +169,30 @@ public sealed class AccessController : Controller
         }
     }
 
+    private static void PopulateIdentityClaims(ClaimsPrincipal principal, ClaimsIdentity identity)
+    {
+        // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
+        // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
+        // subject claim is correctly populated (and avoid an InvalidOperationException), it's manually added here.
+        if (!principal.HasClaim(static claim => claim.Type is Claims.Subject))
+        {
+            identity.AddClaim(new Claim(Claims.Subject, principal.GetUserIdentifier()));
+        }
+
+        if (!principal.HasClaim(static claim => claim.Type is Claims.Name))
+        {
+            identity.AddClaim(new Claim(Claims.Name, principal.GetUserName()));
+        }
+
+        if (!principal.HasClaim(static claim => claim.Type is Claims.Role))
+        {
+            foreach (var role in principal.GetRoles())
+            {
+                identity.AddClaim(new Claim(Claims.Role, role));
+            }
+        }
+    }
+
     [ActionName(nameof(Authorize)), DisableCors]
     [FormValueRequired("submit.Accept"), HttpPost]
     public async Task<IActionResult> AuthorizeAccept()
@@ -231,17 +245,7 @@ public sealed class AccessController : Controller
                 var identity = new ClaimsIdentity(User.Claims, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
                 identity.AddClaim(new Claim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User));
 
-                // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
-                // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
-                // subject claim is correctly populated (and avoid an InvalidOperationException), it's manually added here.
-                if (string.IsNullOrEmpty(User.FindFirst(Claims.Subject)?.Value))
-                {
-                    identity.AddClaim(new Claim(Claims.Subject, User.GetUserIdentifier()));
-                }
-                if (string.IsNullOrEmpty(User.FindFirst(Claims.Name)?.Value))
-                {
-                    identity.AddClaim(new Claim(Claims.Name, User.GetUserName()));
-                }
+                PopulateIdentityClaims(User, identity);
 
                 identity.SetScopes(request.GetScopes());
                 identity.SetResources(await GetResourcesAsync(request.GetScopes()));
@@ -527,17 +531,7 @@ public sealed class AccessController : Controller
         var identity = (ClaimsIdentity)principal.Identity;
         identity.AddClaim(new Claim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User));
 
-        // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
-        // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
-        // subject claim is correctly populated (and avoid an InvalidOperationException), it's manually added here.
-        if (string.IsNullOrEmpty(principal.FindFirst(Claims.Subject)?.Value))
-        {
-            identity.AddClaim(new Claim(Claims.Subject, principal.GetUserIdentifier()));
-        }
-        if (string.IsNullOrEmpty(principal.FindFirst(Claims.Name)?.Value))
-        {
-            identity.AddClaim(new Claim(Claims.Name, principal.GetUserName()));
-        }
+        PopulateIdentityClaims(principal, identity);
 
         identity.SetScopes(request.GetScopes());
         identity.SetResources(await GetResourcesAsync(request.GetScopes()));
@@ -599,17 +593,7 @@ public sealed class AccessController : Controller
         var identity = (ClaimsIdentity)principal.Identity;
         identity.AddClaim(new Claim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User));
 
-        // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
-        // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
-        // subject claim is correctly populated (and avoid an InvalidOperationException), it's manually added here.
-        if (string.IsNullOrEmpty(principal.FindFirst(Claims.Subject)?.Value))
-        {
-            identity.AddClaim(new Claim(Claims.Subject, principal.GetUserIdentifier()));
-        }
-        if (string.IsNullOrEmpty(principal.FindFirst(Claims.Name)?.Value))
-        {
-            identity.AddClaim(new Claim(Claims.Name, principal.GetUserName()));
-        }
+        PopulateIdentityClaims(principal, identity);
 
         identity.SetDestinations(GetDestinations);
 

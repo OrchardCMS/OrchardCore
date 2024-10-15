@@ -17,6 +17,7 @@ using OrchardCore.Demo.Drivers;
 using OrchardCore.Demo.Models;
 using OrchardCore.Demo.Services;
 using OrchardCore.Demo.TagHelpers;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Commands;
@@ -84,12 +85,12 @@ public sealed class Startup : StartupBase
         services.AddScoped<ITestDependency, ClassFoo>();
         services.AddScoped<ICommandHandler, DemoCommands>();
         services.AddSingleton<IBackgroundTask, TestBackgroundTask>();
-        services.AddScoped<IShapeTableProvider, DemoShapeProvider>();
+        services.AddShapeTableProvider<DemoShapeProvider>();
         services.AddShapeAttributes<DemoShapeProvider>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentDisplayDriver, TestContentElementDisplayDriver>();
         services.AddDataMigration<Migrations>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddContentPart<TestContentPartA>();
         services.AddScoped<IUserClaimsProvider, UserProfileClaimsProvider>();
 

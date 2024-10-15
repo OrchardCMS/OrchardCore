@@ -26,6 +26,8 @@ namespace OrchardCore.Tenants.Controllers;
 [Admin("Tenants/{action}/{id?}", "Tenants{action}")]
 public sealed class AdminController : Controller
 {
+    public const string CreateAndSetupValue = "createAndSetup";
+
     private readonly IShellHost _shellHost;
     private readonly IShellSettingsManager _shellSettingsManager;
     private readonly IShellRemovalManager _shellRemovalManager;
@@ -339,7 +341,7 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(EditTenantViewModel model)
+    public async Task<IActionResult> Create(EditTenantViewModel model, string action)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
         {
@@ -379,6 +381,20 @@ public sealed class AdminController : Controller
             shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? []);
 
             await _shellHost.UpdateShellSettingsAsync(shellSettings);
+
+            if (action == CreateAndSetupValue)
+            {
+                var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
+
+                var entry = new ShellSettingsEntry
+                {
+                    Name = shellSettings.Name,
+                    ShellSettings = shellSettings,
+                    Token = dataProtector.Protect(shellSettings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)))
+                };
+
+                return Redirect(HttpContext.GetEncodedUrl(entry));
+            }
 
             return RedirectToAction(nameof(Index));
         }

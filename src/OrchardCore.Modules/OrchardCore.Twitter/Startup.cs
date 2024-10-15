@@ -9,7 +9,6 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Twitter.Drivers;
 using OrchardCore.Twitter.Recipes;
 using OrchardCore.Twitter.Services;
@@ -25,7 +24,7 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
     }
 }
 
@@ -34,8 +33,8 @@ public sealed class TwitterStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<ISite>, TwitterSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddSiteDisplayDriver<TwitterSettingsDisplayDriver>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<ITwitterSettingsService, TwitterSettingsService>();
 
         services.AddRecipeExecutionStep<TwitterSettingsStep>();
@@ -66,9 +65,9 @@ public sealed class TwitterSigninStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INavigationProvider, AdminMenuSignin>();
+        services.AddNavigationProvider<AdminMenuSignin>();
         services.AddSingleton<ITwitterSigninService, TwitterSigninService>();
-        services.AddScoped<IDisplayDriver<ISite>, TwitterSigninSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<TwitterSigninSettingsDisplayDriver>();
         // Register the options initializers required by the Twitter Handler.
         services.TryAddEnumerable(new[]
         {

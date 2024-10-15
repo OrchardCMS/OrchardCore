@@ -24,8 +24,8 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddPermissionProvider<Permissions>();
         services.AddSingleton<CorsService>();
 
         services.TryAddEnumerable(ServiceDescriptor

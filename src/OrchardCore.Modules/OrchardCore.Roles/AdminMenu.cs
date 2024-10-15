@@ -3,22 +3,17 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Roles;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return Task.CompletedTask;
-        }
-
         builder
             .Add(S["Security"], security => security
                 .Add(S["Roles"], S["Roles"].PrefixPosition(), roles => roles
@@ -29,6 +24,6 @@ public sealed class AdminMenu : INavigationProvider
                 )
             );
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

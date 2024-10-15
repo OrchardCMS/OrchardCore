@@ -17,6 +17,6 @@ public class ContentUrlFilter : ILiquidFilter
     {
         var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
 
-        return new ValueTask<FluidValue>(new StringValue((urlHelper).Content(input.ToStringValue())));
+        return ValueTask.FromResult<FluidValue>(new StringValue((urlHelper).Content(input.ToStringValue())));
     }
 }

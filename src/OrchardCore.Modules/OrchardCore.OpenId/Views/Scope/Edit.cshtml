@@ -1,4 +1,5 @@
 @model EditOpenIdScopeViewModel
+@using OrchardCore.OpenId
 @using OrchardCore.OpenId.ViewModels
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit a scope"])</h1></zone>
@@ -8,13 +9,13 @@
 
     <div class="mb-3" asp-validation-class-for="DisplayName">
         <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
-        <input asp-for="DisplayName" class="form-control" />
+        <input asp-for="DisplayName" class="form-control" autofocus />
         <span asp-validation-for="DisplayName" class="text-danger"></span>
     </div>
 
     <div class="mb-3" asp-validation-class-for="Name">
         <label asp-for="Name" class="form-label">@T["Name"]</label>
-        <input asp-for="Name" class="form-control" autofocus />
+        <input asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
@@ -24,22 +25,10 @@
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
 
-    <div class="mb-3" id="TenantGroup" name="TenantGroup">
-        <h6>@T["Tenants"]</h6>
-        @for (var index = 0; index < Model.Tenants.Count; index++)
-        {
-            <input type="hidden" asp-for="Tenants[index].Name" />
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" asp-for="Tenants[index].Selected" checked="@Model.Tenants[index].Current" disabled="@Model.Tenants[index].Current">
-                <label class="form-check-label" asp-for="Tenants[index].Selected">@Model.Tenants[index].Name</label>
-            </div>
-        }
-        <span class="hint">@T["Note: the server tenant is always included in the access token audiences, even if no scope is requested."]</span>
-    </div>
-
     <div class="mb-3" asp-validation-class-for="Resources">
         <label asp-for="Resources" class="form-label">@T["Additional resources (API audiences)"]</label>
         <input asp-for="Resources" class="form-control" />
+        <span class="hint">@T["A space-separated list of values is required. To utilize another active tenant as a resource, specify it using the format <code>{0}{{tenant_name}}</code>.", OpenIdConstants.Prefixes.Tenant]</span>
         <span asp-validation-for="Resources" class="text-danger"></span>
     </div>
 

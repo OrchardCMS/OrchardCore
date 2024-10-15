@@ -23,12 +23,12 @@ public static class LiquidViewFilters
             parameters[i] = arguments.At(i).ToStringValue();
         }
 
-        return new ValueTask<FluidValue>(new StringValue(localizer.GetString(input.ToStringValue(), parameters)));
+        return ValueTask.FromResult<FluidValue>(new StringValue(localizer.GetString(input.ToStringValue(), parameters)));
     }
 
     public static ValueTask<FluidValue> HtmlClass(FluidValue input, FilterArguments _1, TemplateContext _2)
     {
-        return new ValueTask<FluidValue>(new StringValue(input.ToStringValue().HtmlClassify()));
+        return ValueTask.FromResult<FluidValue>(new StringValue(input.ToStringValue().HtmlClassify()));
     }
 
     public static ValueTask<FluidValue> ShapeProperties(FluidValue input, FilterArguments arguments, TemplateContext ctx)

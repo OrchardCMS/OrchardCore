@@ -24,7 +24,7 @@ public class UpdateTwitterStatusTask : TaskActivity<UpdateTwitterStatusTask>
         S = localizer;
     }
 
-    public override LocalizedString DisplayText => S["Update X Status Task"];
+    public override LocalizedString DisplayText => S["Update X (Twitter) Status Task"];
 
     // The category to which this activity belongs. The activity picker groups activities by this category.
     public override LocalizedString Category => S["Social"];

@@ -25,7 +25,7 @@ public sealed class Startup : StartupBase
 
         services.AddMiniProfiler();
 
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

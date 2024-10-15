@@ -46,10 +46,10 @@ You might also read these two blog posts on contributing code: [Open Source Cont
 - Make sure the repository can be built and all tests pass. This is also checked by the CI workflows.
 - If you change CSS or JavaScript files, be sure to run [the Gulp pipeline](../../guides/gulp-pipeline/README.md).
 - If you want to start a conversation with other community members or run the CI workflows but you're not done yet, open your PR as a [draft](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests#draft-pull-requests). Then, [change it to ready for review](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-stage-of-a-pull-request).
-- If your PR addresses an issue, be sure to [link them](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue). This helps everyone find their way around contributions, and merging your PR will automatically close the issue too.
+- If your PR addresses an issue, be sure to [link them](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue) (e.g. with `Fixes #IssueId`). This helps everyone find their way around contributions, and merging your PR will automatically close the issue too.
 - If there's no issue for your PR, then please describe the context and rationale in the pull request description, and provide screenshots/screen recordings of the changes if they affect the UX.
 - Refactoring is great, but if you do so, please guard it with new tests.
-- If you add a significant new feature or a breaking change, then document this under the release notes of the upcoming pull request.
+- If you add a significant new feature or a breaking change, then document this under the release notes of the upcoming release (you can find this in the `docs/OrchardCore.Docs/releases` folder).
 - So we can help you better, please [allow our core contributors to edit your PR](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork).
 
 !!! tip

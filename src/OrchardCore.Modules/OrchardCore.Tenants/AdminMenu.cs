@@ -4,29 +4,26 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Tenants;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     private readonly ShellSettings _shellSettings;
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer, ShellSettings shellSettings)
+    public AdminMenu(
+        ShellSettings shellSettings,
+        IStringLocalizer<AdminMenu> stringLocalizer)
     {
         _shellSettings = shellSettings;
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return Task.CompletedTask;
-        }
-
-        // Don't add the menu item on non-default tenants
+        // Don't add the menu item on non-default tenants.
         if (!_shellSettings.IsDefaultShell())
         {
-            return Task.CompletedTask;
+            return ValueTask.CompletedTask;
         }
 
         builder
@@ -40,6 +37,6 @@ public sealed class AdminMenu : INavigationProvider
                 ),
                 priority: 1);
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

@@ -27,7 +27,6 @@ Update the source, so everything looks like on the new version.
 - [ ] Update the `OrchardCore.Commons.props` file with `<VersionSuffix></VersionSuffix>` such that preview build numbers are not injected in packages. Verify the `VersionPrefix` tag matches the released version.
 - [ ] Update module versions in `src/OrchardCore/OrchardCore.Abstractions/Modules/Manifest/ManifestConstants.cs`.
 - [ ] Create a new milestone.
-- [ ] Change the Orchard Core version in the project templates, more specifically in `dotnetcli.host.json` and `template.json` files.
 - [ ] Add final updates to the release notes in the documentation. It should include the following, at least:
   - Overview of the release's highlights and goals. What do you want people to remember this release for?
   - Prerequisites. What framework version do you need, anything else to work with Orchard?

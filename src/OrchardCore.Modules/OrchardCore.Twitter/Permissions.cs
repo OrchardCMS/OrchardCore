@@ -4,9 +4,9 @@ namespace OrchardCore.Twitter;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageTwitter = new("ManageTwitter", "Manage Twitter settings");
+    public static readonly Permission ManageTwitter = new("ManageTwitter", "Manage X (Twitter) settings");
 
-    public static readonly Permission ManageTwitterSignin = new("ManageTwitterSignin", "Manage Sign in with Twitter settings");
+    public static readonly Permission ManageTwitterSignin = new("ManageTwitterSignin", "Manage Sign in with X (Twitter) settings");
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

@@ -31,7 +31,7 @@ public static class ShellHostExtensions
     /// Reloads all shell settings and releases all shells so that new ones will be
     /// built for subsequent requests, while existing requests get flushed.
     /// </summary>
-    public async static Task ReloadAllShellContextsAsync(this IShellHost shellHost)
+    public static async Task ReloadAllShellContextsAsync(this IShellHost shellHost)
     {
         foreach (var settings in shellHost.GetAllSettings())
         {
@@ -43,7 +43,7 @@ public static class ShellHostExtensions
     /// Releases all shells so that new ones will be built for subsequent requests.
     /// Note: Can be used to free up resources after a given period of inactivity.
     /// </summary>
-    public async static Task ReleaseAllShellContextsAsync(this IShellHost shellHost)
+    public static async Task ReleaseAllShellContextsAsync(this IShellHost shellHost)
     {
         foreach (var settings in shellHost.GetAllSettings())
         {

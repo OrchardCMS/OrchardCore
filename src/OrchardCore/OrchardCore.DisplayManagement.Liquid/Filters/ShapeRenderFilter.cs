@@ -29,9 +29,9 @@ public class ShapeRenderFilter : ILiquidFilter
                 return Awaited(task);
             }
 
-            return new ValueTask<FluidValue>(new HtmlContentValue(task.Result));
+            return ValueTask.FromResult<FluidValue>(new HtmlContentValue(task.Result));
         }
 
-        return new ValueTask<FluidValue>(new HtmlContentValue(HtmlString.Empty));
+        return ValueTask.FromResult<FluidValue>(new HtmlContentValue(HtmlString.Empty));
     }
 }

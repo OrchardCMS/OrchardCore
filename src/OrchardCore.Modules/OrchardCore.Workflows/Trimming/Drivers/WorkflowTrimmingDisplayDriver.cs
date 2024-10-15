@@ -31,8 +31,13 @@ public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTr
     protected override string SettingsGroupId
         => GroupId;
 
-    public override IDisplayResult Edit(ISite site, WorkflowTrimmingSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(ISite model, WorkflowTrimmingSettings settings, BuildEditorContext context)
     {
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageWorkflowSettings))
+        {
+            return null;
+        }
+
         return Initialize<WorkflowTrimmingViewModel>("WorkflowTrimming_Fields_Edit", async model =>
         {
             model.RetentionDays = settings.RetentionDays;

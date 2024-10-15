@@ -16,4 +16,14 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Registers a navigation provider.
+    /// </summary>
+    /// <typeparam name="TProvider"></typeparam>
+    public static IServiceCollection AddNavigationProvider<TProvider>(this IServiceCollection services)
+        where TProvider : class, INavigationProvider
+    {
+        return services.AddScoped<INavigationProvider, TProvider>();
+    }
 }

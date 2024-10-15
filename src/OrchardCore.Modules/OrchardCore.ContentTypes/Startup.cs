@@ -19,8 +19,8 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddPermissionProvider<Permissions>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentDefinitionService, ContentDefinitionService>();
         services.AddScoped<IStereotypeService, StereotypeService>();
         services.AddScoped<IContentDefinitionDisplayHandler, ContentDefinitionDisplayCoordinator>();

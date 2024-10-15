@@ -1,0 +1,5 @@
+@model OrchardCore.Users.Workflows.ViewModels.UserEventViewModel<OrchardCore.Users.Workflows.Activities.UserConfirmedEvent>
+
+<header>
+    <h4><i class="fa-solid fa-envelope-circle-check" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["User Confirmed"])</h4>
+</header>

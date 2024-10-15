@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
 
         services.AddTransient<ContentItemType>();
 
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
 
         services.AddTransient<DynamicPartGraphType>();
         services.AddScoped<IContentTypeBuilder, TypedContentTypeBuilder>();

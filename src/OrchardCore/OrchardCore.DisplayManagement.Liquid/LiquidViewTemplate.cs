@@ -244,7 +244,7 @@ public static class LiquidTemplateContextExtensions
             }
 
             // Configure Fluid with the local date and time
-            var now = await localClock.LocalNowAsync;
+            var now = await localClock.GetLocalNowAsync();
 
             context.Now = () => now;
 

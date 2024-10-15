@@ -10,49 +10,54 @@ namespace OrchardCore.Roles.Recipes;
 /// <summary>
 /// This recipe step creates a set of roles.
 /// </summary>
-public sealed class RolesStep : IRecipeStepHandler
+public sealed class RolesStep : NamedRecipeStepHandler
 {
     private readonly RoleManager<IRole> _roleManager;
+    private readonly ISystemRoleNameProvider _systemRoleNameProvider;
 
-    public RolesStep(RoleManager<IRole> roleManager)
+    public RolesStep(
+        RoleManager<IRole> roleManager,
+        ISystemRoleNameProvider systemRoleNameProvider)
+        : base("Roles")
     {
         _roleManager = roleManager;
+        _systemRoleNameProvider = systemRoleNameProvider;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "Roles", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var model = context.Step.ToObject<RolesStepModel>();
 
-        foreach (var importedRole in model.Roles)
+        foreach (var roleEntry in model.Roles)
         {
-            if (string.IsNullOrWhiteSpace(importedRole.Name))
+            var roleName = roleEntry.Name?.Trim();
+
+            if (string.IsNullOrWhiteSpace(roleName))
             {
                 continue;
             }
 
-            var role = (Role)await _roleManager.FindByNameAsync(importedRole.Name);
+            var role = await _roleManager.FindByNameAsync(roleName);
             var isNewRole = role == null;
 
             if (isNewRole)
             {
                 role = new Role
                 {
-                    RoleName = importedRole.Name
+                    RoleName = roleName,
                 };
             }
 
-            role.RoleDescription = importedRole.Description;
-            role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
-            role.RoleClaims.AddRange(importedRole.Permissions.Select(p => new RoleClaim
+            if (role is Role r)
             {
-                ClaimType = Permission.ClaimType,
-                ClaimValue = p,
-            }));
+                r.RoleDescription = roleEntry.Description;
+                r.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
+
+                if (!await _systemRoleNameProvider.IsAdminRoleAsync(roleName))
+                {
+                    r.RoleClaims.AddRange(roleEntry.Permissions.Select(RoleClaim.Create));
+                }
+            }
 
             if (isNewRole)
             {
@@ -74,6 +79,8 @@ public sealed class RolesStepModel
 public sealed class RolesStepRoleModel
 {
     public string Name { get; set; }
+
     public string Description { get; set; }
+
     public string[] Permissions { get; set; }
 }

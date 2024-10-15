@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -21,7 +20,7 @@ public sealed class ContentPickerFieldElasticEditorSettingsDriver : ContentPartF
     {
         return Initialize<ContentPickerFieldElasticEditorSettings>("ContentPickerFieldElasticEditorSettings_Edit", async model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldElasticEditorSettings>();
+            var settings = partFieldDefinition.GetSettings<ContentPickerFieldElasticEditorSettings>();
 
             model.Index = settings.Index;
 

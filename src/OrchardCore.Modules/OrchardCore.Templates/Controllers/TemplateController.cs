@@ -353,39 +353,35 @@ public sealed class TemplateController : Controller
             return Forbid();
         }
 
-        if (itemIds?.Count() > 0)
+        switch (options.BulkAction)
         {
-            var templatesDocument = options.AdminTemplates
-                    ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
-                    : await _templatesManager.LoadTemplatesDocumentAsync();
-            var checkedContentItems = templatesDocument.Templates.Where(x => itemIds.Contains(x.Key));
+            case ContentsBulkAction.None:
+                break;
+            case ContentsBulkAction.Remove:
+                if (itemIds != null)
+                {
+                    var templatesDocument = options.AdminTemplates
+                        ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
+                        : await _templatesManager.LoadTemplatesDocumentAsync();
+                    var checkedContentItemIds = templatesDocument.Templates.Keys
+                        .Intersect(itemIds, StringComparer.OrdinalIgnoreCase);
 
-            switch (options.BulkAction)
-            {
-                case ContentsBulkAction.None:
-                    break;
-                case ContentsBulkAction.Remove:
-                    foreach (var item in checkedContentItems)
+                    foreach (var id in checkedContentItemIds)
                     {
                         await (options.AdminTemplates
-                                ? _adminTemplatesManager.RemoveTemplateAsync(item.Key)
-                                : _templatesManager.RemoveTemplateAsync(item.Key));
+                            ? _adminTemplatesManager.RemoveTemplateAsync(id)
+                            : _templatesManager.RemoveTemplateAsync(id));
                     }
+
                     await _notifier.SuccessAsync(H["Templates successfully removed."]);
-                    break;
-                default:
-                    return BadRequest();
-            }
+                }
+
+                break;
+            default:
+                return BadRequest();
         }
 
-        if (options.AdminTemplates)
-        {
-            return RedirectToAction(nameof(Admin));
-        }
-        else
-        {
-            return RedirectToAction(nameof(Index));
-        }
+        return RedirectToAction(options.AdminTemplates ? nameof(Admin) : nameof(Index));
     }
 
     private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)

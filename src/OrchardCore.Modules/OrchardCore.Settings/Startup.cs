@@ -64,16 +64,16 @@ public sealed class Startup : StartupBase
         });
 
         services.AddScoped<ISetupEventHandler, SetupEventHandler>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<IAuthorizationHandler, SuperUserHandler>();
 
         services.AddRecipeExecutionStep<SettingsStep>();
         services.AddSingleton<ISiteService, SiteService>();
 
         // Site Settings editor
-        services.AddScoped<IDisplayDriver<ISite>, DefaultSiteSettingsDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ISite>, ButtonsSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddSiteDisplayDriver<DefaultSiteSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<ButtonsSettingsDisplayDriver>();
+        services.AddNavigationProvider<AdminMenu>();
 
         services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
 

@@ -11,7 +11,6 @@ using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Recipes.ViewModels;
-using OrchardCore.Security;
 
 namespace OrchardCore.Recipes.Controllers;
 
@@ -60,7 +59,7 @@ public sealed class AdminController : Controller
     [Admin("Recipes", "Recipes")]
     public async Task<ActionResult> Index()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner))
+        if (!await _authorizationService.AuthorizeAsync(User, RecipePermissions.ManageRecipes))
         {
             return Forbid();
         }
@@ -86,7 +85,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<ActionResult> Execute(string basePath, string fileName)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner))
+        if (!await _authorizationService.AuthorizeAsync(User, RecipePermissions.ManageRecipes))
         {
             return Forbid();
         }
@@ -119,7 +118,7 @@ public sealed class AdminController : Controller
         {
             _logger.LogError(e, "Unable to import a recipe file.");
 
-            await _notifier.ErrorAsync(H["The recipe '{0}' failed to run do to the following errors: {1}", recipe.DisplayName, string.Join(' ', e.StepResult.Errors)]);
+            await _notifier.ErrorAsync(H["The recipe '{0}' failed to run due to the following errors: {1}", recipe.DisplayName, string.Join(' ', e.StepResult.Errors)]);
         }
         catch (Exception e)
         {

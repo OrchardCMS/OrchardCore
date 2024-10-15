@@ -14,7 +14,7 @@ public class WorkflowTrimmingViewModel
 
     public WorkflowTrimmingViewModel()
     {
-        Statuses = Enum.GetValues(typeof(WorkflowStatus))
+        Statuses = Enum.GetValues<WorkflowStatus>()
             .Cast<WorkflowStatus>()
             .Select(status => new WorkflowStatusItem
             {

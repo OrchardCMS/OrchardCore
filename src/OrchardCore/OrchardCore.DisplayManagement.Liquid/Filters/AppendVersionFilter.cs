@@ -23,6 +23,6 @@ public class AppendVersionFilter : ILiquidFilter
 
         var imageUrl = _fileVersionProvider.AddFileVersionToPath(_httpContextAccessor.HttpContext.Request.PathBase, url);
 
-        return new ValueTask<FluidValue>(new StringValue(imageUrl ?? url));
+        return ValueTask.FromResult<FluidValue>(new StringValue(imageUrl ?? url));
     }
 }

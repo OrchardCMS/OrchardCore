@@ -51,7 +51,7 @@ public class DefaultContentsAdminListFilterProvider : IContentsAdminListFilterPr
                         query.With<ContentItemIndex>(x => x.Latest);
                     }
 
-                    return new ValueTask<IQuery<ContentItem>>(query);
+                    return ValueTask.FromResult<IQuery<ContentItem>>(query);
                 })
                 .MapTo<ContentOptionsViewModel>((val, model) =>
                 {

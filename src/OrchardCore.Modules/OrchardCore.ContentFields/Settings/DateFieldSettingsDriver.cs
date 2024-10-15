@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -13,7 +12,7 @@ public sealed class DateFieldSettingsDriver : ContentPartFieldDefinitionDisplayD
     {
         return Initialize<DateFieldSettings>("DateFieldSettings_Edit", model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<DateFieldSettings>();
+            var settings = partFieldDefinition.GetSettings<DateFieldSettings>();
 
             model.Hint = settings.Hint;
             model.Required = settings.Required;

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Search.AzureAI.Models;
-using static OrchardCore.Indexing.DocumentIndex;
+using static OrchardCore.Indexing.DocumentIndexBase;
 
 namespace OrchardCore.Search.AzureAI.Services;
 

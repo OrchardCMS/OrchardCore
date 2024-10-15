@@ -5,11 +5,12 @@ theme:
   logo: assets/images/orchard-logo.png
   favicon: assets/images/favicon.png
   features:
-    - navigation.footer
+    - content.tabs.link
     - header.autohide
+    - navigation.footer
     - navigation.instant
     - navigation.tabs
-    - content.tabs.link
+    - navigation.top
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -54,7 +55,7 @@ validation:
 # Add files here that are intentionally not in the navigation and thus omitted_files shouldn't warn about them.
 not_in_nav: |
   samples/
-  releases/2.0.0.md
+  releases/2.1.0.md
 
 # Extensions
 markdown_extensions:
@@ -196,6 +197,7 @@ nav:
           - Shortcodes: reference/modules/Shortcodes/README.md
           - Sitemaps: reference/modules/Sitemaps/README.md
           - SMS: reference/modules/Sms/README.md
+          - Azure Communication SMS: reference/modules/Sms.Azure/README.md
           - Spatial: reference/modules/Spatial/README.md
           - XML-RPC: reference/modules/XmlRpc/README.md
           - Menu: reference/modules/Menu/README.md
@@ -271,6 +273,10 @@ nav:
       - Owners: resources/owners/README.md
       - Workshops: resources/workshops/README.md
   - Releases:
+      - 2.0.2: releases/2.0.2.md
+      - 2.0.1: releases/2.0.1.md
+      - 2.0.0: releases/2.0.0.md
+      - 1.8.4: releases/1.8.4.md
       - 1.8.3: releases/1.8.3.md
       - 1.8.2: releases/1.8.2.md
       - 1.8.1: releases/1.8.1.md

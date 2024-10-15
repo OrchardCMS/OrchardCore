@@ -5,7 +5,7 @@ using OrchardCore.Settings.Drivers;
 
 namespace OrchardCore.Settings;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -15,18 +15,13 @@ public sealed class AdminMenu : INavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return Task.CompletedTask;
-        }
-
         builder
             .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, configuration => configuration
                 .AddClass("menu-configuration")
@@ -42,6 +37,6 @@ public sealed class AdminMenu : INavigationProvider
                 priority: 1)
             );
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

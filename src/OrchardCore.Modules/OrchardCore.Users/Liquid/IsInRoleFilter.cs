@@ -30,11 +30,11 @@ public class IsInRoleFilter : ILiquidFilter
 
                 if (user.Claims.Any(claim => claim.Type == roleClaimType && claim.Value.Equals(claimName, StringComparison.OrdinalIgnoreCase)))
                 {
-                    return new ValueTask<FluidValue>(BooleanValue.True);
+                    return ValueTask.FromResult<FluidValue>(BooleanValue.True);
                 }
             }
         }
 
-        return new ValueTask<FluidValue>(BooleanValue.False);
+        return ValueTask.FromResult<FluidValue>(BooleanValue.False);
     }
 }

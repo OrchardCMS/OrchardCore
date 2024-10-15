@@ -78,6 +78,8 @@ dotnet_diagnostic.IDE0303.severity                         = silent         # Co
 
 dotnet_diagnostic.IDE0078.severity                         = silent         # Use pattern matching
 
+dotnet_diagnostic.IDE0130.severity                         = silent         # Namespace does not match folder structure
+
 dotnet_style_prefer_conditional_expression_over_assignment = silent   # Remove redundant equality, e.g. Disabled == false
 
 dotnet_diagnostic.CA2263.severity                         = warning         # Prefer generic overload when type is known

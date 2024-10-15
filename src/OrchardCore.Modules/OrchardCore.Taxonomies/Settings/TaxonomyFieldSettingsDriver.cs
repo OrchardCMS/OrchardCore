@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -13,7 +12,7 @@ public sealed class TaxonomyFieldSettingsDriver : ContentPartFieldDefinitionDisp
     {
         return Initialize<TaxonomyFieldSettings>("TaxonomyFieldSettings_Edit", model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<TaxonomyFieldSettings>();
+            var settings = partFieldDefinition.GetSettings<TaxonomyFieldSettings>();
 
             model.Hint = settings.Hint;
             model.Required = settings.Required;
