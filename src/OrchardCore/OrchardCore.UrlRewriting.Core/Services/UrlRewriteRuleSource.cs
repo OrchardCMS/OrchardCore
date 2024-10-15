@@ -11,12 +11,11 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
 {
     public const string SourceName = "Rewrite";
 
-    internal IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public UrlRewriteRuleSource(IStringLocalizer<UrlRewriteRuleSource> stringLocalizer)
     {
         S = stringLocalizer;
-
         Description = S["URL Rewrite Rule"];
     }
 

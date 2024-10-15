@@ -6,7 +6,7 @@ public sealed class UrlRewritingPermissionProvider : IPermissionProvider
 {
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        UrlRewritingPermissions.ManageUrlRewriting,
+        UrlRewritingPermissions.ManageUrlRewritingRules,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()

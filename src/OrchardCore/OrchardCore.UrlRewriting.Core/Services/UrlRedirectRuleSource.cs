@@ -11,12 +11,11 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
 {
     public const string SourceName = "Redirect";
 
-    internal IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public UrlRedirectRuleSource(IStringLocalizer<UrlRedirectRuleSource> stringLocalizer)
     {
         S = stringLocalizer;
-
         Description = S["URL Redirect Rule"];
     }
 

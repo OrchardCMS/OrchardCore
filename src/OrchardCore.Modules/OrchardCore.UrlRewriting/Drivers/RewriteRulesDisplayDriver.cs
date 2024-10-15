@@ -10,14 +10,13 @@ namespace OrchardCore.UrlRewriting.Drivers;
 
 public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
 {
-    internal readonly IStringLocalizer S;
-
     private readonly IShellReleaseManager _shellReleaseManager;
+
+    internal readonly IStringLocalizer S;
 
     public RewriteRulesDisplayDriver(
         IShellReleaseManager shellReleaseManager,
-        IStringLocalizer<RewriteRulesDisplayDriver> stringLocalizer
-        )
+        IStringLocalizer<RewriteRulesDisplayDriver> stringLocalizer)
     {
         _shellReleaseManager = shellReleaseManager;
         S = stringLocalizer;

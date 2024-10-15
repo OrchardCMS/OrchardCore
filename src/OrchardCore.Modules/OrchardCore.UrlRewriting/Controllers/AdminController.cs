@@ -62,7 +62,7 @@ public sealed class AdminController : Controller
         [FromServices] IShapeFactory shapeFactory,
         [FromServices] IOptions<PagerOptions> pagerOptions)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
+        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewritingRules))
         {
             return Forbid();
         }
@@ -112,14 +112,16 @@ public sealed class AdminController : Controller
     [ActionName(nameof(Index))]
     [FormValueRequired("submit.Filter")]
     public ActionResult IndexFilterPOST(ListRewriteRuleViewModel model)
-       => RedirectToAction(nameof(Index), new RouteValueDictionary
-       {
-            { _optionsSearch, model.Options.Search }
-       });
+    {
+        return RedirectToAction(nameof(Index), new RouteValueDictionary
+        {
+            { _optionsSearch, model.Options.Search },
+        });
+    }
 
     public async Task<ActionResult> Create(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
+        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewritingRules))
         {
             return Forbid();
         }
@@ -142,7 +144,7 @@ public sealed class AdminController : Controller
     [ActionName(nameof(Create))]
     public async Task<ActionResult> CreatePOST(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
+        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewritingRules))
         {
             return Forbid();
         }
@@ -174,7 +176,7 @@ public sealed class AdminController : Controller
 
     public async Task<ActionResult> Edit(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
+        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewritingRules))
         {
             return Forbid();
         }
@@ -195,7 +197,7 @@ public sealed class AdminController : Controller
     [ActionName(nameof(Edit))]
     public async Task<ActionResult> EditPOST(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
+        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewritingRules))
         {
             return Forbid();
         }
@@ -226,7 +228,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
+        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewritingRules))
         {
             return Forbid();
         }
@@ -252,7 +254,7 @@ public sealed class AdminController : Controller
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> IndexPost(RewriteRuleOptions options, IEnumerable<string> ruleIds)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewriting))
+        if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewritingRules))
         {
             return Forbid();
         }

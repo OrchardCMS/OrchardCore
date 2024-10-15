@@ -11,7 +11,7 @@ public class RewriteRulesManager : IRewriteRulesManager
     private readonly IRewriteRulesStore _store;
     private readonly IEnumerable<IRewriteRuleHandler> _rewriteRuleHandlers;
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<RewriteRulesManager> _logger;
+    private readonly ILogger _logger;
 
     public RewriteRulesManager(
         IRewriteRulesStore store,
