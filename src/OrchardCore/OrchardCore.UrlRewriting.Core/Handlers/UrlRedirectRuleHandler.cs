@@ -24,6 +24,11 @@ public sealed class UrlRedirectRuleHandler : RewriteRuleHandlerBase
 
     public override Task ValidatingAsync(ValidatingRewriteRuleContext context)
     {
+        if (context.Rule.Source != UrlRedirectRuleSource.SourceName)
+        {
+            return Task.CompletedTask;
+        }
+
         var metadata = context.Rule.As<UrlRedirectSourceMetadata>();
 
         if (string.IsNullOrWhiteSpace(metadata.Pattern))

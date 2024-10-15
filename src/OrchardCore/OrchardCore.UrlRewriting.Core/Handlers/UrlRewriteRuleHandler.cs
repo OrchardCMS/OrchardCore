@@ -24,6 +24,11 @@ public sealed class UrlRewriteRuleHandler : RewriteRuleHandlerBase
 
     public override Task ValidatingAsync(ValidatingRewriteRuleContext context)
     {
+        if (context.Rule.Source != UrlRewriteRuleSource.SourceName)
+        {
+            return Task.CompletedTask;
+        }
+
         var metadata = context.Rule.As<UrlRewriteSourceMetadata>();
 
         if (string.IsNullOrWhiteSpace(metadata.Pattern))
@@ -49,7 +54,7 @@ public sealed class UrlRewriteRuleHandler : RewriteRuleHandlerBase
 
     private static Task PopulateAsync(RewriteRule rule, JsonNode data)
     {
-        if (rule.Source != UrlRedirectRuleSource.SourceName)
+        if (rule.Source != UrlRewriteRuleSource.SourceName)
         {
             return Task.CompletedTask;
         }
