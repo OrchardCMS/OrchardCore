@@ -55,7 +55,7 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
     {
         var initialLength = builder.Length;
 
-        void FlagAppend(StringBuilder builder, string flag)
+        void AppendFlag(StringBuilder builder, string flag)
         {
             if (builder.Length > initialLength)
             {
@@ -67,19 +67,19 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
 
         if (metadata.IsCaseInsensitive)
         {
-            FlagAppend(builder, "NC");
+            AppendFlag(builder, "NC");
         };
 
         if (metadata.AppendQueryString)
         {
-            FlagAppend(builder, "QSA");
+            AppendFlag(builder, "QSA");
         }
         else
         {
-            FlagAppend(builder, "QSD");
+            AppendFlag(builder, "QSD");
         }
 
-        FlagAppend(builder, "R=");
+        AppendFlag(builder, "R=");
         builder.Append((int)metadata.RedirectType);
     }
 }
