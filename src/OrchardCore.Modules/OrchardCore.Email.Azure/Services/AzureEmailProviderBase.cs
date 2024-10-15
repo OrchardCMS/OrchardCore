@@ -162,19 +162,19 @@ public abstract class AzureEmailProviderBase : IEmailProvider
         List<EmailAddress> toRecipients = null;
         if (recipients.To.Count > 0)
         {
-            toRecipients = [.. recipients.To.Select(ToAzureEmailAddress)];
+            toRecipients = [.. recipients.To.Select(ConvertEmailAddressToAzureEmailAddress)];
         }
 
         List<EmailAddress> ccRecipients = null;
         if (recipients.Cc.Count > 0)
         {
-            ccRecipients = [.. recipients.Cc.Select(ToAzureEmailAddress)];
+            ccRecipients = [.. recipients.Cc.Select(ConvertEmailAddressToAzureEmailAddress)];
         }
 
         List<EmailAddress> bccRecipients = null;
         if (recipients.Bcc.Count > 0)
         {
-            bccRecipients = [.. recipients.Bcc.Select(ToAzureEmailAddress)];
+            bccRecipients = [.. recipients.Bcc.Select(ConvertEmailAddressToAzureEmailAddress)];
         }
 
         var content = new EmailContent(message.Subject);
@@ -195,7 +195,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
         foreach (var address in message.GetReplyTo())
         {
-            emailMessage.ReplyTo.Add(ToAzureEmailAddress(address));
+            emailMessage.ReplyTo.Add(ConvertEmailAddressToAzureEmailAddress(address));
         }
 
         foreach (var attachment in message.Attachments)
@@ -227,7 +227,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
         return emailMessage;
     }
 
-    private static EmailAddress ToAzureEmailAddress(string emailWithDisplayName)
+    private static EmailAddress ConvertEmailAddressToAzureEmailAddress(string emailWithDisplayName)
     {
         var (displayName, emailAddress) = ParseEmailAddressWithDisplayName(emailWithDisplayName);
 
