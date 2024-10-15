@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
@@ -13,6 +14,7 @@ using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Setup.Events;
+using YesSql;
 
 namespace OrchardCore.Setup.Services;
 
@@ -258,6 +260,19 @@ public class SetupService : ISetupService
         if (context.Errors.Count > 0)
         {
             return executionId;
+        }
+
+        // When using SQLite, clearing the connection pool with ReadWriteCreate SqliteOpenMode, used when the shell was
+        // still initializing, to unlock the database file (and thus also allow it to be deleted).
+        if (shellSettings["DatabaseProvider"] == DatabaseProviderValue.Sqlite)
+        {
+            await using var shellContext = await _shellContextFactory.CreateMinimumContextAsync(shellSettings);
+            var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
+            await using var connection = store.Configuration.ConnectionFactory.CreateConnection();
+            if (connection is SqliteConnection sqliteConnection)
+            {
+                SqliteConnection.ClearPool(sqliteConnection);
+            }
         }
 
         // Update the shell state.
