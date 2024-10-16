@@ -9,17 +9,19 @@ namespace OrchardCore.DisplayManagement.Views;
 
 public class ShapeResult : IDisplayResult
 {
+    private readonly string _shapeType;
+    private readonly Func<IBuildShapeContext, ValueTask<IShape>> _shapeBuilder;
+    private readonly Func<IShape, Task> _initializingAsync;
+    private readonly HashSet<string> _groupIds = new(StringComparer.OrdinalIgnoreCase);
+
     private string _defaultLocation;
     private Dictionary<string, string> _otherLocations;
     private string _name;
     private string _differentiator;
     private string _prefix;
     private string _cacheId;
-    private readonly string _shapeType;
-    private readonly Func<IBuildShapeContext, ValueTask<IShape>> _shapeBuilder;
-    private readonly Func<IShape, Task> _initializingAsync;
+
     private Action<CacheContext> _cache;
-    private string _groupId;
     private Action<ShapeDisplayContext> _displaying;
     private Func<IShape, Task> _processingAsync;
     private Func<Task<bool>> _renderPredicateAsync;
@@ -82,7 +84,10 @@ public class ShapeResult : IDisplayResult
         }
 
         // If no placement is found, use the default location.
-        placement ??= new PlacementInfo() { Location = _defaultLocation };
+        placement ??= new PlacementInfo
+        {
+            Location = _defaultLocation,
+        };
 
         // If a placement was found without actual location, use the default.
         // It can happen when just setting alternates or wrappers for instance.
@@ -90,23 +95,35 @@ public class ShapeResult : IDisplayResult
 
         placement.DefaultPosition ??= context.DefaultPosition;
 
-        // If there are no placement or it's explicitly noop then stop rendering execution.
-        if (string.IsNullOrEmpty(placement.Location) || placement.Location == "-")
+        // If the placement should be hidden, then stop rendering execution.
+        if (placement.IsHidden())
         {
             return;
         }
 
         // Parse group placement.
-        _groupId = placement.GetGroup() ?? _groupId;
+        var groupId = placement.GetGroup();
+
+        if (groupId != null)
+        {
+            _groupIds.Add(groupId);
+        }
+
+        var requestingGroup = string.IsNullOrEmpty(context.GroupId);
+
+        if (requestingGroup && _groupIds.Count == 0)
+        {
+            return;
+        }
 
         // If the shape's group doesn't match the currently rendered one, return.
-        if (!string.Equals(context.GroupId ?? string.Empty, _groupId ?? string.Empty, StringComparison.OrdinalIgnoreCase))
+        if (!requestingGroup && !_groupIds.Contains(context.GroupId))
         {
             return;
         }
 
         // If a condition has been applied to this result evaluate it only if the shape has been placed.
-        if (_renderPredicateAsync != null && !(await _renderPredicateAsync()))
+        if (_renderPredicateAsync != null && !await _renderPredicateAsync())
         {
             return;
         }
@@ -299,7 +316,10 @@ public class ShapeResult : IDisplayResult
     /// <returns></returns>
     public ShapeResult OnGroup(string groupId)
     {
-        _groupId = groupId;
+        ArgumentNullException.ThrowIfNull(groupId);
+
+        _groupIds.Add(groupId);
+
         return this;
     }
 
