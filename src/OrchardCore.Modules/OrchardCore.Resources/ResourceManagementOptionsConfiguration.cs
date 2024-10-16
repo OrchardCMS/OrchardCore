@@ -479,9 +479,9 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
         manifest
             .DefineScript("Sortable")
             .SetUrl("~/OrchardCore.Resources/Scripts/Sortable.min.js", "~/OrchardCore.Resources/Scripts/Sortable.js")
-            .SetCdn("https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js", "https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.js")
-            .SetCdnIntegrity("sha384-eeLEhtwdMwD3X9y+8P3Cn7Idl/M+w8H4uZqkgD/2eJVkWIN1yKzEj6XegJ9dL3q0", "sha384-OFIl93h6jYoAF+hATXncsLYMiLo81FpuReH3fgCI4wep7qNCmiA2I0bwcvVqHSBj")
-            .SetVersion("1.15.0");
+            .SetCdn("https://cdn.jsdelivr.net/npm/sortablejs@1.15.3/Sortable.min.js", "https://cdn.jsdelivr.net/npm/sortablejs@1.15.3/Sortable.js")
+            .SetCdnIntegrity("sha384-/jkFGhPVLS9HIUzX09xB5W3coE5q1X5NXZA/PuOAdOaRxUPczlZmKzYEq9QcJnW0", "sha384-do1oujgtpAbjFRK6zLARg2zWqak7wvdRd7R7BHxErnVtSx8QUGQTv+QMTxsI+Bxq")
+            .SetVersion("1.15.3");
 
         manifest
             .DefineScript("vuedraggable")
