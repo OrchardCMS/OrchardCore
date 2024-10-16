@@ -1,4 +1,5 @@
 @using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore.UrlRewriting.Endpoints.Rules
 @model ListRewriteRuleViewModel
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["URL Rewriting"])</h1></zone>
@@ -15,7 +16,7 @@
                 <div class="col">
                     <div class="has-search">
                         <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
-                        <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                        <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus autocomplete="off" />
                     </div>
                 </div>
                 <div class="col-auto">
@@ -25,19 +26,19 @@
         </div>
     </div>
 
-    <ul class="list-group with-checkbox">
+    <ul class="list-group with-checkbox" id="rewrite-rules-sortable-list">
         @if (Model.Rules.Count > 0)
         {
-            int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
+            int startIndex = 0;
             int endIndex = startIndex + Model.Rules.Count - 1;
 
-            <li class="list-group-item text-bg-theme">
+            <li class="list-group-item text-bg-theme ignore-elements">
                 <div class="row gx-3">
                     <div class="col">
                         <div class="form-check my-1">
                             <input type="checkbox" class="form-check-input" id="select-all">
                             <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
-                            <label id="items" for="select-all">@T.Plural(Model.Rules.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                            <label id="items" for="select-all">@T.Plural(Model.Rules.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural(Model.Rules.Count, " / {0} item in total", " / {0} items in total")</span></label>
                             <label id="selected-items" class="text-muted" for="select-all"></label>
                         </div>
                     </div>
@@ -60,26 +61,35 @@
             </li>
             @foreach (var entry in Model.Rules)
             {
-                <li class="list-group-item">
-                    <div class="form-check float-start">
-                        <input type="checkbox" class="form-check-input" value="@entry.Rule.Id" name="ruleIds" id="ruleIds-@entry.Rule.Id">
-                        <label class="form-check-label" for="ruleIds-@entry.Rule.Id">&nbsp;</label>
+                <li class="list-group-item item d-flex justify-content-between" data-filter-value="@entry.Rule.Name.ToLowerInvariant()">
+                    <div class="d-flex flex-row">
+                        <div class="ui-sortable-handle d-inline me-2">
+                            <i class="fa-solid fa-arrows-alt" aria-hidden="true"></i>
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" value="@entry.Rule.Id" name="ruleIds" id="ruleIds-@entry.Rule.Id">
+                            <label class="form-check-label" for="ruleIds-@entry.Rule.Id">&nbsp;</label>
+                        </div>
                     </div>
-                    @await DisplayAsync(entry.Shape)
+
+                    <div class="flex-grow-1">
+                        @await DisplayAsync(entry.Shape)
+                    </div>
                 </li>
             }
         }
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info mb-0" role="alert">
+                <div class="alert alert-info mb-0 text-center" role="alert">
                     @T["<strong>Nothing here!</strong> There are no rewrite rules at the moment."]
                 </div>
             </li>
         }
     </ul>
 
-    <div id="list-alert" class="alert alert-info d-none" role="alert">
+    <div id="list-alert" class="alert alert-info d-none text-center" role="alert">
         @T["<strong>Nothing here!</strong> Your search returned no results."]
     </div>
 
@@ -118,61 +128,173 @@
     </div>
 </form>
 
-<script at="Foot" depends-on="jQuery">
-    $(function () {
-        var actions = $("#actions");
-        var items = $("#items");
-        var filters = $(".filter");
-        var selectAllCtrl = $("#select-all");
-        var selectedItems = $("#selected-items");
-        var itemsCheckboxes = $(":checkbox[name='ruleIds']");
+<script asp-name="sortable-rules" at="Foot"></script>
+
+<script at="Foot" depends-on="jQuery,sortable-rules">
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // Create the sortable UI.
+        sortingListManager.create('#rewrite-rules-sortable-list', '@Url.RouteUrl(SortRulesEndpoint.RouteName, new { area = "OrchardCore.UrlRewriting" })', '@T["Unable to sort the list. Try refreshing your page and try again."]');
+        
+        let searchBox = document.getElementById('search-box');
+        let searchAlert = document.getElementById('list-alert');
+
+        const filterElements = document.querySelectorAll('[data-filter-value]');
+
+        searchBox.addEventListener('keydown', function (e) {
+            var key = e.charCode || e.keyCode || 0;
+            if (key === 13) {
+                e.preventDefault();
+            }
+        });
+
+        searchBox.addEventListener('keyup', e => {
+
+            var search = e.target.value.toLowerCase();
+            // On ESC, clear the search box and display all rules.
+            if (e.keyCode == 27 || search == '') {
+                searchBox.value = '';
+                for(let i = 0; i < filterElements.length; i++) {
+                    filterElements[i].classList.remove("d-none");
+                    filterElements[i].classList.remove("first-child-visible");
+                    filterElements[i].classList.remove("last-child-visible");
+                }
+
+                if (filterElements.length > 0)
+                {
+                    filterElements[0].classList.add('first-child-visible');
+                    filterElements[filterElements.length - 1].classList.add('last-child-visible');
+                }
+            } else {
+                let visibleElements = [];
+                for(let i = 0; i < filterElements.length; i++) {
+                    let filter = filterElements[i];
+
+                    var text = filter.getAttribute('data-filter-value');
+
+                    if (!text){
+                        filter.classList.add("d-none");
+                        continue;
+                    }
+
+                    var found = text.indexOf(search) > -1;
+
+                    if(found) {
+                        filter.classList.remove("d-none");
+                        filter.classList.remove("first-child-visible");
+                        filter.classList.remove("last-child-visible");
+                        visibleElements.push(filter);
+                    } else {
+                        filter.classList.add("d-none");
+                    }
+                }
+
+                if (visibleElements.length > 0)
+                {
+                    visibleElements[0].classList.add('first-child-visible');
+                    visibleElements[visibleElements.length - 1].classList.add('last-child-visible');
+                    searchAlert.classList.add('d-none');
+                } else {
+                    searchAlert.classList.remove('d-none');
+                }
+            }
+        });
+
+        var actions = document.getElementById('actions');
+        var items = document.getElementById('items');
+        var filters = document.querySelectorAll('.filter');
+        var selectAllCtrl = document.getElementById('select-all');
+        var selectedItems = document.getElementById('selected-items');
+        var itemsCheckboxes = document.querySelectorAll("input[type='checkbox'][name='ruleIds']");
 
         function displayActionsOrFilters() {
-            if ($(":checkbox[name='ruleIds']:checked").length > 1) {
-                actions.show();
-                filters.hide();
-                selectedItems.show();
-                items.hide();
-            }
-            else {
-                actions.hide();
-                filters.show();
-                selectedItems.hide();
-                items.show();
+            // Select all checked checkboxes with name 'ruleIds'
+            var checkedCheckboxes = document.querySelectorAll("input[type='checkbox'][name='ruleIds']:checked");
+
+            console.log('total selected', checkedCheckboxes.length);
+
+            if (checkedCheckboxes.length > 1) {
+                actions.classList.remove('d-none');
+                actions.style.display = 'block';
+                for(let i = 0; i < filters.length; i++) {
+                   filters[i].classList.add('d-none');
+                }
+                selectedItems.classList.remove('d-none');
+                items.classList.add('d-none');
+            } else {
+                actions.classList.add('d-none');
+
+                for(let i = 0; i < filters.length; i++) {
+                   filters[i].classList.remove('d-none');
+                }                
+                selectedItems.classList.add('d-none');
+                items.classList.remove('d-none');
             }
         }
 
-        $(".dropdown-menu .dropdown-item").filter(function () {
-            return $(this).data("action");
-        }).on("click", function () {
-            if ($(":checkbox[name='ruleIds']:checked").length > 1) {
-                var $this = $(this);
-                confirmDialog({
-                    ...$this.data(), callback: function (r) {
-                        if (r) {
-                            $("[name='Options.BulkAction']").val($this.data("action"));
-                            $("[name='submit.BulkAction']").click();
-                        }
+        var dropdownItems = document.querySelectorAll(".dropdown-menu .dropdown-item");
+
+        // Add click event listeners to each dropdown item
+        dropdownItems.forEach(function(item) {
+            // Check if the item has a data-action attribute
+            if (item.dataset.action) {
+                item.addEventListener("click", function() {
+                    // Get all checked checkboxes
+                    var checkedCheckboxes = document.querySelectorAll("input[type='checkbox'][name='ruleIds']:checked");
+            
+                    // Check if more than one checkbox is checked
+                    if (checkedCheckboxes.length > 1) {
+                        // Get data attributes from the clicked item
+                        var actionData = Object.assign({}, item.dataset);
+                
+                        confirmDialog({
+                            ...actionData,
+                            callback: function(r) {
+                                if (r) {
+                                    // Set the value of the BulkAction option
+                                    document.querySelector("[name='Options.BulkAction']").value = actionData.action;
+                                    // Trigger the submit action
+                                    document.querySelector("[name='submit.BulkAction']").click();
+                                }
+                            }
+                        });
                     }
                 });
             }
         });
 
-        selectAllCtrl.click(function () {
-            itemsCheckboxes.not(this).prop("checked", this.checked);
-            selectedItems.text($(":checkbox[name='ruleIds']:checked").length + ' @T["selected"]');
+        selectAllCtrl.addEventListener("click", function () {
+            itemsCheckboxes.forEach(function (checkbox) {
+                if (checkbox !== selectAllCtrl) {
+                    checkbox.checked = selectAllCtrl.checked; // Set the checked state of all checkboxes
+                }
+            });
+
+            // Update the selected items text
+            updateSelectedItemsText();
             displayActionsOrFilters();
         });
 
-        itemsCheckboxes.on("click", function () {
-            var itemsCount = $(":checkbox[name='ruleIds']").length;
-            var selectedItemsCount = $(":checkbox[name='ruleIds']:checked").length;
+        // Event listener for individual checkboxes
+        itemsCheckboxes.forEach(function (checkbox) {
+            checkbox.addEventListener("click", function () {
+                var itemsCount = itemsCheckboxes.length;
+                var selectedItemsCount = document.querySelectorAll("input[type='checkbox'][name='ruleIds']:checked").length;
 
-            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
-            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
+                // Update selectAllCtrl state
+                selectAllCtrl.checked = selectedItemsCount === itemsCount;
+                selectAllCtrl.indeterminate = selectedItemsCount > 0 && selectedItemsCount < itemsCount;
 
-            selectedItems.text(selectedItemsCount + ' @T["selected"]');
-            displayActionsOrFilters();
+                // Update the selected items text
+                updateSelectedItemsText();
+                displayActionsOrFilters();
+            });
         });
+
+        // Function to update selected items text
+        function updateSelectedItemsText() {
+            var selectedCount = document.querySelectorAll("input[type='checkbox'][name='ruleIds']:checked").length;
+            selectedItems.textContent = selectedCount + ' @T["selected"]';
+        }
     })
 </script>

@@ -7,6 +7,4 @@ public class ListRewriteRuleViewModel
     public RewriteRuleOptions Options { get; set; }
 
     public IEnumerable<string> SourceNames { get; set; }
-
-    public dynamic Pager { get; set; }
 }

@@ -118,6 +118,27 @@ public class RewriteRulesManager : IRewriteRulesManager
         return result;
     }
 
+    public async Task<ListRewriteRuleResult> GetAllAsync()
+    {
+        var records = await LocateRulesAsync(new RewriteRulesQueryContext
+        {
+            Sorted = true,
+        });
+
+        var result = new ListRewriteRuleResult
+        {
+            Count = records.Count(),
+            Records = records,
+        };
+
+        foreach (var record in result.Records)
+        {
+            await LoadAsync(record);
+        }
+
+        return result;
+    }
+
     public async Task UpdateAsync(RewriteRule rule, JsonNode data = null)
     {
         var updatingContext = new UpdatingRewriteRuleContext(rule, data);
@@ -136,6 +157,48 @@ public class RewriteRulesManager : IRewriteRulesManager
 
         var savedContext = new SavedRewriteRuleContext(rule);
         await _rewriteRuleHandlers.InvokeAsync((handler, ctx) => handler.SavedAsync(ctx), savedContext, _logger);
+    }
+
+    public async Task ResortOrderAsync(int oldOrder, int newOrder)
+    {
+        var rules = await _store.GetAllAsync();
+
+        var ruleToMove = rules.FirstOrDefault(x => x.Order == oldOrder);
+
+        if (ruleToMove == null)
+        {
+            return;
+        }
+
+        var ruleToShift = rules.FirstOrDefault(x => x.Order == newOrder);
+
+        if (ruleToShift == null)
+        {
+            ruleToMove.Order = newOrder;
+
+            await _store.SaveAsync(ruleToMove);
+        }
+        else
+        {
+            var shift = false;
+
+            foreach (var rule in rules)
+            {
+                if (!shift)
+                {
+                    if (rule.Id != ruleToShift.Id)
+                    {
+                        continue;
+                    }
+
+                    shift = true;
+                }
+
+                rule.Order = oldOrder++;
+
+                await _store.SaveAsync(rule);
+            }
+        }
     }
 
     private Task LoadAsync(RewriteRule rule)

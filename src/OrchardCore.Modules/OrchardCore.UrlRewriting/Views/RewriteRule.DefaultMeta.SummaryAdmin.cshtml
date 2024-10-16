@@ -12,10 +12,6 @@
     <i class="fa-solid fa-calendar text-secondary" aria-hidden="true"></i> <time datetime="@createdAt">@await DisplayAsync(await New.Timespan(Utc: Model.Value.CreatedUtc))</time>
 </span>
 
-<span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Execution Order"]">
-    <i class="fa-solid fa-arrow-up-1-9 text-secondary me-1" aria-hidden="true"></i>@Model.Value.Order
-</span>
-
 @if (!string.IsNullOrEmpty(Model.Value.Author))
 {
     <span class="badge ta-badge font-weight-normal" data-bs-toggle="tooltip" title="@T["Author"]">

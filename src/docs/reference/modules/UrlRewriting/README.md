@@ -48,7 +48,6 @@ The `UrlRewriting` step allows you to create or update URL rewrite rules easily.
         {
           "Source": "Redirect",
           "Name": "Redirect about-us to about",
-          "Order": 1,
           "Pattern": "^/about-us$",
           "SubstitutionPattern": "/about",
           "IsCaseInsensitive": true,
@@ -58,7 +57,6 @@ The `UrlRewriting` step allows you to create or update URL rewrite rules easily.
         {
           "Source": "Rewrite",
           "Name": "Serve media URLs from img",
-          "Order": 2,
           "Pattern": "^/img/(.*)$",
           "SubstitutionPattern": "/media/$1",
           "IsCaseInsensitive": true,
@@ -77,7 +75,6 @@ The `UrlRewriting` step allows you to create or update URL rewrite rules easily.
 
 - **Id**: A unique identifier for the redirect rule. If the specified Id matches an existing rule, that rule will be updated with the provided properties. To create a new rule, leave the Id property empty or specify a unique value that does not match any existing rule.
 - **Name**: A descriptive name for the rule (e.g., `"Redirect about-us to about"`).
-- **Order**: A execution sequence number for this rule.
 - **Pattern**: The URL pattern to match (e.g., `^/about-us$` for an exact match).
 - **SubstitutionPattern**: The target URL to redirect to (e.g., `/about`).
 - **IsCaseInsensitive**: When set to `true`, matching is case-insensitive.
@@ -88,7 +85,6 @@ The `UrlRewriting` step allows you to create or update URL rewrite rules easily.
 
 - **Id**: A unique identifier for the rewrite rule. Similar to redirect rules, if the specified Id matches an existing rule, that rule will be updated. Leave the Id empty to create a new rule.
 - **Name**: A descriptive name for the rule (e.g., `"Serve media URLs from img"`).
-- **Order**: A execution sequence number for this rule.
 - **Pattern**: The URL pattern to match (e.g., `^/img/(.*)$` to match any URL starting with `/img/`).
 - **SubstitutionPattern**: The target URL for the rewrite (e.g., `/media/$1`, where `$1` captures the matched portion of the original URL).
 - **IsCaseInsensitive**: When set to `true`, matching is case-insensitive.

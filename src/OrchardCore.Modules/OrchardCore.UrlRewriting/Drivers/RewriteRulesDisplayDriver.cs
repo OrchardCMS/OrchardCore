@@ -39,7 +39,6 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
         return Initialize<EditRewriteRuleViewModel>("RewriteRule_Fields_Edit", model =>
         {
             model.Name = rule.Name;
-            model.Order = rule.Order;
         }).Location("Content:1");
     }
 
@@ -48,8 +47,7 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
         var model = new EditRewriteRuleViewModel();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix,
-            m => m.Name,
-            m => m.Order);
+            m => m.Name);
 
         if (string.IsNullOrEmpty(model.Name))
         {
@@ -57,7 +55,6 @@ public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
         }
 
         rule.Name = model.Name;
-        rule.Order = model.Order;
 
         _shellReleaseManager.RequestRelease();
 

@@ -18,4 +18,8 @@ public interface IRewriteRulesManager
     Task DeleteAsync(RewriteRule rule);
 
     Task UpdateAsync(RewriteRule rule, JsonNode data = null);
+
+    Task ResortOrderAsync(int value1, int value2);
+
+    Task<ListRewriteRuleResult> GetAllAsync();
 }

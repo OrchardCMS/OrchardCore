@@ -7,8 +7,10 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.UrlRewriting.Drivers;
+using OrchardCore.UrlRewriting.Endpoints.Rules;
 using OrchardCore.UrlRewriting.Handlers;
 using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.Recipes;
@@ -40,10 +42,14 @@ public sealed class Startup : StartupBase
 
         services.AddRewriteRuleSource<UrlRewriteRuleSource>(UrlRewriteRuleSource.SourceName)
             .AddScoped<IDisplayDriver<RewriteRule>, UrlRewriteRuleDisplayDriver>();
+
+        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
+        routes.AddSortRulesEndpoint();
+
         var rewriteOptions = serviceProvider.GetRequiredService<IOptions<RewriteOptions>>().Value;
 
         app.UseRewriter(rewriteOptions);

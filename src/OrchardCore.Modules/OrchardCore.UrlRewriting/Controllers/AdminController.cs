@@ -2,15 +2,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.UrlRewriting.Models;
 using OrchardCore.UrlRewriting.ViewModels;
@@ -56,38 +53,19 @@ public sealed class AdminController : Controller
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> Index(
-        RewriteRuleOptions options,
-        PagerParameters pagerParameters,
-        [FromServices] IShapeFactory shapeFactory,
-        [FromServices] IOptions<PagerOptions> pagerOptions)
+    public async Task<IActionResult> Index(RewriteRuleOptions options)
     {
         if (!await _authorizationService.AuthorizeAsync(User, UrlRewritingPermissions.ManageUrlRewritingRules))
         {
             return Forbid();
         }
 
-        var pager = new Pager(pagerParameters, pagerOptions.Value.GetPageSize());
-
-        // Maintain previous route data when generating page links.
-        var routeData = new RouteData();
-
-        if (!string.IsNullOrEmpty(options.Search))
-        {
-            routeData.Values.TryAdd(_optionsSearch, options.Search);
-        }
-
-        var result = await _rewriteRulesManager.PageAsync(pager.Page, pager.PageSize, new RewriteRulesQueryContext()
-        {
-            Name = options.Search,
-            Sorted = true,
-        });
+        var result = await _rewriteRulesManager.GetAllAsync();
 
         var model = new ListRewriteRuleViewModel
         {
             Rules = [],
             Options = options,
-            Pager = await shapeFactory.PagerAsync(pager, result.Count, routeData),
             SourceNames = _urlRewritingRuleSources.Select(x => x.Name),
         };
 
@@ -106,17 +84,6 @@ public sealed class AdminController : Controller
         ];
 
         return View(model);
-    }
-
-    [HttpPost]
-    [ActionName(nameof(Index))]
-    [FormValueRequired("submit.Filter")]
-    public ActionResult IndexFilterPOST(ListRewriteRuleViewModel model)
-    {
-        return RedirectToAction(nameof(Index), new RouteValueDictionary
-        {
-            { _optionsSearch, model.Options.Search },
-        });
     }
 
     public async Task<ActionResult> Create(string id)
