@@ -104,20 +104,13 @@ public class ShapeResult : IDisplayResult
         // Parse group placement.
         var groupId = placement.GetGroup();
 
-        if (groupId != null)
+        if (!string.IsNullOrEmpty(groupId))
         {
             _groupIds.Add(groupId);
         }
 
-        var requestingGroup = string.IsNullOrEmpty(context.GroupId);
-
-        if (requestingGroup && _groupIds.Count == 0)
-        {
-            return;
-        }
-
         // If the shape's group doesn't match the currently rendered one, return.
-        if (!requestingGroup && !_groupIds.Contains(context.GroupId))
+        if (!string.IsNullOrEmpty(context.GroupId) && !_groupIds.Contains(context.GroupId))
         {
             return;
         }
@@ -310,15 +303,23 @@ public class ShapeResult : IDisplayResult
     }
 
     /// <summary>
-    /// Sets the group identifier the shape will be rendered in.
+    /// Sets the group identifiers the shape will be rendered in.
     /// </summary>
-    /// <param name="groupId"></param>
+    /// <param name="groupIds"></param>
     /// <returns></returns>
-    public ShapeResult OnGroup(string groupId)
+    public ShapeResult OnGroup(params string[] groupIds)
     {
-        ArgumentNullException.ThrowIfNull(groupId);
+        ArgumentNullException.ThrowIfNull(groupIds);
 
-        _groupIds.Add(groupId);
+        foreach (var groupId in groupIds)
+        {
+            if (string.IsNullOrEmpty(groupId))
+            {
+                continue;
+            }
+
+            _groupIds.Add(groupId);
+        }
 
         return this;
     }

@@ -14,6 +14,26 @@ namespace OrchardCore.Tests.DisplayManagement;
 public class ShapeResultTests
 {
     [Fact]
+    public async Task Shape_WhenCalled_ReturnShapeWhenNoGroupIsProvided()
+    {
+        var serviceProvider = GetServiceProvider(new GroupDisplayDriverStub());
+
+        var displayManager = serviceProvider.GetRequiredService<IDisplayManager<GroupModel>>();
+        var model = new GroupModel();
+
+        var shape = await displayManager.BuildEditorAsync(model, updater: null, isNew: false);
+
+        var testZone = shape.GetProperty<IShape>(GroupDisplayDriverStub.ZoneName);
+
+        Assert.NotNull(testZone);
+
+        var shapeModel = testZone.Items[0] as ShapeViewModel<GroupModel>;
+
+        Assert.NotNull(shapeModel);
+        Assert.Equal(shapeModel.Value.Value, model.Value);
+    }
+
+    [Fact]
     public async Task Shape_WhenCalled_ReturnShapeWhenGroupIsMatched()
     {
         var groupId = "abc";
