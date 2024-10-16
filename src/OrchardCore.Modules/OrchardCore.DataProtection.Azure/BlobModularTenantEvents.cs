@@ -8,10 +8,10 @@ namespace OrchardCore.DataProtection.Azure;
 /// <summary>
 /// A tenant event that deletes data protection blobs from a container when a tenant is deleted.
 /// </summary>
-public class BlobModularTenantEvents : ModularTenantEvents
+internal sealed class BlobModularTenantEvents : ModularTenantEvents
 {
     private readonly BlobOptions _blobOptions;
-    private readonly ILogger<BlobModularTenantEvents> _logger;
+    private readonly ILogger _logger;
 
     public BlobModularTenantEvents(
         BlobOptions blobOptions,
@@ -25,7 +25,7 @@ public class BlobModularTenantEvents : ModularTenantEvents
     /// Removes the data protection blob from the container when a tenant is deleted.
     /// </summary>
     /// <param name="context">The <see cref="ShellRemovingContext"/></param>
-    public async override Task RemovingAsync(ShellRemovingContext context)
+    public override Task RemovingAsync(ShellRemovingContext context)
     {
         var blobClient = new BlobClient(
             _blobOptions.ConnectionString,
@@ -34,6 +34,6 @@ public class BlobModularTenantEvents : ModularTenantEvents
 
         _logger.LogDebug("Deleting blob '{BlobName}' from container '{ContainerName}'.", _blobOptions.BlobName, _blobOptions.ContainerName);
 
-        await blobClient.DeleteIfExistsAsync();
+        return blobClient.DeleteIfExistsAsync();
     }
 }
