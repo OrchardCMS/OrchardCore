@@ -10,15 +10,15 @@ namespace OrchardCore.Contents.Recipes;
 /// <summary>
 /// This recipe step creates a set of content items.
 /// </summary>
-public sealed class ContentStep : IRecipeStepHandler
+public sealed class ContentStep : NamedRecipeStepHandler
 {
-    public Task ExecuteAsync(RecipeExecutionContext context)
+    public ContentStep()
+        : base("Content")
     {
-        if (!string.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
-        {
-            return Task.CompletedTask;
-        }
+    }
 
+    protected override Task HandleAsync(RecipeExecutionContext context)
+    {
         var model = context.Step.ToObject<ContentStepModel>();
         var contentItems = model.Data.ToObject<ContentItem[]>();
 
@@ -26,6 +26,7 @@ public sealed class ContentStep : IRecipeStepHandler
         if (ShellScope.Context.IsActivated)
         {
             var contentManager = ShellScope.Services.GetRequiredService<IContentManager>();
+
             return contentManager.ImportAsync(contentItems);
         }
 
@@ -34,6 +35,7 @@ public sealed class ContentStep : IRecipeStepHandler
         ShellScope.AddDeferredTask(scope =>
         {
             var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
+
             return contentManager.ImportAsync(contentItems);
         });
 

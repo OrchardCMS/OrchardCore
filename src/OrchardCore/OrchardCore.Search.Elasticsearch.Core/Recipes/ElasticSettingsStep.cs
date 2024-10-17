@@ -7,30 +7,25 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
 /// <summary>
 /// This recipe step is used to sync Elasticsearch and Lucene settings.
 /// </summary>
-public sealed class ElasticSettingsStep : IRecipeStepHandler
+public sealed class ElasticSettingsStep : NamedRecipeStepHandler
 {
     private readonly ElasticIndexingService _elasticIndexingService;
 
     public ElasticSettingsStep(ElasticIndexingService elasticIndexingService)
+        : base("Settings")
     {
         _elasticIndexingService = elasticIndexingService;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "Settings", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var step = context.Step["ElasticSettings"];
 
-        if (step != null)
+        if (step != null && step["SyncWithLucene"] != null && step["SyncWithLucene"].GetValue<bool>())
         {
-            if (step["SyncWithLucene"] != null && (bool)step["SyncWithLucene"])
-            {
-                await _elasticIndexingService.SyncSettings();
-            }
+            return _elasticIndexingService.SyncSettings();
         }
+
+        return Task.CompletedTask;
     }
 }
