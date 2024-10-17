@@ -38,7 +38,7 @@ internal static class ElasticsearchOptionsExtensions
             // When no analyzers are configured, we'll define a default analyzer.
             options.Analyzers.Add(ElasticsearchConstants.DefaultAnalyzer, new JsonObject
             {
-                ["type"] = "standard",
+                ["type"] = ElasticsearchConstants.DefaultAnalyzer,
             });
         }
 
