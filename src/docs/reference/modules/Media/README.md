@@ -356,7 +356,7 @@ The following configuration values are used by default and can be customized:
             ".mpg",
             ".ogv", // Ogg
             ".3gp", // 3GPP
-            ".webm"
+            ".webm",
         ],
 
       // The Content Security Policy to apply to assets served from the media library.
