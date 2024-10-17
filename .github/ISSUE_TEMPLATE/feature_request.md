@@ -7,12 +7,16 @@ assignees: ''
 
 ---
 <!-- Please also see the docs on how we manage issues: https://docs.orchardcore.net/en/latest/docs/guides/contributing/managing-issues/. -->
+<!-- Please replace all placeholders such as this below. -->
 
-### Is your feature request related to a problem? Please describe.
-A clear and concise description of what the problem is.
+### Is your feature request related to a problem?
+
+<!-- Add a clear and concise description of the problem. -->
 
 ### Describe the solution you'd like
-A clear and concise description of what you want to happen.
+
+<!-- Add a clear and concise description of what you want to happen. -->
 
 ### Describe alternatives you've considered
-A clear and concise description of any alternative solutions or features you've considered.
+
+<!-- Add a clear and concise description of any alternative solutions or features you've considered. -->
