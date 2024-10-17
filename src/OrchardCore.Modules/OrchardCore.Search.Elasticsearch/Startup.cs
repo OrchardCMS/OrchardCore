@@ -54,42 +54,9 @@ public sealed class Startup : StartupBase
         {
             var configuration = _shellConfiguration.GetSection(ElasticConnectionOptionsConfigurations.ConfigSectionName);
 
-            o.IndexPrefix = configuration.GetValue<string>(nameof(o.IndexPrefix));
-
-            var jsonNode = configuration.GetSection(nameof(o.Analyzers)).AsJsonNode();
-            var jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonNode);
-
-            var analyzersObject = JsonObject.Create(jsonElement, new JsonNodeOptions()
-            {
-                PropertyNameCaseInsensitive = true,
-            });
-
-            if (analyzersObject != null)
-            {
-                o.IndexPrefix = configuration.GetValue<string>(nameof(o.IndexPrefix));
-
-                if (jsonNode is JsonObject jAnalyzers)
-                {
-                    foreach (var analyzer in jAnalyzers)
-                    {
-                        if (analyzer.Value is not JsonObject jAnalyzer)
-                        {
-                            continue;
-                        }
-
-                        o.Analyzers.Add(analyzer.Key, jAnalyzer);
-                    }
-                }
-            }
-
-            if (o.Analyzers.Count == 0)
-            {
-                // When no analyzers are configured, we'll define a default analyzer.
-                o.Analyzers.Add(ElasticsearchConstants.DefaultAnalyzer, new JsonObject
-                {
-                    ["type"] = ElasticsearchConstants.DefaultAnalyzer,
-                });
-            }
+            o.AddIndexPrefix(configuration);
+            o.AddFilter(configuration);
+            o.AddAnalyzers(configuration);
         });
 
         services.AddElasticServices();
