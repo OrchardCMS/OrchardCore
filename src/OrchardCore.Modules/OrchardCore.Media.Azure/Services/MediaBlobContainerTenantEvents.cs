@@ -10,7 +10,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Azure.Services;
 
-public class MediaBlobContainerTenantEvents : ModularTenantEvents
+public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
 {
     private readonly MediaBlobStorageOptions _options;
     private readonly ShellSettings _shellSettings;

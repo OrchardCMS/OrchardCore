@@ -3,7 +3,7 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 
-public class ElasticIndexResetDeploymentSource
+public sealed class ElasticIndexResetDeploymentSource
     : DeploymentSourceBase<ElasticIndexResetDeploymentStep>
 {
     protected override Task ProcessAsync(ElasticIndexResetDeploymentStep step, DeploymentPlanResult result)
