@@ -4,7 +4,7 @@ using OrchardCore.Search.Lucene.Model;
 
 namespace OrchardCore.Search.Lucene.Deployment;
 
-public class LuceneIndexDeploymentSource
+public sealed class LuceneIndexDeploymentSource
     : DeploymentSourceBase<LuceneIndexDeploymentStep>
 {
     private readonly LuceneIndexSettingsService _luceneIndexSettingsService;

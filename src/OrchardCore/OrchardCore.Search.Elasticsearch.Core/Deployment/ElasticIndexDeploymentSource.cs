@@ -5,7 +5,7 @@ using OrchardCore.Search.Elasticsearch.Core.Services;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 
-public class ElasticIndexDeploymentSource
+public sealed class ElasticIndexDeploymentSource
     : DeploymentSourceBase<ElasticIndexDeploymentStep>
 {
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;

@@ -6,7 +6,7 @@ using YesSql;
 
 namespace OrchardCore.Contents.Deployment;
 
-public class AllContentDeploymentSource
+public sealed class AllContentDeploymentSource
     : DeploymentSourceBase<AllContentDeploymentStep>
 {
     private readonly ISession _session;

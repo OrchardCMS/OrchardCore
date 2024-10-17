@@ -3,7 +3,7 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.ContentTypes.Deployment;
 
-public class DeleteContentDefinitionDeploymentSource
+public sealed class DeleteContentDefinitionDeploymentSource
     : DeploymentSourceBase<DeleteContentDefinitionDeploymentStep>
 {
     protected override Task ProcessAsync(DeleteContentDefinitionDeploymentStep step, DeploymentPlanResult result)

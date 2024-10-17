@@ -5,7 +5,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Deployment;
 
-public class SearchSettingsDeploymentSource
+public sealed class SearchSettingsDeploymentSource
     : DeploymentSourceBase<SearchSettingsDeploymentStep>
 {
     private readonly ISiteService _siteService;

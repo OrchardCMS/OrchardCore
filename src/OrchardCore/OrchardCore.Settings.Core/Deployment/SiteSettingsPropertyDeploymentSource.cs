@@ -3,7 +3,7 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Settings.Deployment;
 
-public class SiteSettingsPropertyDeploymentSource<TModel>
+public sealed class SiteSettingsPropertyDeploymentSource<TModel>
     : DeploymentSourceBase<SiteSettingsPropertyDeploymentStep<TModel>> where TModel : class, new()
 {
     private readonly ISiteService _siteService;
