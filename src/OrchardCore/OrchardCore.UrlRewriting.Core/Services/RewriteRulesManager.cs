@@ -144,9 +144,17 @@ public class RewriteRulesManager : IRewriteRulesManager
             return;
         }
 
-        var temp = rules[oldOrder - 1];
-        rules[oldOrder - 1] = rules[newOrder - 1];
-        rules[newOrder - 1] = temp;
+        // Adjust newOrder for zero-based index
+        var zeroBasedOldOrder = oldOrder - 1;
+        var zeroBasedNewOrder = newOrder - 1;
+
+        // Get the element to move
+        var ruleToMove = rules[zeroBasedOldOrder];
+
+        // Remove the rule from its current position
+        rules.RemoveAt(zeroBasedOldOrder);
+
+        rules.Insert(zeroBasedNewOrder, ruleToMove);
 
         await _store.UpdateOrderAndSaveAsync(rules);
     }
