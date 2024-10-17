@@ -12,7 +12,7 @@ await UserManager.GetTwoFactorEnabledAsync(Model.User))
     <li>
         <form method="post" class="d-inline-block" class="no-multisubmit">
             <input name="id" type="hidden" value="@Model.User.UserId" />
-            <button asp-action="Disable" asp-controller="AdminTwoFactorAuthentication" class="dropdown-item">@T["Disable Two Factor"]</button>
+            <button asp-action="Disable" asp-controller="AdminTwoFactorAuthentication" class="dropdown-item">@T["Disable two-factor authentication"]</button>
         </form>
     </li>
 }
