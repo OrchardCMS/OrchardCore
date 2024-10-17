@@ -81,6 +81,16 @@ public sealed class AccountController : AccountBaseController
         // Clear the existing external cookie to ensure a clean login process.
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
+        foreach (var handler in _accountEvents)
+        {
+            var result = await handler.LoggingInAsync();
+
+            if (result != null)
+            {
+                return result;
+            }
+        }
+
         var formShape = await _loginFormDisplayManager.BuildEditorAsync(_updateModelAccessor.ModelUpdater, false);
 
         CopyTempDataErrorsToModelState();

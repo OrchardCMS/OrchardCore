@@ -41,6 +41,7 @@ using OrchardCore.Users.Controllers;
 using OrchardCore.Users.DataMigrations;
 using OrchardCore.Users.Deployment;
 using OrchardCore.Users.Drivers;
+using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
@@ -250,6 +251,7 @@ public sealed class ExternalAuthenticationStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<ILoginFormEvent, ExternalLoginFormEvents>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
         services.AddScoped<IDisplayDriver<UserMenu>, ExternalAuthenticationUserMenuDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalRegistrationSettingsDisplayDriver>();
@@ -259,8 +261,6 @@ public sealed class ExternalAuthenticationStartup : StartupBase
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        builder.UseMiddleware<DefaultExternalAuthenticationsMiddleware>();
-
         _userOptions ??= serviceProvider.GetRequiredService<IOptions<UserOptions>>().Value;
 
         routes.MapAreaControllerRoute(
