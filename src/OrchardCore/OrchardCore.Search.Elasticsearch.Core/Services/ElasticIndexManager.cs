@@ -198,8 +198,7 @@ public sealed class ElasticIndexManager
                 .DynamicTemplate("*.Location", dyn => dyn
                     .MatchMappingType("object")
                     .PathMatch("*" + ".Location")
-                    .Mapping(m => m
-                        .GeoPoint(g => g))
+                    .Mapping(m => m.GeoPoint(g => g))
                     )
                 )
             );
@@ -588,6 +587,7 @@ public sealed class ElasticIndexManager
                     {
                         AddValue(entries, entry.Name, new GeoLocation((double)point.Latitude, (double)point.Longitude));
                     }
+
                     break;
             }
         }
