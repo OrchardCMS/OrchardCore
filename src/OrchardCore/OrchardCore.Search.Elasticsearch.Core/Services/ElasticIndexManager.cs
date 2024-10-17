@@ -31,7 +31,7 @@ public sealed class ElasticIndexManager
     private readonly string _lastTaskId = "last_task_id";
     private readonly Dictionary<string, Func<IAnalyzer>> _analyzerGetter = new(StringComparer.OrdinalIgnoreCase)
     {
-        { ElasticsearchConstants.StandardAnalyzer, () => new StandardAnalyzer() },
+        { ElasticsearchConstants.DefaultAnalyzer, () => new StandardAnalyzer() },
         { ElasticsearchConstants.SimpleAnalyzer, () => new SimpleAnalyzer() },
         { ElasticsearchConstants.KeywordAnalyzer, () => new KeywordAnalyzer() },
         { ElasticsearchConstants.WhitespaceAnalyzer, () => new WhitespaceAnalyzer() },
