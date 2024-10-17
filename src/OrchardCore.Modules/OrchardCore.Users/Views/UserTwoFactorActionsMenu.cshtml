@@ -6,7 +6,7 @@
 @inject UserManager<IUser> UserManager
 @inject IAuthorizationService AuthorizationService
 
-@if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, Model.User) &&
+@if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.DisableTwoFactorAuthenticationForUsers, Model.User) &&
 await UserManager.GetTwoFactorEnabledAsync(Model.User))
 {
     <li>
