@@ -47,6 +47,7 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         ".mpg",
         ".ogv", // (Ogg)
         ".3gp", // (3GPP)
+        ".webm",
     ];
 
     private const int DefaultMaxBrowserCacheDays = 30;

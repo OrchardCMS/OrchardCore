@@ -87,7 +87,7 @@ public sealed class Startup : StartupBase
                 // When no analyzers are configured, we'll define a default analyzer.
                 o.Analyzers.Add(ElasticsearchConstants.DefaultAnalyzer, new JsonObject
                 {
-                    ["type"] = "standard",
+                    ["type"] = ElasticsearchConstants.DefaultAnalyzer,
                 });
             }
         });

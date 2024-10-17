@@ -57,7 +57,7 @@
     <PackageVersion Include="NEST" Version="7.17.5" />
     <PackageVersion Include="NJsonSchema" Version="11.0.2" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="5.3.14" />
-    <PackageVersion Include="NodaTime" Version="3.1.12" />
+    <PackageVersion Include="NodaTime" Version="3.2.0" />
     <PackageVersion Include="OpenIddict.Core" Version="5.8.0" />
     <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="5.8.0" />
     <PackageVersion Include="OpenIddict.Server.DataProtection" Version="5.8.0" />
