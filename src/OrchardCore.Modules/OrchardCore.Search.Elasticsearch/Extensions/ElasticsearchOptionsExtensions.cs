@@ -55,7 +55,7 @@ internal static class ElasticsearchOptionsExtensions
             PropertyNameCaseInsensitive = true,
         });
 
-        if (filterObject != null)
+        if (filterObject is not null)
         {
             if (jsonNode is JsonObject jFilters)
             {
