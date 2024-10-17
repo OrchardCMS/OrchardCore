@@ -98,45 +98,16 @@ public class RewriteRulesManager : IRewriteRulesManager
         return rule;
     }
 
-    public async Task<ListRewriteRuleResult> PageAsync(int page, int pageSize, RewriteRulesQueryContext context = null)
+    public async Task<IEnumerable<RewriteRule>> GetAllAsync()
     {
-        var records = await LocateRulesAsync(context);
+        var rules = await GetSortedRuleAsync();
 
-        var skip = (page - 1) * pageSize;
-
-        var result = new ListRewriteRuleResult
+        foreach (var rule in rules)
         {
-            Count = records.Count(),
-            Records = records.Skip(skip).Take(pageSize),
-        };
-
-        foreach (var record in result.Records)
-        {
-            await LoadAsync(record);
+            await LoadAsync(rule);
         }
 
-        return result;
-    }
-
-    public async Task<ListRewriteRuleResult> GetAllAsync()
-    {
-        var records = await LocateRulesAsync(new RewriteRulesQueryContext
-        {
-            Sorted = true,
-        });
-
-        var result = new ListRewriteRuleResult
-        {
-            Count = records.Count(),
-            Records = records,
-        };
-
-        foreach (var record in result.Records)
-        {
-            await LoadAsync(record);
-        }
-
-        return result;
+        return rules;
     }
 
     public async Task UpdateAsync(RewriteRule rule, JsonNode data = null)
@@ -161,44 +132,23 @@ public class RewriteRulesManager : IRewriteRulesManager
 
     public async Task ResortOrderAsync(int oldOrder, int newOrder)
     {
-        var rules = await _store.GetAllAsync();
-
-        var ruleToMove = rules.FirstOrDefault(x => x.Order == oldOrder);
-
-        if (ruleToMove == null)
+        if (oldOrder < 1 || newOrder < 1)
         {
             return;
         }
 
-        var ruleToShift = rules.FirstOrDefault(x => x.Order == newOrder);
+        var rules = (await GetSortedRuleAsync()).ToList();
 
-        if (ruleToShift == null)
+        if (oldOrder > rules.Count || newOrder > rules.Count)
         {
-            ruleToMove.Order = newOrder;
-
-            await _store.SaveAsync(ruleToMove);
+            return;
         }
-        else
-        {
-            var shift = false;
 
-            foreach (var rule in rules)
-            {
-                if (!shift)
-                {
-                    if (rule.Id != ruleToShift.Id)
-                    {
-                        continue;
-                    }
+        var temp = rules[oldOrder - 1];
+        rules[oldOrder - 1] = rules[newOrder - 1];
+        rules[newOrder - 1] = temp;
 
-                    shift = true;
-                }
-
-                rule.Order = oldOrder++;
-
-                await _store.SaveAsync(rule);
-            }
-        }
+        await _store.UpdateOrderAndSaveAsync(rules);
     }
 
     private Task LoadAsync(RewriteRule rule)
@@ -208,32 +158,12 @@ public class RewriteRulesManager : IRewriteRulesManager
         return _rewriteRuleHandlers.InvokeAsync((handler, context) => handler.LoadedAsync(context), loadedContext, _logger);
     }
 
-    private async Task<IEnumerable<RewriteRule>> LocateRulesAsync(RewriteRulesQueryContext context)
+    private async Task<IEnumerable<RewriteRule>> GetSortedRuleAsync()
     {
         var rules = await _store.GetAllAsync();
 
-        if (context == null)
-        {
-            return rules;
-        }
-
-        if (!string.IsNullOrEmpty(context.Source))
-        {
-            rules = rules.Where(x => x.Source.Equals(context.Source, StringComparison.OrdinalIgnoreCase));
-        }
-
-        if (!string.IsNullOrEmpty(context.Name))
-        {
-            rules = rules.Where(x => x.Name.Contains(context.Name, StringComparison.OrdinalIgnoreCase));
-        }
-
-        if (context.Sorted)
-        {
-            rules = rules.OrderBy(x => x.Order)
-                .ThenBy(x => x.CreatedUtc);
-        }
-
-        return rules;
+        return rules.OrderBy(x => x.Order)
+            .ThenBy(x => x.CreatedUtc);
     }
 
     private async Task<int> GetNextOrderSequence()

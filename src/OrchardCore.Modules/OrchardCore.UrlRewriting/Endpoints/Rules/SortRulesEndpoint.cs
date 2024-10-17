@@ -41,7 +41,7 @@ public static class SortRulesEndpoint
         return TypedResults.Ok();
     }
 
-    private class ResortingRequest
+    private sealed class ResortingRequest
     {
         public int? OldIndex { get; set; }
 

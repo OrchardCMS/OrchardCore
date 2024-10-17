@@ -21,28 +21,55 @@ public sealed class RewriteRulesStore : IRewriteRulesStore
 
     public async Task SaveAsync(RewriteRule rule)
     {
+        ArgumentNullException.ThrowIfNull(rule);
+
         var document = await _documentManager.GetOrCreateMutableAsync();
 
         document.Rules[rule.Id] = rule;
 
-        await _documentManager.UpdateAsync(document);
+        await UpdateOrderAndSaveAsync(document.Rules.Values);
     }
 
     public async Task DeleteAsync(RewriteRule rule)
     {
+        ArgumentNullException.ThrowIfNull(rule);
+
         var document = await _documentManager.GetOrCreateMutableAsync();
 
-        document.Rules.Remove(rule.Id);
-
-        await _documentManager.UpdateAsync(document);
+        if (document.Rules.Remove(rule.Id))
+        {
+            await UpdateOrderAndSaveAsync(document.Rules.Values);
+        }
     }
 
     public async Task<RewriteRule> FindByIdAsync(string id)
     {
+        ArgumentException.ThrowIfNullOrEmpty(id);
+
         var document = await _documentManager.GetOrCreateImmutableAsync();
 
         return document.Rules.TryGetValue(id, out var rule)
             ? rule
             : null;
+    }
+
+    public async Task<IEnumerable<RewriteRule>> UpdateOrderAndSaveAsync(IEnumerable<RewriteRule> rules)
+    {
+        ArgumentNullException.ThrowIfNull(rules);
+
+        var order = 0;
+
+        foreach (var rule in rules)
+        {
+            rule.Order = order++;
+        }
+
+        var document = await _documentManager.GetOrCreateMutableAsync();
+
+        document.Rules = rules.ToDictionary(x => x.Id);
+
+        await _documentManager.UpdateAsync(document);
+
+        return document.Rules.Values;
     }
 }

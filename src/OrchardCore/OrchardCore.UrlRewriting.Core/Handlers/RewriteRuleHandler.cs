@@ -70,13 +70,6 @@ public sealed class RewriteRuleHandler : RewriteRuleHandlerBase
             rule.Name = name;
         }
 
-        var order = data[nameof(RewriteRule.Order)]?.GetValue<int>();
-
-        if (order.HasValue)
-        {
-            rule.Order = order.Value;
-        }
-
         return Task.CompletedTask;
     }
 }

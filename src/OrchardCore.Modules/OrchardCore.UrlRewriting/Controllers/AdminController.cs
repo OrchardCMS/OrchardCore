@@ -60,7 +60,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var result = await _rewriteRulesManager.GetAllAsync();
+        var rules = await _rewriteRulesManager.GetAllAsync();
 
         var model = new ListRewriteRuleViewModel
         {
@@ -69,7 +69,7 @@ public sealed class AdminController : Controller
             SourceNames = _urlRewritingRuleSources.Select(x => x.Name),
         };
 
-        foreach (var rule in result.Records)
+        foreach (var rule in rules)
         {
             model.Rules.Add(new RewriteRuleEntry
             {

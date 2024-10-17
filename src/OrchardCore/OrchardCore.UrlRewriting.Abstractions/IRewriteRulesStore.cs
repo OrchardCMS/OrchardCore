@@ -11,4 +11,6 @@ public interface IRewriteRulesStore
     Task<IEnumerable<RewriteRule>> GetAllAsync();
 
     Task SaveAsync(RewriteRule rule);
+
+    Task<IEnumerable<RewriteRule>> UpdateOrderAndSaveAsync(IEnumerable<RewriteRule> rules);
 }

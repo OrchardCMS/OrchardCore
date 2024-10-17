@@ -11,15 +11,13 @@ public interface IRewriteRulesManager
 
     Task<RewriteRule> FindByIdAsync(string id);
 
-    Task<ListRewriteRuleResult> PageAsync(int page, int pageSize, RewriteRulesQueryContext context = null);
-
     Task SaveAsync(RewriteRule rule);
 
     Task DeleteAsync(RewriteRule rule);
 
     Task UpdateAsync(RewriteRule rule, JsonNode data = null);
 
-    Task ResortOrderAsync(int value1, int value2);
+    Task ResortOrderAsync(int oldOrder, int newOrder);
 
-    Task<ListRewriteRuleResult> GetAllAsync();
+    Task<IEnumerable<RewriteRule>> GetAllAsync();
 }
