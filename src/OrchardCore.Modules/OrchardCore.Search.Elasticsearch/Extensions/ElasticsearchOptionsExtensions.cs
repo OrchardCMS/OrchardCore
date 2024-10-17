@@ -77,6 +77,7 @@ internal static class ElasticsearchOptionsExtensions
     internal static ElasticsearchOptions AddIndexPrefix(this ElasticsearchOptions options, IConfigurationSection configuration)
     {
         options.IndexPrefix = configuration.GetValue<string>(nameof(options.IndexPrefix));
+
         return options;
     }
 }
