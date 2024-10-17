@@ -2,7 +2,7 @@ namespace OrchardCore.AdminMenu.Models;
 
 public class AdminMenu
 {
-    public string Id { get; set; } = Guid.NewGuid().ToString("n");
+    public string Id { get; set; } = Ulid.NewUlid().ToGuid().ToString("n");
     public string Name { get; set; }
     public bool Enabled { get; set; } = true;
     public List<AdminNode> MenuItems { get; init; } = [];

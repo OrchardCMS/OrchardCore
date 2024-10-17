@@ -373,7 +373,7 @@ public sealed class WorkflowTypeController : Controller
             return Forbid();
         }
 
-        var newLocalId = string.IsNullOrWhiteSpace(localId) ? Guid.NewGuid().ToString() : localId;
+        var newLocalId = string.IsNullOrWhiteSpace(localId) ? Ulid.NewUlid().ToGuid().ToString() : localId;
         var availableActivities = _activityLibrary.ListActivities();
         var workflowType = await _session.GetAsync<WorkflowType>(id);
 

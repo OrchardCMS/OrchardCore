@@ -80,7 +80,7 @@ public class CacheTicketStore : ITicketStore
 
     public async Task<string> StoreAsync(AuthenticationTicket ticket)
     {
-        var key = Guid.NewGuid().ToString();
+        var key = Ulid.NewUlid().ToGuid().ToString();
         var cacheKey = $"{KeyPrefix}-{key}";
 
         try

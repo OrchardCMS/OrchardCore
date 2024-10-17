@@ -19,5 +19,9 @@
     <ProjectReference Include="..\OrchardCore.Navigation.Core\OrchardCore.Navigation.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Ulid" />
+  </ItemGroup>
+
 </Project>
 

@@ -202,7 +202,7 @@ public class DynamicCacheTagHelper : TagHelper
                         {
                             // No need to optimize this code as it will be used for debugging purpose.
                             writer.WriteLine();
-                            writer.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Guid.NewGuid()})");
+                            writer.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Ulid.NewUlid().ToGuid()})");
                             writer.WriteLine($"         VARY BY: {string.Join(", ", cacheContext.Contexts)}");
                             writer.WriteLine($"    DEPENDENCIES: {string.Join(", ", cacheContext.Tags)}");
                             writer.WriteLine($"      EXPIRES ON: {cacheContext.ExpiresOn}");

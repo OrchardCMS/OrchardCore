@@ -268,7 +268,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
 
     /// <inheritdoc/>
     public virtual ValueTask<TApplication> InstantiateAsync(CancellationToken cancellationToken)
-        => new(new TApplication { ApplicationId = Guid.NewGuid().ToString("n") });
+        => new(new TApplication { ApplicationId = Ulid.NewUlid().ToGuid().ToString("n") });
 
     /// <inheritdoc/>
     public virtual IAsyncEnumerable<TApplication> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
