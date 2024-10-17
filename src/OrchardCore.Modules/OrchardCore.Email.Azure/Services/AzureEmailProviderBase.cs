@@ -189,7 +189,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
         var emailMessage = new EmailMessage(
             // For compatibility with configuration for other providers that allow a sender with display name.
-            TryCreateMailAddressOrFail(message.From).EmailAddress,
+            CreateMailAddressOrFail(message.From).EmailAddress,
             new EmailRecipients(toRecipients, ccRecipients, bccRecipients),
             content);
 
@@ -229,12 +229,12 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
     private static EmailAddress ConvertEmailAddressToAzureEmailAddress(string emailWithDisplayName)
     {
-        var (displayName, emailAddress) = TryCreateMailAddressOrFail(emailWithDisplayName);
+        var (displayName, emailAddress) = CreateMailAddressOrFail(emailWithDisplayName);
 
         return new EmailAddress(emailAddress, displayName);
     }
 
-    private static (string DisplayName, string EmailAddress) TryCreateMailAddressOrFail(string email)
+    private static (string DisplayName, string EmailAddress) CreateMailAddressOrFail(string email)
     {
         if (MailAddress.TryCreate(email, out var mailAddress))
         {
