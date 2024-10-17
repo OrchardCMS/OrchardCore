@@ -107,11 +107,16 @@ public class ShapeResult : IDisplayResult
 
         if (!string.IsNullOrEmpty(groupId))
         {
-            _groupIds = StringValues.Concat(_groupIds, groupId);
+            OnGroup(groupId);
         }
 
         // If the shape's group doesn't match the currently rendered one, return.
-        if (!string.IsNullOrEmpty(context.GroupId) && !_groupIds.Contains(context.GroupId, StringComparer.OrdinalIgnoreCase))
+        if (_groupIds.Count > 0 && !_groupIds.Contains(context.GroupId ?? string.Empty, StringComparer.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        if (_groupIds.Count == 0 && !string.IsNullOrEmpty(context.GroupId))
         {
             return;
         }
@@ -312,15 +317,7 @@ public class ShapeResult : IDisplayResult
     {
         ArgumentNullException.ThrowIfNull(groupIds);
 
-        foreach (var groupId in groupIds)
-        {
-            if (string.IsNullOrEmpty(groupId))
-            {
-                continue;
-            }
-
-            _groupIds = StringValues.Concat(_groupIds, groupId);
-        }
+        _groupIds = StringValues.Concat(_groupIds, groupIds.Where(x => x != null).ToArray());
 
         return this;
     }

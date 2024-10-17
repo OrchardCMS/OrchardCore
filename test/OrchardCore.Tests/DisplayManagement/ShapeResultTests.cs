@@ -9,40 +9,26 @@ using OrchardCore.Environment.Extensions;
 using OrchardCore.Scripting;
 using OrchardCore.Tests.DisplayManagement.Stubs;
 using OrchardCore.Tests.Stubs;
+
 namespace OrchardCore.Tests.DisplayManagement;
 
 public class ShapeResultTests
 {
-    [Fact]
-    public async Task Shape_WhenCalled_ReturnShapeWhenNoGroupIsProvided()
+    [Theory]
+    [InlineData("groupOne", "gRoUpTWo")] // case insensitive check.
+    [InlineData("groupOne", "groupOne")]
+    [InlineData("", "")]
+    [InlineData("", null)]
+    [InlineData(null, "")]
+    [InlineData(null, null)]
+    public async Task Shape_WhenCalled_ReturnShapeWhenGroupIsMatched(string groupId, string renderingGroupId)
     {
-        var serviceProvider = GetServiceProvider(new GroupDisplayDriverStub());
-
-        var displayManager = serviceProvider.GetRequiredService<IDisplayManager<GroupModel>>();
-        var model = new GroupModel();
-
-        var shape = await displayManager.BuildEditorAsync(model, updater: null, isNew: false);
-
-        var testZone = shape.GetProperty<IShape>(GroupDisplayDriverStub.ZoneName);
-
-        Assert.NotNull(testZone);
-
-        var shapeModel = testZone.Items[0] as ShapeViewModel<GroupModel>;
-
-        Assert.NotNull(shapeModel);
-        Assert.Equal(shapeModel.Value.Value, model.Value);
-    }
-
-    [Fact]
-    public async Task Shape_WhenCalled_ReturnShapeWhenGroupIsMatched()
-    {
-        var groupId = "abc";
         var serviceProvider = GetServiceProvider(new GroupDisplayDriverStub(groupId));
 
         var displayManager = serviceProvider.GetRequiredService<IDisplayManager<GroupModel>>();
         var model = new GroupModel();
 
-        var shape = await displayManager.BuildEditorAsync(model, updater: null, isNew: false, groupId: groupId);
+        var shape = await displayManager.BuildEditorAsync(model, updater: null, isNew: false, groupId: renderingGroupId);
 
         var testZone = shape.GetProperty<IShape>(GroupDisplayDriverStub.ZoneName);
 
@@ -54,91 +40,20 @@ public class ShapeResultTests
         Assert.Equal(shapeModel.Value.Value, model.Value);
     }
 
-    [Fact]
-    public async Task Shape_WhenCalled_NullGroupShouldBeTreatedAsEmptyString()
+    [Theory]
+    [InlineData("groupOne", "groupTwo")]
+    [InlineData("", "groupTwo")]
+    [InlineData(null, "groupTwo")]
+    [InlineData("groupOne", "")]
+    [InlineData("groupOne", null)]
+    public async Task Shape_WhenCalled_ReturnNullWhenIncorrectGroupIsSpecified(string groupId, string renderingGroupId)
     {
-        var serviceProvider = GetServiceProvider(new GroupDisplayDriverStub(""));
+        var serviceProvider = GetServiceProvider(new GroupDisplayDriverStub(groupId));
 
         var displayManager = serviceProvider.GetRequiredService<IDisplayManager<GroupModel>>();
         var model = new GroupModel();
 
-        var shape = await displayManager.BuildEditorAsync(model, updater: null, isNew: false, groupId: null);
-
-        var testZone = shape.GetProperty<IShape>(GroupDisplayDriverStub.ZoneName);
-
-        Assert.NotNull(testZone);
-
-        var shapeModel = testZone.Items[0] as ShapeViewModel<GroupModel>;
-
-        Assert.NotNull(shapeModel);
-        Assert.Equal(shapeModel.Value.Value, model.Value);
-    }
-
-    [Fact]
-    public async Task Shape_WhenCalled_ReturnShapeWhenMatchedToAnyGroup()
-    {
-        var groupId = "abc";
-        var serviceProvider = GetServiceProvider(new GroupDisplayDriverStub("xyz", "test", groupId));
-
-        var displayManager = serviceProvider.GetRequiredService<IDisplayManager<GroupModel>>();
-        var model = new GroupModel();
-
-        var shape = await displayManager.BuildEditorAsync(model, updater: null, isNew: false, groupId: groupId);
-
-        var testZone = shape.GetProperty<IShape>(GroupDisplayDriverStub.ZoneName);
-
-        Assert.NotNull(testZone);
-
-        var shapeModel = testZone.Items[0] as ShapeViewModel<GroupModel>;
-
-        Assert.NotNull(shapeModel);
-        Assert.Equal(shapeModel.Value.Value, model.Value);
-    }
-
-    [Fact]
-    public async Task Shape_WhenCalled_ReturnShapeWhenMatchedToAnyGroupCaseInsensitive()
-    {
-        var serviceProvider = GetServiceProvider(new GroupDisplayDriverStub("xyz", "test"));
-
-        var displayManager = serviceProvider.GetRequiredService<IDisplayManager<GroupModel>>();
-        var model = new GroupModel();
-
-        var shape = await displayManager.BuildEditorAsync(model, updater: null, isNew: false, groupId: "xYz");
-
-        var testZone = shape.GetProperty<IShape>(GroupDisplayDriverStub.ZoneName);
-
-        Assert.NotNull(testZone);
-
-        var shapeModel = testZone.Items[0] as ShapeViewModel<GroupModel>;
-
-        Assert.NotNull(shapeModel);
-        Assert.Equal(shapeModel.Value.Value, model.Value);
-    }
-
-    [Fact]
-    public async Task Shape_WhenCalled_ReturnNullWhenIncorrectGroupIsSpecified()
-    {
-        var serviceProvider = GetServiceProvider(new GroupDisplayDriverStub("groupOne"));
-
-        var displayManager = serviceProvider.GetRequiredService<IDisplayManager<GroupModel>>();
-        var model = new GroupModel();
-
-        var shape = await displayManager.BuildEditorAsync(model, updater: null, isNew: false, groupId: "groupTwo");
-
-        var testZone = shape.GetProperty<IShape>(GroupDisplayDriverStub.ZoneName);
-
-        Assert.Null(testZone);
-    }
-
-    [Fact]
-    public async Task Shape_WhenCalled_ReturnNullWhenGroupDoesNotMatchExactGroup()
-    {
-        var serviceProvider = GetServiceProvider(new GroupDisplayDriverStub());
-
-        var displayManager = serviceProvider.GetRequiredService<IDisplayManager<GroupModel>>();
-        var model = new GroupModel();
-
-        var shape = await displayManager.BuildEditorAsync(model, updater: null, isNew: false, groupId: "groupTwo");
+        var shape = await displayManager.BuildEditorAsync(model, updater: null, isNew: false, groupId: renderingGroupId);
 
         var testZone = shape.GetProperty<IShape>(GroupDisplayDriverStub.ZoneName);
 
