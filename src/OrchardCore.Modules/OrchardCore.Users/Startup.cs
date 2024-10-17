@@ -426,6 +426,7 @@ public sealed class RegistrationStartup : StartupBase
             o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
         });
 
+        services.AddScoped<IDisplayDriver<User>, UserRegistrationAdminDisplayDriver>();
         services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
 

@@ -432,14 +432,15 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    public async Task<IActionResult> Mappings(string indexName)
+    public async Task<IActionResult> IndexInfo(string indexName)
     {
-        var mappings = await _elasticIndexManager.GetIndexMappings(indexName);
-        var formattedJson = JNode.Parse(mappings).ToJsonString(JOptions.Indented);
-        return View(new MappingsViewModel
+        var info = await _elasticIndexManager.GetIndexInfo(indexName);
+
+        var formattedJson = JNode.Parse(info).ToJsonString(JOptions.Indented);
+        return View(new IndexInfoViewModel
         {
             IndexName = _elasticIndexManager.GetFullIndexName(indexName),
-            Mappings = formattedJson
+            IndexInfo = formattedJson
         });
     }
 
