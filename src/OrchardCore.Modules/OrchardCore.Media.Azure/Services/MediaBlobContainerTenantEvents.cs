@@ -15,7 +15,8 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
     private readonly MediaBlobStorageOptions _options;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
-    private readonly IStringLocalizer S;
+
+    internal readonly IStringLocalizer S;
 
     public MediaBlobContainerTenantEvents(
         IOptions<MediaBlobStorageOptions> options,
