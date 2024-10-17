@@ -262,6 +262,7 @@ nav:
           - Workflows: reference/modules/Workflows/README.md
           - DataProtection (Azure Storage): reference/modules/DataProtection.Azure/README.md
           - Background Tasks: reference/modules/BackgroundTasks/README.md
+          - URL Rewriting: reference/modules/UrlRewriting/README.md
           - Reverse Proxy: reference/modules/ReverseProxy/README.md
   - Resources:
       - Learning: resources/README.md

@@ -1,0 +1,35 @@
+@model UrlRewriteRuleViewModel
+
+<div class="mb-3">
+    <label asp-for="Pattern" class="form-label">@T["Match URL Pattern"]</label>
+    <input asp-for="Pattern" class="form-control" />
+    <span class="hint">@T["Specifies a pattern using regular expressions to match incoming URLs, following the syntax defined in ECMA-262."]</span>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="IsCaseInsensitive" />
+        <label class="form-check-label" asp-for="IsCaseInsensitive">@T["Case Insensitive"]</label>
+        <span class="hint dashed">@T["When checked, the pattern will be case insensitive."]</span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="QueryStringPolicy" class="form-label">@T["Query String Policy"]</label>
+    <select asp-for="QueryStringPolicy" asp-items="Model.QueryStringPolicies" class="form-select"></select>
+</div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="SkipFurtherRules" checked="@Model.SkipFurtherRules" />
+        <label class="form-check-label" asp-for="SkipFurtherRules">@T["Stop Evaluation of Subsequent Rules"]</label>
+        <span class="hint dashed">@T["When selected, subsequent rules will be ignored if this rule is matched."]</span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="SubstitutionPattern" class="form-label">@T["The Substitution URL Pattern"]</label>
+    <input asp-for="SubstitutionPattern" class="form-control" />
+    <span asp-validation-for="SubstitutionPattern"></span>
+    <span class="hint">@T["Defines a URL structure with placeholders that will be replaced by actual values during the request."]</span>
+</div>
