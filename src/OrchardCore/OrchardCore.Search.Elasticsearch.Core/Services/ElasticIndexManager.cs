@@ -31,15 +31,15 @@ public sealed class ElasticIndexManager
     private readonly string _lastTaskId = "last_task_id";
     private readonly Dictionary<string, Func<IAnalyzer>> _analyzerGetter = new(StringComparer.OrdinalIgnoreCase)
     {
-        { ElasticsearchConstants.DefaultAnalyzer, () => new StandardAnalyzer() },
-        { "simple", () => new SimpleAnalyzer() },
-        { "keyword", () => new KeywordAnalyzer() },
-        { "whitespace", () => new WhitespaceAnalyzer() },
-        { "pattern", () => new PatternAnalyzer() },
-        { "language", () => new LanguageAnalyzer() },
-        { "fingerprint", () => new FingerprintAnalyzer() },
-        { "custom", () => new CustomAnalyzer() },
-        { "stop", () => new StopAnalyzer() },
+        { ElasticsearchConstants.StandardAnalyzer, () => new StandardAnalyzer() },
+        { ElasticsearchConstants.SimpleAnalyzer, () => new SimpleAnalyzer() },
+        { ElasticsearchConstants.KeywordAnalyzer, () => new KeywordAnalyzer() },
+        { ElasticsearchConstants.WhitespaceAnalyzer, () => new WhitespaceAnalyzer() },
+        { ElasticsearchConstants.PatternAnalyzer, () => new PatternAnalyzer() },
+        { ElasticsearchConstants.LanguageAnalyzer, () => new LanguageAnalyzer() },
+        { ElasticsearchConstants.FingerprintAnalyzer, () => new FingerprintAnalyzer() },
+        { ElasticsearchConstants.CustomAnalyzer, () => new CustomAnalyzer() },
+        { ElasticsearchConstants.StopAnalyzer, () => new StopAnalyzer() },
     };
     private static readonly List<char> _charsToRemove =
     [
