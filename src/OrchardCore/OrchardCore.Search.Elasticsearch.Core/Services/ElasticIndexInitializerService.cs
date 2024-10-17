@@ -18,7 +18,7 @@ public sealed class ElasticIndexInitializerService : ModularTenantEvents
     private readonly ShellSettings _shellSettings;
     private readonly ElasticIndexManager _elasticIndexManager;
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-    protected readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
     public ElasticIndexInitializerService(
