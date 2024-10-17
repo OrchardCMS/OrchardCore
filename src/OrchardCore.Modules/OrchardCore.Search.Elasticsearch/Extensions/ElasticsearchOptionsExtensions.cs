@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Shell.Configuration;
 
 namespace OrchardCore.Search.Elasticsearch;
+
 internal static class ElasticsearchOptionsExtensions
 {
     internal static ElasticsearchOptions AddAnalyzers(this ElasticsearchOptions options, IConfigurationSection configuration)
