@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.CustomSettings.ViewModels;
 using OrchardCore.Deployment;
@@ -6,32 +7,24 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.CustomSettings.Deployment;
 
-public sealed class CustomSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, CustomSettingsDeploymentStep>
+public sealed class CustomSettingsDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<CustomSettingsDeploymentStep, CustomSettingsDeploymentStepViewModel>
 {
     private readonly CustomSettingsService _customSettingsService;
 
-    public CustomSettingsDeploymentStepDriver(CustomSettingsService customSettingsService)
+    public CustomSettingsDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _customSettingsService = customSettingsService;
+        _customSettingsService = serviceProvider.GetService<CustomSettingsService>();
     }
 
-    public override Task<IDisplayResult> DisplayAsync(CustomSettingsDeploymentStep step, BuildDisplayContext context)
+    public override IDisplayResult Edit(CustomSettingsDeploymentStep step, Action<CustomSettingsDeploymentStepViewModel> intializeAction)
     {
-        return
-            CombineAsync(
-                View("CustomSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("CustomSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
-
-    public override IDisplayResult Edit(CustomSettingsDeploymentStep step, BuildEditorContext context)
-    {
-        return Initialize<CustomSettingsDeploymentStepViewModel>("CustomSettingsDeploymentStep_Fields_Edit", async model =>
+        return base.Edit(step, async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.SettingsTypeNames = step.SettingsTypeNames;
             model.AllSettingsTypeNames = (await _customSettingsService.GetAllSettingsTypeNamesAsync()).ToArray();
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(CustomSettingsDeploymentStep step, UpdateEditorContext context)
