@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Primitives;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Implementation;
@@ -12,14 +13,14 @@ public class ShapeResult : IDisplayResult
     private readonly string _shapeType;
     private readonly Func<IBuildShapeContext, ValueTask<IShape>> _shapeBuilder;
     private readonly Func<IShape, Task> _initializingAsync;
-    private readonly HashSet<string> _groupIds = new(StringComparer.OrdinalIgnoreCase);
 
     private string _defaultLocation;
-    private Dictionary<string, string> _otherLocations;
     private string _name;
     private string _differentiator;
     private string _prefix;
     private string _cacheId;
+    private Dictionary<string, string> _otherLocations;
+    private StringValues _groupIds;
 
     private Action<CacheContext> _cache;
     private Action<ShapeDisplayContext> _displaying;
@@ -106,11 +107,11 @@ public class ShapeResult : IDisplayResult
 
         if (!string.IsNullOrEmpty(groupId))
         {
-            _groupIds.Add(groupId);
+            _groupIds = StringValues.Concat(_groupIds, groupId);
         }
 
         // If the shape's group doesn't match the currently rendered one, return.
-        if (!string.IsNullOrEmpty(context.GroupId) && !_groupIds.Contains(context.GroupId))
+        if (!string.IsNullOrEmpty(context.GroupId) && !_groupIds.Contains(context.GroupId, StringComparer.OrdinalIgnoreCase))
         {
             return;
         }
@@ -318,7 +319,7 @@ public class ShapeResult : IDisplayResult
                 continue;
             }
 
-            _groupIds.Add(groupId);
+            _groupIds = StringValues.Concat(_groupIds, groupId);
         }
 
         return this;
