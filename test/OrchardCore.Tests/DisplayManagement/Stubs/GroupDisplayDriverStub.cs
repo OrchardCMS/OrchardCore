@@ -11,21 +11,14 @@ internal sealed class GroupDisplayDriverStub : DisplayDriver<GroupModel>
 
     public GroupDisplayDriverStub(params string[] groupIds)
     {
-        _groupIds = groupIds;
+        _groupIds = groupIds ?? [];
     }
 
     public override IDisplayResult Edit(GroupModel model, BuildEditorContext context)
     {
         var result = View("test", model)
-            .Location(ZoneName);
-
-        if (_groupIds != null)
-        {
-            foreach (var groupId in _groupIds)
-            {
-                result.OnGroup(groupId);
-            }
-        }
+            .Location(ZoneName)
+            .OnGroup(_groupIds);
 
         return result;
     }
