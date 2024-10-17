@@ -4,9 +4,6 @@ namespace OrchardCore.Notifications;
 
 public sealed class NotificationPermissionsProvider : IPermissionProvider
 {
-    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Notifications.NotificationPermissions.ManageNotifications'.")]
-    public static readonly Permission ManageNotifications = NotificationPermissions.ManageNotifications;
-
     private readonly IEnumerable<Permission> _allPermissions =
     [
         NotificationPermissions.ManageNotifications,

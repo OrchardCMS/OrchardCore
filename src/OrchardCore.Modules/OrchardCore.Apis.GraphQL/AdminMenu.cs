@@ -18,7 +18,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["GraphiQL"], S["GraphiQL"].PrefixPosition(), graphiQL => graphiQL
                     .Action("Index", "Admin", "OrchardCore.Apis.GraphQL")
-                    .Permission(CommonPermissions.ExecuteGraphQL)
+                    .Permission(GraphQLPermissions.ExecuteGraphQL)
                     .LocalNav()
                 )
             );

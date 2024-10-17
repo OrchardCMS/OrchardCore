@@ -24,7 +24,7 @@ public sealed class ContentPartFieldIndexSettingsDisplayDriver : ContentPartFiel
 
     public override async Task<IDisplayResult> EditAsync(ContentPartFieldDefinition contentPartFieldDefinition, BuildEditorContext updater)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageLuceneIndexes))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, LuceneSearchPermissions.ManageLuceneIndexes))
         {
             return null;
         }
@@ -37,7 +37,7 @@ public sealed class ContentPartFieldIndexSettingsDisplayDriver : ContentPartFiel
 
     public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition contentPartFieldDefinition, UpdatePartFieldEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageLuceneIndexes))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, LuceneSearchPermissions.ManageLuceneIndexes))
         {
             return null;
         }

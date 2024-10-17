@@ -34,7 +34,7 @@ public sealed class LuceneSettingsDisplayDriver : SiteDisplayDriver<LuceneSettin
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLuceneIndexes))
+        if (!await _authorizationService.AuthorizeAsync(user, LuceneSearchPermissions.ManageLuceneIndexes))
         {
             return null;
         }
@@ -53,7 +53,7 @@ public sealed class LuceneSettingsDisplayDriver : SiteDisplayDriver<LuceneSettin
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLuceneIndexes))
+        if (!await _authorizationService.AuthorizeAsync(user, LuceneSearchPermissions.ManageLuceneIndexes))
         {
             return null;
         }
