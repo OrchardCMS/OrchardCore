@@ -32,17 +32,22 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
             model.Pattern = metadata.Pattern;
             model.SubstitutionPattern = metadata.SubstitutionPattern;
             model.IsCaseInsensitive = metadata.IsCaseInsensitive;
-            model.AppendQueryString = context.IsNew || metadata.AppendQueryString;
+            model.QueryStringPolicy = metadata.QueryStringPolicy;
             model.RedirectType = Enum.IsDefined(typeof(RedirectType), metadata.RedirectType)
             ? metadata.RedirectType
             : RedirectType.Found;
 
+            model.QueryStringPolicies =
+            [
+                new(S["Append Query String from Original Request"], nameof(QueryStringPolicy.Append)),
+                new(S["Exclude Query String from Original Request"], nameof(QueryStringPolicy.Drop)),
+            ];
             model.RedirectTypes =
             [
                 new(S["Found (302)"], nameof(RedirectType.Found)),
                 new(S["Moved Permanently (301)"], nameof(RedirectType.MovedPermanently)),
                 new(S["Temporary Redirect (307)"], nameof(RedirectType.TemporaryRedirect)),
-                new(S["Permanent Redirect (308)"], nameof(RedirectType.PermanentRedirect))
+                new(S["Permanent Redirect (308)"], nameof(RedirectType.PermanentRedirect)),
             ];
         }).Location("Content:5");
     }
@@ -60,7 +65,7 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
             m => m.Pattern,
             m => m.SubstitutionPattern,
             m => m.IsCaseInsensitive,
-            m => m.AppendQueryString,
+            m => m.QueryStringPolicy,
             m => m.RedirectType);
 
         if (string.IsNullOrWhiteSpace(model.Pattern))
@@ -86,7 +91,7 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
             Pattern = model.Pattern?.Trim(),
             SubstitutionPattern = model.SubstitutionPattern?.Trim(),
             IsCaseInsensitive = model.IsCaseInsensitive,
-            AppendQueryString = model.AppendQueryString,
+            QueryStringPolicy = model.QueryStringPolicy,
             RedirectType = model.RedirectType,
         });
 

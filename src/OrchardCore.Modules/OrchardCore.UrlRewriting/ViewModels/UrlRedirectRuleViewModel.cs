@@ -12,10 +12,13 @@ public class UrlRedirectRuleViewModel
 
     public bool IsCaseInsensitive { get; set; }
 
-    public bool AppendQueryString { get; set; }
+    public QueryStringPolicy QueryStringPolicy { get; set; }
 
     public RedirectType RedirectType { get; set; }
 
     [BindNever]
     public List<SelectListItem> RedirectTypes { get; set; }
+
+    [BindNever]
+    public List<SelectListItem> QueryStringPolicies { get; set; }
 }

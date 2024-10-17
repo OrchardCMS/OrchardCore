@@ -82,11 +82,11 @@ public sealed class UrlRewriteRuleHandler : RewriteRuleHandlerBase
             metadata.IsCaseInsensitive = ignoreCase.Value;
         }
 
-        var appendQueryString = data[nameof(UrlRewriteSourceMetadata.IgnoreQueryString)]?.GetValue<bool>();
+        var queryStringPolicy = data[nameof(UrlRewriteSourceMetadata.QueryStringPolicy)]?.GetEnumValue<QueryStringPolicy>();
 
-        if (appendQueryString.HasValue)
+        if (queryStringPolicy.HasValue)
         {
-            metadata.IgnoreQueryString = appendQueryString.Value;
+            metadata.QueryStringPolicy = queryStringPolicy.Value;
         }
 
         var skipFurtherRules = data[nameof(UrlRewriteSourceMetadata.SkipFurtherRules)]?.GetValue<bool>();

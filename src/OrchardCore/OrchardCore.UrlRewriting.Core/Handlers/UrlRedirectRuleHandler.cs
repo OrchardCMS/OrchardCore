@@ -82,11 +82,11 @@ public sealed class UrlRedirectRuleHandler : RewriteRuleHandlerBase
             metadata.SubstitutionPattern = substitutionPattern;
         }
 
-        var appendQueryString = data[nameof(UrlRedirectSourceMetadata.AppendQueryString)]?.GetValue<bool>();
+        var queryStringPolicy = data[nameof(UrlRewriteSourceMetadata.QueryStringPolicy)]?.GetEnumValue<QueryStringPolicy>();
 
-        if (appendQueryString.HasValue)
+        if (queryStringPolicy.HasValue)
         {
-            metadata.AppendQueryString = appendQueryString.Value;
+            metadata.QueryStringPolicy = queryStringPolicy.Value;
         }
 
         var redirectType = data[nameof(UrlRedirectSourceMetadata.RedirectType)]?.GetEnumValue<RedirectType>();

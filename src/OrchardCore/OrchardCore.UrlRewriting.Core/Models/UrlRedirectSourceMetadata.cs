@@ -8,7 +8,7 @@ public class UrlRedirectSourceMetadata
 
     public bool IsCaseInsensitive { get; set; }
 
-    public bool AppendQueryString { get; set; }
+    public QueryStringPolicy QueryStringPolicy { get; set; }
 
     public RedirectType RedirectType { get; set; }
 }

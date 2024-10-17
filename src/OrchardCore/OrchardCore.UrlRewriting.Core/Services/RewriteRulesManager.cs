@@ -144,14 +144,13 @@ public class RewriteRulesManager : IRewriteRulesManager
             return;
         }
 
-        // Adjust newOrder for zero-based index
         var zeroBasedOldOrder = oldOrder - 1;
         var zeroBasedNewOrder = newOrder - 1;
 
-        // Get the element to move
+        // Get the element to move.
         var ruleToMove = rules[zeroBasedOldOrder];
 
-        // Remove the rule from its current position
+        // Remove the rule from its current position.
         rules.RemoveAt(zeroBasedOldOrder);
 
         rules.Insert(zeroBasedNewOrder, ruleToMove);

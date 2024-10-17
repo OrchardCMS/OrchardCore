@@ -15,11 +15,8 @@
 </div>
 
 <div class="mb-3">
-    <div class="form-check">
-        <input type="checkbox" class="form-check-input" asp-for="AppendQueryString" />
-        <label class="form-check-label" asp-for="AppendQueryString">@T["Append Query String"]</label>
-        <span class="hint dashed">@T["When selected, the query string will be appended if it exists."]</span>
-    </div>
+    <label asp-for="QueryStringPolicy" class="form-label">@T["Query String Policy"]</label>
+    <select asp-for="QueryStringPolicy" asp-items="Model.QueryStringPolicies" class="form-select"></select>
 </div>
 
 <div class="mb-3">

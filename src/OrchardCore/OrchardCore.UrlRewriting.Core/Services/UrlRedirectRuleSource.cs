@@ -71,11 +71,11 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
             AppendFlag(builder, "NC");
         };
 
-        if (metadata.AppendQueryString)
+        if (metadata.QueryStringPolicy == QueryStringPolicy.Append)
         {
             AppendFlag(builder, "QSA");
         }
-        else
+        else if (metadata.QueryStringPolicy == QueryStringPolicy.Drop)
         {
             AppendFlag(builder, "QSD");
         }

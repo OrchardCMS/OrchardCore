@@ -51,7 +51,7 @@ The `UrlRewriting` step allows you to create or update URL rewrite rules easily.
           "Pattern": "^/about-us$",
           "SubstitutionPattern": "/about",
           "IsCaseInsensitive": true,
-          "AppendQueryString": false,
+          "QueryStringPolicy": "Append",
           "RedirectType": "MovedPermanently"
         },
         {
@@ -60,7 +60,7 @@ The `UrlRewriting` step allows you to create or update URL rewrite rules easily.
           "Pattern": "^/img/(.*)$",
           "SubstitutionPattern": "/media/$1",
           "IsCaseInsensitive": true,
-          "IgnoreQueryString": false,
+          "QueryStringPolicy": "Drop",
           "SkipFurtherRules": true
         }
       ]
@@ -78,7 +78,7 @@ The `UrlRewriting` step allows you to create or update URL rewrite rules easily.
 - **Pattern**: The URL pattern to match (e.g., `^/about-us$` for an exact match).
 - **SubstitutionPattern**: The target URL to redirect to (e.g., `/about`).
 - **IsCaseInsensitive**: When set to `true`, matching is case-insensitive.
-- **AppendQueryString**: When `false`, the original query string will not be included in the redirect.
+- **QueryStringPolicy**: To append the query string to the new URL, use 'Append'. To ignore the query string during the redirect, select 'Drop'.
 - **RedirectType**: Specifies the HTTP status code for the redirect. `MovedPermanently` (HTTP 301) indicates a permanent redirect.
 
 ### Rewrite Rule Properties
@@ -88,5 +88,5 @@ The `UrlRewriting` step allows you to create or update URL rewrite rules easily.
 - **Pattern**: The URL pattern to match (e.g., `^/img/(.*)$` to match any URL starting with `/img/`).
 - **SubstitutionPattern**: The target URL for the rewrite (e.g., `/media/$1`, where `$1` captures the matched portion of the original URL).
 - **IsCaseInsensitive**: When set to `true`, matching is case-insensitive.
-- **IgnoreQueryString**: When set to `false`, the query string from the original request will be considered during the rewrite.
+- **QueryStringPolicy**: To append the query string to the new URL, use 'Append'. To ignore the query string during the redirect, select 'Drop'.
 - **SkipFurtherRules**: When set to `true`, subsequent rules will not be processed if this rule matches.
