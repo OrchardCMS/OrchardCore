@@ -57,6 +57,9 @@ public sealed class NumericFieldDisplayDriver : ContentFieldDisplayDriver<Numeri
             model.Field = field;
             model.Part = context.ContentPart;
             model.PartFieldDefinition = context.PartFieldDefinition;
+            model.TypePartDefinition = context.TypePartDefinition;
+            model.IsNew = context.IsNew;
+            model.TypePartDefinition = context.TypePartDefinition;
         });
     }
 

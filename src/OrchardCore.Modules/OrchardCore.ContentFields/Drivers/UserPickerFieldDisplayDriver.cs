@@ -50,6 +50,7 @@ public sealed class UserPickerFieldDisplayDriver : ContentFieldDisplayDriver<Use
             model.Part = context.ContentPart;
             model.PartFieldDefinition = context.PartFieldDefinition;
             model.TypePartDefinition = context.TypePartDefinition;
+            model.IsNew = context.IsNew;
 
             if (field.UserIds.Length > 0)
             {

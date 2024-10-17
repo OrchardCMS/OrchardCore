@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -10,4 +11,8 @@ public class EditTimeFieldViewModel
     public TimeField Field { get; set; }
     public ContentPart Part { get; set; }
     public ContentPartFieldDefinition PartFieldDefinition { get; set; }
+    [BindNever]
+    public ContentTypePartDefinition TypePartDefinition { get; set; }
+    [BindNever]
+    public bool IsNew { get; set; }
 }

@@ -31,6 +31,8 @@ public sealed class BooleanFieldDisplayDriver : ContentFieldDisplayDriver<Boolea
             model.Field = field;
             model.Part = context.ContentPart;
             model.PartFieldDefinition = context.PartFieldDefinition;
+            model.IsNew = context.IsNew;
+            model.TypePartDefinition = context.TypePartDefinition;
         });
     }
 
