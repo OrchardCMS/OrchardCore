@@ -31,7 +31,7 @@ public sealed class ElasticIndexManager
     private readonly string _lastTaskId = "last_task_id";
     private readonly Dictionary<string, Func<IAnalyzer>> _analyzerGetter = new(StringComparer.OrdinalIgnoreCase)
     {
-        { "standard", () => new StandardAnalyzer() },
+        { ElasticsearchConstants.DefaultAnalyzer, () => new StandardAnalyzer() },
         { "simple", () => new SimpleAnalyzer() },
         { "keyword", () => new KeywordAnalyzer() },
         { "whitespace", () => new WhitespaceAnalyzer() },
@@ -97,7 +97,9 @@ public sealed class ElasticIndexManager
         var indexSettingsDescriptor = new IndexSettingsDescriptor();
 
         // The name "standardanalyzer" is a legacy used prior OC 1.6 release. It can be removed in future releases.
-        var analyzerName = (elasticIndexSettings.AnalyzerName == "standardanalyzer" ? null : elasticIndexSettings.AnalyzerName) ?? "standard";
+        var analyzerName = (elasticIndexSettings.AnalyzerName == "standardanalyzer"
+        ? null
+        : elasticIndexSettings.AnalyzerName) ?? ElasticsearchConstants.DefaultAnalyzer;
 
         if (_elasticsearchOptions.Analyzers.TryGetValue(analyzerName, out var analyzerProperties))
         {
