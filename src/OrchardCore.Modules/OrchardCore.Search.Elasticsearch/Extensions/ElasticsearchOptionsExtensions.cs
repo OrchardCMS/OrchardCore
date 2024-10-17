@@ -17,7 +17,7 @@ internal static class ElasticsearchOptionsExtensions
             PropertyNameCaseInsensitive = true,
         });
 
-        if (analyzersObject != null)
+        if (analyzersObject is not null)
         {
             if (jsonNode is JsonObject jAnalyzers)
             {
