@@ -11,14 +11,10 @@ namespace OrchardCore.AdminDashboard;
 public sealed class Migrations : DataMigration
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IRecipeMigrator _recipeMigrator;
 
-    public Migrations(
-        IContentDefinitionManager contentDefinitionManager,
-        IRecipeMigrator recipeMigrator)
+    public Migrations(IContentDefinitionManager contentDefinitionManager)
     {
         _contentDefinitionManager = contentDefinitionManager;
-        _recipeMigrator = recipeMigrator;
     }
 
     public async Task<int> CreateAsync()
@@ -38,17 +34,14 @@ public sealed class Migrations : DataMigration
             .WithDescription("Provides a way to add widgets to a dashboard.")
             );
 
-        await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
-        await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
-
         // Shortcut other migration steps on new content definition schemas.
         return 3;
     }
 
-    public async Task<int> UpdateFrom1Async()
+#pragma warning disable CA1822 // Mark members as static
+    public int UpdateFrom1()
+#pragma warning restore CA1822 // Mark members as static
     {
-        await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
-
         return 2;
     }
 
