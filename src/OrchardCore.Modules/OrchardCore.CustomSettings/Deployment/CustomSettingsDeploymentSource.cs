@@ -4,7 +4,7 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.CustomSettings.Deployment;
 
-public class CustomSettingsDeploymentSource
+public sealed class CustomSettingsDeploymentSource
     : DeploymentSourceBase<CustomSettingsDeploymentStep>
 {
     private readonly CustomSettingsService _customSettingsService;
