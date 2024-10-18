@@ -1,0 +1,8 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.UrlRewriting.Models
+
+@model ShapeViewModel<RewriteRule>
+
+<span class="badge ta-badge bg-warning-subtle font-weight-normal" data-bs-toggle="tooltip" title="@T["Source"]">
+    <i class="text-secondary me-1" aria-hidden="true"></i>@Model.Value.Source
+</span>
