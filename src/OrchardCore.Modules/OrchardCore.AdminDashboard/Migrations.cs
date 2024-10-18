@@ -39,6 +39,7 @@ public sealed class Migrations : DataMigration
             );
 
         await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
+        await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
 
         // Shortcut other migration steps on new content definition schemas.
         return 3;
@@ -61,5 +62,14 @@ public sealed class Migrations : DataMigration
         );
 
         return 3;
+    }
+
+    public async Task<int> UpdateFrom3Async()
+    {
+        await _contentDefinitionManager.AlterPartDefinitionAsync("DashboardPart", builder => builder
+            .Attachable(false)
+            );
+
+        return 4;
     }
 }

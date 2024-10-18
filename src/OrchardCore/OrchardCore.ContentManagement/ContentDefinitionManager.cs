@@ -1,8 +1,10 @@
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Records;
+using OrchardCore.ContentTypes.Events;
 using OrchardCore.Data.Documents;
 using OrchardCore.Modules;
 
@@ -13,6 +15,8 @@ public class ContentDefinitionManager : IContentDefinitionManager
     private const string CacheKey = nameof(ContentDefinitionManager);
 
     private readonly IContentDefinitionStore _contentDefinitionStore;
+    private readonly IEnumerable<IContentDefinitionHandler> _handlers;
+    private readonly ILogger _logger;
     private readonly IMemoryCache _memoryCache;
 
     private readonly ConcurrentDictionary<string, ContentTypeDefinition> _cachedTypeDefinitions;
@@ -23,9 +27,13 @@ public class ContentDefinitionManager : IContentDefinitionManager
 
     public ContentDefinitionManager(
         IContentDefinitionStore contentDefinitionStore,
+        IEnumerable<IContentDefinitionHandler> handlers,
+        ILogger<ContentDefinitionManager> logger,
         IMemoryCache memoryCache)
     {
         _contentDefinitionStore = contentDefinitionStore;
+        _handlers = handlers;
+        _logger = logger;
         _memoryCache = memoryCache;
 
         _cachedTypeDefinitions = _memoryCache.GetOrCreate("TypeDefinitions", entry => new ConcurrentDictionary<string, ContentTypeDefinition>(StringComparer.OrdinalIgnoreCase));
@@ -179,11 +187,11 @@ public class ContentDefinitionManager : IContentDefinitionManager
     public async Task<string> GetIdentifierAsync() => (await _contentDefinitionStore.GetContentDefinitionAsync()).Identifier;
 
     private ContentTypeDefinition LoadTypeDefinition(ContentDefinitionRecord document, string name) =>
-        !_scopedTypeDefinitions.TryGetValue(name, out var typeDefinition)
-        ? _scopedTypeDefinitions[name] = Build(
+        _scopedTypeDefinitions.TryGetValue(name, out var typeDefinition)
+        ? typeDefinition
+        : _scopedTypeDefinitions[name] = Build(
             document.ContentTypeDefinitionRecords.FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(name)),
-            document.ContentPartDefinitionRecords)
-        : typeDefinition;
+            document.ContentPartDefinitionRecords);
 
     private ContentTypeDefinition GetTypeDefinition(ContentDefinitionRecord document, string name) =>
         _cachedTypeDefinitions.GetOrAdd(name, name => Build(
@@ -324,47 +332,79 @@ public class ContentDefinitionManager : IContentDefinitionManager
     private static void Apply(ContentPartFieldDefinition model, ContentPartFieldDefinitionRecord record)
         => record.Settings = model.Settings;
 
-    private static ContentTypeDefinition Build(
+    private ContentTypeDefinition Build(
         ContentTypeDefinitionRecord source,
-        IList<ContentPartDefinitionRecord> partDefinitionRecords) =>
-        source is not null
-        ? new ContentTypeDefinition(
-            source.Name,
-            source.DisplayName,
-            source.ContentTypePartDefinitionRecords.Select(typePart => Build(
-                typePart,
-                partDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(typePart.PartName)))),
-            source.Settings)
-        : null;
+        IList<ContentPartDefinitionRecord> partDefinitionRecords)
+    {
+        if (source is not null)
+        {
+            var context = new LoadedContentTypeContext(source);
 
-    private static ContentTypePartDefinition Build(
+            _handlers.Invoke((handler, ctx) => handler.TypeLoaded(ctx), context, _logger);
+
+            return new ContentTypeDefinition(
+                source.Name,
+                source.DisplayName,
+                source.ContentTypePartDefinitionRecords.Select(typePart => Build(
+                    typePart,
+                    partDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(typePart.PartName)))),
+                source.Settings);
+        }
+
+        return null;
+    }
+
+    private ContentTypePartDefinition Build(
         ContentTypePartDefinitionRecord source,
-        ContentPartDefinitionRecord partDefinitionRecord) =>
-        source is not null
-        ? new ContentTypePartDefinition(
-            source.Name,
-            Build(partDefinitionRecord) ?? new ContentPartDefinition(source.PartName, [], []),
-            source.Settings)
-        : null;
+        ContentPartDefinitionRecord partDefinitionRecord)
+    {
+        if (source is not null)
+        {
+            var context = new LoadedContentTypePartContext(source);
 
-    private static ContentPartDefinition Build(ContentPartDefinitionRecord source) =>
-        source is not null
-        ? new ContentPartDefinition(
-            source.Name,
-            source.ContentPartFieldDefinitionRecords.Select(Build),
-            source.Settings)
-        : null;
+            _handlers.Invoke((handler, ctx) => handler.TypePartLoaded(ctx), context, _logger);
 
-    private static ContentPartFieldDefinition Build(ContentPartFieldDefinitionRecord source) =>
-        source is not null
-        ? new ContentPartFieldDefinition(
-            Build(new ContentFieldDefinitionRecord
-            {
-                Name = source.FieldName,
-            }),
-            source.Name,
-            source.Settings)
-        : null;
+            return new ContentTypePartDefinition(
+                source.Name,
+                Build(partDefinitionRecord) ?? new ContentPartDefinition(source.PartName, [], []),
+                source.Settings);
+        }
+
+        return null;
+    }
+
+    private ContentPartDefinition Build(ContentPartDefinitionRecord source)
+    {
+        if (source is not null)
+        {
+            return new ContentPartDefinition(
+                source.Name,
+                source.ContentPartFieldDefinitionRecords.Select(Build),
+                source.Settings);
+        }
+
+        return null;
+    }
+
+    private ContentPartFieldDefinition Build(ContentPartFieldDefinitionRecord source)
+    {
+        if (source is not null)
+        {
+            var context = new LoadedContentPartFieldContext(source);
+
+            _handlers.Invoke((handler, ctx) => handler.PartFieldLoaded(ctx), context, _logger);
+
+            return new ContentPartFieldDefinition(
+                Build(new ContentFieldDefinitionRecord
+                {
+                    Name = source.FieldName,
+                }),
+                source.Name,
+                source.Settings);
+        }
+
+        return null;
+    }
 
     private static ContentFieldDefinition Build(ContentFieldDefinitionRecord source)
         => source is null ? null : new ContentFieldDefinition(source.Name);

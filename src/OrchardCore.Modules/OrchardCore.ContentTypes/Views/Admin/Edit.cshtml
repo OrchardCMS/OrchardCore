@@ -38,8 +38,11 @@
     if (typePart?.PartDefinition?.Fields != null)
     {
         fieldDefinitions = typePart.PartDefinition.Fields
-        .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
-        .OrderBy(x => x.Order)
+        .Select(field => new
+        {
+            Field = field,
+            Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0"),
+        }).OrderBy(x => x.Order)
         .Select(x => x.Field)
         .ToList();
     }
@@ -110,6 +113,8 @@
         <ul class="list-group sortable" id="parts">
             @foreach (var partDefinition in partDefinitions)
             {
+                var settings = partDefinition.GetSettings<ContentSettings>();
+
                 <li class="list-group-item@(partDefinition == typePart ? " bg-faded" : string.Empty)" style="cursor: move;">
                     <div class="w-100">
                         @partDefinition.DisplayName()
@@ -123,7 +128,10 @@
 
                             <div class="float-end">
                                 <a asp-route-action="EditTypePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                                <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                @if (!settings.IsCodeManaged)
+                                {
+                                    <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                }
                             </div>
                         }
                         else
