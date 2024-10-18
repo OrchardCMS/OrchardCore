@@ -16,7 +16,7 @@ public class ElasticQueryService : IElasticQueryService
         ILogger<ElasticQueryService> logger
         )
     {
-        _elasticClient = elasticClient;
+        _elasticClient = elasticClient;  
         _elasticIndexManager = elasticIndexManager;
         _logger = logger;
     }
@@ -47,6 +47,7 @@ public class ElasticQueryService : IElasticQueryService
                 Fields = deserializedSearchRequest.Fields,
                 Sort = deserializedSearchRequest.Sort,
                 Source = deserializedSearchRequest.Source,
+                Highlight = deserializedSearchRequest.Highlight
             };
 
             var searchResponse = await _elasticClient.SearchAsync<Dictionary<string, object>>(searchRequest);
@@ -72,6 +73,7 @@ public class ElasticQueryService : IElasticQueryService
                 elasticTopDocs.Count = searchResponse.Total;
                 elasticTopDocs.TopDocs = new List<Dictionary<string, object>>(searchResponse.Documents);
                 elasticTopDocs.Fields = hits;
+                elasticTopDocs.Hits = searchResponse.Hits;
             }
             else
             {

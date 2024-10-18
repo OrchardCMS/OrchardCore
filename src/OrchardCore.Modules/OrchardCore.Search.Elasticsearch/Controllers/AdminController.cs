@@ -515,7 +515,9 @@ public sealed class AdminController : Controller
         stopwatch.Start();
 
         var parameters = JConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
-        var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions.Value))));
+        var props = parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions.Value)));
+
+        var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(model.DecodedQuery, _javaScriptEncoder, props);
 
         try
         {
