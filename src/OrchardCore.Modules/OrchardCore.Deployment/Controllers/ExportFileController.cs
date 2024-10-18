@@ -33,7 +33,7 @@ public sealed class ExportFileController : Controller
     [DeleteFileResultFilter]
     public async Task<IActionResult> Execute(long id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Export))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ExportData))
         {
             return Forbid();
         }

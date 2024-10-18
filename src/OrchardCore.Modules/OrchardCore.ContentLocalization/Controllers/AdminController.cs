@@ -47,7 +47,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.LocalizeContent, contentItem))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentLocalizationPermissions.LocalizeContent, contentItem))
         {
             return Forbid();
         }
