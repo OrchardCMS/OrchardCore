@@ -25,25 +25,23 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton<IRewriteRulesStore, RewriteRulesStore>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddScoped<IDisplayDriver<RewriteRule>, RewriteRulesDisplayDriver>();
-
         services.AddPermissionProvider<UrlRewritingPermissionProvider>();
+
         services.AddTransient<IConfigureOptions<RewriteOptions>, RewriteOptionsConfiguration>();
-        services.AddRecipeExecutionStep<UrlRewritingStep>();
+        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        services.AddSingleton<IRewriteRulesStore, RewriteRulesStore>();
         services.AddScoped<IRewriteRulesManager, RewriteRulesManager>();
         services.AddScoped<IRewriteRuleHandler, RewriteRuleHandler>();
-        services.AddScoped<IRewriteRuleHandler, UrlRedirectRuleHandler>();
-        services.AddScoped<IRewriteRuleHandler, UrlRewriteRuleHandler>();
+        services.AddScoped<IDisplayDriver<RewriteRule>, RewriteRulesDisplayDriver>();
 
+        // Add Apache Mod Rewrite options.
         services.AddRewriteRuleSource<UrlRedirectRuleSource>(UrlRedirectRuleSource.SourceName)
+            .AddScoped<IRewriteRuleHandler, UrlRedirectRuleHandler>()
             .AddScoped<IDisplayDriver<RewriteRule>, UrlRedirectRuleDisplayDriver>();
-
         services.AddRewriteRuleSource<UrlRewriteRuleSource>(UrlRewriteRuleSource.SourceName)
+            .AddScoped<IRewriteRuleHandler, UrlRewriteRuleHandler>()
             .AddScoped<IDisplayDriver<RewriteRule>, UrlRewriteRuleDisplayDriver>();
-
-        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -53,5 +51,14 @@ public sealed class Startup : StartupBase
         var rewriteOptions = serviceProvider.GetRequiredService<IOptions<RewriteOptions>>().Value;
 
         app.UseRewriter(rewriteOptions);
+    }
+}
+
+[Feature("OrchardCore.Recipes.Core")]
+public sealed class RecipesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRecipeExecutionStep<UrlRewritingStep>();
     }
 }

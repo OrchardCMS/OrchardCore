@@ -6,7 +6,7 @@ using OrchardCore.UrlRewriting.Models;
 
 namespace OrchardCore.UrlRewriting.Services;
 
-public class RewriteRulesManager : IRewriteRulesManager
+public sealed class RewriteRulesManager : IRewriteRulesManager
 {
     private readonly IRewriteRulesStore _store;
     private readonly IEnumerable<IRewriteRuleHandler> _rewriteRuleHandlers;

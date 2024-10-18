@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Options;
 using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.UrlRewriting;
+namespace OrchardCore.UrlRewriting.Services;
 
-public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+internal sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
     private static readonly ResourceManifest _manifest;
 

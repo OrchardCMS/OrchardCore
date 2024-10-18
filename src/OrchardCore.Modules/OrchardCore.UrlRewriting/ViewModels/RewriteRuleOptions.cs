@@ -12,9 +12,3 @@ public class RewriteRuleOptions
     [BindNever]
     public List<SelectListItem> BulkActions { get; set; }
 }
-
-public enum RewriteRuleAction
-{
-    None,
-    Remove,
-}

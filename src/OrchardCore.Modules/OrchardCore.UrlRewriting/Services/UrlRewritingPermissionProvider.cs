@@ -1,6 +1,6 @@
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.UrlRewriting;
+namespace OrchardCore.UrlRewriting.Services;
 
 public sealed class UrlRewritingPermissionProvider : IPermissionProvider
 {

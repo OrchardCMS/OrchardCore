@@ -5,6 +5,6 @@ using OrchardCore.Modules.Manifest;
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
-    Description = "Enables URL rewrites and redirects for incoming requests.",
+    Description = "Enables URL rewriting for incoming requests.",
     Category = "Infrastructure"
 )]
