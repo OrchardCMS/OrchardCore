@@ -216,7 +216,7 @@ public class AutoSetupMiddleware
         shellSettings["TablePrefix"] = setupOptions.DatabaseTablePrefix;
         shellSettings["Schema"] = setupOptions.DatabaseSchema;
         shellSettings["DatabaseProvider"] = setupOptions.DatabaseProvider;
-        shellSettings["Secret"] = Guid.NewGuid().ToString();
+        shellSettings["Secret"] = Ulid.NewUlid().ToGuid().ToString();
         shellSettings["RecipeName"] = setupOptions.RecipeName;
         shellSettings["FeatureProfile"] = setupOptions.FeatureProfile;
 

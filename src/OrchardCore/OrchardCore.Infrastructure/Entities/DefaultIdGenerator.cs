@@ -8,7 +8,7 @@ public class DefaultIdGenerator : IIdGenerator
     public string GenerateUniqueId()
     {
         // Generate a base32 Guid value
-        var guid = Guid.NewGuid().ToByteArray();
+        var guid = Ulid.NewUlid().ToGuid().ToByteArray();
 
         var hs = BitConverter.ToInt64(guid, 0);
         var ls = BitConverter.ToInt64(guid, 8);

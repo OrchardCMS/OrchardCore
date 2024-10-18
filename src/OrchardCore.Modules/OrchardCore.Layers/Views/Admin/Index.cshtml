@@ -72,7 +72,7 @@
 
                                 if (widgetContentTypes.Count > 0)
                                 {
-                                    var htmlId = Guid.NewGuid().ToString("n");
+                                    var htmlId = Ulid.NewUlid().ToGuid().ToString("n");
 
                                     <div class="dropdown">
                                         <button type="button" class="btn btn-primary btn-sm dropdown-toggle" id="@htmlId" data-bs-toggle="dropdown" aria-expanded="false">

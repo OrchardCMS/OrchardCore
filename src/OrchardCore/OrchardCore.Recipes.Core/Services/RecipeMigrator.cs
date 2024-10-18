@@ -52,7 +52,7 @@ public class RecipeMigrator : IRecipeMigrator
         await _environmentProviders.OrderBy(x => x.Order)
             .InvokeAsync((provider, env) => provider.PopulateEnvironmentAsync(env), environment, _logger);
 
-        var executionId = Guid.NewGuid().ToString("n");
+        var executionId = Ulid.NewUlid().ToGuid().ToString("n");
 
         return await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, environment, CancellationToken.None);
     }
