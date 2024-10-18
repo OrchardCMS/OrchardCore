@@ -4,20 +4,16 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Deployment.Steps;
 
-public sealed class RecipeFileDeploymentStepDriver : DisplayDriver<DeploymentStep, RecipeFileDeploymentStep>
+public sealed class RecipeFileDeploymentStepFieldsDriver
+    : DeploymentStepFieldsDriverBase<RecipeFileDeploymentStep, RecipeFileDeploymentStepViewModel>
 {
-    public override Task<IDisplayResult> DisplayAsync(RecipeFileDeploymentStep step, BuildDisplayContext context)
+    public RecipeFileDeploymentStepFieldsDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        return
-            CombineAsync(
-                View("RecipeFileDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("RecipeFileDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
     }
 
-    public override IDisplayResult Edit(RecipeFileDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(RecipeFileDeploymentStep step, Action<RecipeFileDeploymentStepViewModel> initializeAction)
     {
-        return Initialize<RecipeFileDeploymentStepViewModel>("RecipeFileDeploymentStep_Fields_Edit", model =>
+        return base.Edit(step, model =>
         {
             model.RecipeName = step.RecipeName;
             model.DisplayName = step.DisplayName;
@@ -28,7 +24,7 @@ public sealed class RecipeFileDeploymentStepDriver : DisplayDriver<DeploymentSte
             model.IsSetupRecipe = step.IsSetupRecipe;
             model.Categories = step.Categories;
             model.Tags = step.Tags;
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(RecipeFileDeploymentStep step, UpdateEditorContext context)

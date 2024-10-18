@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
@@ -7,7 +8,8 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Deployment.Steps;
 
-public sealed class JsonRecipeDeploymentStepDriver : DisplayDriver<DeploymentStep, JsonRecipeDeploymentStep>
+public sealed class JsonRecipeDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<JsonRecipeDeploymentStep, JsonRecipeDeploymentStepViewModel>
 {
     /// <summary>
     /// A limited schema for recipe steps. Does not include any step data.
@@ -30,27 +32,18 @@ public sealed class JsonRecipeDeploymentStepDriver : DisplayDriver<DeploymentSte
 
     internal readonly IStringLocalizer S;
 
-    public JsonRecipeDeploymentStepDriver(IStringLocalizer<JsonRecipeDeploymentStepDriver> stringLocalizer)
+    public JsonRecipeDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        S = stringLocalizer;
+        S = serviceProvider.GetService<IStringLocalizer<JsonRecipeDeploymentStepDriver>>();
     }
 
-    public override Task<IDisplayResult> DisplayAsync(JsonRecipeDeploymentStep step, BuildDisplayContext context)
+    public override IDisplayResult Edit(JsonRecipeDeploymentStep step, Action<JsonRecipeDeploymentStepViewModel> intializeAction)
     {
-        return
-            CombineAsync(
-                View("JsonRecipeDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("JsonRecipeDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
-
-    public override IDisplayResult Edit(JsonRecipeDeploymentStep step, BuildEditorContext context)
-    {
-        return Initialize<JsonRecipeDeploymentStepViewModel>("JsonRecipeDeploymentStep_Fields_Edit", model =>
+        return base.Edit(step, model =>
         {
             model.Json = step.Json;
             model.Schema = Schema;
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(JsonRecipeDeploymentStep step, UpdateEditorContext context)

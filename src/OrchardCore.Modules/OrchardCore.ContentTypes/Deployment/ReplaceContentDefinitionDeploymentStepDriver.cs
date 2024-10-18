@@ -5,25 +5,21 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentTypes.Deployment;
 
-public sealed class ReplaceContentDefinitionDeploymentStepDriver : DisplayDriver<DeploymentStep, ReplaceContentDefinitionDeploymentStep>
+public sealed class ReplaceContentDefinitionDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<ReplaceContentDefinitionDeploymentStep, ReplaceContentDefinitionStepViewModel>
 {
-    public override Task<IDisplayResult> DisplayAsync(ReplaceContentDefinitionDeploymentStep step, BuildDisplayContext context)
+    public ReplaceContentDefinitionDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        return
-            CombineAsync(
-                View("ReplaceContentDefinitionDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("ReplaceContentDefinitionDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
     }
 
-    public override IDisplayResult Edit(ReplaceContentDefinitionDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(ReplaceContentDefinitionDeploymentStep step, Action<ReplaceContentDefinitionStepViewModel> intializeAction)
     {
-        return Initialize<ReplaceContentDefinitionStepViewModel>("ReplaceContentDefinitionDeploymentStep_Fields_Edit", model =>
+        return base.Edit(step, model =>
         {
             model.ContentParts = step.ContentParts;
             model.ContentTypes = step.ContentTypes;
             model.IncludeAll = step.IncludeAll;
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ReplaceContentDefinitionDeploymentStep step, UpdateEditorContext context)

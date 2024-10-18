@@ -5,24 +5,17 @@ using OrchardCore.Templates.ViewModels;
 
 namespace OrchardCore.Templates.Deployment;
 
-public sealed class AllTemplatesDeploymentStepDriver : DisplayDriver<DeploymentStep, AllTemplatesDeploymentStep>
+public sealed class AllTemplatesDeploymentStepDriver
+    : DeploymentStepDriverBase<AllTemplatesDeploymentStep, AllTemplatesDeploymentStepViewModel>
 {
-    public override Task<IDisplayResult> DisplayAsync(AllTemplatesDeploymentStep step, BuildDisplayContext context)
+    public override IDisplayResult Edit(AllTemplatesDeploymentStep step, Action<AllTemplatesDeploymentStepViewModel> intializeAction)
     {
-        return
-            CombineAsync(
-                View("AllTemplatesDeploymentStep_Summary", step).Location("Summary", "Content"),
-                View("AllTemplatesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
-
-    public override IDisplayResult Edit(AllTemplatesDeploymentStep step, BuildEditorContext context)
-    {
-        return Initialize<AllTemplatesDeploymentStepViewModel>("AllTemplatesDeploymentStep_Fields_Edit", model =>
+        return base.Edit(step, model =>
         {
             model.ExportAsFiles = step.ExportAsFiles;
-        }).Location("Content");
+        });
     }
+
     public override async Task<IDisplayResult> UpdateAsync(AllTemplatesDeploymentStep step, UpdateEditorContext context)
     {
         await context.Updater.TryUpdateModelAsync(step, Prefix, x => x.ExportAsFiles);

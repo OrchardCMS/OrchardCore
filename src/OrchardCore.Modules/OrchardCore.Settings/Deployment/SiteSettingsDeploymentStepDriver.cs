@@ -5,20 +5,16 @@ using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Deployment;
 
-public sealed class SiteSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, SiteSettingsDeploymentStep>
+public sealed class SiteSettingsDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<SiteSettingsDeploymentStep>
 {
-    public override Task<IDisplayResult> DisplayAsync(SiteSettingsDeploymentStep step, BuildDisplayContext context)
+    public SiteSettingsDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        return
-            CombineAsync(
-                View("SiteSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("SiteSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
     }
 
     public override IDisplayResult Edit(SiteSettingsDeploymentStep step, BuildEditorContext context)
     {
-        return Initialize<SiteSettingsDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Edit", model =>
+        return Initialize<SiteSettingsDeploymentStepViewModel>(EditShape, model =>
         {
             model.Settings = step.Settings;
         }).Location("Content");
