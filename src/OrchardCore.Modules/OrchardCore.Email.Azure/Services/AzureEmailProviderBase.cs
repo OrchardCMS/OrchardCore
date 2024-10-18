@@ -1,3 +1,4 @@
+using System.Net.Mail;
 using Azure;
 using Azure.Communication.Email;
 using Microsoft.Extensions.Localization;
@@ -161,19 +162,19 @@ public abstract class AzureEmailProviderBase : IEmailProvider
         List<EmailAddress> toRecipients = null;
         if (recipients.To.Count > 0)
         {
-            toRecipients = [.. recipients.To.Select(r => new EmailAddress(r))];
+            toRecipients = [.. recipients.To.Select(ConvertEmailAddressToAzureEmailAddress)];
         }
 
         List<EmailAddress> ccRecipients = null;
         if (recipients.Cc.Count > 0)
         {
-            ccRecipients = [.. recipients.Cc.Select(r => new EmailAddress(r))];
+            ccRecipients = [.. recipients.Cc.Select(ConvertEmailAddressToAzureEmailAddress)];
         }
 
         List<EmailAddress> bccRecipients = null;
         if (recipients.Bcc.Count > 0)
         {
-            bccRecipients = [.. recipients.Bcc.Select(r => new EmailAddress(r))];
+            bccRecipients = [.. recipients.Bcc.Select(ConvertEmailAddressToAzureEmailAddress)];
         }
 
         var content = new EmailContent(message.Subject);
@@ -187,13 +188,14 @@ public abstract class AzureEmailProviderBase : IEmailProvider
         }
 
         var emailMessage = new EmailMessage(
-            message.From,
+            // For compatibility with configuration for other providers that allow a sender with display name.
+            CreateMailAddressOrFail(message.From).EmailAddress,
             new EmailRecipients(toRecipients, ccRecipients, bccRecipients),
             content);
 
         foreach (var address in message.GetReplyTo())
         {
-            emailMessage.ReplyTo.Add(new EmailAddress(address));
+            emailMessage.ReplyTo.Add(ConvertEmailAddressToAzureEmailAddress(address));
         }
 
         foreach (var attachment in message.Attachments)
@@ -223,5 +225,22 @@ public abstract class AzureEmailProviderBase : IEmailProvider
         }
 
         return emailMessage;
+    }
+
+    private static EmailAddress ConvertEmailAddressToAzureEmailAddress(string emailWithDisplayName)
+    {
+        var (displayName, emailAddress) = CreateMailAddressOrFail(emailWithDisplayName);
+
+        return new EmailAddress(emailAddress, displayName);
+    }
+
+    private static (string DisplayName, string EmailAddress) CreateMailAddressOrFail(string email)
+    {
+        if (MailAddress.TryCreate(email, out var mailAddress))
+        {
+            return (mailAddress.DisplayName, mailAddress.Address);
+        }
+
+        throw new ArgumentException($"The email address '{email}' is invalid.");
     }
 }
