@@ -546,6 +546,17 @@ public sealed class ElasticIndexManager
                     )
                 )
             );
+        // DynamicTemplates mapping for Geo fields, the GeoPointFieldIndexHandler adds a Location index by default.
+        await _elasticClient.MapAsync<object>(p => p
+            .Index(fullIndexName)
+            .DynamicTemplates(d => d
+                .DynamicTemplate("*.Location", dyn => dyn
+                    .MatchMappingType("object")
+                    .PathMatch("*" + ".Location")
+                    .Mapping(m => m.GeoPoint(g => g))
+                    )
+                )
+            );
 
         return response.Acknowledged;
     }
@@ -1028,6 +1039,13 @@ public sealed class ElasticIndexManager
                             AddValue(entries, entry.Name, stringValue);
                         }
                     }
+                    break;
+                case DocumentIndex.Types.GeoPoint:
+                    if (entry.Value is DocumentIndex.GeoPoint point)
+                    {
+                        AddValue(entries, entry.Name, new GeoLocation((double)point.Latitude, (double)point.Longitude));
+                    }
+
                     break;
             }
         }
