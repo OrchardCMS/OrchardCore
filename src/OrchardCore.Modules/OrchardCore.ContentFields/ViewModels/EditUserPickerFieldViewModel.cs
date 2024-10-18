@@ -23,6 +23,9 @@ public class EditUserPickerFieldViewModel
 
     [BindNever]
     public IList<VueMultiselectUserViewModel> SelectedUsers { get; set; } = [];
+
+    [BindNever]
+    public bool IsNew { get; set; }
 }
 
 public class VueMultiselectUserViewModel
