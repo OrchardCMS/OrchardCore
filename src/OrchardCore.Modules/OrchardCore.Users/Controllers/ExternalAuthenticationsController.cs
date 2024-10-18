@@ -24,8 +24,6 @@ namespace OrchardCore.Users.Controllers;
 [Feature(UserConstants.Features.ExternalAuthentication)]
 public sealed class ExternalAuthenticationsController : AccountBaseController
 {
-    public const string DefaultExternalLoginProtector = "DefaultExternalLogin";
-
     private readonly SignInManager<IUser> _signInManager;
     private readonly UserManager<IUser> _userManager;
     private readonly ILogger _logger;
@@ -73,39 +71,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         H = htmlLocalizer;
         S = stringLocalizer;
-    }
-
-    [AllowAnonymous]
-    public async Task<IActionResult> DefaultExternalLogin(string protectedToken, string returnUrl = null)
-    {
-        if (_externalLoginOption.UseExternalProviderIfOnlyOneDefined)
-        {
-            var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
-            if (schemes.Count() == 1)
-            {
-                var dataProtector = _dataProtectionProvider.CreateProtector(DefaultExternalLoginProtector)
-                    .ToTimeLimitedDataProtector();
-
-                try
-                {
-                    if (Guid.TryParse(dataProtector.Unprotect(protectedToken), out var token))
-                    {
-                        var tokenBytes = await _distributedCache.GetAsync(token.ToString());
-                        var cacheToken = new Guid(tokenBytes);
-                        if (token.Equals(cacheToken))
-                        {
-                            return ExternalLogin(schemes.First().Name, returnUrl);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "An error occurred while validating {DefaultExternalLogin} token", DefaultExternalLoginProtector);
-                }
-            }
-        }
-
-        return RedirectToLogin();
     }
 
     [HttpPost]
