@@ -336,78 +336,80 @@ public class ContentDefinitionManager : IContentDefinitionManager
         ContentTypeDefinitionRecord source,
         IList<ContentPartDefinitionRecord> partDefinitionRecords)
     {
-        if (source is not null)
+        if (source is null)
         {
-            var context = new LoadedContentTypeContext(source);
-
-            _handlers.Invoke((handler, ctx) => handler.TypeLoaded(ctx), context, _logger);
-
-            return new ContentTypeDefinition(
-                source.Name,
-                source.DisplayName,
-                source.ContentTypePartDefinitionRecords.Select(typePart => Build(
-                    typePart,
-                    partDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(typePart.PartName)))),
-                source.Settings);
+            return null;
         }
 
-        return null;
+        var context = new LoadingContentTypeContext(source);
+
+        _handlers.Invoke((handler, ctx) => handler.LoadingContentType(ctx), context, _logger);
+
+        return new ContentTypeDefinition(
+            source.Name,
+            source.DisplayName,
+            source.ContentTypePartDefinitionRecords.Select(typePart => Build(
+                typePart,
+                partDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(typePart.PartName)))),
+            source.Settings);
     }
 
     private ContentTypePartDefinition Build(
         ContentTypePartDefinitionRecord source,
         ContentPartDefinitionRecord partDefinitionRecord)
     {
-        if (source is not null)
+        if (source is null)
         {
-            var context = new LoadedContentTypePartContext(source);
-
-            _handlers.Invoke((handler, ctx) => handler.TypePartLoaded(ctx), context, _logger);
-
-            return new ContentTypePartDefinition(
-                source.Name,
-                Build(partDefinitionRecord) ?? new ContentPartDefinition(source.PartName, [], []),
-                source.Settings);
+            return null;
         }
 
-        return null;
+        var context = new LoadingContentTypePartContext(source);
+
+        _handlers.Invoke((handler, ctx) => handler.LoadingContentTypePart(ctx), context, _logger);
+
+        return new ContentTypePartDefinition(
+            source.Name,
+            Build(partDefinitionRecord) ?? new ContentPartDefinition(source.PartName, [], []),
+            source.Settings);
     }
 
     private ContentPartDefinition Build(ContentPartDefinitionRecord source)
     {
-        if (source is not null)
+        if (source is null)
         {
-            return new ContentPartDefinition(
-                source.Name,
-                source.ContentPartFieldDefinitionRecords.Select(Build),
-                source.Settings);
+            return null;
         }
 
-        return null;
+        return new ContentPartDefinition(
+            source.Name,
+            source.ContentPartFieldDefinitionRecords.Select(Build),
+            source.Settings);
     }
 
     private ContentPartFieldDefinition Build(ContentPartFieldDefinitionRecord source)
     {
-        if (source is not null)
+        if (source is null)
         {
-            var context = new LoadedContentPartFieldContext(source);
-
-            _handlers.Invoke((handler, ctx) => handler.PartFieldLoaded(ctx), context, _logger);
-
-            return new ContentPartFieldDefinition(
-                Build(new ContentFieldDefinitionRecord
-                {
-                    Name = source.FieldName,
-                }),
-                source.Name,
-                source.Settings);
+            return null;
         }
 
-        return null;
+        var context = new LoadingContentPartFieldContext(source);
+
+        _handlers.Invoke((handler, ctx) => handler.LoadingContentPartField(ctx), context, _logger);
+
+        return new ContentPartFieldDefinition(
+            Build(new ContentFieldDefinitionRecord
+            {
+                Name = source.FieldName,
+            }),
+            source.Name,
+            source.Settings);
     }
 
     private static ContentFieldDefinition Build(ContentFieldDefinitionRecord source)
-        => source is null ? null : new ContentFieldDefinition(source.Name);
+        => source is null
+        ? null
+        : new ContentFieldDefinition(source.Name);
 
     private async Task UpdateContentDefinitionRecordAsync(ContentDefinitionRecord document)
     {
@@ -423,7 +425,8 @@ public class ContentDefinitionManager : IContentDefinitionManager
     /// </summary>
     private void CheckDocumentIdentifier(ContentDefinitionRecord document)
     {
-        if (!_memoryCache.TryGetValue<Document>(CacheKey, out var cacheEntry) || cacheEntry.Identifier != document.Identifier)
+        if (!_memoryCache.TryGetValue<Document>(CacheKey, out var cacheEntry) ||
+            cacheEntry.Identifier != document.Identifier)
         {
             cacheEntry = new Document()
             {

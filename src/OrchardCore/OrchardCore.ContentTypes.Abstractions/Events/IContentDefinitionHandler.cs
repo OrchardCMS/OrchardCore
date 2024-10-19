@@ -2,9 +2,9 @@ namespace OrchardCore.ContentTypes.Events;
 
 public interface IContentDefinitionHandler
 {
-    void TypeLoaded(LoadedContentTypeContext context);
+    void LoadingContentType(LoadingContentTypeContext context);
 
-    void TypePartLoaded(LoadedContentTypePartContext context);
+    void LoadingContentTypePart(LoadingContentTypePartContext context);
 
-    void PartFieldLoaded(LoadedContentPartFieldContext context);
+    void LoadingContentPartField(LoadingContentPartFieldContext context);
 }

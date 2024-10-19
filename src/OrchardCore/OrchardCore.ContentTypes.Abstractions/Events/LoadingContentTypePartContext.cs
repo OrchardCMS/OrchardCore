@@ -2,11 +2,11 @@
 
 namespace OrchardCore.ContentTypes.Events;
 
-public class LoadedContentTypePartContext
+public class LoadingContentTypePartContext
 {
     public ContentTypePartDefinitionRecord Record { get; }
 
-    public LoadedContentTypePartContext(ContentTypePartDefinitionRecord record)
+    public LoadingContentTypePartContext(ContentTypePartDefinitionRecord record)
     {
         Record = record;
     }
