@@ -5,18 +5,18 @@ namespace OrchardCore.UrlRewriting.Rules;
 
 internal sealed class ExcludeUrlPrefixRule : IRule
 {
-    private readonly PathString _adminUrlPrefix;
+    private readonly PathString _prefix;
 
-    public ExcludeUrlPrefixRule(string prefix)
+    public ExcludeUrlPrefixRule(PathString prefix)
     {
         ArgumentException.ThrowIfNullOrEmpty(prefix);
 
-        _adminUrlPrefix = new PathString('/' + prefix.TrimStart('/'));
+        _prefix = prefix;
     }
 
     public void ApplyRule(RewriteContext context)
     {
-        if (context.HttpContext.Request.Path.StartsWithSegments(_adminUrlPrefix))
+        if (context.HttpContext.Request.Path.StartsWithSegments(_prefix))
         {
             context.Result = RuleResult.SkipRemainingRules;
 

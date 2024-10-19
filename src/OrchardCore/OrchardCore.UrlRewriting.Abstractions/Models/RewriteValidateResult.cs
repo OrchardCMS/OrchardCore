@@ -6,7 +6,8 @@ public class RewriteValidateResult
 {
     private readonly List<ValidationResult> _errors = [];
 
-    public IReadOnlyList<ValidationResult> Errors => _errors;
+    public IReadOnlyList<ValidationResult> Errors 
+        => _errors;
 
     /// <summary>
     /// Success may be altered by a handler during the validating async event.
@@ -16,6 +17,7 @@ public class RewriteValidateResult
     public void Fail(ValidationResult error)
     {
         Succeeded = false;
+
         _errors.Add(error);
     }
 }

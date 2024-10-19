@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -43,7 +44,9 @@ public sealed class RewriteOptionsConfiguration : IConfigureOptions<RewriteOptio
         if (options.Rules.Count > 0)
         {
             // Exclude URIs prefixed with 'admin' to prevent accidental access restrictions caused by the provided rules.
-            options.Rules.Insert(0, new ExcludeUrlPrefixRule(_adminOptions.AdminUrlPrefix));
+            var prefix = new PathString('/' + _adminOptions.AdminUrlPrefix.TrimStart('/'));
+            
+            options.Rules.Insert(0, new ExcludeUrlPrefixRule(prefix));
         }
     }
 }

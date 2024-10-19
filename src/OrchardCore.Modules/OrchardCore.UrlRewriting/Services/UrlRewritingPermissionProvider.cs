@@ -18,6 +18,6 @@ public sealed class UrlRewritingPermissionProvider : IPermissionProvider
         {
             Name = OrchardCoreConstants.Roles.Administrator,
             Permissions = _allPermissions,
-        }
+        },
     ];
 }

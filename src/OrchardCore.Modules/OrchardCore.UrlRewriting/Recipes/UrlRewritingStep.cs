@@ -9,7 +9,7 @@ using OrchardCore.UrlRewriting.Models;
 namespace OrchardCore.UrlRewriting.Recipes;
 
 /// <summary>
-/// This recipe step creates a set of url rewrites.
+/// This recipe step creates or updates a set of URL rewrite rule.
 /// </summary>
 public sealed class UrlRewritingStep : NamedRecipeStepHandler
 {
@@ -32,8 +32,9 @@ public sealed class UrlRewritingStep : NamedRecipeStepHandler
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
         var model = context.Step.ToObject<UrlRewritingStepModel>(_jsonSerializerOptions);
+        var tokens = model.Rules.Cast<JsonObject>() ?? [];
 
-        foreach (var token in model.Rules.Cast<JsonObject>())
+        foreach (var token in tokens)
         {
             RewriteRule rule = null;
 

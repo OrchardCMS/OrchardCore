@@ -1,6 +1,6 @@
 namespace OrchardCore.UrlRewriting.Models;
 
-public class UrlRewriteSourceMetadata
+public sealed class UrlRewriteSourceMetadata
 {
     public string Pattern { get; set; }
 

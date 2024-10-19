@@ -50,7 +50,7 @@ public sealed class Startup : StartupBase
     }
 }
 
-[Feature("OrchardCore.Recipes.Core")]
+[RequireFeatures("OrchardCore.Recipes.Core")]
 public sealed class RecipesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
