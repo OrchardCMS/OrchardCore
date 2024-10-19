@@ -8,7 +8,7 @@
 <div class="col">
     <div class="card h-100">
         <div class="card-body">
-            <h4>@Model.Source</h4>
+            <h4>@(service?.DisplayName ?? Model.Source)</h4>
             <p class="hint">@service?.Description</p>
         </div>
         <div class="card-footer text-muted text-sm-end">

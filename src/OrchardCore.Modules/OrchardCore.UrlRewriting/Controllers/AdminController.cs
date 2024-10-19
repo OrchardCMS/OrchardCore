@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -23,6 +25,8 @@ public sealed class AdminController : Controller
     private readonly INotifier _notifier;
     private readonly IDisplayManager<RewriteRule> _rewriteRuleDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger _logger;
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IEnumerable<IUrlRewriteRuleSource> _urlRewritingRuleSources;
     private readonly IRewriteRulesManager _rewriteRulesManager;
@@ -38,6 +42,8 @@ public sealed class AdminController : Controller
         IEnumerable<IUrlRewriteRuleSource> urlRewritingRuleSources,
         IRewriteRulesManager rewriteRulesManager,
         IUpdateModelAccessor updateModelAccessor,
+        IServiceProvider serviceProvider,
+        ILogger<AdminController> logger,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer
         )
@@ -49,6 +55,8 @@ public sealed class AdminController : Controller
         _urlRewritingRuleSources = urlRewritingRuleSources;
         _rewriteRulesManager = rewriteRulesManager;
         _updateModelAccessor = updateModelAccessor;
+        _serviceProvider = serviceProvider;
+        _logger = logger;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
@@ -66,7 +74,7 @@ public sealed class AdminController : Controller
         {
             Rules = [],
             Options = options,
-            SourceNames = _urlRewritingRuleSources.Select(x => x.Name),
+            SourceNames = _urlRewritingRuleSources.Select(x => x.TechnicalName),
         };
 
         foreach (var rule in rules)
@@ -93,6 +101,15 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
+        var ruleSource = _serviceProvider.GetKeyedService<IUrlRewriteRuleSource>(id);
+
+        if (ruleSource == null)
+        {
+            await _notifier.ErrorAsync(H["Unable to find a rule-source that can handle the source '{Source}'.", id]);
+
+            return RedirectToAction(nameof(Index));
+        }
+
         var rule = await _rewriteRulesManager.NewAsync(id);
 
         if (rule == null)
@@ -102,9 +119,13 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var shape = await _rewriteRuleDisplayManager.BuildEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: true);
+        var model = new RewriteRuleViewModel
+        {
+            DisplayName = ruleSource.DisplayName,
+            Editor = await _rewriteRuleDisplayManager.BuildEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: true),
+        };
 
-        return View(shape);
+        return View(model);
     }
 
     [HttpPost]
@@ -116,6 +137,15 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
+        var ruleSource = _serviceProvider.GetKeyedService<IUrlRewriteRuleSource>(id);
+
+        if (ruleSource == null)
+        {
+            await _notifier.ErrorAsync(H["Unable to find a rule-source that can handle the source '{Source}'.", id]);
+
+            return RedirectToAction(nameof(Index));
+        }
+
         var rule = await _rewriteRulesManager.NewAsync(id);
 
         if (rule == null)
@@ -125,7 +155,11 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var shape = await _rewriteRuleDisplayManager.UpdateEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: true);
+        var model = new RewriteRuleViewModel
+        {
+            DisplayName = ruleSource.DisplayName,
+            Editor = await _rewriteRuleDisplayManager.UpdateEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: true),
+        };
 
         if (ModelState.IsValid)
         {
@@ -138,7 +172,7 @@ public sealed class AdminController : Controller
 
         _shellReleaseManager.SuspendReleaseRequest();
 
-        return View(shape);
+        return View(model);
     }
 
     public async Task<ActionResult> Edit(string id)
@@ -155,9 +189,13 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var shape = await _rewriteRuleDisplayManager.BuildEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: false);
+        var model = new RewriteRuleViewModel
+        {
+            DisplayName = rule.Name,
+            Editor = await _rewriteRuleDisplayManager.BuildEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: false),
+        };
 
-        return View(shape);
+        return View(model);
     }
 
     [HttpPost]
@@ -176,11 +214,18 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var shape = await _rewriteRuleDisplayManager.UpdateEditorAsync(rule, _updateModelAccessor.ModelUpdater, isNew: false);
+        // Clone the rule to prevent modifying the original instance in the store.
+        var ruleToUpdate = rule.Clone();
+
+        var model = new RewriteRuleViewModel
+        {
+            DisplayName = ruleToUpdate.Name,
+            Editor = await _rewriteRuleDisplayManager.UpdateEditorAsync(ruleToUpdate, _updateModelAccessor.ModelUpdater, isNew: false),
+        };
 
         if (ModelState.IsValid)
         {
-            await _rewriteRulesManager.SaveAsync(rule);
+            await _rewriteRulesManager.SaveAsync(ruleToUpdate);
 
             await _notifier.SuccessAsync(H["Rule updated successfully."]);
 
@@ -189,7 +234,7 @@ public sealed class AdminController : Controller
 
         _shellReleaseManager.SuspendReleaseRequest();
 
-        return View(shape);
+        return View(model);
     }
 
     [HttpPost]

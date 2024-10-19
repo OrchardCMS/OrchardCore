@@ -3,7 +3,7 @@
 
 @model ListRewriteRuleViewModel
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["URL Rewriting"])</h1></zone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["URL Rewriting Rules"])</h1></zone>
 
 @* the form is necessary to generate an antiforgery token for the delete and toggle actions *@
 <form asp-action="Index" method="post" class="no-multisubmit">
@@ -131,7 +131,7 @@
 <script asp-src="~/OrchardCore.UrlRewriting/Scripts/admin-ui.min.js" debug-src="~/OrchardCore.UrlRewriting/Scripts/admin-ui.min.js" asp-name="url-rewriting-rules-admin" at="Foot" depends-on="sortable-rules"></script>
 
 <script at="Foot" depends-on="url-rewriting-rules-admin">
-            document.addEventListener('DOMContentLoaded', (e) => {
+                    document.addEventListener('DOMContentLoaded', (e) => {
     urlRewritingAdmin.initialize('@Url.RouteUrl(SortRulesEndpoint.RouteName, new { area = "OrchardCore.UrlRewriting" })','@T["Unable to sort the list. Try refreshing your page and try again."]','@T["selected"]');
         });
 </script>

@@ -16,11 +16,14 @@ public sealed class UrlRedirectRuleSource : IUrlRewriteRuleSource
     public UrlRedirectRuleSource(IStringLocalizer<UrlRedirectRuleSource> stringLocalizer)
     {
         S = stringLocalizer;
+        DisplayName = S["Redirect"];
         Description = S["URL Redirect Rule"];
     }
 
-    public string Name
+    public string TechnicalName
         => SourceName;
+
+    public LocalizedString DisplayName { get; }
 
     public LocalizedString Description { get; }
 

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Rewrite;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.UrlRewriting.Rules;
@@ -8,16 +9,16 @@ namespace OrchardCore.UrlRewriting.Services;
 public sealed class RewriteOptionsConfiguration : IConfigureOptions<RewriteOptions>
 {
     private readonly IRewriteRulesStore _rewriteRulesStore;
-    private readonly IEnumerable<IUrlRewriteRuleSource> _sources;
+    private readonly IServiceProvider _serviceProvider;
     private readonly AdminOptions _adminOptions;
 
     public RewriteOptionsConfiguration(
         IRewriteRulesStore rewriteRulesStore,
-        IEnumerable<IUrlRewriteRuleSource> sources,
+        IServiceProvider serviceProvider,
         IOptions<AdminOptions> adminOptions)
     {
         _rewriteRulesStore = rewriteRulesStore;
-        _sources = sources;
+        _serviceProvider = serviceProvider;
         _adminOptions = adminOptions.Value;
     }
 
@@ -29,7 +30,7 @@ public sealed class RewriteOptionsConfiguration : IConfigureOptions<RewriteOptio
 
         foreach (var rule in rules.OrderBy(r => r.Order).ThenBy(r => r.CreatedUtc))
         {
-            var source = _sources.FirstOrDefault(x => x.Name == rule.Source);
+            var source = _serviceProvider.GetKeyedService<IUrlRewriteRuleSource>(rule.Source);
 
             if (source == null)
             {

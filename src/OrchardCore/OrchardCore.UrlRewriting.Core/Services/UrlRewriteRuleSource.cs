@@ -16,11 +16,14 @@ public sealed class UrlRewriteRuleSource : IUrlRewriteRuleSource
     public UrlRewriteRuleSource(IStringLocalizer<UrlRewriteRuleSource> stringLocalizer)
     {
         S = stringLocalizer;
+        DisplayName = S["Rewrite"];
         Description = S["URL Rewrite Rule"];
     }
 
-    public string Name
+    public string TechnicalName
         => SourceName;
+
+    public LocalizedString DisplayName { get; }
 
     public LocalizedString Description { get; }
 

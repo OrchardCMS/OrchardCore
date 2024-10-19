@@ -1,8 +1,10 @@
-<zone Name="Title"><h1>@RenderTitleSegments(T["Edit rule"])</h1></zone>
+@model RewriteRuleViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit '{0}' rule", Model.DisplayName])</h1></zone>
 
 <form method="post" asp-route-id="@ViewContext.HttpContext.Request.RouteValues["id"]" enctype="multipart/form-data" class="no-multisubmit">
     @Html.ValidationSummary()
-    @await DisplayAsync(Model)
+    @await DisplayAsync(Model.Editor)
 
     <button class="btn btn-primary" type="submit">@T["Save"]</button>
 

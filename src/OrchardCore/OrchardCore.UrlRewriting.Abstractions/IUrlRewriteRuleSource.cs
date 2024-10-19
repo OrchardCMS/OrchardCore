@@ -13,7 +13,12 @@ public interface IUrlRewriteRuleSource
     /// It should be unique across different sources to avoid conflicts.
     /// </para>
     /// </summary>
-    string Name { get; }
+    string TechnicalName { get; }
+
+    /// <summary>
+    /// Gets a localized display name for the rule source.
+    /// </summary>
+    LocalizedString DisplayName { get; }
 
     /// <summary>
     /// Gets a localized description for the rule source.
