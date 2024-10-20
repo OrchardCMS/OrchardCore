@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -8,38 +9,28 @@ using OrchardCore.Queries.ViewModels;
 
 namespace OrchardCore.Queries.Deployment;
 
-public sealed class QueryBasedContentDeploymentStepDriver : DisplayDriver<DeploymentStep, QueryBasedContentDeploymentStep>
+public sealed class QueryBasedContentDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<QueryBasedContentDeploymentStep, QueryBasedContentDeploymentStepViewModel>
 {
     private readonly IQueryManager _queryManager;
 
     internal readonly IStringLocalizer S;
 
-    public QueryBasedContentDeploymentStepDriver(
-        IQueryManager queryManager,
-        IStringLocalizer<QueryBasedContentDeploymentStepDriver> stringLocalizer)
+    public QueryBasedContentDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _queryManager = queryManager;
-        S = stringLocalizer;
+        _queryManager = serviceProvider.GetService<IQueryManager>();
+        S = serviceProvider.GetService<IStringLocalizer<QueryBasedContentDeploymentStepDriver>>();
     }
 
-    public override Task<IDisplayResult> DisplayAsync(QueryBasedContentDeploymentStep step, BuildDisplayContext context)
+    public override IDisplayResult Edit(QueryBasedContentDeploymentStep step, Action<QueryBasedContentDeploymentStepViewModel> intializeAction)
     {
-        return
-            CombineAsync(
-                View("QueryBasedContentDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("QueryBasedContentDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
-
-    public override IDisplayResult Edit(QueryBasedContentDeploymentStep step, BuildEditorContext context)
-    {
-        return Initialize<QueryBasedContentDeploymentStepViewModel>("QueryBasedContentDeploymentStep_Fields_Edit", async model =>
+        return base.Edit(step, async model =>
         {
             model.QueryName = step.QueryName;
             model.QueryParameters = step.QueryParameters;
             model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
             model.Queries = await _queryManager.ListQueriesAsync(true);
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(QueryBasedContentDeploymentStep step, UpdateEditorContext context)

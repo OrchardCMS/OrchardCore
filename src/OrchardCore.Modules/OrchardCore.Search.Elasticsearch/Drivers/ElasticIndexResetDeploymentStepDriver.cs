@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -6,32 +7,24 @@ using OrchardCore.Search.Elasticsearch.ViewModels;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 
-public sealed class ElasticIndexResetDeploymentStepDriver : DisplayDriver<DeploymentStep, ElasticIndexResetDeploymentStep>
+public sealed class ElasticIndexResetDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<ElasticIndexResetDeploymentStep, ElasticIndexResetDeploymentStepViewModel>
 {
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
 
-    public ElasticIndexResetDeploymentStepDriver(ElasticIndexSettingsService elasticIndexSettingsService)
+    public ElasticIndexResetDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _elasticIndexSettingsService = elasticIndexSettingsService;
+        _elasticIndexSettingsService = serviceProvider.GetService<ElasticIndexSettingsService>();
     }
 
-    public override Task<IDisplayResult> DisplayAsync(ElasticIndexResetDeploymentStep step, BuildDisplayContext context)
+    public override IDisplayResult Edit(ElasticIndexResetDeploymentStep step, Action<ElasticIndexResetDeploymentStepViewModel> intializeAction)
     {
-        return
-            CombineAsync(
-                View("ElasticIndexResetDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("ElasticIndexResetDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
-
-    public override IDisplayResult Edit(ElasticIndexResetDeploymentStep step, BuildEditorContext context)
-    {
-        return Initialize<ElasticIndexResetDeploymentStepViewModel>("ElasticIndexResetDeploymentStep_Fields_Edit", async model =>
+        return base.Edit(step, async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.Indices;
             model.AllIndexNames = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ElasticIndexResetDeploymentStep resetIndexStep, UpdateEditorContext context)

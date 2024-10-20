@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -5,33 +6,25 @@ using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Deployment;
 
-public sealed class MediaDeploymentStepDriver : DisplayDriver<DeploymentStep, MediaDeploymentStep>
+public sealed class MediaDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<MediaDeploymentStep, MediaDeploymentStepViewModel>
 {
     private readonly IMediaFileStore _mediaFileStore;
 
-    public MediaDeploymentStepDriver(IMediaFileStore mediaFileStore)
+    public MediaDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _mediaFileStore = mediaFileStore;
+        _mediaFileStore = serviceProvider.GetService<IMediaFileStore>();
     }
 
-    public override Task<IDisplayResult> DisplayAsync(MediaDeploymentStep step, BuildDisplayContext context)
+    public override IDisplayResult Edit(MediaDeploymentStep step, Action<MediaDeploymentStepViewModel> intializeAction)
     {
-        return
-            CombineAsync(
-                View("MediaDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("MediaDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
-
-    public override IDisplayResult Edit(MediaDeploymentStep step, BuildEditorContext context)
-    {
-        return Initialize<MediaDeploymentStepViewModel>("MediaDeploymentStep_Fields_Edit", async model =>
+        return base.Edit(step, async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.FilePaths = step.FilePaths;
             model.DirectoryPaths = step.DirectoryPaths;
             model.Entries = await GetMediaStoreEntries();
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(MediaDeploymentStep step, UpdateEditorContext context)

@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -5,32 +6,24 @@ using OrchardCore.Search.Lucene.ViewModels;
 
 namespace OrchardCore.Search.Lucene.Deployment;
 
-public sealed class LuceneIndexRebuildDeploymentStepDriver : DisplayDriver<DeploymentStep, LuceneIndexRebuildDeploymentStep>
+public sealed class LuceneIndexRebuildDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<LuceneIndexRebuildDeploymentStep, LuceneIndexRebuildDeploymentStepViewModel>
 {
     private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 
-    public LuceneIndexRebuildDeploymentStepDriver(LuceneIndexSettingsService luceneIndexSettingsService)
+    public LuceneIndexRebuildDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _luceneIndexSettingsService = luceneIndexSettingsService;
+        _luceneIndexSettingsService = serviceProvider.GetService<LuceneIndexSettingsService>();
     }
 
-    public override Task<IDisplayResult> DisplayAsync(LuceneIndexRebuildDeploymentStep step, BuildDisplayContext context)
+    public override IDisplayResult Edit(LuceneIndexRebuildDeploymentStep step, Action<LuceneIndexRebuildDeploymentStepViewModel> intializeAction)
     {
-        return
-            CombineAsync(
-                View("LuceneIndexRebuildDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("LuceneIndexRebuildDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
-
-    public override IDisplayResult Edit(LuceneIndexRebuildDeploymentStep step, BuildEditorContext context)
-    {
-        return Initialize<LuceneIndexRebuildDeploymentStepViewModel>("LuceneIndexRebuildDeploymentStep_Fields_Edit", async model =>
+        return base.Edit(step, async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.IndexNames;
             model.AllIndexNames = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(LuceneIndexRebuildDeploymentStep rebuildIndexStep, UpdateEditorContext context)
