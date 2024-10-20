@@ -7,9 +7,9 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.AdminDashboard.Services;
 
-public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefinitionHandler
+public sealed class DashboardPartContentTypeDefinitionHandler : ContentDefinitionHandlerBase
 {
-    public void LoadingContentType(LoadingContentTypeContext context)
+    public override void BuildingContentType(BuildingContentTypeContext context)
     {
         if (!context.Record.Settings.TryGetPropertyValue(nameof(ContentTypeSettings), out var node))
         {
@@ -18,7 +18,7 @@ public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefiniti
 
         var settings = node.ToObject<ContentTypeSettings>();
 
-        if (settings.Stereotype == null || !string.Equals(settings.Stereotype, "DashboardWidget", StringComparison.OrdinalIgnoreCase))
+        if (settings.Stereotype == null || !string.Equals(settings.Stereotype, AdminDashboardConstants.Stereotype, StringComparison.OrdinalIgnoreCase))
         {
             return;
         }
@@ -28,32 +28,21 @@ public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefiniti
             return;
         }
 
-        var pastSettings = new JsonObject()
-        {
-            [nameof(ContentSettings)] = JObject.FromObject(new ContentSettings
-            {
-                IsCodeManaged = true,
-            }),
-        };
-
-        pastSettings[nameof(ContentSettings)] = JObject.FromObject(new ContentSettings
-        {
-            IsCodeManaged = true,
-        });
-
         context.Record.ContentTypePartDefinitionRecords.Add(new ContentTypePartDefinitionRecord
         {
             Name = nameof(DashboardPart),
             PartName = nameof(DashboardPart),
-            Settings = pastSettings,
+            Settings = new JsonObject()
+            {
+                [nameof(ContentSettings)] = JObject.FromObject(new ContentSettings
+                {
+                    IsCodeManaged = true,
+                }),
+            },
         });
     }
 
-    public void LoadingContentPartField(LoadingContentPartFieldContext context)
-    {
-    }
-
-    public void LoadingContentTypePart(LoadingContentTypePartContext context)
+    public override void BuildingContentTypePart(BuildingContentTypePartContext context)
     {
         if (!context.Record.PartName.EqualsOrdinalIgnoreCase(nameof(DashboardPart)))
         {
@@ -66,5 +55,30 @@ public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefiniti
         settings.IsCodeManaged = true;
 
         context.Record.Settings[nameof(ContentSettings)] = JObject.FromObject(settings);
+    }
+
+    public override void BuildingContentPartDefinition(BuildingContentPartDefinitionContext context)
+    {
+        if (context.Record is not null || context.Name != nameof(DashboardPart))
+        {
+            return;
+        }
+
+        context.Record = new ContentPartDefinitionRecord()
+        {
+            Name = context.Name,
+            Settings = new JsonObject()
+            {
+                [nameof(ContentPartSettings)] = JObject.FromObject(new ContentPartSettings
+                {
+                    Attachable = false,
+                    Reusable = true,
+                }),
+                [nameof(ContentSettings)] = JObject.FromObject(new ContentSettings
+                {
+                    IsCodeManaged = true,
+                }),
+            },
+        };
     }
 }

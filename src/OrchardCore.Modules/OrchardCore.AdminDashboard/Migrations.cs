@@ -11,10 +11,14 @@ namespace OrchardCore.AdminDashboard;
 public sealed class Migrations : DataMigration
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IRecipeMigrator _recipeMigrator;
 
-    public Migrations(IContentDefinitionManager contentDefinitionManager)
+    public Migrations(
+        IContentDefinitionManager contentDefinitionManager,
+        IRecipeMigrator recipeMigrator)
     {
         _contentDefinitionManager = contentDefinitionManager;
+        _recipeMigrator = recipeMigrator;
     }
 
     public async Task<int> CreateAsync()
@@ -29,19 +33,16 @@ public sealed class Migrations : DataMigration
                 "Position")
         );
 
-        await _contentDefinitionManager.AlterPartDefinitionAsync("DashboardPart", builder => builder
-            .Attachable()
-            .WithDescription("Provides a way to add widgets to a dashboard.")
-            );
+        await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
 
         // Shortcut other migration steps on new content definition schemas.
-        return 3;
+        return 4;
     }
 
-#pragma warning disable CA1822 // Mark members as static
-    public int UpdateFrom1()
-#pragma warning restore CA1822 // Mark members as static
+    public async Task<int> UpdateFrom1Async()
     {
+        await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
+
         return 2;
     }
 
@@ -59,9 +60,7 @@ public sealed class Migrations : DataMigration
 
     public async Task<int> UpdateFrom3Async()
     {
-        await _contentDefinitionManager.AlterPartDefinitionAsync("DashboardPart", builder => builder
-            .Attachable(false)
-            );
+        await _contentDefinitionManager.DeletePartDefinitionAsync("DashboardPart");
 
         return 4;
     }
