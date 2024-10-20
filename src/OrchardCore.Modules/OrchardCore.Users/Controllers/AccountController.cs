@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -19,15 +17,14 @@ using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
-using YesSql.Services;
 
 namespace OrchardCore.Users.Controllers;
 
 [Authorize]
 public sealed class AccountController : AccountBaseController
 {
-    [Obsolete("This property will be removed in v3. Instead use ExternalAuthenticationController.DefaultExternalLoginProtector")]
-    public const string DefaultExternalLoginProtector = ExternalAuthenticationsController.DefaultExternalLoginProtector;
+    [Obsolete("This property is no longer used and will be removed in v3.")]
+    public const string DefaultExternalLoginProtector = "DefaultExternalLogin";
 
     private readonly IUserService _userService;
     private readonly SignInManager<IUser> _signInManager;
@@ -35,14 +32,10 @@ public sealed class AccountController : AccountBaseController
     private readonly ILogger _logger;
     private readonly ISiteService _siteService;
     private readonly IEnumerable<ILoginFormEvent> _accountEvents;
-    private readonly ExternalLoginOptions _externalLoginOptions;
     private readonly RegistrationOptions _registrationOptions;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IDisplayManager<LoginForm> _loginFormDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly INotifier _notifier;
-    private readonly IClock _clock;
-    private readonly IDistributedCache _distributedCache;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -57,11 +50,7 @@ public sealed class AccountController : AccountBaseController
         IStringLocalizer<AccountController> stringLocalizer,
         IEnumerable<ILoginFormEvent> accountEvents,
         IOptions<RegistrationOptions> registrationOptions,
-        IOptions<ExternalLoginOptions> externalLoginOptions,
         INotifier notifier,
-        IClock clock,
-        IDistributedCache distributedCache,
-        IDataProtectionProvider dataProtectionProvider,
         IDisplayManager<LoginForm> loginFormDisplayManager,
         IUpdateModelAccessor updateModelAccessor)
     {
@@ -71,12 +60,8 @@ public sealed class AccountController : AccountBaseController
         _logger = logger;
         _siteService = siteService;
         _accountEvents = accountEvents;
-        _externalLoginOptions = externalLoginOptions.Value;
         _registrationOptions = registrationOptions.Value;
         _notifier = notifier;
-        _clock = clock;
-        _distributedCache = distributedCache;
-        _dataProtectionProvider = dataProtectionProvider;
         _loginFormDisplayManager = loginFormDisplayManager;
         _updateModelAccessor = updateModelAccessor;
 
@@ -96,23 +81,13 @@ public sealed class AccountController : AccountBaseController
         // Clear the existing external cookie to ensure a clean login process.
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-        if (_externalLoginOptions.UseExternalProviderIfOnlyOneDefined)
+        foreach (var handler in _accountEvents)
         {
-            var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
-            if (schemes.Count() == 1)
+            var result = await handler.LoggingInAsync();
+
+            if (result != null)
             {
-                var dataProtector = _dataProtectionProvider.CreateProtector(ExternalAuthenticationsController.DefaultExternalLoginProtector)
-                    .ToTimeLimitedDataProtector();
-
-                var token = Guid.NewGuid();
-                var expiration = new TimeSpan(0, 0, 5);
-                var protectedToken = dataProtector.Protect(token.ToString(), _clock.UtcNow.Add(expiration));
-                await _distributedCache.SetAsync(token.ToString(), token.ToByteArray(), new DistributedCacheEntryOptions()
-                {
-                    AbsoluteExpirationRelativeToNow = expiration,
-                });
-
-                return RedirectToAction(nameof(ExternalAuthenticationsController.DefaultExternalLogin), typeof(ExternalAuthenticationsController).ControllerName(), new { protectedToken, returnUrl });
+                return result;
             }
         }
 
