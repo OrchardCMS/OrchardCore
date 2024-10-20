@@ -47,6 +47,8 @@ public sealed class DateTimeFieldDisplayDriver : ContentFieldDisplayDriver<DateT
             model.Field = field;
             model.Part = context.ContentPart;
             model.PartFieldDefinition = context.PartFieldDefinition;
+            model.IsNew = context.IsNew;
+            model.TypePartDefinition = context.TypePartDefinition;
         });
     }
 
