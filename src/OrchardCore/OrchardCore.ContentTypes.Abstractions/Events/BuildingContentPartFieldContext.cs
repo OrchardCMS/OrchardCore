@@ -2,17 +2,13 @@ using OrchardCore.ContentManagement.Metadata.Records;
 
 namespace OrchardCore.ContentTypes.Events;
 
-public class BuildingContentPartFieldContext
+public sealed class BuildingContentPartFieldContext : BuildingContentTypeContextBase
 {
-    public readonly string Name;
-
     public ContentPartFieldDefinitionRecord Record { get; set; }
 
     public BuildingContentPartFieldContext(string name, ContentPartFieldDefinitionRecord record)
+        : base(name)
     {
-        ArgumentException.ThrowIfNullOrEmpty(name);
-
-        Name = name;
         Record = record;
     }
 }
