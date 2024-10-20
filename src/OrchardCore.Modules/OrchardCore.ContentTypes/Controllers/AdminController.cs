@@ -414,14 +414,30 @@ public sealed class AdminController : Controller
 
         var typeViewModel = await _contentDefinitionService.LoadTypeAsync(id);
 
-        if (typeViewModel == null || !typeViewModel.TypeDefinition.Parts.Any(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase)))
+        if (typeViewModel == null)
         {
             return NotFound();
         }
 
-        await _contentDefinitionService.RemovePartFromTypeAsync(name, id);
+        var partDefinition = typeViewModel.TypeDefinition.Parts.FirstOrDefault(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase));
 
-        await _notifier.SuccessAsync(H["The \"{0}\" part has been removed.", name]);
+        if (partDefinition == null)
+        {
+            return NotFound();
+        }
+
+        var settings = partDefinition.GetSettings<ContentSettings>();
+
+        if (settings.IsCodeManaged)
+        {
+            await _notifier.ErrorAsync(H["The \"{0}\" part cannot be removed.", name]);
+        }
+        else
+        {
+            await _contentDefinitionService.RemovePartFromTypeAsync(name, id);
+
+            await _notifier.SuccessAsync(H["The \"{0}\" part has been removed.", name]);
+        }
 
         return RedirectToAction(nameof(Edit), new { id });
     }
@@ -440,7 +456,7 @@ public sealed class AdminController : Controller
 
         return View(new ListContentPartsViewModel
         {
-            // only user-defined parts (not code as they are not configurable)
+            // only user-defined parts (not code as they are not configurable).
             Parts = await _contentDefinitionService.GetPartsAsync(true/*metadataPartsOnly*/)
         });
     }
