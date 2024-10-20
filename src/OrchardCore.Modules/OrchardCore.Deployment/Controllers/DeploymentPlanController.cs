@@ -61,12 +61,12 @@ public sealed class DeploymentPlanController : Controller
 
     public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Export))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ExportData))
         {
             return Forbid();
         }
@@ -125,7 +125,7 @@ public sealed class DeploymentPlanController : Controller
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> IndexBulkActionPOST(ContentOptions options, IEnumerable<long> itemIds)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
@@ -154,7 +154,7 @@ public sealed class DeploymentPlanController : Controller
 
     public async Task<IActionResult> Display(long id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
@@ -195,7 +195,7 @@ public sealed class DeploymentPlanController : Controller
 
     public async Task<IActionResult> Create()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
@@ -208,7 +208,7 @@ public sealed class DeploymentPlanController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(CreateDeploymentPlanViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
@@ -242,7 +242,7 @@ public sealed class DeploymentPlanController : Controller
 
     public async Task<IActionResult> Edit(long id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
@@ -266,7 +266,7 @@ public sealed class DeploymentPlanController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(EditDeploymentPlanViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }
@@ -312,7 +312,7 @@ public sealed class DeploymentPlanController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(long id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageDeploymentPlan))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan))
         {
             return Forbid();
         }

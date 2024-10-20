@@ -24,7 +24,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Admin Menus"], S["Admin Menus"].PrefixPosition(), adminMenu => adminMenu
-                    .Permission(Permissions.ManageAdminMenu)
+                    .Permission(AdminMenuPermissions.ManageAdminMenu)
                     .Action("List", "Menu", "OrchardCore.AdminMenu")
                     .LocalNav()
                 )

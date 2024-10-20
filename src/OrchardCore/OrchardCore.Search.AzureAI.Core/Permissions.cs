@@ -16,7 +16,7 @@ public sealed class Permissions : IPermissionProvider
     {
         var permissions = new List<Permission>()
         {
-            AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes,
+            AzureAISearchPermissions.ManageAzureAISearchIndexes,
         };
 
         var indexSettings = await _indexSettingsService.GetSettingsAsync();
@@ -36,7 +36,7 @@ public sealed class Permissions : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
-                AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes,
+                AzureAISearchPermissions.ManageAzureAISearchIndexes,
             ],
         },
     ];

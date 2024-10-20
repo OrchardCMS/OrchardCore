@@ -7,14 +7,9 @@ namespace OrchardCore.Localization;
 /// </summary>
 public sealed class Permissions : IPermissionProvider
 {
-    /// <summary>
-    /// Gets a permission for managing the cultures.
-    /// </summary>
-    public static readonly Permission ManageCultures = new("ManageCultures", "Manage supported culture");
-
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ManageCultures,
+        LocalizationPermissions.ManageCultures,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()

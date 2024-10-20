@@ -51,12 +51,12 @@ public sealed class AzureAISearchSettingsDisplayDriver : SiteDisplayDriver<Azure
             .Select(x => new SelectListItem(x.IndexName, x.IndexName))
             .ToList();
         }).Location("Content:2#Azure AI Search;5")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchPermissions.ManageAzureAISearchIndexes))
         .OnGroup(SettingsGroupId);
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureAISearchSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AzureAISearchPermissions.ManageAzureAISearchIndexes))
         {
             return null;
         }

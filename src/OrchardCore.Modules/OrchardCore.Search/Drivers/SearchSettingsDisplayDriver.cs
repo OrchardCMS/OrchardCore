@@ -39,7 +39,7 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, SearchPermissions.ManageSearchSettings))
         {
             return null;
         }
@@ -60,7 +60,7 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, SearchPermissions.ManageSearchSettings))
         {
             return null;
         }

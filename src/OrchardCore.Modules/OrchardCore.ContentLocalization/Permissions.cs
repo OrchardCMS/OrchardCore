@@ -4,20 +4,16 @@ namespace OrchardCore.ContentLocalization;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission LocalizeContent = new("LocalizeContent", "Localize content for others");
-    public static readonly Permission LocalizeOwnContent = new("LocalizeOwnContent", "Localize own content", new[] { LocalizeContent });
-    public static readonly Permission ManageContentCulturePicker = new("ManageContentCulturePicker", "Manage ContentCulturePicker settings");
-
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        LocalizeContent,
-        LocalizeOwnContent,
-        ManageContentCulturePicker,
+        ContentLocalizationPermissions.LocalizeContent,
+        ContentLocalizationPermissions.LocalizeOwnContent,
+        ContentLocalizationPermissions.ManageContentCulturePicker,
     ];
 
     private readonly IEnumerable<Permission> _generalPermissions =
     [
-        LocalizeOwnContent,
+        ContentLocalizationPermissions.LocalizeOwnContent,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()

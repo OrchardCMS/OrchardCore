@@ -28,7 +28,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .Add(S["Admin"], S["Admin"].PrefixPosition(), admin => admin
                         .AddClass("admin").Id("admin")
                         .Action("Index", "Admin", _routeValues)
-                        .Permission(PermissionsAdminSettings.ManageAdminSettings)
+                        .Permission(AdminPermissions.ManageAdminSettings)
                         .LocalNav()
                     )
                 )
