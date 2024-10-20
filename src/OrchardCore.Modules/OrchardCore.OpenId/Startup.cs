@@ -23,6 +23,7 @@ using OrchardCore.Navigation;
 using OrchardCore.OpenId.Configuration;
 using OrchardCore.OpenId.Deployment;
 using OrchardCore.OpenId.Drivers;
+using OrchardCore.OpenId.Handlers;
 using OrchardCore.OpenId.Migrations;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.Services;
@@ -34,6 +35,7 @@ using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Users.Handlers;
 
 namespace OrchardCore.OpenId;
 
@@ -85,6 +87,8 @@ public sealed class ClientStartup : StartupBase
             // Built-in initializers:
             ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>()
         });
+
+        services.AddScoped<IExternalLoginEventHandler, OpenIdExternalLoginEventHandler>();
     }
 }
 
