@@ -297,7 +297,16 @@ public class ElasticIndexingService
 
                         if (included is not null && (bool)included)
                         {
-                            partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>()));
+                            var elasticSettings = JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>());
+
+                            if (partDefinition.Settings.ContainsKey(nameof(ElasticContentIndexSettings)))
+                            {
+                                partDefinition.Settings[nameof(ElasticContentIndexSettings)] = elasticSettings;
+                            }
+                            else
+                            {
+                                partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), elasticSettings);
+                            }
                         }
                     }
                 });
@@ -325,10 +334,18 @@ public class ElasticIndexingService
                     if (fieldDefinition.Settings.TryGetPropertyValue("LuceneContentIndexSettings", out var existingFieldSettings))
                     {
                         var included = existingFieldSettings["Included"];
-
                         if (included != null && (bool)included)
                         {
-                            fieldDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>()));
+                            var elasticSettings = JNode.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>());
+
+                            if (fieldDefinition.Settings.ContainsKey(nameof(ElasticContentIndexSettings)))
+                            {
+                                fieldDefinition.Settings[nameof(ElasticContentIndexSettings)] = elasticSettings;
+                            }
+                            else
+                            {
+                                fieldDefinition.Settings.Add(nameof(ElasticContentIndexSettings), elasticSettings);
+                            }
                         }
                     }
                 }
