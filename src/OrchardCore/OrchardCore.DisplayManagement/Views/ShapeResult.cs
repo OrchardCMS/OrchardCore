@@ -105,13 +105,26 @@ public class ShapeResult : IDisplayResult
         // Parse group placement.
         var groupId = placement.GetGroup();
 
+        // Apply group constraints from placement
         if (!string.IsNullOrEmpty(groupId))
         {
-            _groupIds = StringValues.Concat(_groupIds, groupId);
+            OnGroup(groupId);
         }
 
+        bool hasGroupConstraints = !StringValues.IsNullOrEmpty(_groupIds);
+
+        // If no specific group is requested, use "" as it represents "any group" when applied on a shape.
+        // This allows to render shapes when no shape constraints are set and also on specific groups.
+        var requestedGroup = context.GroupId ?? string.Empty;
+        
         // If the shape's group doesn't match the currently rendered one, return.
-        if (!string.IsNullOrEmpty(context.GroupId) && !_groupIds.Contains(context.GroupId, StringComparer.OrdinalIgnoreCase))
+        if (hasGroupConstraints && !_groupIds.Contains(requestedGroup, StringComparer.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        // If we try to render the shape without a group, but we require one, don't render it
+        if (!hasGroupConstraints && !string.IsNullOrEmpty(context.GroupId))
         {
             return;
         }
@@ -312,15 +325,7 @@ public class ShapeResult : IDisplayResult
     {
         ArgumentNullException.ThrowIfNull(groupIds);
 
-        foreach (var groupId in groupIds)
-        {
-            if (string.IsNullOrEmpty(groupId))
-            {
-                continue;
-            }
-
-            _groupIds = StringValues.Concat(_groupIds, groupId);
-        }
+        _groupIds = StringValues.Concat(_groupIds, groupIds);
 
         return this;
     }
