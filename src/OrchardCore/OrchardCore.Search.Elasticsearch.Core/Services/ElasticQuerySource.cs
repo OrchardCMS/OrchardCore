@@ -87,7 +87,7 @@ public sealed class ElasticQuerySource : IQuerySource
 
                 keyValuePairs.Add(KeyValuePair.Create("_score", (JsonNode)JsonValue.Create(document.Score.Value.ToString())));
 
-                var highlights = JsonSerializer.Serialize(document.Highlight, options);
+                var highlights = JsonSerializer.Serialize(document.Highlight, JOptions.UnsafeRelaxedJsonEscaping);
                 keyValuePairs.Add(KeyValuePair.Create("Highlight", (JsonNode)JsonValue.Create(highlights)));
 
                 results.Add(new JsonObject(keyValuePairs));
