@@ -25,7 +25,6 @@ public sealed class ElasticQuerySource : IQuerySource
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly TemplateOptions _templateOptions;
 
-    private readonly JsonSerializerOptions options = new JsonSerializerOptions() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
 
     public ElasticQuerySource(
         IElasticQueryService queryService,
