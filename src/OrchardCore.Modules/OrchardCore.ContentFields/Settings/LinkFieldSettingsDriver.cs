@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -13,7 +12,7 @@ public sealed class LinkFieldSettingsDriver : ContentPartFieldDefinitionDisplayD
     {
         return Initialize<LinkFieldSettings>("LinkFieldSettings_Edit", model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<LinkFieldSettings>();
+            var settings = partFieldDefinition.GetSettings<LinkFieldSettings>();
 
             model.Hint = settings.Hint;
             model.HintLinkText = settings.HintLinkText;

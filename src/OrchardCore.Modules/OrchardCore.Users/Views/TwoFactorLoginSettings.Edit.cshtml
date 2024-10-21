@@ -1,5 +1,12 @@
-@model OrchardCore.Users.Models.TwoFactorLoginSettings
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using Microsoft.Extensions.Options
 
+@inject IOptions<CookieAuthenticationOptions> CookieAuthenticationOptions
+
+@model OrchardCore.Users.Models.TwoFactorLoginSettings
+@{
+    var duration = await DisplayAsync(await New.Duration(timeSpan: CookieAuthenticationOptions.Value.ExpireTimeSpan));
+}
 <fieldset>
     <legend>@T["Two-Factor Settings"]</legend>
 
@@ -8,7 +15,9 @@
             <input type="checkbox" class="form-check-input" asp-for="AllowRememberClientTwoFactorAuthentication" />
             <span asp-validation-for="AllowRememberClientTwoFactorAuthentication"></span>
             <label class="form-check-label" asp-for="AllowRememberClientTwoFactorAuthentication">@T["Allow users to remember client"]</label>
-            <span class="hint dashed">@T["When selected, users may use Remember Client during login to avoid having to provide a token every time."]</span>
+            <span class="hint dashed" title="@CookieAuthenticationOptions.Value.ExpireTimeSpan.ToString()">
+                @T["When selected, users may use Remember Client during login to avoid having to provide a token every time. The client will be remembered for: {0}", duration]
+            </span>
         </div>
     </div>
 
@@ -25,7 +34,7 @@
         <span asp-validation-for="NumberOfRecoveryCodesToGenerate"></span>
         <label class="form-check-label" asp-for="NumberOfRecoveryCodesToGenerate">@T["Number of recovery codes to generate"]</label>
         <input type="number" class="form-control" min="1" asp-for="NumberOfRecoveryCodesToGenerate" />
-        <span class="hint dashed">@T["The number of recovery codes to generate. Default is 5."]</span>
+        <span class="hint">@T["The number of recovery codes to generate. Default is 5."]</span>
     </div>
 
     <div class="mb-3" asp-validation-class-for="UseSiteTheme">
@@ -33,7 +42,7 @@
             <input type="checkbox" class="form-check-input" asp-for="UseSiteTheme" />
             <span asp-validation-for="UseSiteTheme"></span>
             <label class="form-check-label" asp-for="UseSiteTheme">@T["Use site theme for two-factor authentication pages"]</label>
-            <span class="hint dashed">@T["Requires an active site theme."]</span>
+            <span class="hint">@T["Requires an active site theme."]</span>
         </div>
     </div>
 

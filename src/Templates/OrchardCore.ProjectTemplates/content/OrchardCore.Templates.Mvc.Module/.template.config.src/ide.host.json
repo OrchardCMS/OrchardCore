@@ -4,14 +4,14 @@
   "symbolInfo": [
     {
       "id": "Framework",
-      "isVisible": "true"
+      "isVisible": true
     },
     {
       "id": "OrchardVersion",
       "name": {
         "text": "Orchard Core Version"
       },
-      "isVisible": "true"
+      "isVisible": true
     }
   ]
 }

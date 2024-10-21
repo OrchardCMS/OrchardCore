@@ -25,7 +25,7 @@ public sealed class FormInputElementPartDisplayDriver : ContentPartDisplayDriver
         });
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(FormInputElementPart part, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(FormInputElementPart part, UpdatePartEditorContext context)
     {
         var viewModel = new FormInputElementPartEditViewModel();
 

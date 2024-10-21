@@ -1,17 +1,12 @@
 @model SummaryAdminUserViewModel
-@using OrchardCore.Entities
-@using OrchardCore.Users.Models
-@using Microsoft.AspNetCore.Identity
-@using OrchardCore.Users
-@inject UserManager<IUser> UserManager
+
 @inject IAuthorizationService AuthorizationService
+
 @{
     var isCurrentUser = Model.User.UserName == User.Identity.Name;
-    var canEdit = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, Model.User);
-    var isLockedOut = await UserManager.IsLockedOutAsync(Model.User);
 }
 
-@if (canEdit)
+@if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, Model.User))
 {
     <a asp-action="Edit" asp-route-id="@Model.User.UserId" class="btn btn-primary btn-sm">@T["Edit"]</a>
 }
@@ -19,26 +14,4 @@
 @if (!isCurrentUser && await AuthorizationService.AuthorizeAsync(User, CommonPermissions.ViewUsers, Model.User))
 {
     <a asp-action="Display" asp-route-id="@Model.User.UserId" class="btn btn-success btn-sm">@T["View"]</a>
-}
-
-@if (canEdit)
-{
-    <a asp-action="EditPassword" asp-route-id="@Model.User.UserId" class="btn btn-secondary btn-sm">@T["Edit Password"]</a>
-    if (isLockedOut)
-    {
-        <a asp-action="Unlock" asp-route-id="@Model.User.UserId" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Unlock user"]" data-message="@T["Are you sure you want to unlock this user?"]">@T["Unlock"]</a>
-    }
-}
-
-@if (!isCurrentUser && await AuthorizationService.AuthorizeAsync(User, CommonPermissions.DeleteUsers, Model.User))
-{
-    <a asp-action="Delete" asp-route-id="@Model.User.UserId" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
-}
-
-@if (canEdit && !Model.User.EmailConfirmed && Site.As<RegistrationSettings>().UsersMustValidateEmail)
-{
-    <form method="post" class="d-inline-block" class="no-multisubmit">
-        <input name="id" type="hidden" value="@Model.User.UserId" />
-        <button asp-action="SendVerificationEmail" asp-controller="Registration" class="btn btn-info btn-sm">@T["Send verification email"]</button>
-    </form>
 }

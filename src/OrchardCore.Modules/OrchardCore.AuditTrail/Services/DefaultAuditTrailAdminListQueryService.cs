@@ -87,7 +87,7 @@ public class DefaultAuditTrailAdminListQueryService : IAuditTrailAdminListQueryS
             }
         }
 
-        var localNow = await _localClock.LocalNowAsync;
+        var localNow = await _localClock.GetLocalNowAsync();
         var startOfWeek = CultureInfo.CurrentUICulture.DateTimeFormat.FirstDayOfWeek;
 
         options.AuditTrailDates =

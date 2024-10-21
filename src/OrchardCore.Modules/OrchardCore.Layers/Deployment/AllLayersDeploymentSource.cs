@@ -9,7 +9,8 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Layers.Deployment;
 
-public class AllLayersDeploymentSource : IDeploymentSource
+public class AllLayersDeploymentSource
+    : DeploymentSourceBase<AllLayersDeploymentStep>
 {
     private readonly ILayerService _layerService;
     private readonly ISiteService _siteService;
@@ -25,13 +26,8 @@ public class AllLayersDeploymentSource : IDeploymentSource
         _jsonSerializerOptions = serializationOptions.Value.SerializerOptions;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(AllLayersDeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not AllLayersDeploymentStep)
-        {
-            return;
-        }
-
         var layers = await _layerService.GetLayersAsync();
 
         result.Steps.Add(new JsonObject

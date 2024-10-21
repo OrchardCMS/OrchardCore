@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Security;
 
@@ -17,9 +18,29 @@ public class RoleClaim
     /// </summary>
     public string ClaimValue { get; set; }
 
+    public RoleClaim()
+    {
+    }
+
+    public RoleClaim(string type, string value)
+    {
+        ClaimType = type;
+        ClaimValue = value;
+    }
+
+    public static RoleClaim Create(string value)
+    {
+        return new RoleClaim(type: Permission.ClaimType, value: value);
+    }
+
     public Claim ToClaim()
     {
         return new Claim(ClaimType, ClaimValue);
+    }
+
+    public RoleClaim Clone()
+    {
+        return new RoleClaim(type: ClaimType, value: ClaimValue);
     }
 
     public static implicit operator Claim(RoleClaim claim)

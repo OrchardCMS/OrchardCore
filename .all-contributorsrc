@@ -3195,6 +3195,33 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "XopcT",
+      "name": "Vladimir Verbitsky",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8039133?v=4",
+      "profile": "https://github.com/XopcT",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "matTrabolsi",
+      "name": "matTrabolsi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/72926503?v=4",
+      "profile": "https://github.com/matTrabolsi",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "denispetrische",
+      "name": "Denis",
+      "avatar_url": "https://avatars.githubusercontent.com/u/95141776?v=4",
+      "profile": "https://github.com/denispetrische",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

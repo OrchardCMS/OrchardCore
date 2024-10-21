@@ -20,7 +20,8 @@ public class Composite : DynamicObject
         }
 
         result = null;
-        return true;
+
+        return false;
     }
 
     public override bool TrySetMember(SetMemberBinder binder, object value)

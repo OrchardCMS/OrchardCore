@@ -234,7 +234,7 @@ public class DynamicCacheTests
         // the creation of the shape.
 
         var factory = _serviceProvider.GetService<IShapeFactory>();
-                
+
         async Task<IDisplayResult> CreateDisplayResultAsync()
         {
             var contentItem = new ContentItem();
@@ -245,7 +245,7 @@ public class DynamicCacheTests
 
             return driverResult;
         }
-        
+
         var displayResult = await CreateDisplayResultAsync();
 
         var shapeResult = displayResult as ShapeResult;

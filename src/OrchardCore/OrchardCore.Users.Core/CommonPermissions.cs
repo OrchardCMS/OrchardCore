@@ -23,6 +23,8 @@ public static class CommonPermissions
 
     public static readonly Permission AssignRoleToUsers = new("AssignRoleToUsers", "Assign any role to users", [EditUsers], true);
 
+    public static readonly Permission DisableTwoFactorAuthenticationForUsers = new("DisableTwoFactorAuthenticationForUsers", "Disable two-factor authentication for any user", [ManageUsers], true);
+
     public static readonly Permission EditOwnUser = new("ManageOwnUserInformation", "Edit own user information", [EditUsers]);
 
     public static Permission CreateEditUsersInRolePermission(string roleName) =>
