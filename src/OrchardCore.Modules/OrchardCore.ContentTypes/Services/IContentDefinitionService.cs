@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.ViewModels;
 
@@ -13,7 +14,13 @@ public interface IContentDefinitionService
 
     Task<EditTypeViewModel> GetTypeAsync(string name);
 
+    [Obsolete("This method is obsolete and will be removed in future release. Instead use the other AddTypeAsync signature.")]
     Task<ContentTypeDefinition> AddTypeAsync(string name, string displayName);
+
+    Task<ContentTypeDefinition> AddTypeAsync(string name, string displayName, IEnumerable<ContentTypePartDefinition> parts, JsonObject settings)
+#pragma warning disable CS0618 // Type or member is obsolete
+        => AddTypeAsync(name, displayName);
+#pragma warning restore CS0618 // Type or member is obsolete
 
     Task RemoveTypeAsync(string name, bool deleteContent);
 

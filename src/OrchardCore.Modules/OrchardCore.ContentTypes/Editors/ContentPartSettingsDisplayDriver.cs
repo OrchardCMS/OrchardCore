@@ -14,6 +14,7 @@ public sealed class ContentPartSettingsDisplayDriver : ContentPartDefinitionDisp
         {
             var settings = contentPartDefinition.GetSettings<ContentPartSettings>();
 
+            model.IsNew = context.IsNew;
             model.Attachable = settings.Attachable;
             model.Reusable = settings.Reusable;
             model.Description = settings.Description;

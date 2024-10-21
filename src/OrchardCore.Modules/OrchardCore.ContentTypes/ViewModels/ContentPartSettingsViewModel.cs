@@ -11,5 +11,8 @@ public class ContentPartSettingsViewModel
     public string DisplayName { get; set; }
 
     [BindNever]
+    public bool IsNew { get; set; }
+
+    [BindNever]
     public ContentPartDefinition ContentPartDefinition { get; set; }
 }

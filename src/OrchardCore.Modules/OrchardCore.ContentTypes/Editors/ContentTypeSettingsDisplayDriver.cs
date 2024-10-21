@@ -32,15 +32,16 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
         return Initialize<ContentTypeSettingsViewModel>("ContentTypeSettings_Edit", async model =>
         {
             var settings = contentTypeDefinition.GetSettings<ContentTypeSettings>();
-            model.Creatable = settings.Creatable;
-            model.Listable = settings.Listable;
-            model.Draftable = settings.Draftable;
-            model.Versionable = settings.Versionable;
-            model.Securable = settings.Securable;
+            model.Creatable = context.IsNew || settings.Creatable;
+            model.Listable = context.IsNew || settings.Listable;
+            model.Draftable = context.IsNew || settings.Draftable;
+            model.Versionable = context.IsNew || settings.Versionable;
+            model.Securable = context.IsNew || settings.Securable;
             model.Stereotype = settings.Stereotype;
             model.Description = settings.Description;
             model.Options = await GetOptionsAsync(contentTypeDefinition, settings.Stereotype);
-        }).Location("Content:5");
+        }).Location("Content:5")
+        .OnGroup(context.GroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentTypeDefinition contentTypeDefinition, UpdateTypeEditorContext context)

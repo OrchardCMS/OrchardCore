@@ -34,7 +34,13 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
         _logger = logger;
     }
 
-    public async Task<dynamic> BuildTypeEditorAsync(ContentTypeDefinition contentTypeDefinition, IUpdateModel updater, string groupId)
+    public Task<dynamic> BuildTypeEditorAsync(ContentTypeDefinition contentTypeDefinition, IUpdateModel updater, string groupId)
+        => BuildTypeEditorAsync(contentTypeDefinition, updater, false, groupId);
+
+    public Task<dynamic> UpdateTypeEditorAsync(ContentTypeDefinition contentTypeDefinition, IUpdateModel updater, string groupId)
+        => UpdateTypeEditorAsync(contentTypeDefinition, updater, false, groupId);
+
+    public async Task<dynamic> BuildTypeEditorAsync(ContentTypeDefinition contentTypeDefinition, IUpdateModel updater, bool isNew, string groupId)
     {
         ArgumentNullException.ThrowIfNull(contentTypeDefinition);
 
@@ -44,7 +50,7 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
         var typeContext = new BuildEditorContext(
             contentTypeDefinitionShape,
             groupId,
-            false,
+            isNew,
             "",
             _shapeFactory,
             await _layoutAccessor.GetLayoutAsync(),
@@ -58,7 +64,7 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
         return contentTypeDefinitionShape;
     }
 
-    public async Task<dynamic> UpdateTypeEditorAsync(ContentTypeDefinition contentTypeDefinition, IUpdateModel updater, string groupId)
+    public async Task<dynamic> UpdateTypeEditorAsync(ContentTypeDefinition contentTypeDefinition, IUpdateModel updater, bool isNew, string groupId)
     {
         ArgumentNullException.ThrowIfNull(contentTypeDefinition);
 
@@ -73,7 +79,7 @@ public class DefaultContentDefinitionDisplayManager : BaseDisplayManager, IConte
                 typeBuilder,
                 contentTypeDefinitionShape,
                 groupId,
-                false,
+                isNew,
                 _shapeFactory,
                 layout,
                 updater

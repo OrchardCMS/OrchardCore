@@ -34,7 +34,10 @@ public sealed class GraphQLContentTypeSettingsDisplayDriver : ContentTypeDefinit
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        context.Builder.WithSettings(model.Settings);
+        if (model.Settings != null)
+        {
+            context.Builder.WithSettings(model.Settings);
+        }
 
         return Edit(contentTypeDefinition, context);
     }

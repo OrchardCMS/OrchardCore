@@ -59,28 +59,28 @@
     </div>
 </form>
 
-<script at="Foot">
-    //<![CDATA[
-    $(function () {
-        var $name = $("#@Html.IdFor(m => m.Name)");
-        var $displayName = $("#@Html.IdFor(m => m.DisplayName)");
+<script at="Foot" depends-on="admin">
+    document.addEventListener('DOMContentLoaded', () => {
 
-        var nameAltered;
-        $name.keypress(function () {
-            nameAltered = true;
+        var name = document.getElementById('@Html.IdFor(m => m.Name)');
+        var displayName = document.getElementById('@Html.IdFor(m => m.DisplayName)');
+
+        var nameAltered = false;
+
+        name.addEventListener('keyup', (e) => {
+            nameAltered = e.target.value != '';
         });
 
         var compute = function () {
-            // stop processing automatically if altered by the user
+            // stop processing automatically if altered by the user.
             if (nameAltered) {
                 return true;
             }
 
-            $name.val(getTechnicalName($displayName.val()));
+            name.value = getTechnicalName(displayName.value);
         };
 
-        $displayName.keyup(compute);
-        $displayName.blur(compute);
-    })
-    //]]>
+        displayName.addEventListener('keyup', compute);
+        displayName.addEventListener('blur', compute);
+    });
 </script>

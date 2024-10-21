@@ -19,6 +19,8 @@ namespace OrchardCore.ContentTypes.Controllers;
 
 public sealed class AdminController : Controller
 {
+    public const string PlaceholderGroupId = "placeholder";
+
     private readonly IContentDefinitionService _contentDefinitionService;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IAuthorizationService _authorizationService;
@@ -75,76 +77,63 @@ public sealed class AdminController : Controller
     }
 
     [Admin("ContentTypes/Create", "CreateType")]
-    public async Task<ActionResult> Create(string suggestion)
+    public async Task<ActionResult> Create(CreateContentTypeViewModel model)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
         {
             return Forbid();
         }
 
-        return View(new CreateTypeViewModel { DisplayName = suggestion, Name = suggestion.ToSafeName() });
+        var groupId = string.Empty;
+        var suggestion = model.Suggestion;
+
+        if (string.IsNullOrWhiteSpace(suggestion))
+        {
+            suggestion = IdGenerator.GenerateId();
+            groupId = PlaceholderGroupId;
+        }
+
+        var definition = new ContentTypeDefinition(suggestion.ToSafeName(), suggestion);
+
+        model.Editor = await _contentDefinitionDisplayManager.BuildTypeEditorAsync(definition, _updateModelAccessor.ModelUpdater, true, groupId);
+
+        return View(model);
     }
 
-    [HttpPost, ActionName("Create")]
-    public async Task<ActionResult> CreatePOST(CreateTypeViewModel viewModel)
+    [HttpPost]
+    [ActionName("Create")]
+    public async Task<ActionResult> CreatePOST(CreateContentTypeViewModel model)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
         {
             return Forbid();
         }
 
-        viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? string.Empty;
-        viewModel.Name ??= string.Empty;
+        var groupId = string.Empty;
+        var suggestion = model.Suggestion;
 
-        if (string.IsNullOrWhiteSpace(viewModel.DisplayName))
+        if (string.IsNullOrWhiteSpace(suggestion))
         {
-            ModelState.AddModelError("DisplayName", S["The Display Name can't be empty."]);
-        }
-        var types = await _contentDefinitionService.LoadTypesAsync();
-
-        if (types.Any(t => string.Equals(t.DisplayName.Trim(), viewModel.DisplayName.Trim(), StringComparison.OrdinalIgnoreCase)))
-        {
-            ModelState.AddModelError("DisplayName", S["A type with the same Display Name already exists."]);
+            suggestion = IdGenerator.GenerateId();
+            groupId = PlaceholderGroupId;
         }
 
-        if (string.IsNullOrWhiteSpace(viewModel.Name))
-        {
-            ModelState.AddModelError("Name", S["The Technical Name can't be empty."]);
-        }
+        var definition = new ContentTypeDefinition(suggestion.ToSafeName(), suggestion);
 
-        if (!string.IsNullOrWhiteSpace(viewModel.Name) && !char.IsLetter(viewModel.Name[0]))
-        {
-            ModelState.AddModelError("Name", S["The Technical Name must start with a letter."]);
-        }
-
-        if (!string.Equals(viewModel.Name, viewModel.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
-        {
-            ModelState.AddModelError("Name", S["The Technical Name contains invalid characters."]);
-        }
-
-        if (viewModel.Name.IsReservedContentName())
-        {
-            ModelState.AddModelError("Name", S["The Technical Name is reserved for internal use."]);
-        }
-
-        if (types.Any(t => string.Equals(t.Name.Trim(), viewModel.Name.Trim(), StringComparison.OrdinalIgnoreCase)))
-        {
-            ModelState.AddModelError("Name", S["A type with the same Technical Name already exists."]);
-        }
+        model.Editor = await _contentDefinitionDisplayManager.UpdateTypeEditorAsync(definition, _updateModelAccessor.ModelUpdater, true, groupId);
 
         if (!ModelState.IsValid)
         {
             await _documentStore.CancelAsync();
-            return View(viewModel);
+
+            return View(model);
         }
 
-        var contentTypeDefinition = await _contentDefinitionService.AddTypeAsync(viewModel.Name, viewModel.DisplayName);
+        var contentTypeDefinition = await _contentDefinitionService.AddTypeAsync(definition.Name, definition.DisplayName, definition.Parts, definition.Settings);
 
-        var typeViewModel = new EditTypeViewModel(contentTypeDefinition);
+        await _notifier.SuccessAsync(H["The \"{0}\" content type has been created.", definition.DisplayName]);
 
-        await _notifier.SuccessAsync(H["The \"{0}\" content type has been created.", typeViewModel.DisplayName]);
-
-        return RedirectToAction("AddPartsTo", new { id = typeViewModel.Name });
+        return RedirectToAction(nameof(AddPartsTo), new { id = definition.Name });
     }
 
     [Admin("ContentTypes/Edit/{id}", "EditType")]
@@ -162,7 +151,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        typeViewModel.Editor = await _contentDefinitionDisplayManager.BuildTypeEditorAsync(typeViewModel.TypeDefinition, _updateModelAccessor.ModelUpdater);
+        typeViewModel.Editor = await _contentDefinitionDisplayManager.BuildTypeEditorAsync(typeViewModel.TypeDefinition, _updateModelAccessor.ModelUpdater, false);
 
         return View(typeViewModel);
     }
@@ -186,7 +175,7 @@ public sealed class AdminController : Controller
         viewModel.Settings = contentTypeDefinition.Settings;
         viewModel.TypeDefinition = contentTypeDefinition;
         viewModel.DisplayName = contentTypeDefinition.DisplayName;
-        viewModel.Editor = await _contentDefinitionDisplayManager.UpdateTypeEditorAsync(contentTypeDefinition, _updateModelAccessor.ModelUpdater);
+        viewModel.Editor = await _contentDefinitionDisplayManager.UpdateTypeEditorAsync(contentTypeDefinition, _updateModelAccessor.ModelUpdater, false);
 
         if (!ModelState.IsValid)
         {

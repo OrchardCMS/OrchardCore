@@ -1,12 +1,42 @@
-@model ContentTypeViewModel
+@model CreateContentViewModel
+
+<div class="mb-3">
+    <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
+    <input asp-for="DisplayName" class="form-control" />
+    <span class="hint w-100">@T["Name of the type as it will be displayed on screens."]</span>
+</div>
 
 <div class="mb-3">
     <label asp-for="Name" class="form-label">@T["Technical Name"]</label>
-    <input asp-for="Name" class="form-control w-md-75 w-xl-50" readonly />
+    <input asp-for="Name" class="form-control" readonly="@(!Model.IsNew)" />
     <span class="hint w-100">@T["Technical name of the type."]</span>
 </div>
-<div class="mb-3">
-    <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
-    <input asp-for="DisplayName" class="form-control w-md-75 w-xl-50" />
-    <span class="hint w-100">@T["Name of the type as it will be displayed on screens."]</span>
-</div>
+
+@if (Model.IsNew)
+{
+    <script at="Foot" depends-on="admin">
+        document.addEventListener('DOMContentLoaded', () => {
+
+            var name = document.getElementById('@Html.IdFor(m => m.Name)');
+            var displayName = document.getElementById('@Html.IdFor(m => m.DisplayName)');
+
+            var nameAltered = false;
+
+            name.addEventListener('keyup', (e) => {
+                nameAltered = e.target.value != '';
+            });
+
+            var compute = function () {
+                // stop processing automatically if altered by the user.
+                if (nameAltered) {
+                    return true;
+                }
+
+                name.value = getTechnicalName(displayName.value);
+            };
+
+            displayName.addEventListener('keyup', compute);
+            displayName.addEventListener('blur', compute);
+        });
+    </script>
+}

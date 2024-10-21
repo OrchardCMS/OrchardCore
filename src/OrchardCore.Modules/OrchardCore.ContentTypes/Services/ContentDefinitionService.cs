@@ -1,3 +1,5 @@
+using System.Reflection;
+using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -89,7 +91,10 @@ public class ContentDefinitionService : IContentDefinitionService
         return new EditTypeViewModel(contentTypeDefinition);
     }
 
-    public async Task<ContentTypeDefinition> AddTypeAsync(string name, string displayName)
+    public Task<ContentTypeDefinition> AddTypeAsync(string name, string displayName)
+        => AddTypeAsync(name, displayName, [], []);
+
+    public async Task<ContentTypeDefinition> AddTypeAsync(string name, string displayName, IEnumerable<ContentTypePartDefinition> parts, JsonObject settings)
     {
         if (string.IsNullOrWhiteSpace(displayName))
         {
@@ -117,7 +122,7 @@ public class ContentDefinitionService : IContentDefinitionService
             name = VersionName(name);
         }
 
-        var contentTypeDefinition = new ContentTypeDefinition(name, displayName);
+        var contentTypeDefinition = new ContentTypeDefinition(name, displayName, parts ?? [], settings ?? []);
 
         await _contentDefinitionManager.StoreTypeDefinitionAsync(contentTypeDefinition);
 
