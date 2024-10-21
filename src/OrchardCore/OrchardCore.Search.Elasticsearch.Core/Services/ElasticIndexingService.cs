@@ -297,16 +297,7 @@ public class ElasticIndexingService
 
                         if (included is not null && (bool)included)
                         {
-                            var elasticSettings = JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>());
-
-                            if (partDefinition.Settings.ContainsKey(nameof(ElasticContentIndexSettings)))
-                            {
-                                partDefinition.Settings[nameof(ElasticContentIndexSettings)] = elasticSettings;
-                            }
-                            else
-                            {
-                                partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), elasticSettings);
-                            }
+                            partDefinition.Settings[nameof(ElasticContentIndexSettings)] = JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>());
                         }
                     }
                 });
@@ -325,7 +316,7 @@ public class ElasticIndexingService
 
                     if (included != null && (bool)included)
                     {
-                        partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>()));
+                        partDefinition.Settings[nameof(ElasticContentIndexSettings)] = JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>());
                     }
                 }
 
@@ -334,18 +325,10 @@ public class ElasticIndexingService
                     if (fieldDefinition.Settings.TryGetPropertyValue("LuceneContentIndexSettings", out var existingFieldSettings))
                     {
                         var included = existingFieldSettings["Included"];
+
                         if (included != null && (bool)included)
                         {
-                            var elasticSettings = JNode.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>());
-
-                            if (fieldDefinition.Settings.ContainsKey(nameof(ElasticContentIndexSettings)))
-                            {
-                                fieldDefinition.Settings[nameof(ElasticContentIndexSettings)] = elasticSettings;
-                            }
-                            else
-                            {
-                                fieldDefinition.Settings.Add(nameof(ElasticContentIndexSettings), elasticSettings);
-                            }
+                            fieldDefinition.Settings[nameof(ElasticContentIndexSettings)] = JNode.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>());
                         }
                     }
                 }
