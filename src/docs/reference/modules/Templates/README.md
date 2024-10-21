@@ -51,6 +51,50 @@ For instance, when a content item is displayed in a list, the `Summary` display 
 | `Content_Summary__BlogPost` | `Content-BlogPost.Summary.cshtml` |
 | `Content_Summary__Article` | `Content-Article.Summary.cshtml` |
 
+### `Content__[ContentItemId]`
+
+This template is called when displaying a content item with a specific ContentItemId.
+
+#### Content with specific ContentItemId Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Content__42n8364bk2azcy1yd71gnrntwf` | `Content-42n8364bk2azcy1yd71gnrntwf.cshtml` 
+
+### `Content_[DisplayType]__[ContentItemId]`
+
+This template is called when displaying a content item with a specific display type and ContentItemId.
+For instance, when a content item is displayed in a list, the `Summary` display type is commonly used.
+
+#### Content with specific Display Type and ContentItemId Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Content_Summary__42n8364bk2azcy1yd71gnrntwf` | `Content-42n8364bk2azcy1yd71gnrntwf.Summary.cshtml` 
+
+### `Content__[Id]`
+
+This template is called when displaying a content item with a specific Id.
+
+Note: This template was supported on Orchard version 1.X and will probably be removed from future versions. It is strongly recommended to use the corresponding template that utilizes the ContentItemId.
+
+#### Content with specific Id Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Content__12` | `Content-12.cshtml` 
+
+### `Content_[DisplayType]__[Id]`
+
+This template is called when displaying a content item with a specific display type and Id.
+For instance, when a content item is displayed in a list, the `Summary` display type is commonly used.
+
+#### Content with specific Display Type and Id Examples
+
+| Template | Filename|
+| --------- | ------------ |
+| `Content_Summary__12` | `Content-12.Summary.cshtml` 
+
 ### `Content__Alias__[Alias]`
 
 This template is called when displaying a content item with a specific alias. It needs to have the `AliasPart` attached to it.
