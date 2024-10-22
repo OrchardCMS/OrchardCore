@@ -20,6 +20,7 @@ public sealed class Startup : StartupBase
         services.AddAzureAISearchServices();
         services.AddSiteDisplayDriver<AzureAISearchDefaultSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddNavigationProvider<AdminSettingsMenu>();
     }
 }
 

@@ -34,7 +34,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddSiteDisplayDriver<HttpsSettingsDisplayDriver>();
-        services.AddNavigationProvider<AdminMenu>();
+        services.AddNavigationProvider<AdminSettingsMenu>();
         services.AddSingleton<IHttpsService, HttpsService>();
 
         services.AddPermissionProvider<Permissions>();

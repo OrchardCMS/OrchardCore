@@ -16,7 +16,7 @@ public sealed class StartupPixel : StartupBase
     {
         services.AddSiteDisplayDriver<FacebookPixelSettingsDisplayDriver>();
         services.AddPermissionProvider<PixelPermissionProvider>();
-        services.AddNavigationProvider<AdminMenuPixel>();
+        services.AddNavigationProvider<AdminSettingsMenuPixel>();
 
         services.Configure<MvcOptions>((options) =>
         {

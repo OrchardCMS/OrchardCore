@@ -42,6 +42,7 @@ public sealed class Startup : StartupBase
         services.AddContentPart<LayerMetadata>();
         services.AddScoped<IContentDisplayDriver, LayerMetadataWelder>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddNavigationProvider<AdminSettingsMenu>();
         services.AddScoped<ILayerService, LayerService>();
         services.AddScoped<IContentHandler, LayerMetadataHandler>();
         services.AddIndexProvider<LayerMetadataIndexProvider>();

@@ -16,9 +16,16 @@ public static class NavigationConstants
 
     public const string AdminMenuWorkflowsPosition = "8";
 
+    [Obsolete("This property is not longer used and will be removed. Instead, use AdminMenuToolsPosition")]
     public const string AdminMenuConfigurationPosition = "100";
 
+    public const string AdminMenuToolsPosition = "100";
+
+    public const string AdminMenuSettingsPosition = "150";
+
     public const string AdminId = "admin";
+
+    public const string SiteSettingsId = "adminSettings";
 
     public const string AdminMenuId = "adminMenu";
 }

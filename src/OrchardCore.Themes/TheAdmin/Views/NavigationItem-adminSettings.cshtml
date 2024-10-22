@@ -1,0 +1,83 @@
+@using OrchardCore.Navigation
+@{
+    TagBuilder li = Tag(Model, "li");
+
+    // Morphing the shape to keep Model untouched.
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "NavigationItemLink";
+
+    if (Model.Id != null)
+    {
+        Model.Metadata.Alternates.Add("NavigationItemLink_Id__" + Model.Id);
+    }
+
+    // Extract classes that are not icons from 'Model.Classes'.
+    var notIconClasses = ((IEnumerable<string>)Model.Classes)
+        .Where(c => !c.StartsWith(NavigationConstants.CssClassPrefix, StringComparison.OrdinalIgnoreCase))
+        .ToArray();
+
+    if (notIconClasses.Length > 0)
+    {
+        li.Attributes["class"] = string.Join(' ', notIconClasses);
+    }
+    else
+    {
+        // This removes the class attribute on the li element when
+        // an empty class attribute gets rendered.
+        li.Attributes.Remove("class");
+    }
+
+    if ((bool)Model.Selected)
+    {
+        li.AddCssClass("active");
+    }
+
+    // Render sub-items (MenuItem).
+    if (Model.HasItems)
+    {
+        var subMenuId = "Sub_" + Guid.NewGuid().ToString("n");
+
+        li.AddCssClass("has-items");
+        var button = new TagBuilder("button");
+        button.AddCssClass("btn btn-toggle d-inline-flex align-items-center rounded border-0");
+        button.MergeAttribute("data-bs-toggle", "collapse");
+        button.MergeAttribute("data-bs-target", "#" + subMenuId);
+        button.MergeAttribute("aria-expanded", "true");
+        button.InnerHtml.AppendHtml(await DisplayAsync(Model));
+        li.InnerHtml.AppendHtml(button);
+
+        var subMenuContainer = new TagBuilder("div");
+        subMenuContainer.AddCssClass("collapse");
+        subMenuContainer.MergeAttribute("id", subMenuId);
+
+        if ((bool)Model.Selected)
+        {
+            subMenuContainer.AddCssClass("collapse show");
+        }
+        else
+        {
+            subMenuContainer.AddCssClass("collapse");
+        }
+
+        var ul = new TagBuilder("ul");
+        ul.AddCssClass("btn-toggle-nav list-unstyled fw-normal pb-1");
+
+        foreach (var item in Model)
+        {
+            item.ParentMenuId = subMenuId;
+
+            ul.InnerHtml.AppendHtml(await DisplayAsync(item));
+        }
+
+        subMenuContainer.InnerHtml.AppendHtml(ul);
+
+        li.InnerHtml.AppendHtml(subMenuContainer);
+    }
+    else
+    {
+        li.AddCssClass("settings-link");
+        li.InnerHtml.AppendHtml(await DisplayAsync(Model));
+    }
+}
+
+@li

@@ -21,7 +21,7 @@ public sealed class StartupLogin : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddNavigationProvider<AdminMenuLogin>();
+        services.AddNavigationProvider<AdminSettingsMenuLogin>();
 
         services.AddSingleton<IFacebookLoginService, FacebookLoginService>();
         services.AddSiteDisplayDriver<FacebookLoginSettingsDisplayDriver>();

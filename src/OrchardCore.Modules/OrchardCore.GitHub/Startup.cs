@@ -30,7 +30,7 @@ public sealed class GitHubLoginStartup : StartupBase
     {
         services.AddSingleton<IGitHubAuthenticationService, GitHubAuthenticationService>();
         services.AddSiteDisplayDriver<GitHubAuthenticationSettingsDisplayDriver>();
-        services.AddNavigationProvider<AdminMenuGitHubLogin>();
+        services.AddNavigationProvider<AdminSettingsMenuGitHubLogin>();
         services.AddRecipeExecutionStep<GitHubAuthenticationSettingsStep>();
 
         services.AddTransient<IConfigureOptions<GitHubAuthenticationSettings>, GitHubAuthenticationSettingsConfiguration>();

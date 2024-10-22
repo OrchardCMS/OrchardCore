@@ -125,6 +125,7 @@ public sealed class Startup : StartupBase
 
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddNavigationProvider<AdminSettingsMenu>();
 
         services.AddSiteDisplayDriver<LoginSettingsDisplayDriver>();
 
@@ -250,7 +251,7 @@ public sealed class ExternalAuthenticationStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddNavigationProvider<RegistrationAdminMenu>();
+        services.AddNavigationProvider<RegistrationAdminSettingsMenu>();
         services.AddScoped<IDisplayDriver<UserMenu>, ExternalAuthenticationUserMenuDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalRegistrationSettingsDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalLoginSettingsDisplayDriver>();
@@ -394,7 +395,7 @@ public sealed class ChangeEmailStartup : StartupBase
         });
 
         services.AddSiteDisplayDriver<ChangeEmailSettingsDisplayDriver>();
-        services.AddNavigationProvider<ChangeEmailAdminMenu>();
+        services.AddNavigationProvider<ChangeEmailAdminSettingsMenu>();
         services.AddScoped<IDisplayDriver<UserMenu>, ChangeEmailUserMenuDisplayDriver>();
     }
 }
@@ -426,7 +427,7 @@ public sealed class RegistrationStartup : StartupBase
 
         services.AddScoped<IDisplayDriver<User>, UserRegistrationAdminDisplayDriver>();
         services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
-        services.AddNavigationProvider<RegistrationAdminMenu>();
+        services.AddNavigationProvider<RegistrationAdminSettingsMenu>();
 
         services.AddScoped<IDisplayDriver<LoginForm>, RegisterUserLoginFormDisplayDriver>();
         services.AddScoped<IDisplayDriver<RegisterUserForm>, RegisterUserFormDisplayDriver>();
@@ -501,7 +502,7 @@ public sealed class ResetPasswordStartup : StartupBase
         });
 
         services.AddSiteDisplayDriver<ResetPasswordSettingsDisplayDriver>();
-        services.AddNavigationProvider<ResetPasswordAdminMenu>();
+        services.AddNavigationProvider<ResetPasswordAdminSettingsMenu>();
 
         services.AddScoped<IDisplayDriver<ResetPasswordForm>, ResetPasswordFormDisplayDriver>();
         services.AddScoped<IDisplayDriver<LoginForm>, ForgotPasswordLoginFormDisplayDriver>();

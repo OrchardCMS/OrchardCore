@@ -1,9 +1,31 @@
+@using OrchardCore.Navigation
 @model AdminIndexViewModel
+@inject IShapeFactory ShapeFactory
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Settings"])</h1></zone>
+<div class="row">
+    <div class="col-12 col-md-8 col-lg-9 order-2 order-md-1">
+        <zone Name="Title"><h1>@RenderTitleSegments(T["Settings"])</h1></zone>
 
-<form asp-action="Index" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">
-      <input asp-for="GroupId" type="hidden" />
-    @Html.ValidationSummary()
-    @await DisplayAsync(Model.Shape)
-</form>
+        <form asp-action="Index" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">
+            <input asp-for="GroupId" type="hidden" />
+            @Html.ValidationSummary()
+            @await DisplayAsync(Model.Shape)
+        </form>
+    </div>
+
+    <div class="col-12 col-md-4 col-lg-3 order-1 order-md-2">
+        <div class="rounded text-bg-theme">
+            @{
+                var shape = await ShapeFactory.CreateAsync("Navigation", Arguments.From(new
+                {
+                    MenuName = NavigationConstants.SiteSettingsId,
+                    ViewContext.RouteData,
+                }));
+            }
+
+            @await DisplayAsync(shape)
+        </div>
+    </div>
+
+</div>
+

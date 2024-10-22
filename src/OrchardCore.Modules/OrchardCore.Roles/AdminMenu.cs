@@ -17,7 +17,8 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Security"], security => security
                 .Add(S["Roles"], S["Roles"].PrefixPosition(), roles => roles
-                    .AddClass("roles").Id("roles")
+                    .AddClass("roles")
+                    .Id("roles")
                     .Action("Index", "Admin", "OrchardCore.Roles")
                     .Permission(CommonPermissions.ManageRoles)
                     .LocalNav()

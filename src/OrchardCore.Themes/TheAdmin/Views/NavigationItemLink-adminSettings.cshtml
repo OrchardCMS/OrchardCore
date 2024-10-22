@@ -1,0 +1,51 @@
+@using OrchardCore.Localization
+@using OrchardCore.Navigation
+@{
+    // Morphing the shape to keep Model untouched.
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "NavigationItemText";
+
+    if (Model.Id != null)
+    {
+        Model.Metadata.Alternates.Add("NavigationItemText_Id__" + Model.Id);
+    }
+
+    var tag = Tag(Model, "a");
+    tag.Attributes["id"] = null;
+
+    if (Model.Href == null || Model.Href.ToString() == "#")
+    {
+        tag.Attributes["href"] = "#m" + Model.GetHashCode().ToString();
+    }
+    else
+    {
+        tag.Attributes["href"] = Model.Href;
+    }
+
+    if (!string.IsNullOrEmpty(Model.Target))
+    {
+        tag.Attributes["target"] = Model.Target;
+    }
+
+    // Extract classes that are not icons from 'Model.Classes'.
+    var notIconClasses = ((IEnumerable<string>)Model.Classes)
+        .Where(c => !c.StartsWith(NavigationConstants.CssClassPrefix, StringComparison.OrdinalIgnoreCase))
+        .ToArray();
+
+    if (notIconClasses.Length > 0)
+    {
+        tag.Attributes["class"] = string.Join(' ', notIconClasses);
+    }
+    else
+    {
+        // This removes the class attribute on the li element when
+        // an empty class attribute gets rendered.
+        tag.Attributes.Remove("class");
+    }
+
+    tag.AddCssClass("link-body-emphasis d-inline-flex text-decoration-none rounded");
+
+    tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
+}
+
+@tag

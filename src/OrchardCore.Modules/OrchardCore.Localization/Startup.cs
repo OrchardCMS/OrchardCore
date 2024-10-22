@@ -28,7 +28,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddSiteDisplayDriver<LocalizationSettingsDisplayDriver>();
-        services.AddNavigationProvider<AdminMenu>();
+        services.AddNavigationProvider<AdminSettingsMenu>();
         services.AddPermissionProvider<Permissions>();
         services.AddScoped<ILocalizationService, LocalizationService>();
 

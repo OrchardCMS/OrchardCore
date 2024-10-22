@@ -21,7 +21,7 @@ public sealed class Startup : StartupBase
     {
         services.AddPermissionProvider<SecurityPermissions>();
         services.AddSiteDisplayDriver<SecuritySettingsDisplayDriver>();
-        services.AddNavigationProvider<AdminMenu>();
+        services.AddNavigationProvider<AdminSettingsMenu>();
         services.AddSingleton<ISecurityService, SecurityService>();
 
         services.AddTransient<IConfigureOptions<SecuritySettings>, SecuritySettingsConfiguration>();

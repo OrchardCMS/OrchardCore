@@ -74,6 +74,7 @@ public sealed class Startup : StartupBase
         services.AddSiteDisplayDriver<DefaultSiteSettingsDisplayDriver>();
         services.AddSiteDisplayDriver<ButtonsSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddNavigationProvider<SiteSettingsMenu>();
 
         services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
 

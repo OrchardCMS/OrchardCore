@@ -21,7 +21,7 @@ public sealed class Startup : StartupBase
     {
         services.AddReCaptcha();
         services.AddSiteDisplayDriver<ReCaptchaSettingsDisplayDriver>();
-        services.AddNavigationProvider<AdminMenu>();
+        services.AddNavigationProvider<AdminSettingsMenu>();
         services.AddPermissionProvider<Permissions>();
     }
 }

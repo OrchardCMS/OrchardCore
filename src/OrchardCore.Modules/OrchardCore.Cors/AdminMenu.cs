@@ -7,23 +7,20 @@ public sealed class AdminMenu : AdminNavigationProvider
 {
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], settings => settings
-                    .Add(S["CORS"], S["CORS"].PrefixPosition(), entry => entry
-                        .AddClass("cors")
-                        .Id("cors")
-                        .Action("Index", "Admin", "OrchardCore.Cors")
-                        .Permission(Permissions.ManageCorsSettings)
-                        .LocalNav()
-                    )
+            .Add(S["Tools"], tools => tools
+                .Add(S["CORS"], S["CORS"].PrefixPosition(), entry => entry
+                    .AddClass("cors")
+                    .Id("cors")
+                    .Action("Index", "Admin", "OrchardCore.Cors")
+                    .LocalNav()
                 )
             );
 

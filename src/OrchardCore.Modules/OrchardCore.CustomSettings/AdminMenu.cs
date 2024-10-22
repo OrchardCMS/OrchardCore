@@ -4,10 +4,11 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Settings;
 
 namespace OrchardCore.CustomSettings;
 
-public sealed class AdminMenu : AdminNavigationProvider
+public sealed class AdminSettingsMenu : SettingsNavigationProvider
 {
     private static readonly ConcurrentDictionary<string, RouteValueDictionary> _routeValues = [];
 
@@ -15,11 +16,11 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenu(
-        IStringLocalizer<AdminMenu> localizer,
+    public AdminSettingsMenu(
+        IStringLocalizer<AdminSettingsMenu> stringLocalizer,
         CustomSettingsService customSettingsService)
     {
-        S = localizer;
+        S = stringLocalizer;
         _customSettingsService = customSettingsService;
     }
 
@@ -41,16 +42,14 @@ public sealed class AdminMenu : AdminNavigationProvider
             var htmlName = type.Name.HtmlClassify();
 
             builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], settings => settings
-                        .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), layers => layers
-                            .Action("Index", "Admin", routeValues)
-                            .AddClass(htmlName)
-                            .Id(htmlName)
-                            .Permission(Permissions.CreatePermissionForType(type))
-                            .Resource(type.Name)
-                            .LocalNav()
-                        )
+                .Add(S["Custom"], configuration => configuration
+                    .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), layers => layers
+                        .Action("Index", "Admin", routeValues)
+                        .AddClass(htmlName)
+                        .Id(htmlName)
+                        .Permission(Permissions.CreatePermissionForType(type))
+                        .Resource(type.Name)
+                        .LocalNav()
                     )
                 );
         }

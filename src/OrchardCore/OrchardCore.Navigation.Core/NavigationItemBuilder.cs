@@ -125,8 +125,8 @@ public class NavigationItemBuilder : NavigationBuilder
     public NavigationItemBuilder Action(RouteValueDictionary values)
     {
         return values != null
-                   ? Action(values["action"] as string, values["controller"] as string, values)
-                   : Action(null, null, new RouteValueDictionary());
+            ? Action(values["action"] as string, values["controller"] as string, values)
+            : Action(null, null, new RouteValueDictionary());
     }
 
     public NavigationItemBuilder Action(string actionName)

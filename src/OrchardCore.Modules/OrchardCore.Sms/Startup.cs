@@ -37,6 +37,7 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<SmsPermissionProvider>();
         services.AddSiteDisplayDriver<SmsSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
+        services.AddNavigationProvider<AdminSettingsMenu>();
     }
 }
 

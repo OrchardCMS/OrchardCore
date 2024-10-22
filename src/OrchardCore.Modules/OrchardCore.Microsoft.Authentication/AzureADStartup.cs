@@ -30,7 +30,7 @@ public sealed class AzureADStartup : StartupBase
         services.AddRecipeExecutionStep<AzureADSettingsStep>();
 
         services.AddSiteDisplayDriver<AzureADSettingsDisplayDriver>();
-        services.AddNavigationProvider<AdminMenuAAD>();
+        services.AddNavigationProvider<AdminSettingsMenuAAD>();
 
         services.AddTransient<IConfigureOptions<AzureADSettings>, AzureADSettingsConfiguration>();
 

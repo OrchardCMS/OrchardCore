@@ -30,7 +30,6 @@ using OrchardCore.OpenId.Services.Handlers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.Tasks;
 using OrchardCore.Recipes;
-using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -56,7 +55,7 @@ public sealed class Startup : StartupBase
         services.TryAddEnumerable(new[]
         {
             ServiceDescriptor.Scoped<IPermissionProvider, Permissions>(),
-            ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>(),
+            ServiceDescriptor.Scoped<INavigationProvider, ClientSettingsMenu>(),
         });
     }
 }
@@ -74,6 +73,7 @@ public sealed class ClientStartup : StartupBase
             ServiceDescriptor.Scoped<IDisplayDriver<ISite>, OpenIdClientSettingsDisplayDriver>(),
         });
 
+        services.AddNavigationProvider<ClientSettingsMenu>();
         services.AddRecipeExecutionStep<OpenIdClientSettingsStep>();
         // Register the options initializers required by the OpenID Connect client handler.
         services.TryAddEnumerable(new[]
@@ -100,6 +100,7 @@ public sealed class ServerStartup : StartupBase
                 options.UseDataProtection();
             });
 
+        services.AddNavigationProvider<ServerAdminMenu>();
         services.TryAddSingleton<IOpenIdServerService, OpenIdServerService>();
 
         services.AddDataMigration<DefaultScopesMigration>();
@@ -197,6 +198,15 @@ public sealed class ServerStartup : StartupBase
     }
 }
 
+[Feature(OpenIdConstants.Features.Management)]
+public sealed class ManagementStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddNavigationProvider<ManagementAdminMenu>();
+    }
+}
+
 [RequireFeatures("OrchardCore.Deployment", OpenIdConstants.Features.Server)]
 public sealed class ServerDeploymentStartup : StartupBase
 {
@@ -219,6 +229,7 @@ public sealed class ValidationStartup : StartupBase
                 options.UseSystemNetHttp();
             });
 
+        services.AddNavigationProvider<ValidationAdminMenu>();
         services.TryAddSingleton<IOpenIdValidationService, OpenIdValidationService>();
 
         // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
