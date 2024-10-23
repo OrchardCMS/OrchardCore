@@ -1,5 +1,6 @@
 using GraphQL;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.Metadata;
@@ -11,18 +12,21 @@ public class DynamicContentFieldsIndexAliasProvider : ContentDefinitionHandlerBa
 {
     private static readonly string _cacheKey = nameof(DynamicContentFieldsIndexAliasProvider);
 
-    private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IEnumerable<IContentFieldProvider> _contentFieldProviders;
+    private readonly IServiceProvider _serviceProvider;
     private readonly IMemoryCache _memoryCache;
     private readonly GraphQLContentOptions _contentOptions;
 
-    public DynamicContentFieldsIndexAliasProvider(IContentDefinitionManager contentDefinitionManager,
+    private IContentDefinitionManager _contentDefinitionManager;
+
+    public DynamicContentFieldsIndexAliasProvider(
         IEnumerable<IContentFieldProvider> contentFieldProviders,
         IOptions<GraphQLContentOptions> contentOptionsAccessor,
+        IServiceProvider serviceProvider,
         IMemoryCache memoryCache)
     {
-        _contentDefinitionManager = contentDefinitionManager;
         _contentFieldProviders = contentFieldProviders;
+        _serviceProvider = serviceProvider;
         _memoryCache = memoryCache;
         _contentOptions = contentOptionsAccessor.Value;
     }
@@ -35,6 +39,10 @@ public class DynamicContentFieldsIndexAliasProvider : ContentDefinitionHandlerBa
     private async ValueTask<IEnumerable<IndexAlias>> GetAliasesInternalAsync()
     {
         var aliases = new List<IndexAlias>();
+
+        // Resolve the definition manager lazily to avoid circular dependency.
+        _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+
         var types = await _contentDefinitionManager.ListTypeDefinitionsAsync();
         var parts = types.SelectMany(t => t.Parts);
 
