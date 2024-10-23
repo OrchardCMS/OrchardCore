@@ -21,7 +21,7 @@ public static class NavigationConstants
 
     public const string AdminMenuToolsPosition = "100";
 
-    public const string AdminMenuSettingsPosition = "150";
+    public const string AdminMenuSettingsPosition = "after";
 
     public const string AdminId = "admin";
 

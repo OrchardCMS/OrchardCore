@@ -17,7 +17,7 @@ public sealed class AdminSettingsMenu : SettingsNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["General"], general => general
+            .Add(S["Site"], site => site
                 .Add(S["Reverse Proxy"], S["Reverse Proxy"].PrefixPosition(), entry => entry
                     .AddClass("reverseproxy")
                     .Id("reverseproxy")

@@ -75,6 +75,7 @@
     }
     else
     {
+        li.MergeAttribute("data-searchable-text", ((string)Model.Text).ToLowerInvariant());
         li.AddCssClass("settings-link");
         li.InnerHtml.AppendHtml(await DisplayAsync(Model));
     }

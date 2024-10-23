@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
@@ -20,7 +19,7 @@ public sealed class AdminSettingsMenuLogin : SettingsNavigationProvider
             .Add(S["Authentication"], authentication => authentication
                 .Add(S["Meta"], S["Meta"].PrefixPosition(), meta => meta
                     .AddClass("facebook")
-                    .Id("facebook")
+                    .Id("metaAuthenticationSettings")
                     .Action(GetRouteValues(FacebookConstants.Features.Login))
                     .Permission(Permissions.ManageFacebookApp)
                     .LocalNav()

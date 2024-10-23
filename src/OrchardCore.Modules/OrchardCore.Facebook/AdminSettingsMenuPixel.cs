@@ -17,7 +17,8 @@ public sealed class AdminSettingsMenuPixel : SettingsNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["General"], general => general
+            .Add(S["Meta"], S["Meta"].PrefixPosition(), meta => meta
+                .Id("metaSettings")
                 .Add(S["Meta Pixel"], S["Meta Pixel"].PrefixPosition(), pixel => pixel
                     .AddClass("facebookPixel")
                     .Id("facebookPixel")

@@ -16,7 +16,7 @@ public sealed class AdminSettingsMenu : SettingsNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["General"], general => general
+            .Add(S["Site"], site => site
                 .Add(S["Search"], S["Search"].PrefixPosition(), search => search
                     .AddClass("searchsettings")
                     .Id("searchsettings")

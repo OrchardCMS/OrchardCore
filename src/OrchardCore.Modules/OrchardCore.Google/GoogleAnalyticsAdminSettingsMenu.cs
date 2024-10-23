@@ -16,8 +16,9 @@ public sealed class GoogleAnalyticsAdminSettingsMenu : SettingsNavigationProvide
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["General"], general => general
-                .Add(S["Google Analytics"], S["Google Analytics"].PrefixPosition(), google => google
+            .Add(S["Google"], S["Google"].PrefixPosition(), google => google
+                .Id("googleSettings")
+                .Add(S["Analytics"], S["Analytics"].PrefixPosition(), analytics => analytics
                     .AddClass("googleAnalytics")
                     .Id("googleAnalytics")
                     .Action(GetRouteValues(GoogleConstants.Features.GoogleAnalytics))

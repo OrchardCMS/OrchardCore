@@ -15,6 +15,14 @@ public sealed class SiteSettingsMenu : SettingsNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+        builder
+            .Add(S["Site"], site => site
+                .Add(S["General"], S["General"].PrefixPosition(), general => general
+                    .Action(GetRouteValues(DefaultSiteSettingsDisplayDriver.GroupId))
+                    .LocalNav()
+                )
+            );
+
         return ValueTask.CompletedTask;
     }
 }

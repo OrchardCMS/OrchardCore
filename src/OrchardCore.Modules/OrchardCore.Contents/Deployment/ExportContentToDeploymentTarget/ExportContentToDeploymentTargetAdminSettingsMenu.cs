@@ -16,7 +16,7 @@ public sealed class ExportContentToDeploymentTargetAdminSettingsMenu : SettingsN
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["General"], general => general
+            .Add(S["Site"], site => site
                 .Add(S["Export Target Settings"], S["Export Target Settings"].PrefixPosition(), targetSettings => targetSettings
                     .Action(GetRouteValues(ExportContentToDeploymentTargetSettingsDisplayDriver.GroupId))
                     .Permission(OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan)

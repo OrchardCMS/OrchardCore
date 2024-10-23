@@ -16,10 +16,11 @@ public sealed class AdminSettingsMenu : SettingsNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["General"], general => general
+            .Add(S["Meta"], S["Meta"].PrefixPosition(), meta => meta
+                .Id("metaSettings")
                 .Add(S["Meta App"], S["Meta App"].PrefixPosition(), metaApp => metaApp
                     .AddClass("facebookApp")
-                    .Id("facebookApp")
+                    .Id("metaApp")
                     .Action(GetRouteValues(FacebookConstants.Features.Core))
                     .Permission(Permissions.ManageFacebookApp)
                     .LocalNav()

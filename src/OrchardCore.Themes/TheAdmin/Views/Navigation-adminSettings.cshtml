@@ -18,7 +18,79 @@
     <span class="fs-5 fw-semibold">@T["Settings"]</span>
 </div>
 
+<div class="mb-3 px-3">
+    <label for="SettingsSearch" class="form-label visually-hidden">@T["Search"]</label>
+    <input type="text" class="form-control" id="SettingsSearch" name="SettingsSearch" value="" placeholder="@T["Search..."]" />
+</div>
+
 @tag
+
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', () => {
+        let searchElement = document.getElementById('SettingsSearch');
+        let menuElement = document.getElementById('@NavigationConstants.SiteSettingsId');
+        let menuItemElements = menuElement.querySelectorAll('li');
+        let parentMenuItemElements = menuElement.querySelectorAll('li.has-items');
+
+        const resetMenuItems = () => {
+
+            for (let i = 0; i < menuItemElements.length; i++) {
+                menuItemElements[i].classList.remove('d-none');
+            }
+        };
+
+        searchElement.addEventListener('keydown', (e) => {
+
+            if (e.key === 'Escape') {
+                searchElement.value = '';
+                resetMenuItems();
+            }
+        });
+
+        searchElement.addEventListener('keyup', (e) => {
+
+            var value = e.target.value;
+
+            if (!value) {
+                resetMenuItems();
+
+                return;
+            }
+
+            // Set the visibility of the children.
+            for (let i = 0; i < menuItemElements.length; i++) {
+                var item = menuItemElements[i];
+                var searchText = item.getAttribute('data-searchable-text') || '';
+
+                if (!searchText.includes(value)) {
+                    item.classList.add('d-none');
+                } else {
+                    item.classList.remove('d-none');
+                }
+            }
+
+            // Set the visibility of the parents.
+            for (let i = 0; i < parentMenuItemElements.length; i++) {
+
+                let containers = parentMenuItemElements[i].querySelectorAll('.collapse');
+
+                for (let x = 0; x < containers.length; x++) {
+
+                    let container = containers[x];
+                    var visibleItems = container.querySelectorAll('li:not(.d-none)');
+
+                    if (visibleItems.length) {
+                        parentMenuItemElements[i].classList.remove('d-none');
+                        container.classList.add('show');
+                    } else {
+                        parentMenuItemElements[i].classList.add('d-none');
+                        container.classList.remove('show');
+                    }
+                }
+            }
+        });
+    });
+</script>
 
 <style at="Head">
 

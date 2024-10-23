@@ -30,7 +30,7 @@ public sealed class AdminSettingsMenu : SettingsNavigationProvider
         }
 
         builder
-            .Add(S["General"], general => general
+            .Add(S["Site"], site => site
                 .Add(S["Azure AI Search"], S["Azure AI Search"].PrefixPosition(), azureAISearch => azureAISearch
                     .AddClass("azure-ai-search")
                     .Id("azureaisearch")

@@ -16,8 +16,9 @@ public sealed class GoogleTagManagerAdminSettingsMenu : SettingsNavigationProvid
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["General"], general => general
-                .Add(S["Google Tag Manager"], S["Google Tag Manager"].PrefixPosition(), google => google
+            .Add(S["Google"], S["Google"].PrefixPosition(), google => google
+                .Id("googleSettings")
+                .Add(S["Tag Manager"], S["Tag Manager"].PrefixPosition(), tagManager => tagManager
                     .AddClass("googleTagManager")
                     .Id("googleTagManager")
                     .Action(GetRouteValues(GoogleConstants.Features.GoogleTagManager))

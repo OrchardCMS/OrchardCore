@@ -17,8 +17,8 @@ public sealed class SiteSettingsMenu : SettingsNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["General"], "before", general => general
-                .Id("generalsettings")
+            .Add(S["Site"], "before", site => site
+                .Id("siteSettings")
                 .Add(S["Admin"], S["Admin"].PrefixPosition(), admin => admin
                     .AddClass("admin")
                     .Id("admin")

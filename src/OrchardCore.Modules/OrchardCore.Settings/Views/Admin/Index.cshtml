@@ -1,9 +1,12 @@
 @using OrchardCore.Navigation
+
 @model AdminIndexViewModel
+
 @inject IShapeFactory ShapeFactory
 
 <div class="row">
     <div class="col-12 col-md-8 col-lg-9 order-2 order-md-1">
+
         <zone Name="Title"><h1>@RenderTitleSegments(T["Settings"])</h1></zone>
 
         <form asp-action="Index" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data" class="no-multisubmit">

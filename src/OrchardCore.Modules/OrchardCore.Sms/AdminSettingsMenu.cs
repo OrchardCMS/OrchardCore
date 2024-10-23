@@ -16,7 +16,7 @@ public sealed class AdminSettingsMenu : SettingsNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["General"], general => general
+            .Add(S["Communication"], S["Communication"].PrefixPosition(), communication => communication
                 .Add(S["SMS"], S["SMS"].PrefixPosition(), sms => sms
                     .AddClass("sms")
                     .Id("sms")

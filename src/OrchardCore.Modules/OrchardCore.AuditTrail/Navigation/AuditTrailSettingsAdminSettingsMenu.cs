@@ -17,7 +17,7 @@ public sealed class AuditTrailSettingsAdminSettingsMenu : SettingsNavigationProv
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-             .Add(S["General"], general => general
+             .Add(S["Site"], site => site
                  .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), auditTrail => auditTrail
                     .AddClass("audittrail")
                     .Id("audittrailSettings")

@@ -16,7 +16,7 @@ public sealed class ClientSettingsMenu : SettingsNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["General"], openId => openId
+            .Add(S["Site"], site => site
                 .Add(S["OpenID Connect client"], S["OpenID Connect client"].PrefixPosition(), client => client
                     .Action(GetRouteValues("OrchardCore.OpenId.Client"))
                     .Permission(Permissions.ManageClientSettings)
