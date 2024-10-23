@@ -281,7 +281,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin {
   scrollbar-color: var(--oc-scrollbar-color) var(--oc-admin-menu-bg-color);
 }
 [dir] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin {
-  margin-bottom: 40px;
+  margin-bottom: var(--oc-start-navigation-width-when-compact);
 }
 body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin .item-label {
   display: flex;
@@ -1172,14 +1172,14 @@ html[dir]:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-
 .leftbar-compactor {
   display: block;
   width: var(--oc-start-navigation-width-when-compact);
-  height: 50px;
+  height: var(--oc-start-navigation-width-when-compact);
   color: var(--oc-admin-menu-font-color);
   font-size: 20px;
   display: block;
 }
 
 [dir] .leftbar-compactor {
-  padding: 10px;
+  padding: 0 !important;
   border: none;
   background-color: transparent;
   cursor: pointer;
@@ -1199,10 +1199,6 @@ html[dir]:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-
 }
 .leftbar-compactor:hover {
   color: rgb(0, 120, 212);
-  color: var(rgb(0, 120, 212));
-}
-[dir] .leftbar-compactor:hover {
-  text-shadow: 0 0 4px rgba(0, 120, 212, 0.5);
 }
 .leftbar-compactor:before {
   content: "⟪";

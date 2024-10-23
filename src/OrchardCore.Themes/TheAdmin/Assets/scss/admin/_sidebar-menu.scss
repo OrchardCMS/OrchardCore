@@ -123,7 +123,7 @@ body:not(.left-sidebar-compact) {
                     overflow-y: auto;
                     overflow-x: hidden;
                     height: 100%;
-                    margin-bottom: 40px;
+                    margin-bottom: var(--oc-start-navigation-width-when-compact);
                     scrollbar-width: thin;
                     scrollbar-color: var(--oc-scrollbar-color) var(--oc-admin-menu-bg-color);
 
@@ -887,13 +887,13 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
 .leftbar-compactor {
     display: block;
     width: var(--oc-start-navigation-width-when-compact);
-    height: 50px;
-    padding: 10px;
+    height: var(--oc-start-navigation-width-when-compact);
+    padding: 0 !important;
     border: none;
     background-color: transparent;
     color: var(--oc-admin-menu-font-color);
     cursor: pointer;
-    font-size: 20px;
+    font-size: 1.4rem;
     float: right;
     transition-duration: 0.2s;
     display: block;
@@ -905,8 +905,6 @@ html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label
 
     &:hover {
         color: rgba(0, 120, 212, 1);
-        color: var(rgba(0, 120, 212, 1));
-        text-shadow: 0 0 4px rgba(0, 120, 212, 0.5);
     }
 
     &:before {
