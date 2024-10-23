@@ -103,7 +103,7 @@ public sealed class AuthenticatorAppController : TwoFactorAuthenticationBaseCont
 
         await Notifier.SuccessAsync(H["Your authenticator app has been verified."]);
 
-        return await RedirectToTwoFactorAsync(user);
+        return await RedirectToTwoFactorAsync(user,model.ReturnUrl);
     }
 
     public async Task<IActionResult> Reset()

@@ -20,12 +20,13 @@
 
 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
 
-<form method="post">
+<form method="post" >
     <div class="form-floating mb-3">
         <input type="hidden" asp-for="PhoneNumber" />
         <input asp-for="Code" class="form-control" autocomplete="off" placeholder="@T["Please enter the code"]" />
         <label asp-for="Code" class="form-label form-label">@T["Verification code"]</label>
         <span asp-validation-for="Code" class="text-danger"></span>
     </div>
+    <input type="hidden" name="ReturnUrl" value="@ViewData["ReturnUrl"]" />
     <button type="submit" class="btn btn-lg btn-primary">@T["Verify"]</button>
 </form>

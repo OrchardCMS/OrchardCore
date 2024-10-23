@@ -131,7 +131,7 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
         }
     }
 
-    protected async Task<IActionResult> RedirectToTwoFactorAsync(IUser user)
+    protected async Task<IActionResult> RedirectToTwoFactorAsync(IUser user, string returnUrl=null)
     {
         if (await UserManager.CountRecoveryCodesAsync(user) == 0)
         {
@@ -142,12 +142,13 @@ public abstract class TwoFactorAuthenticationBaseController : AccountBaseControl
 
             await Notifier.WarningAsync(H["New recovery codes were generated."]);
 
-            return RedirectToAction(nameof(TwoFactorAuthenticationController.ShowRecoveryCodes), _twoFactorAuthenticationControllerName);
+            // 传递 returnUrl 参数
+            return RedirectToAction(nameof(TwoFactorAuthenticationController.ShowRecoveryCodes), _twoFactorAuthenticationControllerName, new { returnUrl });
         }
 
+        // 如果不需要生成新的恢复码，则直接重定向到 TwoFactorIndex
         return RedirectToTwoFactorIndex();
     }
-
     protected async Task<IList<string>> GetTwoFactorProvidersAsync(IUser user)
     {
         var providers = await UserManager.GetValidTwoFactorProvidersAsync(user);

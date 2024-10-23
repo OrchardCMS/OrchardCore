@@ -5,4 +5,5 @@ public class TwoFactorMethod
     public string Provider { get; set; }
 
     public bool IsEnabled { get; set; }
+    public string ReturnUrl { get; set; }
 }

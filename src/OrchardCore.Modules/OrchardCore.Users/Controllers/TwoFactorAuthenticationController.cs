@@ -213,7 +213,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         return View(model);
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string returnUrl=null)
     {
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
@@ -223,18 +223,20 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
 
         var providers = await GetTwoFactorProvidersAsync(user);
         var model = new TwoFactorAuthenticationViewModel();
-        await PopulateModelAsync(user, providers, model);
+
+         await PopulateModelAsync(user, providers, model,returnUrl);
 
         if (user is User u)
         {
             model.PreferredProvider = u.As<TwoFactorPreference>().DefaultProvider;
         }
-
+        ViewData["ReturnUrl"] = returnUrl;
+        //RedirectToLocal(returnUrl);
         return View(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Index(TwoFactorAuthenticationViewModel model)
+    public async Task<IActionResult> Index(TwoFactorAuthenticationViewModel model, string returnUrl = null)
     {
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
@@ -257,14 +259,27 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
 
                 await Notifier.SuccessAsync(H["Preferences were updated successfully."]);
 
-                return RedirectToAction(nameof(Index));
+                // 优先使用提供的 returnUrl，如果没有提供则重定向到 Index
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+                else
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                //return RedirectToAction(nameof(Index));
             }
 
             await Notifier.ErrorAsync(H["Unable to update preferences."]);
         }
 
         await PopulateModelAsync(user, providers, model);
-
+        // 如果有 returnUrl，将其传递给视图
+        if (!string.IsNullOrEmpty(returnUrl))
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+        }
         return View(model);
     }
 
@@ -328,7 +343,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         return RedirectToAction(nameof(ShowRecoveryCodes));
     }
 
-    public async Task<IActionResult> ShowRecoveryCodes()
+    public async Task<IActionResult> ShowRecoveryCodes(string returnUrl=null)
     {
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
@@ -339,7 +354,10 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         var userId = await UserManager.GetUserIdAsync(user);
 
         var recoveryCodes = await GetCachedRecoveryCodesAsync(userId);
-
+         if(Url.IsLocalUrl(returnUrl))
+        {
+            return Redirect(returnUrl);
+        }
         if (recoveryCodes == null || recoveryCodes.Length == 0)
         {
             return RedirectToAction(nameof(Index));
@@ -474,7 +492,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         return defaultProvider;
     }
 
-    private async Task PopulateModelAsync(IUser user, IList<string> providers, TwoFactorAuthenticationViewModel model)
+    private async Task PopulateModelAsync(IUser user, IList<string> providers, TwoFactorAuthenticationViewModel model,string returnUrl="")
     {
         model.User = user;
         model.IsTwoFaEnabled = await UserManager.GetTwoFactorEnabledAsync(user);
@@ -489,6 +507,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
             {
                 Provider = key,
                 IsEnabled = providers.Contains(key),
+                ReturnUrl = returnUrl
             };
 
             var shape = await _twoFactorDisplayManager.BuildDisplayAsync(method, this, "SummaryAdmin");

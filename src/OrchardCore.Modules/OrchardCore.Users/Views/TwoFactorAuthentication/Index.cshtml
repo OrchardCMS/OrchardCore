@@ -11,7 +11,7 @@
     ViewLayout = "Layout__TwoFactor";
 }
 <script asp-name="font-awesome" at="Foot" version="6"></script>
-
+<span>TowFactorAuthentication</span> 
 @if (Model.AuthenticationMethods.Count == 0)
 {
     <div class="alert alert-danger text-center">
@@ -59,7 +59,7 @@
             }
             else if (!Model.IsTwoFaEnabled && Model.ValidTwoFactorProviders.Count > 0)
             {
-                <form method="post" asp-action="EnableTwoFactorAuthentication">
+                <form method="post" asp-action="EnableTwoFactorAuthentication" asp-route-returnurl="@ViewData["ReturnUrl"]">
                     <button type="submit" class="btn btn-sm btn-success">@T["Enable"]</button>
                 </form>
             }
@@ -99,7 +99,7 @@
             {
                 <div class="mb-3">
                     <p class="mb-1">@T["The current device has been saved during the two-factor authentication process."]</p>
-                    <form method="post" asp-action="ForgetTwoFactorClient">
+                    <form method="post" asp-action="ForgetTwoFactorClient" asp-route-returnurl="@ViewData["ReturnUrl"]">
                         <button type="submit" class="btn btn-sm btn-primary">@T["Forget this device"]</button>
                     </form>
                 </div>
@@ -108,7 +108,7 @@
 
         @if (Model.ValidTwoFactorProviders.Count > 1)
         {
-            <form method="post">
+            <form method="post" asp-route-returnurl="@ViewData["ReturnUrl"]">
                 <div class="mb-3">
                     <label asp-for="PreferredProvider" class="form-label">@T["Preferred Two-Factor Method"]</label>
                     <select asp-for="PreferredProvider" asp-items="Model.ValidTwoFactorProviders" class="form-select">

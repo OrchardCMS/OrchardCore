@@ -53,8 +53,7 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
         return CombineAsync(
             Initialize<SummaryAdminUserViewModel>("UserFields", model => model.User = user).Location("SummaryAdmin", "Header:1"),
             Initialize<SummaryAdminUserViewModel>("UserInfo", model => model.User = user).Location("DetailAdmin", "Content:5"),
-            Initialize<SummaryAdminUserViewModel>("UserButtons", model => model.User = user).Location("SummaryAdmin", "Actions:1"),
-            Initialize<SummaryAdminUserViewModel>("UserActionsMenu", model => model.User = user).Location("SummaryAdmin", "ActionsMenu:5")
+            Initialize<SummaryAdminUserViewModel>("UserButtons", model => model.User = user).Location("SummaryAdmin", "Actions:1")
         );
     }
 

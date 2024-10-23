@@ -140,10 +140,10 @@ public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseCont
 
         await SetPendingPhoneNumberAsync(phoneNumber, user.UserName);
 
-        return RedirectToAction(nameof(ValidateCode));
+        return RedirectToAction(nameof(ValidateCode),new { model.ReturnUrl });
     }
 
-    public async Task<IActionResult> ValidateCode()
+    public async Task<IActionResult> ValidateCode(string returnUrl=null)
     {
         var user = await UserManager.GetUserAsync(User);
         if (user == null)
@@ -159,7 +159,7 @@ public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseCont
 
             return RedirectToAction(nameof(Index));
         }
-
+        ViewData["ReturnUrl"] = returnUrl;
         var model = new EnableSmsAuthenticatorViewModel
         {
             PhoneNumber = pendingPhoneNumber,
@@ -193,7 +193,7 @@ public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseCont
 
                 await Notifier.SuccessAsync(H["Your phone number has been confirmed."]);
 
-                return await RedirectToTwoFactorAsync(user);
+                return await RedirectToTwoFactorAsync(user,model.ReturnUrl);
             }
 
             await Notifier.ErrorAsync(H["Invalid verification code."]);

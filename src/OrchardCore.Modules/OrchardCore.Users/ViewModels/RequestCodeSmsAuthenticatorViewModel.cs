@@ -8,4 +8,5 @@ public class RequestCodeSmsAuthenticatorViewModel
 
     [BindNever]
     public bool AllowChangingPhoneNumber { get; set; }
+    public string ReturnUrl { get; set; }
 }
