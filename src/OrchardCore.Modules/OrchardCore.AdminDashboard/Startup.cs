@@ -43,7 +43,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentDisplayDriver, DashboardContentDisplayDriver>();
 
         services.AddDataMigration<Migrations>();
-        services.AddScoped<IContentDefinitionHandler, DashboardPartContentTypeDefinitionHandler>();
+        services.AddScoped<IContentDefinitionEventHandler, DashboardPartContentTypeDefinitionHandler>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

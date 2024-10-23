@@ -15,7 +15,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
     private const string CacheKey = nameof(ContentDefinitionManager);
 
     private readonly IContentDefinitionStore _contentDefinitionStore;
-    private readonly IEnumerable<IContentDefinitionHandler> _handlers;
+    private readonly IEnumerable<IContentDefinitionEventHandler> _handlers;
     private readonly ILogger _logger;
     private readonly IMemoryCache _memoryCache;
 
@@ -27,7 +27,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
 
     public ContentDefinitionManager(
         IContentDefinitionStore contentDefinitionStore,
-        IEnumerable<IContentDefinitionHandler> handlers,
+        IEnumerable<IContentDefinitionEventHandler> handlers,
         ILogger<ContentDefinitionManager> logger,
         IMemoryCache memoryCache)
     {

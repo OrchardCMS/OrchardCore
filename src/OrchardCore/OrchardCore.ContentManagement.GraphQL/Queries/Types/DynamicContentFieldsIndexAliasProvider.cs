@@ -7,7 +7,7 @@ using OrchardCore.ContentTypes.Events;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, IContentDefinitionEventHandler
+public class DynamicContentFieldsIndexAliasProvider : ContentDefinitionHandlerBase, IIndexAliasProvider
 {
     private static readonly string _cacheKey = nameof(DynamicContentFieldsIndexAliasProvider);
 
@@ -75,39 +75,51 @@ public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, ICont
         return aliases;
     }
 
-    private void InvalidateInternalAsync() => _memoryCache.Remove(_cacheKey);
+    private void InvalidateInternal()
+        => _memoryCache.Remove(_cacheKey);
 
-    public void ContentFieldAttached(ContentFieldAttachedContext context) => InvalidateInternalAsync();
+    public override void ContentFieldAttached(ContentFieldAttachedContext context)
+        => InvalidateInternal();
 
-    public void ContentFieldDetached(ContentFieldDetachedContext context) => InvalidateInternalAsync();
+    public override void ContentFieldDetached(ContentFieldDetachedContext context)
+        => InvalidateInternal();
 
-    public void ContentPartAttached(ContentPartAttachedContext context) => InvalidateInternalAsync();
+    public override void ContentPartAttached(ContentPartAttachedContext context)
+        => InvalidateInternal();
 
-    public void ContentPartCreated(ContentPartCreatedContext context) => InvalidateInternalAsync();
+    public override void ContentPartCreated(ContentPartCreatedContext context)
+        => InvalidateInternal();
 
-    public void ContentPartDetached(ContentPartDetachedContext context) => InvalidateInternalAsync();
+    public override void ContentPartDetached(ContentPartDetachedContext context)
+        => InvalidateInternal();
 
-    public void ContentPartImported(ContentPartImportedContext context) => InvalidateInternalAsync();
+    public override void ContentPartImported(ContentPartImportedContext context)
+        => InvalidateInternal();
 
-    public void ContentPartImporting(ContentPartImportingContext context) { }
+    public override void ContentPartRemoved(ContentPartRemovedContext context)
+        => InvalidateInternal();
 
-    public void ContentPartRemoved(ContentPartRemovedContext context) => InvalidateInternalAsync();
+    public override void ContentTypeCreated(ContentTypeCreatedContext context)
+        => InvalidateInternal();
 
-    public void ContentTypeCreated(ContentTypeCreatedContext context) => InvalidateInternalAsync();
+    public override void ContentTypeImported(ContentTypeImportedContext context)
+        => InvalidateInternal();
 
-    public void ContentTypeImported(ContentTypeImportedContext context) => InvalidateInternalAsync();
+    public override void ContentTypeRemoved(ContentTypeRemovedContext context)
+        => InvalidateInternal();
 
-    public void ContentTypeImporting(ContentTypeImportingContext context) { }
+    public override void ContentTypeUpdated(ContentTypeUpdatedContext context)
+        => InvalidateInternal();
 
-    public void ContentTypeRemoved(ContentTypeRemovedContext context) => InvalidateInternalAsync();
+    public override void ContentPartUpdated(ContentPartUpdatedContext context)
+        => InvalidateInternal();
 
-    public void ContentTypeUpdated(ContentTypeUpdatedContext context) => InvalidateInternalAsync();
+    public override void ContentTypePartUpdated(ContentTypePartUpdatedContext context)
+        => InvalidateInternal();
 
-    public void ContentPartUpdated(ContentPartUpdatedContext context) => InvalidateInternalAsync();
+    public override void ContentFieldUpdated(ContentFieldUpdatedContext context)
+        => InvalidateInternal();
 
-    public void ContentTypePartUpdated(ContentTypePartUpdatedContext context) => InvalidateInternalAsync();
-
-    public void ContentFieldUpdated(ContentFieldUpdatedContext context) => InvalidateInternalAsync();
-
-    public void ContentPartFieldUpdated(ContentPartFieldUpdatedContext context) => InvalidateInternalAsync();
+    public override void ContentPartFieldUpdated(ContentPartFieldUpdatedContext context)
+        => InvalidateInternal();
 }
