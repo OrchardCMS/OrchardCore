@@ -454,8 +454,8 @@ public sealed class AdminController : Controller
 
         return View(new ListContentPartsViewModel
         {
-            // only user-defined parts (not code as they are not configurable).
-            Parts = await _contentDefinitionService.GetPartsAsync(true/*metadataPartsOnly*/)
+            // Only user-defined parts (not code as they are not configurable).
+            Parts = await _contentDefinitionService.GetPartsAsync(metadataPartsOnly: true)
         });
     }
 

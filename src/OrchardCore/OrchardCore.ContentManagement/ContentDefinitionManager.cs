@@ -189,23 +189,27 @@ public class ContentDefinitionManager : IContentDefinitionManager
     private ContentTypeDefinition LoadTypeDefinition(ContentDefinitionRecord document, string name) =>
         _scopedTypeDefinitions.TryGetValue(name, out var typeDefinition)
         ? typeDefinition
-        : _scopedTypeDefinitions[name] = Build(name,
+        : _scopedTypeDefinitions[name] = Build(
+            name,
             document.ContentTypeDefinitionRecords.FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(name)),
             document.ContentPartDefinitionRecords);
 
     private ContentTypeDefinition GetTypeDefinition(ContentDefinitionRecord document, string name) =>
-        _cachedTypeDefinitions.GetOrAdd(name, name => Build(name,
+        _cachedTypeDefinitions.GetOrAdd(name, name => Build(
+            name,
             document.ContentTypeDefinitionRecords.FirstOrDefault(type => type.Name.EqualsOrdinalIgnoreCase(name)),
             document.ContentPartDefinitionRecords));
 
     private ContentPartDefinition LoadPartDefinition(ContentDefinitionRecord document, string name) =>
         !_scopedPartDefinitions.TryGetValue(name, out var partDefinition)
-        ? _scopedPartDefinitions[name] = Build(name,
+        ? _scopedPartDefinitions[name] = Build(
+            name,
             document.ContentPartDefinitionRecords.FirstOrDefault(part => part.Name.EqualsOrdinalIgnoreCase(name)))
         : partDefinition;
 
     private ContentPartDefinition GetPartDefinition(ContentDefinitionRecord document, string name) =>
-        _cachedPartDefinitions.GetOrAdd(name, name => Build(name,
+        _cachedPartDefinitions.GetOrAdd(name, name => Build(
+            name,
             document.ContentPartDefinitionRecords.FirstOrDefault(record => record.Name.EqualsOrdinalIgnoreCase(name))));
 
     private static ContentTypeDefinitionRecord Acquire(
@@ -330,7 +334,8 @@ public class ContentDefinitionManager : IContentDefinitionManager
     private static void Apply(ContentPartFieldDefinition model, ContentPartFieldDefinitionRecord record)
         => record.Settings = model.Settings;
 
-    private ContentTypeDefinition Build(string name,
+    private ContentTypeDefinition Build(
+        string name,
         ContentTypeDefinitionRecord source,
         IList<ContentPartDefinitionRecord> partDefinitionRecords)
     {
