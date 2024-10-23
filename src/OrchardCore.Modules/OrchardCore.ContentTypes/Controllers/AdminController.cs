@@ -426,17 +426,15 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var settings = partDefinition.GetSettings<ContentSettings>();
-
-        if (settings.IsCodeManaged)
-        {
-            await _notifier.ErrorAsync(H["The \"{0}\" part cannot be removed.", name]);
-        }
-        else
+        try
         {
             await _contentDefinitionService.RemovePartFromTypeAsync(name, id);
 
             await _notifier.SuccessAsync(H["The \"{0}\" part has been removed.", name]);
+        }
+        catch
+        {
+            await _notifier.ErrorAsync(H["The \"{0}\" part cannot be removed.", name]);
         }
 
         return RedirectToAction(nameof(Edit), new { id });

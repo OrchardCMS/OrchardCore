@@ -144,7 +144,11 @@ public class ContentDefinitionService : IContentDefinitionService
         var partDefinitions = typeDefinition.Parts.ToList();
         foreach (var partDefinition in partDefinitions)
         {
-            await RemovePartFromTypeAsync(partDefinition.PartDefinition.Name, name);
+            try
+            {
+                await RemovePartFromTypeAsync(partDefinition.PartDefinition.Name, name);
+            }
+            catch { }
 
             // Delete the part if it's its own part.
             if (partDefinition.PartDefinition.Name == name)
@@ -216,7 +220,7 @@ public class ContentDefinitionService : IContentDefinitionService
         {
             _logger.LogError("The part '{PartName}' is code managed and cannot be removed from '{ContentType}' content type.", partName, typeName);
 
-            return;
+            throw new InvalidOperationException("Unable to remove code managed part.");
         }
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync(typeName, typeBuilder => typeBuilder.RemovePart(partName));
