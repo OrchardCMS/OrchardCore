@@ -1174,7 +1174,7 @@ html[dir]:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-
   width: var(--oc-start-navigation-width-when-compact);
   height: var(--oc-start-navigation-width-when-compact);
   color: var(--oc-admin-menu-font-color);
-  font-size: 20px;
+  font-size: 1.4rem;
   display: block;
 }
 
