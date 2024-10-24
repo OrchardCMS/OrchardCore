@@ -11,10 +11,9 @@ public class AzureEmailProvider : AzureEmailProviderBase
 
     public AzureEmailProvider(
         IOptions<AzureEmailOptions> options,
-        IEmailAddressValidator emailAddressValidator,
         ILogger<AzureEmailProvider> logger,
         IStringLocalizer<AzureEmailProvider> stringLocalizer)
-        : base(options.Value, emailAddressValidator, logger, stringLocalizer)
+        : base(options.Value, logger, stringLocalizer)
     {
     }
 
