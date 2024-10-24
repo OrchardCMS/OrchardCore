@@ -184,7 +184,8 @@ public class ContentDefinitionManager : IContentDefinitionManager
         await UpdateContentDefinitionRecordAsync(document);
     }
 
-    public async Task<string> GetIdentifierAsync() => (await _contentDefinitionStore.GetContentDefinitionAsync()).Identifier;
+    public async Task<string> GetIdentifierAsync()
+        => (await _contentDefinitionStore.GetContentDefinitionAsync()).Identifier;
 
     private ContentTypeDefinition LoadTypeDefinition(ContentDefinitionRecord document, string name) =>
         _scopedTypeDefinitions.TryGetValue(name, out var typeDefinition)
