@@ -1,7 +1,7 @@
 namespace OrchardCore.Search.Elasticsearch.ViewModels;
 
-public class MappingsViewModel
+public class IndexInfoViewModel
 {
     public string IndexName { get; set; }
-    public string Mappings { get; set; }
+    public string IndexInfo { get; set; }
 }

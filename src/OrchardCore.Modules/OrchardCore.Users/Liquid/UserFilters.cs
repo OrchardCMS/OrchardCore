@@ -3,6 +3,7 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Liquid;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
@@ -46,6 +47,10 @@ public static class UserFilters
                 if (string.Equals(claimType, Permission.ClaimType, StringComparison.OrdinalIgnoreCase) &&
                     user.HasClaim(StandardClaims.SiteOwner.Type, StandardClaims.SiteOwner.Value))
                 {
+                    var logger = context.Services.GetRequiredService<ILogger<Startup>>();
+
+                    logger.LogWarning("The tenant is using the 'has_claim' Liquid filter for Permission claims '{ClaimName}', which will break in the next major release of OrchardCore; please use 'has_permission: \"{ClaimName}\"' instead.", claimName, claimName);
+
                     return BooleanValue.True;
                 }
             }
