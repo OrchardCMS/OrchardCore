@@ -79,7 +79,6 @@ public abstract class AzureEmailProviderBase : IEmailProvider
     };
 
     private readonly AzureEmailOptions _providerOptions;
-    private readonly IEmailAddressValidator _emailAddressValidator;
     private readonly ILogger _logger;
 
     private EmailClient _emailClient;
@@ -88,12 +87,10 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
     public AzureEmailProviderBase(
         AzureEmailOptions options,
-        IEmailAddressValidator emailAddressValidator,
         ILogger logger,
         IStringLocalizer stringLocalizer)
     {
         _providerOptions = options;
-        _emailAddressValidator = emailAddressValidator;
         _logger = logger;
         S = stringLocalizer;
     }
@@ -117,12 +114,15 @@ public abstract class AzureEmailProviderBase : IEmailProvider
 
         if (!string.IsNullOrWhiteSpace(senderAddress))
         {
-            if (!_emailAddressValidator.Validate(senderAddress))
+            if (MailAddress.TryCreate(senderAddress, out var senderMailAddress))
+            {
+                // For compatibility with configuration for other providers that allow a sender with display name.
+                message.From = senderMailAddress.Address;
+            }
+            else
             {
                 return EmailResult.FailedResult(nameof(message.From), S["Invalid email address for the sender: '{0}'.", senderAddress]);
             }
-
-            message.From = senderAddress;
         }
 
         var errors = new Dictionary<string, IList<LocalizedString>>();
@@ -150,7 +150,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
         {
             _logger.LogError(ex, "An error occurred while sending an email using the Azure Email Provider.");
 
-            // IMPORTANT, do not expose ex.Message as it could contain the connection string in a raw format!
+            // IMPORTANT: Do not expose ex.Message as it could contain the connection string in a raw format!
             return EmailResult.FailedResult(string.Empty, S["An error occurred while sending an email."]);
         }
     }
@@ -159,22 +159,43 @@ public abstract class AzureEmailProviderBase : IEmailProvider
     {
         var recipients = message.GetRecipients();
 
-        List<EmailAddress> toRecipients = null;
-        if (recipients.To.Count > 0)
+        var toRecipients = new List<EmailAddress>();
+        foreach (var toRecipient in recipients.To)
         {
-            toRecipients = [.. recipients.To.Select(ConvertEmailAddressToAzureEmailAddress)];
+            if (MailAddress.TryCreate(toRecipient, out var toMailAddress))
+            {
+                toRecipients.Add(ConvertMailAddressToAzureEmailAddress(toMailAddress));
+            }
+            else
+            {
+                errors[nameof(recipients.To)].Add(S["Invalid email address for the 'To' recipient: '{0}'.", toRecipient]);
+            }
         }
 
-        List<EmailAddress> ccRecipients = null;
-        if (recipients.Cc.Count > 0)
+        var ccRecipients = new List<EmailAddress>();
+        foreach (var ccRecipient in recipients.Cc)
         {
-            ccRecipients = [.. recipients.Cc.Select(ConvertEmailAddressToAzureEmailAddress)];
+            if (MailAddress.TryCreate(ccRecipient, out var ccMailAddress))
+            {
+                ccRecipients.Add(ConvertMailAddressToAzureEmailAddress(ccMailAddress));
+            }
+            else
+            {
+                errors[nameof(recipients.Cc)].Add(S["Invalid email address for the 'CC' recipient: '{0}'.", ccRecipient]);
+            }
         }
 
-        List<EmailAddress> bccRecipients = null;
-        if (recipients.Bcc.Count > 0)
+        var bccRecipients = new List<EmailAddress>();
+        foreach (var bccRecipient in recipients.Bcc)
         {
-            bccRecipients = [.. recipients.Bcc.Select(ConvertEmailAddressToAzureEmailAddress)];
+            if (MailAddress.TryCreate(bccRecipient, out var bccMailAddress))
+            {
+                bccRecipients.Add(ConvertMailAddressToAzureEmailAddress(bccMailAddress));
+            }
+            else
+            {
+                errors[nameof(recipients.Bcc)].Add(S["Invalid email address for the 'BCC' recipient: '{0}'.", bccRecipient]);
+            }
         }
 
         var content = new EmailContent(message.Subject);
@@ -188,14 +209,20 @@ public abstract class AzureEmailProviderBase : IEmailProvider
         }
 
         var emailMessage = new EmailMessage(
-            // For compatibility with configuration for other providers that allow a sender with display name.
-            CreateMailAddressOrFail(message.From).EmailAddress,
+            message.From,
             new EmailRecipients(toRecipients, ccRecipients, bccRecipients),
             content);
 
-        foreach (var address in message.GetReplyTo())
+        foreach (var replyTo in message.GetReplyTo())
         {
-            emailMessage.ReplyTo.Add(ConvertEmailAddressToAzureEmailAddress(address));
+            if (MailAddress.TryCreate(replyTo, out var replyToMailAddress))
+            {
+                emailMessage.ReplyTo.Add(ConvertMailAddressToAzureEmailAddress(replyToMailAddress));
+            }
+            else
+            {
+                errors[nameof(emailMessage.ReplyTo)].Add(S["Invalid email address to reply to: '{0}'.", replyTo]);
+            }
         }
 
         foreach (var attachment in message.Attachments)
@@ -227,20 +254,6 @@ public abstract class AzureEmailProviderBase : IEmailProvider
         return emailMessage;
     }
 
-    private static EmailAddress ConvertEmailAddressToAzureEmailAddress(string emailWithDisplayName)
-    {
-        var (displayName, emailAddress) = CreateMailAddressOrFail(emailWithDisplayName);
-
-        return new EmailAddress(emailAddress, displayName);
-    }
-
-    private static (string DisplayName, string EmailAddress) CreateMailAddressOrFail(string email)
-    {
-        if (MailAddress.TryCreate(email, out var mailAddress))
-        {
-            return (mailAddress.DisplayName, mailAddress.Address);
-        }
-
-        throw new ArgumentException($"The email address '{email}' is invalid.");
-    }
+    private static EmailAddress ConvertMailAddressToAzureEmailAddress(MailAddress mailAddress) =>
+        new EmailAddress(mailAddress.Address, mailAddress.DisplayName);
 }
