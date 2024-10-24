@@ -35,20 +35,4 @@ public interface IContentDefinitionEventHandler
     void ContentFieldDetached(ContentFieldDetachedContext context);
 
     void ContentPartFieldUpdated(ContentPartFieldUpdatedContext context);
-
-    void ContentTypeBuilding(BuildingContentTypeContext context)
-    {
-    }
-
-    void ContentTypePartBuilding(ContentTypePartContextBuilding context)
-    {
-    }
-
-    void ContentPartFieldBuilding(ContentPartFieldContextBuilding context)
-    {
-    }
-
-    void ContentPartDefinitionBuilding(ContentPartDefinitionContextBuilding context)
-    {
-    }
 }

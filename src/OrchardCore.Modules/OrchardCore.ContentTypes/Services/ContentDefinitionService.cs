@@ -216,11 +216,9 @@ public class ContentDefinitionService : IContentDefinitionService
 
         var settings = partDefinition.GetSettings<ContentSettings>();
 
-        if (settings.IsCodeManaged)
+        if (settings.IsSystemType)
         {
-            _logger.LogError("The part '{PartName}' is code managed and cannot be removed from '{ContentType}' content type.", partName, typeName);
-
-            throw new InvalidOperationException("Unable to remove code managed part.");
+            throw new InvalidOperationException("Unable to remove system-type part.");
         }
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync(typeName, typeBuilder => typeBuilder.RemovePart(partName));
@@ -228,7 +226,7 @@ public class ContentDefinitionService : IContentDefinitionService
         var context = new ContentPartDetachedContext
         {
             ContentTypeName = typeName,
-            ContentPartName = partName
+            ContentPartName = partName,
         };
 
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartDetached(ctx), context, _logger);

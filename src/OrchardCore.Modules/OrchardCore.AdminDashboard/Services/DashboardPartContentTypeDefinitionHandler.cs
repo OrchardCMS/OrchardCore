@@ -7,9 +7,13 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.AdminDashboard.Services;
 
-public sealed class DashboardPartContentTypeDefinitionHandler : ContentDefinitionHandlerBase
+public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefinitionHandler
 {
-    public override void ContentTypeBuilding(BuildingContentTypeContext context)
+    /// <summary>
+    /// Adds the <see cref="DashboardPart"/> to the content type definition when the stereotype is set to 'DashboardWidget'.
+    /// This occurs during the content type building process, allowing the content type to function as a dashboard widget.
+    /// </summary>
+    public void ContentTypeBuilding(BuildingContentTypeContext context)
     {
         if (!context.Record.Settings.TryGetPropertyValue(nameof(ContentTypeSettings), out var node))
         {
@@ -36,13 +40,17 @@ public sealed class DashboardPartContentTypeDefinitionHandler : ContentDefinitio
             {
                 [nameof(ContentSettings)] = JObject.FromObject(new ContentSettings
                 {
-                    IsCodeManaged = true,
+                    IsSystemType = true,
                 }),
             },
         });
     }
 
-    public override void ContentTypePartBuilding(ContentTypePartContextBuilding context)
+    /// <summary>
+    /// Marks the part on the content type as a system type to prevent its removal.
+    /// This ensures that the part remains integral to the content type and cannot be deleted.
+    /// </summary>
+    public void ContentTypePartBuilding(ContentTypePartContextBuilding context)
     {
         if (!context.Record.PartName.EqualsOrdinalIgnoreCase(nameof(DashboardPart)))
         {
@@ -52,12 +60,16 @@ public sealed class DashboardPartContentTypeDefinitionHandler : ContentDefinitio
         var settings = context.Record.Settings[nameof(ContentSettings)]?.ToObject<ContentSettings>()
             ?? new ContentSettings();
 
-        settings.IsCodeManaged = true;
+        settings.IsSystemType = true;
 
         context.Record.Settings[nameof(ContentSettings)] = JObject.FromObject(settings);
     }
 
-    public override void ContentPartDefinitionBuilding(ContentPartDefinitionContextBuilding context)
+    /// <summary>
+    /// Creates a definition if the Record is null and the part name is 'DashboardPart'.
+    /// This ensures that the 'DashboardPart' has a valid definition when it is missing.
+    /// </summary>
+    public void ContentPartDefinitionBuilding(ContentPartDefinitionContextBuilding context)
     {
         if (context.Record is not null || context.Name != nameof(DashboardPart))
         {
@@ -76,9 +88,13 @@ public sealed class DashboardPartContentTypeDefinitionHandler : ContentDefinitio
                 }),
                 [nameof(ContentSettings)] = JObject.FromObject(new ContentSettings
                 {
-                    IsCodeManaged = true,
+                    IsSystemType = true,
                 }),
             },
         };
+    }
+
+    public void ContentPartFieldBuilding(ContentPartFieldContextBuilding context)
+    {
     }
 }

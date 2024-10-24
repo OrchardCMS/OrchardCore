@@ -1,6 +1,5 @@
 using GraphQL;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.Metadata;
@@ -8,25 +7,24 @@ using OrchardCore.ContentTypes.Events;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-public class DynamicContentFieldsIndexAliasProvider : ContentDefinitionHandlerBase, IIndexAliasProvider
+public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, IContentDefinitionEventHandler
 {
     private static readonly string _cacheKey = nameof(DynamicContentFieldsIndexAliasProvider);
 
     private readonly IEnumerable<IContentFieldProvider> _contentFieldProviders;
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IMemoryCache _memoryCache;
     private readonly GraphQLContentOptions _contentOptions;
 
-    private IContentDefinitionManager _contentDefinitionManager;
 
     public DynamicContentFieldsIndexAliasProvider(
         IEnumerable<IContentFieldProvider> contentFieldProviders,
         IOptions<GraphQLContentOptions> contentOptionsAccessor,
-        IServiceProvider serviceProvider,
+        IContentDefinitionManager contentDefinitionManager,
         IMemoryCache memoryCache)
     {
         _contentFieldProviders = contentFieldProviders;
-        _serviceProvider = serviceProvider;
+        _contentDefinitionManager = contentDefinitionManager;
         _memoryCache = memoryCache;
         _contentOptions = contentOptionsAccessor.Value;
     }
@@ -39,9 +37,6 @@ public class DynamicContentFieldsIndexAliasProvider : ContentDefinitionHandlerBa
     private async ValueTask<IEnumerable<IndexAlias>> GetAliasesInternalAsync()
     {
         var aliases = new List<IndexAlias>();
-
-        // Resolve the definition manager lazily to avoid circular dependency.
-        _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
         var types = await _contentDefinitionManager.ListTypeDefinitionsAsync();
         var parts = types.SelectMany(t => t.Parts);
@@ -86,48 +81,56 @@ public class DynamicContentFieldsIndexAliasProvider : ContentDefinitionHandlerBa
     private void InvalidateInternal()
         => _memoryCache.Remove(_cacheKey);
 
-    public override void ContentFieldAttached(ContentFieldAttachedContext context)
+    public void ContentFieldAttached(ContentFieldAttachedContext context)
         => InvalidateInternal();
 
-    public override void ContentFieldDetached(ContentFieldDetachedContext context)
+    public void ContentFieldDetached(ContentFieldDetachedContext context)
         => InvalidateInternal();
 
-    public override void ContentPartAttached(ContentPartAttachedContext context)
+    public void ContentPartAttached(ContentPartAttachedContext context)
         => InvalidateInternal();
 
-    public override void ContentPartCreated(ContentPartCreatedContext context)
+    public void ContentPartCreated(ContentPartCreatedContext context)
         => InvalidateInternal();
 
-    public override void ContentPartDetached(ContentPartDetachedContext context)
+    public void ContentPartDetached(ContentPartDetachedContext context)
         => InvalidateInternal();
 
-    public override void ContentPartImported(ContentPartImportedContext context)
+    public void ContentPartImported(ContentPartImportedContext context)
         => InvalidateInternal();
 
-    public override void ContentPartRemoved(ContentPartRemovedContext context)
+    public void ContentPartRemoved(ContentPartRemovedContext context)
         => InvalidateInternal();
 
-    public override void ContentTypeCreated(ContentTypeCreatedContext context)
+    public void ContentTypeCreated(ContentTypeCreatedContext context)
         => InvalidateInternal();
 
-    public override void ContentTypeImported(ContentTypeImportedContext context)
+    public void ContentTypeImported(ContentTypeImportedContext context)
         => InvalidateInternal();
 
-    public override void ContentTypeRemoved(ContentTypeRemovedContext context)
+    public void ContentTypeRemoved(ContentTypeRemovedContext context)
         => InvalidateInternal();
 
-    public override void ContentTypeUpdated(ContentTypeUpdatedContext context)
+    public void ContentTypeUpdated(ContentTypeUpdatedContext context)
         => InvalidateInternal();
 
-    public override void ContentPartUpdated(ContentPartUpdatedContext context)
+    public void ContentPartUpdated(ContentPartUpdatedContext context)
         => InvalidateInternal();
 
-    public override void ContentTypePartUpdated(ContentTypePartUpdatedContext context)
+    public void ContentTypePartUpdated(ContentTypePartUpdatedContext context)
         => InvalidateInternal();
 
-    public override void ContentFieldUpdated(ContentFieldUpdatedContext context)
+    public void ContentFieldUpdated(ContentFieldUpdatedContext context)
         => InvalidateInternal();
 
-    public override void ContentPartFieldUpdated(ContentPartFieldUpdatedContext context)
+    public void ContentPartFieldUpdated(ContentPartFieldUpdatedContext context)
         => InvalidateInternal();
+
+    public void ContentTypeImporting(ContentTypeImportingContext context)
+    {
+    }
+
+    public void ContentPartImporting(ContentPartImportingContext context)
+    {
+    }
 }
