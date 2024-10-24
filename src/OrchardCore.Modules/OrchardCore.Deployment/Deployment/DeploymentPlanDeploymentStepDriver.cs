@@ -1,35 +1,28 @@
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Deployment.Deployment;
 
-public sealed class DeploymentPlanDeploymentStepDriver : DisplayDriver<DeploymentStep, DeploymentPlanDeploymentStep>
+public sealed class DeploymentPlanDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<DeploymentPlanDeploymentStep, DeploymentPlanDeploymentStepViewModel>
 {
     private readonly IDeploymentPlanService _deploymentPlanService;
 
-    public DeploymentPlanDeploymentStepDriver(IDeploymentPlanService deploymentPlanService)
+    public DeploymentPlanDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _deploymentPlanService = deploymentPlanService;
+        _deploymentPlanService = serviceProvider.GetService<IDeploymentPlanService>();
     }
 
-    public override Task<IDisplayResult> DisplayAsync(DeploymentPlanDeploymentStep step, BuildDisplayContext context)
+    public override IDisplayResult Edit(DeploymentPlanDeploymentStep step, Action<DeploymentPlanDeploymentStepViewModel> intializeAction)
     {
-        return
-            CombineAsync(
-                View("DeploymentPlanDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("DeploymentPlanDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
-
-    public override IDisplayResult Edit(DeploymentPlanDeploymentStep step, BuildEditorContext context)
-    {
-        return Initialize<DeploymentPlanDeploymentStepViewModel>("DeploymentPlanDeploymentStep_Fields_Edit", async model =>
+        return base.Edit(step, async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.DeploymentPlanNames = step.DeploymentPlanNames;
             model.AllDeploymentPlanNames = (await _deploymentPlanService.GetAllDeploymentPlanNamesAsync()).ToArray();
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(DeploymentPlanDeploymentStep step, UpdateEditorContext context)

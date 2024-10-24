@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
@@ -7,34 +8,25 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 
-public sealed class ContentItemDeploymentStepDriver : DisplayDriver<DeploymentStep, ContentItemDeploymentStep>
+public sealed class ContentItemDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<ContentItemDeploymentStep, ContentItemDeploymentStepViewModel>
 {
     private readonly IContentManager _contentManager;
 
     internal readonly IStringLocalizer S;
 
-    public ContentItemDeploymentStepDriver(IContentManager contentManager,
-        IStringLocalizer<ContentItemDeploymentStepDriver> stringLocalizer)
+    public ContentItemDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _contentManager = contentManager;
-        S = stringLocalizer;
+        _contentManager = serviceProvider.GetService<IContentManager>();
+        S = serviceProvider.GetService<IStringLocalizer<ContentItemDeploymentStepDriver>>();
     }
 
-    public override Task<IDisplayResult> DisplayAsync(ContentItemDeploymentStep step, BuildDisplayContext context)
+    public override IDisplayResult Edit(ContentItemDeploymentStep step, Action<ContentItemDeploymentStepViewModel> intializeAction)
     {
-        return
-            CombineAsync(
-                View("ContentItemDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("ContentItemDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
-
-    public override IDisplayResult Edit(ContentItemDeploymentStep step, BuildEditorContext context)
-    {
-        return Initialize<ContentItemDeploymentStepViewModel>("ContentItemDeploymentStep_Fields_Edit", model =>
+        return base.Edit(step, model =>
         {
             model.ContentItemId = step.ContentItemId;
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentItemDeploymentStep step, UpdateEditorContext context)

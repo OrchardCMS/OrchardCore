@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -5,32 +6,24 @@ using OrchardCore.Search.Lucene.ViewModels;
 
 namespace OrchardCore.Search.Lucene.Deployment;
 
-public sealed class LuceneIndexResetDeploymentStepDriver : DisplayDriver<DeploymentStep, LuceneIndexResetDeploymentStep>
+public sealed class LuceneIndexResetDeploymentStepDriver
+    : DeploymentStepFieldsDriverBase<LuceneIndexResetDeploymentStep, LuceneIndexResetDeploymentStepViewModel>
 {
     private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 
-    public LuceneIndexResetDeploymentStepDriver(LuceneIndexSettingsService luceneIndexSettingsService)
+    public LuceneIndexResetDeploymentStepDriver(IServiceProvider serviceProvider) : base(serviceProvider)
     {
-        _luceneIndexSettingsService = luceneIndexSettingsService;
+        _luceneIndexSettingsService= serviceProvider.GetService<LuceneIndexSettingsService>();
     }
 
-    public override Task<IDisplayResult> DisplayAsync(LuceneIndexResetDeploymentStep step, BuildDisplayContext context)
+    public override IDisplayResult Edit(LuceneIndexResetDeploymentStep step, Action<LuceneIndexResetDeploymentStepViewModel> intializeAction)
     {
-        return
-            CombineAsync(
-                View("LuceneIndexResetDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                View("LuceneIndexResetDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
-            );
-    }
-
-    public override IDisplayResult Edit(LuceneIndexResetDeploymentStep step, BuildEditorContext context)
-    {
-        return Initialize<LuceneIndexResetDeploymentStepViewModel>("LuceneIndexResetDeploymentStep_Fields_Edit", async model =>
+        return base.Edit(step, async model =>
         {
             model.IncludeAll = step.IncludeAll;
             model.IndexNames = step.IndexNames;
             model.AllIndexNames = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray();
-        }).Location("Content");
+        });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(LuceneIndexResetDeploymentStep resetIndexStep, UpdateEditorContext context)
