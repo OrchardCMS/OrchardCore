@@ -106,7 +106,7 @@ internal static class ControllerExtensions
             },
             protocol: controller.HttpContext.Request.Scheme);
 
-        await SendEmailAsync(controller, user.Email, subject, new ConfirmEmailViewModel()
+        await SendEmailAsync(controller, user.Email, subject, new ConfirmEmailViewModel
         {
             User = user,
             ConfirmEmailUrl = callbackUrl,
