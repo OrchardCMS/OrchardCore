@@ -16,6 +16,7 @@ public static class JOptions
         PathStringJsonConverter.Instance,
         TimeSpanJsonConverter.Instance,
         DateTimeJsonConverter.Instance,
+        new JsonStringEnumConverter()
     ];
 
     public static readonly JsonSerializerOptions Base = new()
