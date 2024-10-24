@@ -7,7 +7,7 @@ using OrchardCore.FileStorage.AmazonS3;
 
 namespace OrchardCore.Media.AmazonS3.Services;
 
-public class MediaS3BucketTenantEvents : AwsTenantEventsBase
+public sealed class MediaS3BucketTenantEvents : AwsTenantEventsBase
 {
     public MediaS3BucketTenantEvents(
         ShellSettings shellSettings,

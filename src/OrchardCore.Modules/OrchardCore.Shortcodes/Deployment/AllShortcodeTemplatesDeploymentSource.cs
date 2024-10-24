@@ -4,7 +4,7 @@ using OrchardCore.Shortcodes.Services;
 
 namespace OrchardCore.Shortcodes.Deployment;
 
-public class AllShortcodeTemplatesDeploymentSource
+public sealed class AllShortcodeTemplatesDeploymentSource
     : DeploymentSourceBase<AllShortcodeTemplatesDeploymentStep>
 {
     private readonly ShortcodeTemplatesManager _templatesManager;

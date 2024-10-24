@@ -3,7 +3,7 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.Lucene.Deployment;
 
-public class LuceneIndexResetDeploymentSource
+public sealed class LuceneIndexResetDeploymentSource
     : DeploymentSourceBase<LuceneIndexResetDeploymentStep>
 {
     protected override Task ProcessAsync(LuceneIndexResetDeploymentStep step, DeploymentPlanResult result)

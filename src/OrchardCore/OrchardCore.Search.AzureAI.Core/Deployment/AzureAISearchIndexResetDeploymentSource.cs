@@ -3,7 +3,7 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.AzureAI.Deployment;
 
-public class AzureAISearchIndexResetDeploymentSource
+public sealed class AzureAISearchIndexResetDeploymentSource
     : DeploymentSourceBase<AzureAISearchIndexResetDeploymentStep>
 {
     public const string Name = "azureai-index-reset";

@@ -6,7 +6,7 @@ using OrchardCore.Json;
 
 namespace OrchardCore.Queries.Deployment;
 
-public class AllQueriesDeploymentSource
+public sealed class AllQueriesDeploymentSource
     : DeploymentSourceBase<AllQueriesDeploymentStep>
 {
     private readonly IQueryManager _queryManager;

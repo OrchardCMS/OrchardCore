@@ -5,7 +5,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Deployment;
 
-public class AzureAISearchSettingsDeploymentSource(ISiteService siteService)
+public sealed class AzureAISearchSettingsDeploymentSource(ISiteService siteService)
     : DeploymentSourceBase<AzureAISearchSettingsDeploymentStep>
 {
     private readonly ISiteService _siteService = siteService;

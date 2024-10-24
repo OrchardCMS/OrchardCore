@@ -9,7 +9,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Layers.Deployment;
 
-public class AllLayersDeploymentSource
+public sealed class AllLayersDeploymentSource
     : DeploymentSourceBase<AllLayersDeploymentStep>
 {
     private readonly ILayerService _layerService;

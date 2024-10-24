@@ -5,7 +5,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Search.Lucene;
 
-public class LuceneIndexInitializerService : ModularTenantEvents
+public sealed class LuceneIndexInitializerService : ModularTenantEvents
 {
     private readonly ShellSettings _shellSettings;
 

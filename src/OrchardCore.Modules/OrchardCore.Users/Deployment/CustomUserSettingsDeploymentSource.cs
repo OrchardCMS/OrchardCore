@@ -6,7 +6,7 @@ using YesSql;
 
 namespace OrchardCore.Users.Deployment;
 
-public class CustomUserSettingsDeploymentSource
+public sealed class CustomUserSettingsDeploymentSource
     : DeploymentSourceBase<CustomUserSettingsDeploymentStep>
 {
     private readonly CustomUserSettingsService _customUserSettingsService;
