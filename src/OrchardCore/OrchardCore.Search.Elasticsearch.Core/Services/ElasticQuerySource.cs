@@ -1,4 +1,5 @@
 using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using Fluid;
 using Fluid.Values;
@@ -23,6 +24,7 @@ public sealed class ElasticQuerySource : IQuerySource
     private readonly ISession _session;
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly TemplateOptions _templateOptions;
+
 
     public ElasticQuerySource(
         IElasticQueryService queryService,
@@ -78,10 +80,17 @@ public sealed class ElasticQuerySource : IQuerySource
         {
             var results = new List<JsonObject>();
 
-            foreach (var document in docs.TopDocs)
+            foreach (var document in docs.Hits)
             {
-                results.Add(new JsonObject(document.Select(x =>
-                    KeyValuePair.Create(x.Key, (JsonNode)JsonValue.Create(x.Value.ToString())))));
+                var keyValuePairs = document.Source.Select(x =>
+                    KeyValuePair.Create(x.Key, (JsonNode)JsonValue.Create(x.Value.ToString()))).ToList();
+
+                keyValuePairs.Add(KeyValuePair.Create("_score", (JsonNode)JsonValue.Create(document.Score.Value.ToString())));
+
+                var highlights = JsonSerializer.Serialize(document.Highlight, JOptions.UnsafeRelaxedJsonEscaping);
+                keyValuePairs.Add(KeyValuePair.Create("Highlight", (JsonNode)JsonValue.Create(highlights)));
+
+                results.Add(new JsonObject(keyValuePairs));
             }
 
             elasticQueryResults.Items = results;
