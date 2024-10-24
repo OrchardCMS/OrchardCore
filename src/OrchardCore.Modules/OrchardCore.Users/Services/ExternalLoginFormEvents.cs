@@ -10,7 +10,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services;
 
-public sealed class ExternalLoginFormEvents : LoginFormEventBase
+public sealed class ExternalLoginFormEvents : ILoginFormEvent
 {
     private readonly ExternalLoginOptions _externalLoginOptions;
     private readonly SignInManager<IUser> _signInManager;
@@ -29,7 +29,13 @@ public sealed class ExternalLoginFormEvents : LoginFormEventBase
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public override async Task<IActionResult> LoggingInAsync()
+    public Task IsLockedOutAsync(IUser user)
+        => Task.CompletedTask;
+
+    public Task LoggedInAsync(IUser user)
+        => Task.CompletedTask;
+
+    public async Task<IActionResult> LoggingInAsync()
     {
         if (!_externalLoginOptions.UseExternalProviderIfOnlyOneDefined)
         {
@@ -61,4 +67,13 @@ public sealed class ExternalLoginFormEvents : LoginFormEventBase
 
         return null;
     }
+
+    public Task LoggingInAsync(string userName, Action<string, string> reportError)
+        => Task.CompletedTask;
+
+    public Task LoggingInFailedAsync(string userName)
+        => Task.CompletedTask;
+
+    public Task LoggingInFailedAsync(IUser user)
+        => Task.CompletedTask;
 }
