@@ -30,13 +30,13 @@ public class SmsNotificationProvider : INotificationMethodProvider
             return false;
         }
 
-        var mailMessage = new SmsMessage()
+        var smsMessage = new SmsMessage()
         {
             To = user.PhoneNumber,
             Body = message.TextBody,
         };
 
-        var result = await _smsService.SendAsync(mailMessage);
+        var result = await _smsService.SendAsync(smsMessage);
 
         return result.Succeeded;
     }
