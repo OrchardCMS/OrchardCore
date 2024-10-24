@@ -210,7 +210,7 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
 
     /// <inheritdoc/>
     public virtual ValueTask<TScope> InstantiateAsync(CancellationToken cancellationToken)
-        => new(new TScope { ScopeId = Guid.NewGuid().ToString("n") });
+        => new(new TScope { ScopeId = Ulid.NewUlid().ToGuid().ToString("n") });
 
     /// <inheritdoc/>
     public virtual IAsyncEnumerable<TScope> ListAsync(int? count, int? offset, CancellationToken cancellationToken)

@@ -140,7 +140,7 @@ public class JsonDynamicTests
     [Fact]
     public void JsonDynamicValueMustConvertToGuid()
     {
-        Guid expectedValue = Guid.NewGuid();
+        Guid expectedValue = Ulid.NewUlid().ToGuid();
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
         Assert.Equal(expectedValue, (Guid)myDynamic);
@@ -149,7 +149,7 @@ public class JsonDynamicTests
     [Fact]
     public void JsonDynamicValueMustConvertToNullableGuid()
     {
-        Guid? expectedValue = Guid.NewGuid();
+        Guid? expectedValue = Ulid.NewUlid().ToGuid();
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
         Assert.Equal(expectedValue, (Guid?)myDynamic);
@@ -530,7 +530,7 @@ public class JsonDynamicTests
     [Fact]
     public void JsonDynamicValueCanImplicitlyConvertToGuid()
     {
-        Guid expectedValue = Guid.NewGuid();
+        Guid expectedValue = Ulid.NewUlid().ToGuid();
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
         Guid value = myDynamic;
@@ -543,7 +543,7 @@ public class JsonDynamicTests
     [Fact]
     public void JsonDynamicValueCanImplicitlyConvertToNullableGuid()
     {
-        Guid? expectedValue = Guid.NewGuid();
+        Guid? expectedValue = Ulid.NewUlid().ToGuid();
         dynamic myDynamic = new JsonDynamicValue(JsonValue.Create(expectedValue));
 
         Guid? value = myDynamic;
