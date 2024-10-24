@@ -76,7 +76,7 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> Index(AzureAIIndexOptions options, PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchPermissions.ManageAzureAISearchIndexes))
         {
             return Forbid();
         }
@@ -142,7 +142,7 @@ public sealed class AdminController : Controller
     [FormValueRequired("submit.BulkAction")]
     public async Task<IActionResult> IndexPost(AzureAIIndexOptions options, IEnumerable<string> itemIds)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchPermissions.ManageAzureAISearchIndexes))
         {
             return Forbid();
         }
@@ -180,7 +180,7 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> Create()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchPermissions.ManageAzureAISearchIndexes))
         {
             return Forbid();
         }
@@ -203,7 +203,7 @@ public sealed class AdminController : Controller
     [HttpPost, ActionName(nameof(Create))]
     public async Task<IActionResult> CreatePost(AzureAISettingsViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchPermissions.ManageAzureAISearchIndexes))
         {
             return Forbid();
         }
@@ -272,7 +272,7 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> Edit(string indexName)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchPermissions.ManageAzureAISearchIndexes))
         {
             return Forbid();
         }
@@ -316,7 +316,7 @@ public sealed class AdminController : Controller
     [HttpPost, ActionName(nameof(Edit))]
     public async Task<IActionResult> EditPost(AzureAISettingsViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchPermissions.ManageAzureAISearchIndexes))
         {
             return Forbid();
         }
@@ -396,7 +396,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string indexName)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchPermissions.ManageAzureAISearchIndexes))
         {
             return Forbid();
         }
@@ -432,7 +432,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Rebuild(string indexName)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchPermissions.ManageAzureAISearchIndexes))
         {
             return Forbid();
         }
@@ -462,7 +462,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Reset(string indexName)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchPermissions.ManageAzureAISearchIndexes))
         {
             return Forbid();
         }

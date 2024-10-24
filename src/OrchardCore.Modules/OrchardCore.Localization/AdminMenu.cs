@@ -40,7 +40,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                             .AddClass("cultures")
                             .Id("cultures")
                             .Action("Index", "Admin", _routeValues)
-                            .Permission(Permissions.ManageCultures)
+                            .Permission(LocalizationPermissions.ManageCultures)
                             .LocalNav()
                         )
                     )

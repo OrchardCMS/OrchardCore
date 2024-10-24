@@ -65,7 +65,7 @@ public sealed class AdminController : Controller
     [Admin("Media", "Media.Index")]
     public async Task<IActionResult> Index()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
             return Forbid();
         }
@@ -75,7 +75,7 @@ public sealed class AdminController : Controller
 
     public async Task<ActionResult<IEnumerable<MediaFolderViewModel>>> GetFolders(string path)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
             return Forbid();
         }
@@ -91,14 +91,14 @@ public sealed class AdminController : Controller
         }
 
         // create default folders if not exist
-        if (await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+        if (await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageOwnMedia)
             && await _mediaFileStore.GetDirectoryInfoAsync(_mediaFileStore.Combine(_mediaOptions.AssetsUsersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(User))) == null)
         {
             await _mediaFileStore.TryCreateDirectoryAsync(_mediaFileStore.Combine(_mediaOptions.AssetsUsersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(User)));
         }
 
         var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
-            .WhereAwait(async e => e.IsDirectory && await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)e.Path));
+            .WhereAwait(async e => e.IsDirectory && await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)e.Path));
 
         return Ok(await allowed.Select(folder =>
         {
@@ -124,8 +124,8 @@ public sealed class AdminController : Controller
             path = string.Empty;
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
-            || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)path))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
+            || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path))
         {
             return Forbid();
         }
@@ -141,7 +141,7 @@ public sealed class AdminController : Controller
             .WhereAwait(async e =>
                 !e.IsDirectory
                 && (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(e.Path)))
-                && await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)e.Path))
+                && await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)e.Path))
             .Select(e => CreateFileResult(e));
 
         return Ok(await allowed.ToListAsync());
@@ -149,8 +149,8 @@ public sealed class AdminController : Controller
 
     public async Task<ActionResult<object>> GetMediaItem(string path)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
-            || (HttpContext.IsSecureMediaEnabled() && !await _authorizationService.AuthorizeAsync(User, SecureMediaPermissions.ViewMedia, (object)(path ?? string.Empty))))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
+            || (HttpContext.IsSecureMediaEnabled() && !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ViewMedia, (object)(path ?? string.Empty))))
         {
             return Forbid();
         }
@@ -174,8 +174,8 @@ public sealed class AdminController : Controller
     [MediaSizeLimit]
     public async Task<IActionResult> Upload(string path, string extensions)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
-            || (HttpContext.IsSecureMediaEnabled() && !await _authorizationService.AuthorizeAsync(User, SecureMediaPermissions.ViewMedia, (object)(path ?? string.Empty))))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
+            || (HttpContext.IsSecureMediaEnabled() && !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ViewMedia, (object)(path ?? string.Empty))))
         {
             return Forbid();
         }
@@ -272,8 +272,8 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> DeleteFolder(string path)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
-            || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)path))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
+            || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path))
         {
             return Forbid();
         }
@@ -300,8 +300,8 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> DeleteMedia(string path)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
-            || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)path))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
+            || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)path))
         {
             return Forbid();
         }
@@ -322,9 +322,9 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> MoveMedia(string oldPath, string newPath)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
-            || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)oldPath)
-            || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)newPath))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
+            || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)oldPath)
+            || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)newPath))
         {
             return Forbid();
         }
@@ -367,14 +367,14 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia))
         {
             return Forbid();
         }
 
         foreach (var path in paths)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
+            if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageAttachedMediaFieldsFolder, (object)path))
             {
                 return Forbid();
             }
@@ -394,9 +394,9 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> MoveMediaList(string[] mediaNames, string sourceFolder, string targetFolder)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
-            || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)sourceFolder)
-            || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)targetFolder))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
+            || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)sourceFolder)
+            || !await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)targetFolder))
         {
             return Forbid();
         }
@@ -454,8 +454,8 @@ public sealed class AdminController : Controller
 
         var newPath = _mediaFileStore.Combine(path, name);
 
-        if (!await authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
-            || !await authorizationService.AuthorizeAsync(User, Permissions.ManageMediaFolder, (object)newPath))
+        if (!await authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMedia)
+            || !await authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)newPath))
         {
             return Forbid();
         }
@@ -501,14 +501,14 @@ public sealed class AdminController : Controller
     public async Task<IActionResult> MediaApplication(MediaApplicationViewModel model)
     {
         // Check if the user has access to new folders. If not, we hide the "create folder" button from the root folder.
-        model.AllowNewRootFolders = !HttpContext.IsSecureMediaEnabled() || await _authorizationService.AuthorizeAsync(User, SecureMediaPermissions.ViewMedia, (object)"_non-existent-path-87FD1922-8F88-4A33-9766-DA03E6E6F7BA");
+        model.AllowNewRootFolders = !HttpContext.IsSecureMediaEnabled() || await _authorizationService.AuthorizeAsync(User, MediaPermissions.ViewMedia, (object)"_non-existent-path-87FD1922-8F88-4A33-9766-DA03E6E6F7BA");
 
         return View(model);
     }
 
     public async Task<IActionResult> Options()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewMediaOptions))
+        if (!await _authorizationService.AuthorizeAsync(User, MediaPermissions.ViewMediaOptions))
         {
             return Forbid();
         }

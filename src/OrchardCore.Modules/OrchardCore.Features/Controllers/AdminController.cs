@@ -53,7 +53,7 @@ public sealed class AdminController : Controller
     [Admin("Features/{tenant?}", "Features")]
     public async Task<ActionResult> Features(string tenant)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
+        if (!await _authorizationService.AuthorizeAsync(User, FeaturesPermissions.ManageFeatures))
         {
             return Forbid();
         }
@@ -80,7 +80,7 @@ public sealed class AdminController : Controller
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> Features(BulkActionViewModel model, bool? force, string tenant)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
+        if (!await _authorizationService.AuthorizeAsync(User, FeaturesPermissions.ManageFeatures))
         {
             return Forbid();
         }
@@ -107,7 +107,7 @@ public sealed class AdminController : Controller
     [Admin("Features/{id}/Disable/{tenant?}", "FeaturesDisable")]
     public async Task<IActionResult> Disable(string id, string tenant)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
+        if (!await _authorizationService.AuthorizeAsync(User, FeaturesPermissions.ManageFeatures))
         {
             return Forbid();
         }
@@ -147,7 +147,7 @@ public sealed class AdminController : Controller
     [Admin("Features/{id}/Enable/{tenant?}", "FeaturesEnable")]
     public async Task<IActionResult> Enable(string id, string tenant)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageFeatures))
+        if (!await _authorizationService.AuthorizeAsync(User, FeaturesPermissions.ManageFeatures))
         {
             return Forbid();
         }

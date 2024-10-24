@@ -29,7 +29,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .Action("Index", "Admin", _routeValues)
                     .AddClass("searchsettings")
                     .Id("searchsettings")
-                    .Permission(Permissions.ManageSearchSettings)
+                    .Permission(SearchPermissions.ManageSearchSettings)
                     .LocalNav()
                 )
             );

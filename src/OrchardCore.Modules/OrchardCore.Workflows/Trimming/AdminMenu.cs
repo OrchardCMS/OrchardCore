@@ -27,7 +27,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 .Add(S["Settings"], settings => settings
                     .Add(S["Workflow Trimming"], S["Workflow Trimming"], trimming => trimming
                         .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageWorkflowSettings)
+                        .Permission(WorkflowsPermissions.ManageWorkflowSettings)
                         .LocalNav()
                     )
                 )

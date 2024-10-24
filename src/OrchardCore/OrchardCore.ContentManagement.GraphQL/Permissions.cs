@@ -1,14 +1,13 @@
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentManagement.GraphQL;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ApiViewContent = new("ApiViewContent", "Access view content endpoints");
-
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ApiViewContent,
+        GraphQLPermissions.ApiViewContent,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()

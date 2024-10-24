@@ -29,7 +29,7 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageServerSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageServerSettings))
         {
             return null;
         }
@@ -91,7 +91,7 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageServerSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageServerSettings))
         {
             return null;
         }

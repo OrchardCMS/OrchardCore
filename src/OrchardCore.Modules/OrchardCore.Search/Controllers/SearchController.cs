@@ -75,7 +75,7 @@ public sealed class SearchController : Controller
 
         searchService ??= searchServices.First();
 
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QuerySearchIndex, new SearchPermissionParameters(searchService.Name, viewModel.Index)))
+        if (!await _authorizationService.AuthorizeAsync(User, SearchPermissions.QuerySearchIndex, new SearchPermissionParameters(searchService.Name, viewModel.Index)))
         {
             return this.ChallengeOrForbid();
         }

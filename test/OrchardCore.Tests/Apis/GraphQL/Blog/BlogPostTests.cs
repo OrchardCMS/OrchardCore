@@ -220,7 +220,7 @@ public class BlogPostTests
                 UsePermissionsContext = true,
                 AuthorizedPermissions =
                 [
-                    CommonPermissions.ExecuteGraphQL,
+                    GraphQLPermissions.ExecuteGraphQL,
                     Contents.CommonPermissions.ViewContent,
                 ],
             });
@@ -245,7 +245,7 @@ public class BlogPostTests
                 UsePermissionsContext = true,
                 AuthorizedPermissions =
                 [
-                    CommonPermissions.ExecuteGraphQL,
+                    GraphQLPermissions.ExecuteGraphQL,
                     Contents.CommonPermissions.ViewOwnContent,
                 ],
             });
@@ -270,7 +270,7 @@ public class BlogPostTests
                 UsePermissionsContext = true,
                 AuthorizedPermissions =
                 [
-                    CommonPermissions.ExecuteGraphQL,
+                    GraphQLPermissions.ExecuteGraphQL,
                 ],
             });
 

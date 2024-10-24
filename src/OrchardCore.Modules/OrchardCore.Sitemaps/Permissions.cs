@@ -4,11 +4,9 @@ namespace OrchardCore.Sitemaps;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageSitemaps = new("ManageSitemaps", "Manage sitemaps");
-
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ManageSitemaps,
+        SitemapsPermissions.ManageSitemaps,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
