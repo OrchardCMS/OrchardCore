@@ -50,11 +50,16 @@ public sealed class ElasticQuerySource : IQuerySource
         var docs = await _queryService.SearchAsync(metadata?.Index, tokenizedContent);
         elasticQueryResults.Count = docs.Count;
 
+        // We always return an empty collection if the bottom lines queries have no results.
+        elasticQueryResults.Items = [];
+
+        if (elasticQueryResults.Count == 0 || docs.TopDocs == null || docs.TopDocs.Count == 0)
+        {
+            return elasticQueryResults;
+        }
+
         if (query.ReturnContentItems)
         {
-            // We always return an empty collection if the bottom lines queries have no results.
-            elasticQueryResults.Items = [];
-
             // Load corresponding content item versions.
             var topDocs = docs.TopDocs.Where(x => x != null).ToList();
 
