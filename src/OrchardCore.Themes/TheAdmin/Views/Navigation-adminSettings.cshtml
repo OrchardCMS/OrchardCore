@@ -3,8 +3,9 @@
 @using OrchardCore.Admin.Models
 @using OrchardCore.Navigation
 @{
-    TagBuilder tag = Tag(Model, "ul");
-    tag.AddCssClass("list-unstyled");
+    var tag = Tag(Model, "ul");
+    tag.AddCssClass("list-unstyled pb-3");
+
     tag.Attributes["Id"] = NavigationConstants.SiteSettingsId;
 
     foreach (var item in Model)
@@ -13,14 +14,26 @@
     }
 }
 
-<div class="d-flex align-items-center py-3 px-3 mb-3 link-body-emphasis text-decoration-none border-bottom">
-    <i class="fa-solid fa-gear pe-2"></i>
-    <span class="fs-5 fw-semibold">@T["Settings"]</span>
-</div>
+<div class="px-3">
 
-<div class="mb-3 px-3">
-    <label for="SettingsSearch" class="form-label visually-hidden">@T["Search"]</label>
-    <input type="text" class="form-control" id="SettingsSearch" name="SettingsSearch" value="" placeholder="@T["Search..."]" />
+    <div class="mb-3">
+        <div class="d-flex align-items-center py-3 link-body-emphasis text-decoration-none border-bottom">
+            <i class="fa-solid fa-gear pe-2"></i>
+            <span class="fs-5 fw-semibold">@T["Settings"]</span>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label for="SettingsSearch" class="form-label visually-hidden">@T["Search"]</label>
+        <input type="text" class="form-control" id="SettingsSearch" name="SettingsSearch" value="" placeholder="@T["Search..."]" />
+    </div>
+
+    <div class="mb-3 d-none" id="SettingsSearchAlert">
+        <div class="alert alert-info mb-0" role="alert">
+            @T["No settings found"]
+        </div>
+    </div>
+
 </div>
 
 @tag
@@ -31,12 +44,29 @@
         let menuElement = document.getElementById('@NavigationConstants.SiteSettingsId');
         let menuItemElements = menuElement.querySelectorAll('li');
         let parentMenuItemElements = menuElement.querySelectorAll('li.has-items');
+        let alertContainer = document.getElementById('SettingsSearchAlert');
 
         const resetMenuItems = () => {
 
             for (let i = 0; i < menuItemElements.length; i++) {
                 menuItemElements[i].classList.remove('d-none');
             }
+
+            // Set the visibility of the parents.
+            for (let i = 0; i < parentMenuItemElements.length; i++) {
+                var parent = parentMenuItemElements[i];
+                let containers = parent.querySelectorAll('.collapse');
+
+                for (let x = 0; x < containers.length; x++) {
+                    if(x == 0 && parent.classList.contains('active')) {
+                        containers[x].classList.add('show');
+                    } else {
+                        containers[x].classList.remove('show');
+                    }
+                }
+            }
+
+            alertContainer.classList.add('d-none');
         };
 
         searchElement.addEventListener('keydown', (e) => {
@@ -57,6 +87,7 @@
                 return;
             }
 
+            var foundOne = false;
             // Set the visibility of the children.
             for (let i = 0; i < menuItemElements.length; i++) {
                 var item = menuItemElements[i];
@@ -66,6 +97,7 @@
                     item.classList.add('d-none');
                 } else {
                     item.classList.remove('d-none');
+                    foundOne = true;
                 }
             }
 
@@ -87,6 +119,12 @@
                         container.classList.remove('show');
                     }
                 }
+            }
+
+            if(!foundOne) {
+                alertContainer.classList.remove('d-none');
+            } else {
+                alertContainer.classList.add('d-none');
             }
         });
     });
