@@ -144,11 +144,7 @@ public class ContentDefinitionService : IContentDefinitionService
         var partDefinitions = typeDefinition.Parts.ToList();
         foreach (var partDefinition in partDefinitions)
         {
-            try
-            {
-                await RemovePartFromTypeAsync(partDefinition.PartDefinition.Name, name);
-            }
-            catch { }
+            await RemovePartFromTypeAsync(partDefinition.PartDefinition.Name, name);
 
             // Delete the part if it's its own part.
             if (partDefinition.PartDefinition.Name == name)

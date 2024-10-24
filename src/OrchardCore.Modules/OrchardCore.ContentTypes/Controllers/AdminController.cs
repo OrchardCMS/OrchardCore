@@ -426,16 +426,9 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        try
-        {
-            await _contentDefinitionService.RemovePartFromTypeAsync(name, id);
+        await _contentDefinitionService.RemovePartFromTypeAsync(name, id);
 
-            await _notifier.SuccessAsync(H["The \"{0}\" part has been removed.", name]);
-        }
-        catch
-        {
-            await _notifier.ErrorAsync(H["The \"{0}\" part cannot be removed.", name]);
-        }
+        await _notifier.SuccessAsync(H["The \"{0}\" part has been removed.", name]);
 
         return RedirectToAction(nameof(Edit), new { id });
     }
