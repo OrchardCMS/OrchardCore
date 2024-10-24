@@ -33,7 +33,8 @@ public class DefaultContentManager : IContentManager
     public DefaultContentManager(
         IContentDefinitionManager contentDefinitionManager,
         IContentManagerSession contentManagerSession,
-        IEnumerable<IContentHandler> handlers,
+        IEnumerable<IContentHandler> handlers, 
+        IEnumerable<IBulkContentEventHandler> bulkContentEventHandlers,
         ISession session,
         IContentItemIdGenerator idGenerator,
         ILogger<DefaultContentManager> logger,
@@ -41,6 +42,7 @@ public class DefaultContentManager : IContentManager
     {
         _contentDefinitionManager = contentDefinitionManager;
         Handlers = handlers;
+        BulkContentHandlers = bulkContentEventHandlers;
         _session = session;
         _idGenerator = idGenerator;
         _contentManagerSession = contentManagerSession;
@@ -48,6 +50,7 @@ public class DefaultContentManager : IContentManager
         _clock = clock;
     }
 
+    public IEnumerable<IBulkContentEventHandler> BulkContentEventHandlers { get; private set; }
     public IEnumerable<IContentHandler> Handlers { get; private set; }
 
     public IEnumerable<IContentHandler> _reversedHandlers;
@@ -606,6 +609,9 @@ public class DefaultContentManager : IContentManager
     {
         ArgumentNullException.ThrowIfNull(contentItems);
 
+        var contentList = contentItems.Select(x => new ImportContentContext(x)).ToList();
+        await BulkContentHandlers.InvokeAsync((handler, list) => handler.ImportingAsync(list), contentList, _logger);
+
         var skip = 0;
 
         var importedVersionIds = new HashSet<string>();
@@ -734,6 +740,8 @@ public class DefaultContentManager : IContentManager
             skip += _importBatchSize;
             batchedContentItems = contentItems.Skip(skip).Take(_importBatchSize);
         }
+
+        await BulkContentHandlers.InvokeAsync((handler, list) => handler.ImportedAsync(list), contentList, _logger);
     }
 
     public async Task UpdateAsync(ContentItem contentItem)
