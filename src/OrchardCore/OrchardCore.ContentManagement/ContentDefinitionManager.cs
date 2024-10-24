@@ -341,7 +341,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
     {
         var context = new BuildingContentTypeContext(name, source);
 
-        _handlers.Invoke((handler, ctx) => handler.BuildingContentType(ctx), context, _logger);
+        _handlers.Invoke((handler, ctx) => handler.ContentTypeBuilding(ctx), context, _logger);
 
         if (context.Record is null)
         {
@@ -362,9 +362,9 @@ public class ContentDefinitionManager : IContentDefinitionManager
         ContentTypePartDefinitionRecord source,
         ContentPartDefinitionRecord partDefinitionRecord)
     {
-        var context = new BuildingContentTypePartContext(name, source);
+        var context = new ContentTypePartContextBuilding(name, source);
 
-        _handlers.Invoke((handler, ctx) => handler.BuildingContentTypePart(ctx), context, _logger);
+        _handlers.Invoke((handler, ctx) => handler.ContentTypePartBuilding(ctx), context, _logger);
 
         if (context.Record is null)
         {
@@ -379,9 +379,9 @@ public class ContentDefinitionManager : IContentDefinitionManager
 
     private ContentPartDefinition Build(string name, ContentPartDefinitionRecord source)
     {
-        var context = new BuildingContentPartDefinitionContext(name, source);
+        var context = new ContentPartDefinitionContextBuilding(name, source);
 
-        _handlers.Invoke((handler, ctx) => handler.BuildingContentPartDefinition(ctx), context, _logger);
+        _handlers.Invoke((handler, ctx) => handler.ContentPartDefinitionBuilding(ctx), context, _logger);
 
         if (context.Record is null)
         {
@@ -396,9 +396,9 @@ public class ContentDefinitionManager : IContentDefinitionManager
 
     private ContentPartFieldDefinition Build(string name, ContentPartFieldDefinitionRecord source)
     {
-        var context = new BuildingContentPartFieldContext(name, source);
+        var context = new ContentPartFieldContextBuilding(name, source);
 
-        _handlers.Invoke((handler, ctx) => handler.BuildingContentPartField(ctx), context, _logger);
+        _handlers.Invoke((handler, ctx) => handler.ContentPartFieldBuilding(ctx), context, _logger);
 
         if (context.Record is null)
         {

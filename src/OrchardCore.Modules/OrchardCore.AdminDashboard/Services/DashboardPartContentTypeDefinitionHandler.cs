@@ -9,7 +9,7 @@ namespace OrchardCore.AdminDashboard.Services;
 
 public sealed class DashboardPartContentTypeDefinitionHandler : ContentDefinitionHandlerBase
 {
-    public override void BuildingContentType(BuildingContentTypeContext context)
+    public override void ContentTypeBuilding(BuildingContentTypeContext context)
     {
         if (!context.Record.Settings.TryGetPropertyValue(nameof(ContentTypeSettings), out var node))
         {
@@ -42,7 +42,7 @@ public sealed class DashboardPartContentTypeDefinitionHandler : ContentDefinitio
         });
     }
 
-    public override void BuildingContentTypePart(BuildingContentTypePartContext context)
+    public override void ContentTypePartBuilding(ContentTypePartContextBuilding context)
     {
         if (!context.Record.PartName.EqualsOrdinalIgnoreCase(nameof(DashboardPart)))
         {
@@ -57,7 +57,7 @@ public sealed class DashboardPartContentTypeDefinitionHandler : ContentDefinitio
         context.Record.Settings[nameof(ContentSettings)] = JObject.FromObject(settings);
     }
 
-    public override void BuildingContentPartDefinition(BuildingContentPartDefinitionContext context)
+    public override void ContentPartDefinitionBuilding(ContentPartDefinitionContextBuilding context)
     {
         if (context.Record is not null || context.Name != nameof(DashboardPart))
         {

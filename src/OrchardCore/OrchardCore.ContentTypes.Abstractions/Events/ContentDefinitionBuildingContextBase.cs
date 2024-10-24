@@ -1,10 +1,10 @@
 ﻿namespace OrchardCore.ContentTypes.Events;
 
-public abstract class BuildingContentTypeContextBase
+public abstract class ContentDefinitionBuildingContextBase
 {
     public readonly string Name;
 
-    protected BuildingContentTypeContextBase(string name)
+    protected ContentDefinitionBuildingContextBase(string name)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 

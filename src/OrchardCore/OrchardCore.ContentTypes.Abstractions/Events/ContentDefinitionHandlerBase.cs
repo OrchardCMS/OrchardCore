@@ -2,19 +2,19 @@ namespace OrchardCore.ContentTypes.Events;
 
 public abstract class ContentDefinitionHandlerBase : IContentDefinitionEventHandler
 {
-    public virtual void BuildingContentPartDefinition(BuildingContentPartDefinitionContext context)
+    public virtual void ContentPartDefinitionBuilding(ContentPartDefinitionContextBuilding context)
     {
     }
 
-    public virtual void BuildingContentPartField(BuildingContentPartFieldContext context)
+    public virtual void ContentPartFieldBuilding(ContentPartFieldContextBuilding context)
     {
     }
 
-    public virtual void BuildingContentType(BuildingContentTypeContext context)
+    public virtual void ContentTypeBuilding(BuildingContentTypeContext context)
     {
     }
 
-    public virtual void BuildingContentTypePart(BuildingContentTypePartContext context)
+    public virtual void ContentTypePartBuilding(ContentTypePartContextBuilding context)
     {
     }
 

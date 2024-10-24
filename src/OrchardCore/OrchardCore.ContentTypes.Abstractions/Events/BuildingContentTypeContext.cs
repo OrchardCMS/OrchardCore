@@ -2,7 +2,7 @@ using OrchardCore.ContentManagement.Metadata.Records;
 
 namespace OrchardCore.ContentTypes.Events;
 
-public sealed class BuildingContentTypeContext : BuildingContentTypeContextBase
+public sealed class BuildingContentTypeContext : ContentDefinitionBuildingContextBase
 {
     public ContentTypeDefinitionRecord Record { get; set; }
 
