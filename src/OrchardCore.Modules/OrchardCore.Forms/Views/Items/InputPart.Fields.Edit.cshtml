@@ -4,9 +4,9 @@
 @{
     var wrapperId = Html.IdFor(m => m);
 }
-<div class="@Orchard.GetWrapperCssClasses()" id="@wrapperId">
-    <label asp-for="Type" class="@Orchard.GetLabelCssClasses()">@T["Type"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()" id="@wrapperId">
+    <label asp-for="Type" class="@Orchard.GetLabelClasses()">@T["Type"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <select asp-for="Type" class="form-select content-preview-select field-type-select-menu">
             <option value="text">@T["Text"]</option>
             <option value="number">@T["Number"]</option>
@@ -34,24 +34,24 @@
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperCssClasses("show-for-input")">
-    <label asp-for="Placeholder" class="@Orchard.GetLabelCssClasses()">@T["Placeholder Text"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses("show-for-input")">
+    <label asp-for="Placeholder" class="@Orchard.GetLabelClasses()">@T["Placeholder Text"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="Placeholder" type="text" class="form-control content-preview-text" />
         <span class="hint">@T["The text to display when the field has no value."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <label asp-for="DefaultValue" class="@Orchard.GetLabelCssClasses()">@T["Default Value"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="DefaultValue" class="@Orchard.GetLabelClasses()">@T["Default Value"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="DefaultValue" type="text" class="form-control content-preview-text" />
         <span class="hint">@T["The default value for this field."]</span>
     </div>
 </div>
 
 <script at="Foot">
-    var initilizeFieldType = (wrapper) => {
+    var initializeFieldType = (wrapper) => {
         var selectMenus = wrapper.getElementsByClassName('field-type-select-menu');
         for (let i = 0; i < selectMenus.length; i++) {
             var selectMenu = selectMenus[i];
@@ -74,9 +74,9 @@
     };
     var wrapper = document.getElementById('@wrapperId')
     if (wrapper != null) {
-        initilizeFieldType(wrapper);
+        initializeFieldType(wrapper);
     }
     document.addEventListener('DOMContentLoaded', function () {
-        initilizeFieldType(document);
+        initializeFieldType(document);
     });
 </script>

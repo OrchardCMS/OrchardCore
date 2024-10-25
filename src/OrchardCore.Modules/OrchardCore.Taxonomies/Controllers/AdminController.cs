@@ -1,9 +1,9 @@
-using System;
-using System.Threading.Tasks;
+using System.Text.Json.Nodes;
+using System.Text.Json.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Newtonsoft.Json.Linq;
+using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
@@ -13,341 +13,377 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Taxonomies.Models;
 using YesSql;
 
-namespace OrchardCore.Taxonomies.Controllers
+namespace OrchardCore.Taxonomies.Controllers;
+
+[Admin]
+public sealed class AdminController : Controller
 {
-    public class AdminController : Controller
+    private readonly IContentManager _contentManager;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IContentItemDisplayManager _contentItemDisplayManager;
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly ISession _session;
+    private readonly INotifier _notifier;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
+
+    internal readonly IHtmlLocalizer H;
+
+    public AdminController(
+        ISession session,
+        IContentManager contentManager,
+        IAuthorizationService authorizationService,
+        IContentItemDisplayManager contentItemDisplayManager,
+        IContentDefinitionManager contentDefinitionManager,
+        INotifier notifier,
+        IHtmlLocalizer<AdminController> localizer,
+        IUpdateModelAccessor updateModelAccessor)
     {
-        private readonly IContentManager _contentManager;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IContentItemDisplayManager _contentItemDisplayManager;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ISession _session;
-        private readonly IHtmlLocalizer H;
-        private readonly INotifier _notifier;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
+        _contentManager = contentManager;
+        _authorizationService = authorizationService;
+        _contentItemDisplayManager = contentItemDisplayManager;
+        _contentDefinitionManager = contentDefinitionManager;
+        _session = session;
+        _notifier = notifier;
+        _updateModelAccessor = updateModelAccessor;
+        H = localizer;
+    }
 
-        public AdminController(
-            ISession session,
-            IContentManager contentManager,
-            IAuthorizationService authorizationService,
-            IContentItemDisplayManager contentItemDisplayManager,
-            IContentDefinitionManager contentDefinitionManager,
-            INotifier notifier,
-            IHtmlLocalizer<AdminController> localizer,
-            IUpdateModelAccessor updateModelAccessor)
+    [Admin("Taxonomies/Create/{id}", "Taxonomies.Create")]
+    public async Task<IActionResult> Create(string id, string taxonomyContentItemId, string taxonomyItemId)
+    {
+        if (string.IsNullOrWhiteSpace(id))
         {
-            _contentManager = contentManager;
-            _authorizationService = authorizationService;
-            _contentItemDisplayManager = contentItemDisplayManager;
-            _contentDefinitionManager = contentDefinitionManager;
-            _session = session;
-            _notifier = notifier;
-            _updateModelAccessor = updateModelAccessor;
-            H = localizer;
+            return NotFound();
         }
 
-        public async Task<IActionResult> Create(string id, string taxonomyContentItemId, string taxonomyItemId)
+        if (await _contentDefinitionManager.GetTypeDefinitionAsync(id) == null)
         {
-            if (String.IsNullOrWhiteSpace(id))
-            {
-                return NotFound();
-            }
+            return NotFound();
+        }
 
-            if (_contentDefinitionManager.GetTypeDefinition(id) == null)
-            {
-                return NotFound();
-            }
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
+        {
+            return Forbid();
+        }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
-            {
-                return Forbid();
-            }
+        var contentItem = await _contentManager.NewAsync(id);
+        contentItem.Weld<TermPart>();
+        contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
-            var contentItem = await _contentManager.NewAsync(id);
-            contentItem.Weld<TermPart>();
-            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
+        var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+        model.Properties["TaxonomyContentItemId"] = taxonomyContentItemId;
+        model.Properties["TaxonomyItemId"] = taxonomyItemId;
 
-            model.TaxonomyContentItemId = taxonomyContentItemId;
-            model.TaxonomyItemId = taxonomyItemId;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ActionName("Create")]
+    public async Task<IActionResult> CreatePost(string id, string taxonomyContentItemId, string taxonomyItemId)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return NotFound();
+        }
+
+        if (await _contentDefinitionManager.GetTypeDefinitionAsync(id) == null)
+        {
+            return NotFound();
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
+        {
+            return Forbid();
+        }
+
+        ContentItem taxonomy;
+
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
+
+        if (!contentTypeDefinition.IsDraftable())
+        {
+            taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
+        }
+        else
+        {
+            taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.DraftRequired);
+        }
+
+        if (taxonomy == null)
+        {
+            return NotFound();
+        }
+
+        var contentItem = await _contentManager.NewAsync(id);
+        contentItem.Weld<TermPart>();
+        contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
+
+        var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+
+        if (!ModelState.IsValid)
+        {
+            model.Properties["TaxonomyContentItemId"] = taxonomyContentItemId;
+            model.Properties["TaxonomyItemId"] = taxonomyItemId;
 
             return View(model);
         }
 
-        [HttpPost]
-        [ActionName("Create")]
-        public async Task<IActionResult> CreatePost(string id, string taxonomyContentItemId, string taxonomyItemId)
+        if (taxonomyItemId == null)
         {
-            if (String.IsNullOrWhiteSpace(id))
+            // Use the taxonomy as the parent if no target is specified.
+            taxonomy.Alter<TaxonomyPart>(part => part.Terms.Add(contentItem));
+        }
+        else
+        {
+            // Look for the target taxonomy item in the hierarchy.
+            var parentTaxonomyItem = FindTaxonomyItem((JsonObject)taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+
+            // Couldn't find targeted taxonomy item.
+            if (parentTaxonomyItem == null)
             {
                 return NotFound();
             }
 
-            if (_contentDefinitionManager.GetTypeDefinition(id) == null)
+            var taxonomyItems = (JsonArray)parentTaxonomyItem?["Terms"];
+
+            if (taxonomyItems == null)
             {
-                return NotFound();
+                parentTaxonomyItem["Terms"] = taxonomyItems = [];
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
-            {
-                return Forbid();
-            }
-
-            ContentItem taxonomy;
-
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
-
-            if (!contentTypeDefinition.IsDraftable())
-            {
-                taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
-            }
-            else
-            {
-                taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.DraftRequired);
-            }
-
-            if (taxonomy == null)
-            {
-                return NotFound();
-            }
-
-            var contentItem = await _contentManager.NewAsync(id);
-            contentItem.Weld<TermPart>();
-            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
-
-            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
-
-            if (!ModelState.IsValid)
-            {
-                model.TaxonomyContentItemId = taxonomyContentItemId;
-                model.TaxonomyItemId = taxonomyItemId;
-
-                return View(model);
-            }
-
-            if (taxonomyItemId == null)
-            {
-                // Use the taxonomy as the parent if no target is specified
-                taxonomy.Alter<TaxonomyPart>(part => part.Terms.Add(contentItem));
-            }
-            else
-            {
-                // Look for the target taxonomy item in the hierarchy
-                var parentTaxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
-
-                // Couldn't find targeted taxonomy item
-                if (parentTaxonomyItem == null)
-                {
-                    return NotFound();
-                }
-
-                var taxonomyItems = parentTaxonomyItem?.Terms as JArray;
-
-                if (taxonomyItems == null)
-                {
-                    parentTaxonomyItem["Terms"] = taxonomyItems = new JArray();
-                }
-
-                taxonomyItems.Add(JObject.FromObject(contentItem));
-            }
-
-            _session.Save(taxonomy);
-
-            return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
+            taxonomyItems.Add(JObject.FromObject(contentItem));
         }
 
-        public async Task<IActionResult> Edit(string taxonomyContentItemId, string taxonomyItemId)
+        await _session.SaveAsync(taxonomy);
+
+        return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
+    }
+
+    [Admin("Taxonomies/Edit/{taxonomyContentItemId}/{taxonomyItemId}", "Taxonomies.Create")]
+    public async Task<IActionResult> Edit(string taxonomyContentItemId, string taxonomyItemId)
+    {
+        if (string.IsNullOrWhiteSpace(taxonomyContentItemId) || string.IsNullOrWhiteSpace(taxonomyItemId))
         {
-            if (String.IsNullOrWhiteSpace(taxonomyContentItemId) || String.IsNullOrWhiteSpace(taxonomyItemId))
-            {
-                return NotFound();
-            }
+            return NotFound();
+        }
 
-            var taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
+        var taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
 
-            if (taxonomy == null)
-            {
-                return NotFound();
-            }
+        if (taxonomy == null)
+        {
+            return NotFound();
+        }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies, taxonomy))
-            {
-                return Forbid();
-            }
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies, taxonomy))
+        {
+            return Forbid();
+        }
 
-            // Look for the target taxonomy item in the hierarchy
-            JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+        // Look for the target taxonomy item in the hierarchy.
+        var taxonomyItem = FindTaxonomyItem((JsonObject)taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
-            // Couldn't find targeted taxonomy item
-            if (taxonomyItem == null)
-            {
-                return NotFound();
-            }
+        // Couldn't find targeted taxonomy item.
+        if (taxonomyItem == null)
+        {
+            return NotFound();
+        }
 
-            var contentItem = taxonomyItem.ToObject<ContentItem>();
-            contentItem.Weld<TermPart>();
-            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
+        var contentItem = taxonomyItem.ToObject<ContentItem>();
+        contentItem.Weld<TermPart>();
+        contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+        var model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
-            model.TaxonomyContentItemId = taxonomyContentItemId;
-            model.TaxonomyItemId = taxonomyItemId;
+        model.Properties["TaxonomyContentItemId"] = taxonomyContentItemId;
+        model.Properties["TaxonomyItemId"] = taxonomyItemId;
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ActionName("Edit")]
+    public async Task<IActionResult> EditPost(string taxonomyContentItemId, string taxonomyItemId)
+    {
+        if (string.IsNullOrWhiteSpace(taxonomyContentItemId) || string.IsNullOrWhiteSpace(taxonomyItemId))
+        {
+            return NotFound();
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
+        {
+            return Forbid();
+        }
+
+        ContentItem taxonomy;
+
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
+
+        if (!contentTypeDefinition.IsDraftable())
+        {
+            taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
+        }
+        else
+        {
+            taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.DraftRequired);
+        }
+
+        if (taxonomy == null)
+        {
+            return NotFound();
+        }
+
+        // Look for the target taxonomy item in the hierarchy.
+        var taxonomyItem = FindTaxonomyItem((JsonObject)taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+
+        // Couldn't find targeted taxonomy item.
+        if (taxonomyItem == null)
+        {
+            return NotFound();
+        }
+
+        var existing = taxonomyItem.ToObject<ContentItem>();
+
+        // Create a new item to take into account the current type definition.
+        var contentItem = await _contentManager.NewAsync(existing.ContentType);
+
+        contentItem.ContentItemId = existing.ContentItemId;
+        contentItem.Merge(existing);
+        contentItem.Weld<TermPart>();
+        contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
+
+        var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+
+        if (!ModelState.IsValid)
+        {
+            model.Properties["TaxonomyContentItemId"] = taxonomyContentItemId;
+            model.Properties["TaxonomyItemId"] = taxonomyItemId;
 
             return View(model);
         }
 
-        [HttpPost]
-        [ActionName("Edit")]
-        public async Task<IActionResult> EditPost(string taxonomyContentItemId, string taxonomyItemId)
+        taxonomyItem.Merge((JsonObject)contentItem.Content, new JsonMergeSettings
         {
-            if (String.IsNullOrWhiteSpace(taxonomyContentItemId) || String.IsNullOrWhiteSpace(taxonomyItemId))
-            {
-                return NotFound();
-            }
+            MergeArrayHandling = MergeArrayHandling.Replace,
+            MergeNullValueHandling = MergeNullValueHandling.Merge
+        });
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
-            {
-                return Forbid();
-            }
+        // Merge doesn't copy the properties.
+        taxonomyItem[nameof(ContentItem.DisplayText)] = contentItem.DisplayText;
 
-            ContentItem taxonomy;
+        await _session.SaveAsync(taxonomy);
 
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
+        return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
+    }
 
-            if (!contentTypeDefinition.IsDraftable())
-            {
-                taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
-            }
-            else
-            {
-                taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.DraftRequired);
-            }
-
-            if (taxonomy == null)
-            {
-                return NotFound();
-            }
-
-            // Look for the target taxonomy item in the hierarchy
-            JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
-
-            // Couldn't find targeted taxonomy item
-            if (taxonomyItem == null)
-            {
-                return NotFound();
-            }
-
-            var existing = taxonomyItem.ToObject<ContentItem>();
-
-            // Create a new item to take into account the current type definition.
-            var contentItem = await _contentManager.NewAsync(existing.ContentType);
-
-            contentItem.ContentItemId = existing.ContentItemId;
-            contentItem.Merge(existing);
-            contentItem.Weld<TermPart>();
-            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
-
-            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
-
-            if (!ModelState.IsValid)
-            {
-                model.TaxonomyContentItemId = taxonomyContentItemId;
-                model.TaxonomyItemId = taxonomyItemId;
-
-                return View(model);
-            }
-
-            taxonomyItem.Merge(contentItem.Content, new JsonMergeSettings
-            {
-                MergeArrayHandling = MergeArrayHandling.Replace,
-                MergeNullValueHandling = MergeNullValueHandling.Merge
-            });
-
-            // Merge doesn't copy the properties
-            taxonomyItem[nameof(ContentItem.DisplayText)] = contentItem.DisplayText;
-
-            _session.Save(taxonomy);
-
-            return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
+    [HttpPost]
+    [Admin("Taxonomies/Delete/{taxonomyContentItemId}/{taxonomyItemId}", "Taxonomies.Delete")]
+    public async Task<IActionResult> Delete(string taxonomyContentItemId, string taxonomyItemId)
+    {
+        if (string.IsNullOrWhiteSpace(taxonomyContentItemId) || string.IsNullOrWhiteSpace(taxonomyItemId))
+        {
+            return NotFound();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Delete(string taxonomyContentItemId, string taxonomyItemId)
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
         {
-            if (String.IsNullOrWhiteSpace(taxonomyContentItemId) || String.IsNullOrWhiteSpace(taxonomyItemId))
-            {
-                return NotFound();
-            }
-
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies))
-            {
-                return Forbid();
-            }
-
-            ContentItem taxonomy;
-
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition("Taxonomy");
-
-            if (!contentTypeDefinition.IsDraftable())
-            {
-                taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
-            }
-            else
-            {
-                taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.DraftRequired);
-            }
-
-            if (taxonomy == null)
-            {
-                return NotFound();
-            }
-
-            // Look for the target taxonomy item in the hierarchy
-            var taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
-
-            // Couldn't find targeted taxonomy item
-            if (taxonomyItem == null)
-            {
-                return NotFound();
-            }
-
-            taxonomyItem.Remove();
-            _session.Save(taxonomy);
-
-            await _notifier.SuccessAsync(H["Taxonomy item deleted successfully."]);
-
-            return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
+            return Forbid();
         }
 
-        private JObject FindTaxonomyItem(JObject contentItem, string taxonomyItemId)
+        ContentItem taxonomy;
+
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync("Taxonomy");
+
+        if (!contentTypeDefinition.IsDraftable())
         {
-            if (contentItem["ContentItemId"]?.Value<string>() == taxonomyItemId)
-            {
-                return contentItem;
-            }
+            taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
+        }
+        else
+        {
+            taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.DraftRequired);
+        }
 
-            if (contentItem.GetValue("Terms") == null)
-            {
-                return null;
-            }
+        if (taxonomy == null)
+        {
+            return NotFound();
+        }
 
-            var taxonomyItems = (JArray)contentItem["Terms"];
+        // Look for the target taxonomy item in the hierarchy.
+        var content = (JsonObject)taxonomy.As<TaxonomyPart>().Content;
 
-            JObject result;
+        RemoveTaxonomyItem(content, taxonomyItemId);
 
-            foreach (JObject taxonomyItem in taxonomyItems)
-            {
-                // Search in inner taxonomy items
-                result = FindTaxonomyItem(taxonomyItem, taxonomyItemId);
+        var updatedPart = content.ToObject<TaxonomyPart>();
 
-                if (result != null)
-                {
-                    return result;
-                }
-            }
+        if (updatedPart == null)
+        {
+            return NotFound();
+        }
 
+        taxonomy.Apply(updatedPart);
+
+        await _session.SaveAsync(taxonomy);
+
+        await _notifier.SuccessAsync(H["Taxonomy item deleted successfully."]);
+
+        return RedirectToAction(nameof(Edit), "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
+    }
+
+    private static JsonObject FindTaxonomyItem(JsonObject contentItem, string taxonomyItemId)
+    {
+        if (contentItem["ContentItemId"]?.Value<string>() == taxonomyItemId)
+        {
+            return contentItem;
+        }
+
+        if (!contentItem.TryGetPropertyValue("Terms", out var terms) || terms is not JsonArray taxonomyItems)
+        {
             return null;
         }
+
+        JsonObject result;
+        foreach (var taxonomyItem in taxonomyItems.Cast<JsonObject>())
+        {
+            // Search in inner taxonomy items.
+            result = FindTaxonomyItem(taxonomyItem, taxonomyItemId);
+
+            if (result != null)
+            {
+                return result;
+            }
+        }
+
+        return null;
+    }
+
+    private static bool RemoveTaxonomyItem(JsonObject contentItem, string taxonomyItemToRemove)
+    {
+        if (contentItem == null)
+        {
+            return false;
+        }
+
+        if (contentItem["ContentItemId"]?.Value<string>() == taxonomyItemToRemove)
+        {
+            return true;
+        }
+
+        if (!contentItem.TryGetPropertyValue("Terms", out var terms) || terms is not JsonArray taxonomyItems)
+        {
+            return false;
+        }
+
+        for (var i = taxonomyItems.Count - 1; i >= 0; i--)
+        {
+            var taxonomyItem = taxonomyItems[i] as JsonObject;
+            if (RemoveTaxonomyItem(taxonomyItem, taxonomyItemToRemove))
+            {
+                taxonomyItems.RemoveAt(i);
+
+                return false;
+            }
+        }
+
+        return false;
     }
 }

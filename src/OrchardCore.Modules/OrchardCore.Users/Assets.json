@@ -4,5 +4,11 @@
       "Assets/js/password-generator.js"
     ],
     "output": "wwwroot/Scripts/password-generator.js"
+  },
+  {
+    "inputs": [
+      "node_modules/qrcodejs/qrcode.js"
+    ],
+    "output": "wwwroot/Scripts/qrcode.js"
   }
 ]

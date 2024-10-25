@@ -1,20 +1,20 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
 
 namespace OrchardCore.Forms.Drivers;
 
-public class FormElementValidationPartDisplayDriver : ContentPartDisplayDriver<FormElementValidationPart>
+public sealed class FormElementValidationPartDisplayDriver : ContentPartDisplayDriver<FormElementValidationPart>
 {
-    public override IDisplayResult Display(FormElementValidationPart part)
+    public override IDisplayResult Display(FormElementValidationPart part, BuildPartDisplayContext context)
     {
-        return View("FormElementValidationPart", part).Location("Detail", "Content:after");
+        return View("FormElementValidationPart", part)
+            .Location("Detail", "Content:after");
     }
 
-    public override IDisplayResult Edit(FormElementValidationPart part)
+    public override IDisplayResult Edit(FormElementValidationPart part, BuildPartEditorContext context)
     {
         return Initialize<FormElementValidationPartViewModel>("FormElementValidationPart_Fields_Edit", m =>
         {
@@ -22,15 +22,14 @@ public class FormElementValidationPartDisplayDriver : ContentPartDisplayDriver<F
         });
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(FormElementValidationPart part, IUpdateModel updater)
+    public override async Task<IDisplayResult> UpdateAsync(FormElementValidationPart part, UpdatePartEditorContext context)
     {
         var viewModel = new FormElementValidationPartViewModel();
 
-        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-        {
-            part.Option = viewModel.ValidationOption;
-        }
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
-        return Edit(part);
+        part.Option = viewModel.ValidationOption;
+
+        return Edit(part, context);
     }
 }

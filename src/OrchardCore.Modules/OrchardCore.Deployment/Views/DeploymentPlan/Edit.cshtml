@@ -6,7 +6,7 @@
 <form asp-action="Edit" method="post" class="no-multisubmit">
     <input type="hidden" asp-for="Id" />
     <div class="mb-3" asp-validation-class-for="Name">
-        <label asp-for="Name">@T["Name"]</label>
+        <label asp-for="Name" class="form-label">@T["Name"]</label>
         <input asp-for="Name" class="form-control" autofocus />
         <span asp-validation-for="Name"></span>
     </div>

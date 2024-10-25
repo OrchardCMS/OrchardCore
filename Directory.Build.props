@@ -1,0 +1,55 @@
+<Project>
+
+  <Import Project="src\OrchardCore.Build\TargetFrameworks.props" />
+  
+  <PropertyGroup>
+    <!-- https://aka.ms/vs-build-acceleration -->
+    <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Analysis rules">
+
+    <AnalysisLevel>latest-Recommended</AnalysisLevel>
+
+    <!-- The behavior could vary based on the current user's locale setting -->
+    <NoWarn>$(NoWarn);CA1304;CA1305;CA1310</NoWarn>
+
+    <!-- Specify a culture or use an invariant version to avoid implicit dependency on current culture -->
+    <NoWarn>$(NoWarn);CA1311</NoWarn>
+
+    <!-- Do not declare static members on generic types -->
+    <NoWarn>$(NoWarn);CA1000</NoWarn>
+
+    <!-- For improved performance, use the LoggerMessage delegates -->
+    <NoWarn>$(NoWarn);CA1848</NoWarn>
+
+    <!-- Identifier contains type name -->
+    <NoWarn>$(NoWarn);CA1720</NoWarn>
+
+    <!-- Do not declare visible instance fields -->
+    <NoWarn>$(NoWarn);CA1051</NoWarn>
+
+    <!-- Avoid using cref tags with a prefix -->
+    <NoWarn>$(NoWarn);CA1200</NoWarn>
+
+    <!-- Rename type name X so that it does not end in 'Delegate', 'EventHandler', 'Permission' etc -->
+    <NoWarn>$(NoWarn);CA1711</NoWarn>
+
+    <!-- Parameter name differs from original overriden implemented name -->
+    <NoWarn>$(NoWarn);CA1725</NoWarn>
+
+    <!-- Reserved keyword -->
+    <NoWarn>$(NoWarn);CA1716</NoWarn>
+
+    <!-- Type owns disposable field(s) -->
+    <NoWarn>$(NoWarn);CA1001</NoWarn>
+
+    <!-- Exception type is not sufficiently specific -->
+    <NoWarn>$(NoWarn);CA2201</NoWarn>
+
+    <!-- CA1861: Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array -->
+    <NoWarn>$(NoWarn);CA1861</NoWarn>
+
+  </PropertyGroup>
+
+</Project>

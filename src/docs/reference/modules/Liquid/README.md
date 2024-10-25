@@ -15,7 +15,7 @@ If you need to render some raw HTML chars you can use the `raw` filter.
 ## Content Item Filters
 
 All the default filters that are available in the standard Liquid syntax are available in OrchardCore.  
-On top of that each Orchard module can provide custom filters for their own purpose. 
+On top of that each Orchard module can provide custom filters for their own purpose.
 Here is a list of common filters that apply to content items.
 
 ### `display_url`
@@ -67,6 +67,7 @@ Output
 ```text
 Blog
 ```
+
 ## String Filters
 
 ### `slugify`
@@ -279,7 +280,7 @@ Example:
 
 ### `jsonparse`
 
-Converts a json string to a JObject. 
+Converts a json string to a JObject.
 This can be useful to build collections and iterate over the values in liquid.
 
 Example:
@@ -342,7 +343,7 @@ inspect all the available properties by evaluating `Content` directly. It will t
 The convention is that each Part is exposed by its name as the first level.  
 If the content item has custom fields, they will be available under a part whose name will match the content type.
 
-For example, assuming the type `Product` has a Text field named `Size`, access the value of this field for a 
+For example, assuming the type `Product` has a Text field named `Size`, access the value of this field for a
 content item as follows:
 
 ```liquid
@@ -354,6 +355,7 @@ Similarly, if the content item has a `Title` part, we can access it like this:
 ```liquid
 {{ Model.ContentItem.Content.TitlePart.Title }}
 ```
+
 **Note**: This is no longer the recommended way to display the title of a content item.
 Use the `Model.ContentItem.DisplayText` property instead.
 
@@ -392,22 +394,22 @@ The resulting object has access to the following properties:
 
 | Property | Example | Description |
 | --------- | ---- |------------ |
-| `UserId` | `42z3ps88pm8d40zn9cfwbee45c ` | The id of the authenticated user. |
+| `UserId` | `42z3ps88pm8d40zn9cfwbee45c` | The id of the authenticated user. |
 | `UserName` | `admin` | The name of the authenticated user. |
 | `NormalizedUserName` | `ADMIN` | The normailzed name of the authenticated user. |
 | `Email` | `admin@gmail.com` | The email of the authenticated user. |
-| `NormailizedEmail` | `ADMIN@GMAIL>COM` | The normalized email of the authenticated user. |
+| `NormailizedEmail` | `ADMIN@GMAIL.COM` | The normalized email of the authenticated user. |
 | `EmailConfirmed` | `true` | True if the user has confirmed his email or if the email confirmation is not required |
 | `IsEnabled` | `true` | True if the user is enabled |
 | `RoleNames` | `[Editor,Contributor]`  | An array of role names assigned to the user |
 | `Properties` | `UserProfile.FirstName.Text` | Holds the Custom Users Settings of the user. |
 
 You can use this filter to load the user information of the current authenticated user like this.
+
 ```liquid
 {% assign user = User | user_id | users_by_id %}
 
 {{ user.UserName }} - {{ user.Email }}
-
 ```
 
 You can use this filter with the UserPicker field to load the picked user's information.
@@ -418,16 +420,14 @@ You can use this filter with the UserPicker field to load the picked user's info
 {% for user in users %}
   {{ user.UserName }} - {{ user.Email }}
 {% endfor %}
-
 ```
-
 
 #### User has_permission filter
 
 Checks if the User has permission clearance, optionally on a resource
 
 ```liquid
-{{ User | has_permission:"EditContent",Model.ContentItem }}
+{{ User | has_permission: "EditContent", Model.ContentItem }}
 ```
 
 #### User is_in_role filter
@@ -435,7 +435,7 @@ Checks if the User has permission clearance, optionally on a resource
 Checks if the user is in role
 
 ```liquid
-{{ User | is_in_role:"Administrator" }}
+{{ User | is_in_role: "Administrator" }}
 ```
 
 #### User has_claim filter
@@ -443,9 +443,11 @@ Checks if the user is in role
 Checks if the user has a claim of the specified type
 
 ```liquid
-{{ User | has_claim:"email_verified","true" }}
-{{ User | has_claim:"Permission","ManageSettings" }}
+{{ User | has_claim: "email_verified", "true" }}
 ```
+
+!!! warning
+    To avoid false negatives for Administrator users, ensure you use the `has_permission` filter instead of `has_claim` when checking if a user has a permission. This ensures accurate permission evaluation, especially for administrators who may not have explicit claims but still possess full access rights.
 
 ### Site
 
@@ -453,18 +455,18 @@ Gives access to the current site settings, e.g `Site.SiteName`.
 
 | Property | Example | Description |
 | -------- | ------- |------------ |
-| `BaseUrl` |  | The base URL of the site. | 
-| `Calendar` |  | The site's calendar. | 
-| `MaxPagedCount` | `0` | The maximum number of pages that can be paged. | 
-| `MaxPageSize` | `100` | The maximum page size that can be set by a user. | 
-| `PageSize` | `10` | The default page size of lists. | 
-| `SiteName` | `My Site` | The friendly name of the site. | 
-| `SuperUser` | `4kxfgfrxqmdpnt5n508cqvpvca` | The user id of the site's super user. | 
-| `TimeZoneId` | `America/Los_Angeles` | The site's time zone id as per the tz database, c.f., https://en.wikipedia.org/wiki/List_of_tz_database_time_zones | 
-| `UseCdn` | `false` | Enable/disable the use of a CDN. | 
-| `ResourceDebugMode` | `Disabled` | Provides options for whether src or debug-src is used for loading scripts and stylesheets | 
-| `CdnBaseUrl` | `https://localhost:44300` | If provided a CDN Base url is prepended to local scripts and stylesheets  | 
-| `Meta` |  | The meta to render in the head section of the current theme.| 
+| `BaseUrl` |  | The base URL of the site. |
+| `Calendar` |  | The site's calendar. |
+| `MaxPagedCount` | `0` | The maximum number of pages that can be paged. |
+| `MaxPageSize` | `100` | The maximum page size that can be set by a user. |
+| `PageSize` | `10` | The default page size of lists. |
+| `SiteName` | `My Site` | The friendly name of the site. |
+| `SuperUser` | `4kxfgfrxqmdpnt5n508cqvpvca` | The user id of the site's super user. |
+| `TimeZoneId` | `America/Los_Angeles` | The site's time zone id as per the tz database, c.f., <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> |
+| `UseCdn` | `false` | Enable/disable the use of a CDN. |
+| `ResourceDebugMode` | `Disabled` | Provides options for whether src or debug-src is used for loading scripts and stylesheets |
+| `CdnBaseUrl` | `https://localhost:44300` | If provided a CDN Base url is prepended to local scripts and stylesheets  |
+| `Meta` |  | The meta to render in the head section of the current theme.|
 
 ### Request
 
@@ -502,9 +504,37 @@ The following properties are available on the `Culture` object.
 
 | Property | Example | Description |
 | --------- | ---- |------------ |
-| `Name` | `en-US` | The request's culture as an ISO language code. |
+| `Name` | `en-US` | The ISO language code of the current culture. |
 | `Dir` | `rtl` | The text writing direction. |
+| `DisplayName` | `English (United States)` | The display name of the current culture. |
+| `NativeName` | `English (United States)` | The native name of the current culture. |
+| `TwoLetterISOLanguageName` | `en` | The two-letter ISO language name of the current culture. |
 
+##### supported_cultures filter
+
+Returns the currently supported cultures. Here is an example of how to print the names of supported cultures using a list:
+
+```liquid
+{% assign cultures = Culture | supported_cultures %}
+<ul>
+{% for culture in cultures %}
+    <li>{{ culture.Name }}</li>
+{% endfor %}
+</ul>
+```
+
+### Environment
+
+Represents the current hosting environment.
+
+The following properties are available on the `Environment` object.
+
+| Property | Description |
+| --------- |------------ |
+| `IsDevelopment` | Checks if the current hosting environment name is `Development`. |
+| `IsStaging` | Checks if the current hosting environment name is `Staging`. |
+| `IsProduction` | Checks if the current hosting environment name is `Production`. |
+| `Name` | Gets hosting environment name. |
 
 ### HttpContext
 
@@ -516,17 +546,17 @@ The following properties are available on the `HttpContext` object.
 | --------- | ---- |------------ |
 | `Items` | `HttpContext.Items["Item1"]` | Returns an item with key Item1 |
 
-
 #### httpcontext_add_items
+
 Adds key/value to HttpContext.Items collection
 
 `{% httpcontext_add_items Item1:"value 1", Item2:"Value2"  %}`
 
 #### httpcontext_remove_items
+
 Removes key from HttpContext.Items collection
 
 `{% httpcontext_remove_items "Item1" %}`
-
 
 ## Shape Filters
 
@@ -872,7 +902,6 @@ The content of this block can then be reused from the Layout using the `{% rende
 
 ASP.NET Core MVC provides a set of tag helpers to render predefined HTML outputs. The Liquid module provides a way to call into these Tag Helpers using custom liquid tags.
 
-
 ### `form`
 
 Invokes the `form` tag helper of ASP.NET Core.
@@ -883,7 +912,7 @@ Invokes the `form` tag helper of ASP.NET Core.
 {% endform %}
 ```
 
-###  `input`
+### `input`
 
 Using `helper` invokes the `input` tag helper of ASP.NET Core and binds `Text` of the Model
 
@@ -940,6 +969,7 @@ Invokes the `style` tag helper from the `Orchard.ResourceManagement` package. [S
 Invokes the `a` content link tag helper from the `OrchardCore.Contents` package.
 
 ### `route_*`
+
 Route data can be added using `route_*` to tag helper of ASP.NET Core that supports route data using `asp-route-*` attribute.
 
 In following example, `route_returnUrl` adds `returnUrl` to form action.
@@ -957,7 +987,6 @@ In following example, `route_todoid` adds `Model.TodoId` to hyperlink.
     Delete
 {% enda %}
 ```
-
 
 ### `antiforgerytoken`
 
@@ -1017,3 +1046,7 @@ Optionally you can pass a class for model binding.
 <https://github.com/sebastienros/fluid>  
 Copyright (c) 2017 Sebastien Ros  
 MIT License
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pi_WiSqp5x4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

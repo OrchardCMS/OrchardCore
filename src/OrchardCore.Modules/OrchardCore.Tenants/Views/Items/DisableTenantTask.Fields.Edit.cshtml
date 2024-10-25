@@ -2,7 +2,7 @@
 @model DisableTenantTaskViewModel
 
 <div class="mb-3" asp-validation-class-for="TenantNameExpression">
-    <label asp-for="TenantNameExpression">@T["Tenant name"] <span asp-validation-for="TenantNameExpression"></span></label>
+    <label asp-for="TenantNameExpression" class="form-label">@T["Tenant name"] <span asp-validation-for="TenantNameExpression"></span></label>
     <input type="text" asp-for="TenantNameExpression" class="form-control code" autofocus />
     <span class="hint">@T["Select the name of the tenant to disable."]</span>
 </div>

@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
@@ -59,9 +59,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         result[getText(item).toUpperCase()] = wrapTable(getText(item), item);
       }
     } else if (input) {
-      for (var name in input) {
-        result[name.toUpperCase()] = wrapTable(name, input[name]);
-      }
+      for (var name in input) result[name.toUpperCase()] = wrapTable(name, input[name]);
     }
     return result;
   }
@@ -70,9 +68,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   }
   function shallowClone(object) {
     var result = {};
-    for (var key in object) {
-      if (object.hasOwnProperty(key)) result[key] = object[key];
-    }
+    for (var key in object) if (object.hasOwnProperty(key)) result[key] = object[key];
     return result;
   }
   function match(string, word) {
@@ -82,19 +78,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   }
   function addMatches(result, search, wordlist, formatter) {
     if (isArray(wordlist)) {
-      for (var i = 0; i < wordlist.length; i++) {
-        if (match(search, wordlist[i])) result.push(formatter(wordlist[i]));
-      }
+      for (var i = 0; i < wordlist.length; i++) if (match(search, wordlist[i])) result.push(formatter(wordlist[i]));
     } else {
-      for (var word in wordlist) {
-        if (wordlist.hasOwnProperty(word)) {
-          var val = wordlist[word];
-          if (!val || val === true) val = word;else val = val.displayText ? {
-            text: val.text,
-            displayText: val.displayText
-          } : val.text;
-          if (match(search, val)) result.push(formatter(val));
-        }
+      for (var word in wordlist) if (wordlist.hasOwnProperty(word)) {
+        var val = wordlist[word];
+        if (!val || val === true) val = word;else val = val.displayText ? {
+          text: val.text,
+          displayText: val.displayText
+        } : val.text;
+        if (match(search, val)) result.push(formatter(val));
       }
     }
   }
@@ -106,18 +98,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     // replace duplicated identifierQuotes with single identifierQuotes
     // and remove single identifierQuotes
     var nameParts = name.split(identifierQuote + identifierQuote);
-    for (var i = 0; i < nameParts.length; i++) {
-      nameParts[i] = nameParts[i].replace(new RegExp(identifierQuote, "g"), "");
-    }
+    for (var i = 0; i < nameParts.length; i++) nameParts[i] = nameParts[i].replace(new RegExp(identifierQuote, "g"), "");
     return nameParts.join(identifierQuote);
   }
   function insertIdentifierQuotes(name) {
     var nameParts = getText(name).split(".");
-    for (var i = 0; i < nameParts.length; i++) {
-      nameParts[i] = identifierQuote +
-      // duplicate identifierQuotes
-      nameParts[i].replace(new RegExp(identifierQuote, "g"), identifierQuote + identifierQuote) + identifierQuote;
-    }
+    for (var i = 0; i < nameParts.length; i++) nameParts[i] = identifierQuote +
+    // duplicate identifierQuotes
+    nameParts[i].replace(new RegExp(identifierQuote, "g"), identifierQuote + identifierQuote) + identifierQuote;
     var escaped = nameParts.join(".");
     if (typeof name == "string") return escaped;
     name = shallowClone(name);
@@ -183,9 +171,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   }
   function eachWord(lineText, f) {
     var words = lineText.split(/\s+/);
-    for (var i = 0; i < words.length; i++) {
-      if (words[i]) f(words[i].replace(/[`,;]/g, ''));
-    }
+    for (var i = 0; i < words.length; i++) if (words[i]) f(words[i].replace(/[`,;]/g, ''));
   }
   function findTableByAlias(alias, editor) {
     var doc = editor.doc;

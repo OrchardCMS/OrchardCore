@@ -23,8 +23,8 @@
             en: {
                 mention: 'Mention'
             },
-            sl: {
-                mention: 'Omeni'
+            az: {
+                mention: 'Bildirmək'
             },
             by: {
                 mention: 'Згадаць'
@@ -49,6 +49,9 @@
             },
             ru: {
                 mention: 'Упомянуть'
+            },
+            sl: {
+                mention: 'Omeni'
             },
             tr: {
                 mention: 'Bahset'

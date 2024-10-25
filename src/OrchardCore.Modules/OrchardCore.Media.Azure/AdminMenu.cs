@@ -1,35 +1,30 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Media.Azure
+namespace OrchardCore.Media.Azure;
+
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        private readonly IStringLocalizer S;
+        S = stringLocalizer;
+    }
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            S = localizer;
-        }
-
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
-
-            builder.Add(S["Configuration"], configuration => configuration
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        builder
+            .Add(S["Configuration"], configuration => configuration
                 .Add(S["Media"], S["Media"].PrefixPosition(), media => media
                     .Add(S["Azure Blob Options"], S["Azure Blob Options"].PrefixPosition(), options => options
-                        .Action("Options", "Admin", new { area = "OrchardCore.Media.Azure" })
+                        .Action("Options", "Admin", "OrchardCore.Media.Azure")
                         .Permission(Permissions.ViewAzureMediaOptions)
-                        .LocalNav())
-            ));
+                        .LocalNav()
+                    )
+                )
+            );
 
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

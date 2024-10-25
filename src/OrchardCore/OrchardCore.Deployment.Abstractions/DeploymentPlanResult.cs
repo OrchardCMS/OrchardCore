@@ -1,42 +1,40 @@
-using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.Recipes.Models;
 
-namespace OrchardCore.Deployment
+namespace OrchardCore.Deployment;
+
+/// <summary>
+/// The state of a deployment plan built by sources.
+/// </summary>
+public class DeploymentPlanResult
 {
-    /// <summary>
-    /// The state of a deployment plan built by sources.
-    /// </summary>
-    public class DeploymentPlanResult
+    public DeploymentPlanResult(IFileBuilder fileBuilder, RecipeDescriptor recipeDescriptor)
     {
-        public DeploymentPlanResult(IFileBuilder fileBuilder, RecipeDescriptor recipeDescriptor)
+        FileBuilder = fileBuilder;
+
+        Recipe = new JsonObject
         {
-            FileBuilder = fileBuilder;
+            ["name"] = recipeDescriptor.Name ?? string.Empty,
+            ["displayName"] = recipeDescriptor.DisplayName ?? string.Empty,
+            ["description"] = recipeDescriptor.Description ?? string.Empty,
+            ["author"] = recipeDescriptor.Author ?? string.Empty,
+            ["website"] = recipeDescriptor.WebSite ?? string.Empty,
+            ["version"] = recipeDescriptor.Version ?? string.Empty,
+            ["issetuprecipe"] = recipeDescriptor.IsSetupRecipe,
+            ["categories"] = JArray.FromObject(recipeDescriptor.Categories ?? []),
+            ["tags"] = JArray.FromObject(recipeDescriptor.Tags ?? []),
+        };
+    }
 
-            Recipe = new JObject();
-            Recipe["name"] = recipeDescriptor.Name ?? "";
-            Recipe["displayName"] = recipeDescriptor.DisplayName ?? "";
-            Recipe["description"] = recipeDescriptor.Description ?? "";
-            Recipe["author"] = recipeDescriptor.Author ?? "";
-            Recipe["website"] = recipeDescriptor.WebSite ?? "";
-            Recipe["version"] = recipeDescriptor.Version ?? "";
-            Recipe["issetuprecipe"] = recipeDescriptor.IsSetupRecipe;
-            Recipe["categories"] = new JArray(recipeDescriptor.Categories ?? new string[] { });
-            Recipe["tags"] = new JArray(recipeDescriptor.Tags ?? new string[] { });
-        }
+    public JsonObject Recipe { get; }
+    public IList<JsonObject> Steps { get; init; } = [];
+    public IFileBuilder FileBuilder { get; }
+    public async Task FinalizeAsync()
+    {
+        Recipe["steps"] = JArray.FromObject(Steps);
 
-        public JObject Recipe { get; }
-        public IList<JObject> Steps { get; } = new List<JObject>();
-        public IFileBuilder FileBuilder { get; }
-        public async Task FinalizeAsync()
-        {
-            Recipe["steps"] = new JArray(Steps);
-
-            // Add the recipe steps as its own file content
-            await FileBuilder.SetFileAsync("Recipe.json", Encoding.UTF8.GetBytes(Recipe.ToString(Formatting.Indented)));
-        }
+        // Add the recipe steps as its own file content
+        await FileBuilder.SetFileAsync("Recipe.json", Encoding.UTF8.GetBytes(Recipe.ToString()));
     }
 }

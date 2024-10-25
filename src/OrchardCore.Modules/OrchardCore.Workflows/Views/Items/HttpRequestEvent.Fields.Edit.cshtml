@@ -5,8 +5,8 @@
 @inject IAntiforgery antiforgery
 
 <div class="mb-3" asp-validation-class-for="HttpMethod">
-    <label asp-for="HttpMethod">@T["HTTP Method"]</label>
-    <select asp-for="HttpMethod" class="form-select" asp-items="Model.GetAvailableHttpMethods()"></select>
+    <label asp-for="HttpMethod" class="form-label">@T["HTTP Method"]</label>
+    <select asp-for="HttpMethod" class="form-select" asp-items="HttpRequestEventViewModel.GetAvailableHttpMethods()"></select>
     <span asp-validation-for="HttpMethod"></span>
     <span class="hint">@T["The HTTP method to match."]</span>
 </div>
@@ -19,22 +19,32 @@
         <span class="input-group-text" id="basic-addon3">@Url.GetBaseUrl()</span>
         <input asp-for="Url" type="text" id="workflow-url-text" class="form-control" readonly />
         <button class="btn btn-primary" type="button" id="generate-url-button" title="@T["Generate a new URL"]" data-generate-url="@Url.Action("GenerateUrl", "HttpWorkflow")" data-antiforgery-token="@antiforgeryTokenSet.RequestToken" data-antiforgery-header-name="@antiforgeryTokenSet.HeaderName">@T["Regenerate"]</button>
-        <span class="btn btn-secondary" onclick="select_all_and_copy(document.getElementById('workflow-url-text'))"><i class="fas fa-copy" aria-hidden="true"></i> @T["Copy"]</span>
+        <span class="btn btn-secondary" onclick="select_all_and_copy(document.getElementById('workflow-url-text'))"><i class="fa-solid fa-copy" aria-hidden="true"></i> @T["Copy"]</span>
     </div>
-    <span class="hint"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> @T["Anyone that invokes this URL will trigger this workflow. Keep it in a safe place."]</span>
+    <span class="hint"><i class="fa-solid fa-exclamation-triangle" aria-hidden="true"></i> @T["Anyone that invokes this URL will trigger this workflow. Keep it in a safe place."]</span>
 </div>
 
 <div class="mb-3">
-    <input type="checkbox" asp-for="ValidateAntiforgeryToken" />
-    <label asp-for="ValidateAntiforgeryToken">@T["Validate Antiforgery Token"]</label>
-    <span class="hint">@T["Uncheck this option if the request comes from a service that invokes this URL as a webhook. If this URL is requested from a form, then keep this option checked to ensure the form values have not been tampered with."]</span>
+    <div class="form-check">
+        <input type="checkbox" asp-for="ValidateAntiforgeryToken" class="form-check-input" />
+        <label asp-for="ValidateAntiforgeryToken" class="form-check-label">@T["Validate Antiforgery Token"]</label>
+        <span class="hint">@T["Uncheck this option if the request comes from a service that invokes this URL as a webhook. If this URL is requested from a form, then keep this option checked to ensure the form values have not been tampered with."]</span>
+    </div>
 </div>
 
 <div class="mb-3">
     <input type="number" asp-for="TokenLifeSpan" id="token-lifespan" class="form-control" />
-    <label asp-for="TokenLifeSpan">@T["Token Life Span"]</label>
-    <span class="hint"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> @T["Hit the <b>Regenerate</b> button after changing this value."]</span>
+    <label asp-for="TokenLifeSpan" class="form-label">@T["Token Life Span"]</label>
+    <span class="hint"><i class="fa-solid fa-exclamation-triangle" aria-hidden="true"></i> @T["Hit the <b>Regenerate</b> button after changing this value."]</span>
     <span class="hint">@T["Number of days to expire the token. 0 for the token to never expire"]</span>
+</div>
+
+
+<div class="mb-3" asp-validation-class-for="FormLocationKey">
+    <label asp-for="FormLocationKey" class="form-label">@T["Form Location Key"]</label>
+    <input type="text" asp-for="FormLocationKey" class="form-control" />
+    <span asp-validation-for="FormLocationKey"></span>
+    <span class="hint">@T["This key name is used to store and then retrieve the current form's location. Leave blank if the workflow doesn't handle any form or a single one."]</span>
 </div>
 
 <script depends-on="jQuery" asp-src="~/OrchardCore.Workflows/Scripts/orchard.http-request-event-editor.min.js" debug-src="~/OrchardCore.Workflows/Scripts/orchard.http-request-event-editor.js" at="Foot"></script>

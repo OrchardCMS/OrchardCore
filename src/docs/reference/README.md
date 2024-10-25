@@ -26,19 +26,21 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [CORS](modules/Cors/README.md)
 - [ReCaptcha](modules/ReCaptcha/README.md)
 - [Sanitizer](core/Sanitizer/README.md)
-- [Security](modules/Security/README.md) 
+- [Security](modules/Security/README.md)
 
 ### Authentication and User Management
 
 - Authentication:
   - [Microsoft](modules/Microsoft.Authentication/README.md)
   - [Facebook](modules/Facebook/README.md)
-  - [Twitter](modules/Twitter/README.md)
+  - [X (Twitter)](modules/X/README.md)
   - [GitHub](modules/GitHub/README.md)
   - [Google](modules/Google/README.md)
-- Users: 
+- Users:
   - [Overview](modules/Users/README.md)
   - [Custom User Settings](modules/Users/CustomUserSettings/README.md)
+  - [Notifications](modules/Notifications/README.md)
+  - [Ticket store](modules/Users/TicketStore.md)
 - [OpenId](modules/OpenId/README.md)
 - [Roles](modules/Roles/README.md)
 
@@ -46,7 +48,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 
 - [Contents](modules/Contents/README.md)
 - [Content Types](modules/ContentTypes/README.md)
-- Content Parts: 
+- Content Parts:
   - [Add Parts to your Content](modules/ContentParts/README.md)
   - [Title](modules/Title/README.md)
   - [Autoroute](modules/Autoroute/README.md)
@@ -54,7 +56,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
   - [Html](modules/Html/README.md)
   - [Markdown](modules/Markdown/README.md)
   - [List](modules/Lists/README.md)
-  - [Flow](modules/Flow/README.md) 
+  - [Flow](modules/Flow/README.md)
   - [Bag](modules/Flow/BagPart.md)
   - [Publish Later](modules/PublishLater/README.md)
   - [SEO Meta](modules/Seo/README.md)
@@ -99,6 +101,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Shells](core/Shells/README.md)
 - [Workflows](modules/Workflows/README.md)
 - [Background Tasks](modules/BackgroundTasks/README.md)
+- [URL Rewriting](modules/UrlRewriting/README.md)
 
 ### Hosting and Operations
 
@@ -113,9 +116,14 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Mini Profiler](modules/MiniProfiler/README.md)
 - [Response Compression](modules/ResponseCompression/README.md)
 - [Email](modules/Email/README.md)
+- [SMTP Provider](modules/Email.Smtp/README.md)
+- [Azure Email Provider](modules/Email.Azure/README.md)
 - [Redis](modules/Redis/README.md)
 - [Deployment](modules/Deployment/README.md)
+- [Diagnostics](modules/Diagnostics/README.md)
 - [Remote Deployment](modules/Deployment.Remote/README.md)
+- [Sms](modules/Sms/README.md)
+- [Azure Communication SMS](modules/Sms.Azure/README.md)
 
 ### Localization
 
@@ -131,7 +139,8 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 
 ### Search, Indexing, Querying
 
-- [SQL](modules/SQLIndexing/README.md)
+- [Azure AI Search](modules/AzureAISearch/README.md)
+- [SQL Indexing](modules/SQLIndexing/README.md)
 - [Lucene](modules/Lucene/README.md)
 - [Elasticsearch](modules/Elasticsearch/README.md)
 - [Queries](modules/Queries/README.md)

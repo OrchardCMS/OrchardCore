@@ -57,7 +57,7 @@ Properties inherited from the base Shape class:
 | `Classes` | `Dictionary<string, string>` | CSS classes to add to the main Tag element. |
 
 The `PagerId` property is used to create templates for specific instances. For instance, assigning
-the value `MainBlog` to `PagerId` and then rendering the pager will look for a template named 
+the value `MainBlog` to `PagerId` and then rendering the pager will look for a template named
 `Pager-MainBlog.cshtml`.
 
 A pager can be further customized by defining templates for the following shapes:
@@ -124,7 +124,7 @@ would in turn look for the template `Pager-MainBlog.Previous.cshtml`.
 
 ## SEO
 
-In order to block search engines from crawling all your pagers links, it is possible to override the Pager anchors "rel" attributes with "no-follow". To achieve this, you can simply do this: 
+In order to block search engines from crawling all your pagers links, it is possible to override the Pager anchors "rel" attributes with "no-follow". To achieve this, you can simply do this:
 
 === "Liquid"
 
@@ -146,31 +146,44 @@ Navigation can be extended, through code, by implementing `INavigationProvider` 
 Below is a sample implementation of an `INavigationProvider` used to extend the "main" navigation section of the site.
 
 ```csharp
-public class MainMenu : INavigationProvider
+public sealed class MainMenu : INavigationProvider
+{
+    internal readonly IStringLocalizer S;
+
+    public MainMenu(IStringLocalizer<MainMenu> localizer)
     {
-        private readonly IStringLocalizer S;
-
-        public MainMenu(IStringLocalizer<MainMenu> localizer)
-        {
-            S = localizer;
-        }
-
-        public async Task BuildNavigation(string name, NavigationBuilder builder)
-        {
-            //Only interact with the "main" navigation menu here.
-            if (!String.Equals(name, "main", StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
-            builder
-                .Add(S["Notifications"], S["Notifications"], layers => layers
-                    .Action("Index", "Template", new { area = "CRT.Client.OrchardModules.CommunicationTemplates", groupId = 1 })
-                    .LocalNav()
-                );
-        }
+        S = localizer;
     }
+
+    public ValueTask BuildNavigation(string name, NavigationBuilder builder)
+    {
+        //Only interact with the "main" navigation menu here.
+        if (!String.Equals(name, "main", StringComparison.OrdinalIgnoreCase))
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        builder
+            .Add(S["Notifications"], S["Notifications"], notifications => notifications
+                .Action("Index", "Template", new { area = "CRT.Client.OrchardModules.CommunicationTemplates", groupId = "1" })
+                .LocalNav()
+            );
+
+        return ValueTask.CompletedTask;
+    }
+}
 ```  
+
+### Implementing `INavigationProvider` to Add Menu Items
+
+As mentioned about, you can implement the `INavigationProvider` interface to add menu items to any menu in your application. Below are specific implementations to guide you:
+
+| **Class Name**                | **Description**                                                                  |
+| ----------------------------- | -------------------------------------------------------------------------------- |
+| `NamedNavigationProvider`      | Inherit from this class to add menu items to a menu with a specific name.         |
+| `AdminNavigationProvider`  | Inherit from this class to add menu items that will only appear in the admin menu. |
+
+
 
 This provider will be called as long as the site is using a theme that includes a line similar to the following, which causes the navigation menu to be rendered by your theme at the location specified:
 `@await DisplayAsync(await New.Navigation(MenuName: "main", RouteData: @ViewContext.RouteData))`
@@ -224,3 +237,7 @@ At this time, the Admin Menu is the only navigation with code dynamically adding
         return View(viewModel);
     }
     ```
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/3w68lDwUzFQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

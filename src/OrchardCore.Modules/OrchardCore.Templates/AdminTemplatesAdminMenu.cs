@@ -1,36 +1,28 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Templates
+namespace OrchardCore.Templates;
+
+public sealed class AdminTemplatesAdminMenu : AdminNavigationProvider
 {
-    public class AdminTemplatesAdminMenu : INavigationProvider
+    internal readonly IStringLocalizer S;
+
+    public AdminTemplatesAdminMenu(IStringLocalizer<AdminTemplatesAdminMenu> stringLocalizer)
     {
-        private readonly IStringLocalizer S;
+        S = stringLocalizer;
+    }
 
-        public AdminTemplatesAdminMenu(IStringLocalizer<AdminTemplatesAdminMenu> localizer)
-        {
-            S = localizer;
-        }
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        builder
+            .Add(S["Design"], design => design
+                .Add(S["Admin Templates"], S["Admin Templates"].PrefixPosition(), import => import
+                    .Action("Admin", "Template", "OrchardCore.Templates")
+                    .Permission(AdminTemplatesPermissions.ManageAdminTemplates)
+                    .LocalNav()
+                )
+            );
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
-
-            builder
-                .Add(S["Design"], design => design
-                    .Add(S["Admin Templates"], S["Admin Templates"].PrefixPosition(), import => import
-                        .Action("Admin", "Template", new { area = "OrchardCore.Templates" })
-                        .Permission(AdminTemplatesPermissions.ManageAdminTemplates)
-                        .LocalNav()
-                    )
-                );
-
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

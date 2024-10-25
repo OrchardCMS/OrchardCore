@@ -1,36 +1,30 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.Security;
 
-namespace OrchardCore.Recipes
+namespace OrchardCore.Recipes;
+
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        private readonly IStringLocalizer S;
+        S = stringLocalizer;
+    }
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            S = localizer;
-        }
-
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
-
-            builder.Add(S["Configuration"], configuration => configuration
-                .AddClass("recipes").Id("recipes")
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        builder
+            .Add(S["Configuration"], configuration => configuration
                 .Add(S["Recipes"], S["Recipes"].PrefixPosition(), recipes => recipes
-                    .Permission(StandardPermissions.SiteOwner)
-                    .Action("Index", "Admin", new { area = "OrchardCore.Recipes" })
-                    .LocalNav())
-                );
+                    .AddClass("recipes")
+                    .Id("recipes")
+                    .Permission(RecipePermissions.ManageRecipes)
+                    .Action("Index", "Admin", "OrchardCore.Recipes")
+                    .LocalNav()
+                )
+            );
 
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

@@ -10,11 +10,11 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Recipes",
     Name = "Recipes",
     Description = "The Recipes module allows you to execute recipe steps from json files.",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Recipes.Core",
         "OrchardCore.Scripting",
-    },
+    ],
     Category = "Infrastructure",
     IsAlwaysEnabled = true
 )]

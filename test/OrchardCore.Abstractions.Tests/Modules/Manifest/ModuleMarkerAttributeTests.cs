@@ -131,8 +131,8 @@
 //            var priString = string.Empty;
 
 //            ReportKeyValuePairs(
-//                new RenderKeyValuePair(nameof(id), id)
-//                , new RenderKeyValuePair(nameof(type), type)
+//                new RenderKeyValuePair(nameof(id), id),
+//                new RenderKeyValuePair(nameof(type), type)
 //            );
 
 //            var marker = CreateFromArgs(ModuleMarkerStringsCtorClassifier, id, type);
@@ -191,9 +191,9 @@
 //            var priString = string.Empty;
 
 //            ReportKeyValuePairs(
-//                new RenderKeyValuePair(nameof(id), id)
-//                , new RenderKeyValuePair(nameof(name), name)
-//                , new RenderKeyValuePair(nameof(type), type)
+//                new RenderKeyValuePair(nameof(id), id),
+//                new RenderKeyValuePair(nameof(name), name),
+//                new RenderKeyValuePair(nameof(type), type)
 //            );
 
 //            var marker = CreateFromArgs(ModuleMarkerStringsCtorClassifier, id, name, type);
@@ -250,15 +250,15 @@
 //            var priString = string.Empty;
 
 //            ReportKeyValuePairs(
-//                new RenderKeyValuePair(nameof(id), id)
-//                , new RenderKeyValuePair(nameof(type), type)
-//                , new RenderKeyValuePair(nameof(description), description)
-//                , new RenderKeyValuePair(nameof(author), author)
-//                , new RenderKeyValuePair(nameof(semVer), semVer)
-//                , new RenderKeyValuePair(nameof(deps), depString)
-//                , new RenderKeyValuePair(nameof(tags), tagString)
-//                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-//                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+//                new RenderKeyValuePair(nameof(id), id),
+//                new RenderKeyValuePair(nameof(type), type),
+//                new RenderKeyValuePair(nameof(description), description),
+//                new RenderKeyValuePair(nameof(author), author),
+//                new RenderKeyValuePair(nameof(semVer), semVer),
+//                new RenderKeyValuePair(nameof(deps), depString),
+//                new RenderKeyValuePair(nameof(tags), tagString),
+//                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+//                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
 //            );
 
 //            var marker = CreateFromArgs(ModuleMarkerString8Bool2CtorClassifier, id, type, description, author, semVer, depString, website, tagString, defaultTenant, alwaysEnabled);
@@ -316,17 +316,17 @@
 //            var priString = string.Empty;
 
 //            ReportKeyValuePairs(
-//                new RenderKeyValuePair(nameof(id), id)
-//                , new RenderKeyValuePair(nameof(name), name)
-//                , new RenderKeyValuePair(nameof(type), type)
-//                , new RenderKeyValuePair(nameof(description), description)
-//                , new RenderKeyValuePair(nameof(author), author)
-//                , new RenderKeyValuePair(nameof(semVer), semVer)
-//                , new RenderKeyValuePair(nameof(deps), depString)
-//                , new RenderKeyValuePair(nameof(website), website)
-//                , new RenderKeyValuePair(nameof(tags), tagString)
-//                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-//                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+//                new RenderKeyValuePair(nameof(id), id),
+//                new RenderKeyValuePair(nameof(name), name),
+//                new RenderKeyValuePair(nameof(type), type),
+//                new RenderKeyValuePair(nameof(description), description),
+//                new RenderKeyValuePair(nameof(author), author),
+//                new RenderKeyValuePair(nameof(semVer), semVer),
+//                new RenderKeyValuePair(nameof(deps), depString),
+//                new RenderKeyValuePair(nameof(website), website),
+//                new RenderKeyValuePair(nameof(tags), tagString),
+//                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+//                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
 //            );
 
 //            var marker = CreateFromArgs(ModuleMarkerString9Bool2CtorClassifier, id, name, type, description, author, semVer, depString, website, tagString, defaultTenant, alwaysEnabled);
@@ -385,19 +385,19 @@
 //            var priString = $"{priority}";
 
 //            ReportKeyValuePairs(
-//                new RenderKeyValuePair(nameof(id), id)
-//                , new RenderKeyValuePair(nameof(name), name)
-//                , new RenderKeyValuePair(nameof(type), type)
-//                , new RenderKeyValuePair(nameof(category), category)
-//                , new RenderKeyValuePair(nameof(priority), priString)
-//                , new RenderKeyValuePair(nameof(description), description)
-//                , new RenderKeyValuePair(nameof(author), author)
-//                , new RenderKeyValuePair(nameof(semVer), semVer)
-//                , new RenderKeyValuePair(nameof(deps), depString)
-//                , new RenderKeyValuePair(nameof(website), website)
-//                , new RenderKeyValuePair(nameof(tags), tagString)
-//                , new RenderKeyValuePair(nameof(defaultTenant), defaultTenant)
-//                , new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
+//                new RenderKeyValuePair(nameof(id), id),
+//                new RenderKeyValuePair(nameof(name), name),
+//                new RenderKeyValuePair(nameof(type), type),
+//                new RenderKeyValuePair(nameof(category), category),
+//                new RenderKeyValuePair(nameof(priority), priString),
+//                new RenderKeyValuePair(nameof(description), description),
+//                new RenderKeyValuePair(nameof(author), author),
+//                new RenderKeyValuePair(nameof(semVer), semVer),
+//                new RenderKeyValuePair(nameof(deps), depString),
+//                new RenderKeyValuePair(nameof(website), website),
+//                new RenderKeyValuePair(nameof(tags), tagString),
+//                new RenderKeyValuePair(nameof(defaultTenant), defaultTenant),
+//                new RenderKeyValuePair(nameof(alwaysEnabled), alwaysEnabled)
 //            );
 
 //            var marker = CreateFromArgs(ModuleMarkerString11Bool2CtorClassifier, id, name, type, category, priString, description, author, semVer, depString, website, tagString, defaultTenant, alwaysEnabled);

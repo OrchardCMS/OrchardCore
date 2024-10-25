@@ -1,0 +1,95 @@
+name: Community Metrics
+on:
+  workflow_dispatch:
+  schedule:
+    # Run on the first day of every month at 2:19 AM UTC.
+    - cron: '19 2 1 * *'
+
+permissions:
+  issues: write
+  pull-requests: read
+
+jobs:
+  generate-community-metrics:
+    name: Generate Community Metrics
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get Dates For Last Month
+      shell: pwsh
+      run: |
+        # Calculate the first day of the previous month.
+        $firstDay = (Get-Date).AddMonths(-1).ToString("yyyy-MM-01")
+    
+        # Calculate the last day of the previous month.
+        $lastDay = (Get-Date $firstDay).AddMonths(1).AddDays(-1).ToString("yyyy-MM-dd")
+    
+        # Set an environment variable with the date range.
+        Write-Output "$firstDay..$lastDay"
+        Write-Output "LAST_MONTH=$firstDay..$lastDay" >> $env:GITHUB_ENV
+
+    - name: Compute Issue Metrics
+      uses: github/issue-metrics@v3
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore is:issue created:${{ env.LAST_MONTH }} -reason:"not planned" -label:"community metrics"'
+        HIDE_TIME_TO_ANSWER: true
+
+    - name: Rename Issue Metrics File
+      shell: pwsh
+      run: |
+        # Renaming the file wouldn't work since other scripts will be denied access to it for some reason.
+        Add-Content -Path ./community_metrics.md -Value (Get-Content -Path ./issue_metrics.md -Raw)
+
+    - name: Compute Pull Request Metrics
+      uses: github/issue-metrics@v3
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore is:pr created:${{ env.LAST_MONTH }} -label:dontmerge -label:notready -is:draft'
+        HIDE_TIME_TO_ANSWER: true
+
+    - name: Concatenate Issue and Pull Request Metrics
+      shell: pwsh
+      run: |
+        $content = (Get-Content -Path ./issue_metrics.md -Raw) -replace '# Issue Metrics', '# Pull Request Metrics'
+        Add-Content -Path ./community_metrics.md -Value ([Environment]::NewLine + $content)
+
+    - name: Compute Q&A Discussion Request Metrics
+      uses: github/issue-metrics@v3
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore type:discussions created:${{ env.LAST_MONTH }} category:Q&A'
+        HIDE_TIME_TO_CLOSE: true
+        HIDE_ITEMS_CLOSED_COUNT: true
+
+    - name: Concatenate Issue/PR and Discussion Metrics
+      shell: pwsh
+      run: |
+        $content = (Get-Content -Path ./issue_metrics.md -Raw) -replace '# Issue Metrics', '# Discussion Metrics'
+        Add-Content -Path ./community_metrics.md -Value ([Environment]::NewLine + $content)
+
+    - name: Display Issue Metrics in Summary
+      shell: pwsh
+      run: |
+        Get-Content ./community_metrics.md >> $env:GITHUB_STEP_SUMMARY
+
+    - name: Close Previous Issue
+      shell: pwsh
+      run: |
+        # Without the --repo switch, the GH CLI will try to look it up from the current clone, which doesn't exist
+        # because we don't otherwise need checkout.
+        $issues = gh issue list --repo '${{ github.repository }}' --label 'community metrics' --state open --json number --jq '.[].number'
+        foreach ($issue in $issues)
+        {
+            gh issue close $issue --repo '${{ github.repository }}' --comment 'Closing this issue as newer community metrics are available.'
+        }
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create Issue
+      # v5.0.0
+      uses: peter-evans/create-issue-from-file@24452a72d85239eacf1468b0f1982a9f3fec4c94
+      with:
+        title: Monthly community metrics report for ${{ env.LAST_MONTH }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        content-filepath: ./community_metrics.md
+        labels: community metrics

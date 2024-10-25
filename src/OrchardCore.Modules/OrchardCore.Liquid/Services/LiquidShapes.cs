@@ -1,36 +1,41 @@
-using System.Collections.Generic;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Liquid.ViewModels;
+using OrchardCore.Modules;
 
-namespace OrchardCore.Liquid.Services
+namespace OrchardCore.Liquid.Services;
+
+[RequireFeatures("OrchardCore.Contents")]
+public class LiquidShapes(HtmlEncoder htmlEncoder) : ShapeTableProvider
 {
-    public class LiquidShapes : IShapeTableProvider
+    private readonly HtmlEncoder _htmlEncoder = htmlEncoder;
+
+    public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
-        private readonly HtmlEncoder _htmlEncoder;
+        builder.Describe("LiquidPart").OnProcessing(BuildViewModelAsync);
+        builder.Describe("LiquidPart_Summary").OnProcessing(BuildViewModelAsync);
 
-        public LiquidShapes(HtmlEncoder htmlEncoder)
+        return ValueTask.CompletedTask;
+    }
+
+    private async Task BuildViewModelAsync(ShapeDisplayContext shapeDisplayContext)
+    {
+        var model = shapeDisplayContext.Shape as LiquidPartViewModel;
+
+        if (model?.LiquidPart is null)
         {
-            _htmlEncoder = htmlEncoder;
+            return;
         }
 
-        private async Task BuildViewModelAsync(ShapeDisplayContext shapeDisplayContext)
-        {
-            var model = shapeDisplayContext.Shape as LiquidPartViewModel;
-            var liquidTemplateManager = shapeDisplayContext.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
+        var liquidTemplateManager = shapeDisplayContext.ServiceProvider.GetRequiredService<ILiquidTemplateManager>();
 
-            model.Html = await liquidTemplateManager.RenderStringAsync(model.LiquidPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext.Value,
-                new Dictionary<string, FluidValue>() { ["ContentItem"] = new ObjectValue(model.ContentItem) });
-        }
-
-        public void Discover(ShapeTableBuilder builder)
-        {
-            builder.Describe("LiquidPart").OnProcessing(BuildViewModelAsync);
-            builder.Describe("LiquidPart_Summary").OnProcessing(BuildViewModelAsync);
-        }
+        model.Html = await liquidTemplateManager.RenderStringAsync(model.LiquidPart.Liquid, _htmlEncoder, shapeDisplayContext.DisplayContext.Value,
+            new Dictionary<string, FluidValue>()
+            {
+                ["ContentItem"] = new ObjectValue(model.ContentItem)
+            });
     }
 }

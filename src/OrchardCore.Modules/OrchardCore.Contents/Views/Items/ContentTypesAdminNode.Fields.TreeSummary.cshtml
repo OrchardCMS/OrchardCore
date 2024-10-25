@@ -4,7 +4,7 @@
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
 @{
-    var allContentTypes = ContentDefinitionManager.ListTypeDefinitions();
+    var allContentTypes = await ContentDefinitionManager.ListTypeDefinitionsAsync();
 
     var selectedContentTypes = Model.Value.ContentTypes;
 
@@ -15,7 +15,7 @@
 
     bool isSelected(ContentTypeDefinition ctd, ContentTypeEntry[] selectedList)
     {
-        return selectedList.Any(selected => String.Equals(ctd.Name, selected.ContentTypeId, StringComparison.OrdinalIgnoreCase));
+        return selectedList.Any(selected => string.Equals(ctd.Name, selected.ContentTypeId, StringComparison.OrdinalIgnoreCase));
     }
 }
 
@@ -23,7 +23,7 @@
 
     @if (Model.Value.ShowAll)
     {
-        <span class="badge bg-success">@T["Show all Content Types"]</span>
+        <span class="badge text-bg-success">@T["Show all Content Types"]</span>
     }
     else
     {
@@ -36,7 +36,7 @@
         }
         else
         {
-            <span class="badge bg-warning">@T["Nothing here!"]</span>
+            <span class="badge text-bg-warning">@T["Nothing here!"]</span>
         }
     }
     <span class="text-muted dashed">@T["Content Types"]</span>

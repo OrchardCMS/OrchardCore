@@ -1,7 +1,10 @@
-namespace OrchardCore.Search.Model
+namespace OrchardCore.Search.Models;
+
+public class SearchSettings
 {
-    public class SearchSettings
-    {
-        public string SearchProviderAreaName { get; set; }
-    }
+    public string ProviderName { get; set; }
+
+    public string Placeholder { get; set; }
+
+    public string PageTitle { get; set; }
 }

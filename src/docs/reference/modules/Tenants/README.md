@@ -13,8 +13,8 @@ first.
 
 ## robots.txt for Tenants
 
-Static File Provider allows you to setup `robots.txt` per tenant. 
-To create `robots.txt` for each tenant, Place `robots.txt` under `App_Data\Sites\[Tenant]\wwwroot` folder 
+Static File Provider allows you to setup `robots.txt` per tenant.
+To create `robots.txt` for each tenant, Place `robots.txt` under `App_Data\Sites\[Tenant]\wwwroot` folder
 
 E.g.
 
@@ -35,12 +35,11 @@ This feature allows the `Default` tenant to create Feature Profiles which can re
 
 #### Rule Configuration
 
-Rules are a JSON array of Rule Expressions. 
+Rules are a JSON array of Rule Expressions.
 
 A rule consists of the Rule Name, and an Expression, which supports simple matching, i.e. characters, or the `*` or `?` modifier.
 
 By default the available rules are `Exclude` and `Include`
-
 
 Consider the following
 
@@ -143,6 +142,8 @@ Tenant Removal can be allowed from any configuration source (e.g. `appsettings.j
 }
 ```
 
-## Video
+## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/aQAjTG2ma64" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/2nKvyP6lRWM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

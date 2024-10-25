@@ -4,7 +4,7 @@ This modules provides a **GeoPointField** which can be used to give a geographic
 
 ## Lucene Geo Queries
 
-See https://www.elastic.co/guide/en/elasticsearch/reference/current/geo-queries.html for details.
+See <https://www.elastic.co/guide/en/elasticsearch/reference/current/geo-queries.html> for details.
 
 ## Terms Specifications
 
@@ -15,8 +15,8 @@ See https://www.elastic.co/guide/en/elasticsearch/reference/current/geo-queries.
 `distance`: The distance is not linear since the earth is round this is why it is called "as the crow flies".
 
 See:  
-https://en.wikipedia.org/wiki/As_the_crow_flies  
-https://en.wikipedia.org/wiki/Haversine_formula
+<https://en.wikipedia.org/wiki/As_the_crow_flies>  
+<https://en.wikipedia.org/wiki/Haversine_formula>
 
 ## Geo Bounding Box
 
@@ -56,8 +56,8 @@ Here is an example lucene query for finding all BlogPost content items with a Lo
 
 This will return a result assuming that you have a content item with a **Geopoint Field with Lat -34, Long 138** for example.
 
-See ElasticSearch documentation for more details : 
-https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-geo-bounding-box-query.html
+See ElasticSearch documentation for more details :
+<https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-geo-bounding-box-query.html>
 
 ## Geo Distance
 
@@ -88,7 +88,7 @@ Assuming a BlogPost content item has a `GeoPointField` named Location with the v
 
 Note: a 200km radius equates to approximately 1.7986 degrees of arc from the geo point centre. So searching at `[-34.8, 138]` should be greater than 200km from the content location and not return it as a result.
 
-Here is another Query that combines a `geo_bounding_box` with a `geo_distance` filtered query. They should be used together to fasten the Query results because you generally want to evaluate a distance on fewer records than what the database holds for perf reasons: 
+Here is another Query that combines a `geo_bounding_box` with a `geo_distance` filtered query. They should be used together to fasten the Query results because you generally want to evaluate a distance on fewer records than what the database holds for perf reasons:
 
 Visual representation:
 
@@ -138,4 +138,4 @@ Visual representation:
 ```
 
 See ElasticSearch documention for more details:  
-https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-geo-distance-query.html
+<https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-geo-distance-query.html>

@@ -1,39 +1,22 @@
-using System;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.Deployment;
-using OrchardCore.Search.Elasticsearch.Core.Services;
 
-namespace OrchardCore.Search.Elasticsearch.Core.Deployment
+namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
+
+public class ElasticIndexRebuildDeploymentSource
+    : DeploymentSourceBase<ElasticIndexRebuildDeploymentStep>
 {
-    public class ElasticIndexRebuildDeploymentSource : IDeploymentSource
+    protected override Task ProcessAsync(ElasticIndexRebuildDeploymentStep step, DeploymentPlanResult result)
     {
-        private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+        var indicesToRebuild = step.IncludeAll ? [] : step.Indices;
 
-        public ElasticIndexRebuildDeploymentSource(ElasticIndexSettingsService elasticIndexSettingsService)
+        result.Steps.Add(new JsonObject
         {
-            _elasticIndexSettingsService = elasticIndexSettingsService;
-        }
+            ["name"] = "elastic-index-rebuild",
+            ["includeAll"] = step.IncludeAll,
+            ["Indices"] = JArray.FromObject(indicesToRebuild),
+        });
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-        {
-            var elasticIndexRebuildStep = step as ElasticIndexRebuildDeploymentStep;
-
-            if (elasticIndexRebuildStep == null)
-            {
-                return;
-            }
-
-            var indexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
-
-            var data = new JArray();
-            var indicesToRebuild = elasticIndexRebuildStep.IncludeAll ? Array.Empty<string>() : elasticIndexRebuildStep.Indices;
-
-            result.Steps.Add(new JObject(
-                new JProperty("name", "elastic-index-rebuild"),
-                new JProperty("includeAll", elasticIndexRebuildStep.IncludeAll),
-                new JProperty("Indices", new JArray(indicesToRebuild))
-            ));
-        }
+        return Task.CompletedTask;
     }
 }

@@ -1,0 +1,40 @@
+.monaco-editor {
+    --vscode-foreground: var(--bs-body-color) !important;
+    --vscode-editor-background: var(--bs-body-bg) !important;
+    --vscode-editor-foreground: var(--bs-body-color) !important;
+    --vscode-editorStickyScroll-background: var(--bs-body-bg) !important;
+    --vscode-editorLink-activeForeground: var(--bs-secondary) !important;
+    --vscode-breadcrumb-background: var(--bs-body-bg) !important;
+    --vscode-editorGutter-background: var(--bs-body-bg) !important;
+    --vscode-editorMarkerNavigation-background: var(--bs-body-bg) !important;
+    --vscode-editorSuggestWidget-foreground: var(--bs-body-color) !important;
+    --vscode-minimapSlider-background: rgba(var(--bs-body-bg-rbg), 0.2);
+    --vscode-minimapSlider-hoverBackground: rgba(var(--bs-body-bg-rbg), 0.35);
+    --vscode-minimapSlider-activeBackground: rgba(var(--bs-body-bg-rbg), 0.2);
+    --vscode-scrollbarSlider-background: var(--oc-scrollbar-color) !important;
+    --vscode-scrollbarSlider-hoverBackground: var(--oc-admin-menu-bg-color) !important;
+    --vscode-scrollbarSlider-activeBackground: var(--oc-admin-menu-bg-color) !important;
+    --vscode-dropdown-background: var(--bs-body-bg) !important;
+    --vscode-dropdown-foreground: var(--bs-body-color) !important;
+    --vscode-dropdown-border: var(--bs-border-color-translucent);
+}
+
+div.editor-widget.find-widget {
+    .button.codicon {
+        background-color: transparent;
+        border-color: transparent;
+        display: flex;
+        color: var(--bs-secondary-color);
+        box-shadow: none;
+    }
+
+    .button.codicon:focus {
+        background-color: transparent;
+        border-color: transparent;
+    }
+
+    .button.codicon:active {
+        background-color: transparent;
+        border-color: transparent;
+    }
+}

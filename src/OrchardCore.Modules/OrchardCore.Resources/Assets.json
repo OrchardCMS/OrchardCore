@@ -1,17 +1,29 @@
 [
   {
     "generateRTL": false,
-    "generateSourceMaps": false,
     "inputs": [
       "node_modules/bootstrap/scss/bootstrap.scss"
     ],
     "output": "wwwroot/Styles/bootstrap.css"
   },
   {
+    "generateRTL": false,
+    "inputs": [
+      "node_modules/bootstrap/dist/css/bootstrap.rtl.css"
+    ],
+    "output": "wwwroot/Styles/bootstrap.rtl.css"
+  },
+  {
     "inputs": [
       "node_modules/bootstrap/dist/js/bootstrap.js"
     ],
     "output": "wwwroot/Scripts/bootstrap.js"
+  },
+  {
+    "inputs": [
+      "Assets/js/credential-helpers.js"
+    ],
+    "output": "wwwroot/Scripts/credential-helpers.js"
   },
   {
     "inputs": [
@@ -32,7 +44,7 @@
     ],
     "output": "wwwroot/Styles/bootstrap-select.css"
   },
- {
+  {
     "inputs": [
       "node_modules/bootstrap-select/dist/js/bootstrap-select.js"
     ],
@@ -172,38 +184,71 @@
     "output": "wwwroot/Scripts/popper.js"
   },
   {
-    "generateSourceMaps": false,
     "generateRTL": true,
     "inputs": [
       "node_modules/trumbowyg/dist/ui/sass/trumbowyg.scss"
     ],
-    "output": "wwwroot/Styles/trumbowyg.css"
+    "output": "wwwroot/Styles/trumbowyg/trumbowyg.css"
   },
   {
-    "generateSourceMaps": false,
+    "copy": true,
+    "inputs": [
+      "node_modules/trumbowyg/dist/ui/icons.svg"
+    ],
+    "output": "wwwroot/Scripts/trumbowyg/ui/icons.svg"
+  },
+  {
     "generateRTL": true,
     "inputs": [
       "Assets/trumbowyg/plugins/*/ui/sass/*.scss"
     ],
-    "output": "wwwroot/Styles/trumbowyg-plugins.css"
+    "output": "wwwroot/Styles/trumbowyg/trumbowyg-plugins.css"
   },
   {
     "inputs": [
       "node_modules/trumbowyg/dist/trumbowyg.js"
     ],
-    "output": "wwwroot/Scripts/trumbowyg.js"
+    "output": "wwwroot/Scripts/trumbowyg/trumbowyg.js"
   },
   {
     "inputs": [
       "Assets/trumbowyg/js/trumbowyg.shortcodes.js"
     ],
-    "output": "wwwroot/Scripts/trumbowyg.shortcodes.js"
+    "output": "wwwroot/Scripts/trumbowyg/trumbowyg.shortcodes.js"
   },
   {
     "inputs": [
-      "Assets/trumbowyg/plugins/*/*.js"
+      "Assets/trumbowyg/js/trumbowyg.theme.js"
     ],
-    "output": "wwwroot/Scripts/trumbowyg-plugins.js"
+    "output": "wwwroot/Scripts/trumbowyg/trumbowyg.theme.js"
+  },
+  {
+    "inputs": [
+      "Assets/trumbowyg/plugins/allowtagsfrompaste/trumbowyg.allowtagsfrompaste.js",
+      "Assets/trumbowyg/plugins/base64/trumbowyg.base64.js",
+      "Assets/trumbowyg/plugins/cleanpaste/trumbowyg.cleanpaste.js",
+      "Assets/trumbowyg/plugins/colors/trumbowyg.colors.js",
+      "Assets/trumbowyg/plugins/emoji/trumbowyg.emoji.js",
+      "Assets/trumbowyg/plugins/fontfamily/trumbowyg.fontfamily.js",
+      "Assets/trumbowyg/plugins/fontsize/trumbowyg.fontsize.js",
+      "Assets/trumbowyg/plugins/giphy/trumbowyg.giphy.js",
+      "Assets/trumbowyg/plugins/history/trumbowyg.history.js",
+      "Assets/trumbowyg/plugins/indent/trumbowyg.indent.js",
+      "Assets/trumbowyg/plugins/insertaudio/trumbowyg.insertaudio.js",
+      "Assets/trumbowyg/plugins/lineheight/trumbowyg.lineheight.js",
+      "Assets/trumbowyg/plugins/mathml/trumbowyg.mathml.js",
+      "Assets/trumbowyg/plugins/mention/trumbowyg.mention.js",
+      "Assets/trumbowyg/plugins/noembed/trumbowyg.noembed.js",
+      "Assets/trumbowyg/plugins/pasteembed/trumbowyg.pasteembed.js",
+      "Assets/trumbowyg/plugins/pasteimage/trumbowyg.pasteimage.js",
+      "Assets/trumbowyg/plugins/preformatted/trumbowyg.preformatted.js",
+      "Assets/trumbowyg/plugins/resizimg/trumbowyg.resizimg.js",
+      "Assets/trumbowyg/plugins/specialchars/trumbowyg.specialchars.js",
+      "Assets/trumbowyg/plugins/table/trumbowyg.table.js",
+      "Assets/trumbowyg/plugins/template/trumbowyg.template.js",
+      "Assets/trumbowyg/plugins/upload/trumbowyg.upload.js"
+    ],
+    "output": "wwwroot/Scripts/trumbowyg/trumbowyg-plugins.js"
   },
   {
     "copy": true,
@@ -276,11 +321,31 @@
     "output": "wwwroot/Vendor/fontawesome-free/webfonts/@"
   },
   {
-    "generateSourceMaps": false,
     "inputs": [
       "node_modules/js-cookie/dist/js.cookie.js"
     ],
     "output": "wwwroot/Scripts/js.cookie.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/nouislider/dist/nouislider.js"
+    ],
+    "output": "wwwroot/Scripts/nouislider/nouislider.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/nouislider/dist/nouislider.d.ts"
+    ],
+    "output": "wwwroot/Scripts/nouislider/nouislider.d.ts"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/nouislider/dist/nouislider.css"
+    ],
+    "output": "wwwroot/Scripts/nouislider/nouislider.css"
   },
   {
     "copy": true,

@@ -38,7 +38,7 @@ public class AutoroutePart : ContentPart
 }
 ```
 
-This is the part that is attached to your content item. GraphQL doesnt know what this is, so we now need to create a GraphQL representation of this class;
+This is the part that is attached to your content item. GraphQL doesn't know what this is, so we now need to create a GraphQL representation of this class;
 
 ```csharp
 public class AutorouteQueryObjectType : ObjectGraphType<AutoroutePart>
@@ -62,7 +62,7 @@ The last part is to tell the Orchard Subsystem about your new type, once this is
 
 ```csharp
 [RequireFeatures("OrchardCore.Apis.GraphQL")]
-public class Startup : StartupBase
+public class sealed Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -72,15 +72,22 @@ public class Startup : StartupBase
 }
 ```
 
-Thats it, your part will now be exposed in GraphQL... just go to the query explorer and take a look. Magic.
+That's it, your part will now be exposed in GraphQL... just go to the query explorer and take a look. Magic.
 
-### Define a query filter type
+## Filtration
+
+### Define a custom query filter type
 
 So now you have lots of data coming back, the next thing you want to do is to be able to filter said data.
 
 We follow a similar process from step #1, so at this point I will make the assumption you have implemented step #1.
 
-What we are going to cover here is;
+Use this approach if you:
+
+- want to add a new filter on Content-Type queries,
+- need to use custom logic for filtering. For example, fetching data from a service, or comparing complex objects.
+
+What we are going to cover here is:
 
 1. Implement an Input type.
 2. Register it in Startup class.
@@ -100,12 +107,11 @@ public class AutorouteInputObjectType : InputObjectGraphType<AutoroutePart>
 }
 ```
 
-
 Update Startup class like below.
 
 ```csharp
 [RequireFeatures("OrchardCore.Apis.GraphQL")]
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -128,7 +134,7 @@ When an input part is registered, it adds in that part as the parent query, in t
 }
 ```
 
-Next we want to implement a filter. The filter takes the input from the class we just built and the above example, and performs the actual filter against the object passed to it.
+Next, we want to implement a filter. The filter takes the input from the class we just built and the above example, and performs the actual filter against the object passed to it. Note that `GraphQLFilter` also provides `PostQueryAsync` that can be used in other use cases too, like checking permissions.
 
 ```csharp
 public class AutoroutePartGraphQLFilter : GraphQLFilter<ContentItem>
@@ -151,7 +157,9 @@ public class AutoroutePartGraphQLFilter : GraphQLFilter<ContentItem>
 
         if (!string.IsNullOrWhiteSpace(part.Path))
         {
-            return Task.FromResult(autorouteQuery.Where(index => index.Path == part.Path).All());
+            // Do not use commands that are terminating query, e.g. All() in here. Query needs to be editable, because ContentItemsFieldType that calls PreQueryAsync might need to work with it (e.g. insert another where conditions).
+
+            return Task.FromResult(autorouteQuery.Where(index => index.Path == part.Path));
         }
 
         return Task.FromResult(query);
@@ -174,6 +182,140 @@ Shown in the example above, we have an autoroutePart argument, this is registere
 ```
 
 Done.
+
+### Using default Content-Type query filters
+
+In the previous section, we demonstrated how to create filters for complex requirements, allowing you to create custom filtration methods. However, in case you need to add a simple filter on Content-Type queries, there is also a simpler solution.
+
+Use this approach if you:
+
+* want to add a new filter on Content-Type queries,
+* will have a database index with data for your filters,
+* you can use simple comparison (equals, contains, in...) against index values. For example, `AutoroutePartIndex.Path = filterValue`.
+
+We will cover:
+
+1. Implementing a `WhereInputObjectGraphType`.
+2. Implementing `IIndexAliasProvider`.
+3. Registering it in the `Startup` class.
+
+#### Implementing WhereInputObjectGraphType
+
+The `WhereInputObjectGraphType` enhances the `InputObjectGraphType` by introducing methods to define filters such as equality, substrings, or array filters. Inheriting from `WhereInputObjectGraphType` is essential since it's the expected type for the `ContentItemsFieldType` that is responsible for the filtering logic.
+
+Here is an example implementation:
+
+```csharp
+// Assuming we've added the necessary using directives. 
+// It is essential to inherit from WhereInputObjectGraphType. 
+// Do not use the InputObjectGraphType type as it will not be 
+// handled by default ContentItem queries.
+public class AutorouteInputObjectType : WhereInputObjectGraphType<AutoroutePart>
+{
+    // Binds the filter fields to the GraphQL type representing AutoroutePart
+    public AutorouteInputObjectType()
+    {
+        Name = "AutoroutePartInput";
+
+        // Utilize the method for adding scalar fields from the base class.
+        AddScalarFilterFields<StringGraphType>("path", S["Filter by the path of the content item"]);
+    }
+}
+```
+
+This method will add scalar filters to all ContentItem queries, including your own custom Content Types. Scalar filters include following:
+
+1. equals, not equals
+2. contains, not contains
+3. starts with, ends with, not starts with, not ends with
+4. in, not in
+
+These filters are checked against an index that is bound to the given ```ContentPart```.
+
+#### Implementing IIndexAliasProvider
+
+To bind ```ContentPart``` to an Index, you have to implement ```IIndexAliasProvider```. Ensure that field names in your filter object are the same as fields in the index. It is needed for filter automatching.
+
+```csharp
+public class AutoroutePartIndexAliasProvider : IIndexAliasProvider
+{
+    private static readonly IndexAlias[] _aliases =
+    [
+        new IndexAlias
+        {
+            Alias = "autoroutePart", // alias of graphql ContentPart. You may also use nameof(AutoroutPart).ToFieldName()
+            Index = nameof(AutoroutePartIndex), // name of index bound to part - keep in mind, that fields need to correspond. E.g. 'path' has the same name in the index and part.
+            IndexType = typeof(AutoroutePartIndex)
+        }
+    ];
+
+    public ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
+    {
+        return ValueTask.FromResult<IEnumerable<IndexAlias>>(_aliases);
+    }
+}
+```
+
+#### Updating the Startup Class
+
+Update Startup class like below.
+
+```csharp
+[RequireFeatures("OrchardCore.Apis.GraphQL")]
+public sealed class Startup : StartupBase
+{
+    // Assuming we've added the necessary using directives.
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        // Code to register the AutoroutePart and AutorouteQueryObjectType is assumed to be present.
+        // Register WhereInputObjectGraphType
+        services.AddInputObjectGraphType<AutoroutePart, AutorouteInputObjectType>();
+
+        // Register IIndexAliasProvider
+        services.AddTransient<IIndexAliasProvider, AutoroutePartIndexAliasProvider>();
+        services.AddWhereInputIndexPropertyProvider<AutoroutePartIndex>();
+    }
+}
+```
+With these configurations, you can navigate to your GraphQL interface, and you should see the new filters available for use in all Content type queries.
+
+#### Example Query Filters
+
+Below are the resulting query filters applied to an autoroutePart:
+
+```json
+{
+  person(where: {path: {path_contains: "", path: "", path_ends_with: "", path_in: "", path_not: "", path_not_contains: "", path_not_ends_with: "", path_not_in: "", path_not_starts_with: "", path_starts_with: ""}}) {
+    name
+  }
+}
+```
+
+Alternatively, if you register the part with ```collapse = true```, fields will not be nested inside object:
+
+```json
+{
+  person(where: {path_contains: "", path: "", path_ends_with: "", path_in: "", path_not: "", path_not_contains: "", path_not_ends_with: "", path_not_in: "", path_not_starts_with: "", path_starts_with: ""}) {
+    name
+  }
+}
+```
+
+For a more detailed understanding, refer to the implementation of [WhereInputObjectGraphType](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Apis.GraphQL.Abstractions/Queries/WhereInputObjectGraphType.cs) and [ContentItemFieldsType](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement.GraphQL/Queries/ContentItemsFieldType.cs). Also, you can check the [`AutoroutePartIndex`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.Autoroute.Core/Indexes/AutoroutePartIndex.cs) that was used for examples.
+
+### Using arguments for query filtering
+
+There is also the possibility to utilize query arguments and use them for filtering query results, or customizing query output inside the `Resolve` method. For more information, visit the [GraphQL documentation](https://graphql-dotnet.github.io/docs/getting-started/arguments/).
+
+Use this approach if you:
+
+* want to add a new filter on any type of query, content part, or field,
+* or will use custom logic for filtration.
+* or you need to switch data sources, or logic, based on the argument's value
+
+Orchard Core's implementation of a filtering query by an argument can be seen in [`ContentItemQuery`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore/OrchardCore.ContentManagement.GraphQL/Queries/ContentItemQuery.cs) or `MediaAssetQuery`.
+
+Orchard Core's implementation of applying an argument on a field can be seen in `MediaFieldQueryObjectType`.
 
 ## Querying related content items
 

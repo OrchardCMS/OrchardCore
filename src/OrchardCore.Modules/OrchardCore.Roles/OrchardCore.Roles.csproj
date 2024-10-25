@@ -5,7 +5,7 @@
     <!-- NuGet properties-->
     <Title>OrchardCore Roles</Title>
     <Description>$(OCCMSDescription)
-    
+
     The roles module adds the ability to manage roles and assign permissions to roles.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
@@ -25,6 +25,7 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Roles.Core\OrchardCore.Roles.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Users.Core\OrchardCore.Users.Core.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

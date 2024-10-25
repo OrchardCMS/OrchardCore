@@ -12,7 +12,7 @@
 
 @{
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetStereotype() == "Widget");
+    var widgetContentTypes = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.GetStereotype() == "Widget");
     var parentContentType = Model.WidgetsListPart.ContentItem.ContentType;
     string partName = ((dynamic)Model).Metadata.Name;
 }
@@ -132,7 +132,7 @@
                             <div class="btn-widget-add-below w-100 border border-info">
                                 <div class="btn-group ">
                                     <button type="button" title="@T["Add Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                        <i class="fa-solid fa-plus" aria-hidden="true"></i>
                                     </button>
                                     <div class="dropdown-menu">
                                         @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
@@ -168,10 +168,8 @@
             var contentItem = await ContentManager.NewAsync(type.Name);
             await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, "", Guid.NewGuid().ToString("n")));
         }
-
-        <script asp-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.min.js"
-            debug-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.js" at="Foot" depends-on="admin"></script>
-        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.min.css"
-           debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
+        
+        <script asp-name="widgetslist-edit" at="Foot"></script>
+        <style asp-name="widgetslist-edit" at="Head"></style>
     }
 </div>

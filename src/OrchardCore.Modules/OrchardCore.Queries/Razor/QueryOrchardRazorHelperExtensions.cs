@@ -1,11 +1,11 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
 using OrchardCore.Queries;
 
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class QueryOrchardRazorHelperExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     public static Task<IEnumerable> QueryAsync(this IOrchardHelper orchardHelper, string queryName)
     {
@@ -24,6 +24,7 @@ public static class QueryOrchardRazorHelperExtensions
         }
 
         var result = await queryManager.ExecuteQueryAsync(query, parameters);
+
         return result.Items;
     }
 
@@ -39,6 +40,7 @@ public static class QueryOrchardRazorHelperExtensions
         }
 
         var result = await queryManager.ExecuteQueryAsync(query, parameters);
+
         return result;
     }
 }

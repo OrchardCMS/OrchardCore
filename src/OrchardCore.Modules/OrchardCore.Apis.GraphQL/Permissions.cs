@@ -1,32 +1,33 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Apis.GraphQL
+namespace OrchardCore.Apis.GraphQL;
+
+public sealed class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission ExecuteGraphQLMutations = CommonPermissions.ExecuteGraphQLMutations;
-        public static readonly Permission ExecuteGraphQL = CommonPermissions.ExecuteGraphQL;
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Apis.GraphQL.CommonPermissions.ExecuteGraphQLMutations'.")]
+    public static readonly Permission ExecuteGraphQLMutations = CommonPermissions.ExecuteGraphQLMutations;
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult<IEnumerable<Permission>>(
-                new[] {
-                    ExecuteGraphQLMutations,
-                    ExecuteGraphQL,
-                }
-            );
-        }
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Apis.GraphQL.CommonPermissions.ExecuteGraphQL'.")]
+    public static readonly Permission ExecuteGraphQL = CommonPermissions.ExecuteGraphQL;
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        CommonPermissions.ExecuteGraphQL,
+        CommonPermissions.ExecuteGraphQLMutations,
+    ];
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
         {
-            return new[] {
-                new PermissionStereotype {
-                    Name = "Administrator",
-                    Permissions = new[] { ExecuteGraphQLMutations }
-                }
-            };
-        }
-    }
+            Name = OrchardCoreConstants.Roles.Administrator,
+            Permissions =
+            [
+                CommonPermissions.ExecuteGraphQLMutations,
+            ],
+        },
+    ];
 }

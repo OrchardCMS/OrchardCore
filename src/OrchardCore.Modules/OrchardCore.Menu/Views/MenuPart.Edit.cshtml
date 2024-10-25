@@ -8,7 +8,7 @@
     The shape is created from MenuPartDisplayDriver
 *@
 
-<script asp-src="~/OrchardCore.Menu/Scripts/menu.js" at="Foot" depends-on="admin, jQuery-ui"></script>
+<script asp-src="~/OrchardCore.Menu/Scripts/menu.js" at="Foot" depends-on="jQuery-ui"></script>
 <style asp-src="~/OrchardCore.Menu/Styles/menu.min.css" debug-src="~/OrchardCore.Menu/Styles/menu.css" depends-on="jQuery-ui"></style>
 
 @using OrchardCore
@@ -21,9 +21,9 @@
     var items = Model.MenuPart.ContentItem.As<MenuItemsListPart>().MenuItems;
 }
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <div class="@Orchard.GetEndCssClasses(true)">
-        <div class="card bg-primary">
+<div class="@Orchard.GetWrapperClasses()">
+    <div class="@Orchard.GetEndClasses(true)">
+        <div class="card text-bg-theme">
             <div class="card-body p-3">
                 <button type="button" @(canAddMenuItem ? null : "disabled=\"disabled\"") class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalMenuItems">
                     @T["Add Menu Item"]
@@ -37,9 +37,9 @@
                 {
                     if (Model.MenuItemContentTypes.Any(c => c.Name == menuItem.ContentType))
                     {
-                        dynamic menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
-                        menuItemShape.MenuPart = Model.MenuPart;
-                        menuItemShape.Index = index++;
+                        var menuItemShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Admin");
+                        menuItemShape.Properties["MenuPart"] = Model.MenuPart;
+                        menuItemShape.Properties["Index"] = index++;
 
                         @await DisplayAsync(menuItemShape)
                     }
@@ -62,10 +62,10 @@
                     @foreach (var type in Model.MenuItemContentTypes)
                     {
                         var menuItem = await ContentManager.NewAsync(type.Name);
-                        dynamic thumbnail = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Thumbnail");
-                        thumbnail.MenuItemType = type.Name;
-                        thumbnail.MenuItemTypeDisplayName = type.DisplayName;
-                        thumbnail.MenuContentItemId = Model.MenuPart.ContentItem.ContentItemId;
+                        var thumbnail = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "Thumbnail");
+                        thumbnail.Properties["MenuItemType"] = type.Name;
+                        thumbnail.Properties["MenuItemTypeDisplayName"] = type.DisplayName;
+                        thumbnail.Properties["MenuContentItemId"] = Model.MenuPart.ContentItem.ContentItemId;
                         <div class="col">
                             @await DisplayAsync(thumbnail)
                         </div>

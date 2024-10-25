@@ -6,16 +6,16 @@
     var orderUrl = Url.Action("UpdateOrder", "Step");
 }
 
-<script asp-src="~/OrchardCore.Deployment/Scripts/steporder.min.js" debug-src="~/OrchardCore.Deployment/Scripts/steporder.js" asp-name="step-order" at="Foot" depends-on="sortable, jQuery"></script>
+<script asp-src="~/OrchardCore.Deployment/Scripts/steporder.min.js" debug-src="~/OrchardCore.Deployment/Scripts/steporder.js" asp-name="step-order" at="Foot" depends-on="Sortable, jQuery"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Deployment Plan"])</h1></zone>
 
 <div class="d-none" id="stepOrderUrl" data-url="@orderUrl"></div>
 <div class="d-none" id="deploymentPlanId" data-id="@Model.DeploymentPlan.Id"></div>
 <div class="d-none" id="stepOrderErrorMessage" data-message="@T["Error updating step order"]"></div>
-    
-<div class="card mb-3">
-    <nav class="card-body bg-primary p-3">
+
+<div class="card text-bg-theme mb-3">
+    <nav class="card-body p-3">
         <div class="input-group input-group-sm w-lg-50 d-inline-flex">
             <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalTargets">
                 @T["Execute"]
@@ -39,7 +39,7 @@
 
                 <li class="list-group-item">
                     <div class="d-flex">
-                        <div class="ui-sortable-handle cursor-pointer me-2"><i class="fas fa-arrows-alt" aria-hidden="true"></i></div>
+                        <div class="ui-sortable-handle cursor-pointer me-2"><i class="fa-solid fa-arrows-alt" aria-hidden="true"></i></div>
                         @await DisplayAsync(item)
                     </div>
                 </li>
@@ -98,7 +98,7 @@
                     {
                         var routeWithId = new RouteValueDictionary(target.Route);
                         routeWithId["id"] = Model.DeploymentPlan.Id;
-                        
+
                         <div class="col">
                             <div class="card h-100 mb-3">
                                 <div class="card-body">
@@ -120,10 +120,10 @@
     </div>
 </div>
 <script at="Foot">
-    $(document).ready(function() {
-      $('#modalSteps').on('shown.bs.modal', function() {
-        $('#search-box').trigger('focus');
-      });
+    $(document).ready(function () {
+        $('#modalSteps').on('shown.bs.modal', function () {
+            $('#search-box').trigger('focus');
+        });
     });
 
     function replaceDiacritics(str) {

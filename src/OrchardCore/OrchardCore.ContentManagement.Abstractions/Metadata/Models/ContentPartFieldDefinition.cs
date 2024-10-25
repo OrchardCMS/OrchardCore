@@ -1,17 +1,17 @@
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
-namespace OrchardCore.ContentManagement.Metadata.Models
+namespace OrchardCore.ContentManagement.Metadata.Models;
+
+public class ContentPartFieldDefinition : ContentDefinition
 {
-    public class ContentPartFieldDefinition : ContentDefinition
+    public ContentPartFieldDefinition(ContentFieldDefinition contentFieldDefinition, string name, JsonObject settings)
     {
-        public ContentPartFieldDefinition(ContentFieldDefinition contentFieldDefinition, string name, JObject settings)
-        {
-            Name = name;
-            FieldDefinition = contentFieldDefinition;
-            Settings = settings;
-        }
-
-        public ContentFieldDefinition FieldDefinition { get; private set; }
-        public ContentPartDefinition PartDefinition { get; set; }
+        Name = name;
+        FieldDefinition = contentFieldDefinition;
+        Settings = settings;
     }
+
+    public ContentFieldDefinition FieldDefinition { get; private set; }
+    public ContentPartDefinition PartDefinition { get; set; }
+    public ContentTypePartDefinition ContentTypePartDefinition { get; set; }
 }

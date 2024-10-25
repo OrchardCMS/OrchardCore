@@ -51,39 +51,40 @@ var corsApp = new Vue({
   methods: {
     newPolicy: function newPolicy() {
       this.selectedPolicy = {
-        Name: 'New policy',
-        AllowedOrigins: [],
-        AllowAnyOrigin: true,
-        AllowedMethods: [],
-        AllowAnyMethod: true,
-        AllowedHeaders: [],
-        AllowAnyHeader: true,
-        AllowCredentials: true,
-        IsDefaultPolicy: false
+        name: 'New policy',
+        allowedOrigins: [],
+        allowAnyOrigin: true,
+        allowedMethods: [],
+        allowAnyMethod: true,
+        allowedHeaders: [],
+        allowAnyHeader: true,
+        allowCredentials: true,
+        isDefaultPolicy: false,
+        exposedHeaders: []
       };
     },
     editPolicy: function editPolicy(policy) {
       this.selectedPolicy = Object.assign({}, policy);
-      this.selectedPolicy.OriginalName = this.selectedPolicy.Name;
+      this.selectedPolicy.originalName = this.selectedPolicy.name;
     },
     deletePolicy: function deletePolicy(policy, event) {
       this.selectedPolicy = null;
       var policyToRemove = this.policies.filter(function (item) {
-        return item.Name === policy.Name;
+        return item.name === policy.name;
       });
       if (policyToRemove.length > 0) this.policies.splice($.inArray(policyToRemove[0], this.policies), 1);
       event.stopPropagation();
       this.save();
     },
     updatePolicy: function updatePolicy(policy, event) {
-      if (policy.IsDefaultPolicy) {
+      if (policy.isDefaultPolicy) {
         this.policies.forEach(function (p) {
-          return p.IsDefaultPolicy = false;
+          return p.isDefaultPolicy = false;
         });
       }
-      if (policy.OriginalName) {
+      if (policy.originalName) {
         var policyIndex = this.policies.findIndex(function (oldPolicy) {
-          return oldPolicy.Name === policy.OriginalName;
+          return oldPolicy.name === policy.originalName;
         });
         this.policies[policyIndex] = policy;
       } else {
@@ -93,7 +94,7 @@ var corsApp = new Vue({
       this.back();
     },
     save: function save() {
-      document.getElementById('CorsSettings').value = JSON.stringify(this.policies);
+      document.getElementById('corsSettings').value = JSON.stringify(this.policies);
       document.getElementById('corsForm').submit();
     },
     back: function back() {

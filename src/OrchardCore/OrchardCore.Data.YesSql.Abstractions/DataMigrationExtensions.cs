@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Data.Migration;
 
@@ -16,14 +12,14 @@ public static class DataMigrationExtensions
         var methodInfo = GetCreateMethod(migration);
         if (methodInfo != null)
         {
-            return (int)methodInfo.Invoke(migration, Array.Empty<object>());
+            return (int)methodInfo.Invoke(migration, []);
         }
         else
         {
             methodInfo = GetCreateAsyncMethod(migration);
             if (methodInfo != null)
             {
-                return await (Task<int>)methodInfo.Invoke(migration, Array.Empty<object>());
+                return await (Task<int>)methodInfo.Invoke(migration, []);
             }
         }
 
@@ -41,11 +37,11 @@ public static class DataMigrationExtensions
             var isAwaitable = methodInfo.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null;
             if (isAwaitable)
             {
-                version = await (Task<int>)methodInfo.Invoke(migration, Array.Empty<object>());
+                version = await (Task<int>)methodInfo.Invoke(migration, []);
             }
             else
             {
-                version = (int)methodInfo.Invoke(migration, Array.Empty<object>());
+                version = (int)methodInfo.Invoke(migration, []);
             }
         }
 
@@ -93,7 +89,7 @@ public static class DataMigrationExtensions
                 ? methodInfo.Name["UpdateFrom".Length..^"Async".Length]
                 : methodInfo.Name["UpdateFrom".Length..];
 
-            if (Int32.TryParse(version, out var versionValue))
+            if (int.TryParse(version, out var versionValue))
             {
                 return (versionValue, methodInfo);
             }

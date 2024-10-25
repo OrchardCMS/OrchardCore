@@ -34,45 +34,45 @@ This article will explain how to do it with a `BagPart` as it will provide the b
 - a `Text` field to store the link to the project;
 - a `Markdown` part to provide a description in markdown format.
 
-In the admin, select __Content Definition__ then __Content Types__ and create a new type named `Project`. Click **Create**.
+In the admin, select __Content Definition__ then __Content Types__ and create a new type named `Project`. Click __Create__.
 
-Select __Title__ and __Markdown__ for the parts we can add already, then click **Save**.
+Select __Title__ and __Markdown__ for the parts we can add already, then click __Save__.
 
-Click **Edit** for the __Markdown__ part. Select __Wysiwyg editor__ and click **Save**. This will provide a richer markdown editing experience.
+Click __Edit__ for the __Markdown__ part. Select __Wysiwyg editor__ and click __Save__. This will provide a richer markdown editing experience.
 
-Click **Add Field**, give it a display name `Url`, and select __Text Field__. Click **Save** then **Save** again.
+Click __Add Field__, give it a display name `Url`, and select __Text Field__. Click __Save__ then __Save__ again.
 
-Take the time to drag and drop the __Title__ part at the top of the list such that it will appear first in the editor. Then click **Save**.
+Take the time to drag and drop the __Title__ part at the top of the list such that it will appear first in the editor. Then click __Save__.
 
 ![New Content Type](./assets/new-content-type.png)
 
 At that point you could already create all the Project content items you want very easily. However we need to create a `Portfolio` type to contain and organize them.
 
-In the admin, select __Content Definition__ then __Content Types__ and create a new type named `Portfolio`. Click **Create**.
+In the admin, select __Content Definition__ then __Content Types__ and create a new type named `Portfolio`. Click __Create__.
 
-Select __Title__, __Autoroute__ and __Bag__, then click **Save**.
+Select __Title__, __Autoroute__ and __Bag__, then click __Save__.
 
 Now we can configure the `Portfolio` content type to only accept `Project` content items in its bag.
 
-Click **Edit** for the __Bag__ part. Check __Project__ and click **Save**.
+Click __Edit__ for the __Bag__ part. Check __Project__ and click __Save__.
 
-Click **Edit** for the __Autoroute__ part. Enter `{{ ContentItem | display_text | slugify }}` and check __Allow custom path__. Click **Save**. This will generate a customizable url or used what the user defines.
+Click __Edit__ for the __Autoroute__ part. Enter `{{ ContentItem | display_text | slugify }}` and check __Allow custom path__. Click __Save__. This will generate a customizable url or used what the user defines.
 
-Take the time to drag and drop the __Title__ part at the top of the list such that it will appear first in the editor. Then click **Save**.
+Take the time to drag and drop the __Title__ part at the top of the list such that it will appear first in the editor. Then click __Save__.
 
 ![Project](./assets/project.png)
 
 ## Creating the Portfolio
 
-Click on **New**, then __Portfolio__.
+Click on __New__, then __Portfolio__.
 
 Give it a title like `My Project`.
 
 In __Permalink__ enter `portfolio`. This will be the url to display this content item.
 
-As you click on **Add Item** you'll notice that only __Project__ is available as configured in the `Bag` part for `Portfolio`.
+As you click on __Add Item__ you'll notice that only __Project__ is available as configured in the `Bag` part for `Portfolio`.
 
-Create a few Projects, then click **Publish**.
+Create a few Projects, then click __Publish__.
 
 Click on the __View__ button to see how it looks like already.
 
@@ -100,14 +100,14 @@ The __Bag__ part will invoke all available display drivers recursively, to rende
 
 Each of these drivers return one or more shapes that are added to named zones (or sections) of a global __Shape__ called the `Content` shape.
 
-For instance the `TitleDisplayDriver` class will return a shape of type `TitlePart` in the `Header` zone of the main shape at position `5`. See [TitlePartDisplayDriver](../../../../OrchardCore.Modules/OrchardCore.Title/Drivers/TitlePartDisplayDriver.cs#L14-L20)
+For instance the `TitleDisplayDriver` class will return a shape of type `TitlePart` in the `Header` zone of the main shape at position `5`. See [`TitlePartDisplayDriver`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Title/Drivers/TitlePartDisplayDriver.cs)
 
-Then the `BagPart` shape is added in the `Content` zone of the main shape at the position `5`. See [BagPartDisplayDriver](../../../../OrchardCore.Modules/OrchardCore.Flows/Drivers/BagPartDisplayDriver.cs#L39-L45).
+Then the `BagPart` shape is added in the `Content` zone of the main shape at the position `5`. See [`BagPartDisplayDriver`](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Flows/Drivers/BagPartDisplayDriver.cs).
 
 Once all the drivers for all the parts and all the fields have returned their shapes to specific zones of the main `Content` shape, Orchard will look for a matching template.
 Template matching is done dynamically, and if no specific ones are created for a Content Type, then the file `Content.cshtml` (or `Content.liquid`) is used.  
 The default template will go over all the zones it knows about and render the shapes that are inside each of them.  
-See [Header](../../../../OrchardCore.Modules/OrchardCore.Contents/Views/Content.cshtml#L17) where the `Header` zone shapes are rendered (the `TitlePart` shape) and also [Content](../../../../OrchardCore.Modules/OrchardCore.Contents/Views/Content.cshtml#L24) where the `Content` zone shapes are rendered (`BagPart` and `TextField` shapes).
+See [the source file](https://github.com/OrchardCMS/OrchardCore/blob/main/src/OrchardCore.Modules/OrchardCore.Contents/Views/Content.cshtml) where the `Header` zone shapes are rendered (the `TitlePart` shape) and also `Content` where the `Content` zone shapes are rendered (`BagPart` and `TextField` shapes).
 
 ## Customizing templates
 
@@ -282,3 +282,15 @@ Instead of rendering the shapes that have been removed from the zone, some custo
 One advantage of reusing the shape is that its template might contain some complex logic that is not easily reusable.  
 This is the case for the `MarkdownPart` shape for instance, as it will have to convert some markdown content to HTML.  
 The `TitlePart` however could easily be ignored and the __Content__ template directly access the `Title` property of this shape.
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/yMzqwvr6Lgo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/yDtUyQpormU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/8Hm9HeZMsDA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pfPkPH7PN5w" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jlv60tte8UE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

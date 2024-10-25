@@ -118,7 +118,7 @@ $(function () {
             title: "Numbered List"
         },
         {
-            name: "table",
+            name: "mdtable",
             action: EasyMDE.drawTable,
             className: "fas fa-table fa-sm",
             title: "Insert Table"

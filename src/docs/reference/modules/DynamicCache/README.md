@@ -29,18 +29,19 @@ On subsequent requests, if a cacheable section has already been cached (and the 
 the `ShapeMetadata`). The markup will be retrieved from the cache and returned as part of the response.
 
 ## Invalidating cached sections
+
 If a cached section is invalidated, the markup for the section will be regenerated on the next request, and then placed back into the cache for subsequent requests to take advantage of.
 
 - If its children are still cached, then their cached value will be used.
 - Invalidating a block will also invalidate all parent blocks.
 
-For instance, if `Section B2` is invalidated, `Section B` will also be invalidated. When the Layout is rendered, the `Section B` code will run 
+For instance, if `Section B2` is invalidated, `Section B` will also be invalidated. When the Layout is rendered, the `Section B` code will run
 again, as will `Section B2`, but the cached content of `Section B1` will be reused.
 
 Cached sections can define dependencies, which allows the cache to know when the cached value should be invalidated.
 
 For example, if a cache section includes the body of a content item, you may want to automatically invalidate this cache section whenever that content item changes.
-You can do this by adding the dependencies `contentitemid:{ContentItemId}` to the cache section. 
+You can do this by adding the dependencies `contentitemid:{ContentItemId}` to the cache section.
 
 Cached sections can also be configured with a sliding expiration window, an absolute expiration window, or both.  
 If no expiration window is provided, a default sliding window of one minute will be used.  
@@ -203,7 +204,7 @@ There are four tags that allow you to alter the current cache scope. It's safe t
 | `cache_expires_after` | Sets a timespan relative to when the item was cached that the cache item will expire. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block. | `{% cache_expires_after "01:00:00" %}` (One hour) |
 | `cache_expires_sliding` | Sets a sliding window for the expiry of the cache item. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block. | `{% cache_expires_sliding "00:01:00" %}` (One minute) |
 
-#### Example:
+#### Example
 
 Displaying content items from a query:
 
@@ -225,3 +226,7 @@ Each item that is displayed by the query will now add its own cache dependency t
 
 !!! note
     This has been renamed from `<cache>` to `<dynamic-cache>` to prevent collisions with the ASP.NET Core cache tag helper.
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Fx2e-Sy9FF8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

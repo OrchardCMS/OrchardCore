@@ -3,7 +3,7 @@
 @if (Model.SearchIndexes.Any())
 {
     <div class="mb-3" asp-validation-class-for="SearchIndex">
-        <label asp-for="SearchIndex">@T["Default search index"]</label>
+        <label asp-for="SearchIndex" class="form-label">@T["Default search index"]</label>
         <select asp-for="SearchIndex" class="form-select">
             <option value="" selected="@(Model.SearchIndex == null)">@T["Select a search index"]</option>
             @foreach (var index in Model.SearchIndexes)
@@ -21,7 +21,7 @@ else
 }
 
 <div class="mb-3" asp-validation-class-for="SearchFields">
-    <label asp-for="SearchFields">@T["Default searched fields"]</label>
+    <label asp-for="SearchFields" class="form-label">@T["Default searched fields"]</label>
     <input asp-for="SearchFields" class="form-control" />
     <span asp-validation-for="SearchFields"></span>
     <span class="hint">@T["A comma separated list of fields to use for search pages. The default value is <code>Content.ContentItem.FullText</code>."]</span>

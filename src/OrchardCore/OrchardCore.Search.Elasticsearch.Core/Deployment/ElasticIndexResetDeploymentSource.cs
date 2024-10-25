@@ -1,39 +1,22 @@
-using System;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.Deployment;
-using OrchardCore.Search.Elasticsearch.Core.Services;
 
-namespace OrchardCore.Search.Elasticsearch.Core.Deployment
+namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
+
+public class ElasticIndexResetDeploymentSource
+    : DeploymentSourceBase<ElasticIndexResetDeploymentStep>
 {
-    public class ElasticIndexResetDeploymentSource : IDeploymentSource
+    protected override Task ProcessAsync(ElasticIndexResetDeploymentStep step, DeploymentPlanResult result)
     {
-        private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+        var indicesToReset = step.IncludeAll ? [] : step.Indices;
 
-        public ElasticIndexResetDeploymentSource(ElasticIndexSettingsService elasticIndexSettingsService)
+        result.Steps.Add(new JsonObject
         {
-            _elasticIndexSettingsService = elasticIndexSettingsService;
-        }
+            ["name"] = "lucene-index-reset",
+            ["includeAll"] = step.IncludeAll,
+            ["Indices"] = JArray.FromObject(indicesToReset),
+        });
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-        {
-            var elasticIndexResetStep = step as ElasticIndexResetDeploymentStep;
-
-            if (elasticIndexResetStep == null)
-            {
-                return;
-            }
-
-            var indexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
-
-            var data = new JArray();
-            var indicesToReset = elasticIndexResetStep.IncludeAll ? Array.Empty<string>() : elasticIndexResetStep.Indices;
-
-            result.Steps.Add(new JObject(
-            new JProperty("name", "lucene-index-reset"),
-                new JProperty("includeAll", elasticIndexResetStep.IncludeAll),
-                new JProperty("Indices", new JArray(indicesToReset))
-            ));
-        }
+        return Task.CompletedTask;
     }
 }

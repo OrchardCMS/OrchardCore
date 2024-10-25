@@ -5,7 +5,7 @@ Orchard Core is available for use via two different NuGet meta packages.
 - `OrchardCore.Application.Cms.Core.Targets`
 - `OrchardCore.Application.Cms.Targets`
 
-The first package `OrchardCore.Application.Cms.Core.Targets` is intended for use when 
+The first package `OrchardCore.Application.Cms.Core.Targets` is intended for use when
 
 - Developing a Decoupled Web Site
 - Developing a Headless Web Site
@@ -26,7 +26,7 @@ The second package `OrchardCore.Application.Cms.Targets` contains all of the abo
 Recipes in Orchard Core help you get your site setup by enabling features,
 and / or creating content types, and content for your site.
 
-Orchard Core Themes can contain Razor or Liquid views, and by default use 
+Orchard Core Themes can contain Razor or Liquid views, and by default use
 Orchard Core Display Management techniques to render content.
 
 ## OrchardCore.Application.Cms.Core.Targets
@@ -40,7 +40,7 @@ or when building your own theme.
 Alternatively you can start with another recipe,
 and change the active theme after setup.
 
-#### Blank Recipe Contents 
+#### Blank Recipe Contents
 
 - Content management features
 - Activates `TheAdmin` theme
@@ -84,7 +84,7 @@ TheBlogTheme is based on the [Start Bootstrap Clean Blog Theme](https://startboo
 
 ### Blog - Lucene Query Recipe
 
-The Lucene Query recipe is an optional recipe in the TheBlogTheme. 
+The Lucene Query recipe is an optional recipe in the TheBlogTheme.
 This recipe runs the Blog Lucene Search recipe and as an example,
 the recipe replaces the RecentBlogPosts SQL query with a Lucene query.
 
@@ -95,13 +95,13 @@ the recipe replaces the RecentBlogPosts SQL query with a Lucene query.
 
 ### Blog - Lucene Search Recipe
 
-The Lucene Search recipe is an optional recipe in the TheBlogTheme. 
+The Lucene Search recipe is an optional recipe in the TheBlogTheme.
 This recipe enables the Lucene feature and creates Search setting, Lucene indices and permissions.
 
 #### Blog Lucene Search Recipe Contents
 
 - Enables Lucene feature
-- Setup Lucene indices 
+- Setup Lucene indices
 - Create the search settings
 - Search index permission
 
@@ -139,7 +139,7 @@ TheComingSoon theme is based on the [Start Bootstrap Coming Soon Theme](https://
 
 The Saas recipe includes a Software as a Service multi tenancy configuration.
 
-It configures the site to use TheTheme, and you are then able to create Tenants 
+It configures the site to use TheTheme, and you are then able to create Tenants
 using any of the other recipes.
 
 #### Saas Recipe Contents

@@ -1,6 +1,4 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -10,70 +8,61 @@ using OrchardCore.Settings;
 using OrchardCore.Twitter.Signin.Settings;
 using OrchardCore.Twitter.Signin.ViewModels;
 
-namespace OrchardCore.Twitter.Signin.Drivers
+namespace OrchardCore.Twitter.Signin.Drivers;
+
+public sealed class TwitterSigninSettingsDisplayDriver : SiteDisplayDriver<TwitterSigninSettings>
 {
-    public class TwitterSigninSettingsDisplayDriver : SectionDisplayDriver<ISite, TwitterSigninSettings>
+    private readonly IShellReleaseManager _shellReleaseManager;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public TwitterSigninSettingsDisplayDriver(
+        IShellReleaseManager shellReleaseManager,
+        IAuthorizationService authorizationService,
+        IHttpContextAccessor httpContextAccessor)
     {
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IShellHost _shellHost;
-        private readonly ShellSettings _shellSettings;
+        _shellReleaseManager = shellReleaseManager;
+        _authorizationService = authorizationService;
+        _httpContextAccessor = httpContextAccessor;
+    }
 
-        public TwitterSigninSettingsDisplayDriver(
-            IAuthorizationService authorizationService,
-            IDataProtectionProvider dataProtectionProvider,
-            IHttpContextAccessor httpContextAccessor,
-            IShellHost shellHost,
-            ShellSettings shellSettings)
+    protected override string SettingsGroupId
+        => TwitterConstants.Features.Signin;
+
+    public override async Task<IDisplayResult> EditAsync(ISite site, TwitterSigninSettings settings, BuildEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
         {
-            _authorizationService = authorizationService;
-            _dataProtectionProvider = dataProtectionProvider;
-            _httpContextAccessor = httpContextAccessor;
-            _shellHost = shellHost;
-            _shellSettings = shellSettings;
+            return null;
         }
 
-        public override async Task<IDisplayResult> EditAsync(TwitterSigninSettings settings, BuildEditorContext context)
+        return Initialize<TwitterSigninSettingsViewModel>("TwitterSigninSettings_Edit", model =>
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
+            if (settings.CallbackPath.HasValue)
             {
-                return null;
+                model.CallbackPath = settings.CallbackPath;
             }
-
-            return Initialize<TwitterSigninSettingsViewModel>("TwitterSigninSettings_Edit", model =>
-            {
-                if (settings.CallbackPath.HasValue)
-                {
-                    model.CallbackPath = settings.CallbackPath;
-                }
-                model.SaveTokens = settings.SaveTokens;
-            }).Location("Content:5").OnGroup(TwitterConstants.Features.Signin);
-        }
-
-        public override async Task<IDisplayResult> UpdateAsync(TwitterSigninSettings settings, BuildEditorContext context)
+            model.SaveTokens = settings.SaveTokens;
+        }).Location("Content:5")
+        .OnGroup(SettingsGroupId);
+    }
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, TwitterSigninSettings settings, UpdateEditorContext context)
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
         {
-            if (context.GroupId == TwitterConstants.Features.Signin)
-            {
-                var user = _httpContextAccessor.HttpContext?.User;
-                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
-                {
-                    return null;
-                }
-
-                var model = new TwitterSigninSettingsViewModel();
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                if (context.Updater.ModelState.IsValid)
-                {
-                    var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Signin);
-                    settings.CallbackPath = model.CallbackPath;
-                    settings.SaveTokens = model.SaveTokens;
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
-            }
-            return await EditAsync(settings, context);
+            return null;
         }
+
+        var model = new TwitterSigninSettingsViewModel();
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        settings.CallbackPath = model.CallbackPath;
+        settings.SaveTokens = model.SaveTokens;
+
+        _shellReleaseManager.RequestRelease();
+
+        return await EditAsync(site, settings, context);
     }
 }

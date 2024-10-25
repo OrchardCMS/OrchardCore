@@ -13,20 +13,23 @@ using OrchardCore.Modules.Manifest;
     Id = GoogleConstants.Features.GoogleAuthentication,
     Name = "Google Authentication",
     Category = "Google",
-    Description = "Authenticates users with their Google Account."
+    Description = "Authenticates users with their Google Account.",
+    Dependencies =
+    [
+        "OrchardCore.Users.ExternalAuthentication",
+    ]
 )]
 
 [assembly: Feature(
     Id = GoogleConstants.Features.GoogleAnalytics,
     Name = "Google Analytics",
     Category = "Google",
-    Description = "Integrate Google Analytics gtagjs"
+    Description = "Integrate Google Analytics (gtag.js)"
 )]
 
 [assembly: Feature(
     Id = GoogleConstants.Features.GoogleTagManager,
     Name = "Google Tag Manager",
     Category = "Google",
-    Description = "Integrate Google Tag Manager",
-    Dependencies = new[] { GoogleConstants.Features.GoogleAnalytics }
+    Description = "Integrate Google Tag Manager"
 )]

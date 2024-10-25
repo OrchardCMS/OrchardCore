@@ -1,14 +1,13 @@
 
-namespace OrchardCore.Modules.Manifest
+namespace OrchardCore.Modules.Manifest;
+
+public static class ManifestConstants
 {
-    public static class ManifestConstants
-    {
-        public const string OrchardCoreTeam = "The Orchard Core Team";
+    public const string OrchardCoreTeam = "The Orchard Core Team";
 
-        public const string OrchardCoreVersion = "1.5.0";
+    public const string OrchardCoreVersion = "2.0.2";
 
-        public const string OrchardCoreWebsite = "https://orchardcore.net";
+    public const string OrchardCoreWebsite = "https://orchardcore.net";
 
-        public const string AdminTag = "Admin";
-    }
+    public const string AdminTag = "Admin";
 }

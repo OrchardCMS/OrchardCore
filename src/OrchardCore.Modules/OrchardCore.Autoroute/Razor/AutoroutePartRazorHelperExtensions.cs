@@ -1,30 +1,31 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
+using OrchardCore.Autoroute;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Routing;
 
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class AutoroutePartRazorHelperExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Returns a content item id by its slug.
     /// </summary>
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="slug">The slug.</param>
-    /// <example>GetContentItemIdBySlugAsync("myblog/my-blog-post")</example>
+    /// <example>GetContentItemIdBySlugAsync("myblog/my-blog-post").</example>
     /// <returns>A content item id or <c>null</c> if it was not found.</returns>
     public static async Task<string> GetContentItemIdBySlugAsync(this IOrchardHelper orchardHelper, string slug)
     {
-        if (String.IsNullOrEmpty(slug))
+        if (string.IsNullOrEmpty(slug))
         {
             return null;
         }
 
         // Provided for backwards compatability and avoiding confusion.
-        if (slug.StartsWith("slug:", StringComparison.OrdinalIgnoreCase))
+        if (slug.StartsWith(AutorouteConstants.SlugPrefix, StringComparison.OrdinalIgnoreCase))
         {
-            slug = slug.Substring(5);
+            slug = slug[5..];
         }
 
         if (!slug.StartsWith('/'))
@@ -50,7 +51,7 @@ public static class AutoroutePartRazorHelperExtensions
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="slug">The slug to load.</param>
     /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
-    /// <example>GetContentItemBySlugAsync("myblog/my-blog-post")</example>
+    /// <example>GetContentItemBySlugAsync("myblog/my-blog-post").</example>
     /// <returns>A content item with the specific name, or <c>null</c> if it doesn't exist.</returns>
     public static async Task<ContentItem> GetContentItemBySlugAsync(this IOrchardHelper orchardHelper, string slug, bool latest = false)
     {

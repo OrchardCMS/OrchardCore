@@ -17,9 +17,9 @@ In Visual Studio you will find these files in **Solution Explorer** in a solutio
 
 There are several reasons why the pipeline has been implemented at the solution level rather than in each extension that needs to process client-side assets.
 
-* Current and future can share the existing pipeline logic instead of having to reinvent it.
-* Only one copy of the necessary Node.js packages needs to be downloaded and stored alongside the codebase.
-* Keeping Node package folders (`node_modules`) anywhere inside the `OrchardCore.Cms.Web` project causes their contents to be included when publishing Orchard for deployment which would increase the size of the deployment package by orders of magnitude even though these files are only useful at development time.
+- Current and future can share the existing pipeline logic instead of having to reinvent it.
+- Only one copy of the necessary Node.js packages needs to be downloaded and stored alongside the codebase.
+- Keeping Node package folders (`node_modules`) anywhere inside the `OrchardCore.Cms.Web` project causes their contents to be included when publishing Orchard for deployment which would increase the size of the deployment package by orders of magnitude even though these files are only useful at development time.
 
 The client-side asset pipeline is not configured by default to be invoked automatically when opening or building Orchard Core. To minimize build time and make it as easy as possible to get started with Orchard Core, all built-in modules and themes in Orchard Core are kept in source control with their processed output files included. This means you don't have to activate and run the client-side asset pipeline to build or run Orchard Core out of the box. You only need to run the client-side asset pipeline if you make changes to these assets, or wish to use it to process assets in your own extensions.
 
@@ -27,7 +27,7 @@ The client-side asset pipeline is not configured by default to be invoked automa
 
 ## Installing prerequisites
 
-The client-side asset pipeline requires Node.js to be installed. If you are using Visual Studio 2022 or later, Node.js is typically already installed as part of Visual Studio. If you are not using Visual Studio, or if you selected not to include Node.js when installing Visual Studio, you will need to install Node.js manually from https://nodejs.org.
+The client-side asset pipeline requires Node.js to be installed. If you are using Visual Studio 2022 or later, Node.js is typically already installed as part of Visual Studio. If you are not using Visual Studio, or if you selected not to include Node.js when installing Visual Studio, you will need to install Node.js manually from <https://nodejs.org>.
 
 Next you will need to use NPM to install all the packages the client-side asset pipeline needs, including Gulp itself. Using the command line, navigate to the Orchard Core solution folder and execute the command `npm install`, which will install all dependencies referenced in the `package.json` file. In Visual Studio 2022 or later, you can instead simply open the `package.json` file and save it without making any changes - this will trigger an automatic `npm install` behind the scenes.
 
@@ -49,6 +49,8 @@ The way you typically execute the Gulp tasks depends on whether you are using Vi
 2. Make sure you have installed all the required Node.js packages using the `npm install` command as described above.
 3. Navigate to the Orchard Core solution folder where the file `gulpfile.js` is located.
 4. Execute one of the commands `gulp build`, `gulp rebuild` and `gulp watch` to execute the corresponding Gulp task.
+
+Note: If Gulp fails on your system, try downgrading to an older Node.js version. If you are using [Node Version Manager](https://github.com/nvm-sh/nvm) ([for Windows](https://github.com/coreybutler/nvm-windows)) you can type `nvm install 18` or `nvm use 18` to switch to the latest version of Node.js 18.
 
 ### Using Visual Studio
 
@@ -145,8 +147,8 @@ When executing the **build** or **rebuild** task, the asset pipeline will perfor
 
 After the **build** task has executed your extension's `Styles` folder will contain two files:
 
-* `Styles.css` (non-minified with inline source maps)
-* `Styles.min.css` (minified)
+- `Styles.css` (non-minified with inline source maps)
+- `Styles.min.css` (minified)
 
 Once these output asset files have been generated you can reference them from Razor views just as you normally wolud using the Orchard Core resource manager, either by declaring them in a resource manifest class and requiring them using one of the `Require()` methods or by including them by path using one of the `Include()` methods.
 
@@ -280,36 +282,36 @@ For example you can specify both `.less` and `.css` input assets in a group targ
 
 The following file types are supported as stylesheet input assets:
 
-* LESS (`.less`)
-* SASS (`.sass`)
-* SCSS (`.scss`)
-* Plain CSS (`.css`)
+- LESS (`.less`)
+- SASS (`.sass`)
+- SCSS (`.scss`)
+- Plain CSS (`.css`)
 
 The following tasks are performed on stylesheet assets:
 
-* LESS/SASS transpilation
-* Vendor prefix normalization
-* Inline source map generation (unless disabled)
-* File header generation
-* Line ending normalization
-* Bundling (unless disabled)
-* Minification
+- LESS/SASS transpilation
+- Vendor prefix normalization
+- Inline source map generation (unless disabled)
+- File header generation
+- Line ending normalization
+- Bundling (unless disabled)
+- Minification
 
 ### Script assets
 
 The following file types are supported as script input assets:
 
-* TypeScript (`*.ts`, `*.jsx`)
-* Plain JavaScript (`*.js`)
+- TypeScript (`*.ts`, `*.jsx`)
+- Plain JavaScript (`*.js`)
 
 The following tasks are performed on script assets:
 
-* TypeScript transpilation
-* Inline source map generation (unless disabled)
-* File header generation
-* Line ending normalization
-* Bundling (unless disabled)
-* Minification
+- TypeScript transpilation
+- Inline source map generation (unless disabled)
+- File header generation
+- Line ending normalization
+- Bundling (unless disabled)
+- Minification
 
 Note: All input script assets are processed through the TypeScript transpiler, also plain JavaScript `.js` files. This means the asset pipeline will throw errors for obvious syntactical errors in plain JavaScript files. This should generally be considered an advantage as JavaScript errors can be caught at build time rather than at runtime.
 
@@ -331,14 +333,14 @@ An array of additional files to be monitored for changes. Paths are relative to 
 
 ### `generateSourceMaps`
 
-`true` to emit inline source maps into non-minified output files, `false` to disable source maps. Default is `true`.
+`true` to emit inline source maps into non-minified output files, `false` to disable source maps. Default is `false`.
 
 ### `flatten`
 
 By default, when using a glob to specify input assets and using the `@` character in the output file path to bypass bundling, output files are generated in the same relative location as their corresponding input assets relative to the first glob in the input pattern. For example, assuming you have the following input assets:
 
-* `Assets/Pages/PageStyles.less`
-* `Assets/Widgets/LoginWidget/Login.less`
+- `Assets/Pages/PageStyles.less`
+- `Assets/Widgets/LoginWidget/Login.less`
 
 Given the following asset group definition:
 
@@ -353,29 +355,29 @@ Given the following asset group definition:
 
 The default behavior of the asset pipeline would generate the following output files:
 
-* `Styles/Pages/PageStyles.css`
-* `Styles/Pages/PageStyles.min.css`
-* `Styles/Widgets/LoginWidget/Login.css`
-* `Styles/Widgets/LoginWidget/Login.min.css`
+- `Styles/Pages/PageStyles.css`
+- `Styles/Pages/PageStyles.min.css`
+- `Styles/Widgets/LoginWidget/Login.css`
+- `Styles/Widgets/LoginWidget/Login.min.css`
 
 This may not always be the desired behavior. The `flatten` property can be set to `true` to have the asset pipeline flatten the output folder structure and disregard the relative locations of the input asset files. In this case, setting `flatten` to `true` would instead produce the following two output files:
 
-* `Styles/PageStyles.css`
-* `Styles/PageStyles.min.css`
-* `Styles/Login.css`
-* `Styles/Login.min.css`
+- `Styles/PageStyles.css`
+- `Styles/PageStyles.min.css`
+- `Styles/Login.css`
+- `Styles/Login.min.css`
 
 ### `separateMinified`
 
 By default, minified output files are generated alongside their non-minified siblings with a `.min` filename extension:
 
-* `Styles/SomeStyles.css`
-* `Styles/SomeStyles.min.css`    
+- `Styles/SomeStyles.css`
+- `Styles/SomeStyles.min.css`
 
 In some cases, such as when using a runtime module loader, it can be useful to place minified output files in a subfolder instead of suffixing their filenames. This allows you to simply configure a different base path for the module loader depending on execution mode (i.e. debug vs. release) rather than having to declare every resource differently. Setting the `separateMinified` option property to `true` will result in the following alternative output structure:
 
-* `Styles/SomeStyles.css`
-* `Styles/min/SomeStyles.css`
+- `Styles/SomeStyles.css`
+- `Styles/min/SomeStyles.css`
 
 ### `typeScriptOptions`
 
@@ -399,8 +401,8 @@ However, when developing an extension for internal use you may also consider the
 
 This approach has a couple of advantages:
 
-* Smaller version control footprint
-* No risk of inconsistent/stale output assets due to forgetting to rebuild them or commit their changes to version control
+- Smaller version control footprint
+- No risk of inconsistent/stale output assets due to forgetting to rebuild them or commit their changes to version control
 
 When using this approach, the `Styles` and `Scripts` folders in your extension will always remain empty in Solution Explorer although they will contain the output files on disk, and you will typically configure a Gulp task binding to ensure that client-side assets are always built when the solution is built in Visual Studio. If using an automated build system you will also typically add a step to your build script to ensure the **build** or **rebuild** task is executed as part of the build.
 
@@ -408,8 +410,8 @@ When using this approach, the `Styles` and `Scripts` folders in your extension w
 
 Orchard Core has the ability to load extensions from other folders besides the `OrchardCore.Modules` and `OrchardCore.Themes` folders. If your extension is stored and loaded from such a custom location, the client-side asset pipeline will not automatically detect your asset manifest. This is because, by default, it only looks for `Assets.json` files in folders under these locations:
 
-* `OrchardCore.Modules/`
-* `OrchardCore.Themes/`
+- `OrchardCore.Modules/`
+- `OrchardCore.Themes/`
 
 To add your custom location to be scanned for asset manifests, follow these steps:
 
@@ -424,9 +426,9 @@ var assetManifestPaths = glob.sync("./src/OrchardCore.{Modules,Themes}/*/Assets.
 var customThemePaths = glob.sync("AnotherLocation/MyCompanyThemes/*/Assets.json"); // Custom location!
 assetManifestPaths = assetManifestPaths.concat(customThemePaths);
 ```
-    
+
 4. Save and close the file.
-   
+
 The Orchard Core development team is investigating ways to automate this process.
 
 # Evolution of the client-side asset pipeline

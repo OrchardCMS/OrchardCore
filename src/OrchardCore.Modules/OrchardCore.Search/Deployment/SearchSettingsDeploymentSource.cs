@@ -1,37 +1,28 @@
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.Deployment;
-using OrchardCore.Entities;
-using OrchardCore.Search.Model;
+using OrchardCore.Search.Models;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Search.Deployment
+namespace OrchardCore.Search.Deployment;
+
+public class SearchSettingsDeploymentSource
+    : DeploymentSourceBase<SearchSettingsDeploymentStep>
 {
-    public class SearchSettingsDeploymentSource : IDeploymentSource
+    private readonly ISiteService _siteService;
+
+    public SearchSettingsDeploymentSource(ISiteService site)
     {
-        private readonly ISiteService _site;
+        _siteService = site;
+    }
 
-        public SearchSettingsDeploymentSource(ISiteService site)
+    protected override async Task ProcessAsync(SearchSettingsDeploymentStep step, DeploymentPlanResult result)
+    {
+        var searchSettings = await _siteService.GetSettingsAsync<SearchSettings>();
+
+        result.Steps.Add(new JsonObject
         {
-            _site = site;
-        }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-        {
-            var searchSettingsStep = step as SearchSettingsDeploymentStep;
-
-            if (searchSettingsStep == null)
-            {
-                return;
-            }
-
-            var settings = await _site.GetSiteSettingsAsync();
-            var searchSettings = settings.As<SearchSettings>();
-
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Settings"),
-                new JProperty("SearchSettings", JObject.FromObject(searchSettings))
-            ));
-        }
+            ["name"] = "Settings",
+            ["SearchSettings"] = JObject.FromObject(searchSettings),
+        });
     }
 }

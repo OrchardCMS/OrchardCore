@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
@@ -15,7 +11,7 @@ namespace OrchardCore.PublishLater.Indexes;
 public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly HashSet<string> _partRemoved = new();
+    private readonly HashSet<string> _partRemoved = [];
     private IContentDefinitionManager _contentDefinitionManager;
 
     public PublishLaterPartIndexProvider(IServiceProvider serviceProvider)
@@ -23,7 +19,7 @@ public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
         _serviceProvider = serviceProvider;
     }
 
-    public override Task UpdatedAsync(UpdateContentContext context)
+    public override async Task UpdatedAsync(UpdateContentContext context)
     {
         var part = context.ContentItem.As<PublishLaterPart>();
 
@@ -35,15 +31,13 @@ public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
             _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
             // Search for this part.
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
-            if (!contentTypeDefinition.Parts.Any(ctpd => ctpd.Name == nameof(PublishLaterPart)))
+            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(context.ContentItem.ContentType);
+            if (!contentTypeDefinition.Parts.Any(ctd => ctd.Name == nameof(PublishLaterPart)))
             {
                 context.ContentItem.Remove<PublishLaterPart>();
                 _partRemoved.Add(context.ContentItem.ContentItemId);
             }
         }
-
-        return Task.CompletedTask;
     }
 
     public string CollectionName { get; set; }

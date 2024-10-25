@@ -1,3 +1,10 @@
+@using Microsoft.Extensions.Options
+@using OrchardCore.Media
+
+@model MediaApplicationViewModel
+
+@inject IOptions<MediaOptions> MediaOptions
+
 @{
     Layout = null;
 }
@@ -8,7 +15,7 @@
         <p>@T["Your files will be uploaded to the current folder when you drop them here"]</p>
     </div>
 
-    <div class="alert message-warning" v-if="errors.length > 0">
+    <div class="alert alert-warning message-warning" v-if="errors.length > 0">
         <ul> <li v-for="e in errors"> <p>{{e}}</p> </li> </ul>
     </div>
 
@@ -24,50 +31,50 @@
             <div class="media-container-top-bar">
                 <nav class="nav action-bar pb-3 pt-3 pl-3">
                     <div class="me-auto ms-4">
-                        <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="selectAll">
+                        <a href="javascript:;" class="btn btn-secondary btn-sm me-2" v-on:click="selectAll">
                             @T["Select All"]
                         </a>
-                        <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="unSelectAll" :class="{disabled: selectedMedias.length < 1 }">
+                        <a href="javascript:;" class="btn btn-secondary btn-sm me-2" v-on:click="unSelectAll" :class="{disabled: selectedMedias.length < 1 }">
                             @T["Select None"]
                         </a>
-                        <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="invertSelection">
+                        <a href="javascript:;" class="btn btn-secondary btn-sm me-2" v-on:click="invertSelection">
                             @T["Invert"]
                         </a>
-                        <a href="javascript:;" class="btn btn-light btn-sm me-2" v-on:click="deleteMediaList" :class="{disabled: selectedMedias.length < 1 }">
-                            @T["Delete"] <span class="badge rounded-pill bg-light" v-show="selectedMedias.length > 0">{{ selectedMedias.length}}</span>
+                        <a href="javascript:;" class="btn btn-secondary btn-sm me-2" v-on:click="deleteMediaList" :class="{disabled: selectedMedias.length < 1 }">
+                            @T["Delete"] <span class="badge rounded-pill text-bg-theme" v-show="selectedMedias.length > 0">{{ selectedMedias.length}}</span>
                         </a>
                     </div>
                     <div class="btn-group visibility-buttons">
-                        <button type="button" id="toggle-grid-table-button" class="btn btn-light btn-sm" :class="{selected: gridView}" v-on:click="gridView = true">
-                            <span title="@T["Grid View"]"><i class="fa fa-th-large" aria-hidden="true"></i></span>
+                        <button type="button" id="toggle-grid-table-button-grid" class="btn btn-sm" :class="{selected: gridView}" v-on:click="gridView = true">
+                            <span title="@T["Grid View"]"><i class="fa-solid fa-th-large" aria-hidden="true"></i></span>
                         </button>
-                        <button type="button" id="toggle-grid-table-button" class="btn btn-light btn-sm" :class="{selected: !gridView}" v-on:click="gridView = false">
-                            <span title="@T["List View"]"><i class="fa fa-th-list" aria-hidden="true"></i></span>
+                        <button type="button" id="toggle-grid-table-button-table" class="btn btn-sm" :class="{selected: !gridView}" v-on:click="gridView = false">
+                            <span title="@T["List View"]"><i class="fa-solid fa-th-list" aria-hidden="true"></i></span>
                         </button>
                     </div>
                     <div class="btn-group visibility-buttons" v-show="gridView">
-                        <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm" :class="{selected: smallThumbs}" v-on:click="smallThumbs = true">
-                            <span title="@T["Small Thumbs"]"><i class="fa fa-compress" aria-hidden="true"></i></span>
+                        <button type="button" id="toggle-thumbsize-button-small" class="btn btn-sm" :class="{selected: smallThumbs}" v-on:click="smallThumbs = true">
+                            <span title="@T["Small Thumbs"]"><i class="fa-solid fa-compress" aria-hidden="true"></i></span>
                         </button>
-                        <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm me-2" :class="{selected: !smallThumbs}" v-on:click="smallThumbs = false">
-                            <span title="@T["Large Thumbs"]"><i class="fa fa-expand" aria-hidden="true"></i></span>
+                        <button type="button" id="toggle-thumbsize-button-large" class="btn btn-sm me-2" :class="{selected: !smallThumbs}" v-on:click="smallThumbs = false">
+                            <span title="@T["Large Thumbs"]"><i class="fa-solid fa-expand" aria-hidden="true"></i></span>
                         </button>
                     </div>
 
                     <div class="nav-item ms-2">
                         <div class="media-filter">
                             <div class="input-group input-group-sm">
-                                <span class="fa fa-filter icon-inside-input"></span>
+                                <span class="fa-solid fa-filter icon-inside-input"></span>
                                 <input type="text" id="media-filter-input" v-model="mediaFilter" class="form-control input-filter" placeholder="@T["Filter..."]" aria-label="@T["Filter..."]">
-                                <button id="clear-media-filter-button" class="btn btn-outline-secondary" type="button" :disabled="mediaFilter == '' " v-on:click="mediaFilter = '' "><i class="fa fa-times" aria-hidden="true"></i></button>
+                                <button id="clear-media-filter-button" class="btn btn-outline-secondary" type="button" :disabled="mediaFilter == '' " v-on:click="mediaFilter = '' "><i class="fa-solid fa-times" aria-hidden="true"></i></button>
                             </div>
                         </div>
                     </div>
                     <div class="d-inline-flex ms-2 me-3 mb-1 pt-1">
                         <div class="btn-group btn-group-sm">
                             <label for="fileupload" class="btn btn-sm btn-primary fileinput-button upload-button">
-                                <input id="fileupload" type="file" name="files" multiple="multiple">
-                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                <input id="fileupload" type="file" name="files" multiple="multiple" accept="@Model.Extensions">
+                                <i class="fa-solid fa-plus" aria-hidden="true"></i>
                                 @T["Upload"]
                             </label>
                         </div>
@@ -119,6 +126,13 @@
 <input type="hidden" id="deleteMediaListUrl" value="@Url.Action("DeleteMediaList", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="moveMediaListUrl" value="@Url.Action("MoveMediaList", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })" />
+<input type="hidden" id="allowedExtensions" value="@Model.Extensions" />
+
+@* Settings *@
+<input type="hidden" id="allowNewRootFolders" value="@(Model.AllowNewRootFolders ? "true" : "false")" />
+
+@* Chunked file upload settings *@
+<input type="hidden" id="maxUploadChunkSize" value="@MediaOptions.Value.MaxUploadChunkSize" />
 
 @*Localizable Strings shared*@
 <input type="hidden" id="deleteFolder" data-title="@T["Delete media folder"]" data-message="@T["Are you sure you want to delete this folder?"]" />
@@ -162,7 +176,7 @@
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label for="input" class="form-control-label" id="input-label">@T["Folder name"]</label>
+                    <label for="input" class="form-label" id="input-label">@T["Folder name"]</label>
                     <input type="text" id="create-folder-name" class="form-control">
                 </div>
                 <div id="createFolderModal-errors"></div>
@@ -184,7 +198,7 @@
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label for="input" class="form-control-label" id="input-label">@T["New Name"]</label>
+                    <label for="input" class="form-label" id="input-label">@T["New Name"]</label>
                     <input type="text" id="new-item-name" class="form-control">
                     <input type="hidden" id="old-item-name" value="">
                 </div>

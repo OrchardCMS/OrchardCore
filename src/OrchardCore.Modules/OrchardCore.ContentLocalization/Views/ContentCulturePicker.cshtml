@@ -1,12 +1,19 @@
-@using System.Globalization
-@using Microsoft.AspNetCore.Localization
-@inject OrchardCore.Localization.ILocalizationService localizationService
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@Model.CurrentCulture.NativeName</a>
+    <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
+        @foreach (var culture in Model.SupportedCultures)
+        {
+            if (culture.Name == Model.CurrentCulture.Name)
+            {
+                continue;
+            }
 
-@{
-    var currentCulture = Context.Features.Get<IRequestCultureFeature>()?.RequestCulture?.Culture ?? CultureInfo.CurrentUICulture;
-    var supportedCultures = (await localizationService.GetSupportedCulturesAsync()).Select(c => CultureInfo.GetCultureInfo(c));
-}
-@await DisplayAsync(await New.ContentCulturePickerContainer(
-    CurrentCulture: currentCulture,
-    SupportedCultures: supportedCultures
-))
+            <a asp-route="RedirectToLocalizedContent"
+               asp-route-area="OrchardCore.ContentLocalization"
+               asp-route-targetCulture="@culture.Name"
+               asp-route-contentItemUrl="@Context.Request.Path.Value"
+               asp-route-queryStringValue="@Context.Request.QueryString.Value"
+               class="dropdown-item">@culture.NativeName</a>
+        }
+    </div>
+</li>

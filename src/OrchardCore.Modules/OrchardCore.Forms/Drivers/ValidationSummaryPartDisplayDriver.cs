@@ -1,19 +1,35 @@
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
+using OrchardCore.Forms.ViewModels;
 
-namespace OrchardCore.Forms.Drivers
+namespace OrchardCore.Forms.Drivers;
+
+public sealed class ValidationSummaryPartDisplayDriver : ContentPartDisplayDriver<ValidationSummaryPart>
 {
-    public class ValidationSummaryPartDisplayDriver : ContentPartDisplayDriver<ValidationSummaryPart>
+    public override IDisplayResult Display(ValidationSummaryPart part, BuildPartDisplayContext context)
     {
-        public override IDisplayResult Display(ValidationSummaryPart part)
-        {
-            return View("ValidationSummaryPart", part).Location("Detail", "Content");
-        }
+        return View("ValidationSummaryPart", part)
+            .Location("Detail", "Content");
+    }
 
-        public override IDisplayResult Edit(ValidationSummaryPart part)
+    public override IDisplayResult Edit(ValidationSummaryPart part, BuildPartEditorContext context)
+    {
+        return Initialize<ValidationSummaryViewModel>("ValidationSummaryPart_Fields_Edit", model =>
         {
-            return View("ValidationSummaryPart_Fields_Edit", part);
-        }
+            model.ModelOnly = part.ModelOnly;
+        });
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(ValidationSummaryPart part, UpdatePartEditorContext context)
+    {
+        var model = new ValidationSummaryViewModel();
+
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        part.ModelOnly = model.ModelOnly;
+
+        return Edit(part, context);
     }
 }

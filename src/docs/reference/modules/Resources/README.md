@@ -44,32 +44,32 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 
 | Name                  | Type   | Versions      | Dependencies   |
 | --------------------- | ------ | ------------- | -------------- |
-| jQuery                | Script | 3.6.1         | -              |
-| jQuery.slim           | Script | 3.6.1         | -              |
+| jQuery                | Script | 3.7.1         | -              |
+| jQuery.slim           | Script | 3.7.1         | -              |
 | jQuery-ui             | Script | 1.12.1        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | jquery.easing         | Script | 1.4.1         | -              |
 | jquery-resizable-dom  | Script | 0.35.0        | -              |
-| js-cookie             | Script | 3.0.1         | jQuery         |
+| js-cookie             | Script | 3.0.5         | -              |
 | popper                | Script | 1.16.1        | -              |
-| popperjs              | Script | 2.11.6        | -              |
+| popperjs              | Script | 2.11.8        | -              |
 | bootstrap             | Script | 4.6.1         | popper         |
-| bootstrap             | Script | 5.1.3         | popperjs       |
-| bootstrap             | Style  | 4.6.1, 5.1.3  | -              |
-| bootstrap-select      | Script | 1.14.0-beta2  | -              |
-| bootstrap-select      | Style  | 1.14.0-beta2  | -              |
+| bootstrap             | Script | 5.3.3         | popperjs       |
+| bootstrap             | Style  | 4.6.1, 5.3.3  | -              |
+| bootstrap-select      | Script | 1.14.0-beta3  | -              |
+| bootstrap-select      | Style  | 1.14.0-beta3  | -              |
 | codemirror            | Script | 5.65.7        | -              |
 | codemirror            | Style  | 5.65.7        | -              |
-| font-awesome          | Style  | 6.2.1         | -              |
-| font-awesome          | Script | 6.2.1         | -              |
-| font-awesome-v4-shims | Script | 6.2.1         | -              |
+| font-awesome          | Style  | 6.6.0         | -              |
+| font-awesome          | Script | 6.6.0         | -              |
+| font-awesome-v4-shims | Script | 6.6.0         | -              |
 | Sortable              | Script | 1.10.2        | -              |
-| trumbowyg             | Style  | 2.26.0        | -              |
-| trumbowyg             | Script | 2.26.0        | -              |
+| trumbowyg             | Style  | 2.28.0        | -              |
+| trumbowyg             | Script | 2.28.0        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
 | vuedraggable          | Script | 2.24.3        | Sortable       |
-| monaco-loader         | Script | 0.34.1        | -              |
-| monaco                | Script | 0.34.1        | monaco-loader  |
+| monaco-loader         | Script | 0.46.0        | -              |
+| monaco                | Script | 0.46.0        | monaco-loader  |
 | nouislider            | Script | 15.6.1        | -              |
 | nouislider            | Style  | 15.6.1        | -              |
 
@@ -104,16 +104,16 @@ public class ResourceManagementOptionsConfiguration : IConfigureOptions<Resource
 
 ```
 
-In this example we define a script with the unique name `TheBlogTheme-vendor-jQuery`. 
-We use a name that is unique to `TheBlogTheme` to prevent collisions when multiple themes are active. 
+In this example we define a script with the unique name `TheBlogTheme-vendor-jQuery`.
+We use a name that is unique to `TheBlogTheme` to prevent collisions when multiple themes are active.
 
 We set a url for the minified version, and the unminified version, which will be used in `ResourceDebugMode`.
-For the same reason we define two CDN Url's, which will be preferred over the local urls if the `UseCdn` setting in the site admin is set. 
+For the same reason we define two CDN Url's, which will be preferred over the local urls if the `UseCdn` setting in the site admin is set.
 We set the Cdn Integrity Hashes and the version to `3.4.1`
 
-This script will then be available for the tag helper or API to register by name. 
+This script will then be available for the tag helper or API to register by name.
 
-Additionally, we can use the `SetDependencies` method to ensure the script or style is loaded after their dependency. 
+Additionally, we can use the `SetDependencies` method to ensure the script or style is loaded after their dependency.
 
 ```csharp
 public class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
@@ -144,7 +144,6 @@ In this example, we define a style that depends on Bootstrap version 4. In this 
     Make sure to register this `IConfigureOptions<ResourceManagementOptions>` in the `Startup` or your theme or module.
     `serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();`
   
-
 ## Usage
 
 There are two ways to invoke a resource: either by using the `IResourceManager` API or a Tag Helper.  
@@ -336,7 +335,7 @@ You can declare a new resource directly from a view, and it will be injected onl
     <script asp-name="bar" asp-src="~/TheTheme/js/bar.min.js?v=1.0" debug-src="~/TheTheme/js/bar.js?v=1.0" depends-on="foo:1.0" version="1.0"></script>
     ```
 
-We define a script named `foo` with a dependency on `jQuery` with the version `1.0`. 
+We define a script named `foo` with a dependency on `jQuery` with the version `1.0`.
 
 We then define a script named `bar` which also takes a dependency on version `1.0` of the `foo` script.
 
@@ -467,7 +466,7 @@ The style block will only be injected once based on its name and can optionally 
 
 #### Link tag
 
-A link tag is used to define the relationship between the current document and an external resource such as a favicon or stylesheet. For a stylesheet, however, use the [style helper](#register-a-named-script). 
+A link tag is used to define the relationship between the current document and an external resource such as a favicon or stylesheet. For a stylesheet, however, use the [style helper](#register-a-named-script-or-stylesheet).
 
 === "Liquid"
 
@@ -488,6 +487,7 @@ Output
 ```
 
 ##### Using a file in the media library
+
 If you wish to use files contained in the media library when using the link tag helper, you can use the `AssetUrl` helper directly in razor but in liquid you will need to first assign the filter result to a variable like so to generate the correct URL:
 
 === "Liquid"
@@ -583,7 +583,7 @@ These should be rendered at the bottom of the `<body>` section.
 
 !!! note
     When using tag helpers in Razor, you must take a direct reference to the `OrchardCore.ResourceManagement` nuget package in each theme or module that uses the tag helpers. This is not required when using Liquid.
-    
+
 ### Logging
 
 If you register a resource by name and it is not found this will be logged as an error in your `App_Data/Logs` folder.
@@ -595,3 +595,7 @@ This is to allow access to resources when an internet connection is not availabl
 
 !!! note
     It is recommended to enable the CDN setting after setup.
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jlv60tte8UE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

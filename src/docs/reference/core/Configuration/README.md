@@ -6,7 +6,6 @@ To learn more about ASP.NET Core `IConfiguration` visit <https://docs.microsoft.
 
 Note that while this documentation page explains configuration happening in the root web app project on the example of `OrchardCore.Cms.Web.csproj` if you use Orchard from NuGet packages in your own web app then same is available in that web app project too.
 
-
 ## Config Sources
 
 Orchard Core supports a hierarchy of Configuration Sources
@@ -18,7 +17,7 @@ Orchard Core supports a hierarchy of Configuration Sources
 
 The Configuration Sources are loaded in the above order, and settings lower in the hierarchy will override values configured higher up, i.e. an Global Tenant value will always be overridden by an Environment Variable.
 
-!!! note 
+!!! note
     The `IShellConfiguration` patterns in the `appsettings.json` examples below will only work for modules that specifically support such configuration. You can check out the given module's code or documentation to see if this is the case.
 
 ### `IShellConfiguration` in the `OrchardCore.Cms.Web.csproj` Startup Project
@@ -47,7 +46,7 @@ Each Orchard Core module has its own configuration section under the `OrchardCor
 
 See the `appsettings.json` file for more examples.
 
-### Tenant Preconfiguration
+### Tenant Pre-configuration
 
 To pre configure the setup values for a tenant before it has been created you can specify a section named for the tenant,
 with a `State` value of `Uninitialized`
@@ -67,7 +66,7 @@ with a `State` value of `Uninitialized`
 
 The preconfigured tenant will then appear in the `Tenants` list in the admin, and these values will be used when the tenant is setup.
 
-### Tenant Postconfiguration
+### Tenant Post-configuration
 
 To configure the values for a tenant after it has been created you can specify a section named for the tenant,
 without having to provide a state value.
@@ -103,10 +102,10 @@ What if you want all tenants to access the same database? The corresponding conf
 
 Notes on the above configuration:
 
-- Be aware that while you can use the same configuration keys for tenants, as demonstrated previously, this is in the root of the `OrchardCore` section.
-- Add the connection string for the database to be used by all tenants.
-- `DatabaseProvider` should correspond to the database engine used, the sample being one for SQL Server.
-- `TablePrefix` needs to be configured to the prefix used by the Default tenant so tables can be separated for each tenant (otherwise just the Default tenant's tables would lack prefixes). Other tenants should then be set up with a different prefix.
+* Be aware that while you can use the same configuration keys for tenants, as demonstrated previously, this is in the root of the `OrchardCore` section.
+* Add the connection string for the database to be used by all tenants.
+* `DatabaseProvider` should correspond to the database engine used, the sample being one for SQL Server.
+* `TablePrefix` needs to be configured to the prefix used by the Default tenant so tables can be separated for each tenant (otherwise just the Default tenant's tables would lack prefixes). Other tenants should then be set up with a different prefix.
 
 This way, the app can be easily moved between environments (like a staging and production one) by configuring the corresponding database's settings in the given environment. Tenants' shell settings won't contain this information, all tenants will use the same, global configuration.
 
@@ -114,23 +113,26 @@ A related topic is [Shells Configuration Providers](../Shells/README.md). See es
 
 ### `IOptions` Configuration
 
-You can also configure `IOptions` from code in the web project's `Startup` class as explained in the [ASP.NET documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options). 
+You can also configure `IOptions` from code in the web project's `Startup` class as explained in the [ASP.NET documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options).
 
 A lot of Orchard Core features are configured through the admin UI with site settings stored in the database and/or expose configuration via `IOptions`. If you wish to override the site settings or default settings, you can do this with your own configuration code.
 
-For example, the Email module allows SMTP configuration via the `SmtpSettings` class which by default is populated from the given tenant's site settings, as set on the admin. 
+For example, the Resource module allows CDN configuration via the `ResourceOptions` class which by default is populated from the given tenant's site settings, as set on the admin.
 However, you can override the site settings from the `Startup` class like this (note that we use `PostConfigure` to override the site settings values but if the module doesn't use site settings you can just use `Configure`):
 
 ```csharp
 services
     .AddOrchardCms()
     .ConfigureServices(tenantServices =>
-        tenantServices.PostConfigure<SmtpSettings>(settings =>
+        tenantServices.PostConfigure<ResourceOptions>(options =>
         {
-            settings.Port = 255;
+            options.UseCdn = true;
         }));
+```
 
-// Or if you want to make use of IShellConfiguration as seen above:
+Or, if you want to make use of `IShellConfiguration` as seen above:
+
+```csharp
 services
     .AddOrchardCms()
     .ConfigureServices((tenantServices, serviceProvider) =>
@@ -141,38 +143,21 @@ services
         // keys it won't have support for all the hierarchical sources 
         // detailed above.
         var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
-        var password = shellConfiguration.GetValue<string>("SmtpSettings:Password");
 
-        tenantServices.PostConfigure<SmtpSettings>(settings =>
+        tenantServices.PostConfigure<ResourceOptions>(options =>
         {
-            settings.Password = password;
+            options.UseCdn = shellConfiguration.GetValue<bool>("OrchardCore_Resources:UseCdn");
         });
     });
 ```
 
-!!! note 
-    Such configuration for `SmtpSettings` is already available via the `ConfigureEmailSettings` extension method, see [Email Configuration](../../modules/Email/README.md).
-
-This will make the SMTP port use this configuration despite any other value defined in site settings. The second example's configuration value can come from e.g. an `appsettings.json` file like below:
-
-```json
-{
-  "OrchardCore": {
-    "SmtpSettings": {
-      "Password":  "password"
-    }
-  }
-}
-```
-
-!!! note 
-    On the admin there will be no indication that this override happened, and the value displayed there will still be 
-    the one configured in site settings, so if you choose to do this you'll need to let your users know.
+!!! note
+    On the admin there will be no indication that this override happened, and the value displayed there will still be the one configured in site settings, so if you choose to do this you'll need to let your users know.
 
 ### `ORCHARD_APP_DATA` Environment Variable
 
-The location of the `App_Data` folder can be configured by setting the `ORCHARD_APP_DATA` environment variable. 
-Paths can be relative to the application path (./App_Data), absolute (/path/from/root), or fully qualified (D:\Path\To\App_Data). 
+The location of the `App_Data` folder can be configured by setting the `ORCHARD_APP_DATA` environment variable.
+Paths can be relative to the application path (./App_Data), absolute (/path/from/root), or fully qualified (D:\Path\To\App_Data).
 If the folder does not exist the application will attempt to create it.
 
 ### `IShellConfiguration` in the Global Tenant Configuration `App_Data/appsettings.json`
@@ -214,7 +199,7 @@ By default an Orchard Core site will use `CreateDefaultBuilder` in the Startup P
 
 1. Startup project `appsettings.json`
 2. Startup project `appsettings.{environment}.json`
-3. User Secrets (if environment is __Development__)
+3. User Secrets (if environment is **Development**)
 4. Environment Variables
 5. Command Line Args
 6. `IShellConfiguration` will then add these

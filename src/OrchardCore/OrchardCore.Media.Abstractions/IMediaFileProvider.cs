@@ -1,8 +1,7 @@
 using OrchardCore.Modules.FileProviders;
 
-namespace OrchardCore.Media
+namespace OrchardCore.Media;
+
+public interface IMediaFileProvider : IStaticFileProvider, IVirtualPathBaseProvider
 {
-    public interface IMediaFileProvider : IStaticFileProvider, IVirtualPathBaseProvider
-    {
-    }
 }

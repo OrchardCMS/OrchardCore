@@ -1,189 +1,160 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Tenants.Models;
 using OrchardCore.Tenants.ViewModels;
 
-namespace OrchardCore.Tenants.Services
+namespace OrchardCore.Tenants.Services;
+
+public partial class TenantValidator : ITenantValidator
 {
-    public class TenantValidator : ITenantValidator
+    private readonly IShellHost _shellHost;
+    private readonly IShellSettingsManager _shellSettingsManager;
+    private readonly IFeatureProfilesService _featureProfilesService;
+    private readonly IDbConnectionValidator _dbConnectionValidator;
+
+    protected readonly IStringLocalizer S;
+
+    public TenantValidator(
+        IShellHost shellHost,
+        IShellSettingsManager shellSettingsManager,
+        IFeatureProfilesService featureProfilesService,
+        IDbConnectionValidator dbConnectionValidator,
+        IStringLocalizer<TenantValidator> stringLocalizer)
     {
-        private static readonly char[] _hostSeparators = new[] { ',', ' ' };
+        _shellHost = shellHost;
+        _shellSettingsManager = shellSettingsManager;
+        _featureProfilesService = featureProfilesService;
+        _dbConnectionValidator = dbConnectionValidator;
+        S = stringLocalizer;
+    }
 
-        private readonly IShellHost _shellHost;
-        private readonly IShellSettingsManager _shellSettingsManager;
-        private readonly IFeatureProfilesService _featureProfilesService;
-        private readonly IStringLocalizer<TenantValidator> S;
-        private readonly IDbConnectionValidator _dbConnectionValidator;
+    public async Task<IEnumerable<ModelError>> ValidateAsync(TenantModelBase model)
+    {
+        var errors = new List<ModelError>();
 
-        public TenantValidator(
-            IShellHost shellHost,
-            IShellSettingsManager shellSettingsManager,
-            IFeatureProfilesService featureProfilesService,
-            IDbConnectionValidator dbConnectionValidator,
-            IStringLocalizer<TenantValidator> stringLocalizer)
+        if (string.IsNullOrWhiteSpace(model.Name))
         {
-            _shellHost = shellHost;
-            _shellSettingsManager = shellSettingsManager;
-            _featureProfilesService = featureProfilesService;
-            _dbConnectionValidator = dbConnectionValidator;
-            S = stringLocalizer;
+            errors.Add(new ModelError(nameof(model.Name), S["The tenant name is mandatory."]));
         }
 
-        public async Task<IEnumerable<ModelError>> ValidateAsync(TenantModelBase model)
+        if (model.FeatureProfiles is not null && model.FeatureProfiles.Length > 0)
         {
-            var errors = new List<ModelError>();
+            var featureProfiles = await _featureProfilesService.GetFeatureProfilesAsync();
 
-            if (String.IsNullOrWhiteSpace(model.Name))
+            foreach (var featureProfile in model.FeatureProfiles)
             {
-                errors.Add(new ModelError(nameof(model.Name), S["The tenant name is mandatory."]));
-            }
-
-            if (model.FeatureProfiles != null && model.FeatureProfiles.Length > 0)
-            {
-                var featureProfiles = await _featureProfilesService.GetFeatureProfilesAsync();
-
-                foreach (var featureProfile in model.FeatureProfiles)
+                if (!featureProfiles.ContainsKey(featureProfile))
                 {
-                    if (!featureProfiles.ContainsKey(featureProfile))
-                    {
-                        errors.Add(new ModelError(nameof(model.FeatureProfiles), S["The feature profile does not exist."]));
-                    }
+                    errors.Add(new ModelError(nameof(model.FeatureProfiles), S["The feature profile does not exist."]));
                 }
             }
+        }
 
-            if (!String.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
+        if (!string.IsNullOrEmpty(model.Name) && !TenantNameRuleRegex().IsMatch(model.Name))
+        {
+            errors.Add(new ModelError(nameof(model.Name), S["Invalid tenant name. Must contain characters only and no spaces."]));
+        }
+
+        _ = _shellHost.TryGetSettings(model.Name, out var existingShellSettings);
+
+        if (!string.IsNullOrWhiteSpace(model.RequestUrlPrefix) && model.RequestUrlPrefix.Contains('/'))
+        {
+            errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]));
+        }
+
+        if (_shellHost.GetAllSettings().Any(settings =>
+            settings != existingShellSettings &&
+            settings.HasUrlPrefix(model.RequestUrlPrefix) &&
+            settings.HasUrlHost(model.RequestUrlHost)))
+        {
+            errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
+        }
+
+        ShellSettings shellSettings = null;
+        if (model.IsNewTenant)
+        {
+            if (existingShellSettings is null)
             {
-                errors.Add(new ModelError(nameof(model.Name), S["Invalid tenant name. Must contain characters only and no spaces."]));
+                // Set the settings to be validated.
+                shellSettings = _shellSettingsManager
+                    .CreateDefaultSettings()
+                    .AsUninitialized()
+                    .AsDisposable();
+
+                shellSettings.Name = model.Name;
             }
-
-            _ = _shellHost.TryGetSettings(model.Name, out var existingShellSettings);
-
-            if ((existingShellSettings == null || !existingShellSettings.IsDefaultShell()) &&
-                String.IsNullOrWhiteSpace(model.RequestUrlHost) &&
-                String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            else if (existingShellSettings.IsDefaultShell())
             {
-                errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]));
-            }
-
-            if (!String.IsNullOrWhiteSpace(model.RequestUrlPrefix) && model.RequestUrlPrefix.Contains('/'))
-            {
-                errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]));
-            }
-
-            var modelUrlPrefix = model.RequestUrlPrefix?.Trim(' ', '/') ?? String.Empty;
-
-            var modelUrlHosts = model.RequestUrlHost
-                ?.Split(_hostSeparators, StringSplitOptions.RemoveEmptyEntries)
-                ?? Array.Empty<string>();
-
-            if (_shellHost.GetAllSettings().Any(settings =>
-                settings != existingShellSettings &&
-                String.Equals(settings.RequestUrlPrefix ?? String.Empty, modelUrlPrefix, StringComparison.OrdinalIgnoreCase) &&
-                DoesUrlHostExist(settings.RequestUrlHosts, modelUrlHosts)))
-            {
-                errors.Add(new ModelError(nameof(model.RequestUrlPrefix), S["A tenant with the same host and prefix already exists."]));
-            }
-
-            ShellSettings shellSettings = null;
-            if (model.IsNewTenant)
-            {
-                if (existingShellSettings != null)
-                {
-                    if (existingShellSettings.IsDefaultShell())
-                    {
-                        errors.Add(new ModelError(nameof(model.Name), S["The tenant name is in conflict with the 'Default' tenant."]));
-                    }
-                    else
-                    {
-                        errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
-                    }
-                }
-                else
-                {
-                    shellSettings = _shellSettingsManager.CreateDefaultSettings();
-                    shellSettings.Name = model.Name;
-                }
+                errors.Add(new ModelError(nameof(model.Name), S["The tenant name is in conflict with the 'Default' tenant."]));
             }
             else
             {
-                if (existingShellSettings == null)
-                {
-                    errors.Add(new ModelError(nameof(model.Name), S["The existing tenant to be validated was not found."]));
-                }
-                else if (existingShellSettings.State == TenantState.Uninitialized)
-                {
-                    // While the tenant is in Uninitialized state, we still are able to change the database settings.
-                    // Let's validate the database for assurance.
-
-                    shellSettings = existingShellSettings;
-                }
-            }
-
-            if (shellSettings != null)
-            {
-                var validationContext = new DbConnectionValidatorContext(shellSettings, model);
-                await ValidateConnectionAsync(validationContext, errors);
-            }
-
-            return errors;
-        }
-
-        private async Task ValidateConnectionAsync(DbConnectionValidatorContext validationContext, List<ModelError> errors)
-        {
-            switch (await _dbConnectionValidator.ValidateAsync(validationContext))
-            {
-                case DbConnectionValidatorResult.UnsupportedProvider:
-                    errors.Add(new ModelError(nameof(TenantViewModel.DatabaseProvider), S["The provided database provider is not supported."]));
-                    break;
-                case DbConnectionValidatorResult.InvalidConnection:
-                    errors.Add(new ModelError(nameof(TenantViewModel.ConnectionString), S["The provided connection string is invalid or server is unreachable."]));
-                    break;
-                case DbConnectionValidatorResult.DocumentTableFound:
-                    if (validationContext.DatabaseProvider == DatabaseProviderValue.Sqlite)
-                    {
-                        errors.Add(new ModelError(String.Empty, S["The related database file is already in use."]));
-                    }
-                    else
-                    {
-                        errors.Add(new ModelError(nameof(TenantViewModel.TablePrefix), S["The provided database, table prefix and schema are already in use."]));
-                    }
-
-                    break;
+                errors.Add(new ModelError(nameof(model.Name), S["A tenant with the same name already exists."]));
             }
         }
-
-        private static bool DoesUrlHostExist(string[] urlHosts, string[] modelUrlHosts)
+        else if (existingShellSettings is null)
         {
-            if (urlHosts.Length == 0 && modelUrlHosts.Length == 0)
-            {
-                return true;
-            }
+            errors.Add(new ModelError(nameof(model.Name), S["The existing tenant to be validated was not found."]));
+        }
+        else if (existingShellSettings.IsUninitialized())
+        {
+            // Database settings may still have been changed.
+            shellSettings = existingShellSettings;
+        }
 
-            if (urlHosts.Length == 0 || modelUrlHosts.Length == 0)
-            {
-                return false;
-            }
+        if (shellSettings is not null)
+        {
+            // A newly loaded settings from the configuration should be disposed.
+            using var disposable = existingShellSettings is null ? shellSettings : null;
 
-            for (var i = 0; i < urlHosts.Length; i++)
-            {
-                for (var j = 0; j < modelUrlHosts.Length; j++)
+            var validationContext = new DbConnectionValidatorContext(shellSettings, model);
+            await ValidateConnectionAsync(validationContext, errors);
+        }
+
+        return errors;
+    }
+
+    private async Task ValidateConnectionAsync(DbConnectionValidatorContext validationContext, List<ModelError> errors)
+    {
+        switch (await _dbConnectionValidator.ValidateAsync(validationContext))
+        {
+            case DbConnectionValidatorResult.UnsupportedProvider:
+                errors.Add(new ModelError(nameof(
+                    TenantViewModel.DatabaseProvider),
+                    S["The provided database provider is not supported."]));
+                break;
+
+            case DbConnectionValidatorResult.InvalidConnection:
+                errors.Add(new ModelError(
+                    nameof(TenantViewModel.ConnectionString),
+                    S["The provided connection string is invalid or server is unreachable."]));
+                break;
+
+            case DbConnectionValidatorResult.InvalidCertificate:
+                errors.Add(new ModelError(
+                    nameof(TenantViewModel.ConnectionString),
+                    S["The security certificate on the server is from a non-trusted source (the certificate issuing authority isn't listed as a trusted authority in Trusted Root Certification Authorities on the client machine). In a development environment, you have the option to use the '{0}' parameter in your connection string to bypass the validation performed by the certificate authority.", "TrustServerCertificate=True"]));
+                break;
+
+            case DbConnectionValidatorResult.DocumentTableFound:
+                if (validationContext.DatabaseProvider == DatabaseProviderValue.Sqlite)
                 {
-                    if (urlHosts[i].Equals(modelUrlHosts[j], StringComparison.OrdinalIgnoreCase))
-                    {
-                        return true;
-                    }
+                    errors.Add(new ModelError(
+                        string.Empty,
+                        S["The related database file is already in use."]));
+                    break;
                 }
-            }
 
-            return false;
+                errors.Add(new ModelError(
+                    nameof(TenantViewModel.TablePrefix),
+                    S["The provided database, table prefix and schema are already in use."]));
+                break;
         }
     }
+
+    [GeneratedRegex(@"^\w+$")]
+    private static partial Regex TenantNameRuleRegex();
 }

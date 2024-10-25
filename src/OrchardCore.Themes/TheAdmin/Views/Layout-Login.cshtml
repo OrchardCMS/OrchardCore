@@ -1,9 +1,10 @@
-@inject DarkModeService DarkModeService;
-@{
-    var darkMode = await DarkModeService.IsDarkModeAsync();
-}
+@using OrchardCore.Environment.Shell
+@using OrchardCore.Themes.Services
+
+@inject ThemeTogglerService ThemeTogglerService
+
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-theme="@DarkModeService.CurrentTheme">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -11,21 +12,35 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
+    <!-- This script can't wait till the footer -->
+    <script asp-name="admin-main" version="1" at="Head"></script>
+
     <!-- Bootstrap CSS -->
-    <style asp-name="admin" version="1"></style>
+    @if (Orchard.IsRightToLeft())
+    {
+        <style asp-name="bootstrap-rtl" version="5" at="Head"></style>
+        <style asp-name="TheAdminLogin" depends-on="bootstrap-rtl" asp-src="~/TheAdmin/css/login.min.css" debug-src="~/TheAdmin/css/login.css" at="Foot"></style>
+    }
+    else
+    {
+        <style asp-name="bootstrap" version="5" at="Head"></style>
+        <style asp-name="TheAdminLogin" depends-on="bootstrap" asp-src="~/TheAdmin/css/login.min.css" debug-src="~/TheAdmin/css/login.css" at="Foot"></style>
+    }
 
     <script asp-name="font-awesome" at="Foot" version="6"></script>
-    <script asp-name="font-awesome-v4-shims" at="Foot" version="6"></script>
 
     <resources type="Header" />
+    @await RenderSectionAsync("HeadMeta", required: false)
 </head>
 <body>
-    <div class="ta-content ta-content-login">
-        @await RenderSectionAsync("Header", required: false)
-        @await RenderSectionAsync("Messages", required: false)
+    <div class="d-flex align-items-center justify-content-center h-100">
+        <div class="container-fluid">
+            @await RenderSectionAsync("Header", required: false)
+            @await RenderSectionAsync("Messages", required: false)
 
-        <div class="auth-wrapper">
-            @await RenderBodyAsync()
+            <div class="auth-wrapper">
+                @await RenderBodyAsync()
+            </div>
         </div>
     </div>
 

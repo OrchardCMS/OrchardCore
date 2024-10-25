@@ -1,97 +1,92 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
+using System.Text.Json.Nodes;
 using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Entities;
 using OrchardCore.Liquid;
 using OrchardCore.Queries;
-using OrchardCore.Search.Elasticsearch.Core.Models;
+using OrchardCore.Search.Elasticsearch.Models;
 using YesSql;
 using YesSql.Services;
 
-namespace OrchardCore.Search.Elasticsearch.Core.Services
+namespace OrchardCore.Search.Elasticsearch.Core.Services;
+
+public sealed class ElasticQuerySource : IQuerySource
 {
-    public class ElasticQuerySource : IQuerySource
+    public const string SourceName = "Elasticsearch";
+
+    private readonly IElasticQueryService _queryService;
+    private readonly ILiquidTemplateManager _liquidTemplateManager;
+    private readonly ISession _session;
+    private readonly JavaScriptEncoder _javaScriptEncoder;
+    private readonly TemplateOptions _templateOptions;
+
+    public ElasticQuerySource(
+        IElasticQueryService queryService,
+        ILiquidTemplateManager liquidTemplateManager,
+        ISession session,
+        JavaScriptEncoder javaScriptEncoder,
+        IOptions<TemplateOptions> templateOptions)
     {
-        private readonly IElasticQueryService _queryService;
-        private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly ISession _session;
-        private readonly JavaScriptEncoder _javaScriptEncoder;
-        private readonly TemplateOptions _templateOptions;
+        _queryService = queryService;
+        _liquidTemplateManager = liquidTemplateManager;
+        _session = session;
+        _javaScriptEncoder = javaScriptEncoder;
+        _templateOptions = templateOptions.Value;
+    }
 
-        public ElasticQuerySource(
-            IElasticQueryService queryService,
-            ILiquidTemplateManager liquidTemplateManager,
-            ISession session,
-            JavaScriptEncoder javaScriptEncoder,
-            IOptions<TemplateOptions> templateOptions)
+    public string Name
+        => SourceName;
+
+    public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
+    {
+        var metadata = query.As<ElasticsearchQueryMetadata>();
+        var elasticQueryResults = new ElasticQueryResults();
+
+        var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(metadata?.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+        var docs = await _queryService.SearchAsync(metadata?.Index, tokenizedContent);
+        elasticQueryResults.Count = docs.Count;
+
+        if (query.ReturnContentItems)
         {
-            _queryService = queryService;
-            _liquidTemplateManager = liquidTemplateManager;
-            _session = session;
-            _javaScriptEncoder = javaScriptEncoder;
-            _templateOptions = templateOptions.Value;
-        }
+            // We always return an empty collection if the bottom lines queries have no results.
+            elasticQueryResults.Items = [];
 
-        public String Name => "Elasticsearch";
+            // Load corresponding content item versions.
+            var topDocs = docs.TopDocs.Where(x => x != null).ToList();
 
-        public Query Create()
-        {
-            return new ElasticQuery();
-        }
-
-        public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<String, object> parameters)
-        {
-            var elasticQuery = query as ElasticQuery;
-            var elasticQueryResults = new ElasticQueryResults();
-
-            var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(elasticQuery.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
-            var docs = await _queryService.SearchAsync(elasticQuery.Index, tokenizedContent);
-            elasticQueryResults.Count = docs.Count;
-
-            if (elasticQuery.ReturnContentItems)
+            if (topDocs.Count > 0)
             {
-                // We always return an empty collection if the bottom lines queries have no results.
-                elasticQueryResults.Items = new List<ContentItem>();
+                var indexedContentItemVersionIds = topDocs.Select(x => x.GetValueOrDefault("ContentItemVersionId").ToString()).ToArray();
+                var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
 
-                // Load corresponding content item versions
-                var topDocs = docs.TopDocs.Where(x => x != null).ToList();
-
-                if (topDocs.Count > 0)
+                // Reorder the result to preserve the one from the Elasticsearch query.
+                if (dbContentItems.Any())
                 {
-                    var indexedContentItemVersionIds = topDocs.Select(x => x.GetValueOrDefault("ContentItemVersionId").ToString()).ToArray();
-                    var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
-
-                    // Reorder the result to preserve the one from the Elasticsearch query
-                    if (dbContentItems.Any())
-                    {
-                        var dbContentItemVersionIds = dbContentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
-                        var indexedAndInDB = indexedContentItemVersionIds.Where(dbContentItemVersionIds.ContainsKey);
-                        elasticQueryResults.Items = indexedAndInDB.Select(x => dbContentItemVersionIds[x]).ToArray();
-                    }
+                    var dbContentItemVersionIds = dbContentItems.ToDictionary(x => x.ContentItemVersionId, x => x);
+                    var indexedAndInDB = indexedContentItemVersionIds.Where(dbContentItemVersionIds.ContainsKey);
+                    elasticQueryResults.Items = indexedAndInDB.Select(x => dbContentItemVersionIds[x]).ToArray();
                 }
-
-                //TODO : get ContentItemVersionId from docs.Fields
-            }
-            else
-            {
-                var results = new List<JObject>();
-
-                foreach (var document in docs.TopDocs)
-                {
-                    results.Add(new JObject(document.Select(x => new JProperty(x.Key, x.Value.ToString()))));
-                }
-
-                elasticQueryResults.Items = results;
             }
 
-            return elasticQueryResults;
+            // TODO : get ContentItemVersionId from docs.Fields
         }
+        else
+        {
+            var results = new List<JsonObject>();
+
+            foreach (var document in docs.TopDocs)
+            {
+                results.Add(new JsonObject(document.Select(x =>
+                    KeyValuePair.Create(x.Key, (JsonNode)JsonValue.Create(x.Value.ToString())))));
+            }
+
+            elasticQueryResults.Items = results;
+        }
+
+        return elasticQueryResults;
     }
 }

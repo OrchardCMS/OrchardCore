@@ -1,0 +1,22 @@
+name: Validate Pull Request
+
+on:
+  push:
+  pull_request_target:
+    types: [opened, synchronize]
+
+jobs:
+  validate-pull-request:
+    name: Validate Pull Request
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check for Merge Conflict in PR
+        # v3.0.0
+        uses: eps1lon/actions-label-merge-conflict@e62d7a53ff8be8b97684bffb6cfbbf3fc1115e2e
+        with:
+            repoToken: ${{ secrets.GITHUB_TOKEN }}
+            commentOnDirty: "This pull request has merge conflicts. Please resolve those before requesting a review."
+            dirtyLabel: "merge conflict"
+            # The default 120 is too long. The mergeable state is usually calculated by GitHub within seconds.
+            retryAfter: 5

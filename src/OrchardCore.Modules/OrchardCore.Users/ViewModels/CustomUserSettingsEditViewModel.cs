@@ -1,7 +1,6 @@
-namespace OrchardCore.Users.ViewModels
+namespace OrchardCore.Users.ViewModels;
+
+public class CustomUserSettingsEditViewModel
 {
-    public class CustomUserSettingsEditViewModel
-    {
-        public dynamic Editor { get; set; }
-    }
+    public dynamic Editor { get; set; }
 }

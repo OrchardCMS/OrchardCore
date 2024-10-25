@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Forms.Models;
+namespace OrchardCore.Forms.Models;
 
 public enum ValidationOptions
 {

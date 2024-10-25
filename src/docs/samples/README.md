@@ -31,8 +31,8 @@ text^a\ superscript^
 
 ## MagicLink
 
-- Just paste links directly in the document like this: https://google.com.
-- Or even an email address: fake.email@email.com.
+- Just paste links directly in the document like this: <https://google.com>.
+- Or even an email address: <fake.email@email.com>.
 
 ## SmartSymbols
 
@@ -64,16 +64,15 @@ text^a\ superscript^
 ## Task List
 
 - [X] item 1
-    * [X] item A
-    * [ ] item B
+  - [X] item A
+  - [ ] item B
         more text
-        + [x] item a
-        + [ ] item b
-        + [x] item c
-    * [X] item C
+    - [x] item a
+    - [ ] item b
+    - [x] item c
+  - [X] item C
 - [ ] item 2
 - [ ] item 3
-
 
 ## Tilde
 

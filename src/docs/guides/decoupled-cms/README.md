@@ -59,7 +59,7 @@ The newly created website should be able to run, and look like this:
 
 ```xml
 <PropertyGroup>
-  <TargetFramework>net6.0</TargetFramework>
+  <TargetFramework>net8.0</TargetFramework>
 </PropertyGroup>
 ```
 
@@ -69,33 +69,62 @@ This will allow for the Razor Pages to be reloaded without the need to recompile
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="1.5.0" />
+  <PackageReference Include="OrchardCore.Application.Cms.Core.Targets" Version="2.0.2" />
 </ItemGroup>
 ```
+
 This will add the packages from Orchard Core CMS
 
-- Edit the `Startup.cs` file `ConfigureServices` method like this:
+- Edit the `Program.cs` file to configure OrchardCore CMS services like this:
 
 ```csharp
-public void ConfigureServices(IServiceCollection services)
-{
-    services.AddOrchardCms();
-}
+builder.Services.AddOrchardCms();
 ```
 
 !!! warning "Razor Pages"
-    `AddRazorPages` must not be called directly as `services.AddOrchardCms()` already invokes it internally.
+    `builder.Services.AddRazorPages()` must not be called directly as `builder.Services.AddOrchardCms()` already invokes it internally.
 
-- Edit the `Startup.cs` file `Configure`
-- Remove everything after `app.UseStaticFiles();` and replace it by `app.UseOrchardCore();` like this:
+- Edit the `Program.cs` file
+- Add `app.UseOrchardCore();`
+- If any of the following lines exists in your `Program.cs` file, remove them:
 
 ```csharp
-   ...
-   
-   app.UseHttpsRedirection();
-   app.UseStaticFiles();
-   
-   app.UseOrchardCore();
+  builder.Services.AddRazorPages();
+
+  if (!app.Environment.IsDevelopment())
+  {
+      app.UseExceptionHandler("/Error");
+      app.UseHsts();
+  }
+  
+  app.UseHttpsRedirection();
+  app.UseRouting();
+  
+  app.UseAuthorization();
+  
+  app.MapRazorPages();
+}
+```
+
+Here is a sample of a bare minimum `Program.cs` file
+
+```csharp
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+
+        // Add services to the container.
+        builder.Services.AddOrchardCms();
+
+        var app = builder.Build();
+
+        app.UseStaticFiles();
+        app.UseOrchardCore();
+        
+        app.Run();
+    }
 }
 ```
 
@@ -324,7 +353,6 @@ The changes consist in using the `slug` name in both the route and the local pro
 - Open the page `/blogpost/new-day` which should display the exact same result, but using a more SEO and user friendly url.
 
 ### Generating the slug using a custom pattern
-
 
 The __Alias Part__ provides some custom settings in order to let it be generated automatically. In our case we want it to be generated from the __Title__, automatically. To provide such patterns the CMS uses a templating language named __Liquid__, together with some custom functions to manipulate content items' properties. Orchard provides a generally suitable default pattern.
 

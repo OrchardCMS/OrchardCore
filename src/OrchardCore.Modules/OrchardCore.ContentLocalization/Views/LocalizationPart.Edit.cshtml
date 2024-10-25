@@ -10,7 +10,7 @@
         <div class="accordion-header" id="contentLocalizationToggle">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#contentLocalizationCard" aria-expanded="true" aria-controls="collapseOne">
                 @T["Current Culture: {1} | {0}", Model.CultureInfo.Name, Model.CultureInfo.DisplayName]
-                <i class="fa fa-angle-down" aria-hidden="true"></i>
+                <i class="fa-solid fa-angle-down" aria-hidden="true"></i>
             </button>
         </div>
         <div id="contentLocalizationCard" class="collapse" aria-labelledby="contentLocalizationToggle" data-bs-parent="#localizationPartEdit">
@@ -18,22 +18,24 @@
                 @if (!Model.ContentItemCultures.Any())
                 {
                     <p>@T["Your site does not have any cultures. Current System culture is {1} | {0}", CultureInfo.InstalledUICulture.Name, CultureInfo.InstalledUICulture.DisplayName]</p>
-                    <p><a asp-route-area="OrchardCore.Settings" asp-controller="Admin" asp-action="Index" asp-route-groupId = "localization">@T["Add or remove supported cultures for the site"]</a></p>
+                    <p><a asp-route-area="OrchardCore.Settings" asp-controller="Admin" asp-action="Index" asp-route-groupId="localization">@T["Add or remove supported cultures for the site"]</a></p>
                 }
                 else
                 {
                     @if (!string.IsNullOrEmpty(Model.LocalizationSet))
                     {
+                        var returnUrl = Context.Request.Query["returnUrl"];
+
                         <div class="list-group">
                             @foreach (var culture in Model.ContentItemCultures)
                             {
                                 @if (!string.IsNullOrEmpty(culture.ContentItemId))
                                 {
-                                    <a class="list-group-item list-group-item-action" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@culture.ContentItemId" title=@T["Edit {0}", culture.Culture.DisplayName]><i class="fa fa-edit" aria-hidden="true"></i> @culture.Culture.DisplayName | @culture.Culture.Name </a>
+                                    <a class="list-group-item list-group-item-action" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@culture.ContentItemId" asp-route-returnUrl="@returnUrl" title="@T["Edit {0}", culture.Culture.DisplayName]"><i class="fa-solid fa-edit" aria-hidden="true"></i> @culture.Culture.DisplayName | @culture.Culture.Name </a>
                                 }
                                 else
                                 {
-                                    <a class="list-group-item list-group-item-action" data-url-af="UnsafeUrl" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" title=@T["Create {0}", culture.Culture.DisplayName]><i class="fa fa-plus" aria-hidden="true"></i> @culture.Culture.DisplayName | @culture.Culture.Name</a>
+                                    <a class="list-group-item list-group-item-action" data-url-af="UnsafeUrl" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" asp-route-returnUrl="@returnUrl" title="@T["Create {0}", culture.Culture.DisplayName]"><i class="fa-solid fa-plus" aria-hidden="true"></i> @culture.Culture.DisplayName | @culture.Culture.Name</a>
                                 }
                             }
                         </div>

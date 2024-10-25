@@ -1,91 +1,104 @@
-using System;
-using System.Threading.Tasks;
+using System.Text.Json.Nodes;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.ContentTypes.RecipeSteps
+namespace OrchardCore.ContentTypes.RecipeSteps;
+
+/// <summary>
+/// This recipe step creates content definitions.
+/// </summary>
+public sealed class ContentDefinitionStep : NamedRecipeStepHandler
 {
-    /// <summary>
-    /// This recipe step creates content definitions.
-    /// </summary>
-    public class ContentDefinitionStep : IRecipeStepHandler
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+
+    internal readonly IStringLocalizer S;
+
+    public ContentDefinitionStep(
+        IContentDefinitionManager contentDefinitionManager,
+        IStringLocalizer<ContentDefinitionStep> stringLocalizer)
+         : base("ContentDefinition")
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        _contentDefinitionManager = contentDefinitionManager;
+        S = stringLocalizer;
+    }
 
-        public ContentDefinitionStep(IContentDefinitionManager contentDefinitionManager)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
+    {
+        var step = context.Step.ToObject<ContentDefinitionStepModel>();
+
+        foreach (var contentType in step.ContentTypes)
         {
-            _contentDefinitionManager = contentDefinitionManager;
+            var newType = await _contentDefinitionManager.LoadTypeDefinitionAsync(contentType.Name)
+                ?? new ContentTypeDefinition(contentType.Name, contentType.DisplayName);
+
+            await UpdateContentTypeAsync(newType, contentType, context);
         }
 
-        public Task ExecuteAsync(RecipeExecutionContext context)
+        foreach (var contentPart in step.ContentParts)
         {
-            if (!String.Equals(context.Name, "ContentDefinition", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
+            var newPart = await _contentDefinitionManager.LoadPartDefinitionAsync(contentPart.Name)
+                ?? new ContentPartDefinition(contentPart.Name);
 
-            var step = context.Step.ToObject<ContentDefinitionStepModel>();
-
-            foreach (var contentType in step.ContentTypes)
-            {
-                var newType = _contentDefinitionManager.LoadTypeDefinition(contentType.Name)
-                    ?? new ContentTypeDefinition(contentType.Name, contentType.DisplayName);
-
-                UpdateContentType(newType, contentType);
-            }
-
-            foreach (var contentPart in step.ContentParts)
-            {
-                var newPart = _contentDefinitionManager.LoadPartDefinition(contentPart.Name)
-                    ?? new ContentPartDefinition(contentPart.Name);
-
-                UpdateContentPart(newPart, contentPart);
-            }
-
-            return Task.CompletedTask;
+            await UpdateContentPartAsync(newPart, contentPart, context);
         }
+    }
 
-        private void UpdateContentType(ContentTypeDefinition type, ContentTypeDefinitionRecord record)
+    private Task UpdateContentTypeAsync(ContentTypeDefinition type, ContentTypeDefinitionRecord record, RecipeExecutionContext context)
+    {
+        return _contentDefinitionManager.AlterTypeDefinitionAsync(type.Name, builder =>
         {
-            _contentDefinitionManager.AlterTypeDefinition(type.Name, builder =>
+            if (!string.IsNullOrEmpty(record.DisplayName))
             {
-                if (!String.IsNullOrEmpty(record.DisplayName))
-                {
-                    builder.DisplayedAs(record.DisplayName);
-                    builder.MergeSettings(record.Settings);
-                }
-
-                foreach (var part in record.ContentTypePartDefinitionRecords)
-                {
-                    builder.WithPart(part.Name, part.PartName, partBuilder => partBuilder.MergeSettings(part.Settings));
-                }
-            });
-        }
-
-        private void UpdateContentPart(ContentPartDefinition part, ContentPartDefinitionRecord record)
-        {
-            _contentDefinitionManager.AlterPartDefinition(part.Name, builder =>
-            {
+                builder.DisplayedAs(record.DisplayName);
                 builder.MergeSettings(record.Settings);
+            }
 
-                foreach (var field in record.ContentPartFieldDefinitionRecords)
+            foreach (var part in record.ContentTypePartDefinitionRecords)
+            {
+                if (string.IsNullOrEmpty(part.PartName))
                 {
-                    builder.WithField(field.Name, fieldBuilder =>
-                    {
-                        fieldBuilder.OfType(field.FieldName);
-                        fieldBuilder.MergeSettings(field.Settings);
-                    });
-                }
-            });
-        }
+                    context.Errors.Add(S["Unable to add content-part to the '{0}' content-type. The part name cannot be null or empty.", type.Name]);
 
-        private class ContentDefinitionStepModel
+                    continue;
+                }
+
+                builder.WithPart(part.Name, part.PartName, partBuilder => partBuilder.MergeSettings(part.Settings));
+            }
+        });
+    }
+
+    private Task UpdateContentPartAsync(ContentPartDefinition part, ContentPartDefinitionRecord record, RecipeExecutionContext context)
+    {
+        return _contentDefinitionManager.AlterPartDefinitionAsync(part.Name, builder =>
         {
-            public ContentTypeDefinitionRecord[] ContentTypes { get; set; } = Array.Empty<ContentTypeDefinitionRecord>();
-            public ContentPartDefinitionRecord[] ContentParts { get; set; } = Array.Empty<ContentPartDefinitionRecord>();
-        }
+            builder.MergeSettings(record.Settings);
+
+            foreach (var field in record.ContentPartFieldDefinitionRecords)
+            {
+                if (string.IsNullOrEmpty(field.Name))
+                {
+                    context.Errors.Add(S["Unable to add content-field to the '{0}' content-part. The part name cannot be null or empty.", part.Name]);
+
+                    continue;
+                }
+
+                builder.WithField(field.Name, fieldBuilder =>
+                {
+                    fieldBuilder.OfType(field.FieldName);
+                    fieldBuilder.MergeSettings(field.Settings);
+                });
+            }
+        });
+    }
+
+    private sealed class ContentDefinitionStepModel
+    {
+        public ContentTypeDefinitionRecord[] ContentTypes { get; set; } = [];
+
+        public ContentPartDefinitionRecord[] ContentParts { get; set; } = [];
     }
 }

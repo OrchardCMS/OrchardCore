@@ -1,15 +1,12 @@
-using System;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
 using OrchardCore.PublishLater.Indexes;
-using OrchardCore.PublishLater.Models;
 using YesSql.Sql;
 
 namespace OrchardCore.PublishLater;
 
-public class Migrations : DataMigration
+public sealed class Migrations : DataMigration
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -18,74 +15,74 @@ public class Migrations : DataMigration
         _contentDefinitionManager = contentDefinitionManager;
     }
 
-    public int Create()
+    public async Task<int> CreateAsync()
     {
-        _contentDefinitionManager.AlterPartDefinition(nameof(PublishLaterPart), builder => builder
+        await _contentDefinitionManager.AlterPartDefinitionAsync("PublishLaterPart", builder => builder
             .Attachable()
             .WithDescription("Adds the ability to schedule content items to be published at a given future date and time."));
 
-        SchemaBuilder.CreateMapIndexTable<PublishLaterPartIndex>(table => table
-            .Column<string>(nameof(PublishLaterPartIndex.ContentItemId))
-            .Column<DateTime>(nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
-            .Column<bool>(nameof(PublishLaterPartIndex.Published))
-            .Column<bool>(nameof(PublishLaterPartIndex.Latest))
+        await SchemaBuilder.CreateMapIndexTableAsync<PublishLaterPartIndex>(table => table
+            .Column<string>("ContentItemId")
+            .Column<DateTime>("ScheduledPublishDateTimeUtc")
+            .Column<bool>("Published")
+            .Column<bool>("Latest")
         );
 
-        SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
-            .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(ContentItemIndex.DocumentId)}",
+        await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table => table
+            .CreateIndex("IDX_PublishLaterPartIndex_DocumentId",
                 "Id",
-                nameof(ContentItemIndex.DocumentId),
-                nameof(PublishLaterPartIndex.ContentItemId),
-                nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc),
-                nameof(PublishLaterPartIndex.Published),
-                nameof(PublishLaterPartIndex.Latest))
+                "DocumentId",
+                "ContentItemId",
+                "ScheduledPublishDateTimeUtc",
+                "Published",
+                "Latest")
         );
 
         return 3;
     }
 
     // This code can be removed in a later version.
-    public int UpdateFrom1()
+    public async Task<int> UpdateFrom1Async()
     {
-        // The 'ScheduledPublishUtc' column and related index are kept on existing databases,
+        // The 'ScheduledPublishDateTimeUtc' column and related index are kept on existing databases,
         // this because dropping an index and altering a column don't work on all providers.
 
-        SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
+        await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table => table
             .AddColumn<DateTime>(nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
         );
 
-        SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
-            .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc)}",
-                nameof(ContentItemIndex.DocumentId),
-                nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
+        await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table => table
+            .CreateIndex($"IDX_PublishLaterPartIndex_ScheduledPublishDateTimeUtc",
+                "DocumentId",
+                "ScheduledPublishDateTimeUtc")
         );
 
         return 2;
     }
 
-    public int UpdateFrom2()
+    public async Task<int> UpdateFrom2Async()
     {
-        SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table =>
+        await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table =>
         {
-            table.AddColumn<string>(nameof(PublishLaterPartIndex.ContentItemId));
-            table.AddColumn<bool>(nameof(PublishLaterPartIndex.Published));
-            table.AddColumn<bool>(nameof(PublishLaterPartIndex.Latest));
+            table.AddColumn<string>("ContentItemId");
+            table.AddColumn<bool>("Published");
+            table.AddColumn<bool>("Latest");
         });
 
-        SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table =>
+        await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table =>
         {
-            table.DropIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc)}");
+            table.DropIndex("IDX_PublishLaterPartIndex_ScheduledPublishDateTimeUtc");
         });
 
-        SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table =>
+        await SchemaBuilder.AlterIndexTableAsync<PublishLaterPartIndex>(table =>
         {
-            table.CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc)}",
+            table.CreateIndex("IDX_PublishLaterPartIndex_ScheduledPublishDateTimeUtc",
                 "Id",
-                nameof(ContentItemIndex.DocumentId),
-                nameof(PublishLaterPartIndex.ContentItemId),
-                nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc),
-                nameof(PublishLaterPartIndex.Published),
-                nameof(PublishLaterPartIndex.Latest));
+                "DocumentId",
+                "ContentItemId",
+                "ScheduledPublishDateTimeUtc",
+                "Published",
+                "Latest");
         });
 
         return 3;

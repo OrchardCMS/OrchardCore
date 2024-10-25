@@ -1,0 +1,8 @@
+@using OrchardCore.Forms.Activities
+
+@model ActivityViewModel<HttpRedirectToFormLocationTask>
+
+<header>
+    <h4><i class="fa-solid fa-globe" aria-hidden="true"></i>@Model.Activity.GetTitleOrDefault(() => T["HTTP Redirect To Form Location"])</h4>
+</header>
+

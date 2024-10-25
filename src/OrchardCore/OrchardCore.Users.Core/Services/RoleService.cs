@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Security;
 using OrchardCore.Security.Services;
@@ -13,15 +8,19 @@ namespace OrchardCore.Roles.Services;
 public class RoleService : IRoleService
 {
     private readonly RoleManager<IRole> _roleManager;
+    private readonly ISystemRoleNameProvider _systemRoleProvider;
 
-    public RoleService(RoleManager<IRole> roleManager)
+    public RoleService(
+        RoleManager<IRole> roleManager,
+        ISystemRoleNameProvider systemRoleProvider)
     {
         _roleManager = roleManager;
+        _systemRoleProvider = systemRoleProvider;
     }
 
     public async Task<IEnumerable<Claim>> GetRoleClaimsAsync(string role, CancellationToken cancellationToken = default)
     {
-        if (String.IsNullOrEmpty(role))
+        if (string.IsNullOrEmpty(role))
         {
             throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
         }
@@ -49,4 +48,10 @@ public class RoleService : IRoleService
     {
         return Task.FromResult<IEnumerable<string>>(_roleManager.Roles.Select(a => _roleManager.NormalizeKey(a.RoleName)));
     }
+
+    public ValueTask<bool> IsAdminRoleAsync(string role)
+        => _systemRoleProvider.IsAdminRoleAsync(role);
+
+    public ValueTask<bool> IsSystemRoleAsync(string role)
+         => _systemRoleProvider.IsSystemRoleAsync(role);
 }

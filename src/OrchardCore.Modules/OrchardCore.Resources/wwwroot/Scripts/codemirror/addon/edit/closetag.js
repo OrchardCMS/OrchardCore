@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
@@ -147,9 +147,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     cm.replaceSelections(replacements);
     ranges = cm.listSelections();
     if (!dontIndentOnAutoClose) {
-      for (var i = 0; i < ranges.length; i++) {
-        if (i == ranges.length - 1 || ranges[i].head.line < ranges[i + 1].head.line) cm.indentLine(ranges[i].head.line);
-      }
+      for (var i = 0; i < ranges.length; i++) if (i == ranges.length - 1 || ranges[i].head.line < ranges[i + 1].head.line) cm.indentLine(ranges[i].head.line);
     }
   }
   function autoCloseSlash(cm) {
@@ -161,9 +159,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   };
   function indexOf(collection, elt) {
     if (collection.indexOf) return collection.indexOf(elt);
-    for (var i = 0, e = collection.length; i < e; ++i) {
-      if (collection[i] == elt) return i;
-    }
+    for (var i = 0, e = collection.length; i < e; ++i) if (collection[i] == elt) return i;
     return -1;
   }
 

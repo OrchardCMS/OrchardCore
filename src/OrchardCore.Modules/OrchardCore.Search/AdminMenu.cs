@@ -1,38 +1,39 @@
-using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.Search.Drivers;
 
-namespace OrchardCore.Search
+namespace OrchardCore.Search;
+
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    private static readonly RouteValueDictionary _routeValues = new()
     {
-        private readonly IStringLocalizer S;
+        { "area", "OrchardCore.Settings" },
+        { "groupId", SearchConstants.SearchSettingsGroupId },
+    };
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            S = localizer;
-        }
+    internal readonly IStringLocalizer S;
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
 
-            builder
-                .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
-                    .AddClass("search").Id("search")
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Search"], S["Search"].PrefixPosition(), entry => entry
-                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SearchSettingsDisplayDriver.GroupId })
-                             .Permission(Permissions.ManageSearchSettings)
-                             .LocalNav()
-                        )));
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        builder
+            .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
+                .AddClass("search")
+                .Id("search")
+                .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
+                    .Action("Index", "Admin", _routeValues)
+                    .AddClass("searchsettings")
+                    .Id("searchsettings")
+                    .Permission(Permissions.ManageSearchSettings)
+                    .LocalNav()
+                )
+            );
 
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

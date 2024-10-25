@@ -1,9 +1,8 @@
-using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -11,7 +10,9 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Razor;
 
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class OrchardRazorHelperExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     public static async Task<IHtmlContent> DisplayAsync(this IOrchardDisplayHelper orchardDisplayHelper, ContentItem content, string displayType = "", string groupId = "", IUpdateModel updater = null)
     {
@@ -43,9 +44,9 @@ public static class OrchardRazorHelperExtensions
         {
             builder.AppendHtml("\"").Append(stringContent).AppendHtml("\"");
         }
-        else if (content is JToken jTokenContent)
+        else if (content is JsonNode jNodeContent)
         {
-            builder.AppendHtml(jTokenContent.ToString());
+            builder.AppendHtml(jNodeContent.ToString());
         }
         else if (content is ContentItem contentItem)
         {
@@ -57,7 +58,7 @@ public static class OrchardRazorHelperExtensions
         }
         else
         {
-            builder.AppendHtml(JsonConvert.SerializeObject(content));
+            builder.AppendHtml(JConvert.SerializeObject(content));
         }
 
         builder.AppendHtml(")</script>");
@@ -65,24 +66,36 @@ public static class OrchardRazorHelperExtensions
         return builder;
     }
 
-    internal static JObject ConvertContentItem(ContentItem contentItem)
+    internal static JsonObject ConvertContentItem(ContentItem contentItem)
     {
-        var o = new JObject();
+        var o = new JsonObject
+        {
+            // Write all well-known properties.
+            [nameof(ContentItem.ContentItemId)] = contentItem.ContentItemId,
+            [nameof(ContentItem.ContentItemVersionId)] = contentItem.ContentItemVersionId,
+            [nameof(ContentItem.ContentType)] = contentItem.ContentType,
+            [nameof(ContentItem.DisplayText)] = contentItem.DisplayText,
+            [nameof(ContentItem.Latest)] = contentItem.Latest,
+            [nameof(ContentItem.Published)] = contentItem.Published,
+            [nameof(ContentItem.ModifiedUtc)] = contentItem.ModifiedUtc,
+            [nameof(ContentItem.PublishedUtc)] = contentItem.PublishedUtc,
+            [nameof(ContentItem.CreatedUtc)] = contentItem.CreatedUtc,
+            [nameof(ContentItem.Owner)] = contentItem.Owner,
+            [nameof(ContentItem.Author)] = contentItem.Author,
+            [nameof(ContentItem.Content)] = contentItem.Content,
+        };
 
-        // Write all well-known properties
-        o.Add(new JProperty(nameof(ContentItem.ContentItemId), contentItem.ContentItemId));
-        o.Add(new JProperty(nameof(ContentItem.ContentItemVersionId), contentItem.ContentItemVersionId));
-        o.Add(new JProperty(nameof(ContentItem.ContentType), contentItem.ContentType));
-        o.Add(new JProperty(nameof(ContentItem.DisplayText), contentItem.DisplayText));
-        o.Add(new JProperty(nameof(ContentItem.Latest), contentItem.Latest));
-        o.Add(new JProperty(nameof(ContentItem.Published), contentItem.Published));
-        o.Add(new JProperty(nameof(ContentItem.ModifiedUtc), contentItem.ModifiedUtc));
-        o.Add(new JProperty(nameof(ContentItem.PublishedUtc), contentItem.PublishedUtc));
-        o.Add(new JProperty(nameof(ContentItem.CreatedUtc), contentItem.CreatedUtc));
-        o.Add(new JProperty(nameof(ContentItem.Owner), contentItem.Owner));
-        o.Add(new JProperty(nameof(ContentItem.Author), contentItem.Author));
+        return o;
+    }
 
-        o.Add(new JProperty(nameof(ContentItem.Content), (JObject)contentItem.Content));
+    internal static JsonObject ConvertContentPart(ContentPart contentPart)
+    {
+        var o = new JsonObject
+        {
+            // Write all well-known properties.
+            [nameof(ContentPart.ContentItem)] = ConvertContentItem(contentPart.ContentItem),
+            [nameof(ContentPart.Content)] = JObject.FromObject(contentPart.Content),
+        };
 
         return o;
     }

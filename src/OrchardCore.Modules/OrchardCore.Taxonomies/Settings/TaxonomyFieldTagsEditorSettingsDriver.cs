@@ -1,31 +1,34 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Taxonomies.Fields;
 
-namespace OrchardCore.Taxonomies.Settings
+namespace OrchardCore.Taxonomies.Settings;
+
+public sealed class TaxonomyFieldTagsEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TaxonomyField>
 {
-    public class TaxonomyFieldTagsEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TaxonomyField>
+    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
     {
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        return Initialize<TaxonomyFieldTagsEditorSettings>("TaxonomyFieldTagsEditorSettings_Edit", model =>
         {
-            return Initialize<TaxonomyFieldTagsEditorSettings>("TaxonomyFieldTagsEditorSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
-                .Location("Editor");
+            var settings = partFieldDefinition.GetSettings<TaxonomyFieldTagsEditorSettings>();
+
+            model.Open = settings.Open;
+        }).Location("Content");
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+    {
+        if (partFieldDefinition.Editor() == "Tags")
+        {
+            var model = new TaxonomyFieldTagsEditorSettings();
+
+            await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+            context.Builder.WithSettings(model);
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
-        {
-            if (partFieldDefinition.Editor() == "Tags")
-            {
-                var model = new TaxonomyFieldTagsEditorSettings();
-
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
-                context.Builder.WithSettings(model);
-            }
-
-            return Edit(partFieldDefinition);
-        }
+        return Edit(partFieldDefinition, context);
     }
 }

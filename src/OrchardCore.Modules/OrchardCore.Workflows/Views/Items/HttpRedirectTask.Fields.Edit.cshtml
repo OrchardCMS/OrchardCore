@@ -2,16 +2,18 @@
 @model HttpRedirectTaskViewModel
 
 <div class="mb-3" asp-validation-class-for="Location">
-    <label asp-for="Location">@T["Location"]</label>
+    <label asp-for="Location" class="form-label">@T["Location"]</label>
     <input type="text" asp-for="Location" class="form-control code" />
     <span asp-validation-for="Location"></span>
     <span class="hint">@T["The URL to redirect to. With Liquid support."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="Permanent">
-    <label asp-for="Permanent">
-        <input type="checkbox" asp-for="Permanent" />
-        @T["Permanent"]
-    </label>
-    <span class="hint">@T["Check if the redirect should be permanent (301). Leave unchecked for a temporary redirect (302)."]</span>
+    <div class="form-check">
+        <label asp-for="Permanent" class="form-check-label">
+            <input type="checkbox" class="form-check-input" asp-for="Permanent" />
+            @T["Permanent"]
+        </label>
+        <span class="hint dashed">@T["Check if the redirect should be permanent (301). Leave unchecked for a temporary redirect (302)."]</span>
+    </div>
 </div>

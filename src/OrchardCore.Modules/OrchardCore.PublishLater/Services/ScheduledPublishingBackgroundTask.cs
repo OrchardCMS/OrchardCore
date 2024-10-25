@@ -1,7 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.BackgroundTasks;
@@ -17,9 +13,9 @@ namespace OrchardCore.PublishLater.Services;
     Title = "Scheduled Content Items Publisher",
     Schedule = "* * * * *",
     Description = "Publishes content items when their scheduled publish date time arrives.")]
-public class ScheduledPublishingBackgroundTask : IBackgroundTask
+public sealed class ScheduledPublishingBackgroundTask : IBackgroundTask
 {
-    private readonly ILogger<ScheduledPublishingBackgroundTask> _logger;
+    private readonly ILogger _logger;
     private readonly IClock _clock;
 
     public ScheduledPublishingBackgroundTask(ILogger<ScheduledPublishingBackgroundTask> logger, IClock clock)

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-
+    <RootNamespace>OrchardCore.DynamicCache</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore DynamicCache Abstractions</Title>
     <Description>$(OCFrameworkDescription)

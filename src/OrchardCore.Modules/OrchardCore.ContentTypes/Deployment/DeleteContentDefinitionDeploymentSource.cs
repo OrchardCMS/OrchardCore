@@ -1,25 +1,20 @@
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.Deployment;
 
-namespace OrchardCore.ContentTypes.Deployment
+namespace OrchardCore.ContentTypes.Deployment;
+
+public class DeleteContentDefinitionDeploymentSource
+    : DeploymentSourceBase<DeleteContentDefinitionDeploymentStep>
 {
-    public class DeleteContentDefinitionDeploymentSource : IDeploymentSource
+    protected override Task ProcessAsync(DeleteContentDefinitionDeploymentStep step, DeploymentPlanResult result)
     {
-        public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        result.Steps.Add(new JsonObject
         {
-            if (step is not DeleteContentDefinitionDeploymentStep deleteContentDefinitionStep)
-            {
-                return Task.CompletedTask;
-            }
+            ["name"] = "DeleteContentDefinition",
+            ["ContentTypes"] = JArray.FromObject(step.ContentTypes),
+            ["ContentParts"] = JArray.FromObject(step.ContentParts),
+        });
 
-            result.Steps.Add(new JObject(
-                new JProperty("name", "DeleteContentDefinition"),
-                new JProperty("ContentTypes", JArray.FromObject(deleteContentDefinitionStep.ContentTypes)),
-                new JProperty("ContentParts", JArray.FromObject(deleteContentDefinitionStep.ContentParts))
-            ));
-
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

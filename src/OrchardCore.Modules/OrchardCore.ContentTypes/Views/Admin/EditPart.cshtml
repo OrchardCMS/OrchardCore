@@ -12,7 +12,7 @@
         .Select(x => x.Field)
         .ToList();
 
-    var fields = ContentDefinitionService.GetFields().ToList();
+    var fields = (await ContentDefinitionService.GetFieldsAsync()).ToList();
 }
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Part - {0}", Model.DisplayName])</h1></zone>
 
@@ -67,9 +67,13 @@
         <button class="btn btn-danger delete" type="submit" name="submit.Delete" value="Delete" data-url-af="RemoveUrl">@T["Delete"]</button>
     </div>
 </form>
+<script asp-name="Sortable" at="Foot"></script>
+<script at="Foot" depends-on="Sortable">
+    document.addEventListener('DOMContentLoaded', function () {
+        const fields = document.getElementById("fields");
 
-<script at="Foot">
-    $(function () {
-        Sortable.create(document.getElementById("fields"));
-    })
+        if (fields) {
+            Sortable.create(document.getElementById("fields"));
+        }
+    });
 </script>

@@ -16,7 +16,7 @@ ol.media-items-grid {
         border-radius: 0;
 
         .inline-media-button {
-            color: $gray-700;
+            color: var(--oc-media-color);
             opacity: 0;
             padding-top: 0px;
             position: absolute;
@@ -25,16 +25,18 @@ ol.media-items-grid {
             border-radius: 0px;
             margin-top: -32px;
             transition: all 0.2s;
+
             &.delete-button {
                 margin-right: 2.0rem;
             }
+
             &.edit-button {
                 margin-right: 3.8rem;
             }
         }
 
         &.selected {
-            border: 1px solid $primary;
+            border: 1px solid var(--bs-primary, blue);
         }
 
         &.selected .inline-media-button, &:hover .inline-media-button {
@@ -49,10 +51,10 @@ ol.media-items-grid {
         display: flex;
         align-items: center;
         justify-content: center;
-        background: white;
+        background: var(--bs-body-bg, white);
 
         img {
-            background: repeating-conic-gradient($gray-200 0% 25%, transparent 0% 50%) 50% / 10px 10px;
+            background: repeating-conic-gradient(var(--bs-gray-200, #ccc) 0% 25%, transparent 0% 50%) 50% / 10px 10px;
         }
     }
 

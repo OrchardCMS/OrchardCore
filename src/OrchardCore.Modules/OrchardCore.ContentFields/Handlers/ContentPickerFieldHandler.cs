@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
@@ -9,7 +8,7 @@ namespace OrchardCore.ContentFields.Handlers;
 
 public class ContentPickerFieldHandler : ContentFieldHandler<ContentPickerField>
 {
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
 
     public ContentPickerFieldHandler(IStringLocalizer<ContentPickerFieldHandler> stringLocalizer)
     {

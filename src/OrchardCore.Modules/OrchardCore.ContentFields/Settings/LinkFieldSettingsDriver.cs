@@ -1,28 +1,39 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentFields.Settings
+namespace OrchardCore.ContentFields.Settings;
+
+public sealed class LinkFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<LinkField>
 {
-    public class LinkFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<LinkField>
+    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
     {
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        return Initialize<LinkFieldSettings>("LinkFieldSettings_Edit", model =>
         {
-            return Initialize<LinkFieldSettings>("LinkFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
-                .Location("Content");
-        }
+            var settings = partFieldDefinition.GetSettings<LinkFieldSettings>();
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
-        {
-            var model = new LinkFieldSettings();
+            model.Hint = settings.Hint;
+            model.HintLinkText = settings.HintLinkText;
+            model.Required = settings.Required;
+            model.LinkTextMode = settings.LinkTextMode;
+            model.UrlPlaceholder = settings.UrlPlaceholder;
+            model.TextPlaceholder = settings.TextPlaceholder;
+            model.DefaultUrl = settings.DefaultUrl;
+            model.DefaultText = settings.DefaultText;
+            model.DefaultTarget = settings.DefaultTarget;
+        }).Location("Content");
+    }
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+    {
+        var model = new LinkFieldSettings();
 
-            context.Builder.WithSettings(model);
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            return Edit(partFieldDefinition);
-        }
+        context.Builder.WithSettings(model);
+
+        return Edit(partFieldDefinition, context);
     }
 }

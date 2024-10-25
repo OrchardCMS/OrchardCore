@@ -1,19 +1,20 @@
 using OrchardCore.DisplayManagement.Descriptors;
 
-namespace OrchardCore.DisplayManagement.Zones
+namespace OrchardCore.DisplayManagement.Zones;
+
+public class ZoneShapeAlternates : ShapeTableProvider
 {
-    public class ZoneShapeAlternates : IShapeTableProvider
+    public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
-        public void Discover(ShapeTableBuilder builder)
-        {
-            builder.Describe("Zone")
-                .OnDisplaying(context =>
+        builder.Describe("Zone")
+            .OnDisplaying(context =>
+            {
+                if (context.Shape.TryGetProperty("ZoneName", out string zoneName))
                 {
-                    if (context.Shape.TryGetProperty("ZoneName", out string zoneName))
-                    {
-                        context.Shape.Metadata.Alternates.Add("Zone__" + zoneName);
-                    }
-                });
-        }
+                    context.Shape.Metadata.Alternates.Add("Zone__" + zoneName);
+                }
+            });
+
+        return ValueTask.CompletedTask;
     }
 }

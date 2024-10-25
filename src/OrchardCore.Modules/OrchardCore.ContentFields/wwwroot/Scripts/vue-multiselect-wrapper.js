@@ -24,6 +24,8 @@ function initVueMultiselect(element) {
   if (element) {
     var elementId = element.id;
     var selectedItems = JSON.parse(element.dataset.selectedItems || "[]");
+    var editUrl = element.dataset.editUrl;
+    var viewUrl = element.dataset.viewUrl;
     var searchUrl = element.dataset.searchUrl;
     var multiple = JSON.parse(element.dataset.multiple);
     var debouncedSearch = debounce(function (vm, query) {
@@ -73,6 +75,18 @@ function initVueMultiselect(element) {
         var self = this;
         self.asyncFind();
       },
+      mounted: function mounted() {
+        // Store a reference to the div containing the search box used to select content
+        // items so we can hide/show it later (in onSelect and remove). We use the "mounted"
+        // lifecycle method rather than "created" so we know the component has been attached 
+        // to the DOM and we can therefore travese the DOM to find the desired div.
+        this.searchBoxContainer = $(this.$el).children().last();
+
+        // If we're loading an existing content item, we may already have a content picker
+        // configured to only allow a single content item and that item has already been selected. 
+        // In this case, we need to hide the search box now and not wait for onSelect or remove.
+        this.searchBoxContainer.css("display", multiple || this.arrayOfItems.length === 0 ? "block" : "none");
+      },
       methods: {
         asyncFind: function asyncFind(query) {
           var self = this;
@@ -86,9 +100,28 @@ function initVueMultiselect(element) {
             }
           }
           self.arrayOfItems.push(selectedOption);
+
+          // We don't want to show the search box if we are only allowing a single content 
+          // item and a content item has already been selected. We don't need that search 
+          // box again unless and until we delete the currently selected content item. 
+          // So here we set the display mode accordingly. We always show the select list 
+          // if allowing multiple content items and do not show it if we're only allowing 
+          // a single content item and we've just selected that one item.
+          this.searchBoxContainer.css("display", multiple ? "block" : "none");
+        },
+        url: function url(item) {
+          var url = item.isEditable ? editUrl : viewUrl;
+          return url.replace('contentItemId', item.id);
         },
         remove: function remove(item) {
           this.arrayOfItems.splice(this.arrayOfItems.indexOf(item), 1);
+
+          // After removing a selected content item, we always want to show the search box 
+          // since (1) if we are allowing multiple content types to be selected, we always 
+          // want to show it, and (2) if we are only allowing a single content type to be 
+          // selected, and we've just removed that content type, we now need to show the 
+          // search box so we are able to add a new one.
+          this.searchBoxContainer.css("display", "block");
         }
       }
     });

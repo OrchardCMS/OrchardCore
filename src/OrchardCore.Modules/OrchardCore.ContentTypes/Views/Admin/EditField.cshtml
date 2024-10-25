@@ -10,7 +10,7 @@
 
 @{
     var theme = await ThemeManager.GetThemeAsync();
-    var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
+    var shapeTable = await ShapeTableManager.GetShapeTableAsync(theme?.Id);
     var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
     var displayShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
     var returnUrl = ViewData["returnUrl"]?.ToString();
@@ -21,16 +21,16 @@
 <form asp-action="EditField" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()
     <div class="mb-3">
-        <div class="w-md-75 w-xl-50 pe-md-3">
-            <label asp-for="DisplayName">@T["Display Name"]</label>
+        <div class="w-sm-75 w-lg-75 w-xl-50">
+            <label asp-for="DisplayName" class="form-label">@T["Display Name"]</label>
             <input asp-for="DisplayName" autofocus class="form-control" />
         </div>
         <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
     </div>
 
     <div class="mb-3">
-        <div class="w-sm-75 w-md-50 w-lg-25 pe-md-3">
-            <label asp-for="Name">@T["Technical Name"]</label>
+        <div class="w-sm-75 w-lg-75 w-xl-50">
+            <label asp-for="Name" class="form-label">@T["Technical Name"]</label>
             <input asp-for="Name" class="form-control" readonly />
         </div>
         <span class="hint">@T["Technical name of the field."]</span>
@@ -52,17 +52,15 @@
         @if (editorShapes.Any())
         {
             <div class="mb-3">
-                <div class="w-100 w-md-50 pe-md-3">
-                    <label asp-for="Editor">@T["What type of editor should be used?"]</label>
-                    <select asp-for="Editor" class="form-select" id="field-editor-select">
-                        @foreach (var editorShape in editorShapes)
-                        {
-                            dynamic shape = await Factory.CreateAsync(editorShape);
-                            shape.Editor = Model.Editor;
-                            @await DisplayAsync(shape)
-                        }
-                    </select>
-                </div>
+                <label asp-for="Editor" class="form-label">@T["What type of editor should be used?"]</label>
+                <select asp-for="Editor" class="form-select" id="field-editor-select">
+                    @foreach (var editorShape in editorShapes)
+                    {
+                        var shape = await Factory.CreateAsync(editorShape);
+                        shape.Properties["Editor"] = Model.Editor;
+                        @await DisplayAsync(shape)
+                    }
+                </select>
             </div>
         }
 
@@ -73,17 +71,15 @@
         @if (displayShapes.Any())
         {
             <div class="mb-3">
-                <div class="w-100 w-md-50 pe-md-3">
-                    <label asp-for="DisplayMode">@T["What type of display mode should be used?"]</label>
-                    <select asp-for="DisplayMode" class="form-select" id="field-display-select">
-                        @foreach (var displayShape in displayShapes)
-                        {
-                            dynamic shape = await Factory.CreateAsync(displayShape);
-                            shape.DisplayMode = Model.DisplayMode;
-                            @await DisplayAsync(shape)
-                        }
-                    </select>
-                </div>
+                <label asp-for="DisplayMode" class="form-label">@T["What type of display mode should be used?"]</label>
+                <select asp-for="DisplayMode" class="form-select" id="field-display-select">
+                    @foreach (var displayShape in displayShapes)
+                    {
+                        var shape = await Factory.CreateAsync(displayShape);
+                        shape.Properties["DisplayMode"] = Model.DisplayMode;
+                        @await DisplayAsync(shape)
+                    }
+                </select>
             </div>
         }
 

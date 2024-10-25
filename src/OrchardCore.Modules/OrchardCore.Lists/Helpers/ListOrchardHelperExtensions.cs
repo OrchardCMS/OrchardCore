@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
 using OrchardCore.ContentManagement;
@@ -9,7 +6,9 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Lists.Helpers;
 using YesSql;
 
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class ListOrchardHelperExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Returns list count.

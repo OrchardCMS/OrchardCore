@@ -1,18 +1,15 @@
-using System;
-using System.Linq;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Data;
 
 public static class ShellSettingsExtensions
 {
-    private const string _databaseTableOptions = "OrchardCore_Data_TableOptions";
-    private const string _defaultDocumentTable = $"{_databaseTableOptions}:DefaultDocumentTable";
-    private const string _defaultTableNameSeparator = $"{_databaseTableOptions}:DefaultTableNameSeparator";
-    private const string _defaultIdentityColumnSize = $"{_databaseTableOptions}:DefaultIdentityColumnSize";
+    private const string DatabaseTableOptions = "OrchardCore_Data_TableOptions";
+    private const string DefaultDocumentTable = $"{DatabaseTableOptions}:DefaultDocumentTable";
+    private const string DefaultTableNameSeparator = $"{DatabaseTableOptions}:DefaultTableNameSeparator";
+    private const string DefaultIdentityColumnSize = $"{DatabaseTableOptions}:DefaultIdentityColumnSize";
 
-    private readonly static string[] _identityColumnSizes = new[] { nameof(Int64), nameof(Int32) };
+    private static readonly string[] _identityColumnSizes = [nameof(Int64), nameof(Int32)];
 
     public static DatabaseTableOptions GetDatabaseTableOptions(this ShellSettings shellSettings) =>
         new()
@@ -37,11 +34,11 @@ public static class ShellSettingsExtensions
     public static string GetDocumentTable(this ShellSettings shellSettings)
     {
         var documentTable = (!shellSettings.IsInitialized()
-            ? shellSettings[_defaultDocumentTable]
+            ? shellSettings[DefaultDocumentTable]
             : shellSettings["DocumentTable"])
             ?.Trim();
 
-        if (String.IsNullOrEmpty(documentTable))
+        if (string.IsNullOrEmpty(documentTable))
         {
             documentTable = "Document";
         }
@@ -52,17 +49,17 @@ public static class ShellSettingsExtensions
     public static string GetTableNameSeparator(this ShellSettings shellSettings)
     {
         var tableNameSeparator = (!shellSettings.IsInitialized()
-            ? shellSettings[_defaultTableNameSeparator]
+            ? shellSettings[DefaultTableNameSeparator]
             : shellSettings["TableNameSeparator"])
             ?.Trim();
 
-        if (String.IsNullOrEmpty(tableNameSeparator))
+        if (string.IsNullOrEmpty(tableNameSeparator))
         {
             tableNameSeparator = "_";
         }
         else if (tableNameSeparator == "NULL")
         {
-            tableNameSeparator = String.Empty;
+            tableNameSeparator = string.Empty;
         }
         else if (tableNameSeparator.Any(c => c != '_'))
         {
@@ -75,11 +72,11 @@ public static class ShellSettingsExtensions
     public static string GetIdentityColumnSize(this ShellSettings shellSettings)
     {
         var identityColumnSize = (!shellSettings.IsInitialized()
-            ? shellSettings[_defaultIdentityColumnSize]
+            ? shellSettings[DefaultIdentityColumnSize]
             : shellSettings["IdentityColumnSize"])
             ?.Trim();
 
-        if (String.IsNullOrEmpty(identityColumnSize))
+        if (string.IsNullOrEmpty(identityColumnSize))
         {
             identityColumnSize = !shellSettings.IsInitialized() ? nameof(Int64) : nameof(Int32);
         }
@@ -90,8 +87,4 @@ public static class ShellSettingsExtensions
 
         return identityColumnSize;
     }
-
-    public static bool IsInitialized(this ShellSettings shellSettings) =>
-        shellSettings.State == TenantState.Running ||
-        shellSettings.State == TenantState.Disabled;
 }

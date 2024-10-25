@@ -1,10 +1,7 @@
-using System.Threading.Tasks;
+namespace OrchardCore.ContentLocalization.Handlers;
 
-namespace OrchardCore.ContentLocalization.Handlers
+public interface IContentLocalizationHandler
 {
-    public interface IContentLocalizationHandler
-    {
-        Task LocalizingAsync(LocalizationContentContext context);
-        Task LocalizedAsync(LocalizationContentContext context);
-    }
+    Task LocalizingAsync(LocalizationContentContext context);
+    Task LocalizedAsync(LocalizationContentContext context);
 }

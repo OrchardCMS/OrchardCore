@@ -1,5 +1,3 @@
-﻿using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
@@ -11,7 +9,7 @@ namespace OrchardCore.ContentFields.Handlers;
 
 public class YoutubeFieldHandler : ContentFieldHandler<YoutubeField>
 {
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
 
     public YoutubeFieldHandler(IStringLocalizer<YoutubeFieldHandler> stringLocalizer)
     {
@@ -22,7 +20,7 @@ public class YoutubeFieldHandler : ContentFieldHandler<YoutubeField>
     {
         var settings = context.ContentPartFieldDefinition.GetSettings<YoutubeFieldSettings>();
 
-        if (settings.Required && String.IsNullOrWhiteSpace(field.RawAddress))
+        if (settings.Required && string.IsNullOrWhiteSpace(field.RawAddress))
         {
             context.Fail(S["A value is required for '{0}'.", context.ContentPartFieldDefinition.DisplayName()], nameof(field.RawAddress));
         }
@@ -32,7 +30,7 @@ public class YoutubeFieldHandler : ContentFieldHandler<YoutubeField>
             var uri = new Uri(field.RawAddress);
 
             // if it is a url with QueryString
-            if (!String.IsNullOrWhiteSpace(uri.Query))
+            if (!string.IsNullOrWhiteSpace(uri.Query))
             {
                 var query = QueryHelpers.ParseQuery(uri.Query);
                 if (!query.ContainsKey("v"))

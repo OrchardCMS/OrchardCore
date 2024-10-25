@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -9,7 +6,6 @@ using OrchardCore.Data;
 using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 using YesSql;
 
@@ -21,7 +17,7 @@ namespace OrchardCore.Environment.Shell.Removing;
 public class ShellDbTablesRemovingHandler : IShellRemovingHandler
 {
     private readonly IShellContextFactory _shellContextFactory;
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
     public ShellDbTablesRemovingHandler(
@@ -44,10 +40,10 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
             return;
         }
 
-        if (context.ShellSettings.State == TenantState.Uninitialized)
+        if (context.ShellSettings.IsUninitialized())
         {
             var dbConnectionValidator = ShellScope.Services?.GetService<IDbConnectionValidator>();
-            if (dbConnectionValidator == null)
+            if (dbConnectionValidator is null)
             {
                 return;
             }
@@ -63,10 +59,7 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         }
 
         // Can't resolve 'IStore' if 'Uninitialized', so force to 'Disabled'.
-        var shellSettings = new ShellSettings(context.ShellSettings)
-        {
-            State = TenantState.Disabled,
-        };
+        var shellSettings = new ShellSettings(context.ShellSettings).AsDisabled();
 
         var shellDbTablesInfo = await GetTablesToRemoveAsync(shellSettings);
         if (!context.Success)
@@ -77,10 +70,10 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         try
         {
             // Create a minimum shell context without any features.
-            using var shellContext = await _shellContextFactory.CreateMinimumContextAsync(shellSettings);
+            await using var shellContext = await _shellContextFactory.CreateMinimumContextAsync(shellSettings);
             var store = shellContext.ServiceProvider.GetRequiredService<IStore>();
 
-            using var connection = store.Configuration.ConnectionFactory.CreateConnection();
+            await using var connection = store.Configuration.ConnectionFactory.CreateConnection();
             if (shellSettings["DatabaseProvider"] == DatabaseProviderValue.Sqlite && connection is SqliteConnection sqliteConnection)
             {
                 // Clear the pool to unlock the file and remove it.
@@ -90,13 +83,20 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
             else
             {
                 await connection.OpenAsync();
-                using var transaction = connection.BeginTransaction(store.Configuration.IsolationLevel);
+                using var transaction = await connection.BeginTransactionAsync(store.Configuration.IsolationLevel);
+                try
+                {
+                    // Remove all tables of this tenant.
+                    shellDbTablesInfo.Configure(transaction, _logger, throwOnError: false);
+                    shellDbTablesInfo.RemoveAllTables();
 
-                // Remove all tables of this tenant.
-                shellDbTablesInfo.Configure(transaction, _logger, throwOnError: false);
-                shellDbTablesInfo.RemoveAllTables();
-
-                transaction.Commit();
+                    await transaction.CommitAsync();
+                }
+                catch
+                {
+                    await transaction.RollbackAsync();
+                    throw;
+                }
             }
         }
         catch (Exception ex)
@@ -120,8 +120,8 @@ public class ShellDbTablesRemovingHandler : IShellRemovingHandler
         }
 
         // Create an isolated shell context composed of all features that have been installed.
-        using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings);
-        await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
+        await using var shellContext = await _shellContextFactory.CreateMaximumContextAsync(shellSettings);
+        await (await shellContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
         {
             var store = scope.ServiceProvider.GetRequiredService<IStore>();
             shellDbTablesInfo.Configure(store.Configuration);

@@ -7,7 +7,7 @@
             border-top: none !important;
             padding-top: 8px;
             padding-bottom: 8px;
-            color: $gray-700;
+            color: var(--oc-media-color);
             font-size: 0.8125rem;
             user-select: none;
 
@@ -21,13 +21,13 @@
         height: 75px;
 
         td {
-            border-top: $media-border-content;
+            border-top: var(--oc-media-border-content);
             padding: 0.25rem !important;
         }
 
         &.selected {
-            background-color: $selected-background-color;
-            border-left: solid 2px $primary;
+            background-color: var(--oc-media-selected-background-color);
+            border-left: solid 2px var(--bs-primary);
         }
     }
 
@@ -44,7 +44,7 @@
             img {
                 max-width: 75px;
                 max-height: 75px;
-                background: repeating-conic-gradient($gray-200 0% 25%, transparent 0% 50%) 50% / 10px 10px;
+                background: repeating-conic-gradient(var(--bs-gray-200, #ccc) 0% 25%, transparent 0% 50%) 50% / 10px 10px;
             }
         }
     }
@@ -83,7 +83,7 @@
     }
 
     .btn-link {
-        color: $gray-600;
+        color: var(--gray-600);
         padding-left: 0;
     }
 

@@ -35,6 +35,7 @@ Currently you can filter shapes by:
 
 !!! note
     Shape type (placement.json property name) DOES NOT necessarily align with with your part type. For instance, if you created a Content Part `GalleryPart` without a part driver, your shape type will be `ContentPart` with differentiator `GalleryPart`. So your placement.json would look like
+
 ```json
 {
   "ContentPart": [{
@@ -173,6 +174,26 @@ Metadata tag helper example:
     </metadata>
 </menu>
 ```
+
+#### Adding properties with additional tag helpers
+
+Properties can be passed to a shape by adding attributes to the shape tag helper, as mentioned above. But you can also use the `<add-property>` tag helper inside `<shape>`. This even lets you pass Razor code as properties with the `IHtmlContent` value, if you omit the `value` attribute. Something that can't be easily done otherwise.
+
+```xml
+<shape type="MyShape">
+    <add-property name="foo" value="1" />
+    <add-property name="bar" value="a" />
+    <add-property name="content">
+        <h2>Some complicated HTML</h2>
+        <div>
+            You can even include shapes:
+            <shape type="AnotherShape" prop-count="10" />
+        </div>
+    </add-property>
+</shape>
+```
+
+This is the same as `<shape type="MyShape" pro-foo="1" prop-bar="a" prop-content="@someHtmlContentVariable" />` where you'd have to construct `someHtmlContentVariable` separately. Of course, you can mix and match the different formats, for example, to only use `<add-property>` when you want to pass HTML content as property.
 
 ### Date Time shapes
 
@@ -319,17 +340,19 @@ We also specify that the `Content` column will take 9 columns, of the default 12
 !!! note
     By default the columns will break responsively at the `md` breakpoint, and a modifier will be parsed to `col-md-9`.
     If you want to change the breakpoint, you could also specifiy `Content_lg-9`, which is parsed to `col-lg-9`.
-    
+
 ### Dynamic part placement
 
 In the following example we place a dynamic part (part without driver, i.e. created in json) `GalleryPart` in a zone called `MyGalleryZone`. When displaying that part inside Content template we would execute:
 
 === Content-Product.Detail.html
+
 ``` html
 @await DisplayAsync(Model.MyGalleryZone)
 ```
 
 Dynamic parts use `ContentPart` shape for detail display with differentiator of Part name, so the placement file would look like this:
+
 ``` json
 {
   "ContentPart": [
@@ -346,6 +369,7 @@ This setup would then show your template (e.g. `GalleryPart.cshtml` or `GalleryP
 If we would like to show the same part in a summary display content template (or any other that isn't `Detail` display type):
 
 === Content-Product.Summary.html
+
 ``` html
 @await DisplayAsync(Model.MyGalleryZone)
 ```
@@ -365,6 +389,10 @@ Our placement would look like this (note the `_Summary` suffix to ContentPart na
 
 This setup would then show your template  (e.g. `GalleryPart.cshtml` or `GalleryPart.Summary.cshtml`) where `DisplayAsync` was called.
 
-## Video
+## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/h0lZMQkUApo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/YR8QzyAEgo4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pGLggL_T9jc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

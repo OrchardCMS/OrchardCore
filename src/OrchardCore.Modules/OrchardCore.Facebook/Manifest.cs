@@ -2,40 +2,49 @@ using OrchardCore.Facebook;
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
-    Name = "Facebook",
+    Name = "Meta",
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
-    Category = "Facebook"
+    Category = "Meta"
 )]
 
 [assembly: Feature(
     Id = FacebookConstants.Features.Core,
-    Name = "Facebook",
-    Category = "Facebook",
-    Description = "Registers the core components used by the Facebook features."
+    Name = "Meta Core Components",
+    Category = "Meta",
+    Description = "Registers the core components used by the Meta features.",
+    EnabledByDependencyOnly = true
 )]
 
 [assembly: Feature(
     Id = FacebookConstants.Features.Login,
-    Name = "Facebook Login",
-    Category = "Facebook",
-    Description = "Authenticates users from facebook.",
-    Dependencies = new[]
-    {
-        FacebookConstants.Features.Core
-    }
+    Name = "Meta Login",
+    Category = "Meta",
+    Description = "Authenticates users from Meta.",
+    Dependencies =
+    [
+        FacebookConstants.Features.Core,
+        "OrchardCore.Users.ExternalAuthentication",
+    ]
 )]
 
 [assembly: Feature(
     Id = FacebookConstants.Features.Widgets,
-    Name = "Facebook Social Plugins Widgets",
-    Category = "Facebook",
-    Description = "Integrates Facebook Social Plugins as predefined widgets",
-    Dependencies = new[]
-    {
+    Name = "Meta Social Plugins Widgets",
+    Category = "Meta",
+    Description = "Integrates Meta social plugins as predefined widgets",
+    Dependencies =
+    [
         FacebookConstants.Features.Core,
         "OrchardCore.Widgets",
         "OrchardCore.Recipes.Core",
-    }
+    ]
+)]
+
+[assembly: Feature(
+    Id = FacebookConstants.Features.Pixel,
+    Name = "Meta Pixel",
+    Category = "Meta",
+    Description = "Provides a way to enable Meta Pixel tracking for your site."
 )]

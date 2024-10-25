@@ -1,0 +1,23 @@
+@using OrchardCore.Admin.Models
+@using OrchardCore.DisplayManagement
+@using OrchardCore.DisplayManagement.ModelBinding
+@using OrchardCore.DisplayManagement.Zones
+
+@inject IDisplayManager<Navbar> DisplayManager
+@inject IUpdateModelAccessor UpdateModelAccessor
+
+@if (Model.Content == null)
+{
+    var shape = await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater, (string)Model.Metadata.DisplayType);
+
+    if (!shape.TryGetProperty<IShape>("Content", out var content))
+    {
+        return;
+    }
+
+    Model.Content = content;
+}
+
+<ul class="navbar-nav user-top-navbar">
+    @await DisplayAsync(Model.Content)
+</ul>

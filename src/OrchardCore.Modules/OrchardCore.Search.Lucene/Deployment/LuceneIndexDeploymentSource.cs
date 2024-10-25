@@ -1,50 +1,46 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.Deployment;
 using OrchardCore.Search.Lucene.Model;
 
-namespace OrchardCore.Search.Lucene.Deployment
+namespace OrchardCore.Search.Lucene.Deployment;
+
+public class LuceneIndexDeploymentSource
+    : DeploymentSourceBase<LuceneIndexDeploymentStep>
 {
-    public class LuceneIndexDeploymentSource : IDeploymentSource
+    private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
+
+    public LuceneIndexDeploymentSource(LuceneIndexSettingsService luceneIndexSettingsService)
     {
-        private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
+        _luceneIndexSettingsService = luceneIndexSettingsService;
+    }
 
-        public LuceneIndexDeploymentSource(LuceneIndexSettingsService luceneIndexSettingsService)
+    protected override async Task ProcessAsync(LuceneIndexDeploymentStep step, DeploymentPlanResult result)
+    {
+        var indexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
+
+        var data = new JsonArray();
+        var indicesToAdd = step.IncludeAll
+            ? indexSettings.Select(x => x.IndexName).ToArray()
+            : step.IndexNames;
+
+        foreach (var index in indexSettings)
         {
-            _luceneIndexSettingsService = luceneIndexSettingsService;
-        }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-        {
-            var luceneIndexStep = step as LuceneIndexDeploymentStep;
-
-            if (luceneIndexStep == null)
+            if (indicesToAdd.Contains(index.IndexName))
             {
-                return;
-            }
-
-            var indexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
-
-            var data = new JArray();
-            var indicesToAdd = luceneIndexStep.IncludeAll ? indexSettings.Select(x => x.IndexName).ToArray() : luceneIndexStep.IndexNames;
-
-            foreach (var index in indexSettings)
-            {
-                if (indicesToAdd.Contains(index.IndexName))
+                var indexSettingsDict = new Dictionary<string, LuceneIndexSettings>
                 {
-                    var indexSettingsDict = new Dictionary<string, LuceneIndexSettings>();
-                    indexSettingsDict.Add(index.IndexName, index);
-                    data.Add(JObject.FromObject(indexSettingsDict));
-                }
-            }
+                    { index.IndexName, index },
+                };
 
-            // Adding Lucene settings
-            result.Steps.Add(new JObject(
-                new JProperty("name", "lucene-index"),
-                new JProperty("Indices", data)
-            ));
+                data.Add(JObject.FromObject(indexSettingsDict));
+            }
         }
+
+        // Adding Lucene settings
+        result.Steps.Add(new JsonObject
+        {
+            ["name"] = "lucene-index",
+            ["Indices"] = data,
+        });
     }
 }

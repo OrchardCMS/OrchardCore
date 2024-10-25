@@ -1,23 +1,25 @@
-using System;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Roles
+namespace OrchardCore.Roles;
+
+public static class CommonPermissions
 {
-    public class CommonPermissions
-    {
-        public static readonly Permission ManageRoles = new Permission("ManageRoles", "Managing Roles", isSecurityCritical: true);
-        public static readonly Permission AssignRoles = new Permission("AssignRoles", "Assign Roles", new[] { ManageRoles }, isSecurityCritical: true);
+    public static readonly Permission ManageRoles = new("ManageRoles", "Managing Roles", isSecurityCritical: true);
 
-        /// <summary>
-        /// Dynamic permission template for assign role
-        /// </summary>
-        private static readonly Permission AssignRole = new Permission("AssignRole_{0}", "Assign Role - {0}", new[] { AssignRoles, ManageRoles });
+    [Obsolete("This Permission is no longer used and will be removed. Instead use OrchardCore.Users.CommonPermissions.AssignRoleToUsers.")]
+    public static readonly Permission AssignRoles = new("AssignRoles", "Assign Roles", [ManageRoles], isSecurityCritical: true);
 
-        public static Permission CreatePermissionForAssignRole(string name)
-            => new Permission(
-                    String.Format(AssignRole.Name, name),
-                    String.Format(AssignRole.Description, name),
-                    AssignRole.ImpliedBy
-                );
-    }
+    /// <summary>
+    /// Dynamic permission template for assign role.
+    /// </summary>
+    [Obsolete("This Permission is no longer used and will be removed. Instead use OrchardCore.Users.CommonPermissions.CreateAssignRoleToUsersPermission(roleName).")]
+    private static readonly Permission _assignRole = new("AssignRole_{0}", "Assign Role - {0}", [AssignRoles, ManageRoles]);
+
+    [Obsolete("This Permission is no longer used and will be removed. Instead use OrchardCore.Users.CommonPermissions.CreateAssignRoleToUsersPermission(roleName).")]
+    public static Permission CreatePermissionForAssignRole(string name) =>
+        new(
+            string.Format(_assignRole.Name, name),
+            string.Format(_assignRole.Description, name),
+            _assignRole.ImpliedBy
+        );
 }

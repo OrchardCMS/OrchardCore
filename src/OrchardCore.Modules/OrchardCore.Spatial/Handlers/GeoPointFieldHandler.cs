@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -9,7 +8,7 @@ namespace OrchardCore.Spatial.Handlers;
 
 public class GeoPointFieldHandler : ContentFieldHandler<GeoPointField>
 {
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
 
     public GeoPointFieldHandler(IStringLocalizer<GeoPointFieldHandler> stringLocalizer)
     {

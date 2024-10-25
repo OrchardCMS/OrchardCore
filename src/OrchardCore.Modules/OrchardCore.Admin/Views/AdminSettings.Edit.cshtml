@@ -1,11 +1,11 @@
 @model OrchardCore.Admin.ViewModels.AdminSettingsViewModel
 
-<fieldset class="mb-3" asp-validation-class-for="DisplayDarkMode">
+<fieldset class="mb-3" asp-validation-class-for="DisplayThemeToggler">
     <div class="form-check">
-        <input asp-for="DisplayDarkMode" class="form-check-input" type="checkbox" />
-        <label asp-for="DisplayDarkMode" class="form-check-label">@T["Enable dark mode admin theme"]</label>
+        <input asp-for="DisplayThemeToggler" class="form-check-input" type="checkbox" />
+        <label asp-for="DisplayThemeToggler" class="form-check-label">@T["Enable theme toggler"]</label>
     </div>
-    <span class="hint">@T["Whether a dark mode admin theme can be displayed."]</span>
+    <span class="hint">@T["Whether or not to display a theme toggler."]</span>
 </fieldset>
 
 <fieldset class="mb-3" asp-validation-class-for="DisplayMenuFilter">

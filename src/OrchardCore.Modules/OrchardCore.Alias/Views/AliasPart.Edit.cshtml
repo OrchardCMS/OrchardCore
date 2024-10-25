@@ -7,14 +7,14 @@
     var culture = await Orchard.GetContentCultureAsync(Model.AliasPart.ContentItem);
 }
 
-<div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="Alias">
-    <label asp-for="Alias" class="@Orchard.GetLabelCssClasses()">@T["Alias"] </label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="Alias">
+    <label asp-for="Alias" class="@Orchard.GetLabelClasses()">@T["Alias"] </label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="Alias" class="form-control text-muted" disabled="@(Model.Settings?.Options == AliasPartOptions.GeneratedDisabled)" dir="@culture.GetLanguageDirection()" />
         <span asp-validation-for="Alias"></span>
         <span class="hint">
             @T["The alias of the content item."]
-            @if (!String.IsNullOrWhiteSpace(Model.Settings.Pattern))
+            @if (!string.IsNullOrWhiteSpace(Model.Settings.Pattern))
             {
                 @T["Leave empty to re-generate it."]
             }

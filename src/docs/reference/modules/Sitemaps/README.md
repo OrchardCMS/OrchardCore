@@ -33,22 +33,22 @@ Sitemap Indexes are configured by creating a Sitemap Index and selecting which S
 ## Sitemap Content Types Source
 
 The Content Types Source will provide a sitemap for your content items,
-on a per Content Type basis. 
+on a per Content Type basis.
 
-You can choose to Index All Content Types, or specify the Content Types. 
+You can choose to Index All Content Types, or specify the Content Types.
 
-You may also select the default Priority, and Change Frequency, either for all Content Types, 
+You may also select the default Priority, and Change Frequency, either for all Content Types,
 or individual Content Types.
 
 You may also choose to Limit Items.
 
 The Limit Items option is generally used in combination with a Sitemap Index to limit the size of Sitemaps,
-and make maintaining the Sitemap easier. 
+and make maintaining the Sitemap easier.
 
-Google and Bing limit the size of a sitemap to either 50,000 items, or 10MB, 
-whichever is reached first. 
+Google and Bing limit the size of a sitemap to either 50,000 items, or 10MB,
+whichever is reached first.
 
-If you need to limit the quantity of Content Items in a Sitemap 
+If you need to limit the quantity of Content Items in a Sitemap
 
 - Uncheck Index All Content Types.
 
@@ -56,7 +56,7 @@ If you need to limit the quantity of Content Items in a Sitemap
 
 - Select the Content Type to index.
 
-- Choose to Skip `x` number of Content Items and Take `x` number of Content Items. 
+- Choose to Skip `x` number of Content Items and Take `x` number of Content Items.
 
 For the remaining Content Items, create another Sitemap, and repeat choosing different values for Skip and Take as appropriate.
 
@@ -96,20 +96,17 @@ on this protocol.
 
 To include Content Types displayed with Razor Pages, enable the Sitemaps for Decoupled Razor Pages feature.
 
-In your `Startup.cs`, configure the `SitemapsRazorPagesOptions` to support the routes for your Content Types.
+In your `Program.cs`, configure the `SitemapsRazorPagesOptions` to support the routes for your Content Types.
 
 ```csharp
-public override void ConfigureServices(IServiceCollection services)
+builder.Services.Configure<SitemapsRazorPagesOptions>(options =>
 {
-    services.Configure<SitemapsRazorPagesOptions>(options =>
+    options.ConfigureContentType("DecoupledBlogPost", o =>
     {
-        options.ConfigureContentType("DecoupledBlogPost", o =>
-        {
-            o.PageName = "DecoupledBlogPost";
-            o.RouteValues = (contentItem) => new { area = "OrchardCore.Sitemaps", slug = contentItem.ContentItemId };
-        });
+        o.PageName = "DecoupledBlogPost";
+        o.RouteValues = (contentItem) => new { area = "OrchardCore.Sitemaps", slug = contentItem.ContentItemId };
     });
-}      
+});    
 ```
 
 !!! note
@@ -123,6 +120,10 @@ The cache is automatically cleared when content items are published.
 
 To clear the cache manually use the _Configuration -> SEO -> Sitemaps Cache_ feature.
 
+## `robots.txt` File
+
+When both `SEO` and `Sitemaps` features are enabled and no `robots.txt` file is found on the filesystem, the sitemap indexes and sitemaps are added to the `robots.txt` file by default. This can be changed by navigating to **Configuration** >> **Settings** >> **SEO**.
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/fG_rFD0wffw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -133,6 +134,6 @@ To clear the cache manually use the _Configuration -> SEO -> Sitemaps Cache_ fea
 
 <https://github.com/IDeliverable/IDeliverable.Seo>  
 
-Copyright (c) IDeliverable, Ltd. 
+Copyright (c) IDeliverable, Ltd.
 
 BSD-3

@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace OrchardCore.FileStorage.AmazonS3;
 
 public class AwsDirectory : IFileStoreEntry
@@ -14,7 +12,7 @@ public class AwsDirectory : IFileStoreEntry
         _path = path;
         _lastModifiedUtc = lastModifiedUtc;
         _name = System.IO.Path.GetFileName(path);
-        _directoryPath = _path.Length > _name.Length ? _path[..(_path.Length - _name.Length - 1)] : String.Empty;
+        _directoryPath = _path.Length > _name.Length ? _path[..(_path.Length - _name.Length - 1)] : string.Empty;
     }
 
     public string Path => _path;

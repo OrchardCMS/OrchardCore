@@ -1,45 +1,38 @@
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using Microsoft.Extensions.Options;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Deployment;
+using OrchardCore.Json;
 
-namespace OrchardCore.AdminMenu.Deployment
+namespace OrchardCore.AdminMenu.Deployment;
+
+public class AdminMenuDeploymentSource
+    : DeploymentSourceBase<AdminMenuDeploymentStep>
 {
-    public class AdminMenuDeploymentSource : IDeploymentSource
+    private readonly IAdminMenuService _adminMenuService;
+    private readonly JsonSerializerOptions _serializationOptions;
+
+    public AdminMenuDeploymentSource(IAdminMenuService adminMenuService,
+        IOptions<DocumentJsonSerializerOptions> serializationOptions)
     {
-        private readonly IAdminMenuService _adminMenuService;
+        _adminMenuService = adminMenuService;
+        _serializationOptions = serializationOptions.Value.SerializerOptions;
+    }
 
-        public AdminMenuDeploymentSource(IAdminMenuService adminMenuService)
+    protected override async Task ProcessAsync(AdminMenuDeploymentStep step, DeploymentPlanResult result)
+    {
+        var data = new JsonArray();
+        result.Steps.Add(new JsonObject
         {
-            _adminMenuService = adminMenuService;
-        }
+            ["name"] = "AdminMenu",
+            ["data"] = data,
+        });
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
         {
-            var adminMenuStep = step as AdminMenuDeploymentStep;
-
-            if (adminMenuStep == null)
-            {
-                return;
-            }
-
-            var data = new JArray();
-            result.Steps.Add(new JObject(
-                new JProperty("name", "AdminMenu"),
-                new JProperty("data", data)
-            ));
-
-            // For each AdminNode, store info about its concrete type: linkAdminNode, contentTypesAdminNode etc...
-            var serializer = new JsonSerializer() { TypeNameHandling = TypeNameHandling.Auto };
-
-            foreach (var adminMenu in (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
-            {
-                var objectData = JObject.FromObject(adminMenu, serializer);
-                data.Add(objectData);
-            }
-
-            return;
+            var objectData = JObject.FromObject(adminMenu, _serializationOptions);
+            data.Add(objectData);
         }
     }
 }

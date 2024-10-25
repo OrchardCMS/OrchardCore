@@ -6,21 +6,24 @@
     var datepickerId = Html.IdFor(m => m.Value);
 }
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <label asp-for="Value" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndCssClasses()">
-        <div class="@Orchard.GetLimitedWidthWrapperCssClasses()">
-            <div class="@Orchard.GetLimitedWidthCssClasses()">
-                <input asp-for="Value" type="text" class="form-control content-preview-select datepicker" required="@settings.Required" />
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Value" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
+        <div class="@Orchard.GetLimitedWidthWrapperClasses()">
+            <div class="@Orchard.GetLimitedWidthClasses()">
+                <input asp-for="Value" type="text" class="form-control content-preview-select datepicker" />
+                <span asp-validation-for="Value"></span>
             </div>
         </div>
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }
     </div>
 </div>
 
+<style asp-name="jQuery-ui" at="Head"></style>
+<script asp-name="jQuery-ui-i18n" at="Foot"></script>
 <script at="Foot">
     $(function () {
         $('#@datepickerId').datepicker($.datepicker.regional['@language']);

@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.BackgroundTasks;
@@ -13,7 +12,7 @@ internal static class HttpContextExtensions
             context.Request.Host = new HostString(uri.Host, uri.Port);
             context.Request.PathBase = uri.AbsolutePath;
 
-            if (!String.IsNullOrWhiteSpace(uri.Query))
+            if (!string.IsNullOrWhiteSpace(uri.Query))
             {
                 context.Request.QueryString = new QueryString(uri.Query);
             }

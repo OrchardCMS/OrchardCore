@@ -1,0 +1,11 @@
+@using OrchardCore.Sms.ViewModels
+
+@model SmsSettingsViewModel
+
+<div class="mb-3" asp-validation-class-for="DefaultProvider">
+    <label asp-for="DefaultProvider" class="form-label">@T["Default SMS provider"]</label>
+    <select asp-for="DefaultProvider" class="form-select" asp-items="Model.Providers">
+        <option value="">@T["Select a provider"]</option>
+    </select>
+    <span asp-validation-for="DefaultProvider"></span>
+</div>

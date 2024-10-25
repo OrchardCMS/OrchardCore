@@ -10,7 +10,7 @@
 <div class="row">
     <div class="col-12 col-md-6">
         <div class="mb-3" asp-validation-class-for="Name">
-            <label asp-for="Name">@T["Name"]</label>
+            <label asp-for="Name" class="form-label">@T["Name"]</label>
             <input asp-for="Name" class="form-control" autofocus />
             <span asp-validation-for="Name"></span>
             <span class="hint">@T["The name of the feature profile."]</span>
@@ -18,7 +18,7 @@
     </div>
     <div class="col-12">
         <div class="mb-3" asp-validation-class-for="FeatureRules">
-            <label asp-for="FeatureRules">@T["Rules"]</label>
+            <label asp-for="FeatureRules" class="form-label">@T["Rules"]</label>
             <div class="form-control" style="min-height: 400px;">
                 <div id="@Html.IdFor(x => x.FeatureRules)_editor" asp-for="FeatureRules" style="min-height: 385px;" dir="@Orchard.CultureDir()" data-schema="@schema"></div>
             </div>

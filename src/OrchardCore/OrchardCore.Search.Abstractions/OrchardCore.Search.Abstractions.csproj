@@ -1,12 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>OrchardCore.Search.Abstractions</RootNamespace>
+    <RootNamespace>OrchardCore.Search</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore Search Abstractions</Title>
-    <Description>$(OCCMSDescription)
+    <Description>
+      $(OCCMSDescription)
 
-    Abstractions for search.</Description>
+      Abstractions for search.
+    </Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
   </PropertyGroup>
 

@@ -1,16 +1,13 @@
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Microsoft.Authentication.Configuration;
 
-public class AzureADSettingsConfiguration : IConfigureOptions<AzureADSettings>
+public sealed class AzureADSettingsConfiguration : IConfigureOptions<AzureADSettings>
 {
     private readonly IAzureADService _azureADService;
     private readonly ShellSettings _shellSettings;
@@ -48,7 +45,7 @@ public class AzureADSettingsConfiguration : IConfigureOptions<AzureADSettings>
 
         if (_azureADService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
         {
-            if (_shellSettings.State == TenantState.Running)
+            if (_shellSettings.IsRunning())
             {
                 _logger.LogWarning("The AzureAD Authentication is not correctly configured.");
             }

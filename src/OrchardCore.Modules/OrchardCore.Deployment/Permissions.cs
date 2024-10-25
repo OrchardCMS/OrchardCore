@@ -1,31 +1,34 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Deployment
+namespace OrchardCore.Deployment;
+
+public sealed class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission ManageDeploymentPlan = CommonPermissions.ManageDeploymentPlan;
-        public static readonly Permission Export = CommonPermissions.Export;
-        public static readonly Permission Import = CommonPermissions.Import;
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan'.")]
+    public static readonly Permission ManageDeploymentPlan = CommonPermissions.ManageDeploymentPlan;
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(new[] { ManageDeploymentPlan, Import, Export }.AsEnumerable());
-        }
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Deployment.CommonPermissions.Export'.")]
+    public static readonly Permission Export = CommonPermissions.Export;
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Deployment.CommonPermissions.Import'.")]
+    public static readonly Permission Import = CommonPermissions.Import;
+
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        CommonPermissions.Import,
+        CommonPermissions.Export,
+        CommonPermissions.ManageDeploymentPlan,
+    ];
+
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
+
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
         {
-            return new[]
-            {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = new[] { Import, Export }
-                }
-            };
-        }
-    }
+            Name = OrchardCoreConstants.Roles.Administrator,
+            Permissions = _allPermissions,
+        },
+    ];
 }

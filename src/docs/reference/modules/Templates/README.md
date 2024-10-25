@@ -51,6 +51,42 @@ For instance, when a content item is displayed in a list, the `Summary` display 
 | `Content_Summary__BlogPost` | `Content-BlogPost.Summary.cshtml` |
 | `Content_Summary__Article` | `Content-Article.Summary.cshtml` |
 
+### `Content__Alias__[Alias]`
+
+This template is called when displaying a content item with a specific alias. It needs to have the `AliasPart` attached to it.
+
+#### Content with Alias Examples
+
+| Template                   | Filename                       |
+|----------------------------|--------------------------------|
+| `Content__Alias__example`  | `Content-Alias-example.cshtml` |
+| `Content__Alias__my__page` | `Content-Alias-my-page.cshtml` |
+
+#### Content with Alias and Display Type Examples
+
+| Template                           | Filename                               |
+|------------------------------------|----------------------------------------|
+| `Content_Summary__Alias__example`  | `Content-Alias-example.Summary.cshtml` |
+| `Content_Summary__Alias__my__page` | `Content-Alias-my-page.Summary.cshtml` |
+
+### `Content__Slug__[Slug]`
+
+This template is called when displaying a content item with a specific slug (i.e., a path is assigned to the item). It needs to have the `AutoroutePart` attached to it.
+
+#### Content with Slug Examples
+
+| Template                        | Filename                           |
+|---------------------------------|------------------------------------|
+| `Content__Slug__example`        | `Content-Slug-example.cshtml`      |
+| `Content__Slug__blog__my__post` | `Content-Slug-blog-my-post.cshtml` |
+
+#### Content with Slug and Display Type Examples
+
+| Template                          | Filename                               |
+|-----------------------------------|----------------------------------------|
+| `Content_Summary__Slug__example`  | `Content-Slug-example.Summary.cshtml` |
+| `Content_Summary__Slug__blog__my__post` | `Content-Slug-blog-my-post.Summary.cshtml` |
+
 ## Widget templates
 
 ### `Widget__[ContentType]`
@@ -73,14 +109,50 @@ This template is called when a widget is rendered on a page.
 | `Model.ContentItem.Content` | A JSON object containing all the data of the content item. |
 | `Model.Classes` | An array of all the classes attached to the widget. |
 
+### `Widget__Alias__[Alias]`
+
+This template is called when displaying a widget content item with a specific alias. It needs to have the `AliasPart` attached to it.
+
+#### Widget with Alias Examples
+
+| Template                   | Filename                       |
+|----------------------------|--------------------------------|
+| `Widget__Alias__example`  | `Widget-Alias-example.cshtml` |
+| `Widget__Alias__my__page` | `Widget-Alias-my-page.cshtml` |
+
+#### Widget with Alias and Display Type Examples
+
+| Template                           | Filename                               |
+|------------------------------------|----------------------------------------|
+| `Widget_Summary__Alias__example`  | `Widget-Alias-example.Summary.cshtml` |
+| `Widget_Summary__Alias__my__page` | `Widget-Alias-my-page.Summary.cshtml` |
+
+### `Widget__Slug__[Slug]`
+
+This template is called when displaying a widget content item with a specific slug (i.e., a path is assigned to the item). It needs to have the `AutoroutePart` attached to it.
+
+#### Widget with Slug Examples
+
+| Template                        | Filename                           |
+|---------------------------------|------------------------------------|
+| `Widget__Slug__example`        | `Widget-Slug-example.cshtml`      |
+| `Widget__Slug__blog__my__post` | `Widget-Slug-blog-my-post.cshtml` |
+
+#### Widget with Slug and Display Type Examples
+
+| Template                          | Filename                               |
+|-----------------------------------|----------------------------------------|
+| `Widget_Summary__Slug__example`  | `Widget-Slug-example.Summary.cshtml` |
+| `Widget_Summary__Slug__blog__my__post` | `Widget-Slug-blog-my-post.Summary.cshtml` |
+
 ## Content Part templates
 
-Each driver is free to return a shape type of its choosing, but the usage is 
+Each driver is free to return a shape type of its choosing, but the usage is
 to render a content part using a shape with a name that matches the type name.
 For instance the `HtmlBodyPart` content part will return a single shape of type `HtmlBodyPart`, but the `ListPart` returns many
 shapes, one among them being `ListPart`.
 
-As a consequence the following list of templates use the `[ShapeType]` term where 
+As a consequence the following list of templates use the `[ShapeType]` term where
 most of the time it will be equal to the name of the content part. The examples use
 common content part names for this reason.
 
@@ -170,7 +242,6 @@ This template is called when a content part is rendered for a given content part
 | --------- | ------------ |
 | `TitlePart_Summary__CustomMode_Display` | `TitlePart-CustomMode.Display.Summary.cshtml` |
 
-
 ### `[ContentType]_Display__[PartType]__[DisplayMode]`
 
 This template is called when a content part is rendered for a given content type, with given display mode, without a display type.
@@ -221,7 +292,6 @@ This template is called when a shape type is rendered in a given content part ty
 | --------- | ------------ |
 | `Blog_Display__ListPart__ListPartFeed__CustomMode` | `Blog-ListPart-ListPartFeed-CustomMode.Display.cshtml` |
 
-
 ### `[ContentType]_[DisplayType]__[PartType]__[ShapeType]__[DisplayMode]_Display`
 
 This template is called when a shape type is rendered in a given content part type for a given content type, for given display mode with a given display type.
@@ -252,8 +322,6 @@ This template is called when a shape type is rendered in a given content part na
 | --------- | ------------ |
 | `Blog_Summary__Services__ListPartFeed__CustomMode_Display` | `Blog-Services-ListPartFeed-CustomMode.Display.Summary.cshtml` |
 
-
-
 ### Widget parts / Stereotype parts
 
 Content Part attached to Content type of the stereotype (e.g. `Widget`, `Menu`) also has following alternates. This applies to any stereotype other than `Content`.
@@ -267,7 +335,7 @@ This template is called when a content part is rendered for a given stereo type,
 | Template | Filename|
 | --------- | ------------ |
 | `Widget__HtmlBodyPart` | `Widget-HtmlBodyPart.cshtml` |
-| `Widget_Summary__HtmlBodyPart` | `Widget-HtmlBodyPart.Summary.cshtml` 
+| `Widget_Summary__HtmlBodyPart` | `Widget-HtmlBodyPart.Summary.cshtml`
 
 ### `[Stereotype]_[DisplayType]__[PartType]__[PartName]`
 
@@ -313,7 +381,6 @@ This template is called when a content part is rendered for a given stereo type,
 | Template | Filename|
 | --------- | ------------ |
 | `Widget_Display__TitlePart__CustomMode` | `Widget-TitlePart-CustomMode.Display.cshtml` |
-
 
 ### `[Stereotype]_[DisplayType]__[PartType]__[DisplayMode]_Display`
 
@@ -387,8 +454,8 @@ This template is called when a shape type is rendered in a given content part na
 
 ## Content Field templates
 
-Each driver is free to return a shape type of its choosing but the usage is 
-to render a content field using a shape with the same type name. 
+Each driver is free to return a shape type of its choosing but the usage is
+to render a content field using a shape with the same type name.
 For instance the `TextField` content field will return a single shape of type `TextField`,
 but other fields might return many shapes.
 
@@ -493,7 +560,7 @@ This template is called when a content field shape type is rendered for a given 
 The differentiator uniquely identifies a shape in a zone. When rendering a content item, the shape has a `Content` property that contains
 all the shapes provided by content display drivers, including the ones for content parts and content fields.
 
-Differentiators can be used to configure the placement information (c.f. [Placement documentation page](../../core/Placement/)), or to access specific shapes in a zone using these template helpers:
+Differentiators can be used to configure the placement information (c.f. [Placement documentation page](../../core/Placement/README.md)), or to access specific shapes in a zone using these template helpers:
 
 ### Content Part differentiator
 
@@ -616,3 +683,11 @@ Views/Shared/{0}.cshtml
 For example, if you want to override the `OrchardCore.Users\Views\Account\Login.cshtml` view you would need to create a file in your theme and place it under `YourTheme\Views\OrchardCore.Users\Account\Login.cshtml`.  
 For this particular file, you would also need to select the `Use site theme for login page`
 option under the `Configuration->Login` page in the admin.
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/8Hm9HeZMsDA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/bwFH-C18rrA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pfPkPH7PN5w" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

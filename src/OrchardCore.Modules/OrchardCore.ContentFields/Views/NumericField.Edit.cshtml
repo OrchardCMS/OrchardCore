@@ -5,28 +5,28 @@
     string name = Model.PartFieldDefinition.DisplayName();
     decimal min = settings.Minimum.HasValue ? settings.Minimum.Value : 0;
     decimal max = settings.Maximum.HasValue ? settings.Maximum.Value : 10000;
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.Value)_FieldWrapper">
-    <label asp-for="Value" class="@Orchard.GetLabelCssClasses()">@name</label>
-    <div class="@Orchard.GetEndCssClasses()">
-        <div class="@Orchard.GetLimitedWidthWrapperCssClasses()">
-            <div class="@Orchard.GetLimitedWidthCssClasses()">
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Value)_FieldWrapper">
+    <label asp-for="Value" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@name</label>
+    <div class="@Orchard.GetEndClasses()">
+        <div class="@Orchard.GetLimitedWidthWrapperClasses()">
+            <div class="@Orchard.GetLimitedWidthClasses()">
                 <div class="input-group">
                     @if (settings.Minimum.HasValue)
                     {
                         <span class="input-group-text">@min</span>
                     }
-                    <input asp-for="Value" class="form-control content-preview-select" placeholder="@settings.Placeholder" required="@settings.Required" />
+                    <input asp-for="Value" class="form-control content-preview-select" placeholder="@settings.Placeholder" />
                     @if (settings.Maximum.HasValue)
                     {
                         <span class="input-group-text">@max</span>
                     }
                 </div>
+                <span asp-validation-for="Value"></span>
             </div>
         </div>
-        @if (!String.IsNullOrEmpty(settings.Hint))
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }

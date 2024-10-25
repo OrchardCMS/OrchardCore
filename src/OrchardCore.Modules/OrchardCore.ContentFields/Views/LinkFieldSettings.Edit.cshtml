@@ -9,8 +9,8 @@
     </div>
 </div>
 <div class="mb-3">
-    <div class="w-100 w-md-50 pe-md-3">
-        <label asp-for="LinkTextMode">@T["Text"]</label>
+    <div class="w-100 w-lg-75 w-xl-50">
+        <label asp-for="LinkTextMode" class="form-label">@T["Text"]</label>
         <select asp-for="LinkTextMode" class="form-select">
             <option value="@LinkTextMode.Optional" selected="@(Model.LinkTextMode == LinkTextMode.Optional)">@T["Text is optional"]</option>
             <option value="@LinkTextMode.Required" selected="@(Model.LinkTextMode == LinkTextMode.Required)">@T["Text is required"]</option>
@@ -21,39 +21,54 @@
 </div>
 <div class="row">
     <div class="mb-3 col-md-6">
-        <label asp-for="Hint">@T["Hint for the url"]</label>
+        <label asp-for="Hint" class="form-label">@T["Hint for the url"]</label>
         <input asp-for="Hint" type="text" class="form-control" />
         <span class="hint">@T["The hint text to display for the url on the editor."]</span>
     </div>
     <div class="mb-3 col-md-6">
-        <label asp-for="HintLinkText">@T["Hint for the text"]</label>
+        <label asp-for="HintLinkText" class="form-label">@T["Hint for the text"]</label>
         <input asp-for="HintLinkText" type="text" class="form-control" />
         <span class="hint">@T["The hint text to display for the text of the link on the editor."]</span>
     </div>
 </div>
 <div class="row">
     <div class="mb-3 col-md-6">
-        <label asp-for="UrlPlaceholder">@T["Watermark for the url"]</label>
+        <label asp-for="UrlPlaceholder" class="form-label">@T["Watermark for the url"]</label>
         <input asp-for="UrlPlaceholder" type="text" class="form-control" />
         <span class="hint">@T["A hint (placeholder) to display when the input of the url is empty."]</span>
     </div>
     <div class="mb-3 col-md-6">
-        <label asp-for="TextPlaceholder">@T["Watermark for the text"]</label>
+        <label asp-for="TextPlaceholder" class="form-label">@T["Watermark for the text"]</label>
         <input asp-for="TextPlaceholder" type="text" class="form-control" />
         <span class="hint">@T["A hint (placeholder) to display when the input of the text is empty."]</span>
     </div>
 </div>
 <div class="row">
     <div class="mb-3 col-md-6">
-        <label asp-for="DefaultUrl">@T["Default value of the url"]</label>
+        <label asp-for="DefaultUrl" class="form-label">@T["Default value of the url"]</label>
         <input asp-for="DefaultUrl" type="text" class="form-control" />
         <span class="hint">@T["A valid url proposed when creating a content item."]</span>
         <span asp-validation-for="DefaultUrl" class="text-danger"></span>
     </div>
     <div class="mb-3 col-md-6">
-        <label asp-for="DefaultText">@T["Default value of the text"]</label>
+        <label asp-for="DefaultText" class="form-label">@T["Default value of the text"]</label>
         <input asp-for="DefaultText" type="text" class="form-control" />
         <span class="hint">@T["The default link text proposed when creating a content item."]</span>
         <span asp-validation-for="DefaultText" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="mb-3 col-md-6">
+        <label asp-for="DefaultTarget" class="form-label">@T["Default value of the Target"]</label>
+        <input asp-for="DefaultTarget" list="targetOptions" class="form-control" />
+        <datalist id="targetOptions">
+            <option value="_self">@T["Opens the linked document in the same frame as it was clicked (default)."]</option>
+            <option value="_blank">@T["Opens the linked document in a new window or tab."]</option>
+            <option value="_parent">@T["Opens the linked document in the parent frame."]</option>
+            <option value="_top">@T["Opens the linked document in the full body of the window."]</option>
+        </datalist>
+        <span class="hint">@T["The default target proposed when creating a content item."]</span>
+        <span asp-validation-for="DefaultTarget" class="text-danger"></span>
     </div>
 </div>

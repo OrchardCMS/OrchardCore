@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -12,5 +11,5 @@ public class ListPartNavigationAdminViewModel
 
     public bool EnableOrdering { get; set; }
 
-    public ContentTypeDefinition[] ContainedContentTypeDefinitions { get; set; } = Array.Empty<ContentTypeDefinition>();
+    public ContentTypeDefinition[] ContainedContentTypeDefinitions { get; set; } = [];
 }

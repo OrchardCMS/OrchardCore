@@ -1,135 +1,116 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
+using System.Text;
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Configuration.Internal;
 using OrchardCore.FileStorage;
 using OrchardCore.Shells.Azure.Services;
 
-namespace OrchardCore.Shells.Azure.Configuration
+namespace OrchardCore.Shells.Azure.Configuration;
+
+public class BlobShellConfigurationSources : IShellConfigurationSources
 {
-    public class BlobShellConfigurationSources : IShellConfigurationSources
+    private readonly IShellsFileStore _shellsFileStore;
+    private readonly BlobShellStorageOptions _blobOptions;
+    private readonly string _container;
+    private readonly string _fileStoreContainer;
+
+    public BlobShellConfigurationSources(
+        IShellsFileStore shellsFileStore,
+        BlobShellStorageOptions blobOptions,
+        IOptions<ShellOptions> shellOptions)
     {
-        private readonly IShellsFileStore _shellsFileStore;
-        private readonly BlobShellStorageOptions _blobOptions;
-        private readonly string _container;
-        private readonly string _fileStoreContainer;
+        _shellsFileStore = shellsFileStore;
+        _blobOptions = blobOptions;
 
-        public BlobShellConfigurationSources(
-            IShellsFileStore shellsFileStore,
-            BlobShellStorageOptions blobOptions,
-            IOptions<ShellOptions> shellOptions)
+        // e.g., Sites.
+        _container = shellOptions.Value.ShellsContainerName;
+
+        // e.g., App_Data/Sites
+        _fileStoreContainer = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, shellOptions.Value.ShellsContainerName);
+    }
+
+    public async Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
+    {
+        var appSettings = IFileStoreExtensions.Combine(null, _container, tenant, OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
+        var fileInfo = await _shellsFileStore.GetFileInfoAsync(appSettings);
+
+        if (fileInfo == null && _blobOptions.MigrateFromFiles)
         {
-            _shellsFileStore = shellsFileStore;
-            _blobOptions = blobOptions;
-
-            // e.g., Sites.
-            _container = shellOptions.Value.ShellsContainerName;
-
-            // e.g., App_Data/Sites
-            _fileStoreContainer = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, shellOptions.Value.ShellsContainerName);
-        }
-
-        public async Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
-        {
-            var appSettings = IFileStoreExtensions.Combine(null, _container, tenant, "appsettings.json");
-            var fileInfo = await _shellsFileStore.GetFileInfoAsync(appSettings);
-
-            if (fileInfo == null && _blobOptions.MigrateFromFiles)
+            if (await TryMigrateFromFileAsync(tenant, appSettings))
             {
-                if (await TryMigrateFromFileAsync(tenant, appSettings))
-                {
-                    fileInfo = await _shellsFileStore.GetFileInfoAsync(appSettings);
-                }
-            }
-            if (fileInfo != null)
-            {
-                var stream = await _shellsFileStore.GetFileStreamAsync(appSettings);
-                builder.AddJsonStream(stream);
+                fileInfo = await _shellsFileStore.GetFileInfoAsync(appSettings);
             }
         }
 
-        public async Task SaveAsync(string tenant, IDictionary<string, string> data)
+        if (fileInfo != null)
         {
-            var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, "appsettings.json");
+            var stream = await _shellsFileStore.GetFileStreamAsync(appSettings);
+            builder.AddTenantJsonStream(stream);
+        }
+    }
 
-            JObject config;
-            var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings);
+    public async Task SaveAsync(string tenant, IDictionary<string, string> data)
+    {
+        var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
 
-            if (fileInfo != null)
+        var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings);
+
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+        IDictionary<string, string> configData;
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
+        if (fileInfo != null)
+        {
+            using var stream = await _shellsFileStore.GetFileStreamAsync(appsettings);
+            configData = await JsonConfigurationParser.ParseAsync(stream);
+        }
+        else
+        {
+            configData = new Dictionary<string, string>();
+        }
+
+        foreach (var key in data.Keys)
+        {
+            if (data[key] is not null)
             {
-                using (var stream = await _shellsFileStore.GetFileStreamAsync(appsettings))
-                {
-                    using (var streamReader = new StreamReader(stream))
-                    {
-                        using (var reader = new JsonTextReader(streamReader))
-                        {
-                            config = await JObject.LoadAsync(reader);
-                        }
-                    }
-                }
+                configData[key] = data[key];
             }
             else
             {
-                config = new JObject();
-            }
-
-            foreach (var key in data.Keys)
-            {
-                if (data[key] != null)
-                {
-                    config[key] = data[key];
-                }
-                else
-                {
-                    config.Remove(key);
-                }
-            }
-
-            using (var memoryStream = new MemoryStream())
-            {
-                using (var streamWriter = new StreamWriter(memoryStream))
-                {
-                    using (var jsonWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented })
-                    {
-                        await config.WriteToAsync(jsonWriter);
-                        await jsonWriter.FlushAsync();
-                        memoryStream.Position = 0;
-                        await _shellsFileStore.CreateFileFromStreamAsync(appsettings, memoryStream);
-                    }
-                }
+                configData.Remove(key);
             }
         }
 
-        public async Task RemoveAsync(string tenant)
+        var configurationString = configData.ToJsonObject().ToJsonString(JOptions.Default);
+        using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(configurationString));
+
+        await _shellsFileStore.CreateFileFromStreamAsync(appsettings, memoryStream);
+    }
+
+    public async Task RemoveAsync(string tenant)
+    {
+        var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
+
+        var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings);
+        if (fileInfo != null)
         {
-            var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, "appsettings.json");
-
-            var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings);
-            if (fileInfo != null)
-            {
-                await _shellsFileStore.RemoveFileAsync(appsettings);
-            }
+            await _shellsFileStore.RemoveFileAsync(appsettings);
         }
+    }
 
-        private async Task<bool> TryMigrateFromFileAsync(string tenant, string destFile)
+    private async Task<bool> TryMigrateFromFileAsync(string tenant, string destFile)
+    {
+        var tenantFile = Path.Combine(_fileStoreContainer, tenant, OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
+        if (!File.Exists(tenantFile))
         {
-            var tenantFile = Path.Combine(_fileStoreContainer, tenant, "appsettings.json");
-            if (!File.Exists(tenantFile))
-            {
-                return false;
-            }
-
-            using (var file = File.OpenRead(tenantFile))
-            {
-                await _shellsFileStore.CreateFileFromStreamAsync(destFile, file);
-            }
-
-            return true;
+            return false;
         }
+
+        using var file = File.OpenRead(tenantFile);
+        await _shellsFileStore.CreateFileFromStreamAsync(destFile, file);
+
+        return true;
     }
 }

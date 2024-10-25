@@ -1,104 +1,139 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Dapper;
 using Fluid;
 using Fluid.Values;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data;
+using OrchardCore.Entities;
+using OrchardCore.Json;
 using OrchardCore.Liquid;
+using OrchardCore.Queries.Sql.Models;
 using YesSql;
 
-namespace OrchardCore.Queries.Sql
+namespace OrchardCore.Queries.Sql;
+
+public sealed class SqlQuerySource : IQuerySource
 {
-    public class SqlQuerySource : IQuerySource
+    public const string SourceName = "Sql";
+
+    private readonly ILiquidTemplateManager _liquidTemplateManager;
+    private readonly IDbConnectionAccessor _dbConnectionAccessor;
+    private readonly ISession _session;
+    private readonly ILogger _logger;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly TemplateOptions _templateOptions;
+
+    public SqlQuerySource(
+        ILiquidTemplateManager liquidTemplateManager,
+        IDbConnectionAccessor dbConnectionAccessor,
+        ISession session,
+        IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
+        IOptions<TemplateOptions> templateOptions,
+        ILogger<SqlQuerySource> logger)
     {
-        private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly IDbConnectionAccessor _dbConnectionAccessor;
-        private readonly ISession _session;
-        private readonly TemplateOptions _templateOptions;
+        _liquidTemplateManager = liquidTemplateManager;
+        _dbConnectionAccessor = dbConnectionAccessor;
+        _session = session;
+        _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
+        _templateOptions = templateOptions.Value;
+        _logger = logger;
+    }
 
-        public SqlQuerySource(
-            ILiquidTemplateManager liquidTemplateManager,
-            IDbConnectionAccessor dbConnectionAccessor,
-            ISession session,
-            IOptions<TemplateOptions> templateOptions)
+    public string Name
+        => SourceName;
+
+    public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
+    {
+        var metadata = query.As<SqlQueryMetadata>();
+
+        var sqlQueryResults = new SQLQueryResults
         {
-            _liquidTemplateManager = liquidTemplateManager;
-            _dbConnectionAccessor = dbConnectionAccessor;
-            _session = session;
-            _templateOptions = templateOptions.Value;
+            Items = []
+        };
+
+        var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(metadata.Template, NullEncoder.Default,
+            parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
+
+        var configuration = _session.Store.Configuration;
+
+        if (!SqlParser.TryParse(
+                tokenizedQuery,
+                configuration.Schema,
+                configuration.SqlDialect,
+                configuration.TablePrefix,
+                parameters,
+                out var rawQuery,
+                out var messages))
+        {
+            _logger.LogError("Couldn't parse SQL query: {Messages}", string.Join(' ', messages));
+
+            return sqlQueryResults;
         }
 
-        public string Name => "Sql";
+        await using var connection = _dbConnectionAccessor.CreateConnection();
 
-        public Query Create()
+        await connection.OpenAsync();
+
+        await using var transaction = await connection.BeginTransactionAsync(configuration.IsolationLevel);
+
+        var queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
+
+        if (!query.ReturnContentItems)
         {
-            return new SqlQuery();
+            sqlQueryResults.Items = queryResults
+                .Select<object, JsonObject>(document => JObject.FromObject(document, _jsonSerializerOptions))
+                .ToArray();
+
+            return sqlQueryResults;
         }
 
-        public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
-        {
-            var sqlQuery = query as SqlQuery;
-            var sqlQueryResults = new SQLQueryResults();
+        string column = null;
 
-            var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(sqlQuery.Template, NullEncoder.Default,
-                parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
-
-            var connection = _dbConnectionAccessor.CreateConnection();
-            var dialect = _session.Store.Configuration.SqlDialect;
-
-            if (!SqlParser.TryParse(tokenizedQuery, _session.Store.Configuration.Schema, dialect, _session.Store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
+        var documentIds = queryResults
+            .Select(row =>
             {
-                sqlQueryResults.Items = Array.Empty<object>();
-                connection.Dispose();
-                return sqlQueryResults;
-            }
+                var rowDictionary = (IDictionary<string, object>)row;
 
-            if (sqlQuery.ReturnDocuments)
-            {
-                IEnumerable<int> documentIds;
-
-                using (connection)
+                if (column == null)
                 {
-                    await connection.OpenAsync();
-
-                    using (var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel))
+                    if (rowDictionary.ContainsKey(nameof(ContentItemIndex.DocumentId)))
                     {
-                        documentIds = await connection.QueryAsync<int>(rawQuery, parameters, transaction);
+                        column = nameof(ContentItemIndex.DocumentId);
+                    }
+                    else
+                    {
+                        column = rowDictionary.FirstOrDefault(kv => kv.Value is long).Key
+                            ?? rowDictionary.First().Key;
                     }
                 }
 
-                sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds.ToArray());
-                return sqlQueryResults;
-            }
-            else
-            {
-                IEnumerable<dynamic> queryResults;
-
-                using (connection)
+                if (rowDictionary.TryGetValue(column, out var documentIdObject))
                 {
-                    await connection.OpenAsync();
-
-                    using (var transaction = connection.BeginTransaction(_session.Store.Configuration.IsolationLevel))
+                    return documentIdObject switch
                     {
-                        queryResults = await connection.QueryAsync(rawQuery, parameters, transaction);
-                    }
+                        long longValue => longValue,
+                        int intValue => intValue,
+                        { } otherObject =>
+                            long.TryParse(otherObject.ToString(), CultureInfo.InvariantCulture, out var parsedValue)
+                                ? parsedValue
+                                : 0,
+                        _ => 0,
+                    };
                 }
 
-                var results = new List<JObject>();
+                return 0;
+            }).ToArray();
 
-                foreach (var document in queryResults)
-                {
-                    results.Add(JObject.FromObject(document));
-                }
-
-                sqlQueryResults.Items = results;
-                return sqlQueryResults;
-            }
+        if (documentIds.Length > 0)
+        {
+            sqlQueryResults.Items = await _session.GetAsync<ContentItem>(documentIds);
         }
+
+        return sqlQueryResults;
     }
 }

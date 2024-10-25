@@ -1,34 +1,41 @@
-using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Drivers;
 
-namespace OrchardCore.Security
+namespace OrchardCore.Security;
+
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    private static readonly RouteValueDictionary _routeValues = new()
     {
-        private readonly IStringLocalizer S;
+        { "area", "OrchardCore.Settings" },
+        { "groupId", SecuritySettingsDisplayDriver.GroupId },
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            S = localizer;
-        }
+    };
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                builder.Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
-                    .AddClass("security").Id("security")
-                        .Add(S["Settings"], settings => settings
-                            .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
-                                .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SecuritySettingsDisplayDriver.SettingsGroupId })
-                                .LocalNav())));
-            }
+    internal readonly IStringLocalizer S;
 
-            return Task.CompletedTask;
-        }
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        builder
+            .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
+                .AddClass("security")
+                .Id("security")
+                .Add(S["Settings"], settings => settings
+                    .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
+                        .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
+                        .Action("Index", "Admin", _routeValues)
+                        .LocalNav()
+                    )
+                )
+            );
+
+        return ValueTask.CompletedTask;
     }
 }

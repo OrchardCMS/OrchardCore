@@ -1,0 +1,91 @@
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore.Admin
+@using OrchardCore.DisplayManagement.ModelBinding
+@using OrchardCore.DisplayManagement
+@using OrchardCore.Notifications
+@using OrchardCore.Notifications.Endpoints.Management
+@using OrchardCore.Notifications.ViewModels
+
+@inject IDisplayManager<Notification> NotificationDisplayDriver
+@inject IUpdateModelAccessor UpdateModelAccessor
+@inject IAuthorizationService AuthorizationService
+
+@model UserNotificationNavbarViewModel
+
+<li class="nav-item dropdown text-end">
+    <a type="button" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" aria-label="@T["Notifications"]">
+        @if (Model.TotalUnread > 0)
+        {
+            LocalizedHtmlString title;
+            if (Model.TotalUnread > Model.MaxVisibleNotifications)
+            {
+                title = T["You have more than {0} unread notifications", Model.MaxVisibleNotifications];
+            }
+            else
+            {
+                title = T.Plural(Model.TotalUnread, "You have {1} unread notification", "You have {0} unread notifications", Model.TotalUnread);
+            }
+
+            <i class="fa-solid fa-bell" aria-hidden="true" data-bs-toggle="tooltip" data-bs-original-title="@title"></i>
+        }
+        else
+        {
+            <i class="fa-regular fa-bell" aria-hidden="true" data-bs-toggle="tooltip" data-bs-original-title="@T["You have no unread notifications"]"></i>
+        }
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end notification-navbar scrollable position-absolute">
+        @if (Model.Notifications.Count > 0)
+        {
+            var maxCount = Math.Min(Model.MaxVisibleNotifications, Model.Notifications.Count);
+            <li>
+                @for (int i = 0; i < maxCount; i++)
+                {
+                    var notification = Model.Notifications[i];
+                    var shape = await NotificationDisplayDriver.BuildDisplayAsync(notification, UpdateModelAccessor.ModelUpdater, "Header");
+                    shape.Properties[nameof(Notification)] = notification;
+                    <div class="@(i == maxCount - 1 ? string.Empty : "border-bottom")">
+                        @await DisplayAsync(shape)
+                    </div>
+                }
+            </li>
+        }
+        else
+        {
+            <li class="text-center">@T["You have no unread notifications."]</li>
+        }
+
+        <li>
+            <hr class="dropdown-divider">
+        </li>
+
+        @if (await AuthorizationService.AuthorizeAsync(ViewContext.HttpContext.User, AdminPermissions.AccessAdminPanel))
+        {
+            <li>
+                <a class="dropdown-item fw-bold" asp-action="List" asp-controller="Admin" asp-area="@NotificationConstants.Features.Notifications">@T["Notification Center"]</a>
+            </li>
+        }
+    </ul>
+</li>
+
+<script at="Foot" asp-name="notification-manager-initializes" depends-on="notification-manager">
+    (function () {
+        notificationManager.initializeContainer('@Url.RouteUrl(MarkAsReadEndpoints.RouteName, new { area = NotificationConstants.Features.Notifications }))')
+    })();
+</script>
+
+<style at="Head">
+    .notification-navbar {
+        max-width: 20rem;
+    }
+
+        .notification-navbar .notification-is-unread {
+            font-weight: 600 !important;
+        }
+
+    .dropdown-menu.scrollable {
+        overflow-y: auto;
+        max-height: var(--oc-height-dropdown, 250px);
+        scrollbar-width: thin;
+    }
+</style>

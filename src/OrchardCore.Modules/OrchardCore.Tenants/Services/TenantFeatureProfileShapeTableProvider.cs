@@ -1,13 +1,13 @@
-﻿using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Services;
 
-public class TenantFeatureProfileShapeTableProvider : IShapeTableProvider
+public class TenantFeatureProfileShapeTableProvider : ShapeTableProvider
 {
-    public void Discover(ShapeTableBuilder builder)
+    public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
         builder.Describe("TenantActionTags")
                .OnDisplaying(async displaying =>
@@ -17,5 +17,7 @@ public class TenantFeatureProfileShapeTableProvider : IShapeTableProvider
                        await displaying.Shape.AddAsync(new ShapeViewModel<ShellSettingsEntry>("ProfileFeatureTags", entry), "10");
                    }
                });
+
+        return ValueTask.CompletedTask;
     }
 }

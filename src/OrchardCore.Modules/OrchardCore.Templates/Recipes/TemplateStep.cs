@@ -1,41 +1,34 @@
-using System;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Templates.Models;
 using OrchardCore.Templates.Services;
 
-namespace OrchardCore.Templates.Recipes
+namespace OrchardCore.Templates.Recipes;
+
+/// <summary>
+/// This recipe step creates a set of templates.
+/// </summary>
+public sealed class TemplateStep : NamedRecipeStepHandler
 {
-    /// <summary>
-    /// This recipe step creates a set of templates.
-    /// </summary>
-    public class TemplateStep : IRecipeStepHandler
+    private readonly TemplatesManager _templatesManager;
+
+    public TemplateStep(TemplatesManager templatesManager)
+        : base("Templates")
     {
-        private readonly TemplatesManager _templatesManager;
+        _templatesManager = templatesManager;
+    }
 
-        public TemplateStep(TemplatesManager templatesManager)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
+    {
+        if (context.Step.TryGetPropertyValue("Templates", out var jsonNode) && jsonNode is JsonObject templates)
         {
-            _templatesManager = templatesManager;
-        }
-
-        public async Task ExecuteAsync(RecipeExecutionContext context)
-        {
-            if (!String.Equals(context.Name, "Templates", StringComparison.OrdinalIgnoreCase))
+            foreach (var property in templates)
             {
-                return;
-            }
+                var name = property.Key;
+                var value = property.Value.ToObject<Template>();
 
-            if (context.Step.Property("Templates").Value is JObject templates)
-            {
-                foreach (var property in templates.Properties())
-                {
-                    var name = property.Name;
-                    var value = property.Value.ToObject<Template>();
-
-                    await _templatesManager.UpdateTemplateAsync(name, value);
-                }
+                await _templatesManager.UpdateTemplateAsync(name, value);
             }
         }
     }

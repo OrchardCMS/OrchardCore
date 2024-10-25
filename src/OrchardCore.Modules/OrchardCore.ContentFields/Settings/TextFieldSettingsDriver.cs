@@ -1,28 +1,33 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentFields.Settings
+namespace OrchardCore.ContentFields.Settings;
+
+public sealed class TextFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
 {
-    public class TextFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<TextField>
+    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
     {
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        return Initialize<TextFieldSettings>("TextFieldSettings_Edit", model =>
         {
-            return Initialize<TextFieldSettings>("TextFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
-                .Location("Content");
-        }
+            var settings = partFieldDefinition.GetSettings<TextFieldSettings>();
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
-        {
-            var model = new TextFieldSettings();
+            model.Hint = settings.Hint;
+            model.Required = settings.Required;
+            model.DefaultValue = settings.DefaultValue;
+        }).Location("Content");
+    }
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+    {
+        var model = new TextFieldSettings();
 
-            context.Builder.WithSettings(model);
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            return Edit(partFieldDefinition);
-        }
+        context.Builder.WithSettings(model);
+
+        return Edit(partFieldDefinition, context);
     }
 }

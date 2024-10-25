@@ -1,13 +1,12 @@
-namespace OrchardCore.Security
+namespace OrchardCore.Security;
+
+public static class SecurityHeaderNames
 {
-    public static class SecurityHeaderNames
-    {
-        public static readonly string ContentSecurityPolicy = "Content-Security-Policy";
+    public const string ContentSecurityPolicy = "Content-Security-Policy";
 
-        public static readonly string PermissionsPolicy = "Permissions-Policy";
+    public const string PermissionsPolicy = "Permissions-Policy";
 
-        public static readonly string ReferrerPolicy = "Referrer-Policy";
+    public const string ReferrerPolicy = "Referrer-Policy";
 
-        public static readonly string XContentTypeOptions = "X-Content-Type-Options";
-    }
+    public const string XContentTypeOptions = "X-Content-Type-Options";
 }

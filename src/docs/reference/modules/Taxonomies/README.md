@@ -275,9 +275,9 @@ Returns the list of terms including their parents.
 
 Provides a way to query content items that are categorized with specific terms.
 
-#### QueryCategorizedContentItemsAsync Example 
+#### QueryCategorizedContentItemsAsync Example
 
-The following example queries content items that are related to the current content item 
+The following example queries content items that are related to the current content item
 by the term category, but excluding the current content item.
 
 ```csharp
@@ -301,7 +301,7 @@ by the term category, but excluding the current content item.
 
 The `taxonomy_terms` filter loads the specified term content items.
 
-#### taxonomy_terms Example 
+#### taxonomy_terms Example
 
 The following example lists all the terms related to the **Colors** field on the **BlogPost**
 content type, then renders them.
@@ -367,8 +367,8 @@ You can access the `TagNames` property directly with the following accessor:
 
     ``` liquid
     {% for tagName in Model.ContentItem.Content.BlogPost.Tags.TagNames %}
-        <span class="badge bg-secondary">
-            <i class="fas fa-tag fa-xs fa-rotate-90 align-middle" aria-hidden="true"></i>
+        <span class="badge text-bg-secondary">
+            <i class="fa-solid fa-tag fa-xs fa-rotate-90 align-middle" aria-hidden="true"></i>
             <span class="align-middle"> {{ tagName }} </span> 
         </span>
     {% endfor %}
@@ -399,3 +399,5 @@ Provides taxonomy filters in the admin contents list.
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/G9lkGRD9G_E" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/NVjRz5ru7N4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/0pmrmmqF8-4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
@@ -294,13 +294,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     }
     function inScope(state, varname) {
       if (!trackScope) return false;
-      for (var v = state.localVars; v; v = v.next) {
-        if (v.name == varname) return true;
-      }
+      for (var v = state.localVars; v; v = v.next) if (v.name == varname) return true;
       for (var cx = state.context; cx; cx = cx.prev) {
-        for (var v = cx.vars; v; v = v.next) {
-          if (v.name == varname) return true;
-        }
+        for (var v = cx.vars; v; v = v.next) if (v.name == varname) return true;
       }
     }
     function parseJS(state, style, type, content, stream) {
@@ -315,9 +311,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       while (true) {
         var combinator = cc.length ? cc.pop() : jsonMode ? expression : statement;
         if (combinator(type, content)) {
-          while (cc.length && cc[cc.length - 1].lex) {
-            cc.pop()();
-          }
+          while (cc.length && cc[cc.length - 1].lex) cc.pop()();
           if (cx.marked) return cx.marked;
           if (type == "variable" && inScope(state, content)) return "variable-2";
           return style;
@@ -334,18 +328,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       cc: null
     };
     function pass() {
-      for (var i = arguments.length - 1; i >= 0; i--) {
-        cx.cc.push(arguments[i]);
-      }
+      for (var i = arguments.length - 1; i >= 0; i--) cx.cc.push(arguments[i]);
     }
     function cont() {
       pass.apply(null, arguments);
       return true;
     }
     function inList(name, list) {
-      for (var v = list; v; v = v.next) {
-        if (v.name == name) return true;
-      }
+      for (var v = list; v; v = v.next) if (v.name == name) return true;
       return false;
     }
     function register(varname) {
@@ -416,9 +406,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       var result = function result() {
         var state = cx.state,
           indent = state.indented;
-        if (state.lexical.type == "stat") indent = state.lexical.indented;else for (var outer = state.lexical; outer && outer.type == ")" && outer.align; outer = outer.prev) {
-          indent = outer.indented;
-        }
+        if (state.lexical.type == "stat") indent = state.lexical.indented;else for (var outer = state.lexical; outer && outer.type == ")" && outer.align; outer = outer.prev) indent = outer.indented;
         state.lexical = new JSLexical(indent, cx.stream.column(), type, null, state.lexical, info);
       };
       result.lex = true;
@@ -658,9 +646,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       };
     }
     function contCommasep(what, end, info) {
-      for (var i = 3; i < arguments.length; i++) {
-        cx.cc.push(arguments[i]);
-      }
+      for (var i = 3; i < arguments.length; i++) cx.cc.push(arguments[i]);
       return cont(pushlex(end, info), commasep(what, end), poplex);
     }
     function block(type) {
@@ -1020,9 +1006,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
           var c = state.cc[i];
           if (c == poplex) lexical = lexical.prev;else if (c != maybeelse && c != popcontext) break;
         }
-        while ((lexical.type == "stat" || lexical.type == "form") && (firstChar == "}" || (top = state.cc[state.cc.length - 1]) && (top == maybeoperatorComma || top == maybeoperatorNoComma) && !/^[,\.=+\-*:?[\(]/.test(textAfter))) {
-          lexical = lexical.prev;
-        }
+        while ((lexical.type == "stat" || lexical.type == "form") && (firstChar == "}" || (top = state.cc[state.cc.length - 1]) && (top == maybeoperatorComma || top == maybeoperatorNoComma) && !/^[,\.=+\-*:?[\(]/.test(textAfter))) lexical = lexical.prev;
         if (statementIndent && lexical.type == ")" && lexical.prev.type == "stat") lexical = lexical.prev;
         var type = lexical.type,
           closing = firstChar == type;

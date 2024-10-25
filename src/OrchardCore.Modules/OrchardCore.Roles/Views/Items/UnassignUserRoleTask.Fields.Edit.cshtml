@@ -1,0 +1,18 @@
+@using OrchardCore
+@using OrchardCore.Roles.Workflows.ViewModels
+
+@model UnassignUserRoleTaskViewModel
+
+<div class="mb-3" asp-validation-class-for="UserName">
+    <label asp-for="UserName" class="form-label">@T["UserName"]</label>
+    <input type="text" asp-for="UserName" class="form-control code" />
+    <span asp-validation-for="UserName"></span>
+    <span class="hint">@T["The User to update. With Liquid support."]</span>
+</div>
+
+<div class="mb-3" asp-validation-class-for="Roles">
+    <label asp-for="Roles" class="form-label">@T["Roles"]</label>
+    @await Component.InvokeAsync("SelectRoles", new { selectedRoles = Model.Roles, htmlName = Html.NameFor(m => m.Roles), except = new[] { OrchardCoreConstants.Roles.Anonymous, OrchardCoreConstants.Roles.Authenticated } })
+    <span asp-validation-for="Roles"></span>
+    <span class="hint">@T["The Roles to remove."]</span>
+</div>

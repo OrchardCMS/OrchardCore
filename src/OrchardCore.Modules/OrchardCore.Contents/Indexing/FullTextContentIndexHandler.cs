@@ -1,39 +1,33 @@
-using System;
-using System.Threading.Tasks;
 using Cysharp.Text;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Indexing;
 
-namespace OrchardCore.Contents.Indexing
+namespace OrchardCore.Contents.Indexing;
+
+public class FullTextContentIndexHandler(IContentManager contentManager) : IContentItemIndexHandler
 {
-    public class FullTextContentIndexHandler : IContentItemIndexHandler
+    private readonly IContentManager _contentManager = contentManager;
+
+    public async Task BuildIndexAsync(BuildIndexContext context)
     {
-        private readonly IContentManager _contentManager;
+        var result = await _contentManager.PopulateAspectAsync<FullTextAspect>(context.ContentItem);
 
-        public FullTextContentIndexHandler(IContentManager contentManager)
+        using var stringBuilder = ZString.CreateStringBuilder();
+
+        foreach (var segment in result.Segments)
         {
-            _contentManager = contentManager;
+            stringBuilder.Append(segment);
+            stringBuilder.Append(" ");
         }
 
-        public async Task BuildIndexAsync(BuildIndexContext context)
+        var value = stringBuilder.ToString();
+
+        if (string.IsNullOrEmpty(value))
         {
-            var result = await _contentManager.PopulateAspectAsync<FullTextAspect>(context.ContentItem);
-
-            using var stringBuilder = ZString.CreateStringBuilder();
-
-            foreach (var segment in result.Segments)
-            {
-                stringBuilder.Append(segment + " ");
-            }
-
-            if (!String.IsNullOrEmpty(stringBuilder.ToString()))
-            {
-                context.DocumentIndex.Set(
-                    IndexingConstants.FullTextKey,
-                    stringBuilder.ToString(),
-                    DocumentIndexOptions.Sanitize);
-            }
+            return;
         }
+
+        context.DocumentIndex.Set(IndexingConstants.FullTextKey, value, DocumentIndexOptions.Sanitize);
     }
 }

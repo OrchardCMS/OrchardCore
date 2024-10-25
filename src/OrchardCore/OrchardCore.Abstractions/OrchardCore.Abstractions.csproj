@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <RootNamespace>OrchardCore</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore Abstractions</Title>
     <Description>$(OCFrameworkDescription)
@@ -11,20 +12,17 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <InternalsVisibleTo Include="OrchardCore.Tests" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="JsonPath.Net" />
     <PackageReference Include="ZString" />
   </ItemGroup>
 
-  <!-- Six half dozen, some internals visible, or expose Module and Feature attrib properties -->
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>OrchardCore</_Parameter1>
-    </AssemblyAttribute>
-    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>OrchardCore.DisplayManagement</_Parameter1>
     </AssemblyAttribute>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>OrchardCore.Abstractions.Tests</_Parameter1>

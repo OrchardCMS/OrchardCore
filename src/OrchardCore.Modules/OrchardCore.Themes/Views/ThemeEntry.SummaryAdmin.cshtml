@@ -1,0 +1,62 @@
+<div class="card theme-card w-100">
+
+    @if (Model.Thumbnail != null)
+    {
+        @await DisplayAsync(Model.Thumbnail)
+    }
+
+    <div class="card-body">
+
+        @if (Model.Header != null)
+        {
+            @await DisplayAsync(Model.Header)
+        }
+
+        @if (Model.Content != null || Model.Attributes != null)
+        {
+            @if (Model.Content != null)
+            {
+                @await DisplayAsync(Model.Content)
+            }
+
+            @if (Model.Tags != null)
+            {
+                <ul class="list-group list-group-flush">
+                    @await DisplayAsync(Model.Tags)
+                </ul>
+            }
+        }
+
+    </div>
+
+    @if (Model.FooterStart != null || Model.FooterEnd != null || Model.FooterBelow != null)
+    {
+        <div class="card-footer">
+
+            @if (Model.FooterStart != null || Model.FooterEnd != null)
+            {
+                <div class="d-flex justify-content-between">
+
+                    <div class="d-inline-flex">
+                        @if (Model.FooterStart != null)
+                        {
+                            @await DisplayAsync(Model.FooterStart)
+                        }
+                    </div>
+                    <div class="d-inline-flex">
+                        @if (Model.FooterEnd != null)
+                        {
+                            @await DisplayAsync(Model.FooterEnd)
+                        }
+                    </div>
+                </div>
+            }
+
+            @if (Model.FooterBelow != null)
+            {
+                @await DisplayAsync(Model.FooterBelow)
+            }
+        </div>
+    }
+
+</div>

@@ -1,15 +1,13 @@
-using System;
 using OrchardCore.ArchiveLater.Indexes;
 using OrchardCore.ArchiveLater.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
 using YesSql.Sql;
 
 namespace OrchardCore.ArchiveLater;
 
-public class Migrations : DataMigration
+public sealed class Migrations : DataMigration
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -18,27 +16,27 @@ public class Migrations : DataMigration
         _contentDefinitionManager = contentDefinitionManager;
     }
 
-    public int Create()
+    public async Task<int> CreateAsync()
     {
-        _contentDefinitionManager.AlterPartDefinition(nameof(ArchiveLaterPart), builder => builder
+        await _contentDefinitionManager.AlterPartDefinitionAsync(nameof(ArchiveLaterPart), builder => builder
             .Attachable()
             .WithDescription("Adds the ability to schedule content items to be archived at a given future date and time."));
 
-        SchemaBuilder.CreateMapIndexTable<ArchiveLaterPartIndex>(table => table
-            .Column<string>(nameof(ArchiveLaterPartIndex.ContentItemId))
-            .Column<DateTime>(nameof(ArchiveLaterPartIndex.ScheduledArchiveDateTimeUtc))
-            .Column<bool>(nameof(ArchiveLaterPartIndex.Published))
-            .Column<bool>(nameof(ArchiveLaterPartIndex.Latest))
+        await SchemaBuilder.CreateMapIndexTableAsync<ArchiveLaterPartIndex>(table => table
+            .Column<string>("ContentItemId")
+            .Column<DateTime>("ScheduledArchiveDateTimeUtc")
+            .Column<bool>("Published")
+            .Column<bool>("Latest")
         );
 
-        SchemaBuilder.AlterIndexTable<ArchiveLaterPartIndex>(table => table
-            .CreateIndex($"IDX_{nameof(ArchiveLaterPartIndex)}_{nameof(ContentItemIndex.DocumentId)}",
+        await SchemaBuilder.AlterIndexTableAsync<ArchiveLaterPartIndex>(table => table
+            .CreateIndex("IDX_ArchiveLaterPartIndex_DocumentId",
                 "Id",
-                nameof(ContentItemIndex.DocumentId),
-                nameof(ArchiveLaterPartIndex.ContentItemId),
-                nameof(ArchiveLaterPartIndex.ScheduledArchiveDateTimeUtc),
-                nameof(ArchiveLaterPartIndex.Published),
-                nameof(ArchiveLaterPartIndex.Latest))
+                "DocumentId",
+                "ContentItemId",
+                "ScheduledArchiveDateTimeUtc",
+                "Published",
+                "Latest")
         );
 
         return 1;

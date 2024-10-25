@@ -8,11 +8,11 @@ using OrchardCore.Templates.Cms.Module.Models;
 
 namespace OrchardCore.Templates.Cms.Module.Settings
 {
-    public class MyTestPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
+    public sealed class MyTestPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(MyTestPart), contentTypePartDefinition.PartDefinition.Name))
+            if (!string.Equals(nameof(MyTestPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
@@ -28,17 +28,16 @@ namespace OrchardCore.Templates.Cms.Module.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(MyTestPart), contentTypePartDefinition.PartDefinition.Name))
+            if (!string.Equals(nameof(MyTestPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
 
             var model = new MyTestPartSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.MySetting))
-            {
-                context.Builder.WithSettings(new MyTestPartSettings { MySetting = model.MySetting });
-            }
+            await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.MySetting);
+
+            context.Builder.WithSettings(new MyTestPartSettings { MySetting = model.MySetting });
 
             return Edit(contentTypePartDefinition, context.Updater);
         }

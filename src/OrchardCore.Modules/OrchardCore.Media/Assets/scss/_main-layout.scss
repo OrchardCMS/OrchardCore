@@ -1,12 +1,12 @@
 #mediaApp {
     position: absolute;
-    top: 52px;
+    top: var(--oc-top-nav-height, 52);
     bottom: 0;
     right: 0;
-    left: 259px;
+    left: var(--oc-start-navigation-width, 260);
     transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
-    background-color: $body-bg;
-    
+    background-color: var(--bs-body);
+
     ::-webkit-scrollbar {
         width: 4px;
     }
@@ -22,8 +22,8 @@
         align-items: stretch;
 
         #navigationApp {
-            border-right: $media-border-content;
-            border-top: $media-border-content;
+            border-right: var(--oc-media-border-content);
+            border-top: var(--oc-media-border-content);
             flex-shrink: 0;
         }
 
@@ -39,7 +39,7 @@
             }
 
             .media-container-footer {
-                border-top: $media-border-content;
+                border-top: var(--oc-media-border-content);
             }
         }
     }
@@ -83,5 +83,5 @@
 }
 
 .left-sidebar-compact #mediaApp {
-    left: 48px;
+    left: var(--oc-start-navigation-width-when-compact, 48);
 }

@@ -1,99 +1,86 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using OrchardCore.Environment.Shell.Configuration.Internal;
 
-namespace OrchardCore.Environment.Shell.Configuration
+namespace OrchardCore.Environment.Shell.Configuration;
+
+public class ShellConfigurationSources : IShellConfigurationSources
 {
-    public class ShellConfigurationSources : IShellConfigurationSources
+    private readonly string _container;
+    private readonly ILogger _logger;
+
+    public ShellConfigurationSources(IOptions<ShellOptions> shellOptions, ILogger<ShellConfigurationSources> logger)
     {
-        private readonly string _container;
-        private readonly ILogger _logger;
+        // e.g., App_Data/Sites
+        _container = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, shellOptions.Value.ShellsContainerName);
+        Directory.CreateDirectory(_container);
+        _logger = logger;
+    }
 
-        public ShellConfigurationSources(IOptions<ShellOptions> shellOptions, ILogger<ShellConfigurationSources> logger)
+    public Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
+    {
+        builder.AddTenantJsonFile(Path.Combine(_container, tenant, "appsettings.json"), optional: true);
+        return Task.CompletedTask;
+    }
+
+    public async Task SaveAsync(string tenant, IDictionary<string, string> data)
+    {
+        var tenantFolder = Path.Combine(_container, tenant);
+        var appsettings = Path.Combine(tenantFolder, "appsettings.json");
+
+#pragma warning disable CA1859 // Use concrete types when possible for improved performance
+        IDictionary<string, string> configData;
+#pragma warning restore CA1859 // Use concrete types when possible for improved performance
+
+        if (File.Exists(appsettings))
         {
-            // e.g., App_Data/Sites
-            _container = Path.Combine(shellOptions.Value.ShellsApplicationDataPath, shellOptions.Value.ShellsContainerName);
-            Directory.CreateDirectory(_container);
-            _logger = logger;
+            using var streamReader = File.OpenRead(appsettings);
+            configData = await JsonConfigurationParser.ParseAsync(streamReader);
+        }
+        else
+        {
+            configData = new Dictionary<string, string>();
         }
 
-        public Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
+        foreach (var key in data.Keys)
         {
-            builder
-                .AddJsonFile(Path.Combine(_container, tenant, "appsettings.json"), optional: true);
-
-            return Task.CompletedTask;
-        }
-
-        public async Task SaveAsync(string tenant, IDictionary<string, string> data)
-        {
-            var tenantFolder = Path.Combine(_container, tenant);
-            var appsettings = Path.Combine(tenantFolder, "appsettings.json");
-
-            JObject config;
-            if (File.Exists(appsettings))
+            if (data[key] is not null)
             {
-                using (var file = File.OpenText(appsettings))
-                {
-                    using (var reader = new JsonTextReader(file))
-                    {
-                        config = await JObject.LoadAsync(reader);
-                    }
-                }
+                configData[key] = data[key];
             }
             else
             {
-                config = new JObject();
-            }
-
-            foreach (var key in data.Keys)
-            {
-                if (data[key] != null)
-                {
-                    config[key] = data[key];
-                }
-                else
-                {
-                    config.Remove(key);
-                }
-            }
-
-            Directory.CreateDirectory(tenantFolder);
-
-            using (var file = File.CreateText(appsettings))
-            {
-                using (var writer = new JsonTextWriter(file) { Formatting = Formatting.Indented })
-                {
-                    await config.WriteToAsync(writer);
-                }
+                configData.Remove(key);
             }
         }
 
-        public Task RemoveAsync(string tenant)
+        Directory.CreateDirectory(tenantFolder);
+
+        using var streamWriter = File.Create(appsettings);
+        await JsonSerializer.SerializeAsync(streamWriter, configData.ToJsonObject(), JOptions.Indented);
+    }
+
+    public Task RemoveAsync(string tenant)
+    {
+        var tenantFolder = Path.Combine(_container, tenant);
+        var appsettings = Path.Combine(tenantFolder, "appsettings.json");
+
+        if (File.Exists(appsettings))
         {
-            var tenantFolder = Path.Combine(_container, tenant);
-            var appsettings = Path.Combine(tenantFolder, "appsettings.json");
-
-            if (File.Exists(appsettings))
+            try
             {
-                try
-                {
-                    File.Delete(appsettings);
-                }
-                catch (IOException ex)
-                {
-                    _logger.LogError(
-                        ex,
-                        "Error while deleting the '{AppSettings}' file of tenant '{TenantName}'", appsettings, tenant);
-                }
+                File.Delete(appsettings);
             }
-
-            return Task.CompletedTask;
+            catch (IOException ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Error while deleting the '{AppSettings}' file of tenant '{TenantName}'", appsettings, tenant);
+            }
         }
+
+        return Task.CompletedTask;
     }
 }

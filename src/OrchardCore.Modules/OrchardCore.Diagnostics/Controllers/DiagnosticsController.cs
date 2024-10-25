@@ -1,34 +1,16 @@
-using System;
-using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Diagnostics.ViewModels;
 
-namespace OrchardCore.Diagnostics.Controllers
+namespace OrchardCore.Diagnostics.Controllers;
+
+public sealed class DiagnosticsController : Controller
 {
-    public class DiagnosticsController : Controller
+    [IgnoreAntiforgeryToken]
+    public IActionResult Error(int? status)
     {
-        [IgnoreAntiforgeryToken]
-        public IActionResult Error(int? status)
-        {
-            // Most commonly used error messages
-            ViewData["StatusCode"] = status;
-            Enum.TryParse((status ?? 500).ToString(), true, out HttpStatusCode httpStatusCode);
+        // Most commonly used error messages.
+        ViewData["StatusCode"] = status;
 
-
-            switch (httpStatusCode)
-            {
-                case HttpStatusCode.InternalServerError:
-                default:
-                    return View("Error");
-                case HttpStatusCode.Forbidden:
-                    return View("Forbidden");
-                case HttpStatusCode.NotFound:
-                    return View("NotFound");
-                case HttpStatusCode.BadRequest:
-                    return View("BadRequest");
-                case HttpStatusCode.Unauthorized:
-                    return View("Unauthorized");
-
-            }
-        }
+        return View(new HttpErrorShapeViewModel(status));
     }
 }

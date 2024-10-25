@@ -3,7 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
 using OrchardCore.Infrastructure.Html;
 
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class HtmlSanitizerRazorExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Sanitizes a string of html.

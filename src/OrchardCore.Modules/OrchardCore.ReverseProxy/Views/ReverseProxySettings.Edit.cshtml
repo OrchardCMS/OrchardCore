@@ -1,8 +1,8 @@
+@using OrchardCore
+
 @model ReverseProxySettingsViewModel
 
-<p class="alert alert-warning">
-    @T["The current tenant will be reloaded when the settings are saved."]
-</p>
+@inject IClientIPAddressAccessor ClientIPAddressAccessor
 
 <div class="mb-3" asp-validation-class-for="EnableXForwardedFor">
     <div class="form-check">
@@ -12,7 +12,7 @@
         </label>
     </div>
     <span class="hint">@T["Enables the forwarding of the HTTP header X-Forwarded-For"]</span>
-    <span class="hint">@T["Current request value;"] @Context.Connection.RemoteIpAddress</span>
+    <span class="hint">@T["Current request value;"] @await ClientIPAddressAccessor.GetIPAddressAsync()</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="EnableXForwardedProto">

@@ -10,7 +10,7 @@ using OrchardCore.Templates.Cms.Module.ViewModels;
 
 namespace OrchardCore.Templates.Cms.Module.Drivers
 {
-    public class MyTestPartDisplayDriver : ContentPartDisplayDriver<MyTestPart>
+    public sealed class MyTestPartDisplayDriver : ContentPartDisplayDriver<MyTestPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -23,8 +23,7 @@ namespace OrchardCore.Templates.Cms.Module.Drivers
         {
             return Initialize<MyTestPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, part, context))
                 .Location("Detail", "Content:10")
-                .Location("Summary", "Content:10")
-                ;
+                .Location("Summary", "Content:10");
         }
 
         public override IDisplayResult Edit(MyTestPart part, BuildPartEditorContext context)
@@ -44,7 +43,7 @@ namespace OrchardCore.Templates.Cms.Module.Drivers
             return Edit(model);
         }
 
-        private Task BuildViewModel(MyTestPartViewModel model, MyTestPart part, BuildPartDisplayContext context)
+        private static void BuildViewModel(MyTestPartViewModel model, MyTestPart part, BuildPartDisplayContext context)
         {
             var settings = context.TypePartDefinition.GetSettings<MyTestPartSettings>();
 
@@ -53,8 +52,6 @@ namespace OrchardCore.Templates.Cms.Module.Drivers
             model.Show = part.Show;
             model.MyTestPart = part;
             model.Settings = settings;
-
-            return Task.CompletedTask;
         }
     }
 }

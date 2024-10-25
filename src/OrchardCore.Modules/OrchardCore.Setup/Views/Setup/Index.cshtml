@@ -76,7 +76,7 @@
 
             <div class="row float-end">
                 <div class="col">
-                    <label for="culturesList" class="mt-2">@T["Change language"]</label>
+                    <label for="culturesList" class="form-label mt-2">@T["Change language"]</label>
                 </div>
                 <div class="col">
                     <select id="culturesList" class="form-select" onchange="setLocalizationUrl()">
@@ -94,7 +94,7 @@
         <p class="lead">@T["Please answer a few questions to configure your site."]</p>
     </div>
 
-    <div asp-validation-summary="ModelOnly"></div>
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
     @if (defaultRecipe == null)
     {
@@ -106,9 +106,9 @@
     <div class="row mt-2">
         <div class="mb-3 col-md-4" asp-validation-class-for="SiteName">
             <div>
-                <label asp-for="SiteName">@T["What is the name of your site?"]</label>
+                <label asp-for="SiteName" class="form-label">@T["What is the name of your site?"]</label>
                 <input asp-for="SiteName" class="form-control" autofocus required />
-                <span asp-validation-for="SiteName" class="text-danger">@T["The site name is required."]</span>
+                <span asp-validation-for="SiteName" class="text-danger"></span>
                 <span class="text-muted form-text small">@T["This is used as the default title of your pages."]</span>
             </div>
         </div>
@@ -118,7 +118,7 @@
                 <input type="hidden" asp-for="RecipeName" required />
                 <nav>
                     <div asp-validation-class-for="RecipeName">
-                        <label asp-for="RecipeName">@T["Recipe"]</label>
+                        <label asp-for="RecipeName" class="form-label">@T["Recipe"]</label>
                         @if (defaultRecipe == null)
                         {
                             <div id="noRecipes" class="dropdown disabled">
@@ -147,12 +147,12 @@
             </div>
         }
         <div class="mb-3 col-md-4" asp-validation-class-for="SiteTimeZone">
-            <label asp-for="SiteTimeZone">@T["Default Time Zone"]</label>
+            <label asp-for="SiteTimeZone" class="form-label">@T["Default Time Zone"]</label>
             <select asp-for="SiteTimeZone" class="form-select">
-                @foreach (var timezone in Clock.GetTimeZones())
+                @foreach (var timeZone in Clock.GetTimeZones())
                 {
-                    <option value="@timezone.TimeZoneId" selected="@(timezone.TimeZoneId == localTimeZone.TimeZoneId)">
-                        @timezone
+                    <option value="@timeZone.TimeZoneId" selected="@(timeZone.TimeZoneId == localTimeZone.TimeZoneId)">
+                        @timeZone
                     </option>
                 }
             </select>
@@ -164,7 +164,7 @@
     {
         <div class="row">
             <div class="mb-3 col-md-6">
-                <label asp-for="DatabaseProvider">@T["What type of database to use?"]</label>
+                <label asp-for="DatabaseProvider" class="form-label">@T["What type of database to use?"]</label>
                 <select asp-for="DatabaseProvider" class="form-select" required>
                     @foreach (var provider in Model.DatabaseProviders)
                     {
@@ -176,7 +176,7 @@
             </div>
 
             <div class="mb-3 col-md-6 tablePrefix" asp-validation-class-for="TablePrefix">
-                <label asp-for="TablePrefix">@T["Table Prefix"]</label>
+                <label asp-for="TablePrefix" class="form-label">@T["Table Prefix"]</label>
                 <input asp-for="TablePrefix" class="form-control" />
                 <span asp-validation-for="TablePrefix" class="text-danger"></span>
                 <span class="text-muted form-text small">@T["You can specify a table prefix if you intend to reuse the same database for multiple sites."]</span>
@@ -185,7 +185,7 @@
 
         <div class="row connectionString" asp-validation-class-for="ConnectionString">
             <div class="mb-3 col-md-12">
-                <label asp-for="ConnectionString">@T["Connection string"]</label>
+                <label asp-for="ConnectionString" class="form-label">@T["Connection string"]</label>
                 <div class="input-group mb-2 mb-sm-0">
                     <input asp-for="ConnectionString" class="form-control pwd" type="password" required />
                     <button type="button" id="toggleConnectionString" class="btn btn-secondary" tabindex="-1" aria-hidden="true" title="@T["Show/hide connection string"]"><i class="icon fa fa-eye"></i></button>
@@ -197,7 +197,7 @@
 
         <div class="row row-cols-1 row-cols-md-2">
             <div class="mb-3 col tablePrefix">
-                <label asp-for="Schema">@T["Table Schema"]</label>
+                <label asp-for="Schema" class="form-label">@T["Table Schema"]</label>
                 <input asp-for="Schema" class="form-control" />
                 <span asp-validation-for="Schema" class="text-danger"></span>
                 <div class="text-muted form-text small">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
@@ -209,21 +209,21 @@
         <span class="text-muted form-text small">@T["The super user has all the rights. It should be used only during Setup and for disaster recovery."]</span>
         <div class="row">
             <div class="mb-3 col-md-6" asp-validation-class-for="UserName">
-                <label asp-for="UserName">@T["User name"]</label>
+                <label asp-for="UserName" class="form-label">@T["User name"]</label>
                 <input asp-for="UserName" class="form-control" required />
                 <span asp-validation-for="UserName" class="text-danger"></span>
             </div>
             <div class="mb-3 col-md-6" asp-validation-class-for="Email">
-                <label for="Email">@T["Email"]</label>
+                <label asp-for="Email" class="form-label">@T["Email"]</label>
                 <input asp-for="Email" class="form-control" type="email" required />
                 <span asp-validation-for="Email" class="text-danger">@T["The email is invalid."]</span>
             </div>
         </div>
         <div class="row">
             <div class="mb-3 col-md-6" asp-validation-class-for="Password">
-                <label asp-for="Password">@T["Password"]</label>
+                <label asp-for="Password" class="form-label">@T["Password"]</label>
                 <div class="input-group">
-                    <input asp-for="Password" class="form-control" data-bs-toggle="popover" data-bs-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-bs-content="@passwordTooltip" required pattern="@passwordRegex" />
+                    <input asp-for="Password" class="form-control" autocomplete="new-password" data-bs-toggle="popover" data-bs-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-bs-content="@passwordTooltip" required pattern="@passwordRegex" />
                     <button tabindex="-1" class="btn btn-secondary" type="button" id="togglePassword"><i class="icon fa fa-eye"></i></button>
                 </div>
                 <div id="passwordStrength"></div>
@@ -231,9 +231,9 @@
             </div>
 
             <div class="mb-3 col-md-6" asp-validation-class-for="PasswordConfirmation">
-                <label asp-for="PasswordConfirmation">@T["Password Confirmation"]</label>
+                <label asp-for="PasswordConfirmation" class="form-label">@T["Password Confirmation"]</label>
                 <div class="input-group">
-                    <input asp-for="PasswordConfirmation" class="form-control" title="@passwordTooltip" required pattern="@passwordRegex" />
+                    <input asp-for="PasswordConfirmation" class="form-control" autocomplete="new-password" title="@passwordTooltip" required pattern="@passwordRegex" />
                     <button tabindex="-1" class="btn btn-secondary" type="button" id="togglePasswordConfirmation"><i class="icon fa fa-eye"></i></button>
                 </div>
                 <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>

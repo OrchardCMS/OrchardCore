@@ -4,16 +4,16 @@
 
 <form asp-action="Create" method="post" class="no-multisubmit">
     <div class="mb-3" asp-validation-class-for="Name">
-        <label asp-for="Name">@T["Name"]</label>
+        <label asp-for="Name" class="form-label">@T["Name"]</label>
         <input asp-for="Name" class="form-control" type="text" />
         <span asp-validation-for="Name"></span>
     </div>
 
     <div class="mb-3" asp-validation-class-for="Description">
-        <label asp-for="Description">@T["Description"]</label>
+        <label asp-for="Description" class="form-label">@T["Description"]</label>
         <textarea asp-for="Description" class="form-control" rows="3" type="text"></textarea>
         <span asp-validation-for="Description"></span>
     </div>
 
-    <input class="button" type="submit" value="@T["Create"]" />
+    <input class="btn btn-primary" type="submit" value="@T["Create"]" />
 </form>

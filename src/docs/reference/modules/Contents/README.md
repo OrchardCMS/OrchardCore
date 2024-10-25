@@ -2,6 +2,19 @@
 
 This module provides Content Management services.
 
+## CommonPart
+
+Attach this part to your content items to edit the common properties like `CreatedUtc` and `Owner` of a `ContentItem`.
+
+The following properties are available on `CommonPart`:
+
+| Name | Type | Description |
+| -----| ---- |------------ |
+| `CreatedUtc` | `DateTime` | The HTML content in the body. |
+| `Owner` | `string` | The HTML content in the body. |
+| `Content` | | The raw content of the part. |
+| `ContentItem` | | The content item containing this part. |
+
 ## Liquid
 
 You can access content items from liquid views and templates by using the `Content` property.  
@@ -70,6 +83,7 @@ The `console_log` liquid filter can be used to dump data from well known propert
 ```
 
 Well known properties include
+
 - Strings
 - JTokens
 - Content Items (from the `Model.ContentItem` property)
@@ -104,6 +118,7 @@ The `ConsoleLog` extension method can be used to dump data from well known prope
 `@Orchard.ConsoleLog(Model.ContentItem as object)` noting that we cast to an object, as extension methods do not support dynamic dispatching.
 
 Well known properties include
+
 - Strings
 - JTokens
 - Content Items (from the `Model.ContentItem` property)
@@ -113,6 +128,98 @@ Well known properties include
 !!! note
     To log shapes call `@Orchard.ConsoleLog(Model.Content as object)` after calling `@await DisplayAsync(Model.Content)`
     This will allow the shape to execute, and populate the alternates for any child shapes.
+
+## Contents Module RESTful Web API
+
+The `OrchardCore.Contents` module provides RESTful API endpoints via [`minimal API`](https://github.com/OrchardCMS/OrchardCore/tree/main/src/OrchardCore.Modules/OrchardCore.Contents/Endpoints/Api) featuring endpoints to manage _content items_. These endpoints allow for operations such as retrieving, creating, updating, and deleting single content item instances. Access to these endpoints requires authentication and appropriate user role permissions.
+
+### Useful modules and libraries
+
+- We would suggest you read the docs about the [GraphQL module](../Apis.GraphQL/README.md), to be used for querying content items.
+- There's a [Swagger module](https://github.com/OrchardCoreContrib/OrchardCoreContrib.Modules/blob/main/src/OrchardCoreContrib.Apis.Swagger/README.md) made by the community, that allows you to create APIs documentation using Swagger.
+- Lombiq provide a [client library](https://github.com/Lombiq/Orchard-Core-API-Client) for communicating with the Orchard Core web APIs.
+
+### Activating the "OpenId Authorization Server" and "OpenId Token Validation" Features, and setting User Roles
+
+To utilize the Orchard Core Contents API endpoints, user accounts must authenticate using the OAuth 2 standard by activating and configuring the "OpenId Authorization Server" and "OpenId Token Validation" features. Detailed configuration steps can be found in the [OpenId Authorization Server documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/OpenId/#authorization-server) and the [OpenId Token Validation documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/OpenId/#token-validation).
+
+It is usually better to **create a dedicated user for performing API calls**, maintain control over user rights, and easily activate/deactivate the API user. The `OrchardCore.OpenId` feature allows setting these user role permissions from "Roles → Edit (User)". Those are the available permissions:
+
+- View and edit the OpenID Connect client settings
+- View and edit the OpenID Connect server settings
+- View and edit the OpenID Connect validation settings
+- View, add, edit, and remove the OpenID Connect applications
+- View, add, edit, and remove the OpenID Connect scopes
+
+### Contents API Controller Endpoints
+
+#### GET /api/content/{contentItemId}
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| contentItemId | path | The ID of the Content Item to be retrieved. | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Success |
+
+***
+
+#### POST /api/content
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+|  | payload | The content item model to be updated | Yes | Json |
+
+##### Body payload example
+
+```json
+{
+  "contentItem": "string",
+  "id": 0,
+  "contentItemId": "string",
+  "contentItemVersionId": "string",
+  "contentType": "string",
+  "published": true,
+  "latest": true,
+  "modifiedUtc": "2024-03-14T11:40:20.331Z",
+  "publishedUtc": "2024-03-14T11:40:20.331Z",
+  "createdUtc": "2024-03-14T11:40:20.331Z",
+  "owner": "string",
+  "author": "string",
+  "displayText": "string"
+}
+```
+
+> This payload example model was obtained using the GraphiQL panel available in the Admin: _Configuration_ → _GraphiQL_. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview of how to use GraphiQL. 
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Success |
+
+***
+
+#### DELETE /api/content/{contentItemId}
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| contentItemId | path | The ID of the Content Item to be deleted. | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Success |
 
 ## GraphQL
 
@@ -221,13 +328,13 @@ It's also not currently possible to order responses by their parts or custom fie
 
 #### Filtering
 
-When querying all content items of a type you can supply different parameters to the where argument to constrain the data in the response according to your requirements. 
+When querying all content items of a type you can supply different parameters to the where argument to constrain the data in the response according to your requirements.
 The available options depend on the scalar and part fields defined on the type in question.
 
 ##### Single Filters
 
 If you supply exactly one parameter to the `where` argument, the query response will only contain content items that adhere to this constraint.  
-Multiple filters can be combined using `AND` and/or `OR`, see [below](#arbitrary-combination-of-filters-with-and-and-or) for more details.
+Multiple filters can be combined using `AND` and/or `OR`, see [below](#arbitrary-combination-of-filters-with-and-or-and-not) for more details.
 
 ##### Filtering by a publication status
 
@@ -407,6 +514,58 @@ query {
   }
 }
 ```
+
+## List Content Types by Stereotype
+
+Starting with version 1.7, the Contents admin UI provides a way to manage content items of content types that share the same Stereotype.
+
+For example, lets say we want list all content items of a content types that use `Test` stereotype. To do that, add an admin menu item that directs the user to `/Admin/Contents/ContentItems?stereotype=Test`. Adding `stereotype=Test` to the URL will render the UI using any content type that has `Test` as it's stereotype.
+
+## Full-Text Search for Admin UI
+
+Starting with version 1.7, a new options have been introduced to enable control over the behavior of the full-text search in the administration user interface for content items.
+
+For instance, consider a content type called `Product.` Currently, when a user performs a search, the default behavior is to check if the search terms are present in the `DisplayText` column of the `ContentItemIndex` for the content item. However, what if a user wants to search for a product using its serial number, which is not part of the `DisplayText` field?
+
+With the newly added options, we can now allow searching for products based on either the display text or the serial number. To modify the default behavior, two steps need to be taken:
+
+ 1. Implement `IContentsAdminListFilterProvider` interface by defining a custom lookup logic. For example:
+
+    ```csharp
+    public class ProductContentsAdminListFilterProvider : IContentsAdminListFilterProvider
+    {
+        public void Build(QueryEngineBuilder<ContentItem> builder)
+        {
+            builder
+                .WithNamedTerm("producttext", builder => builder
+                    .ManyCondition(
+                        (val, query) => query.Any(
+                            (q) => q.With<ContentItemIndex>(i => i.DisplayText != null && i.DisplayText.Contains(val)),
+                            (q) => q.With<ProductIndex>(i => i.SerialNumber != null && i.SerialNumber.Contains(val))
+                        ),
+                        (val, query) => query.All(
+                            (q) => q.With<ContentItemIndex>(i => i.DisplayText == null || i.DisplayText.NotContains(val)),
+                            (q) => q.With<ProductIndex>(i => i.SerialNumber == null || i.SerialNumber.NotContains(val))
+                        )
+                    )
+                );
+        }
+    }
+    ```
+
+ 2. Register the custom default term name as a search option by adding it to the `ContentsAdminListFilterOptions.` For example:
+
+    ```csharp
+    services.Configure<ContentsAdminListFilterOptions>(options =>
+    {
+        options.DefaultTermNames.Add("Product", "producttext");
+    });
+    ```
+
+Now, when a user searches for a product's serial number in the administration UI, we will utilize the `producttext` filter instead of the default `text` filter to perform the search.
+
+The `UseExactMatch` option in the `ContentsAdminListFilterOptions` class modifies the default search behavior by enclosing searched terms within quotation marks, creating an exact match search by default, this unless if the search text explicitly uses 'OR' or 'AND' operators.
+
 
 ## Videos
 

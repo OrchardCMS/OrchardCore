@@ -12,37 +12,38 @@
     The shape is created from TaxonomyPartDisplayDriver
 *@
 
-<script asp-src="~/OrchardCore.Taxonomies/Scripts/menu.js" at="Foot" depends-on="admin, jQuery-ui"></script>
+<script asp-src="~/OrchardCore.Taxonomies/Scripts/menu.js" at="Foot" depends-on="jQuery-ui"></script>
 <style asp-src="~/OrchardCore.Taxonomies/Styles/menu.min.css" debug-src="~/OrchardCore.Taxonomies/Styles/menu.css" depends-on="jQuery-ui"></style>
 
 @{
     var updater = ModelUpdaterAccessor.ModelUpdater;
     var canAddTerm = Model.TaxonomyPart.ContentItem.Id != 0;
-    var termContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => !t.HasStereotype()).OrderBy(x => x.DisplayName);
+    var termContentTypes = (await ContentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => !t.HasStereotype()).OrderBy(x => x.DisplayName);
     var index = 0;
 }
-<div class="@Orchard.GetWrapperCssClasses()" asp-validation-class-for="TermContentType">
-    <label asp-for="TermContentType" class="@Orchard.GetLabelCssClasses()">@T["Term Content Type"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()" asp-validation-class-for="TermContentType">
+    <label asp-for="TermContentType" class="@Orchard.GetLabelClasses()">@T["Term Content Type"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <select asp-for="TermContentType" class="form-select" asp-items="@(new SelectList(termContentTypes, "Name", "DisplayName"))">
+            <option value="">@T["Select a term content type"]</option>
         </select>
     </div>
     <span asp-validation-for="TermContentType"></span>
 </div>
-<div class="@Orchard.GetWrapperCssClasses()">
+<div class="@Orchard.GetWrapperClasses()">
 
-    <div class="@Orchard.GetEndCssClasses(true)">
+    <div class="@Orchard.GetEndClasses(true)">
         @if (canAddTerm && Model.TermContentType != null)
         {
-            var termContentType = ContentDefinitionManager.GetTypeDefinition(Model.TermContentType);
+            var termContentType = await ContentDefinitionManager.GetTypeDefinitionAsync(Model.TermContentType);
             @if (termContentType != null)
             {
                 <a class="btn btn-primary btn-sm"
-           asp-route-action="Create"
-           asp-route-controller="Admin"
-           asp-route-id="@Model.TaxonomyPart.TermContentType"
-           asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
-           asp-route-area="OrchardCore.Taxonomies">
+                   asp-route-action="Create"
+                   asp-route-controller="Admin"
+                   asp-route-id="@Model.TaxonomyPart.TermContentType"
+                   asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+                   asp-route-area="OrchardCore.Taxonomies">
                     @T["Add {0}", termContentType.DisplayName]
                 </a>
             }
@@ -51,9 +52,9 @@
         <ol id="menu" class="list-group my-3">
             @foreach (var menuItem in Model.TaxonomyPart.ContentItem.As<TaxonomyPart>().Terms)
             {
-                dynamic termShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TermAdmin");
-                termShape.TaxonomyPart = Model.TaxonomyPart;
-                termShape.Index = index++;
+                var termShape = await ContentItemDisplayManager.BuildDisplayAsync(menuItem, updater, "TermAdmin");
+                termShape.Properties["TaxonomyPart"] = Model.TaxonomyPart;
+                termShape.Properties["Index"] = index++;
                 @await DisplayAsync(termShape)
             }
         </ol>

@@ -1,3 +1,5 @@
+@import './_variables';
+
 #folder-tree {
     list-style: none;
     padding-left: 0;
@@ -7,7 +9,7 @@
     .treeroot {
         font-weight: 600;
         height: 40px;
-        border-bottom: $media-border-content;
+        border-bottom: var(--oc-media-border-content);
 
         a {
             font-size: 1rem;
@@ -21,8 +23,7 @@
             font-size: 0.875rem;
             padding: 0;
         }
-
-        // show horizontal-scrollbar to keep it usable even on deeply nested directories        
+        // show horizontal-scrollbar to keep it usable even on deeply nested directories
         + ol {
             overflow-x: auto;
         }
@@ -30,11 +31,11 @@
 
     li.selected > div:not(.treeroot) {
         font-weight: bold;
-        background-color: $selected-background-color;
+        background-color: var(--oc-media-selected-background-color);
     }
 
     li div:not(.treeroot) a:hover, .folderhovered {
-        background-color: $selected-background-color;
+        background-color: var(--bs-list-group-action-hover-bg, var(--bs-secondary-bg, lightgray));
     }
 
     li div {
@@ -50,7 +51,7 @@
 
     div {
         a {
-            color: $gray-700;
+            color: var(--oc-media-color);
             text-decoration: none;
         }
     }
@@ -104,7 +105,8 @@
             a.btn {
                 display: flex;
                 align-items: center;
-                background-color: $selected-background-color;
+                background-color: var(--oc-media-selected-background-color);
+                color: var(--bs-white, #fff)
             }
         }
     }

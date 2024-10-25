@@ -1,40 +1,33 @@
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.Deployment;
 using OrchardCore.Shortcodes.Services;
 
-namespace OrchardCore.Shortcodes.Deployment
+namespace OrchardCore.Shortcodes.Deployment;
+
+public class AllShortcodeTemplatesDeploymentSource
+    : DeploymentSourceBase<AllShortcodeTemplatesDeploymentStep>
 {
-    public class AllShortcodeTemplatesDeploymentSource : IDeploymentSource
+    private readonly ShortcodeTemplatesManager _templatesManager;
+
+    public AllShortcodeTemplatesDeploymentSource(ShortcodeTemplatesManager templatesManager)
     {
-        private readonly ShortcodeTemplatesManager _templatesManager;
+        _templatesManager = templatesManager;
+    }
 
-        public AllShortcodeTemplatesDeploymentSource(ShortcodeTemplatesManager templatesManager)
+    protected override async Task ProcessAsync(AllShortcodeTemplatesDeploymentStep step, DeploymentPlanResult result)
+    {
+        var templateObjects = new JsonObject();
+        var templates = await _templatesManager.GetShortcodeTemplatesDocumentAsync();
+
+        foreach (var template in templates.ShortcodeTemplates)
         {
-            _templatesManager = templatesManager;
+            templateObjects[template.Key] = JObject.FromObject(template.Value);
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        result.Steps.Add(new JsonObject
         {
-            var allTemplatesStep = step as AllShortcodeTemplatesDeploymentStep;
-
-            if (allTemplatesStep == null)
-            {
-                return;
-            }
-
-            var templateObjects = new JObject();
-            var templates = await _templatesManager.GetShortcodeTemplatesDocumentAsync();
-
-            foreach (var template in templates.ShortcodeTemplates)
-            {
-                templateObjects[template.Key] = JObject.FromObject(template.Value);
-            }
-
-            result.Steps.Add(new JObject(
-                new JProperty("name", "ShortcodeTemplates"),
-                new JProperty("ShortcodeTemplates", templateObjects)
-            ));
-        }
+            ["name"] = "ShortcodeTemplates",
+            ["ShortcodeTemplates"] = templateObjects,
+        });
     }
 }

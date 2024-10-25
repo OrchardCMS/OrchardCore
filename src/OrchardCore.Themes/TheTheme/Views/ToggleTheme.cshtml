@@ -1,0 +1,33 @@
+<li class="nav-item dropdown text-end">
+    <a role="button" class="nav-link dropdown-toggle" id="bd-theme" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static" aria-label="@T["Toggle theme"]">
+        <span class="theme-icon-active"><i class="fa-solid fa-circle-half-stroke"></i></span>
+        <span class="d-none" id="bd-theme-text">@T["Toggle theme"]</span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme-text">
+        <li>
+            <button type="button" class="dropdown-item" data-bs-theme-value="auto" aria-pressed="false">
+                <span class="theme-icon">
+                    <i class="fa-solid fa-circle-half-stroke"></i>
+                </span>
+                <span class="ps-2">@T["Auto"]</span>
+            </button>
+        </li>
+        <li>
+            <button type="button" class="dropdown-item active" data-bs-theme-value="light" aria-pressed="true">
+                <span class="theme-icon">
+                    <i class="fa-solid fa-sun"></i>
+                </span>
+                <span class="ps-2">@T["Light"]</span>
+            </button>
+        </li>
+        <li>
+            <button type="button" class="dropdown-item" data-bs-theme-value="dark" aria-pressed="false">
+                <span class="theme-icon">
+                    <i class="fa-solid fa-moon"></i>
+                </span>
+                <span class="ps-2">@T["Dark"]</span>
+            </button>
+        </li>
+        @await RenderSectionAsync("ToggleThemeItems", required: false)
+    </ul>
+</li>

@@ -1,7 +1,7 @@
 @model OrchardCore.Layers.ViewModels.LayerSettingsViewModel
 
 <div class="mb-3" asp-validation-class-for="Zones">
-    <label asp-for="Zones">@T["Available zones for Layers"]</label>
+    <label asp-for="Zones" class="form-label">@T["Available zones for Layers"]</label>
     <input asp-for="Zones" class="form-control" type="text" />
     <span asp-validation-for="Zones"></span>
     <span class="hint">

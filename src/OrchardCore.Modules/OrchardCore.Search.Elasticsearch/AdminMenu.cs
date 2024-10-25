@@ -1,47 +1,43 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
-using OrchardCore.Search.Elasticsearch.Drivers;
 
-namespace OrchardCore.Search.Elasticsearch
+namespace OrchardCore.Search.Elasticsearch;
+
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        private readonly IStringLocalizer S;
+        S = stringLocalizer;
+    }
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            S = localizer;
-        }
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        builder
+            .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
+                .AddClass("search")
+                .Id("search")
+                .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
+                    .Add(S["Elasticsearch Indices"], S["Elasticsearch Indices"].PrefixPosition(), indexes => indexes
+                        .Action("Index", "Admin", "OrchardCore.Search.Elasticsearch")
+                        .AddClass("elasticsearchindices")
+                        .Id("elasticsearchindices")
+                        .Permission(Permissions.ManageElasticIndexes)
+                        .LocalNav()
+                    )
+                )
+                .Add(S["Queries"], S["Queries"].PrefixPosition(), import => import
+                    .Add(S["Run Elasticsearch Query"], S["Run Elasticsearch Query"].PrefixPosition(), queries => queries
+                        .Action("Query", "Admin", "OrchardCore.Search.Elasticsearch")
+                        .AddClass("elasticsearchquery")
+                        .Id("elasticsearchquery")
+                        .Permission(Permissions.ManageElasticIndexes)
+                        .LocalNav()
+                    )
+                )
+            );
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
-
-            builder
-                .Add(S["Search"], "7", search => search
-                    .AddClass("elasticsearch").Id("Elasticsearch")
-                    .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
-                        .Add(S["Elasticsearch Indices"], S["Elasticsearch Indices"].PrefixPosition(), indexes => indexes
-                            .Action("Index", "Admin", new { area = "OrchardCore.Search.Elasticsearch" })
-                            .Permission(Permissions.ManageElasticIndexes)
-                            .LocalNav())
-                        .Add(S["Run Elasticsearch Query"], S["Run Elasticsearch Query"].PrefixPosition(), queries => queries
-                            .Action("Query", "Admin", new { area = "OrchardCore.Search.Elasticsearch" })
-                            .Permission(Permissions.ManageElasticIndexes)
-                            .LocalNav()))
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Elasticsearch"], S["Elasticsearch"].PrefixPosition(), entry => entry
-                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ElasticSettingsDisplayDriver.GroupId })
-                             .Permission(Permissions.ManageElasticIndexes)
-                             .LocalNav()
-                        )));
-
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

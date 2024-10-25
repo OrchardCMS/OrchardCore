@@ -1,66 +1,49 @@
-using System;
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Resolvers;
-using GraphQL.Types;
 
-namespace OrchardCore.Apis.GraphQL.Resolvers
+namespace OrchardCore.Apis.GraphQL.Resolvers;
+
+public class LockedAsyncFieldResolver<TReturnType> : FuncFieldResolver<TReturnType>
 {
-    public class LockedAsyncFieldResolver<TReturnType> : IFieldResolver<Task<TReturnType>>
+    public LockedAsyncFieldResolver(Func<IResolveFieldContext, ValueTask<TReturnType>> resolver) : base(resolver)
     {
-        private readonly Func<IResolveFieldContext, Task<TReturnType>> _resolver;
 
-        public LockedAsyncFieldResolver(Func<IResolveFieldContext, Task<TReturnType>> resolver)
-        {
-            _resolver = resolver;
-        }
-
-        public async Task<TReturnType> Resolve(IResolveFieldContext context)
-        {
-            var graphContext = (GraphQLUserContext)context.UserContext;
-
-            await graphContext.ExecutionContextLock.WaitAsync();
-
-            try
-            {
-                return await _resolver(context);
-            }
-            finally
-            {
-                graphContext.ExecutionContextLock.Release();
-            }
-        }
-
-        object IFieldResolver.Resolve(IResolveFieldContext context)
-        {
-            return Resolve(context);
-        }
     }
 
-    public class LockedAsyncFieldResolver<TSourceType, TReturnType> : AsyncFieldResolver<TSourceType, TReturnType>, IFieldResolver<Task<TReturnType>>
+    public new async ValueTask<object> ResolveAsync(IResolveFieldContext context)
     {
-        public LockedAsyncFieldResolver(Func<IResolveFieldContext<TSourceType>, Task<TReturnType>> resolver) : base(resolver)
+        var graphContext = (GraphQLUserContext)context.UserContext;
+        await graphContext.ExecutionContextLock.WaitAsync();
+
+        try
         {
+            return await base.ResolveAsync(context);
         }
-
-        public new async Task<TReturnType> Resolve(IResolveFieldContext context)
+        finally
         {
-            var graphContext = (GraphQLUserContext)context.UserContext;
-            await graphContext.ExecutionContextLock.WaitAsync();
-
-            try
-            {
-                return await base.Resolve(context);
-            }
-            finally
-            {
-                graphContext.ExecutionContextLock.Release();
-            }
+            graphContext.ExecutionContextLock.Release();
         }
+    }
+}
 
-        object IFieldResolver.Resolve(IResolveFieldContext context)
+public class LockedAsyncFieldResolver<TSourceType, TReturnType> : FuncFieldResolver<TSourceType, TReturnType>
+{
+    public LockedAsyncFieldResolver(Func<IResolveFieldContext<TSourceType>, ValueTask<TReturnType>> resolver) : base(resolver)
+    {
+    }
+
+    public new async Task<object> ResolveAsync(IResolveFieldContext context)
+    {
+        var graphContext = (GraphQLUserContext)context.UserContext;
+        await graphContext.ExecutionContextLock.WaitAsync();
+
+        try
         {
-            return Resolve(context);
+            return await base.ResolveAsync(context);
+        }
+        finally
+        {
+            graphContext.ExecutionContextLock.Release();
         }
     }
 }

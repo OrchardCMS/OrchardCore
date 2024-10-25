@@ -1,14 +1,15 @@
-using System.Threading.Tasks;
 using OrchardCore.Modules;
 using StackExchange.Redis;
 
-namespace OrchardCore.Redis
+namespace OrchardCore.Redis;
+
+public interface IRedisService : IModularTenantEvents
 {
-    public interface IRedisService : IModularTenantEvents
-    {
-        Task ConnectAsync();
-        IConnectionMultiplexer Connection { get; }
-        string InstancePrefix { get; }
-        IDatabase Database { get; }
-    }
+    Task ConnectAsync();
+
+    IConnectionMultiplexer Connection { get; }
+
+    string InstancePrefix { get; }
+
+    IDatabase Database { get; }
 }

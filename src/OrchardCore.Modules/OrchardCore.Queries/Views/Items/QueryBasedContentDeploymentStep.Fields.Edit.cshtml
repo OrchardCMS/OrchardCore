@@ -1,10 +1,9 @@
 @using OrchardCore.Queries.ViewModels
 @model QueryBasedContentDeploymentStepViewModel
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
-@inject OrchardCore.Queries.IQueryManager QueryManager
 
 <style asp-name="codemirror"></style>
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 
 <h5>@T["Queried Content Items"]</h5>
@@ -21,9 +20,9 @@
 
 <div class="mb-3" asp-validation-class-for="QueryName">
     <div>
-        <label asp-for="QueryName">@T["Query"]</label>
+        <label asp-for="QueryName" class="form-label">@T["Query"]</label>
         <select class="form-select form-select-sm" asp-for="QueryName">
-            @foreach (var query in (await QueryManager.ListQueriesAsync()))
+            @foreach (var query in Model.Queries)
             {
                 var name = query.Name;
                 <option value="@name">@name</option>
@@ -36,7 +35,7 @@
 </div>
 
 <div class="mb-3" asp-validation-class-for="QueryParameters">
-    <label asp-for="QueryParameters">@T["Parameters"]</label>
+    <label asp-for="QueryParameters" class="form-label">@T["Parameters"]</label>
     <textarea asp-for="QueryParameters" class="form-control"></textarea>
     <span asp-validation-for="QueryParameters" class="text-danger"></span>
     <div class="hint">@T["An optional JSON object containing the parameter values for this query."]</div>

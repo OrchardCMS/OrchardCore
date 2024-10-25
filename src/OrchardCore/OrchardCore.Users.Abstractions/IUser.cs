@@ -1,13 +1,12 @@
-namespace OrchardCore.Users
+namespace OrchardCore.Users;
+
+/// <summary>
+/// Contract for ASP.NET Core Identity services.
+/// </summary>
+public interface IUser
 {
     /// <summary>
-    /// Contract for ASP.NET Core Identity services.
+    /// Gets the user name.
     /// </summary>
-    public interface IUser
-    {
-        /// <summary>
-        /// Gets the user name.
-        /// </summary>
-        string UserName { get; }
-    }
+    string UserName { get; }
 }

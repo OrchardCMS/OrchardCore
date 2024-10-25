@@ -1,4 +1,3 @@
-using System;
 using YesSql;
 
 namespace OrchardCore.Data;
@@ -11,7 +10,7 @@ public class DefaultTableNameConvention : ITableNameConvention
 
     public string GetIndexTable(Type type, string collection = null)
     {
-        if (String.IsNullOrEmpty(collection))
+        if (string.IsNullOrEmpty(collection))
         {
             return type.Name;
         }
@@ -21,7 +20,7 @@ public class DefaultTableNameConvention : ITableNameConvention
 
     public string GetDocumentTable(string collection = null)
     {
-        if (String.IsNullOrEmpty(collection))
+        if (string.IsNullOrEmpty(collection))
         {
             return _options.DocumentTable;
         }

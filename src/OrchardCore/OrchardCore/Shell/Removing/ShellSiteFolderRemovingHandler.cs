@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -14,7 +11,7 @@ namespace OrchardCore.Environment.Shell.Removing;
 public class ShellSiteFolderRemovingHandler : IShellRemovingHandler
 {
     private readonly ShellOptions _shellOptions;
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
     public ShellSiteFolderRemovingHandler(

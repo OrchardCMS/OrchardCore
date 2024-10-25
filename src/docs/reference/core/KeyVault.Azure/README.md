@@ -5,15 +5,18 @@ The Azure Key Vault configuration provider adds app configuration values from th
 Example:
 Key Vault Input: "OrchardCore--OrchardCore---Shells---Database--ConnectionString".
 Output: "OrchardCore:OrchardCore_Shells_Database:ConnectionString".
-See https://github.com/OrchardCMS/OrchardCore/issues/6359.
+See <https://github.com/OrchardCMS/OrchardCore/issues/6359>.
 
 ## Authenticating with Azure Key Vault
-By default, the Azure Key Vault configuration provider uses the [Azure Identity library](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/identity/Azure.Identity/README.md) for Azure Active Directory token authentication support across the Azure SDK. At this time, the OrchardCore.Azure.KeyVault only supports the DefaultAzureCredential setting, which is appropriate for most scenarios where the application is intended to be run in Azure.
 
-When debugging or executing locally, developers have several options for authenticating with Azure Key Vault. To authenticate in Visual Studio select the Tools > Options menu to launch the Options dialog. Then navigate to the Azure Service Authentication options to sign in with your Azure Active Directory account. Developers using Visual Studio Code can use the [Azure Account Extension], to authenticate via the IDE. 
+By default, the Azure Key Vault configuration provider uses the [Azure Identity library](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/identity/Azure.Identity/README.md) for Microsoft Entra ID (Azure Active Directory) token authentication support across the Azure SDK. At this time, the OrchardCore.Azure.KeyVault only supports the DefaultAzureCredential setting, which is appropriate for most scenarios where the application is intended to be run in Azure.
+
+When debugging or executing locally, developers have several options for authenticating with Azure Key Vault. To authenticate in Visual Studio select the Tools > Options menu to launch the Options dialog. Then navigate to the Azure Service Authentication options to sign in with your Microsoft Entra ID account. Developers using Visual Studio Code can use the [Azure Account Extension], to authenticate via the IDE.
 
 ## Configuration
+
 In addition, you will need to specify the name of your Azure Key Vault and optionally a reload interval in seconds.
+
 ```json
 "OrchardCore_KeyVault_Azure": {
     "KeyVaultName": "", // Set the name of your Azure Key Vault.
@@ -38,4 +41,3 @@ public class Program
             .Build();
 }
 ```
-

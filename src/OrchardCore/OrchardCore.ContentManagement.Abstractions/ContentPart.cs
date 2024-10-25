@@ -1,6 +1,5 @@
-namespace OrchardCore.ContentManagement
+namespace OrchardCore.ContentManagement;
+
+public class ContentPart : ContentElement
 {
-    public class ContentPart : ContentElement
-    {
-    }
 }

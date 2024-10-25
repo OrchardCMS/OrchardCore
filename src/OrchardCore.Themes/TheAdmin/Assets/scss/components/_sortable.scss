@@ -1,0 +1,12 @@
+@import '../_variables';
+
+// Setting a minimum height for sortable containers is necessary to enable the drag-and-drop functionality for items.
+// Be sure to assign a suitable min-height to facilitate the drag-and-drop process.
+.ui-sortable {
+    min-height: $font-size-base;
+}
+
+// If the sortable container is empty, ensure it's visually noticeable.
+ul.ui-sortable:not(:has(>li)) {
+    border: var(--bs-border-width) dashed var(--bs-border-color) !important;
+}

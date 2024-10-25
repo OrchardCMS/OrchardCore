@@ -1,6 +1,6 @@
 # Configuration
 
-Orchard Core allows you to create your own setup templates (know as [Recipes](../glossary/#Recipe)) and configure your [Tenants](../glossary/#Tenant) individually.
+Orchard Core allows you to create your own setup templates (known as [Recipes](../../glossary/README.md#recipe)) and configure your [Tenants](../../glossary/README.md#tenant) individually.
 
 ## Configure your Orchard Core instance
 

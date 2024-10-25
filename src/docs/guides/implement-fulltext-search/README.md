@@ -6,7 +6,7 @@ Before going further, please notice that `TheBlogTheme` includes a recipe which 
 
 Let's see how to make this available for you step by step.
 
-## 1st step : Enable the Lucene or Elasticsearch feature in Orchard Core.
+## 1st step : Enable the Lucene or Elasticsearch feature in Orchard Core
 
 ![Features configuration](images/1.jpg)
 
@@ -23,16 +23,16 @@ Click on "Add Index" button.
 Options that are available on a `Lucene` Index:
 
 The *Index Name* is used for identifying your index.  
-It will create a folder in `/App_Data/Sites/{YourTenantName}/Lucene/{IndexName}` which will contain all the files created by `Lucene` when indexing. 
+It will create a folder in `/App_Data/Sites/{YourTenantName}/Lucene/{IndexName}` which will contain all the files created by `Lucene` when indexing.
 
 The second option is the *Analyzer Name* used for this Index.  
 The analyzer is a more complex feature for advanced users. It allows you to fine tune how your text is stemmed when it is indexed. For example, when you are searching for "Car", you might also want to have results when people are typing "car" which is in lower case. In that case the Analyzer could be programmed with a Lower case filter which will index all text in lower case. For more details about analyzers, please refer to Lucene.NET documentation. By default, the *Analyzer Name* in Orchard Core has only the *standardanalyzer* available which is optimized for "English" culture chars. Analyzers are extensible so that you can add your own by using one of the provided analyzers in Lucene.NET or by implementing your own.  
 
 See:
 
-https://github.com/apache/lucenenet/tree/master/src/Lucene.Net.Analysis.Common/Analysis
+<https://github.com/apache/lucenenet/tree/master/src/Lucene.Net.Analysis.Common/Analysis>
 
-You can register for example a custom analyzer with the DI using this example from a startup.cs file in your custom module: 
+You can register for example a custom analyzer with the DI using this example from a startup.cs file in your custom module:
 
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
@@ -43,7 +43,7 @@ using OrchardCore.Modules;
 namespace OrchardCore.Search.Lucene.FrenchAnalyzer
 {
     [Feature("OrchardCore.Search.Lucene.FrenchAnalyzer")]
-    public class Startup : StartupBase
+    public sealed class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -111,15 +111,16 @@ Or simply use:
 
 ## Optional : Search templates customization
 
-Also, you can customize these templates for your specific needs in your theme by overriding these files : 
+Also, you can customize these templates for your specific needs in your theme by overriding these files :
 
 `/Views/Shared/Search.liquid or .cshtml` (general layout)  
 `/Views/Search-Form.liquid or .cshtml` (form layout)  
-`/Views/Search-Results.liquid or .cshtml` (results layout)   
+`/Views/Search-Results.liquid or .cshtml` (results layout)
 
 For example, you could simply customize the search result template to suit your needs by changing "Summary" to "SearchSummary" and create the corresponding shape templates.
 
-SearchResults.liquid: 
+SearchResults.liquid:
+
 ```html
 {% if Model.ContentItems != null and Model.ContentItems.size > 0 %}
     <ul class="list-group">

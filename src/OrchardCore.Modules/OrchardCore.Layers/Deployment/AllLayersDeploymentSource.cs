@@ -1,54 +1,48 @@
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
-using OrchardCore.Entities;
+using OrchardCore.Json;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Layers.Deployment
+namespace OrchardCore.Layers.Deployment;
+
+public class AllLayersDeploymentSource
+    : DeploymentSourceBase<AllLayersDeploymentStep>
 {
-    public class AllLayersDeploymentSource : IDeploymentSource
+    private readonly ILayerService _layerService;
+    private readonly ISiteService _siteService;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+    public AllLayersDeploymentSource(
+        ILayerService layerService,
+        ISiteService siteService,
+        IOptions<DocumentJsonSerializerOptions> serializationOptions)
     {
-        private readonly static JsonSerializer JsonSerializer = new JsonSerializer()
+        _layerService = layerService;
+        _siteService = siteService;
+        _jsonSerializerOptions = serializationOptions.Value.SerializerOptions;
+    }
+
+    protected override async Task ProcessAsync(AllLayersDeploymentStep step, DeploymentPlanResult result)
+    {
+        var layers = await _layerService.GetLayersAsync();
+
+        result.Steps.Add(new JsonObject
         {
-            TypeNameHandling = TypeNameHandling.Auto
-        };
+            ["name"] = "Layers",
+            ["Layers"] = JArray.FromObject(layers.Layers, _jsonSerializerOptions),
+        });
 
-        private readonly ILayerService _layerService;
-        private readonly ISiteService _siteService;
+        var layerSettings = await _siteService.GetSettingsAsync<LayerSettings>();
 
-        public AllLayersDeploymentSource(ILayerService layerService, ISiteService siteService)
+        // Adding Layer settings
+        result.Steps.Add(new JsonObject
         {
-            _layerService = layerService;
-            _siteService = siteService;
-        }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-        {
-            var allLayersStep = step as AllLayersDeploymentStep;
-
-            if (allLayersStep == null)
-            {
-                return;
-            }
-
-            var layers = await _layerService.GetLayersAsync();
-
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Layers"),
-                new JProperty("Layers", layers.Layers.Select(layer => JObject.FromObject(layer, JsonSerializer)))
-            ));
-
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-            // Adding Layer settings
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Settings"),
-                new JProperty("LayerSettings", JObject.FromObject(siteSettings.As<LayerSettings>()))
-            ));
-        }
+            ["name"] = "Settings",
+            ["LayerSettings"] = JObject.FromObject(layerSettings),
+        });
     }
 }

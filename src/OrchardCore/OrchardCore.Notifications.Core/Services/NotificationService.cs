@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
 using YesSql;
@@ -10,7 +8,7 @@ public class NotificationService : INotificationService
 {
     private readonly INotificationMethodProviderAccessor _notificationMethodProviderAccessor;
     private readonly IEnumerable<INotificationEvents> _notificationEvents;
-    private readonly ILogger<NotificationService> _logger;
+    private readonly ILogger _logger;
     private readonly ISession _session;
     private readonly IClock _clock;
 
@@ -66,13 +64,14 @@ public class NotificationService : INotificationService
         {
             NotificationId = IdGenerator.GenerateId(),
             CreatedUtc = _clock.UtcNow,
+            Subject = context.NotificationMessage.Subject,
             Summary = context.NotificationMessage.Summary,
         };
 
         context.Notification = notification;
 
         await _notificationEvents.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
-        _session.Save(notification, collection: NotificationConstants.NotificationCollection);
+        await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
         await _notificationEvents.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
 
         return notification;

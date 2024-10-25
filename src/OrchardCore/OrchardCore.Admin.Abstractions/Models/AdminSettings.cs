@@ -1,13 +1,15 @@
-namespace OrchardCore.Admin.Models
+using System.ComponentModel;
+
+namespace OrchardCore.Admin.Models;
+
+public class AdminSettings
 {
-    public class AdminSettings
-    {
-        public bool DisplayDarkMode { get; set; } = true;
+    [DefaultValue(true)]
+    public bool DisplayThemeToggler { get; set; } = true;
 
-        public bool DisplayMenuFilter { get; set; }
+    public bool DisplayMenuFilter { get; set; }
 
-        public bool DisplayNewMenu { get; set; }
+    public bool DisplayNewMenu { get; set; }
 
-        public bool DisplayTitlesInTopbar { get; set; }
-    }
+    public bool DisplayTitlesInTopbar { get; set; }
 }

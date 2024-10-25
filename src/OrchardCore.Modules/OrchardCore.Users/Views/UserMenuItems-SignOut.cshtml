@@ -1,0 +1,17 @@
+@using OrchardCore.Users.Models
+
+@if (!Site.As<LoginSettings>().DisableLocalLogin)
+{
+    <li>
+        <a class="dropdown-item" asp-area="@UserConstants.Features.Users" asp-controller="Account" asp-action="ChangePassword" asp-route-returnUrl="@FullRequestPath">
+            <i class="fa-solid fa-key fa-fw" aria-hidden="true"></i> @T["Change password"]
+        </a>
+    </li>
+}
+<li>
+    <form asp-route-area="@UserConstants.Features.Users" asp-controller="Account" asp-action="LogOff" method="post" class="no-multisubmit">
+        <button type="submit" class="dropdown-item">
+            <i class="fa-solid fa-sign-out-alt fa-fw" aria-hidden="true"></i> @T["Log off"]
+        </button>
+    </form>
+</li>

@@ -1,13 +1,7 @@
-using System;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
-using OrchardCore.AuditTrail.Controllers;
 using OrchardCore.AuditTrail.Drivers;
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Models;
@@ -21,148 +15,119 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using YesSql.Filters.Query;
 
-namespace OrchardCore.AuditTrail
+namespace OrchardCore.AuditTrail;
+
+public sealed class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        private readonly AdminOptions _adminOptions;
+        // Add ILookupNormalizer as Singleton because it is needed by Users
+        services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
 
-        public Startup(IOptions<AdminOptions> adminOptions)
+        services.AddScoped<IAuditTrailManager, AuditTrailManager>();
+
+        services
+            .AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailEventDisplayDriver>();
+
+        services.AddSingleton<IAuditTrailIdGenerator, AuditTrailIdGenerator>();
+
+        services.Configure<StoreCollectionOptions>(o => o.Collections.Add(AuditTrailEvent.Collection));
+
+        services.AddDataMigration<Migrations>();
+        services.AddIndexProvider<AuditTrailEventIndexProvider>();
+        services.AddSingleton<IBackgroundTask, AuditTrailBackgroundTask>();
+
+        services.AddPermissionProvider<Permissions>();
+        services.AddNavigationProvider<AuditTrailAdminMenu>();
+        services.AddNavigationProvider<AuditTrailSettingsAdminMenu>();
+
+        services.AddSiteDisplayDriver<AuditTrailSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<AuditTrailTrimmingSettingsDisplayDriver>();
+
+        services.AddScoped<IDisplayDriver<AuditTrailIndexOptions>, AuditTrailOptionsDisplayDriver>();
+
+        services.AddScoped<IAuditTrailAdminListQueryService, DefaultAuditTrailAdminListQueryService>();
+
+        services.AddSingleton<IAuditTrailAdminListFilterParser>(sp =>
         {
-            _adminOptions = adminOptions.Value;
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            // Add ILookupNormalizer as Singleton because it is needed by Users
-            services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
-
-            services.AddScoped<IAuditTrailManager, AuditTrailManager>();
-
-            services
-                .AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailEventDisplayDriver>();
-
-            services.AddSingleton<IAuditTrailIdGenerator, AuditTrailIdGenerator>();
-
-            services.Configure<StoreCollectionOptions>(o => o.Collections.Add(AuditTrailEvent.Collection));
-
-            services.AddDataMigration<Migrations>();
-            services.AddIndexProvider<AuditTrailEventIndexProvider>();
-            services.AddSingleton<IBackgroundTask, AuditTrailBackgroundTask>();
-
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<INavigationProvider, AuditTrailAdminMenu>();
-            services.AddScoped<INavigationProvider, AuditTrailSettingsAdminMenu>();
-
-            services.AddScoped<IDisplayDriver<ISite>, AuditTrailSettingsDisplayDriver>();
-            services.AddScoped<IDisplayDriver<ISite>, AuditTrailTrimmingSettingsDisplayDriver>();
-
-            services.AddScoped<IDisplayDriver<AuditTrailIndexOptions>, AuditTrailOptionsDisplayDriver>();
-
-            services.AddScoped<IAuditTrailAdminListQueryService, DefaultAuditTrailAdminListQueryService>();
-
-            services.AddSingleton<IAuditTrailAdminListFilterParser>(sp =>
+            var filterProviders = sp.GetServices<IAuditTrailAdminListFilterProvider>();
+            var builder = new QueryEngineBuilder<AuditTrailEvent>();
+            foreach (var provider in filterProviders)
             {
-                var filterProviders = sp.GetServices<IAuditTrailAdminListFilterProvider>();
-                var builder = new QueryEngineBuilder<AuditTrailEvent>();
-                foreach (var provider in filterProviders)
-                {
-                    provider.Build(builder);
-                }
+                provider.Build(builder);
+            }
 
-                var parser = builder.Build();
+            var parser = builder.Build();
 
-                return new DefaultAuditTrailAdminListFilterParser(parser);
-            });
+            return new DefaultAuditTrailAdminListFilterParser(parser);
+        });
 
-            services.AddTransient<IAuditTrailAdminListFilterProvider, DefaultAuditTrailAdminListFilterProvider>();
+        services.AddTransient<IAuditTrailAdminListFilterProvider, DefaultAuditTrailAdminListFilterProvider>();
 
-            services.AddOptions<AuditTrailOptions>();
+        services.AddOptions<AuditTrailOptions>();
 
-            services.Configure<AuditTrailAdminListOptions>(options =>
-            {
-                options
-                    .ForSort("time-desc", b => b
-                        .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.CreatedUtc))
-                        .WithSelectListItem<Startup>((S, opt, model) => new SelectListItem(S["Newest"], opt.Value, model.Sort == String.Empty))
-                        .AsDefault())
-
-                    .ForSort("time-asc", b => b
-                        .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderBy(i => i.CreatedUtc))
-                        .WithSelectListItem<Startup>((S, opt, model) => new SelectListItem(S["Oldest"], opt.Value, model.Sort == opt.Value)))
-
-                    .ForSort("category-asc-time-desc", b => b
-                        .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderBy(i => i.Category).ThenByDescending(i => i.CreatedUtc))
-                        .WithSelectListItem<Startup>((S, opt, model) => new SelectListItem(S["Category"], opt.Value, model.Sort == opt.Value)))
-
-                    .ForSort("category-asc-time-asc", b => b
-                        .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderBy(i => i.Category).ThenBy(i => i.CreatedUtc)))
-
-                    .ForSort("category-desc-time-desc", b => b
-                        .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.Category).ThenByDescending(i => i.CreatedUtc)))
-
-                    .ForSort("category-desc-time-asc", b => b
-                        .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.Category).ThenBy(i => i.CreatedUtc)))
-
-                    .ForSort("event-asc-time-desc", b => b
-                        .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderBy(i => i.Name).ThenByDescending(i => i.CreatedUtc))
-                        .WithSelectListItem<Startup>((S, opt, model) => new SelectListItem(S["Event"], opt.Value, model.Sort == opt.Value)))
-
-                    .ForSort("event-asc-time-asc", b => b
-                        .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderBy(i => i.Name).ThenBy(i => i.CreatedUtc)))
-
-                    .ForSort("event-desc-time-desc", b => b
-                        .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.Name).ThenByDescending(i => i.CreatedUtc)))
-
-                    .ForSort("event-desc-time-asc", b => b
-                        .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.Name).ThenBy(i => i.CreatedUtc)))
-
-                    .ForSort("user-asc-time-asc", b => b
-                        .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderBy(i => i.NormalizedUserName).ThenBy(i => i.CreatedUtc))
-                        .WithSelectListItem<Startup>((S, opt, model) => new SelectListItem(S["User"], opt.Value, model.Sort == opt.Value)))
-
-                    .ForSort("user-desc-time-desc", b => b
-                        .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.NormalizedUserName).ThenByDescending(i => i.CreatedUtc)))
-
-                    .ForSort("user-desc-time-asc", b => b
-                        .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.NormalizedUserName).ThenBy(i => i.CreatedUtc)));
-            });
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        services.Configure<AuditTrailAdminListOptions>(options =>
         {
-            var adminControllerName = typeof(AdminController).ControllerName();
+            options
+                .ForSort("time-desc", b => b
+                    .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.CreatedUtc))
+                    .WithSelectListItem<Startup>((S, opt, model) => new SelectListItem(S["Newest"], opt.Value, model.Sort == string.Empty))
+                    .AsDefault())
 
-            routes.MapAreaControllerRoute(
-                name: "AuditTrailIndex",
-                areaName: "OrchardCore.AuditTrail",
-                pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/{correlationId?}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
-            );
+                .ForSort("time-asc", b => b
+                    .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderBy(i => i.CreatedUtc))
+                    .WithSelectListItem<Startup>((S, opt, model) => new SelectListItem(S["Oldest"], opt.Value, model.Sort == opt.Value)))
 
-            routes.MapAreaControllerRoute(
-                name: "AuditTrailDisplay",
-                areaName: "OrchardCore.AuditTrail",
-                pattern: _adminOptions.AdminUrlPrefix + "/AuditTrail/Display/{auditTrailEventId}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Display) }
-            );
-        }
+                .ForSort("category-asc-time-desc", b => b
+                    .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderBy(i => i.Category).ThenByDescending(i => i.CreatedUtc))
+                    .WithSelectListItem<Startup>((S, opt, model) => new SelectListItem(S["Category"], opt.Value, model.Sort == opt.Value)))
+
+                .ForSort("category-asc-time-asc", b => b
+                    .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderBy(i => i.Category).ThenBy(i => i.CreatedUtc)))
+
+                .ForSort("category-desc-time-desc", b => b
+                    .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.Category).ThenByDescending(i => i.CreatedUtc)))
+
+                .ForSort("category-desc-time-asc", b => b
+                    .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.Category).ThenBy(i => i.CreatedUtc)))
+
+                .ForSort("event-asc-time-desc", b => b
+                    .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderBy(i => i.Name).ThenByDescending(i => i.CreatedUtc))
+                    .WithSelectListItem<Startup>((S, opt, model) => new SelectListItem(S["Event"], opt.Value, model.Sort == opt.Value)))
+
+                .ForSort("event-asc-time-asc", b => b
+                    .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderBy(i => i.Name).ThenBy(i => i.CreatedUtc)))
+
+                .ForSort("event-desc-time-desc", b => b
+                    .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.Name).ThenByDescending(i => i.CreatedUtc)))
+
+                .ForSort("event-desc-time-asc", b => b
+                    .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.Name).ThenBy(i => i.CreatedUtc)))
+
+                .ForSort("user-asc-time-asc", b => b
+                    .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderBy(i => i.NormalizedUserName).ThenBy(i => i.CreatedUtc))
+                    .WithSelectListItem<Startup>((S, opt, model) => new SelectListItem(S["User"], opt.Value, model.Sort == opt.Value)))
+
+                .ForSort("user-desc-time-desc", b => b
+                    .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.NormalizedUserName).ThenByDescending(i => i.CreatedUtc)))
+
+                .ForSort("user-desc-time-asc", b => b
+                    .WithQuery((val, query) => query.With<AuditTrailEventIndex>().OrderByDescending(i => i.NormalizedUserName).ThenBy(i => i.CreatedUtc)));
+        });
     }
+}
 
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
+[RequireFeatures("OrchardCore.Deployment")]
+public sealed class DeploymentStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSiteSettingsPropertyDeploymentStep<AuditTrailSettings, DeploymentStartup>(S => S["Audit Trail settings"], S => S["Exports the audit trail settings."]);
-            services.AddSiteSettingsPropertyDeploymentStep<AuditTrailTrimmingSettings, DeploymentStartup>(S => S["Audit Trail Trimming settings"], S => S["Exports the audit trail trimming settings."]);
-        }
+        services.AddSiteSettingsPropertyDeploymentStep<AuditTrailSettings, DeploymentStartup>(S => S["Audit Trail settings"], S => S["Exports the audit trail settings."]);
+        services.AddSiteSettingsPropertyDeploymentStep<AuditTrailTrimmingSettings, DeploymentStartup>(S => S["Audit Trail Trimming settings"], S => S["Exports the audit trail trimming settings."]);
     }
 }

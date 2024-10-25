@@ -1,79 +1,79 @@
-using System;
-using System.IO;
-using System.Security.Claims;
-using System.Threading.Tasks;
+#nullable enable
+
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Users.Authentication;
 
 public class CacheTicketStore : ITicketStore
 {
-    private const string _keyPrefix = "ocauth-ticket";
+    private const string KeyPrefix = "ocauth-ticket";
 
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private IDataProtector _dataProtector;
-    private ILogger<CacheTicketStore> _logger;
+    private IDataProtector? _dataProtector;
+    private readonly ILogger _logger;
+    private readonly IDistributedCache _distributedCache;
+    private readonly IDataProtectionProvider _dataProtectionProvider;
 
-    public CacheTicketStore(IHttpContextAccessor httpContextAccessor)
+    public CacheTicketStore(
+        IDistributedCache distributedCache,
+        IDataProtectionProvider dataProtectionProvider,
+        ILogger<CacheTicketStore> logger
+    )
     {
-        _httpContextAccessor = httpContextAccessor;
+        _distributedCache = distributedCache;
+        _dataProtectionProvider = dataProtectionProvider;
+        _logger = logger;
     }
 
-    public IDataProtector DataProtector => _dataProtector ??= _httpContextAccessor.HttpContext.RequestServices.GetService<IDataProtectionProvider>()
+    private IDataProtector DataProtector => _dataProtector ??= _dataProtectionProvider
         .CreateProtector($"{nameof(CacheTicketStore)}_{IdentityConstants.ApplicationScheme}");
-
-    public ILogger<CacheTicketStore> Logger => _logger ??= _httpContextAccessor.HttpContext.RequestServices.GetService<ILogger<CacheTicketStore>>();
 
     public async Task RemoveAsync(string key)
     {
-        var cacheKey = $"{_keyPrefix}-{key}";
-        var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
-        await cache.RemoveAsync(cacheKey);
+        var cacheKey = $"{KeyPrefix}-{key}";
+        await _distributedCache.RemoveAsync(cacheKey);
     }
 
     public async Task RenewAsync(string key, AuthenticationTicket ticket)
     {
-        var cacheKey = $"{_keyPrefix}-{key}";
-        var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
+        var cacheKey = $"{KeyPrefix}-{key}";
 
         try
         {
             var protectedBytes = DataProtector.Protect(SerializeTicket(ticket));
-            await cache.SetAsync(cacheKey, protectedBytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc.Value });
+            await _distributedCache.SetAsync(cacheKey, protectedBytes,
+                new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc });
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             // Data Protection Error
-            Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(RenewAsync), cacheKey);
+            _logger.LogError(e, "{MethodName} failed  for '{Key}'.", nameof(RenewAsync), cacheKey);
         }
     }
 
-    public async Task<AuthenticationTicket> RetrieveAsync(string key)
+    public async Task<AuthenticationTicket?> RetrieveAsync(string key)
     {
-        var cacheKey = $"{_keyPrefix}-{key}";
-        var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
-        var bytes = await cache.GetAsync(cacheKey);
+        var cacheKey = $"{KeyPrefix}-{key}";
+
+        var bytes = await _distributedCache.GetAsync(cacheKey);
         if (bytes == null || bytes.Length == 0)
         {
             return null;
         }
 
-       try
+        try
         {
             var ticket = DeserializeTicket(DataProtector.Unprotect(bytes));
             return ticket;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             // Data Protection Error
-            Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(RetrieveAsync) ,cacheKey);
+            _logger.LogError(e, "{MethodName} failed  for '{Key}'.", nameof(RetrieveAsync), cacheKey);
             return null;
         }
     }
@@ -81,25 +81,26 @@ public class CacheTicketStore : ITicketStore
     public async Task<string> StoreAsync(AuthenticationTicket ticket)
     {
         var key = Guid.NewGuid().ToString();
-        var cacheKey = $"{_keyPrefix}-{key}";
-        var cache = _httpContextAccessor.HttpContext.RequestServices.GetService<IDistributedCache>();
+        var cacheKey = $"{KeyPrefix}-{key}";
 
         try
         {
             var protectedBytes = DataProtector.Protect(SerializeTicket(ticket));
-            await cache.SetAsync(cacheKey, protectedBytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc.Value });
+            await _distributedCache.SetAsync(cacheKey, protectedBytes,
+                new DistributedCacheEntryOptions() { AbsoluteExpiration = ticket.Properties.ExpiresUtc });
+
             return key;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
-            Logger.LogError(e, "{methodName} failed  for '{key}'.", nameof(StoreAsync) ,cacheKey);
-            return null;
+            _logger.LogError(e, "{MethodName} failed  for '{Key}'.", nameof(StoreAsync), cacheKey);
+            throw;
         }
     }
 
-    private byte[] SerializeTicket(AuthenticationTicket source)
+    private static byte[] SerializeTicket(AuthenticationTicket source)
         => TicketSerializer.Default.Serialize(source);
 
-    private AuthenticationTicket DeserializeTicket(byte[] source)
+    private static AuthenticationTicket? DeserializeTicket(byte[]? source)
         => source == null ? null : TicketSerializer.Default.Deserialize(source);
 }

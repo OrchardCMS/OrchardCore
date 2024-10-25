@@ -1,11 +1,12 @@
-using System;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore;
 using OrchardCore.ResourceManagement;
 
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class ResourceCdnHelperExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Prefixes the Cdn Base URL to the specified resource path.
@@ -17,7 +18,7 @@ public static class ResourceCdnHelperExtensions
 
         if (resourcePath.StartsWith("~/", StringComparison.Ordinal))
         {
-            resourcePath = orchardHelper.HttpContext.Request.PathBase.Add(resourcePath.Substring(1)).Value;
+            resourcePath = orchardHelper.HttpContext.Request.PathBase.Add(resourcePath[1..]).Value;
         }
 
         // If append version is set, allow it to override the site setting.
@@ -28,7 +29,7 @@ public static class ResourceCdnHelperExtensions
         }
 
         // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
-        if (!options.DebugMode && !String.IsNullOrEmpty(options.CdnBaseUrl) &&
+        if (!options.DebugMode && !string.IsNullOrEmpty(options.CdnBaseUrl) &&
             // Don't evaluate with Uri.TryCreate as it produces incorrect results on Linux.
             !resourcePath.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
             !resourcePath.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&

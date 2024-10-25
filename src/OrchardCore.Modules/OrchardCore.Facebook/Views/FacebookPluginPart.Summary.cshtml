@@ -2,9 +2,9 @@
 @using OrchardCore.Settings
 @using OrchardCore.Facebook.Settings
 @model OrchardCore.Facebook.Widgets.ViewModels.FacebookPluginPartViewModel
-@inject ISiteService _site
+@inject ISiteService SiteService
 @{
-    var fbInit = (await _site.GetSiteSettingsAsync()).As<FacebookSettings>().FBInit;
+    var fbInit = (await SiteService.GetSettingsAsync<FacebookSettings>()).FBInit;
 }
 
 @Html.Raw(Model.Html)

@@ -14,7 +14,7 @@ A Task activity typically performs an action, such as publishing a content item,
 
 In order for a workflow to execute, at least one activity must be marked as the *start of the workflow*.  
 Only Event activities can be marked as the start of a workflow.  
-An example of such an event activity is _Content Created_, which executes whenever a content item is created.  
+An example of such an event activity is *Content Created*, which executes whenever a content item is created.  
 A workflow can have more than one start event. This allows you to trigger (run) a workflow in response to various types of events.
 
 Each activity has one or more **outcomes**, which represent a source endpoint from which a connection can be made to the next activity, which are called transitions.  
@@ -82,7 +82,7 @@ Each activity has zero or more outcomes. When an activity has executed, it yield
 The workflow manager uses this list of outcomes to determine which activities to execute next.
 
 Although many activities support multiple outcomes, they typically return only one of them when done executing.  
-For example, the _Send Email_ activity has two possible outcomes: "Done" and "Failed".  
+For example, the *Send Email* activity has two possible outcomes: "Done" and "Failed".  
 When the email was sent successfully, it yields "Done" as the outcome, and "Failed" otherwise.
 
 ### Transition
@@ -101,8 +101,8 @@ Each activity has access to this execution context.
 
 ### Correlation
 
-Correlation is the act of associating a workflow instance with one or more _identifiers_. These identifiers can be anything.  
-For example, when a workflow has the _Content Created_ event as its starting point, the workflow instance will be associated, or rather _correlated_ to the content item ID that was just created.  
+Correlation is the act of associating a workflow instance with one or more *identifiers*. These identifiers can be anything.  
+For example, when a workflow has the *Content Created* event as its starting point, the workflow instance will be associated, or rather *correlated* to the content item ID that was just created.  
 This allows long-running workflow scenarios where only workflow instances associated with a given content item ID are resumed.
 
 ### Input
@@ -130,11 +130,11 @@ Workflows can be **short-running** as well as **long-running**.
 
 ### Short-running workflows
 
-When a workflow executes without encountering any **blocking** activities (i.e. activities that wait for an event to occur, such as _Signal_), the workflow will run to completion in one go.
+When a workflow executes without encountering any **blocking** activities (i.e. activities that wait for an event to occur, such as *Signal*), the workflow will run to completion in one go.
 
 ### Long-running workflows
 
-When a workflow executes and encounters a blocking activity (such as an event), the workflow manager will _halt_ execution and persist the workflow instance to the underlying persistence layer.  
+When a workflow executes and encounters a blocking activity (such as an event), the workflow manager will *halt* execution and persist the workflow instance to the underlying persistence layer.  
 When the appropriate event is triggered (which could happen seconds, days, weeks or even years from now), the workflow manager will load the workflow instance from storage and resume execution.
 
 ## Scripts and Expressions
@@ -155,10 +155,11 @@ The following JavaScript functions are available by default to any activity that
 | `output` | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow. | `output(name: string, value: any): void` |
 | `property` | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to. | `property(name: string): any` |
 | `setProperty` | Stores the specified data in workflow properties. | `setProperty(name: string,data:any):void` |
-| `executeQuery` | Returns the result of the query, see [more](../Queries/#scripting). | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
+| `executeQuery` | Returns the result of the query, see [more](../Queries/README.md#scripting). | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
 | `log` | Output logs according to the specified log level. Allowed log levels : `'Trace','Debug','Information','Warning','Error','Critical','None'` | `log(level: string, text: string, param: object): void` |
 | `lastResult` | Returns the value that the previous activity provided, if any. | `lastResult(): any` |
 | `correlationId` | Returns the correlation value of the workflow instance. | `correlationId(): string` |
+| `setCorrelationId` | Set the correlation value of the workflow instance. | `setCorrelationId(id:string): void` |
 | `signalUrl` | Returns workflow trigger URL with a protected SAS token into which the specified signal name is encoded. Use this to generate URLs that can be shared with trusted parties to trigger the current workflow if it is blocked on the Signal activity that is configured with the same signal name. | `signalUrl(signal: string): string` |
 
 #### JavaScript Functions in HTTP activities
@@ -402,31 +403,28 @@ public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : Activit
     private static string DesignShapeType = $"{typeof(TActivity).Name}_Fields_Design";
     private static string EditShapeType = $"{typeof(TActivity).Name}_Fields_Edit";
 
-    public override IDisplayResult Display(TActivity activity)
+    public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)
     {
-        return Combine(
+        return CombineAsync(
             Shape(ThumbnailshapeType, new ActivityViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
             Shape(DesignShapeType, new ActivityViewModel<TActivity>(activity)).Location("Design", "Content")
         );
     }
 
-    public override IDisplayResult Edit(TActivity activity)
+    public override IDisplayResult Edit(TActivity activity, BuildEditorContext context)
     {
-        return Initialize<TEditViewModel>(EditShapeType, model =>
-        {
-            return EditActivityAsync(activity, model);
-        }).Location("Content");
+        return Initialize<TEditViewModel>(_editShapeType, viewModel => EditActivityAsync(activity, viewModel)).Location("Content");
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(TActivity activity, IUpdateModel updater)
+    public async override Task<IDisplayResult> UpdateAsync(TActivity activity, UpdateEditorContext context)
     {
         var viewModel = new TEditViewModel();
-        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+        if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
         {
             await UpdateActivityAsync(viewModel, activity);
         }
 
-        return Edit(activity);
+        return Edit(activity, context);
     }
 }
 ```
@@ -438,8 +436,31 @@ Continuing with the `NotifyTask` example, we now need to create the following Ra
 - `NotifyTask.Fields.Thumbnail.cshtml`
 - `NotifyTask.Fields.Edit.cshtml`
 
+## Trimming
+
+Old workflow instances can be automatically deleted with the Trimming feature. This is enabled by default and you can configure it (including disabling it) in Configuration → Settings → Workflows Trimming. Without trimming, workflow instances remain in the database indefinitely.
+
+By default, the trimming background task runs once a day and removes at most 5000 workflow instances. You can change the frequency of the background task via [the `OrchardCore.BackgroundTasks` configuration](../BackgroundTasks/README.md), and the batch size via the `OrchardCore_Workflows` configuration from e.g. an `appsettings` file:
+
+```json
+"OrchardCore_Workflows": {
+  "Trimming": {
+    "BatchSize": 1000
+  }
+}
+```
+
+See [Configuration](../../core/Configuration/README.md) for more information on such configuration.
+
+!!! tip
+    If you enable the trimming feature on a site that has tens or even hundreds of thousands of workflow instances already, the initial trimming operation may take weeks to complete. You can expedite this by lowering the background task's frequency, even to once a minute temporarily with the `* * * * *` cron expression.
+
 ## Videos
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/n-O4WO6dVJk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/IcR-YpxKlGQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/pi_WiSqp5x4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Sd-aYy5DblI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

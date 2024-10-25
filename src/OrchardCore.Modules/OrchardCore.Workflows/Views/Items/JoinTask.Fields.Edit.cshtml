@@ -2,7 +2,7 @@
 @model JoinTaskViewModel
 
 <div class="mb-3" asp-validation-class-for="Mode">
-    <label asp-for="Mode">@T["Mode"]</label>
+    <label asp-for="Mode" class="form-label">@T["Mode"]</label>
     <select asp-for="Mode" asp-items="@Html.GetEnumSelectList(Model.Mode.GetType())" class="form-select"></select>
     <span asp-validation-for="Mode"></span>
     <span class="hint">@T["Controls whether the Join task should wait for all or any inbound activity to be completed."]</span>

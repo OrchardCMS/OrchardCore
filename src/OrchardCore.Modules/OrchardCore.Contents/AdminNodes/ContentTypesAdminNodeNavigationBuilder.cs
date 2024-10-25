@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
@@ -12,114 +9,124 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents.Security;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Contents.AdminNodes
+namespace OrchardCore.Contents.AdminNodes;
+
+public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
 {
-    public class ContentTypesAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
+    private readonly LinkGenerator _linkGenerator;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly ILogger _logger;
+
+    public ContentTypesAdminNodeNavigationBuilder(
+        IContentDefinitionManager contentDefinitionManager,
+        LinkGenerator linkGenerator,
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService,
+        ILogger<ContentTypesAdminNodeNavigationBuilder> logger)
     {
-        private readonly LinkGenerator _linkGenerator;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ILogger _logger;
+        _contentDefinitionManager = contentDefinitionManager;
+        _linkGenerator = linkGenerator;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
+        _logger = logger;
+    }
 
-        public ContentTypesAdminNodeNavigationBuilder(
-            IContentDefinitionManager contentDefinitionManager,
-            LinkGenerator linkGenerator,
-            IHttpContextAccessor httpContextAccessor,
-            ILogger<ContentTypesAdminNodeNavigationBuilder> logger)
+    public string Name => nameof(ContentTypesAdminNode);
+
+    public async Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
+    {
+        var node = menuItem as ContentTypesAdminNode;
+
+        if (node == null || !node.Enabled)
         {
-            _contentDefinitionManager = contentDefinitionManager;
-            _linkGenerator = linkGenerator;
-            _httpContextAccessor = httpContextAccessor;
-            _logger = logger;
+            return;
         }
 
-        public string Name => typeof(ContentTypesAdminNode).Name;
-
-        public async Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
+        // Add ContentTypes specific children
+        var typesToShow = await GetListableContentTypeDefinitionsAsync(node);
+        foreach (var ctd in typesToShow)
         {
-            var node = menuItem as ContentTypesAdminNode;
-
-            if ((node == null) || (!node.Enabled))
+            builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
             {
-                return;
-            }
-
-            // Add ContentTypes specific children
-            var typesToShow = GetContentTypesToShow(node);
-            foreach (var ctd in typesToShow)
-            {
-                builder.Add(new LocalizedString(ctd.DisplayName, ctd.DisplayName), cTypeMenu =>
+                cTypeMenu.Url(_linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, string.Empty, new
                 {
-                    cTypeMenu.Url(_linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, "", new
-                    {
-                        area = "OrchardCore.Contents",
-                        controller = "Admin",
-                        action = "List",
-                        contentTypeId = ctd.Name
-                    }));
+                    area = "OrchardCore.Contents",
+                    controller = "Admin",
+                    action = "List",
+                    contentTypeId = ctd.Name
+                }));
 
-                    cTypeMenu.Priority(node.Priority);
-                    cTypeMenu.Position(node.Position);
-                    cTypeMenu.Permission(
-                        ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ViewContent.Name], ctd));
+                cTypeMenu.Priority(node.Priority);
+                cTypeMenu.Position(node.Position);
+                cTypeMenu.Permission(
+                    ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ViewContent.Name], ctd));
 
-                    GetIconClasses(ctd, node).ToList().ForEach(c => cTypeMenu.AddClass(c));
-                });
-            }
-
-            // Add external children
-            foreach (var childNode in node.Items)
-            {
-                try
-                {
-                    var treeBuilder = treeNodeBuilders.Where(x => x.Name == childNode.GetType().Name).FirstOrDefault();
-                    await treeBuilder.BuildNavigationAsync(childNode, builder, treeNodeBuilders);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "An exception occurred while building the '{MenuItem}' child Menu Item.", childNode.GetType().Name);
-                }
-            }
+                GetIconClasses(ctd, node).ToList().ForEach(c => cTypeMenu.AddClass(c));
+            });
         }
 
-        private IEnumerable<ContentTypeDefinition> GetContentTypesToShow(ContentTypesAdminNode node)
+        // Add external children
+        foreach (var childNode in node.Items)
         {
-            var typesToShow = _contentDefinitionManager.ListTypeDefinitions()
-                .Where(ctd => ctd.IsListable());
-
-            if (!node.ShowAll)
+            try
             {
-                typesToShow = typesToShow
-                    .Where(ctd => node.ContentTypes.ToList()
-                                    .Any(s => String.Equals(ctd.Name, s.ContentTypeId, StringComparison.OrdinalIgnoreCase)));
+                var treeBuilder = treeNodeBuilders.FirstOrDefault(x => x.Name == childNode.GetType().Name);
+                await treeBuilder.BuildNavigationAsync(childNode, builder, treeNodeBuilders);
             }
-
-            return typesToShow.OrderBy(t => t.DisplayName);
+            catch (Exception e)
+            {
+                _logger.LogError(e, "An exception occurred while building the '{MenuItem}' child Menu Item.", childNode.GetType().Name);
+            }
         }
+    }
 
-        private static List<string> GetIconClasses(ContentTypeDefinition contentType, ContentTypesAdminNode node)
+    private async Task<IEnumerable<ContentTypeDefinition>> GetListableContentTypeDefinitionsAsync(ContentTypesAdminNode node)
+    {
+        var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+
+        var listableContentTypeDefinitions = new List<ContentTypeDefinition>();
+
+        foreach (var contentTypeDefinition in contentTypeDefinitions)
         {
-            if (node.ShowAll)
+            if (!node.ShowAll && !node.ContentTypes.Any(entry => string.Equals(contentTypeDefinition.Name, entry.ContentTypeId, StringComparison.OrdinalIgnoreCase)))
             {
-                return AddPrefixToClasses(node.IconClass);
+                continue;
             }
-            else
-            {
-                var typeEntry = node.ContentTypes
-                                .Where(x => String.Equals(x.ContentTypeId, contentType.Name, StringComparison.OrdinalIgnoreCase))
-                                .FirstOrDefault();
 
-                return AddPrefixToClasses(typeEntry.IconClass);
+            if (!await _authorizationService.AuthorizeContentTypeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ListContent, contentTypeDefinition))
+            {
+                continue;
             }
+
+            listableContentTypeDefinitions.Add(contentTypeDefinition);
         }
 
-        private static List<string> AddPrefixToClasses(string unprefixed)
+        return listableContentTypeDefinitions.OrderBy(t => t.DisplayName);
+    }
+
+    private static List<string> GetIconClasses(ContentTypeDefinition contentType, ContentTypesAdminNode node)
+    {
+        if (node.ShowAll)
         {
-            return unprefixed?.Split(' ')
-                .ToList()
-                .Select(c => "icon-class-" + c)
-                .ToList()
-                ?? new List<string>();
+            return AddPrefixToClasses(node.IconClass);
         }
+        else
+        {
+            var typeEntry = node.ContentTypes
+                .FirstOrDefault(x => string.Equals(x.ContentTypeId, contentType.Name, StringComparison.OrdinalIgnoreCase));
+
+            return AddPrefixToClasses(typeEntry.IconClass);
+        }
+    }
+
+    private static List<string> AddPrefixToClasses(string unprefixed)
+    {
+        return unprefixed?.Split(' ')
+            .ToList()
+            .Select(c => NavigationConstants.CssClassPrefix + c)
+            .ToList()
+            ?? [];
     }
 }

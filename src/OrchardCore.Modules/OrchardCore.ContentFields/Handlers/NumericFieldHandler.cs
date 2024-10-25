@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
@@ -10,7 +8,7 @@ namespace OrchardCore.ContentFields.Handlers;
 
 public class NumericFieldHandler : ContentFieldHandler<NumericField>
 {
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
 
     public NumericFieldHandler(IStringLocalizer<NumericFieldHandler> stringLocalizer)
     {

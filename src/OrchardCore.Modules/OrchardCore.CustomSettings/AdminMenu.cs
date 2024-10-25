@@ -1,45 +1,58 @@
-using System;
-using System.Threading.Tasks;
+using System.Collections.Concurrent;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.CustomSettings.Services;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.CustomSettings
+namespace OrchardCore.CustomSettings;
+
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    private static readonly ConcurrentDictionary<string, RouteValueDictionary> _routeValues = [];
+
+    private readonly CustomSettingsService _customSettingsService;
+
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(
+        IStringLocalizer<AdminMenu> localizer,
+        CustomSettingsService customSettingsService)
     {
-        private readonly CustomSettingsService _customSettingsService;
-        private readonly IStringLocalizer S;
+        S = localizer;
+        _customSettingsService = customSettingsService;
+    }
 
-        public AdminMenu(
-            IStringLocalizer<AdminMenu> localizer,
-            CustomSettingsService customSettingsService)
+    protected override async ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        foreach (var type in await _customSettingsService.GetAllSettingsTypesAsync())
         {
-            S = localizer;
-            _customSettingsService = customSettingsService;
-        }
-
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
+            if (!_routeValues.TryGetValue(type.Name, out var routeValues))
             {
-                return Task.CompletedTask;
+                routeValues = new RouteValueDictionary()
+                {
+                     { "area", "OrchardCore.Settings" },
+                     { "groupId", type.Name },
+                };
+
+                _routeValues[type.Name] = routeValues;
             }
 
-            foreach (var type in _customSettingsService.GetAllSettingsTypes())
-            {
-                builder
-                    .Add(S["Configuration"], configuration => configuration
-                        .Add(S["Settings"], settings => settings
-                            .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), layers => layers
-                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = type.Name })
-                                .Permission(Permissions.CreatePermissionForType(type))
-                                .Resource(type.Name)
-                                .LocalNav()
-                            )));
-            }
+            var htmlName = type.Name.HtmlClassify();
 
-            return Task.CompletedTask;
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], settings => settings
+                        .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), layers => layers
+                            .Action("Index", "Admin", routeValues)
+                            .AddClass(htmlName)
+                            .Id(htmlName)
+                            .Permission(Permissions.CreatePermissionForType(type))
+                            .Resource(type.Name)
+                            .LocalNav()
+                        )
+                    )
+                );
         }
     }
 }

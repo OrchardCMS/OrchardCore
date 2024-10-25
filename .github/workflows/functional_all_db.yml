@@ -1,34 +1,52 @@
-name: Functional Tests - all Databases
+name: Functional Tests - All Databases
+
 on:
-# manual trigger
+  # Manual trigger.
   workflow_dispatch:
+  pull_request_review:
+    types: [submitted]
+  # Run it on main and release pushes too, in case we merge from a branch that's not up-to-date with the target branch
+  # and breaks something after merge (or if we push to main).
+  push:
+    paths-ignore:
+      - '**/*.md'
+      - 'mkdocs.yml'
+      - 'src/docs/**/*'
+    branches: [ main, release/** ]
+
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+
 jobs:
   test_functional_mvc:
     name: Functional Tests - MVC
+    # These conditions are needed because the workflow triggers on individual PR comments too, see
+    # https://github.com/orgs/community/discussions/124396.
+    # They either need to be repeated for each job, or we need to use a separate job (i.e. VM to run the condition) that
+    # triggers the others.
+    if: github.event_name == 'workflow_dispatch' ||
+        github.event_name == 'push' ||
+        github.event.review.state == 'APPROVED' ||
+        github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-latest
     container:
       image: cypress/included:9.6.1
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+      # We need to install dotnet in the docker container.
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+    - uses: actions/setup-node@v4
       with:
         node-version: "15"
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 6.0.x
-    - name: Fix nuget restore issue
-      run: |
-          apt update && apt --only-upgrade install ca-certificates -y
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run mvc:test
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: functional-mvc-screenshots
@@ -37,24 +55,27 @@ jobs:
   
   test_functional_cms_sqlite:
     name: Functional Tests - CMS Sqlite
+    if: github.event_name == 'workflow_dispatch' ||
+        github.event_name == 'push' ||
+        github.event.review.state == 'APPROVED' ||
+        github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-latest
     container:
       image: cypress/included:9.6.1
+    env:
+      OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v3
+    - uses: actions/checkout@v4
+      # We need to install dotnet in the docker container.
+    - uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.x
-    - name: Fix nuget restore issue
-      run: |
-          apt update && apt --only-upgrade install ca-certificates -y
+        dotnet-version: '8.0.x'
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: functional-cms-sqlite-failure
@@ -62,9 +83,13 @@ jobs:
           test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3
-  
+
   test_functional_cms_postgresql:
     name: Functional Tests - CMS Postgres
+    if: github.event_name == 'workflow_dispatch' ||
+        github.event_name == 'push' ||
+        github.event.review.state == 'APPROVED' ||
+        github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-latest
     container:
       image: cypress/included:9.6.1
@@ -84,21 +109,19 @@ jobs:
     env:
       OrchardCore__ConnectionString: "User ID=postgres;Password=admin;Host=postgres;Port=5432;Database=app;"
       OrchardCore__DatabaseProvider: "Postgres"
+      OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v3
+    - uses: actions/checkout@v4
+      # We need to install dotnet in the docker container.
+    - uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.x
-    - name: Fix nuget restore issue
-      run: |
-          apt update && apt --only-upgrade install ca-certificates -y
+        dotnet-version: '8.0.x'
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: functional-cms-postgresql-failure
@@ -106,39 +129,41 @@ jobs:
           test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3
-  
+
   test_functional_cms_mysql:
     name: Functional Tests - CMS MySql
+    if: github.event_name == 'workflow_dispatch' ||
+        github.event_name == 'push' ||
+        github.event.review.state == 'APPROVED' ||
+        github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-latest
     container:
       image: cypress/included:9.6.1
     services:
-      mariadb:
-        image: mariadb:latest
+      mysql:
+        image: mysql:8
         ports:
           - 3306
         env:
           MYSQL_DATABASE: test
           MYSQL_ROOT_PASSWORD: test123
-        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     env:
-      OrchardCore__ConnectionString: "server=mariadb;uid=root;pwd=test123;database=test"
+      OrchardCore__ConnectionString: "server=mysql;uid=root;pwd=test123;database=test"
       OrchardCore__DatabaseProvider: "MySql"
+      OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v3
+    - uses: actions/checkout@v4
+      # We need to install dotnet in the docker container.
+    - uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.x
-    - name: Fix nuget restore issue
-      run: |
-          apt update && apt --only-upgrade install ca-certificates -y
+        dotnet-version: '8.0.x'
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: functional-cms-mysql-failure
@@ -149,6 +174,10 @@ jobs:
 
   test_functional_cms_mssql:
     name: Functional Tests - CMS SqlServer 2019
+    if: github.event_name == 'workflow_dispatch' ||
+        github.event_name == 'push' ||
+        github.event.review.state == 'APPROVED' ||
+        github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-latest
     container:
       image: cypress/included:9.6.1
@@ -163,21 +192,19 @@ jobs:
     env:
       OrchardCore__ConnectionString: "Server=mssql;Database=tempdb;User Id=sa;Password=Password12!;Encrypt=False"
       OrchardCore__DatabaseProvider: "SqlConnection"
+      OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v3
+    - uses: actions/checkout@v4
+      # We need to install dotnet in the docker container.
+    - uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.x
-    - name: Fix nuget restore issue
-      run: |
-          apt update && apt --only-upgrade install ca-certificates -y
+        dotnet-version: '8.0.x'
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: functional-cms-mssql-failure

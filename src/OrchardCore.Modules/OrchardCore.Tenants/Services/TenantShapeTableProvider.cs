@@ -5,26 +5,28 @@ using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Services;
 
-public class TenantShapeTableProvider : IShapeTableProvider
+public class TenantShapeTableProvider : ShapeTableProvider
 {
-    public void Discover(ShapeTableBuilder builder)
+    public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
         builder.Describe("TenantActionTags")
-       .OnDisplaying(async displaying =>
-       {
-           if (displaying.Shape.TryGetProperty("ShellSettingsEntry", out ShellSettingsEntry entry))
+            .OnDisplaying(async displaying =>
            {
-               await displaying.Shape.AddAsync(new ShapeViewModel<ShellSettingsEntry>("ManageTenantActionTags", entry), "5");
-           }
-       });
+               if (displaying.Shape.TryGetProperty("ShellSettingsEntry", out ShellSettingsEntry entry))
+               {
+                   await displaying.Shape.AddAsync(new ShapeViewModel<ShellSettingsEntry>("ManageTenantActionTags", entry), "5");
+               }
+           });
 
         builder.Describe("TenantActionButtons")
-               .OnDisplaying(async displaying =>
-               {
-                   if (displaying.Shape.TryGetProperty("ShellSettingsEntry", out ShellSettingsEntry entry))
-                   {
-                       await displaying.Shape.AddAsync(new ShapeViewModel<ShellSettingsEntry>("ManageTenantActionButtons", entry), "5");
-                   }
-               });
+            .OnDisplaying(async displaying =>
+            {
+                if (displaying.Shape.TryGetProperty("ShellSettingsEntry", out ShellSettingsEntry entry))
+                {
+                    await displaying.Shape.AddAsync(new ShapeViewModel<ShellSettingsEntry>("ManageTenantActionButtons", entry), "5");
+                }
+            });
+
+        return ValueTask.CompletedTask;
     }
 }

@@ -1,33 +1,35 @@
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Modules;
 
-namespace OrchardCore.Markdown.Media
+namespace OrchardCore.Markdown.Media;
+
+[RequireFeatures("OrchardCore.Media")]
+public class MediaShapes : ShapeTableProvider
 {
-    public class MediaShapes : IShapeTableProvider
+    public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
-        public void Discover(ShapeTableBuilder builder)
-        {
-            builder.Describe("MarkdownBodyPart_Edit")
-                .OnDisplaying(displaying =>
+        builder.Describe("MarkdownBodyPart_Edit")
+            .OnDisplaying(displaying =>
+            {
+                var editor = displaying.Shape;
+
+                if (editor.Metadata.Type == "MarkdownBodyPart_Edit__Wysiwyg")
                 {
-                    IShape editor = displaying.Shape;
+                    editor.Metadata.Wrappers.Add("Media_Wrapper__MarkdownBodyPart");
+                }
+            });
 
-                    if (editor.Metadata.Type == "MarkdownBodyPart_Edit__Wysiwyg")
-                    {
-                        editor.Metadata.Wrappers.Add("Media_Wrapper__MarkdownBodyPart");
-                    }
-                });
+        builder.Describe("MarkdownField_Edit")
+            .OnDisplaying(displaying =>
+            {
+                var editor = displaying.Shape;
 
-            builder.Describe("MarkdownField_Edit")
-                .OnDisplaying(displaying =>
+                if (editor.Metadata.Type == "MarkdownField_Edit__Wysiwyg")
                 {
-                    IShape editor = displaying.Shape;
+                    editor.Metadata.Wrappers.Add("Media_Wrapper__MarkdownBodyPart");
+                }
+            });
 
-                    if (editor.Metadata.Type == "MarkdownField_Edit__Wysiwyg")
-                    {
-                        editor.Metadata.Wrappers.Add("Media_Wrapper__MarkdownBodyPart");
-                    }
-                });
-        }
+        return ValueTask.CompletedTask;
     }
 }

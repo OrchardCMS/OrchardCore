@@ -1,44 +1,47 @@
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
+using OrchardCore.Json;
+using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Workflows.Deployment
+namespace OrchardCore.Workflows.Deployment;
+
+public class AllWorkflowTypeDeploymentSource
+    : DeploymentSourceBase<AllWorkflowTypeDeploymentStep>
 {
-    public class AllWorkflowTypeDeploymentSource : IDeploymentSource
+    private readonly IWorkflowTypeStore _workflowTypeStore;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+    public AllWorkflowTypeDeploymentSource(
+        IWorkflowTypeStore workflowTypeStore,
+        IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions)
     {
-        private readonly IWorkflowTypeStore _workflowTypeStore;
+        _workflowTypeStore = workflowTypeStore;
+        _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
+    }
 
-        public AllWorkflowTypeDeploymentSource(IWorkflowTypeStore workflowTypeStore)
+    protected override async Task ProcessAsync(AllWorkflowTypeDeploymentStep step, DeploymentPlanResult result)
+        => ProcessWorkflowType(result, await _workflowTypeStore.ListAsync(), _jsonSerializerOptions);
+
+    public static void ProcessWorkflowType(DeploymentPlanResult result, IEnumerable<WorkflowType> workflowTypes, JsonSerializerOptions jsonSerializerOptions)
+    {
+        var data = new JsonArray();
+
+        foreach (var workflowType in workflowTypes)
         {
-            _workflowTypeStore = workflowTypeStore;
+            var objectData = JObject.FromObject(workflowType, jsonSerializerOptions);
+
+            // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
+            objectData.Remove(nameof(workflowType.Id));
+            data.Add(objectData);
         }
 
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+        result.Steps.Add(new JsonObject
         {
-            var allContentStep = step as AllWorkflowTypeDeploymentStep;
-
-            if (allContentStep == null)
-            {
-                return;
-            }
-
-            var data = new JArray();
-            result.Steps.Add(new JObject(
-                new JProperty("name", "WorkflowType"),
-                new JProperty("data", data)
-            ));
-
-            foreach (var workflow in await _workflowTypeStore.ListAsync())
-            {
-                var objectData = JObject.FromObject(workflow);
-
-                // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
-                objectData.Remove(nameof(workflow.Id));
-                data.Add(objectData);
-            }
-
-            return;
-        }
+            ["name"] = "WorkflowType",
+            ["data"] = data,
+        });
     }
 }

@@ -1,41 +1,42 @@
-using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
+using OrchardCore.Settings.Drivers;
 
-namespace OrchardCore.Settings
+namespace OrchardCore.Settings;
+
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    private static readonly RouteValueDictionary _routeValues = new()
     {
-        private readonly IStringLocalizer S;
+        { "area", "OrchardCore.Settings" },
+        { "groupId", DefaultSiteSettingsDisplayDriver.GroupId },
+    };
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            S = localizer;
-        }
+    internal readonly IStringLocalizer S;
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
 
-            builder
-                .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, configuration => configuration
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        builder
+            .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, configuration => configuration
                 .AddClass("menu-configuration")
                 .Id("configuration")
-                    .Add(S["Settings"], "1", settings => settings
+                .Add(S["Settings"], "1", settings => settings
                     .Add(S["General"], "1", entry => entry
-                    .AddClass("general").Id("general")
-                        .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "general" })
+                        .AddClass("general")
+                        .Id("general")
+                        .Action("Index", "Admin", _routeValues)
                         .Permission(Permissions.ManageGroupSettings)
                         .LocalNav()
-                    )
-                , priority: 1)
+                    ),
+                priority: 1)
             );
 
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

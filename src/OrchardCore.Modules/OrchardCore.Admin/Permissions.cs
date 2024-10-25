@@ -1,52 +1,46 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Admin
+namespace OrchardCore.Admin;
+
+public sealed class Permissions : IPermissionProvider
 {
-    public class Permissions : IPermissionProvider
-    {
-        public static readonly Permission AccessAdminPanel = new Permission("AccessAdminPanel", "Access admin panel");
+    [Obsolete("This will be removed in a future release. Instead use 'AdminPermissions.AccessAdminPanel'.")]
+    public static readonly Permission AccessAdminPanel = AdminPermissions.AccessAdminPanel;
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            return Task.FromResult(GetPermissions());
-        }
+    private readonly IEnumerable<Permission> _allPermissions =
+    [
+        AdminPermissions.AccessAdminPanel,
+    ];
 
-        public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
-        {
-            return new[]
-            {
-                new PermissionStereotype
-                {
-                    Name = "Administrator",
-                    Permissions = GetPermissions()
-                },
-                new PermissionStereotype {
-                    Name = "Editor",
-                    Permissions = GetPermissions()
-                },
-                new PermissionStereotype {
-                    Name = "Moderator",
-                    Permissions = GetPermissions()
-                },
-                new PermissionStereotype {
-                    Name = "Author",
-                    Permissions = GetPermissions()
-                },
-                new PermissionStereotype {
-                    Name = "Contributor",
-                    Permissions = GetPermissions()
-                }
-            };
-        }
+    public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        => Task.FromResult(_allPermissions);
 
-        private IEnumerable<Permission> GetPermissions()
+    public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
+    [
+        new PermissionStereotype
         {
-            return new[]
-            {
-                AccessAdminPanel
-            };
-        }
-    }
+            Name = OrchardCoreConstants.Roles.Administrator,
+            Permissions = _allPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Editor,
+            Permissions = _allPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Moderator,
+            Permissions = _allPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Author,
+            Permissions = _allPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Contributor,
+            Permissions = _allPermissions,
+        },
+    ];
 }

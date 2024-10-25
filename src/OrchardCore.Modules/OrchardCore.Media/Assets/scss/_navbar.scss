@@ -1,22 +1,22 @@
 .action-bar {
-    border-bottom: $media-border-content; 
+    border-bottom: var(--oc-media-border-content);
 
     .media-filter {
         margin-top: 3px;
 
         .input-filter {
-            border-color: $gray-400;
+            border-color: var(--bs-border-color, #ccc);
             border-right: none;
             max-width: 80px;
             padding-left: 32px;
 
             &:focus, &:focus + .input-group-append > button {
-                border-color: $gray-700;
+                border-color: var(--bs-border-color);
             }
         }
 
         .input-group-append button {
-            border-color: $gray-400;
+            border-color: var(--bs-border-color, #ccc);
             opacity: 1;
             border-left: none;
         }
@@ -29,12 +29,11 @@
             position: absolute;
             top: 8px;
             left: 10px;
-            z-index: $zindex-fixed;
+            z-index: var(--bs-zindex-fixed, 1030);
             pointer-events: none;
-            color: $gray-600;
+            color: var(--bs-gray-600, #ddd);
         }
     }
-
     /* Upload button */
     .fileinput-button {
         cursor: pointer;
@@ -64,7 +63,7 @@
 
 #breadcrumb {
     background-color: transparent;
-    border-bottom: $media-border-content;
+    border-bottom: var(--oc-media-border-content);
     border-radius: 0px;
     min-height: 50px;
     font-size: 0.875rem;
@@ -74,9 +73,9 @@
 
         .breadcrumb-item {
             display: inline-block;
-            
+
             a {
-                color: $gray-700;
+                color: var(--oc-media-color);
             }
         }
     }
@@ -89,7 +88,7 @@
 
         a {
             border-radius: 0px !important;
-            color: $gray-700;
+            color: var(--oc-media-color);
         }
     }
 }
@@ -101,10 +100,10 @@
 
     button {
         border-radius: 0px !important;
-        color: $gray-700;
+        color: var(--oc-media-color);
     }
 
     .selected {
-        color: $primary;
+        color: var(--bs-primary, blue);
     }
 }

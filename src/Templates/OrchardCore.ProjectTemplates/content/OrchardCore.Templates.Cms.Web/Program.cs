@@ -2,6 +2,7 @@
 using OrchardCore.Logging;
 #endif
 #if (UseSerilog)
+using OrchardCore.Logging;
 using Serilog;
 #endif
 

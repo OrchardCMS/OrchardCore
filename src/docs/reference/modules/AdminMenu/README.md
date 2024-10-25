@@ -48,7 +48,7 @@ Note that each one of these nodes can have other nodes nested on it. The nesting
 
 The Admin Menu that OrchardCore provides out of the box it's built broadly speaking like this:
 
-1. NavigationManager retrieves all classes that implement INavigationProvider. There are many of them through many modules with the file name of "AdminMenu.cs".
+1. NavigationManager retrieves all classes that implement `INavigationProvider`. There are many of them through many modules with the file name of "AdminMenu.cs".
 
 2. On each AdminMenu the NavigationManager calls the BuildNavigationAsync method, passing a builder to it. The builder is the object where each AdminMenu can add their own menuItems.
 
@@ -56,7 +56,7 @@ The Admin Menu that OrchardCore provides out of the box it's built broadly speak
 
 ### What changes when the Admin Menu is Enabled
 
-1. The AdminMenu module declares it's own INavigationProvider and so it will be called too by NavigationManager. The name of that INavigationProvider is AdminMenuNavigationProvidersCoordinator.
+1. The AdminMenu module declares it's own `INavigationProvider` and so it will be called too by NavigationManager. The name of that `INavigationProvider` is AdminMenuNavigationProvidersCoordinator.
 
 2. The coordinator retrieves all AdminMenu stored on the database and for each one of them call a BuildTreeAsync method, where each node add recursively its own menu items to the builder.
 
@@ -79,14 +79,11 @@ Any module can add it's own custom admin node types so that they can be used by 
 Commonly the steps that you follow in order to do that are:
 
 1. Add a class that inherits from `AdminNode`. On this class add the specific properties that you want for your node type. This is the info that will go into the database.
-
 2. Add a Driver to handle the display and edit of your admin node on the Admin. This won't handle the actual rendering of the admin menu. Drivers are only about the views required to create and edit the admin menu.
-
 3. Optionally, you could implement a ViewModel to move info between the edit views and the driver.
-
 4. Add a class that implements IAdminNodeNavigationBuilder. Its BuildNavigationAsync() method will be called by the AdminMenuNavigationProvidersCoordinator class when it is time to render the menu.
-
 5. Create the views required to create and edit the admin nodes based on your node type.
+6. Register the new services `services.AddAdminNode<CustomAdminNode, CustomAdminNodeNavigationBuilder, CustomAdminNodeDriver>();`
 
 By convention you should store all these non-view classes on a "AdminNodes" folder. This is optional.
 
@@ -100,69 +97,96 @@ This is the LinkAdminNode.cs
 
 ```csharp
 
-    public class LinkAdminNode : AdminNode
-    {
-        [Required]
-        public string LinkText { get; set; }
+public class LinkAdminNode : AdminNode
+{
+    [Required]
+    public string LinkText { get; set; }
 
-        public string LinkUrl { get; set; }
+    [Required]
+    public string LinkUrl { get; set; }
 
-        public string IconClass { get; set; } = "far fa-circle";
-    }
+    public string IconClass { get; set; }
+
+    /// <summary>
+    /// The names of the permissions required to view this admin menu node
+    /// </summary>
+    public string[] PermissionNames { get; set; } = Array.Empty<string>();
+}
 ```
 
-This is how LinkAdminNodeBuilder builds a link.
+This is how `LinkAdminNodeBuilder` builds a link.
 
 This class is responsible for:
 
 * Converting the admin node info in the database to menuItems and adding them to the global builder.
 
-* Calling the same BuildNavigationAsync() method on each of their AdminNode's children.
+* Calling the same `BuildNavigationAsync()` method on each of their AdminNode's children.
 
 This pattern ensures that at the end of the process the full tree will be processed.
 
 ```csharp
-        public Task BuildNavigationAsync(MenuItem menuItem, 
-                NavigationBuilder builder, 
-                IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
-        {
-            // cast the received item to the concrete admin node type we are handling.
-            var ltn = menuItem as LinkAdminNode;
+public Task BuildNavigationAsync(MenuItem menuItem, NavigationBuilder builder, IEnumerable<IAdminNodeNavigationBuilder> treeNodeBuilders)
+{
+    // Cast the received item to the concrete admin node type we are handling.
+    var node = menuItem as LinkAdminNode;
+    if (node == null || String.IsNullOrEmpty(node.LinkText) || !node.Enabled)
+    {
+        return Task.CompletedTask;
+    }
 
-            if ((ltn == null) ||( !ltn.Enabled))
+    // This is the standard Orchard Core way of adding menuItems to a builder.
+    return builder.AddAsync(new LocalizedString(node.LinkText, node.LinkText), async itemBuilder =>
+    {
+        var nodeLinkUrl = node.LinkUrl;
+        if (!String.IsNullOrEmpty(nodeLinkUrl) && nodeLinkUrl[0] != '/' && !nodeLinkUrl.Contains("://"))
+        {
+            if (nodeLinkUrl.StartsWith("~/", StringComparison.Ordinal))
             {
-                return Task.CompletedTask;
+                nodeLinkUrl = nodeLinkUrl[2..];
             }
 
-            // this is the standard Orchard Core way of adding menuItems to a builder 
-            builder.Add(new LocalizedString(ltn.LinkText, ltn.LinkText), async itemBuilder => {
-
-                // Add the actual link
-                itemBuilder.Url(ltn.LinkUrl);
-                AddIconPickerClassToLink(ltn.IconClass, itemBuilder);
-
-                // Let children admin nodes build themselves inside this MenuItem
-                foreach (var childTreeNode in menuItem.Items)
-                {
-                    try
-                    {
-                        var treeBuilder = treeNodeBuilders
-                                .Where(x => x.Name == childTreeNode.GetType().Name)
-                                .FirstOrDefault();
-
-                        await treeBuilder.BuildNavigationAsync(childTreeNode,itemBuilder,treeNodeBuilders);
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogError(e,
-                            "An exception occurred while building the '{MenuItem}' child Menu Item.",
-                            childTreeNode.GetType().Name);
-                    }
-                }
-            });
-
-            return Task.CompletedTask;
+            // Check if the first segment of 'nodeLinkUrl' is not equal to the admin prefix.
+            if (!nodeLinkUrl.StartsWith($"{_adminOptions.AdminUrlPrefix}", StringComparison.OrdinalIgnoreCase) ||
+                (nodeLinkUrl.Length != _adminOptions.AdminUrlPrefix.Length
+                && nodeLinkUrl[_adminOptions.AdminUrlPrefix.Length] != '/'))
+            {
+                nodeLinkUrl = $"{_adminOptions.AdminUrlPrefix}/{nodeLinkUrl}";
+            }
         }
+
+        // Add the actual link.
+        itemBuilder.Url(nodeLinkUrl);
+        itemBuilder.Priority(node.Priority);
+        itemBuilder.Position(node.Position);
+
+        if (node.PermissionNames.Any())
+        {
+            var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
+            // Find the actual permissions and apply them to the menu.
+            var selectedPermissions = permissions.Where(p => node.PermissionNames.Contains(p.Name));
+            itemBuilder.Permissions(selectedPermissions);
+        }
+
+        // Add adminNode's IconClass property values to menuItem.Classes.
+        // Add them with a prefix so that later the shape template can extract them to use them on a <i> tag.
+        node.IconClass?.Split(' ').ToList().ForEach(c => itemBuilder.AddClass("icon-class-" + c));
+
+        // Let children build themselves inside this MenuItem.
+        // Todo: This logic can be shared by all TreeNodeNavigationBuilders.
+        foreach (var childTreeNode in menuItem.Items)
+        {
+            try
+            {
+                var treeBuilder = treeNodeBuilders.FirstOrDefault(x => x.Name == childTreeNode.GetType().Name);
+                await treeBuilder.BuildNavigationAsync(childTreeNode, itemBuilder, treeNodeBuilders);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "An exception occurred while building the '{MenuItem}' child Menu Item.", childTreeNode.GetType().Name);
+            }
+        }
+    });
+}
 ```
 
 ## CREDITS
@@ -187,3 +211,9 @@ jquery.ui.sortable.js 1.10+
 Copyright (c) 2010-2016 Manuele J Sarfatti and contributors
 Licensed under the MIT License
 <http://www.opensource.org/licenses/mit-license.php>
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/R_Z6gPoAfHE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/3w68lDwUzFQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

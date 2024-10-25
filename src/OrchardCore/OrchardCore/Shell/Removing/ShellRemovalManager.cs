@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Removing;
@@ -16,7 +11,7 @@ public class ShellRemovalManager : IShellRemovalManager
     private readonly IShellHost _shellHost;
     private readonly IShellContextFactory _shellContextFactory;
     private readonly IEnumerable<IShellRemovingHandler> _shellRemovingHandlers;
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
     public ShellRemovalManager(
@@ -41,20 +36,21 @@ public class ShellRemovalManager : IShellRemovalManager
             LocalResourcesOnly = localResourcesOnly,
         };
 
-        if (shellSettings.Name == ShellHelper.DefaultShellName)
+        if (shellSettings.IsDefaultShell())
         {
-            context.ErrorMessage = S["The tenant should not be the '{0}' tenant.", ShellHelper.DefaultShellName];
+            context.ErrorMessage = S["The tenant should not be the '{0}' tenant.", ShellSettings.DefaultShellName];
             return context;
         }
 
-        if (!shellSettings.IsRemovable())
+        // A disabled tenant may be still in use in at least one active scope.
+        if (!shellSettings.IsRemovable() || _shellHost.IsShellActive(shellSettings))
         {
             context.ErrorMessage = S["The tenant '{0}' should be 'Disabled' or 'Uninitialized'.", shellSettings.Name];
             return context;
         }
 
         // Check if the tenant is not 'Uninitialized' and that all resources should be removed.
-        if (shellSettings.State == TenantState.Disabled && !context.LocalResourcesOnly)
+        if (shellSettings.IsDisabled() && !context.LocalResourcesOnly)
         {
             // Create an isolated shell context composed of all features that have been installed.
             ShellContext maximumContext = null;
@@ -75,7 +71,7 @@ public class ShellRemovalManager : IShellRemovalManager
                 return context;
             }
 
-            using var shellContext = maximumContext;
+            await using var shellContext = maximumContext;
             (var locker, var locked) = await shellContext.TryAcquireShellRemovingLockAsync();
             if (!locked)
             {
@@ -89,7 +85,7 @@ public class ShellRemovalManager : IShellRemovalManager
 
             await using var acquiredLock = locker;
 
-            await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
+            await (await shellContext.CreateScopeAsync()).UsingServiceScopeAsync(async scope =>
             {
                 // Execute tenant level removing handlers (singletons or scoped) in a reverse order.
                 // If feature A depends on feature B, the activating handler of feature B should run
@@ -125,7 +121,7 @@ public class ShellRemovalManager : IShellRemovalManager
             });
         }
 
-        if (_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var defaultSettings))
+        if (_shellHost.TryGetSettings(ShellSettings.DefaultShellName, out var defaultSettings))
         {
             // Use the default shell context to execute the host level removing handlers.
             var shellContext = await _shellHost.GetOrCreateShellContextAsync(defaultSettings);

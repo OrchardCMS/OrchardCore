@@ -11,6 +11,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Widgets",
     Name = "Widgets",
     Description = "Provides a part allowing content items to render Widgets in theme zones.",
-    Dependencies = new[] { "OrchardCore.ContentTypes" },
+    Dependencies = ["OrchardCore.ContentTypes"],
     Category = "Content"
 )]

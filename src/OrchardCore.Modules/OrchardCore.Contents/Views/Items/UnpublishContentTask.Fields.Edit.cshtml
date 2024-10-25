@@ -2,7 +2,7 @@
 @model UnpublishContentTaskViewModel
 
 <div class="mb-3" asp-validation-class-for="Expression">
-    <label asp-for="Expression">@T["Expression"]</label>
+    <label asp-for="Expression" class="form-label">@T["Expression"]</label>
     <input type="text" asp-for="Expression" class="form-control code" autofocus />
     <span asp-validation-for="Expression"></span>
     <span class="hint">@T["Enter a JavaScript expression that evaluates to the content item (or its 'ContentItemId') to be unpublished. For example: input(\"ContentItem\"). If no expression is specified, the workflow's \"ContentItem\" input variable or \"ContentItem\" property will be used."]</span>

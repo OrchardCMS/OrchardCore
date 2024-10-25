@@ -1,7 +1,11 @@
 # This Docker file is intended for the CI
 # A prerequisite is a published application in the .build/release  
+FROM --platform=$BUILDPLATFORM golang:alpine AS build
+ARG TARGETOS
 
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-1809 AS build_windows
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS build_linux
+FROM build_${TARGETOS} AS aspnet
 
 EXPOSE 80
 ENV ASPNETCORE_URLS http://+:80

@@ -1,34 +1,27 @@
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 using OrchardCore.Deployment;
 using OrchardCore.Media.Services;
 
-namespace OrchardCore.Media.Deployment
+namespace OrchardCore.Media.Deployment;
+
+public class AllMediaProfilesDeploymentSource
+    : DeploymentSourceBase<AllMediaProfilesDeploymentStep>
 {
-    public class AllMediaProfilesDeploymentSource : IDeploymentSource
+    private readonly MediaProfilesManager _mediaProfilesManager;
+
+    public AllMediaProfilesDeploymentSource(MediaProfilesManager mediaProfilesManager)
     {
-        private readonly MediaProfilesManager _mediaProfilesManager;
+        _mediaProfilesManager = mediaProfilesManager;
+    }
 
-        public AllMediaProfilesDeploymentSource(MediaProfilesManager mediaProfilesManager)
+    protected override async Task ProcessAsync(AllMediaProfilesDeploymentStep step, DeploymentPlanResult result)
+    {
+        var mediaProfiles = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
+
+        result.Steps.Add(new JsonObject
         {
-            _mediaProfilesManager = mediaProfilesManager;
-        }
-
-        public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-        {
-            var allMediaProfilesStep = step as AllMediaProfilesDeploymentStep;
-
-            if (allMediaProfilesStep == null)
-            {
-                return;
-            }
-
-            var mediaProfiles = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
-
-            result.Steps.Add(new JObject(
-                new JProperty("name", "MediaProfiles"),
-                new JProperty("MediaProfiles", JObject.FromObject(mediaProfiles.MediaProfiles))
-            ));
-        }
+            ["name"] = "MediaProfiles",
+            ["MediaProfiles"] = JObject.FromObject(mediaProfiles.MediaProfiles),
+        });
     }
 }

@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
@@ -50,9 +50,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     for (var tag in from) {
       var dest = to[tag] || (to[tag] = []);
       var source = from[tag];
-      for (var i = source.length - 1; i >= 0; i--) {
-        dest.unshift(source[i]);
-      }
+      for (var i = source.length - 1; i >= 0; i--) dest.unshift(source[i]);
     }
   }
   function findMatchingMode(tagInfo, tagText) {
@@ -74,9 +72,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       configScript = parserConfig && parserConfig.scriptTypes;
     addTags(defaultTags, tags);
     if (configTags) addTags(configTags, tags);
-    if (configScript) for (var i = configScript.length - 1; i >= 0; i--) {
-      tags.script.unshift(["type", configScript[i].matches, configScript[i].mode]);
-    }
+    if (configScript) for (var i = configScript.length - 1; i >= 0; i--) tags.script.unshift(["type", configScript[i].matches, configScript[i].mode]);
     function html(stream, state) {
       var style = htmlMode.token(stream, state.htmlState),
         tag = /\btag\b/.test(style),

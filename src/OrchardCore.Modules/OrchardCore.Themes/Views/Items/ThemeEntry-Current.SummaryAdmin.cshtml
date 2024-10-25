@@ -1,0 +1,13 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Themes.Models
+
+@model ShapeViewModel<ThemeEntry>
+
+@if (Model.Value.IsAdmin)
+{
+    <span class="text-muted">@T["This is the current Admin theme"]</span>
+
+    return;
+}
+
+<span class="text-muted">@T["This is the current Site theme"]</span>

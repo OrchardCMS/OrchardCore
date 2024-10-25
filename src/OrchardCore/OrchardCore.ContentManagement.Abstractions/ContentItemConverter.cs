@@ -1,112 +1,106 @@
-using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
-namespace OrchardCore.ContentManagement
+namespace OrchardCore.ContentManagement;
+
+public class ContentItemConverter : JsonConverter<ContentItem>
 {
-    public class ContentItemConverter : JsonConverter
+    public override void Write(Utf8JsonWriter writer, ContentItem value, JsonSerializerOptions options)
     {
-        private readonly JsonLoadSettings _jsonLoadSettings = new JsonLoadSettings
+        var o = new JsonObject()
         {
-            LineInfoHandling = LineInfoHandling.Ignore // defaults to loading which allocates quite a lot
+            // Write all well-known properties.
+            [nameof(ContentItem.ContentItemId)] = value.ContentItemId,
+            [nameof(ContentItem.ContentItemVersionId)] = value.ContentItemVersionId,
+            [nameof(ContentItem.ContentType)] = value.ContentType,
+            [nameof(ContentItem.DisplayText)] = value.DisplayText,
+            [nameof(ContentItem.Latest)] = value.Latest,
+            [nameof(ContentItem.Published)] = value.Published,
+            [nameof(ContentItem.ModifiedUtc)] = value.ModifiedUtc,
+            [nameof(ContentItem.PublishedUtc)] = value.PublishedUtc,
+            [nameof(ContentItem.CreatedUtc)] = value.CreatedUtc,
+            [nameof(ContentItem.Owner)] = value.Owner,
+            [nameof(ContentItem.Author)] = value.Author,
         };
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        // Write all custom content properties.
+        o.Merge(value.Data);
+
+        o.WriteTo(writer);
+    }
+
+    public override ContentItem Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var contentItem = new ContentItem();
+        while (reader.Read())
         {
-            var contentItem = (ContentItem)value;
-            var o = new JObject();
-
-            // Write all well-known properties
-            o.Add(new JProperty(nameof(ContentItem.ContentItemId), contentItem.ContentItemId));
-            o.Add(new JProperty(nameof(ContentItem.ContentItemVersionId), contentItem.ContentItemVersionId));
-            o.Add(new JProperty(nameof(ContentItem.ContentType), contentItem.ContentType));
-            o.Add(new JProperty(nameof(ContentItem.DisplayText), contentItem.DisplayText));
-            o.Add(new JProperty(nameof(ContentItem.Latest), contentItem.Latest));
-            o.Add(new JProperty(nameof(ContentItem.Published), contentItem.Published));
-            o.Add(new JProperty(nameof(ContentItem.ModifiedUtc), contentItem.ModifiedUtc));
-            o.Add(new JProperty(nameof(ContentItem.PublishedUtc), contentItem.PublishedUtc));
-            o.Add(new JProperty(nameof(ContentItem.CreatedUtc), contentItem.CreatedUtc));
-            o.Add(new JProperty(nameof(ContentItem.Owner), contentItem.Owner));
-            o.Add(new JProperty(nameof(ContentItem.Author), contentItem.Author));
-
-            // Write all custom content properties
-            o.Merge(contentItem.Data);
-
-            o.WriteTo(writer);
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            var contentItem = new ContentItem();
-            var skip = false;
-
-            while (skip || reader.Read())
+            if (reader.TokenType == JsonTokenType.EndObject)
             {
-                skip = false;
-
-                if (reader.TokenType == JsonToken.EndObject)
-                {
-                    break;
-                }
-
-                if (reader.TokenType != JsonToken.PropertyName)
-                {
-                    continue;
-                }
-
-                var propertyName = (string)reader.Value;
-
-                switch (propertyName)
-                {
-                    case nameof(ContentItem.ContentItemId):
-                        contentItem.ContentItemId = reader.ReadAsString();
-                        break;
-                    case nameof(ContentItem.ContentItemVersionId):
-                        contentItem.ContentItemVersionId = reader.ReadAsString();
-                        break;
-                    case nameof(ContentItem.ContentType):
-                        contentItem.ContentType = reader.ReadAsString();
-                        break;
-                    case nameof(ContentItem.DisplayText):
-                        contentItem.DisplayText = reader.ReadAsString();
-                        break;
-                    case nameof(ContentItem.Latest):
-                        contentItem.Latest = reader.ReadAsBoolean() ?? false;
-                        break;
-                    case nameof(ContentItem.Published):
-                        contentItem.Published = reader.ReadAsBoolean() ?? false;
-                        break;
-                    case nameof(ContentItem.PublishedUtc):
-                        contentItem.PublishedUtc = reader.ReadAsDateTime();
-                        break;
-                    case nameof(ContentItem.ModifiedUtc):
-                        contentItem.ModifiedUtc = reader.ReadAsDateTime();
-                        break;
-                    case nameof(ContentItem.CreatedUtc):
-                        contentItem.CreatedUtc = reader.ReadAsDateTime();
-                        break;
-                    case nameof(ContentItem.Author):
-                        contentItem.Author = reader.ReadAsString();
-                        break;
-                    case nameof(ContentItem.Owner):
-                        contentItem.Owner = reader.ReadAsString();
-                        break;
-                    default:
-                        var customProperty = JProperty.Load(reader, _jsonLoadSettings);
-                        contentItem.Data.Add(customProperty);
-
-                        // Skip reading a token as JProperty.Load already did the next one
-                        skip = true;
-                        break;
-                }
+                break;
             }
 
-            return contentItem;
+            if (reader.TokenType != JsonTokenType.PropertyName)
+            {
+                continue;
+            }
+
+            var propertyName = reader.GetString();
+
+            reader.Read();
+
+            switch (propertyName)
+            {
+                case nameof(ContentItem.ContentItemId):
+                    contentItem.ContentItemId = reader.TokenType == JsonTokenType.String ? reader.GetString() : null;
+                    break;
+                case nameof(ContentItem.ContentItemVersionId):
+                    contentItem.ContentItemVersionId = reader.TokenType == JsonTokenType.String ? reader.GetString() : null;
+                    break;
+                case nameof(ContentItem.ContentType):
+                    contentItem.ContentType = reader.TokenType == JsonTokenType.String ? reader.GetString() : null;
+                    break;
+                case nameof(ContentItem.DisplayText):
+                    contentItem.DisplayText = reader.TokenType == JsonTokenType.String ? reader.GetString() : null;
+                    break;
+                case nameof(ContentItem.Latest):
+                    contentItem.Latest = (reader.TokenType == JsonTokenType.True ||
+                        reader.TokenType == JsonTokenType.False) && reader.GetBoolean();
+                    break;
+                case nameof(ContentItem.Published):
+                    contentItem.Published = (reader.TokenType == JsonTokenType.True ||
+                        reader.TokenType == JsonTokenType.False) && reader.GetBoolean();
+                    break;
+                case nameof(ContentItem.PublishedUtc):
+                    contentItem.PublishedUtc = reader.TokenType != JsonTokenType.Null &&
+                        reader.TryGetDateTime(out var date) ? date : null;
+                    break;
+                case nameof(ContentItem.ModifiedUtc):
+                    contentItem.ModifiedUtc = reader.TokenType != JsonTokenType.Null &&
+                        reader.TryGetDateTime(out date) ? date : null;
+                    break;
+                case nameof(ContentItem.CreatedUtc):
+                    contentItem.CreatedUtc = reader.TokenType != JsonTokenType.Null &&
+                        reader.TryGetDateTime(out date) ? date : null;
+                    break;
+                case nameof(ContentItem.Author):
+                    contentItem.Author = reader.TokenType == JsonTokenType.String ? reader.GetString() : null;
+                    break;
+                case nameof(ContentItem.Owner):
+                    contentItem.Owner = reader.TokenType == JsonTokenType.String ? reader.GetString() : null;
+                    break;
+                default:
+                    if (reader.TokenType == JsonTokenType.StartObject ||
+                        reader.TokenType == JsonTokenType.StartArray)
+                    {
+                        var property = JNode.Load(ref reader);
+                        contentItem.Data[propertyName] = property;
+                    }
+
+                    break;
+            }
         }
 
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType == typeof(ContentItem);
-        }
+        return contentItem;
     }
 }

@@ -59,8 +59,9 @@
         "DefaultSearchFields": [
           "Content.ContentItem.FullText"
         ],
-        "AllowElasticQueryStringQueryInSearch": false,
-        "SyncWithLucene":  true
+        "SearchType": "",
+        "DefaultQuery": null,
+        "SyncWithLucene": true
       }
     },
     {

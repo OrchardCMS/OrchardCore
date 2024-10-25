@@ -72,10 +72,10 @@
 
             @foreach (var child in children)
             {
-                dynamic adminNodeShape = await MenuItemDisplayManager.BuildDisplayAsync(child, updater, "TreeSummary");
-                adminNodeShape.AdminMenuId = Model.AdminMenuId;
-                adminNodeShape.MenuItem = child;
-                adminNodeShape.Index = Model.Index + "-" + index++;
+                var adminNodeShape = await MenuItemDisplayManager.BuildDisplayAsync(child, updater, "TreeSummary");
+                adminNodeShape.Properties["AdminMenuId"] = Model.AdminMenuId;
+                adminNodeShape.Properties["MenuItem"] = child;
+                adminNodeShape.Properties["Index"] = Model.Index + "-" + index++;
                 @await DisplayAsync(adminNodeShape);
             }
         }

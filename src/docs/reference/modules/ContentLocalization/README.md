@@ -12,11 +12,10 @@ Attach this part to a content type to manage multiple localized versions of a co
 
 The `ContentCulturePicker` feature helps you manage cultures for the frontend.
 
-Enabling this module results in
+Enabling this feature results in
 
 - A `ContentRequestCultureProvider` being added as the first method used to determine the current thread culture.
     This Provider will set the thread culture based on the ContentItem that matches the current url.
-- 2 shapes (described below) are available to the frontend theme.
 
 The `ContentCulturePicker` selects the url to redirect using the following rules
 
@@ -29,7 +28,6 @@ The `ContentCulturePicker` selects the url to redirect using the following rules
 By default, the `ContentCulturePicker` sets a cookie for the `CookieRequestCultureProvider`. This can be disabled in the  `Configuration/Settings/Localization/Content Culture Picker` settings page.
 
 The `ContentRequestCultureProvider` can set the cookie based on the ContentItem that matches the current url. This setting can be edited in the  `Configuration/Settings/Localization/Content Request Culture Provider` settings page.
-
 
 #### Recipe Step
 
@@ -46,77 +44,6 @@ The cookie can be set during recipes using the settings step. Here is a sample s
   }
 },
 ```
-
-### Shapes
-
-#### `ContentCulturePicker`
-
-The `ContentCulturePicker` shape loads data for the `ContentCulturePickerContainer` shape.  
-You should always render this shape in your theme:
-
-=== "Liquid"
-
-    ``` liquid
-    {% shape "ContentCulturePicker" %}
-    ```
-
-=== "Razor"
-
-    ``` html
-    <shape type="ContentCulturePicker" />
-    ```
-
-#### `ContentCulturePickerContainer`
-
-The `ContentCulturePickerContainer` shape is used to render the `ContentCulturePicker`.
-You should override this shape in your theme.
-
-| Property                  | Description                                                 |
-| ------------------------- | ----------------------------------------------------------- |
-| `Model.CurrentCulture`    | CultureViewModel {Name, DisplayName} representing the current thread culture. |
-| `Model.SupportedCultures` | A list of CultureViewModel objects for all supported cultures.   |
-
-##### ContentCulturePickerContainer Example
-
-=== "Liquid"
-
-    ``` liquid
-    <ul>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{Model.CurrentCulture.DisplayName}}</a>
-            <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
-            {% for culture in Model.SupportedCultures %}
-                {% if culture.Name != Model.CurrentCulture.Name  %}
-                <a class="dropdown-item" href="{{culture.Name | switch_culture_url }}">{{culture.DisplayName}}</a>
-                {% endif %}
-            {% endfor %}
-            </div>
-        </li>
-    </ul>
-    ```
-
-=== "Razor"
-
-    ``` html
-    <ul>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@Model.CurrentCulture.DisplayName</a>
-            <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
-                @foreach (var culture in Model.SupportedCultures)
-                {
-                    if (!string.Equals((string)culture.Name, (string)Model.CurrentCulture.Name, StringComparison.OrdinalIgnoreCase))
-                    {
-                        <a asp-route="RedirectToLocalizedContent"
-                        asp-route-area="OrchardCore.ContentLocalization"
-                        asp-route-targetculture="@culture.Name"
-                        asp-route-contentItemUrl="@Context.Request.Path"
-                        class="dropdown-item">@culture.DisplayName</a>
-                    }
-                }
-            </div>
-        </li>
-    </ul>
-    ```
 
 ## Liquid filters
 
@@ -165,3 +92,7 @@ The following configuration is used by default and can be customized:
   }
 }
 ```
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/cwKa1OA48-4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

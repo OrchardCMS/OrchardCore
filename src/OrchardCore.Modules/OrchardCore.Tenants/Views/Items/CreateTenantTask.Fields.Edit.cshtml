@@ -2,62 +2,62 @@
 @model CreateTenantTaskViewModel
 
 <div class="mb-3" asp-validation-class-for="TenantNameExpression">
-    <label asp-for="TenantNameExpression">@T["Name"] <span asp-validation-for="TenantNameExpression"></span></label>
+    <label asp-for="TenantNameExpression" class="form-label">@T["Name"] <span asp-validation-for="TenantNameExpression"></span></label>
     <input type="text" asp-for="TenantNameExpression" class="form-control code" autofocus />
     <span class="hint">@T["Select the name of the tenant to create."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="DescriptionExpression">
-    <label asp-for="DescriptionExpression">@T["Description"] <span asp-validation-for="DescriptionExpression"></span></label>
+    <label asp-for="DescriptionExpression" class="form-label">@T["Description"] <span asp-validation-for="DescriptionExpression"></span></label>
     <input type="text" asp-for="DescriptionExpression" class="form-control code" autofocus />
     <span class="hint">@T["(Optional) the description of the tenant to create."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="RequestUrlPrefixExpression">
-    <label asp-for="RequestUrlPrefixExpression">@T["Url Prefix"] <span asp-validation-for="RequestUrlPrefixExpression"></span></label>
+    <label asp-for="RequestUrlPrefixExpression" class="form-label">@T["Url Prefix"] <span asp-validation-for="RequestUrlPrefixExpression"></span></label>
     <input type="text" asp-for="RequestUrlPrefixExpression" class="form-control code" />
     <span class="hint">@T["(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"http://orchardproject.net/site1\"."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="RequestUrlHostExpression">
-    <label asp-for="RequestUrlHostExpression">@T["Host name"] <span asp-validation-for="RequestUrlHostExpression"></span></label>
+    <label asp-for="RequestUrlHostExpression" class="form-label">@T["Host name"] <span asp-validation-for="RequestUrlHostExpression"></span></label>
     <input type="text" asp-for="RequestUrlHostExpression" class="form-control code" />
     <span class="hint">@T["Example: If host is \"orchardproject.net\", the tenant site URL is \"http://orchardproject.net/\". With Liquid support."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="DatabaseProviderExpression">
-    <label asp-for="DatabaseProviderExpression">@T["What type of database to use?"] <span asp-validation-for="DatabaseProviderExpression"></span></label>
+    <label asp-for="DatabaseProviderExpression" class="form-label">@T["What type of database to use?"] <span asp-validation-for="DatabaseProviderExpression"></span></label>
     <input type="text" asp-for="DatabaseProviderExpression" class="form-control code" />
 </div>
 
 <div class="mb-3" asp-validation-class-for="TablePrefixExpression">
-    <label asp-for="TablePrefixExpression">@T["Table Prefix"] <span asp-validation-for="TablePrefixExpression"></span></label>
+    <label asp-for="TablePrefixExpression" class="form-label">@T["Table Prefix"] <span asp-validation-for="TablePrefixExpression"></span></label>
     <input type="text" asp-for="TablePrefixExpression" class="form-control code" />
 </div>
 
 <div class="mb-3" asp-validation-class-for="ConnectionStringExpression">
-    <label asp-for="ConnectionStringExpression">@T["Connection string"] <span asp-validation-for="ConnectionStringExpression"></span></label>
+    <label asp-for="ConnectionStringExpression" class="form-label">@T["Connection string"] <span asp-validation-for="ConnectionStringExpression"></span></label>
     <input type="text" asp-for="ConnectionStringExpression" class="form-control code" />
 </div>
 
 <div class="mb-3" asp-validation-class-for="SchemaExpression">
-    <label asp-for="TablePrefixExpression">@T["Schema"] <span asp-validation-for="SchemaExpression"></span></label>
+    <label asp-for="TablePrefixExpression" class="form-label">@T["Schema"] <span asp-validation-for="SchemaExpression"></span></label>
     <input type="text" asp-for="SchemaExpression" class="form-control code" />
     <div class="hint">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
 </div>
 
 <div class="mb-3" asp-validation-class-for="RecipeNameExpression">
-    <label asp-for="RecipeNameExpression">@T["Recipe"] <span asp-validation-for="RecipeNameExpression"></span></label>
+    <label asp-for="RecipeNameExpression" class="form-label">@T["Recipe"] <span asp-validation-for="RecipeNameExpression"></span></label>
     <input type="text" asp-for="RecipeNameExpression" class="form-control code" />
 </div>
 
 <div class="mb-3" asp-validation-class-for="FeatureProfileExpression">
-    <label asp-for="FeatureProfileExpression">@T["Feature Profile"] <span asp-validation-for="FeatureProfileExpression"></span></label>
+    <label asp-for="FeatureProfileExpression" class="form-label">@T["Feature Profile"] <span asp-validation-for="FeatureProfileExpression"></span></label>
     <input type="text" asp-for="FeatureProfileExpression" class="form-control code" />
 </div>
 
 <style asp-name="codemirror"></style>
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-addon-mode-simple" at="Foot"></script>

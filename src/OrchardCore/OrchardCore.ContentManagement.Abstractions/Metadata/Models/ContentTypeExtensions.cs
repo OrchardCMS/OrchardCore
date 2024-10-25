@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace OrchardCore.ContentManagement.Metadata.Models;
@@ -9,56 +8,47 @@ public static class ContentTypeExtensions
     {
         stereotype = contentTypeDefinition.GetStereotype();
 
-        return !String.IsNullOrWhiteSpace(stereotype);
+        return !string.IsNullOrWhiteSpace(stereotype);
     }
 
     public static bool HasStereotype(this ContentTypeDefinition contentTypeDefinition)
+        => !string.IsNullOrEmpty(contentTypeDefinition.GetStereotype());
+
+    public static bool StereotypeEquals(this ContentTypeDefinition contentTypeDefinition, string stereotype)
+        => contentTypeDefinition.StereotypeEquals(stereotype, StringComparison.Ordinal);
+
+    public static bool StereotypeEquals(this ContentTypeDefinition contentTypeDefinition, string stereotype, StringComparison stringComparison)
     {
-        return !String.IsNullOrEmpty(contentTypeDefinition.GetStereotype());
+        ArgumentNullException.ThrowIfNull(stereotype);
+
+        return contentTypeDefinition.TryGetStereotype(out var st)
+            && string.Equals(st, stereotype, stringComparison);
     }
 
     public static string GetStereotype(this ContentTypeDefinition contentTypeDefinition)
-    {
-        return contentTypeDefinition.GetSettings().Stereotype;
-    }
+        => contentTypeDefinition.GetSettings().Stereotype;
 
     public static bool IsListable(this ContentTypeDefinition contentTypeDefinition)
-    {
-        return contentTypeDefinition.GetSettings().Listable;
-    }
+        => contentTypeDefinition.GetSettings().Listable;
 
     public static bool IsCreatable(this ContentTypeDefinition contentTypeDefinition)
-    {
-        return contentTypeDefinition.GetSettings().Creatable;
-    }
+        => contentTypeDefinition.GetSettings().Creatable;
 
     public static bool IsDraftable(this ContentTypeDefinition contentTypeDefinition)
-    {
-        return contentTypeDefinition.GetSettings().Draftable;
-    }
+        => contentTypeDefinition.GetSettings().Draftable;
 
     public static bool IsVersionable(this ContentTypeDefinition contentTypeDefinition)
-    {
-        return contentTypeDefinition.GetSettings().Versionable;
-    }
+        => contentTypeDefinition.GetSettings().Versionable;
 
     public static bool IsSecurable(this ContentTypeDefinition contentTypeDefinition)
-    {
-        return contentTypeDefinition.GetSettings().Securable;
-    }
+        => contentTypeDefinition.GetSettings().Securable;
 
     public static bool HasDescription(this ContentTypeDefinition contentTypeDefinition)
-    {
-        return !String.IsNullOrWhiteSpace(contentTypeDefinition.GetSettings().Description);
-    }
+        => !string.IsNullOrWhiteSpace(contentTypeDefinition.GetSettings().Description);
 
     public static string GetDescription(this ContentTypeDefinition contentTypeDefinition)
-    {
-        return contentTypeDefinition.GetSettings().Description;
-    }
+        => contentTypeDefinition.GetSettings().Description;
 
     public static ContentTypeSettings GetSettings(this ContentTypeDefinition contentTypeDefinition)
-    {
-        return contentTypeDefinition.GetSettings<ContentTypeSettings>();
-    }
+        => contentTypeDefinition.GetSettings<ContentTypeSettings>();
 }

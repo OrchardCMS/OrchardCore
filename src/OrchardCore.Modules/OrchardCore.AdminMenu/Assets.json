@@ -1,6 +1,5 @@
 [
   {
-    "generateSourceMaps": false,
     "inputs": [
       "Assets/scss/admin-menu-permission-picker.scss"
     ],
@@ -13,14 +12,12 @@
     "output": "wwwroot/Scripts/admin-menu-permission-picker.js"
   },
   {
-    "generateSourceMaps": false,
     "inputs": [
       "Assets/scss/admin-menu.scss"
     ],
     "output": "wwwroot/Styles/admin-menu.css"
   },
   {
-    "generateSourceMaps": false,
     "inputs": [
       "Assets/scss/admin-menu-icon-picker.scss"
     ],

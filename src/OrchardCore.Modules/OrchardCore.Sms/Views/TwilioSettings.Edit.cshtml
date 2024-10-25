@@ -1,0 +1,39 @@
+@using OrchardCore.Sms.Services
+@using OrchardCore.Sms.ViewModels
+@using OrchardCore.Sms
+
+@model TwilioSettingsViewModel
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="IsEnabled" checked="@Model.IsEnabled" role="button" data-bs-toggle="collapse" data-bs-target="#Twilio_Provider_Settings" aria-expanded="@Model.IsEnabled.ToString().ToLowerInvariant()" aria-controls="Twilio_Provider_Settings" />
+        <label class="form-check-label" asp-for="IsEnabled">@T["Enable Twilio Provider"]</label>
+    </div>
+</div>
+
+<div id="Twilio_Provider_Settings" class="collapse @(Model.IsEnabled ? " show" : string.Empty)">
+
+    <h4>@T["Twilio Account Info"]</h4>
+    <div class="mb-3" asp-validation-class-for="PhoneNumber">
+        <label asp-for="PhoneNumber" class="form-label">@T["Phone Number"]</label>
+        <input asp-for="PhoneNumber" class="form-control" />
+        <span asp-validation-for="PhoneNumber"></span>
+        <span class="hint">@T["Phone number must include a country code. For example, +1 for United States."]</span>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="AccountSID">
+        <label asp-for="AccountSID" class="form-label">@T["Account SID"]</label>
+        <input asp-for="AccountSID" class="form-control" />
+        <span asp-validation-for="AccountSID"></span>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="AuthToken">
+        <label asp-for="AuthToken" class="form-label">@T["Auth Token"]</label>
+        <input asp-for="AuthToken" class="form-control" />
+        <span asp-validation-for="AuthToken"></span>
+        @if (Model.HasAuthToken)
+        {
+            <span class="hint">@T["Auth token was securely saved. Enter a new value if you wish to replace the existing secret."]</span>
+        }
+    </div>
+</div>

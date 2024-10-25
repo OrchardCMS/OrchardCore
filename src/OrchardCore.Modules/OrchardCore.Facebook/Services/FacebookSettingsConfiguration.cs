@@ -1,15 +1,12 @@
-using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell.Models;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Facebook.Settings;
-using System.Linq;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Facebook.Settings;
 
 namespace OrchardCore.Facebook.Services;
 
-public class FacebookSettingsConfiguration : IConfigureOptions<FacebookSettings>
+public sealed class FacebookSettingsConfiguration : IConfigureOptions<FacebookSettings>
 {
     private readonly IFacebookService _facebookService;
     private readonly ShellSettings _shellSettings;
@@ -48,7 +45,7 @@ public class FacebookSettingsConfiguration : IConfigureOptions<FacebookSettings>
 
         if (_facebookService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
         {
-            if (_shellSettings.State == TenantState.Running)
+            if (_shellSettings.IsRunning())
             {
                 _logger.LogWarning("Facebook is not correctly configured.");
             }

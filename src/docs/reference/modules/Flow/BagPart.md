@@ -17,7 +17,7 @@ An example of this can be found in TheAgencyTheme where four Named BagParts are 
 - About
 - Team
 
-## Templating in a decoupled manner.
+## Templating in a decoupled manner
 
 When templating in a decoupled manner the content items are accessed directly through the name of the BagPart.
 
@@ -106,3 +106,7 @@ The name of a BagPart is used as the differentiator in `placement.json`
     }
   ]
 ```
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/JYES1i6BdWs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

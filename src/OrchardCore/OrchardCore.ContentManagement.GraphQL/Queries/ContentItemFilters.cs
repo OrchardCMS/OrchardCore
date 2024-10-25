@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Authorization;
@@ -33,11 +32,11 @@ public class ContentItemFilters : GraphQLFilter<ContentItem>
 
         if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ViewContent))
         {
-            // No additinal check when the user has permission to view all contents
+            // No additional check when the user has permission to view all contents
             return query;
         }
 
-        var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentType);
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
         var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(CommonPermissions.ViewContent);
         var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
 

@@ -1,62 +1,55 @@
-using System;
-using System.Threading.Tasks;
+using System.Text.Json.Nodes;
 using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.OpenId.Recipes
-{
-    public class OpenIdScopeStep : IRecipeStepHandler
-    {
-        private readonly IOpenIdScopeManager _scopeManager;
+namespace OrchardCore.OpenId.Recipes;
 
-        /// <summary>
-        /// This recipe step adds an OpenID Connect scope.
-        /// </summary>
-        public OpenIdScopeStep(IOpenIdScopeManager scopeManager)
+public sealed class OpenIdScopeStep : NamedRecipeStepHandler
+{
+    private readonly IOpenIdScopeManager _scopeManager;
+
+    /// <summary>
+    /// This recipe step adds an OpenID Connect scope.
+    /// </summary>
+    public OpenIdScopeStep(IOpenIdScopeManager scopeManager)
+        : base("OpenIdScope")
+    {
+        _scopeManager = scopeManager;
+    }
+
+    protected override async Task HandleAsync(RecipeExecutionContext context)
+    {
+        var model = context.Step.ToObject<OpenIdScopeStepModel>();
+        var scope = await _scopeManager.FindByNameAsync(model.ScopeName);
+        var descriptor = new OpenIdScopeDescriptor();
+        var isNew = true;
+
+        if (scope != null)
         {
-            _scopeManager = scopeManager;
+            isNew = false;
+            await _scopeManager.PopulateAsync(scope, descriptor);
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        descriptor.Description = model.Description;
+        descriptor.Name = model.ScopeName;
+        descriptor.DisplayName = model.DisplayName;
+
+        if (!string.IsNullOrEmpty(model.Resources))
         {
-            if (!string.Equals(context.Name, "OpenIdScope", StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
+            descriptor.Resources.Clear();
+            descriptor.Resources.UnionWith(
+                model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+        }
 
-            var model = context.Step.ToObject<OpenIdScopeStepModel>();
-            var scope = await _scopeManager.FindByNameAsync(model.ScopeName);
-            var descriptor = new OpenIdScopeDescriptor();
-            var isNew = true;
-
-            if (scope != null)
-            {
-                isNew = false;
-                await _scopeManager.PopulateAsync(scope, descriptor);
-            }
-
-            descriptor.Description = model.Description;
-            descriptor.Name = model.ScopeName;
-            descriptor.DisplayName = model.DisplayName;
-
-            if (!string.IsNullOrEmpty(model.Resources))
-            {
-                descriptor.Resources.Clear();
-                descriptor.Resources.UnionWith(
-                    model.Resources
-                        .Split(' ', StringSplitOptions.RemoveEmptyEntries));
-            }
-
-            if (isNew)
-            {
-                await _scopeManager.CreateAsync(descriptor);
-            }
-            else
-            {
-                await _scopeManager.UpdateAsync(scope, descriptor);
-            }
+        if (isNew)
+        {
+            await _scopeManager.CreateAsync(descriptor);
+        }
+        else
+        {
+            await _scopeManager.UpdateAsync(scope, descriptor);
         }
     }
 }

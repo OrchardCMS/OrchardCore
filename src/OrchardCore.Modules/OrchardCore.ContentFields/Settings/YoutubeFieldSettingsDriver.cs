@@ -1,31 +1,34 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentFields.Settings
+namespace OrchardCore.ContentFields.Settings;
+
+public sealed class YoutubeFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<YoutubeField>
 {
-    public class YoutubeFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<YoutubeField>
+    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
     {
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        return Initialize<YoutubeFieldSettings>("YoutubeFieldSetting_Edit", model =>
         {
-            return Initialize<YoutubeFieldSettings>("YoutubeFieldSetting_Edit", model =>
-             {
-                 partFieldDefinition.PopulateSettings(model);
-                 model.Height = model.Height != default(int) ? model.Height : 315;
-                 model.Width = model.Width != default(int) ? model.Width : 560;
-             }).Location("Content");
-        }
+            var settings = partFieldDefinition.GetSettings<YoutubeFieldSettings>();
 
-        public async override Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
-        {
-            var model = new YoutubeFieldSettings();
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            model.Hint = settings.Hint;
+            model.Label = settings.Label;
+            model.Height = settings.Height != default ? settings.Height : 315;
+            model.Width = settings.Width != default ? settings.Width : 560;
+            model.Required = settings.Required;
+        }).Location("Content");
+    }
 
-            context.Builder.WithSettings(model);
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+    {
+        var model = new YoutubeFieldSettings();
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            return Edit(partFieldDefinition);
-        }
+        context.Builder.WithSettings(model);
+
+        return Edit(partFieldDefinition, context);
     }
 }

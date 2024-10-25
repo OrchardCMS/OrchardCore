@@ -97,12 +97,8 @@
     @if (Context.Items["BagPart.Edit"] == null)
     {
         Context.Items["BagPart.Edit"] = new object();
-        <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.min.js"
-            debug-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
-        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.min.css"
-           debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
-        <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.min.css"
-           debug-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>
+        <script asp-name="flowpart-edit" at="Foot"></script>
+        <style asp-name="flowpart-edit" at="Head"></style>
     }
 
     @* Rendered only once per type to initialize the scripts its editor will need *@
@@ -126,6 +122,9 @@
                 cursor: "move",
                 opacity: 0.7,
                 tolerance: "pointer",
+                scrollSensitivity: 150,
+                scrollSpeed: 100,
+                animation: 150,
                 placeholder: {
                     element: function (currentItem) {
                         return $('<div class="widget-dragdrop-placeholder"><div></div></div>')[0];

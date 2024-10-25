@@ -1,29 +1,58 @@
+@using OrchardCore.Admin.Models
+@using OrchardCore.DisplayManagement
+@using OrchardCore.DisplayManagement.ModelBinding
+@using OrchardCore.Entities
+@using OrchardCore.Themes.Services
+@using OrchardCore.Users.Models
+
+@inject IDisplayManager<Navbar> DisplayManager
+@inject IUpdateModelAccessor UpdateModelAccessor
+@inject ThemeTogglerService ThemeTogglerService
+@{
+    // Navbar is pre-rendered to allow resource injection.
+    var navbar = await DisplayAsync(await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater));
+}
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
-    <link type="image/x-icon" rel="shortcut icon" href="~/TheTheme/favicon.ico">
+    <link type="image/x-icon" rel="shortcut icon" href="~/TheTheme/images/favicon.ico">
+
+    <!-- This script can't wait till the footer -->
+    <script asp-name="theme-head" version="1" at="Head"></script>
+
+    @if (Orchard.IsRightToLeft())
+    {
+        <style asp-name="bootstrap-rtl" version="5" at="Head"></style>
+        <style asp-name="TheTheme" depends-on="bootstrap-rtl" asp-src="~/TheTheme/styles/theme.min.css" debug-src="~/TheTheme/styles/theme.css" at="Foot"></style>
+    }
+    else
+    {
+        <style asp-name="bootstrap" version="5" at="Head"></style>
+        <style asp-name="TheTheme" depends-on="bootstrap" asp-src="~/TheTheme/styles/theme.min.css" debug-src="~/TheTheme/styles/theme.css" at="Foot"></style>
+    }
+
     <script asp-name="bootstrap" version="5" at="Foot"></script>
-    <style asp-name="thetheme-bootstrap-oc" version="1"></style>
-    <style asp-name="font-awesome" version="6"></style>
-    <resources type="Meta" />
-    <resources type="HeadLink" />
-    <resources type="Stylesheet" />
-    <resources type="HeadScript" />
+    <script asp-name="theme-manager" at="Foot"></script>
+
+    <script asp-name="font-awesome" at="Foot" version="6"></script>
+    <resources type="Header" />
     @await RenderSectionAsync("HeadMeta", required: false)
 </head>
-<body dir="@Orchard.CultureDir()">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+<body>
+    <nav class="navbar navbar-expand-md fixed-top">
         <div class="container">
             <shape type="Branding" />
             <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar" aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbar">
-                <menu alias="alias:main-menu" cache-id="main-menu" cache-fixed-duration="00:05:00" cache-tag="alias:main-menu" />
-                <shape type="LoginMenu" />
+                <div class="d-flex w-100 align-items-end justify-content-end justify-content-md-between flex-column flex-md-row">
+                    <menu alias="alias:main-menu" cache-id="main-menu" cache-fixed-duration="00:05:00" cache-tag="alias:main-menu" />
+                    @navbar
+                </div>
             </div>
         </div>
     </nav>

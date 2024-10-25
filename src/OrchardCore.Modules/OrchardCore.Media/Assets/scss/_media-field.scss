@@ -1,3 +1,5 @@
+@import './_variables';
+
 .media-field-toolbar {
     display: flex;
 
@@ -15,7 +17,7 @@
         cursor: pointer;
         margin: 0;
         padding: 4px 8px;
-        border: 1px solid $secondary;
+        border: var(--bs-border-width, 1px) solid var(--bs-border-color, #ccc);
 
         input {
             width: 0.1px;
@@ -45,12 +47,11 @@
 .icon-media-anchor {
     position: absolute;
     line-height: 0px;
-    color: $white;
+    color: var(--bs-white);
     font-size: 1.875rem;
 
-    path
-    {
-        stroke:$black;
+    path {
+        stroke: var(--bs-black);
         stroke-width: 10;
     }
 }

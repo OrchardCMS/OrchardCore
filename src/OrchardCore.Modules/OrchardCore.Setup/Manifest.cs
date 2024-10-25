@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "The setup module is creating the application's setup experience.",
-    Dependencies = new[] { "OrchardCore.Recipes" },
+    Dependencies = ["OrchardCore.Recipes"],
     Category = "Infrastructure"
 )]

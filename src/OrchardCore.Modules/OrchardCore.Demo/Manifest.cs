@@ -1,4 +1,5 @@
 using OrchardCore.Modules.Manifest;
+using OrchardCore.Users;
 
 [assembly: Module(
     Name = "Orchard Demo",
@@ -12,7 +13,11 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Demo",
     Description = "Test",
     Category = "Samples",
-    Dependencies = new[] { "OrchardCore.Users", "OrchardCore.Contents" }
+    Dependencies =
+    [
+        UserConstants.Features.Users,
+        "OrchardCore.Contents",
+    ]
 )]
 
 [assembly: Feature(
@@ -20,4 +25,4 @@ using OrchardCore.Modules.Manifest;
     Name = "Orchard Foo Demo",
     Description = "Foo feature sample.",
     Category = "Samples"
-)] 
+)]

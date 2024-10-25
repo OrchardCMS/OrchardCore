@@ -2,14 +2,14 @@
 @model HttpResponseTaskViewModel
 
 <div class="mb-3" asp-validation-class-for="HttpStatusCode">
-    <label asp-for="HttpStatusCode">@T["HTTP Status Code"]</label>
+    <label asp-for="HttpStatusCode" class="form-label">@T["HTTP Status Code"]</label>
     <input type="text" asp-for="HttpStatusCode" class="form-control" />
     <span asp-validation-for="HttpStatusCode"></span>
     <span class="hint">@T["The HTTP Status Code to send back. <a href=\"https://en.wikipedia.org/wiki/List_of_HTTP_status_codes\" target=\"_blank\">Click here</a> for a complete list."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="ContentType">
-    <label asp-for="ContentType">@T["Content Type"]</label>
+    <label asp-for="ContentType" class="form-label">@T["Content Type"]</label>
     <select asp-for="ContentType" class="form-select">
         <option>text/html</option>
         <option>text/plain</option>
@@ -23,21 +23,21 @@
 
 @*TODO: Only display Content field when appropriate for the selected HTTP status code.*@
 <div class="mb-3" asp-validation-class-for="Content">
-    <label asp-for="Content">@T["Content"]</label>
+    <label asp-for="Content" class="form-label">@T["Content"]</label>
     <textarea asp-for="Content"></textarea>
     <span asp-validation-for="Content"></span>
     <span class="hint">@T["The body to send back. With Liquid support."]</span>
 </div>
 
 <div class="mb-3" asp-validation-class-for="Headers">
-    <label asp-for="Headers">@T["Headers"] </label>
+    <label asp-for="Headers" class="form-label">@T["Headers"] </label>
     <textarea asp-for="Headers"></textarea>
     <span asp-validation-for="Headers"></span>
     <span class="hint">@T["Provide additional HTTP response headers. Enter one key/value pair per line. For example: \"X-MyHeader: Foo\". With Liquid support."]</span>
 </div>
 
 <style asp-name="codemirror"></style>
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
@@ -57,5 +57,5 @@
         };
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Headers)'), codeMirrorOptions);
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Content)'), codeMirrorOptions);
-});
+    });
 </script>

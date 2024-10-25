@@ -3,51 +3,83 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+themeStoreKeySuffix = 'admintheme';
+var getAdminPreferenceKey = function getAdminPreferenceKey() {
+  return getTenantName() + '-adminPreferences';
+};
+var getAdminPreferences = function getAdminPreferences() {
+  return JSON.parse(localStorage.getItem(getAdminPreferenceKey()));
+};
+var setAdminPreferences = function setAdminPreferences(adminPreferences) {
+  var key = getAdminPreferenceKey();
+  localStorage.setItem(key, JSON.stringify(adminPreferences));
+  Cookies.set(key, JSON.stringify(adminPreferences), {
+    expires: 360
+  });
+};
 // We add some classes to the body tag to restore the sidebar to the state is was before reload.
 // That state was saved to localstorage by userPreferencesPersistor.js
 // We need to apply the classes BEFORE the page is rendered. 
 // That is why we use a MutationObserver instead of document.Ready().
-var observer = new MutationObserver(function (mutations) {
-  var html = document.querySelector("html");
-  var tenant = html.getAttribute('data-tenant');
-  var key = tenant + '-adminPreferences';
-  var adminPreferences = JSON.parse(localStorage.getItem(key));
+var themeObserver = new MutationObserver(function (mutations) {
   for (var i = 0; i < mutations.length; i++) {
     for (var j = 0; j < mutations[i].addedNodes.length; j++) {
       if (mutations[i].addedNodes[j].tagName == 'BODY') {
-        var body = mutations[i].addedNodes[j];
-        if (adminPreferences != null) {
-          if (adminPreferences.leftSidebarCompact == true) {
-            body.classList.add('left-sidebar-compact');
-          }
-          isCompactExplicit = adminPreferences.isCompactExplicit;
-          if (html.getAttribute('data-darkmode') === 'True') {
-            if (adminPreferences.darkMode) {
-              html.setAttribute('data-theme', 'darkmode');
-            } else {
-              html.setAttribute('data-theme', 'default');
-            }
-          }
-        } else {
-          body.classList.add('no-admin-preferences');
-          if (html.getAttribute('data-darkmode') === 'True') {
-            // Automatically sets darkmode based on OS preferences
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-              html.setAttribute('data-theme', 'darkmode');
-            } else {
-              html.setAttribute('data-theme', 'default');
-            }
-          }
-        }
+        setTheme(getPreferredTheme());
 
         // we're done: 
-        observer.disconnect();
+        themeObserver.disconnect();
       }
       ;
     }
   }
 });
-observer.observe(document.documentElement, {
+themeObserver.observe(document.documentElement, {
   childList: true,
   subtree: true
 });
+(function () {
+  'use strict';
+
+  var showActiveTheme = function showActiveTheme(theme) {
+    var focus = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    var themeSwitcher = document.querySelector('#bd-theme');
+    if (!themeSwitcher) {
+      return;
+    }
+    var themeSwitcherText = document.querySelector('#bd-theme-text');
+    var activeThemeIcon = document.querySelector('.theme-icon-active');
+    var btnToActive = document.querySelector("[data-bs-theme-value=\"".concat(theme, "\"]"));
+    var svgOfActiveBtn = btnToActive.querySelector('.theme-icon');
+    btnToActive.classList.add('active');
+    btnToActive.setAttribute('aria-pressed', 'true');
+    activeThemeIcon.innerHTML = svgOfActiveBtn.innerHTML;
+    var themeSwitcherLabel = "".concat(themeSwitcherText.textContent, " (").concat(btnToActive.dataset.bsThemeValue, ")");
+    themeSwitcher.setAttribute('aria-label', themeSwitcherLabel);
+    var btnsToInactive = document.querySelectorAll("[data-bs-theme-value]:not([data-bs-theme-value=\"".concat(theme, "\"])"));
+    for (var i = 0; i < btnsToInactive.length; i++) {
+      btnsToInactive[i].classList.remove('active');
+      btnsToInactive[i].setAttribute('aria-pressed', 'false');
+    }
+    if (focus) {
+      themeSwitcher.focus();
+    }
+  };
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+    var storedTheme = getStoredTheme();
+    if (storedTheme !== lightThemeName && storedTheme !== darkThemeName) {
+      setTheme(getPreferredTheme());
+    }
+  });
+  window.addEventListener('DOMContentLoaded', function () {
+    showActiveTheme(getPreferredTheme());
+    document.querySelectorAll('[data-bs-theme-value]').forEach(function (toggle) {
+      toggle.addEventListener('click', function () {
+        var theme = toggle.getAttribute('data-bs-theme-value');
+        setStoredTheme(theme);
+        setTheme(theme);
+        showActiveTheme(theme, true);
+      });
+    });
+  });
+})();

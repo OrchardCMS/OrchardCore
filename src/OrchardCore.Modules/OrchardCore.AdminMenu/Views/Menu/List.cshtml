@@ -4,8 +4,8 @@
     int endIndex = startIndex + Model.AdminMenu.Count - 1;
 }
 
-<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="admin, jQuery-ui"></style>
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.js" at="Foot" depends-on="admin, jQuery-ui"></script>
+<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="jQuery-ui"></style>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.js" at="Foot" depends-on="jQuery-ui"></script>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Admin Menus"])</h1></zone>
 
@@ -15,12 +15,12 @@
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
-    <div class="card mb-3 bg-primary position-sticky action-bar">
+    <div class="card mb-3 text-bg-theme position-sticky action-bar">
         <div class="card-body">
             <div class="row gx-3">
                 <div class="col">
                     <div class="has-search">
-                        <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
+                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
                         <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                     </div>
                 </div>
@@ -34,14 +34,14 @@
     <ul class="list-group with-checkbox">
         @if (Model.AdminMenu.Any())
         {
-            <li class="list-group-item bg-primary">
+            <li class="list-group-item text-bg-theme">
                 <div class="row gx-3">
                     <div class="col">
                         <div class="form-check my-1">
                             <input type="checkbox" class="form-check-input" id="select-all">
                             <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
                             <label id="items" for="select-all">@T.Plural(Model.AdminMenu.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
-                            <label id="selected-items" class="text-muted" for="select-all"></label>
+                            <label id="selected-items" class="text-muted form-label" for="select-all"></label>
                         </div>
                     </div>
                     <div class="col col-md-auto text-end">

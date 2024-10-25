@@ -16,7 +16,7 @@
             Rel = "alternate",
             Type = "application/rss+xml",
             Title = contentItem.DisplayText,
-            Href = String.IsNullOrWhiteSpace(feedMetadata.FeedProxyUrl)
+            Href = string.IsNullOrWhiteSpace(feedMetadata.FeedProxyUrl)
                 ? Url.Action("Index", "Feed", new { area = "OrchardCore.Feeds", ContentItemId = contentItem.ContentItemId }, Context.Request.Scheme)
                 : feedMetadata.FeedProxyUrl
         });

@@ -1,28 +1,33 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentFields.Settings
+namespace OrchardCore.ContentFields.Settings;
+
+public sealed class BooleanFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<BooleanField>
 {
-    public class BooleanFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<BooleanField>
+    public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition, BuildEditorContext context)
     {
-        public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
+        return Initialize<BooleanFieldSettings>("BooleanFieldSettings_Edit", model =>
         {
-            return Initialize<BooleanFieldSettings>("BooleanFieldSettings_Edit", model => partFieldDefinition.PopulateSettings(model))
-                .Location("Content");
-        }
+            var settings = partFieldDefinition.GetSettings<BooleanFieldSettings>();
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
-        {
-            var model = new BooleanFieldSettings();
+            model.Hint = settings.Hint;
+            model.Label = settings.Label;
+            model.DefaultValue = settings.DefaultValue;
+        }).Location("Content");
+    }
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+    {
+        var model = new BooleanFieldSettings();
 
-            context.Builder.WithSettings(model);
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            return Edit(partFieldDefinition);
-        }
+        context.Builder.WithSettings(model);
+
+        return Edit(partFieldDefinition, context);
     }
 }

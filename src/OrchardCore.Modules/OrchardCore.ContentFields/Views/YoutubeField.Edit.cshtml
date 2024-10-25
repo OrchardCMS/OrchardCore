@@ -2,14 +2,14 @@
 @using OrchardCore.Mvc.Utilities
 @{
     var settings = Model.PartFieldDefinition.GetSettings<YoutubeFieldSettings>();
-    var uniqueName = $"{Model.PartFieldDefinition.PartDefinition.Name}-{Model.PartFieldDefinition.Name}";
 }
 
-<div class="@Orchard.GetWrapperCssClasses("field-wrapper", $"field-wrapper-{uniqueName.HtmlClassify()}")" id="@Html.IdFor(x => x.RawAddress)_FieldWrapper">
-    <label asp-for="RawAddress" class="@Orchard.GetLabelCssClasses()">@Model.PartFieldDefinition.DisplayName()</label>
-    <div class="@Orchard.GetEndCssClasses()">
-        <input asp-for="RawAddress" class="form-control content-preview-text" required="@settings.Required" />
-        @if (!String.IsNullOrEmpty(settings.Hint))
+<div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.RawAddress)_FieldWrapper">
+    <label asp-for="RawAddress" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="RawAddress" class="form-control content-preview-text" />
+        <span asp-validation-for="RawAddress"></span>
+        @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }

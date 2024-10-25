@@ -11,10 +11,10 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Sitemaps",
     Name = "Sitemaps",
     Description = "Provides dynamic sitemap generation services.",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Contents",
-    },
+    ],
     Category = "Content Management"
 )]
 
@@ -22,10 +22,10 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Sitemaps.RazorPages",
     Name = "Sitemaps for Decoupled Razor Pages",
     Description = "Provides decoupled razor pages support for dynamic sitemap generation.",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Sitemaps"
-    },
+    ],
     Category = "Content Management"
 )]
 
@@ -33,9 +33,9 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Sitemaps.Cleanup",
     Name = "Sitemaps Cleanup",
     Description = "Cleanup sitemap cache files through a background task.",
-    Dependencies = new[]
-    {
+    Dependencies =
+    [
         "OrchardCore.Sitemaps"
-    },
+    ],
     Category = "Content Management"
 )]

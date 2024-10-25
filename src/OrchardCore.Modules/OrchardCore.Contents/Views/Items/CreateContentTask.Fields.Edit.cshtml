@@ -2,7 +2,7 @@
 @model CreateContentTaskViewModel
 
 <div class="mb-3" asp-validation-class-for="ContentType">
-    <label asp-for="ContentType">@T["Content Type"]</label>
+    <label asp-for="ContentType" class="form-label">@T["Content Type"]</label>
     <select asp-for="ContentType" asp-items="@Model.AvailableContentTypes" class="form-select" asp-validation-class-for="ContentType"></select>
     <span asp-validation-for="ContentType"></span>
     <span class="hint">@T["Select the type of content to create."]</span>
@@ -17,14 +17,14 @@
 </div>
 
 <div class="mb-3" asp-validation-class-for="ContentProperties">
-    <label asp-for="ContentProperties">@T["Content Properties"]</label>
+    <label asp-for="ContentProperties" class="form-label">@T["Content Properties"]</label>
     <textarea asp-for="ContentProperties" class="form-control"></textarea>
     <span asp-validation-for="ContentProperties"></span>
     <span class="hint">@T["Optionally provide values for the content parts, fields and their properties in JSON format. With Liquid support."]</span>
 </div>
 
 <style asp-name="codemirror"></style>
-<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-addon-mode-simple" at="Foot"></script>

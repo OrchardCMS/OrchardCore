@@ -1,10 +1,6 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Shell.Removing;
@@ -15,7 +11,7 @@ namespace OrchardCore.Environment.Shell.Removing;
 public class ShellWebRootRemovingHandler : IShellRemovingHandler
 {
     private readonly IWebHostEnvironment _webHostEnvironment;
-    private readonly IStringLocalizer S;
+    protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
 
     public ShellWebRootRemovingHandler(
@@ -33,7 +29,7 @@ public class ShellWebRootRemovingHandler : IShellRemovingHandler
     /// </summary>
     public Task RemovingAsync(ShellRemovingContext context)
     {
-        if (context.ShellSettings.State == TenantState.Uninitialized)
+        if (context.ShellSettings.IsUninitialized())
         {
             return Task.CompletedTask;
         }

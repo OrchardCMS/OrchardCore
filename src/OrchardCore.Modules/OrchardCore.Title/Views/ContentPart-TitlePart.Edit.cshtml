@@ -1,0 +1,22 @@
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentManagement.Metadata.Settings
+@using OrchardCore.ContentManagement
+@using OrchardCore
+@using OrchardCore.Title.Models
+
+@{
+    ContentTypePartDefinition typePartDefinition = Model.ContentTypePartDefinition;
+    var settings = typePartDefinition.GetSettings<TitlePartSettings>();
+}
+
+@if (settings.Options == TitlePartOptions.GeneratedHidden)
+{
+    return;
+}
+
+<div class="@Orchard.GetPartWrapperClasses(typePartDefinition)">
+    @foreach (var shape in Model)
+    {
+        @await DisplayAsync(shape)
+    }
+</div>

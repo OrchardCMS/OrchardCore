@@ -7,5 +7,5 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "A fail-safe theme when no other themes are available.",
-    Tags = new[] { "Safe" }
+    Tags = ["Safe"]
 )]

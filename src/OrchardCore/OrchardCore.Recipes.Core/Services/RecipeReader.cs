@@ -1,34 +1,40 @@
-using System.IO;
-using System.Threading.Tasks;
+using System.Text.Json;
 using Microsoft.Extensions.FileProviders;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Recipes.Models;
 
-namespace OrchardCore.Recipes.Services
+namespace OrchardCore.Recipes.Services;
+
+public class RecipeReader : IRecipeReader
 {
-    public class RecipeReader : IRecipeReader
+    private readonly ILogger _logger;
+
+    public RecipeReader(ILogger<RecipeReader> logger)
     {
-        public async Task<RecipeDescriptor> GetRecipeDescriptor(string recipeBasePath, IFileInfo recipeFileInfo, IFileProvider recipeFileProvider)
+        _logger = logger;
+    }
+
+    public async Task<RecipeDescriptor> GetRecipeDescriptorAsync(string recipeBasePath, IFileInfo recipeFileInfo, IFileProvider recipeFileProvider)
+    {
+        // TODO: Try to optimize by only reading the required metadata instead of the whole file.
+        using var stream = recipeFileInfo.CreateReadStream();
+
+        RecipeDescriptor recipeDescriptor = null;
+
+        try
         {
-            // TODO: Try to optimize by only reading the required metadata instead of the whole file
+            recipeDescriptor = await JsonSerializer.DeserializeAsync<RecipeDescriptor>(stream, JOptions.Default);
 
-            using (var stream = recipeFileInfo.CreateReadStream())
-            {
-                using (var reader = new StreamReader(stream))
-                {
-                    using (var jsonReader = new JsonTextReader(reader))
-                    {
-                        var recipeDescriptor = (await JObject.LoadAsync(jsonReader)).ToObject<RecipeDescriptor>();
+            recipeDescriptor.FileProvider = recipeFileProvider;
+            recipeDescriptor.BasePath = recipeBasePath;
+            recipeDescriptor.RecipeFileInfo = recipeFileInfo;
 
-                        recipeDescriptor.FileProvider = recipeFileProvider;
-                        recipeDescriptor.BasePath = recipeBasePath;
-                        recipeDescriptor.RecipeFileInfo = recipeFileInfo;
-
-                        return recipeDescriptor;
-                    }
-                }
-            }
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unable to deserialize the recipe file: '{FileName}'.", recipeFileInfo.Name);
+        }
+
+        return recipeDescriptor;
     }
 }

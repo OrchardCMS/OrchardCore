@@ -4,8 +4,6 @@
   -moz-transition: opacity 0.2s 0.2s;
   -webkit-transition: opacity 0.2s 0.2s;
   -o-transition: opacity 0.2s 0.2s;
-  -ms-transition: opacity 0.2s 0.2s;
-  -khtml-transition: opacity 0.2s 0.2s;
 }
 
 .disabled-tree {

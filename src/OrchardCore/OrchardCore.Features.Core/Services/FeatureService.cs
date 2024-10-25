@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
@@ -29,7 +25,7 @@ public class FeatureService
 
     public async Task<IFeatureInfo> GetAvailableFeature(string id)
     {
-        if (String.IsNullOrEmpty(id))
+        if (string.IsNullOrEmpty(id))
         {
             return null;
         }
@@ -41,7 +37,7 @@ public class FeatureService
     {
         if (ids == null || ids.Length == 0)
         {
-            return Enumerable.Empty<IFeatureInfo>();
+            return [];
         }
 
         return (await GetAvailableFeatures()).Where(feature => ids.Contains(feature.Id));

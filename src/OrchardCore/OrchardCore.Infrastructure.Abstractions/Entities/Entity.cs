@@ -1,9 +1,8 @@
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
-namespace OrchardCore.Entities
+namespace OrchardCore.Entities;
+
+public class Entity : IEntity
 {
-    public class Entity : IEntity
-    {
-        public JObject Properties { get; set; } = new JObject();
-    }
+    public JsonObject Properties { get; set; } = [];
 }

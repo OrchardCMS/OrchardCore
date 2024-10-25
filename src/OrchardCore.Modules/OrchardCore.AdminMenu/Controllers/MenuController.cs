@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -18,279 +14,283 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 
-namespace OrchardCore.AdminMenu.Controllers
+namespace OrchardCore.AdminMenu.Controllers;
+
+[Admin("AdminMenu/{action}/{id?}", "AdminMenu{action}")]
+public sealed class MenuController : Controller
 {
-    [Admin]
-    public class MenuController : Controller
+    private const string _optionsSearch = "Options.Search";
+
+    private readonly IAuthorizationService _authorizationService;
+    private readonly IAdminMenuService _adminMenuService;
+    private readonly PagerOptions _pagerOptions;
+    private readonly IShapeFactory _shapeFactory;
+    private readonly INotifier _notifier;
+    private readonly ILogger _logger;
+
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+
+    public MenuController(
+        IAuthorizationService authorizationService,
+        IAdminMenuService adminMenuService,
+        IOptions<PagerOptions> pagerOptions,
+        IShapeFactory shapeFactory,
+        INotifier notifier,
+        IStringLocalizer<MenuController> stringLocalizer,
+        IHtmlLocalizer<MenuController> htmlLocalizer,
+        ILogger<MenuController> logger)
     {
-        private readonly IAuthorizationService _authorizationService;
-        private readonly IAdminMenuService _adminMenuService;
-        private readonly PagerOptions _pagerOptions;
-        private readonly INotifier _notifier;
-        private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
-        private readonly dynamic New;
-        private readonly ILogger _logger;
+        _authorizationService = authorizationService;
+        _adminMenuService = adminMenuService;
+        _pagerOptions = pagerOptions.Value;
+        _shapeFactory = shapeFactory;
+        _notifier = notifier;
+        S = stringLocalizer;
+        H = htmlLocalizer;
+        _logger = logger;
+    }
 
-        public MenuController(
-            IAuthorizationService authorizationService,
-            IAdminMenuService adminMenuService,
-            IOptions<PagerOptions> pagerOptions,
-            IShapeFactory shapeFactory,
-            INotifier notifier,
-            IStringLocalizer<MenuController> stringLocalizer,
-            IHtmlLocalizer<MenuController> htmlLocalizer,
-            ILogger<MenuController> logger)
+    public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
         {
-            _authorizationService = authorizationService;
-            _adminMenuService = adminMenuService;
-            _pagerOptions = pagerOptions.Value;
-            New = shapeFactory;
-            _notifier = notifier;
-            S = stringLocalizer;
-            H = htmlLocalizer;
-            _logger = logger;
+            return Forbid();
         }
 
-        public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
+        var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
+
+        var adminMenuList = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
+
+        if (!string.IsNullOrWhiteSpace(options.Search))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
-            {
-                return Forbid();
-            }
-
-            var pager = new Pager(pagerParameters, _pagerOptions.GetPageSize());
-
-            var adminMenuList = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
-
-            if (!string.IsNullOrWhiteSpace(options.Search))
-            {
-                adminMenuList = adminMenuList.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
-
-            var count = adminMenuList.Count();
-
-            var startIndex = pager.GetStartIndex();
-            var pageSize = pager.PageSize;
-            IEnumerable<Models.AdminMenu> results = new List<Models.AdminMenu>();
-
-            //todo: handle the case where there is a deserialization exception on some of the presets.
-            // load at least the ones without error. Provide a way to delete the ones on error.
-            try
-            {
-                results = adminMenuList
-                .Skip(startIndex)
-                .Take(pageSize)
-                .ToList();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error when retrieving the list of admin menus.");
-                await _notifier.ErrorAsync(H["Error when retrieving the list of admin menus."]);
-            }
-
-            // Maintain previous route data when generating page links
-            var routeData = new RouteData();
-            routeData.Values.Add("Options.Search", options.Search);
-
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
-
-            var model = new AdminMenuListViewModel
-            {
-                AdminMenu = results.Select(x => new AdminMenuEntry { AdminMenu = x }).ToList(),
-                Options = options,
-                Pager = pagerShape
-            };
-
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
-            };
-
-            return View(model);
+            adminMenuList = adminMenuList.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
-        [HttpPost, ActionName("List")]
-        [FormValueRequired("submit.Filter")]
-        public ActionResult IndexFilterPOST(AdminMenuListViewModel model)
+        var startIndex = pager.GetStartIndex();
+        var pageSize = pager.PageSize;
+        IEnumerable<Models.AdminMenu> results = [];
+
+        // todo: handle the case where there is a deserialization exception on some of the presets.
+        // load at least the ones without error. Provide a way to delete the ones on error.
+        try
         {
-            return RedirectToAction(nameof(List), new RouteValueDictionary {
-                { "Options.Search", model.Options.Search }
-            });
+            results = adminMenuList
+            .Skip(startIndex)
+            .Take(pageSize)
+            .ToList();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error when retrieving the list of admin menus.");
+            await _notifier.ErrorAsync(H["Error when retrieving the list of admin menus."]);
         }
 
-        public async Task<IActionResult> Create()
+        // Maintain previous route data when generating page links.
+        var routeData = new RouteData();
+
+        if (!string.IsNullOrEmpty(options.Search))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
-            {
-                return Forbid();
-            }
-
-            var model = new AdminMenuCreateViewModel();
-
-            return View(model);
+            routeData.Values.TryAdd(_optionsSearch, options.Search);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(AdminMenuCreateViewModel model)
+        var pagerShape = await _shapeFactory.PagerAsync(pager, adminMenuList.Count, routeData);
+
+        var model = new AdminMenuListViewModel
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
-            {
-                return Forbid();
-            }
+            AdminMenu = results.Select(x => new AdminMenuEntry { AdminMenu = x }).ToList(),
+            Options = options,
+            Pager = pagerShape,
+        };
 
-            if (ModelState.IsValid)
-            {
-                var tree = new Models.AdminMenu { Name = model.Name };
+        model.Options.ContentsBulkAction =
+        [
+            new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
+        ];
 
-                await _adminMenuService.SaveAsync(tree);
+        return View(model);
+    }
 
-                return RedirectToAction(nameof(List));
-            }
+    [HttpPost, ActionName(nameof(List))]
+    [FormValueRequired("submit.Filter")]
+    public ActionResult IndexFilterPOST(AdminMenuListViewModel model)
+        => RedirectToAction(nameof(List), new RouteValueDictionary
+        {
+            {_optionsSearch, model.Options.Search }
+        });
 
-            return View(model);
+    public async Task<IActionResult> Create()
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        {
+            return Forbid();
         }
 
-        public async Task<IActionResult> Edit(string id)
+        var model = new AdminMenuCreateViewModel();
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(AdminMenuCreateViewModel model)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
-            {
-                return Forbid();
-            }
-
-            var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
-            var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
-
-            if (adminMenu == null)
-            {
-                return NotFound();
-            }
-
-            var model = new AdminMenuEditViewModel
-            {
-                Id = adminMenu.Id,
-                Name = adminMenu.Name
-            };
-
-            return View(model);
+            return Forbid();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Edit(AdminMenuEditViewModel model)
+        if (ModelState.IsValid)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
-            {
-                return Forbid();
-            }
+            var tree = new Models.AdminMenu { Name = model.Name };
 
-            var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
-            var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, model.Id);
-
-            if (adminMenu == null)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                adminMenu.Name = model.Name;
-
-                await _adminMenuService.SaveAsync(adminMenu);
-
-                await _notifier.SuccessAsync(H["Admin menu updated successfully."]);
-
-                return RedirectToAction(nameof(List));
-            }
-
-            return View(model);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Delete(string id)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
-            {
-                return Forbid();
-            }
-
-            var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
-            var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
-
-            if (adminMenu == null)
-            {
-                await _notifier.ErrorAsync(H["Can't find the admin menu."]);
-                return RedirectToAction(nameof(List));
-            }
-
-            var removed = await _adminMenuService.DeleteAsync(adminMenu);
-
-            if (removed == 1)
-            {
-                await _notifier.SuccessAsync(H["Admin menu deleted successfully."]);
-            }
-            else
-            {
-                await _notifier.ErrorAsync(H["Can't delete the admin menu."]);
-            }
+            await _adminMenuService.SaveAsync(tree);
 
             return RedirectToAction(nameof(List));
         }
 
-        [HttpPost, ActionName("List")]
-        [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+        return View(model);
+    }
+
+    public async Task<IActionResult> Edit(string id)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
-            {
-                return Forbid();
-            }
-
-            if (itemIds?.Count() > 0)
-            {
-                var adminMenuList = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
-                var checkedContentItems = adminMenuList.Where(x => itemIds.Contains(x.Id));
-                switch (options.BulkAction)
-                {
-                    case ContentsBulkAction.None:
-                        break;
-                    case ContentsBulkAction.Remove:
-                        foreach (var item in checkedContentItems)
-                        {
-                            var adminMenu = adminMenuList.FirstOrDefault(x => String.Equals(x.Id, item.Id, StringComparison.OrdinalIgnoreCase));
-                            await _adminMenuService.DeleteAsync(adminMenu);
-                        }
-                        await _notifier.SuccessAsync(H["Admin menus successfully removed."]);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-
-            return RedirectToAction(nameof(List));
+            return Forbid();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Toggle(string id)
+        var adminMenuList = await _adminMenuService.GetAdminMenuListAsync();
+        var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
+
+        if (adminMenu == null)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
-            {
-                return Forbid();
-            }
+            return NotFound();
+        }
 
-            var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
-            var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
+        var model = new AdminMenuEditViewModel
+        {
+            Id = adminMenu.Id,
+            Name = adminMenu.Name
+        };
 
-            if (adminMenu == null)
-            {
-                return NotFound();
-            }
+        return View(model);
+    }
 
-            adminMenu.Enabled = !adminMenu.Enabled;
+    [HttpPost]
+    public async Task<IActionResult> Edit(AdminMenuEditViewModel model)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        {
+            return Forbid();
+        }
+
+        var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
+        var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, model.Id);
+
+        if (adminMenu == null)
+        {
+            return NotFound();
+        }
+
+        if (ModelState.IsValid)
+        {
+            adminMenu.Name = model.Name;
 
             await _adminMenuService.SaveAsync(adminMenu);
 
-            await _notifier.SuccessAsync(H["Admin menu toggled successfully."]);
+            await _notifier.SuccessAsync(H["Admin menu updated successfully."]);
 
             return RedirectToAction(nameof(List));
         }
+
+        return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Delete(string id)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        {
+            return Forbid();
+        }
+
+        var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
+        var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
+
+        if (adminMenu == null)
+        {
+            await _notifier.ErrorAsync(H["Can't find the admin menu."]);
+            return RedirectToAction(nameof(List));
+        }
+
+        var removed = await _adminMenuService.DeleteAsync(adminMenu);
+
+        if (removed == 1)
+        {
+            await _notifier.SuccessAsync(H["Admin menu deleted successfully."]);
+        }
+        else
+        {
+            await _notifier.ErrorAsync(H["Can't delete the admin menu."]);
+        }
+
+        return RedirectToAction(nameof(List));
+    }
+
+    [HttpPost, ActionName(nameof(List))]
+    [FormValueRequired("submit.BulkAction")]
+    public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        {
+            return Forbid();
+        }
+
+        if (itemIds?.Count() > 0)
+        {
+            var adminMenuList = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
+            var checkedContentItems = adminMenuList.Where(x => itemIds.Contains(x.Id));
+            switch (options.BulkAction)
+            {
+                case ContentsBulkAction.None:
+                    break;
+                case ContentsBulkAction.Remove:
+                    foreach (var item in checkedContentItems)
+                    {
+                        var adminMenu = adminMenuList.FirstOrDefault(x => string.Equals(x.Id, item.Id, StringComparison.OrdinalIgnoreCase));
+                        await _adminMenuService.DeleteAsync(adminMenu);
+                    }
+                    await _notifier.SuccessAsync(H["Admin menus successfully removed."]);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(options.BulkAction.ToString(), "Invalid bulk action.");
+            }
+        }
+
+        return RedirectToAction(nameof(List));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Toggle(string id)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        {
+            return Forbid();
+        }
+
+        var adminMenuList = await _adminMenuService.LoadAdminMenuListAsync();
+        var adminMenu = _adminMenuService.GetAdminMenuById(adminMenuList, id);
+
+        if (adminMenu == null)
+        {
+            return NotFound();
+        }
+
+        adminMenu.Enabled = !adminMenu.Enabled;
+
+        await _adminMenuService.SaveAsync(adminMenu);
+
+        await _notifier.SuccessAsync(H["Admin menu toggled successfully."]);
+
+        return RedirectToAction(nameof(List));
     }
 }

@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "The title module enables content items to have titles.",
-    Dependencies = new[] { "OrchardCore.Contents" },
+    Dependencies = ["OrchardCore.Contents"],
     Category = "Content Management"
 )]

@@ -49,7 +49,7 @@ The standard template contains wrapper divs and you may wish to customize how th
 </div>
 ```
 
-To customize this template 
+To customize this template
 
 - Navigate to _Design -> Templates_
 

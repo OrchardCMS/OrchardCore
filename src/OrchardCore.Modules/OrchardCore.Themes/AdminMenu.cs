@@ -1,37 +1,29 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Themes
+namespace OrchardCore.Themes;
+
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    public class AdminMenu : INavigationProvider
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        private readonly IStringLocalizer S;
+        S = stringLocalizer;
+    }
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            S = localizer;
-        }
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        builder
+            .Add(S["Design"], NavigationConstants.AdminMenuDesignPosition, design => design
+                .AddClass("themes").Id("themes")
+                .Add(S["Themes"], S["Themes"].PrefixPosition(), themes => themes
+                    .Action("Index", "Admin", "OrchardCore.Themes")
+                    .Permission(Permissions.ApplyTheme)
+                    .LocalNav()
+                )
+            );
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-            {
-                return Task.CompletedTask;
-            }
-
-            builder
-                .Add(S["Design"], NavigationConstants.AdminMenuDesignPosition, design => design
-                    .AddClass("themes").Id("themes")
-                    .Add(S["Themes"], S["Themes"].PrefixPosition(), installed => installed
-                        .Action("Index", "Admin", new { area = "OrchardCore.Themes" })
-                        .Permission(Permissions.ApplyTheme)
-                        .LocalNav()
-                    )
-                );
-
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

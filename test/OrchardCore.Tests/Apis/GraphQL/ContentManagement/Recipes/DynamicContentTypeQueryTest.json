@@ -1,0 +1,200 @@
+{
+  "name": "DynamicContentTypeQueryTest",
+  "displayName": "Dynamic Content Type Query Test",
+  "description": "",
+  "website": "",
+  "issetuprecipe": true,
+  "categories": [
+    "test"
+  ],
+  "tags": [],
+  "variables": {},
+  "steps": [
+    {
+      "name": "feature",
+      "disable": [],
+      "enable": [
+        "OrchardCore.Admin",
+        "OrchardCore.Recipes",
+        "OrchardCore.Roles",
+        "OrchardCore.Users",
+        "OrchardCore.Indexing",
+        "OrchardCore.ContentFields",
+        "OrchardCore.Apis.GraphQL",
+        "OrchardCore.ContentFields.Indexing.SQL",
+        "OrchardCore.ContentTypes",
+        "OrchardCore.Contents",
+        "OrchardCore.Contents.FileContentDefinition"
+      ]
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "Product",
+          "DisplayName": "Product",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Listable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "PricePart",
+              "Name": "PricePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "1"
+                }
+              }
+            },
+            {
+              "PartName": "SkuPart",
+              "Name": "SkuPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                },
+                "GraphQLContentTypePartSettings": {
+                  "Collapse": true,
+                  "Hidden": false,
+                  "PreventFieldNameCollision": false
+                }
+              }
+            },
+            {
+              "PartName": "MetadataPart",
+              "Name": "MetadataPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                },
+                "GraphQLContentTypePartSettings": {
+                  "Collapse": true,
+                  "Hidden": false,
+                  "PreventFieldNameCollision": true
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": [
+        {
+          "Name": "PricePart",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "NumericField",
+              "Name": "Amount",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Amount",
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "SkuPart",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Sku",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Sku",
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "MetadataPart",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Code",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Code",
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "FieldName": "DateField",
+              "Name": "AvailabilityDate",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Availability Date",
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "content",
+      "data": [
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentType": "Product",
+          "DisplayText": "Product 1",
+          "Latest": true,
+          "Published": true,
+          "PricePart": {
+            "Amount": {
+              "Value": 10
+            }
+          },
+          "SkuPart": {
+            "Sku": {
+              "Text": "3000-01"
+            }
+          },
+          "MetadataPart": {
+            "Code": {
+              "Text": "100000987"
+            },
+            "AvailabilityDate": {
+              "Value": "2024-04-07"
+            }
+          }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentType": "Product",
+          "DisplayText": "Product 2",
+          "Latest": true,
+          "Published": true,
+          "PricePart": {
+            "Amount": {
+              "Value": 22
+            }
+          },
+          "SkuPart": {
+            "Sku": {
+              "Text": "4000-44"
+            }
+          },
+          "MetadataPart": {
+            "Code": {
+              "Text": "100000988"
+            },
+            "AvailabilityDate": {
+              "Value": "2024-05-18"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.Themes.Models
+
+@model ShapeViewModel<ThemeEntry>
+
+@if (!string.IsNullOrWhiteSpace(Model.Value.Extension.Manifest.Author))
+{
+    <li class="list-group-item">
+        <small>
+            <i class="fa-solid fa-user fa-fw" aria-hidden="true"></i>
+            @Model.Value.Extension.Manifest.Author
+        </small>
+    </li>
+}
+@if (!string.IsNullOrWhiteSpace(Model.Value.Extension.Manifest.Website))
+{
+    <li class="list-group-item">
+        <small>
+            <i class="fa-solid fa-external-link fa-fw" aria-hidden="true"></i>
+            <a href="@Model.Value.Extension.Manifest.Website" target="_blank">@Model.Value.Extension.Manifest.Website</a>
+        </small>
+    </li>
+}
+@if (Model.Value.Extension.Manifest.Tags.Any())
+{
+    <li class="list-group-item">
+        <small>
+            <i class="fa-solid fa-tags fa-fw" aria-hidden="true"></i> @string.Join(", ", Model.Value.Extension.Manifest.Tags.ToArray())
+        </small>
+    </li>
+}
+<li class="list-group-item">
+    <small>
+        <i class="fa-solid fa-code-branch fa-fw" aria-hidden="true"></i> @Model.Value.Extension.Manifest.Version
+    </small>
+</li>
+

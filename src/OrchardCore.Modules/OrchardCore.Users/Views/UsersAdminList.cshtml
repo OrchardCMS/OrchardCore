@@ -1,6 +1,6 @@
 @model UsersIndexViewModel
 
-<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+<script asp-name="bootstrap-select" depends-on="bootstrap" at="Foot"></script>
 
 <!-- Hidden submit button do not remove -->
 <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
@@ -8,7 +8,7 @@
 
 @Html.HiddenFor(o => o.Options.BulkAction)
 
-<div class="card bg-primary mb-3 position-sticky action-bar">
+<div class="card text-bg-theme mb-3 position-sticky action-bar">
     <div class="card-body">
         <div class="row gx-3">
             <div class="col">
@@ -22,7 +22,7 @@
 </div>
 
 <ul class="list-group with-checkbox">
-    <li class="list-group-item bg-primary">
+    <li class="list-group-item text-bg-theme">
         <div class="row gx-3">
             <div class="col">
                 @await DisplayAsync(Model.Header.Summary)

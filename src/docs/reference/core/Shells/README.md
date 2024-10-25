@@ -1,6 +1,6 @@
 # Shells Configuration Providers
 
-The Azure Shells Configuration and Database Shells Configuration providers allow hosting of shell / tenant 
+The Azure Shells Configuration and Database Shells Configuration providers allow hosting of shell / tenant
 `tenants.json` files and related tenants `appsettings.json` configuration settings in an environment external to the Orchard Core host.
 
 By default the `tenants.json` and related `appsettings.json` for the `Default` shell and any configured tenants
@@ -17,7 +17,7 @@ It is not intended to support shared configuration between local development and
 
 ## Azure Shells Configuration Provider
 
-The Azure Shells Configuration provider uses an Azure Blob Storage Container to store the `tenants.json` and related tenant `appsettings.json` 
+The Azure Shells Configuration provider uses an Azure Blob Storage Container to store the `tenants.json` and related tenant `appsettings.json`
 files in a similar hierarchy to that of the default `App_Data` configuration.
 
 The root of the Azure Blob Container includes a `tenants.json` file, and optionally can include a `appsettings.json` file.
@@ -56,7 +56,7 @@ In the web host `Startup.cs` it is enabled via an extension method on the Orchar
 ``` csharp
 namespace OrchardCore.Cms.Web
 {
-    public class Startup
+    public sealed class Startup
     {
         public void ConfigureServices(IServiceCollection services)
         {
@@ -100,7 +100,7 @@ In the web host `Startup.cs` it is enabled via an extension method on the Orchar
 ``` csharp
 namespace OrchardCore.Cms.Web
 {
-    public class Startup
+    public sealed class Startup
     {
         public void ConfigureServices(IServiceCollection services)
         {
@@ -123,17 +123,17 @@ to assist migrating from an existing `App_Data` configuration.
 When enabled the Shell Configuration provider will first check to see if a configuration exists for a given tenant
 for the chosen storage platform, Database, or Azure Blob Storage.
 
-If the configuration does not exist, the provider will try to load it from the `App_Data` folder, 
+If the configuration does not exist, the provider will try to load it from the `App_Data` folder,
 and migrate it to the storage platform of choice.
 
 ## Environment Options
 
-To disable a provider in Development, or different environments, inject the `IHostEnvironment` 
+To disable a provider in Development, or different environments, inject the `IHostEnvironment`
 
 ``` csharp
 namespace OrchardCore.Cms.Web
 {
-    public class Startup
+    public sealed class Startup
     {
         private readonly IHostEnvironment _env;
 

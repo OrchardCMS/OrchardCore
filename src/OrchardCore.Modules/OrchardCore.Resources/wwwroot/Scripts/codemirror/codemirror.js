@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/5/LICENSE
 
@@ -1423,9 +1423,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       context.baseTokens = null;
       context.baseTokenPos = 1;
     };
-    for (var o = 0; o < cm.state.overlays.length; ++o) {
-      loop(o);
-    }
+    for (var o = 0; o < cm.state.overlays.length; ++o) loop(o);
     return {
       styles: st,
       classes: lineClasses.bgClass || lineClasses.textClass ? lineClasses : null
@@ -2678,9 +2676,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         return arr[i].apply(null, args);
       });
     };
-    for (var i = 0; i < arr.length; ++i) {
-      loop(i);
-    }
+    for (var i = 0; i < arr.length; ++i) loop(i);
   }
   function fireOrphanDelayed() {
     var delayed = orphanDelayedCallbacks;
@@ -7638,9 +7634,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         }
       }
     };
-    for (var i = 0; i < markers.length; i++) {
-      loop(i);
-    }
+    for (var i = 0; i < markers.length; i++) loop(i);
   }
   var nextDocId = 0;
   var Doc = function Doc(text, mode, firstLine, lineSep, direction) {

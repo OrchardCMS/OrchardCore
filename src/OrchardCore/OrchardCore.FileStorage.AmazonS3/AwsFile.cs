@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace OrchardCore.FileStorage.AmazonS3;
 
 public class AwsFile : IFileStoreEntry
@@ -18,7 +16,7 @@ public class AwsFile : IFileStoreEntry
         if (_name == _path)
         {
             // File is in the root directory.
-            _directoryPath = String.Empty;
+            _directoryPath = string.Empty;
         }
         else
         {

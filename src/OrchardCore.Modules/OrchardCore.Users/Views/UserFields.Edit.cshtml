@@ -28,10 +28,10 @@
 {
     <div class="password-generator-wrapper">
         <div class="mb-1">
-            <label asp-for="Password">@T["Password"]</label>
+            <label asp-for="Password" class="form-label">@T["Password"]</label>
             <div class="input-group col-md-4">
                 <span class="input-group-text password-toggle-button"><span class="toggle-icon fas fa-eye prefix"></span></span>
-                <input asp-for="Password" type="password" class="form-control password-input-field" placeholder="@T["Password"]" />
+                <input asp-for="Password" type="password" class="form-control password-input-field" placeholder="@T["Password"]" autocomplete="new-password" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
         </div>
@@ -40,18 +40,18 @@
             <label asp-for="PasswordConfirmation" class="sr-only">@T["Password Confirmation"]</label>
             <div class="input-group col-md-4">
                 <span class="input-group-text password-confirmation-toggle-button"><span class="toggle-icon fas fa-eye prefix"></span></span>
-                <input asp-for="PasswordConfirmation" type="password" class="form-control password-confirmation-input-field" placeholder="@T["Password confirmation"]" />
+                <input asp-for="PasswordConfirmation" type="password" class="form-control password-confirmation-input-field" autocomplete="new-password" placeholder="@T["Password confirmation"]" />
                 <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
             </div>
 
             <div class="mt-2">
                 <div class="btn btn-warning btn-sm password-generator-button"
-                 data-password-length="@IdentityOptions.Value.Password.RequiredLength"
-                 data-password-requireUppercase="@IdentityOptions.Value.Password.RequireUppercase.ToString().ToLowerInvariant()"
-                 data-password-requireLowercase="@IdentityOptions.Value.Password.RequireLowercase.ToString().ToLowerInvariant()"
-                 data-password-requireDigit="@IdentityOptions.Value.Password.RequireDigit.ToString().ToLowerInvariant()"
-                 data-password-requireNonAlphanumeric="@IdentityOptions.Value.Password.RequireNonAlphanumeric.ToString().ToLowerInvariant()"
-                 data-password-requiredUniqueChars="@IdentityOptions.Value.Password.RequiredUniqueChars">
+                     data-password-length="@IdentityOptions.Value.Password.RequiredLength"
+                     data-password-requireUppercase="@IdentityOptions.Value.Password.RequireUppercase.ToString().ToLowerInvariant()"
+                     data-password-requireLowercase="@IdentityOptions.Value.Password.RequireLowercase.ToString().ToLowerInvariant()"
+                     data-password-requireDigit="@IdentityOptions.Value.Password.RequireDigit.ToString().ToLowerInvariant()"
+                     data-password-requireNonAlphanumeric="@IdentityOptions.Value.Password.RequireNonAlphanumeric.ToString().ToLowerInvariant()"
+                     data-password-requiredUniqueChars="@IdentityOptions.Value.Password.RequiredUniqueChars">
                     @T["Generate password"]
                 </div>
                 <div class="btn btn-info btn-sm copy-password-button">@T["Copy password"]</div>

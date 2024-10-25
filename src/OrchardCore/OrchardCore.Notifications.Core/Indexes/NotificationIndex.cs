@@ -1,4 +1,3 @@
-using System;
 using System.Text.RegularExpressions;
 using OrchardCore.Entities;
 using OrchardCore.Notifications.Models;
@@ -6,7 +5,7 @@ using YesSql.Indexes;
 
 namespace OrchardCore.Notifications.Indexes;
 
-public class NotificationIndex : MapIndex
+public partial class NotificationIndex : MapIndex
 {
     public string NotificationId { get; set; }
 
@@ -24,7 +23,7 @@ public class NotificationIndex : MapIndex
     public string Content { get; set; }
 }
 
-public class NotificationIndexProvider : IndexProvider<Notification>
+public partial class NotificationIndexProvider : IndexProvider<Notification>
 {
     public NotificationIndexProvider()
     {
@@ -36,11 +35,11 @@ public class NotificationIndexProvider : IndexProvider<Notification>
         context.For<NotificationIndex>()
             .Map(notification =>
             {
-                var content = notification.Summary ?? String.Empty;
+                var content = notification.Summary ?? string.Empty;
 
                 var bodyInfo = notification.As<NotificationBodyInfo>();
 
-                if (!String.IsNullOrEmpty(bodyInfo?.TextBody))
+                if (!string.IsNullOrEmpty(bodyInfo?.TextBody))
                 {
                     content += $" {bodyInfo.TextBody}";
                 }
@@ -66,10 +65,13 @@ public class NotificationIndexProvider : IndexProvider<Notification>
             });
     }
 
-    private static readonly Regex HtmlRegex = new("<.*?>", RegexOptions.Compiled);
+    private static readonly Regex _htmlRegex = GetHtmlBlockRegex();
 
     public static string StripHTML(string html)
     {
-        return HtmlRegex.Replace(html, String.Empty);
+        return _htmlRegex.Replace(html, string.Empty);
     }
+
+    [GeneratedRegex("<.*?>", RegexOptions.Compiled)]
+    private static partial Regex GetHtmlBlockRegex();
 }

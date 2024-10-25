@@ -99,7 +99,7 @@ And on the front-end, it will look like this:
 
 ### Create the Contact Form Workflow
 
-In order to validate the form input and send an email, we will create a workflow. 
+In order to validate the form input and send an email, we will create a workflow.
 
 From the admin menu, click the **Workflows** menu item. Next, click on **Create Workflow Type**.  
 We're now asked to provide a name for the workflow. Enter "Contact Form Workflow", leave the other options as-is, and click **Save**. When you do, you will be redirected to the Workflow Editor, which is where we'll implement the Contact Form submission logic.
@@ -200,7 +200,7 @@ Create a new Page content item with a title of `Thank You!`, and make sure its P
 Now that our workflow is done, we need to update the Contact Form widget with the Workflow URL that was generated for us in the **HTTP Request** activity. Unless you have that URL still on your clipboard, go back to the first activity on the workflow, double-click it to get to its activity editor, and copy the URL (without the scheme, host and port number; just the path).  
 Go back to the Contact Form page content item, expand the Contact Form widget and paste in the URL into the **Action** field and save your changes.
 
-### Try it out!
+### Try it out
 
 Go ahead and try it out. Navigate to <https://localhost:44300/contact-form> and fill out the form. If all went well, you should see an email coming in and be redirected to the Thank You page.  
 If you leave any field empty or do not pass the captcha, you should be redirected to the Contact Form page and see the validation errors.
@@ -219,3 +219,7 @@ The final workflow should look like this:
 
 Implementing a workflow that handles form submissions is easy, but the workflow becomes big quite quickly as soon as you start adding validation logic to the mix. In the next version of the Forms module, there will be an easier way to validate Form submissions in combination with the Form widget. The Form widget will contain all of the validation settings, and there will be a single workflow activity that validates the submitted values against those settings.  
 The low-level validation activities will remain part of the toolbox to support workflow validation for forms that are not built with the Form widget, but implemented as raw HTML for example.
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Sd-aYy5DblI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -1,14 +1,14 @@
 // When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
 // UserPreferencesLoader has already added the needed class.
 $(function () {
-    
+
 
     // We set leftbar to compact if :
     // 1. That preference was stored by the user the last time he was on the page
     // 2. Or it's the first time on page and page is small.
     //
     if ($('body').hasClass('left-sidebar-compact')
-        || (($('body').hasClass('no-admin-preferences') && $(window).width() < 768))){
+        || (($('body').hasClass('no-admin-preferences') && $(window).width() < 768))) {
         setCompactStatus();
     }
 });
@@ -33,7 +33,6 @@ $(document).on("click", function (event) {
     }
 });
 
-var isCompactExplicit = (isCompactExplicit === undefined) ? false : isCompactExplicit ;
 var subMenuArray = new Array();
 
 function setCompactStatus(explicit) {
@@ -61,19 +60,19 @@ function setCompactStatus(explicit) {
     //animation when open a sub-menu
     setTimeout(function () {
         $('#left-nav > ul > li').css("transition", "none");
-    }, 200); 
-    
+    }, 200);
+
     if (explicit == true) {
-        isCompactExplicit = explicit;
+        isCompactExplicit = true;
     }
-    persistAdminPreferences();    
+    persistAdminPreferences();
 }
 
 function unSetCompactStatus() {
     $('body').removeClass('left-sidebar-compact');
 
     // resetting what we disabled for compact state
-    $('#left-nav ul.menu-admin > li > figure > ul').addClass('collapse');    
+    $('#left-nav ul.menu-admin > li > figure > ul').addClass('collapse');
     $('#left-nav ul.menu-admin > li > figure > figcaption a').attr('data-bs-toggle', 'collapse');
     $('#left-nav li.has-items').removeClass("visible");
     $('#left-nav > ul > li').css("transition", "");
@@ -86,25 +85,20 @@ var leftNav = document.getElementById("left-nav");
 
 // create an Observer instance
 const resizeObserver = new ResizeObserver(entries => {
-    if (isCompactExplicit)
-    {
-        if (leftNav.scrollHeight > leftNav.clientHeight)
-        {
+    if (isCompactExplicit) {
+        if (leftNav.scrollHeight > leftNav.clientHeight) {
             document.body.classList.add("scroll");
         }
-        else
-        {
+        else {
             document.body.classList.remove("scroll");
         }
     }
-    else
-    {
+    else {
         document.body.classList.remove("scroll");
     }
 })
 
 // start observing a DOM node
-if (leftNav != null)
-{
+if (leftNav != null) {
     resizeObserver.observe(leftNav)
 }

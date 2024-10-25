@@ -2,21 +2,21 @@
 @using OrchardCore.Forms.ViewModels
 @model ButtonPartEditViewModel
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <label asp-for="Text" class="@Orchard.GetLabelCssClasses()">@T["Text"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Text" class="@Orchard.GetLabelClasses()">@T["Text"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <input asp-for="Text" type="text" class="form-control content-preview-text" />
         <span class="hint">@T["The text to display on the button."]</span>
     </div>
 </div>
 
-<div class="@Orchard.GetWrapperCssClasses()">
-    <label asp-for="Type" class="@Orchard.GetLabelCssClasses()">@T["Type"]</label>
-    <div class="@Orchard.GetEndCssClasses()">
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Type" class="@Orchard.GetLabelClasses()">@T["Type"]</label>
+    <div class="@Orchard.GetEndClasses()">
         <select asp-for="Type" class="form-select content-preview-select">
-            <option value="submit">Submit</option>
-            <option value="button">Button</option>
-            <option value="reset">Reset</option>
+            <option value="submit">@T["Submit"]</option>
+            <option value="button">@T["Button"]</option>
+            <option value="reset">@T["Reset"]</option>
         </select>
         <span class="hint">@T["The button type."]</span>
     </div>

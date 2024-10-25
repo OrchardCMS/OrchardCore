@@ -1,25 +1,24 @@
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Migration;
 
-namespace OrchardCore.Demo
+namespace OrchardCore.Demo;
+
+public sealed class Migrations : DataMigration
 {
-    public class Migrations : DataMigration
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+
+    public Migrations(IContentDefinitionManager contentDefinitionManager)
     {
-        private IContentDefinitionManager _contentDefinitionManager;
+        _contentDefinitionManager = contentDefinitionManager;
+    }
 
-        public Migrations(IContentDefinitionManager contentDefinitionManager)
-        {
-            _contentDefinitionManager = contentDefinitionManager;
-        }
+    public async Task<int> CreateAsync()
+    {
+        await _contentDefinitionManager.AlterTypeDefinitionAsync("Foo", builder => builder
+            .WithPart("TestContentPartA")
+            .WithPart("TestContentPartB")
+        );
 
-        public int Create()
-        {
-            _contentDefinitionManager.AlterTypeDefinition("Foo", builder => builder
-                .WithPart("TestContentPartA")
-                .WithPart("TestContentPartB")
-            );
-
-            return 1;
-        }
+        return 1;
     }
 }

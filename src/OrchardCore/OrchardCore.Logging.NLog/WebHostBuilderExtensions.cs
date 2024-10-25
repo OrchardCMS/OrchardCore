@@ -1,41 +1,45 @@
-using System;
-using System.IO;
-using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using NLog;
 using NLog.Config;
-using NLog.LayoutRenderers;
 using NLog.Web;
 
-namespace OrchardCore.Logging
+namespace OrchardCore.Logging;
+
+public static class WebHostBuilderExtensions
 {
-    public static class WebHostBuilderExtensions
+    public static IWebHostBuilder UseNLogWeb(this IWebHostBuilder builder)
     {
-        public static IWebHostBuilder UseNLogWeb(this IWebHostBuilder builder)
-        {
-            LayoutRenderer.Register<TenantLayoutRenderer>(TenantLayoutRenderer.LayoutRendererName);
-            builder.UseNLog();
-            builder.ConfigureAppConfiguration((context, _) =>
+        LogManager.Setup().SetupExtensions(ext =>
+            ext.RegisterLayoutRenderer<TenantLayoutRenderer>(TenantLayoutRenderer.LayoutRendererName));
+
+        return builder
+            .UseNLog()
+            .ConfigureAppConfiguration((context, _) =>
             {
                 var environment = context.HostingEnvironment;
-                environment.ConfigureNLog($"{environment.ContentRootPath}{Path.DirectorySeparatorChar}NLog.config");
+                var appData = System.Environment.GetEnvironmentVariable(ShellOptionConstants.OrchardAppData);
+                var configDir = string.IsNullOrWhiteSpace(appData) ? $"{environment.ContentRootPath}/{ShellOptionConstants.DefaultAppDataPath}" : appData;
                 LogManager.Configuration.Variables["configDir"] = environment.ContentRootPath;
             });
-
-            return builder;
-        }
     }
+}
 
-    internal static class AspNetExtensions
+internal static class AspNetExtensions
+{
+    public static LoggingConfiguration ConfigureNLog(this IHostEnvironment env, string configFileRelativePath)
     {
-        public static LoggingConfiguration ConfigureNLog(this IHostEnvironment env, string configFileRelativePath)
-        {
-            ConfigurationItemFactory.Default.RegisterItemsFromAssembly(typeof(AspNetExtensions).GetTypeInfo().Assembly);
-            LogManager.AddHiddenAssembly(typeof(AspNetExtensions).GetTypeInfo().Assembly);
-            var fileName = Path.Combine(env.ContentRootPath, configFileRelativePath);
-            LogManager.LoadConfiguration(fileName);
-            return LogManager.Configuration;
-        }
+        var fileName = Path.Combine(env.ContentRootPath, configFileRelativePath);
+
+        LogManager.Setup()
+            .SetupLogFactory(factory => factory.AddCallSiteHiddenAssembly(typeof(AspNetExtensions).GetType().Assembly))
+            .SetupExtensions(ext =>
+            {
+                ext.RegisterLayoutRenderer<TenantLayoutRenderer>(TenantLayoutRenderer.LayoutRendererName);
+                ext.RegisterNLogWeb();
+            })
+            .LoadConfigurationFromFile(fileName);
+
+        return LogManager.Configuration;
     }
 }

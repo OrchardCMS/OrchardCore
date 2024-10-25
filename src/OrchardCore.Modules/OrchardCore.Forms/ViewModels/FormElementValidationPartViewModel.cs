@@ -1,4 +1,4 @@
-﻿using OrchardCore.Forms.Models;
+using OrchardCore.Forms.Models;
 
 namespace OrchardCore.Forms.ViewModels;
 

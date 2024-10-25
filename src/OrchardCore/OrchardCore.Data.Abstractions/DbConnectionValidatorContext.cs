@@ -11,6 +11,7 @@ public class DbConnectionValidatorContext : IDbConnectionInfo
         ConnectionString = shellSettings["ConnectionString"];
         TablePrefix = shellSettings["TablePrefix"];
         Schema = shellSettings["Schema"];
+        ShellSettings = shellSettings;
 
         TableOptions = shellSettings.GetDatabaseTableOptions();
     }
@@ -22,6 +23,7 @@ public class DbConnectionValidatorContext : IDbConnectionInfo
         ConnectionString = dbConnectionInfo.ConnectionString;
         TablePrefix = dbConnectionInfo.TablePrefix;
         Schema = dbConnectionInfo.Schema;
+        ShellSettings = shellSettings;
 
         TableOptions = shellSettings.GetDatabaseTableOptions();
     }
@@ -35,6 +37,8 @@ public class DbConnectionValidatorContext : IDbConnectionInfo
     public string TablePrefix { get; }
 
     public string Schema { get; }
+
+    public ShellSettings ShellSettings { get; }
 
     public DatabaseTableOptions TableOptions { get; }
 }

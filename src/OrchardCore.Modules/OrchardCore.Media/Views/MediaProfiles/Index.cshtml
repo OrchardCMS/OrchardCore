@@ -13,12 +13,12 @@
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="visually-hidden" />
 
-    <div class="card mb-3 bg-primary position-sticky action-bar">
+    <div class="card mb-3 text-bg-theme position-sticky action-bar">
         <div class="card-body">
             <div class="row gx-3">
                 <div class="col">
                     <div class="has-search">
-                        <i class="fa fa-search form-control-feedback" aria-hidden="true"></i>
+                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
                         <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                     </div>
                 </div>
@@ -31,7 +31,7 @@
     <ul class="list-group">
         @if (Model.MediaProfiles.Count > 0)
         {
-            <li class="list-group-item bg-primary">
+            <li class="list-group-item text-bg-theme">
                 <div class="row gx-3">
                     <div class="col">
                         <div class="form-check my-1">
@@ -69,7 +69,7 @@
                             <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
                         <a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a>
-                        @if (!String.IsNullOrWhiteSpace(entry.MediaProfile.Hint))
+                        @if (!string.IsNullOrWhiteSpace(entry.MediaProfile.Hint))
                         {
                             <span class="hint dashed">@entry.MediaProfile.Hint</span>
                         }

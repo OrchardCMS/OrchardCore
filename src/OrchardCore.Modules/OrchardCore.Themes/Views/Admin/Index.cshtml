@@ -1,4 +1,12 @@
-@model OrchardCore.Themes.Models.SelectThemesViewModel
+@using OrchardCore.DisplayManagement
+@using OrchardCore.DisplayManagement.ModelBinding
+@using OrchardCore.Themes.Models
+
+@inject IDisplayManager<ThemeEntry> ThemeEntryDisplayManager
+@inject IUpdateModelAccessor UpdateModelAccessor
+
+@model SelectThemesViewModel
+
 <style asp-src="~/OrchardCore.Themes/Styles/themes.admin.css"></style>
 <zone Name="Title"><h1>@RenderTitleSegments(T["Themes"])</h1></zone>
 
@@ -12,67 +20,7 @@ else
         @foreach (var themeEntry in Model.Themes)
         {
             <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch">
-                <div class="card theme-card w-100">
-                    <div class="card-theme-thumbnail" style="    background-image: url('@Url.Content($"~/{themeEntry.Extension.Id}/Theme.png")');"></div>
-                    <div class="card-body">
-                        <h4 class="card-title">@themeEntry.Name</h4>
-                        <p class="card-text">
-                            @themeEntry.Extension.Manifest.Description
-                            <ul class="list-group list-group-flush">
-                                @if (!string.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Author))
-                                {
-                                    <li class="list-group-item"><small><i class="fa fa-user fa-fw" aria-hidden="true"></i> @themeEntry.Extension.Manifest.Author</small></li>
-                                }
-                                @if (!string.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Website))
-                                {
-                                    <li class="list-group-item"><small><i class="fa fa-external-link fa-fw" aria-hidden="true"></i> <a href="@themeEntry.Extension.Manifest.Website" target="_blank">@themeEntry.Extension.Manifest.Website</a></small></li>
-                                }
-                                @if (themeEntry.Extension.Manifest.Tags.Any())
-                                {
-                                    <li class="list-group-item"><small><i class="fa fa-tags fa-fw" aria-hidden="true"></i> @string.Join(", ", themeEntry.Extension.Manifest.Tags.ToArray())</small></li>
-                                }
-                                <li class="list-group-item"><small><i class="fa fa-code-branch fa-fw" aria-hidden="true"></i> @themeEntry.Extension.Manifest.Version</small></li>
-                            </ul>
-                        </p>
-                    </div>
-                    <div class="card-footer">
-                        @if (!themeEntry.IsCurrent)
-                        {
-                            <div class="row">
-                                <div class="col-sm-6 text-start">
-                                    <form asp-route-action="SetCurrentTheme" asp-route-id="@themeEntry.Extension.Id" method="post" class="no-multisubmit">
-                                        <button type="submit" class="btn btn-sm btn-primary">@T["Make Current"]</button>
-                                    </form>
-                                </div>
-                                <div class="col-sm-6 text-end">
-                                    @if (themeEntry.Enabled)
-                                    {
-                                        <form asp-route-action="Disable" asp-route-id="@themeEntry.Extension.Id" method="post" class="no-multisubmit">
-                                            <button type="submit" class="btn btn-sm btn-secondary">@T["Disable"]</button>
-                                        </form>
-                                    }
-                                    else
-                                    {
-                                        <form asp-route-action="Enable" asp-route-id="@themeEntry.Extension.Id" method="post" class="no-multisubmit">
-                                            <button type="submit" class="btn btn-sm btn-secondary">@T["Enable"]</button>
-                                        </form>
-                                    }
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            if (themeEntry.IsAdmin)
-                            {
-                                <span class="text-muted">@T["This is the current Admin theme"]</span>
-                            }
-                            else
-                            {
-                                <span class="text-muted">@T["This is the current Site theme"]</span>
-                            }
-                        }
-                    </div>
-                </div>
+                @await DisplayAsync(await ThemeEntryDisplayManager.BuildDisplayAsync(themeEntry, UpdateModelAccessor.ModelUpdater, "SummaryAdmin"))
             </div>
         }
     </div>

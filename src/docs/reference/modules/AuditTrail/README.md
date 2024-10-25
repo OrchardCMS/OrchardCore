@@ -26,7 +26,7 @@ Events provide various details on their line:
 - Event-specific buttons, if any. E.g. events of the *Content* category will display a *View* button that you can use to view the content item at the given version, and a *Restore* button that you can use to restore the content item to the version even if the item was deleted (the restored item will be created as a draft version that you then need to publish).
 - A *Details* link. Here you can get more general information about the given event, as well as event handlers can provide custom information. E.g. if you check out the *Detail* view of a *Content* event you can also see the textual differences between the current version of the content item and the previous version under the *Diff* tab. The values of the current version will be shown in green, and the values of the previous version will be shown in red.
 
-## Audit Trail Settings 
+## Audit Trail Settings
 
 If you navigate to Configuration -> Settings -> Audit Trail, you will see various configuration options, depending on the enabled Audit Trail features:
 
@@ -48,6 +48,8 @@ Orchard Core is built to be extended, and the Audit Trail module is no different
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ko0jEgQtXYc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/t28rnjYtlJc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/uMBN6TVhaMg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## CREDITS
 
