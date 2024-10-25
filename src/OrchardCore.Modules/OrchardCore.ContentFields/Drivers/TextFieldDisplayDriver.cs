@@ -41,7 +41,6 @@ public sealed class TextFieldDisplayDriver : ContentFieldDisplayDriver<TextField
             model.Part = context.ContentPart;
             model.PartFieldDefinition = context.PartFieldDefinition;
             model.IsNew = context.IsNew;
-            model.TypePartDefinition = context.TypePartDefinition;
         });
     }
 

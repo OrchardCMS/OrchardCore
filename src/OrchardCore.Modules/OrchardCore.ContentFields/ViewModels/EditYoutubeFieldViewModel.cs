@@ -16,7 +16,5 @@ public class EditYoutubeFieldViewModel
     public ContentPart Part { get; set; }
     public ContentPartFieldDefinition PartFieldDefinition { get; set; }
     [BindNever]
-    public ContentTypePartDefinition TypePartDefinition { get; set; }
-    [BindNever]
     public bool IsNew { get; set; }
 }

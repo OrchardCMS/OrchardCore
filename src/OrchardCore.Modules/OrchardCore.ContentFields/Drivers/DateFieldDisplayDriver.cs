@@ -40,7 +40,6 @@ public sealed class DateFieldDisplayDriver : ContentFieldDisplayDriver<DateField
             model.Part = context.ContentPart;
             model.PartFieldDefinition = context.PartFieldDefinition;
             model.IsNew = context.IsNew;
-            model.TypePartDefinition = context.TypePartDefinition;
         });
     }
 
