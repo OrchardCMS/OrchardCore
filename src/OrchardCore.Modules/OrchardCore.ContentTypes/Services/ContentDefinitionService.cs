@@ -212,7 +212,7 @@ public class ContentDefinitionService : IContentDefinitionService
 
         var settings = partDefinition.GetSettings<ContentSettings>();
 
-        if (settings.IsSystemType)
+        if (settings.IsRemovable)
         {
             throw new InvalidOperationException("Unable to remove system-type part.");
         }
