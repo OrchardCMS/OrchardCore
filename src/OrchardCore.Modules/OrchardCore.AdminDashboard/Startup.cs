@@ -10,6 +10,7 @@ using OrchardCore.AdminDashboard.Models;
 using OrchardCore.AdminDashboard.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentTypes.Events;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
@@ -42,6 +43,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentDisplayDriver, DashboardContentDisplayDriver>();
 
         services.AddDataMigration<Migrations>();
+        services.AddScoped<IContentDefinitionHandler, DashboardPartContentTypeDefinitionHandler>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
