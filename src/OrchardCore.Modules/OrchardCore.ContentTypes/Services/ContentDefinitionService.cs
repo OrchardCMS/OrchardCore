@@ -141,6 +141,19 @@ public class ContentDefinitionService : IContentDefinitionService
     {
         // First remove all attached parts.
         var typeDefinition = await _contentDefinitionManager.LoadTypeDefinitionAsync(name);
+
+        if (typeDefinition == null)
+        {
+            return;
+        }
+
+        var settings = typeDefinition.GetSettings<ContentSettings>();
+
+        if (!settings.IsRemovable)
+        {
+            throw new InvalidOperationException("Unable to remove system type.");
+        }
+
         var partDefinitions = typeDefinition.Parts.ToList();
         foreach (var partDefinition in partDefinitions)
         {
@@ -212,9 +225,9 @@ public class ContentDefinitionService : IContentDefinitionService
 
         var settings = partDefinition.GetSettings<ContentSettings>();
 
-        if (settings.IsRemovable)
+        if (!settings.IsRemovable)
         {
-            throw new InvalidOperationException("Unable to remove system-type part.");
+            throw new InvalidOperationException("Unable to remove system part.");
         }
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync(typeName, typeBuilder => typeBuilder.RemovePart(partName));
@@ -363,6 +376,13 @@ public class ContentDefinitionService : IContentDefinitionService
             return;
         }
 
+        var settings = partDefinition.GetSettings<ContentSettings>();
+
+        if (!settings.IsRemovable)
+        {
+            throw new InvalidOperationException("Unable to remove system part.");
+        }
+
         foreach (var fieldDefinition in partDefinition.Fields)
         {
             await RemoveFieldFromPartAsync(fieldDefinition.Name, name);
@@ -416,6 +436,20 @@ public class ContentDefinitionService : IContentDefinitionService
 
     public async Task RemoveFieldFromPartAsync(string fieldName, string partName)
     {
+        var partDefinition = await _contentDefinitionManager.LoadPartDefinitionAsync(partName);
+
+        if (partDefinition == null)
+        {
+            return;
+        }
+
+        var settings = partDefinition.GetSettings<ContentSettings>();
+
+        if (!settings.IsRemovable)
+        {
+            throw new InvalidOperationException("Unable to remove system field.");
+        }
+
         await _contentDefinitionManager.AlterPartDefinitionAsync(partName, typeBuilder => typeBuilder.RemoveField(fieldName));
 
         var context = new ContentFieldDetachedContext
