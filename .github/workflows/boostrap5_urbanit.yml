@@ -6,7 +6,7 @@ name: Build and deploy ASP.Net Core app to Azure Web App - urbanit
 on:
   push:
     branches:
-      - boostrap5
+      - bootstrap5
   workflow_dispatch:
 
 jobs:
