@@ -1,4 +1,5 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31710.8
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -499,7 +500,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Notifications.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Notifications", "src\OrchardCore.Modules\OrchardCore.Notifications\OrchardCore.Notifications.csproj", "{19594A96-A033-4820-820B-C6186D00D507}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bootstrap5.OrchardCore", "src\OrchardCore.Themes\Bootstrap5.OrchardCore\Bootstrap5.OrchardCore.csproj", "{4797A1BE-5901-496A-885B-8C1DC66E2006}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bootstrap5.OrchardCore", "src\OrchardCore.Themes\Bootstrap5.OrchardCore\Bootstrap5.OrchardCore.csproj", "{4797A1BE-5901-496A-885B-8C1DC66E2006}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.HealthChecks.Abstractions", "src\OrchardCore\OrchardCore.HealthChecks.Abstractions\OrchardCore.HealthChecks.Abstractions.csproj", "{91CED599-45B1-474D-A7F2-231BF857A5F2}"
 EndProject
@@ -531,9 +532,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Sms.Azure", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.UrlRewriting", "src\OrchardCore.Modules\OrchardCore.UrlRewriting\OrchardCore.UrlRewriting.csproj", "{D0F8B342-BDA8-44CB-AA43-7A65C79636A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.UrlRewriting.Abstractions", "src\OrchardCore\OrchardCore.UrlRewriting.Abstractions\OrchardCore.UrlRewriting.Abstractions.csproj", "{675C8A76-C64F-47EC-B4F5-06D4F2D9662A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.UrlRewriting.Abstractions", "src\OrchardCore\OrchardCore.UrlRewriting.Abstractions\OrchardCore.UrlRewriting.Abstractions.csproj", "{675C8A76-C64F-47EC-B4F5-06D4F2D9662A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.UrlRewriting.Core", "src\OrchardCore\OrchardCore.UrlRewriting.Core\OrchardCore.UrlRewriting.Core.csproj", "{7B18DD99-A7BB-4297-8679-D87289758756}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.UrlRewriting.Core", "src\OrchardCore\OrchardCore.UrlRewriting.Core\OrchardCore.UrlRewriting.Core.csproj", "{7B18DD99-A7BB-4297-8679-D87289758756}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1347,6 +1348,10 @@ Global
 		{19594A96-A033-4820-820B-C6186D00D507}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19594A96-A033-4820-820B-C6186D00D507}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19594A96-A033-4820-820B-C6186D00D507}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4797A1BE-5901-496A-885B-8C1DC66E2006}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4797A1BE-5901-496A-885B-8C1DC66E2006}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4797A1BE-5901-496A-885B-8C1DC66E2006}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4797A1BE-5901-496A-885B-8C1DC66E2006}.Release|Any CPU.Build.0 = Release|Any CPU
 		{91CED599-45B1-474D-A7F2-231BF857A5F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{91CED599-45B1-474D-A7F2-231BF857A5F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91CED599-45B1-474D-A7F2-231BF857A5F2}.Release|Any CPU.ActiveCfg = Release|Any CPU

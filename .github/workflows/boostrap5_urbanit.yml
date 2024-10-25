@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP.Net Core app to Azure Web App - eredwww
+name: Build and deploy ASP.Net Core app to Azure Web App - urbanit
 
 on:
   push:
@@ -19,14 +19,14 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '8.0.x'
           include-prerelease: true
 
       - name: Build with dotnet
-        run: dotnet build  ./src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -c Release -f net6.0
+        run: dotnet build  ./src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -c Release -f net8.0
 
       - name: dotnet publish
-        run: dotnet publish ./src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -c Release -f net6.0 -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish ./src/OrchardCore.Cms.Web/OrchardCore.Cms.Web.csproj -c Release -f net8.0 -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
