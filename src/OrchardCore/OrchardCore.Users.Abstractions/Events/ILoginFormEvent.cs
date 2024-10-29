@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+
 namespace OrchardCore.Users.Events;
 
 /// <summary>
@@ -35,4 +37,11 @@ public interface ILoginFormEvent
     /// </summary>
     /// <param name="user">The <see cref="IUser"/>.</param>
     Task LoggedInAsync(IUser user);
+
+    /// <summary>
+    /// Occurs when a user visits the login page.
+    /// </summary>
+    /// <returns></returns>
+    Task<IActionResult> LoggingInAsync()
+        => Task.FromResult<IActionResult>(null);
 }
