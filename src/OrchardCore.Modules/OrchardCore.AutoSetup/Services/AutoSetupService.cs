@@ -39,7 +39,7 @@ public class AutoSetupService : IAutoSetupService
         {
             _logger.LogInformation("The AutoSetup successfully provisioned the site '{SiteName}'.", setupOptions.SiteName);
 
-            return (setupContext,true);
+            return (setupContext, true);
         }
 
         var stringBuilder = new StringBuilder();
