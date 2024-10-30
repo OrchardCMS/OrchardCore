@@ -1,8 +1,9 @@
-@model EditTypeViewModel
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Mvc.Utilities
 @using System.Linq
+
+@model EditTypeViewModel
 
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject OrchardCore.ContentTypes.Services.IContentDefinitionService ContentDefinitionService
@@ -85,7 +86,7 @@
                                 {
                                     <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
                                 }
-                                @if (settings.IsRemovable)
+                                @if (!settings.IsSystemDefined)
                                 {
                                     <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                                 }
@@ -135,7 +136,7 @@
 
                             <div class="float-end">
                                 <a asp-route-action="EditTypePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                                @if (settings.IsRemovable)
+                                @if (settings.IsSystemDefined)
                                 {
                                     <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                                 }
@@ -169,7 +170,7 @@
     <div class="mb-3">
         <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
 
-        @if (contentSettings.IsRemovable)
+        @if (!contentSettings.IsSystemDefined)
         {
             <button class="btn btn-danger delete" type="submit" name="submit.Delete" value="Delete" data-url-af="RemoveUrl">@T["Delete"]</button>
         }

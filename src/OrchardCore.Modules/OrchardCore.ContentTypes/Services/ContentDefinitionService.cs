@@ -149,9 +149,9 @@ public class ContentDefinitionService : IContentDefinitionService
 
         var settings = typeDefinition.GetSettings<ContentSettings>();
 
-        if (!settings.IsRemovable)
+        if (settings.IsSystemDefined)
         {
-            throw new InvalidOperationException("Unable to remove system type.");
+            throw new InvalidOperationException("Unable to remove system-defined type.");
         }
 
         var partDefinitions = typeDefinition.Parts.ToList();
@@ -225,9 +225,9 @@ public class ContentDefinitionService : IContentDefinitionService
 
         var settings = partDefinition.GetSettings<ContentSettings>();
 
-        if (!settings.IsRemovable)
+        if (settings.IsSystemDefined)
         {
-            throw new InvalidOperationException("Unable to remove system part.");
+            throw new InvalidOperationException("Unable to remove system-defined part.");
         }
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync(typeName, typeBuilder => typeBuilder.RemovePart(partName));
@@ -378,9 +378,9 @@ public class ContentDefinitionService : IContentDefinitionService
 
         var settings = partDefinition.GetSettings<ContentSettings>();
 
-        if (!settings.IsRemovable)
+        if (settings.IsSystemDefined)
         {
-            throw new InvalidOperationException("Unable to remove system part.");
+            throw new InvalidOperationException("Unable to remove system-defined part.");
         }
 
         foreach (var fieldDefinition in partDefinition.Fields)
@@ -445,9 +445,9 @@ public class ContentDefinitionService : IContentDefinitionService
 
         var settings = partDefinition.GetSettings<ContentSettings>();
 
-        if (!settings.IsRemovable)
+        if (settings.IsSystemDefined)
         {
-            throw new InvalidOperationException("Unable to remove system field.");
+            throw new InvalidOperationException("Unable to remove system-defined field.");
         }
 
         await _contentDefinitionManager.AlterPartDefinitionAsync(partName, typeBuilder => typeBuilder.RemoveField(fieldName));

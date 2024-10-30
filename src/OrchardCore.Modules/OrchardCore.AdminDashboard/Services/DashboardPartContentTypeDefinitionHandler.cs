@@ -40,7 +40,7 @@ public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefiniti
             {
                 [nameof(ContentSettings)] = JObject.FromObject(new ContentSettings
                 {
-                    IsRemovable = false,
+                    IsSystemDefined = true,
                 }),
             },
         });
@@ -60,7 +60,7 @@ public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefiniti
         var settings = context.Record.Settings[nameof(ContentSettings)]?.ToObject<ContentSettings>()
             ?? new ContentSettings();
 
-        settings.IsRemovable = false;
+        settings.IsSystemDefined = true;
 
         context.Record.Settings[nameof(ContentSettings)] = JObject.FromObject(settings);
     }
@@ -88,7 +88,7 @@ public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefiniti
                 }),
                 [nameof(ContentSettings)] = JObject.FromObject(new ContentSettings
                 {
-                    IsRemovable = true,
+                    IsSystemDefined = true,
                 }),
             },
         };
