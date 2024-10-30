@@ -84,7 +84,7 @@ public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefiniti
                 [nameof(ContentPartSettings)] = JObject.FromObject(new ContentPartSettings
                 {
                     Attachable = false,
-                    Reusable = true,
+                    Reusable = false,
                 }),
                 [nameof(ContentSettings)] = JObject.FromObject(new ContentSettings
                 {

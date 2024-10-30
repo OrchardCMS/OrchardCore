@@ -261,7 +261,8 @@ public class ContentDefinitionManager : IContentDefinitionManager
 
         var toRemove = record.ContentTypePartDefinitionRecords
             .Where(typePartDefinitionRecord => !model.Parts
-                .Any(typePart => typePart.Name.EqualsOrdinalIgnoreCase(typePartDefinitionRecord.Name)));
+                .Any(typePart => typePart.Name.EqualsOrdinalIgnoreCase(typePartDefinitionRecord.Name)))
+            .ToArray();
 
         foreach (var remove in toRemove)
         {
@@ -298,7 +299,8 @@ public class ContentDefinitionManager : IContentDefinitionManager
 
         var toRemove = record.ContentPartFieldDefinitionRecords
             .Where(partFieldDefinitionRecord => !model.Fields
-                .Any(partField => partField.Name.EqualsOrdinalIgnoreCase(partFieldDefinitionRecord.Name)));
+                .Any(partField => partField.Name.EqualsOrdinalIgnoreCase(partFieldDefinitionRecord.Name)))
+            .ToArray();
 
         foreach (var remove in toRemove)
         {
