@@ -69,7 +69,7 @@ public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefiniti
     /// Creates a definition if the Record is null and the part name is 'DashboardPart'.
     /// This ensures that the 'DashboardPart' has a valid definition when it is missing.
     /// </summary>
-    public void ContentPartDefinitionBuilding(ContentPartDefinitionContextBuilding context)
+    public void ContentPartBuilding(ContentPartDefinitionContextBuilding context)
     {
         if (context.Record is not null || context.PartName != nameof(DashboardPart))
         {

@@ -15,6 +15,13 @@ public interface IContentDefinitionHandler
     void ContentTypeBuilding(BuildingContentTypeContext context);
 
     /// <summary>
+    /// Invoked during the building of a content part definition.
+    /// Allows modification or customization of content parts before they are finalized in the content definition.
+    /// </summary>
+    /// <param name="context">The context for the content part definition being built.</param>
+    void ContentPartBuilding(ContentPartDefinitionContextBuilding context);
+
+    /// <summary>
     /// Invoked during the building of a part on a content type.
     /// Enables modification or customization of the content part as it is attached to a content type.
     /// </summary>
@@ -27,12 +34,5 @@ public interface IContentDefinitionHandler
     /// </summary>
     /// <param name="context">The context for the content part field being built.</param>
     void ContentPartFieldBuilding(ContentPartFieldContextBuilding context);
-
-    /// <summary>
-    /// Invoked during the building of a content part definition.
-    /// Allows modification or customization of content parts before they are finalized in the content definition.
-    /// </summary>
-    /// <param name="context">The context for the content part definition being built.</param>
-    void ContentPartDefinitionBuilding(ContentPartDefinitionContextBuilding context);
 }
 

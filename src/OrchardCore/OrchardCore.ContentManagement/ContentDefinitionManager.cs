@@ -384,7 +384,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
     {
         var context = new ContentPartDefinitionContextBuilding(name, source);
 
-        _handlers.Invoke((handler, ctx) => handler.ContentPartDefinitionBuilding(ctx), context, _logger);
+        _handlers.Invoke((handler, ctx) => handler.ContentPartBuilding(ctx), context, _logger);
 
         if (context.Record is null)
         {
