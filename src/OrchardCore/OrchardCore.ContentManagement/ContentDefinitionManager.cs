@@ -342,7 +342,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
         ContentTypeDefinitionRecord source,
         IList<ContentPartDefinitionRecord> partDefinitionRecords)
     {
-        var context = new BuildingContentTypeContext(name, source);
+        var context = new ContentTypeBuildingContext(name, source);
 
         _handlers.Invoke((handler, ctx) => handler.ContentTypeBuilding(ctx), context, _logger);
 
@@ -365,7 +365,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
         ContentTypePartDefinitionRecord source,
         ContentPartDefinitionRecord partDefinitionRecord)
     {
-        var context = new ContentTypePartContextBuilding(name, source);
+        var context = new ContentTypePartBuildingContext(name, source);
 
         _handlers.Invoke((handler, ctx) => handler.ContentTypePartBuilding(ctx), context, _logger);
 
@@ -382,7 +382,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
 
     private ContentPartDefinition Build(string name, ContentPartDefinitionRecord source)
     {
-        var context = new ContentPartDefinitionContextBuilding(name, source);
+        var context = new ContentPartBuildingContext(name, source);
 
         _handlers.Invoke((handler, ctx) => handler.ContentPartBuilding(ctx), context, _logger);
 
@@ -399,7 +399,7 @@ public class ContentDefinitionManager : IContentDefinitionManager
 
     private ContentPartFieldDefinition Build(string name, ContentPartFieldDefinitionRecord source)
     {
-        var context = new ContentPartFieldContextBuilding(name, source);
+        var context = new ContentPartFieldBuildingContext(name, source);
 
         _handlers.Invoke((handler, ctx) => handler.ContentPartFieldBuilding(ctx), context, _logger);
 

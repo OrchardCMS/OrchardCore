@@ -13,7 +13,7 @@ public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefiniti
     /// Adds the <see cref="DashboardPart"/> to the content type definition when the stereotype is set to 'DashboardWidget'.
     /// This occurs during the content type building process, allowing the content type to function as a dashboard widget.
     /// </summary>
-    public void ContentTypeBuilding(BuildingContentTypeContext context)
+    public void ContentTypeBuilding(ContentTypeBuildingContext context)
     {
         if (!context.Record.Settings.TryGetPropertyValue(nameof(ContentTypeSettings), out var node))
         {
@@ -50,7 +50,7 @@ public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefiniti
     /// Marks the part on the content type as a system type to prevent its removal.
     /// This ensures that the part remains integral to the content type and cannot be deleted.
     /// </summary>
-    public void ContentTypePartBuilding(ContentTypePartContextBuilding context)
+    public void ContentTypePartBuilding(ContentTypePartBuildingContext context)
     {
         if (!context.Record.PartName.EqualsOrdinalIgnoreCase(nameof(DashboardPart)))
         {
@@ -69,7 +69,7 @@ public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefiniti
     /// Creates a definition if the Record is null and the part name is 'DashboardPart'.
     /// This ensures that the 'DashboardPart' has a valid definition when it is missing.
     /// </summary>
-    public void ContentPartBuilding(ContentPartDefinitionContextBuilding context)
+    public void ContentPartBuilding(ContentPartBuildingContext context)
     {
         if (context.Record is not null || context.PartName != nameof(DashboardPart))
         {
@@ -94,7 +94,7 @@ public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefiniti
         };
     }
 
-    public void ContentPartFieldBuilding(ContentPartFieldContextBuilding context)
+    public void ContentPartFieldBuilding(ContentPartFieldBuildingContext context)
     {
     }
 }
