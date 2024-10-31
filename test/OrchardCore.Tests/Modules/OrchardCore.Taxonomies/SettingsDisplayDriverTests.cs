@@ -3,6 +3,7 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Taxonomies.Drivers;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.Settings;
 using OrchardCore.Tests.Modules.OrchardCore.ContentFields.Settings;
