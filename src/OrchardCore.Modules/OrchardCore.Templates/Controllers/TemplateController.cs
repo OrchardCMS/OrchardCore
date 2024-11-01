@@ -164,26 +164,7 @@ public sealed class TemplateController : Controller
 
         if (ModelState.IsValid)
         {
-            if (string.IsNullOrWhiteSpace(model.Name))
-            {
-                ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
-            }
-            else if (string.IsNullOrWhiteSpace(model.Content))
-            {
-                ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
-            }
-            else
-            {
-                var templatesDocument = model.AdminTemplates
-                    ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
-                    : await _templatesManager.GetTemplatesDocumentAsync()
-                    ;
-
-                if (templatesDocument.Templates.ContainsKey(model.Name))
-                {
-                    ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
-                }
-            }
+            await ValidateModelAsync(model);
         }
 
         if (ModelState.IsValid)
@@ -265,18 +246,7 @@ public sealed class TemplateController : Controller
 
         if (ModelState.IsValid)
         {
-            if (string.IsNullOrWhiteSpace(model.Name))
-            {
-                ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
-            }
-            else if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) && templatesDocument.Templates.ContainsKey(model.Name))
-            {
-                ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
-            }
-            else if (string.IsNullOrWhiteSpace(model.Content))
-            {
-                ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
-            }
+            await ValidateModelAsync(model, templatesDocument, sourceName);
         }
 
         if (!templatesDocument.Templates.ContainsKey(sourceName))
@@ -393,6 +363,30 @@ public sealed class TemplateController : Controller
         else
         {
             return RedirectToAction(nameof(Index));
+        }
+    }
+
+    private async Task ValidateModelAsync(TemplateViewModel model, TemplatesDocument templatesDocument = null, string sourceName = null)
+    {
+        if (string.IsNullOrWhiteSpace(model.Name))
+        {
+            ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
+        }
+        else if (string.IsNullOrWhiteSpace(model.Content))
+        {
+            ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
+        }
+        else
+        {
+            templatesDocument ??= model.AdminTemplates
+                ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
+                : await _templatesManager.GetTemplatesDocumentAsync();
+
+            if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) &&
+                templatesDocument.Templates.ContainsKey(model.Name))
+            {
+                ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
+            }
         }
     }
 }
