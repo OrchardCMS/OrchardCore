@@ -372,10 +372,6 @@ public sealed class TemplateController : Controller
         {
             ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
         }
-        else if (string.IsNullOrWhiteSpace(model.Content))
-        {
-            ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
-        }
         else
         {
             templatesDocument ??= model.AdminTemplates
@@ -387,6 +383,11 @@ public sealed class TemplateController : Controller
             {
                 ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
             }
+        }
+
+        if (string.IsNullOrWhiteSpace(model.Content))
+        {
+            ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
         }
     }
 }
