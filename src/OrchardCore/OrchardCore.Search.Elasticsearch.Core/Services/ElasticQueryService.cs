@@ -1,4 +1,5 @@
 using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Nest;
 
@@ -81,6 +82,7 @@ public class ElasticQueryService : IElasticQueryService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while querying elastic with exception: {Message}", ex.Message);
+            throw;
         }
 
         return elasticTopDocs;

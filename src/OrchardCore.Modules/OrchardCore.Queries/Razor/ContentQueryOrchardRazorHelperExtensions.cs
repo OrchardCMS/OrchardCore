@@ -14,33 +14,41 @@ public static class ContentQueryOrchardRazorHelperExtensions
 
     public static async Task<IEnumerable<ContentItem>> ContentQueryAsync(this IOrchardHelper orchardHelper, string queryName, IDictionary<string, object> parameters)
     {
-        var results = await orchardHelper.QueryAsync(queryName, parameters);
+
         var contentItems = new List<ContentItem>();
-
-        if (results != null)
+        try
         {
-            foreach (var result in results)
+            var results = await orchardHelper.QueryAsync(queryName, parameters);
+            if (results != null)
             {
-                if (result is not ContentItem contentItem)
+                foreach (var result in results)
                 {
-                    contentItem = null;
-
-                    if (result is JsonObject jObject)
+                    if (result is not ContentItem contentItem)
                     {
-                        contentItem = jObject.ToObject<ContentItem>();
+                        contentItem = null;
+
+                        if (result is JsonObject jObject)
+                        {
+                            contentItem = jObject.ToObject<ContentItem>();
+                        }
                     }
-                }
 
-                // If input is a 'JObject' but which not represents a 'ContentItem',
-                // a 'ContentItem' is still created but with some null properties.
-                if (contentItem?.ContentItemId == null)
-                {
-                    continue;
-                }
+                    // If input is a 'JObject' but which not represents a 'ContentItem',
+                    // a 'ContentItem' is still created but with some null properties.
+                    if (contentItem?.ContentItemId == null)
+                    {
+                        continue;
+                    }
 
-                contentItems.Add(contentItem);
+                    contentItems.Add(contentItem);
+                }
             }
         }
+        catch (Exception)
+        {
+            return contentItems;
+        }
+
 
         return contentItems;
     }

@@ -3,12 +3,14 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OrchardCore.Infrastructure.Filters;
 
 namespace OrchardCore.Queries.Controllers;
 
 [Route("api/queries")]
 [ApiController]
 [Authorize(AuthenticationSchemes = "Api")]
+[TypeFilter(typeof(ApiExceptionHandlingFilter))]
 [IgnoreAntiforgeryToken]
 [AllowAnonymous]
 public sealed class QueryApiController : ControllerBase

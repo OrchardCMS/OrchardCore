@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Entities;
+using OrchardCore.Infrastructure.Filters;
 using OrchardCore.Queries;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.Models;
@@ -11,6 +12,7 @@ namespace OrchardCore.Search.Elasticsearch;
 
 [Route("api/elasticsearch")]
 [ApiController]
+[TypeFilter(typeof(ApiExceptionHandlingFilter))]
 [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
 public sealed class ElasticsearchApiController : ControllerBase
 {

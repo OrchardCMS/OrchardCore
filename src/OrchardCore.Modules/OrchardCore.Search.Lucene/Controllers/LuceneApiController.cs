@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Entities;
+using OrchardCore.Infrastructure.Filters;
 using OrchardCore.Queries;
 using OrchardCore.Search.Lucene.Model;
 
@@ -10,6 +11,7 @@ namespace OrchardCore.Search.Lucene.Controllers;
 [Route("api/lucene")]
 [ApiController]
 [Authorize(AuthenticationSchemes = "Api")]
+[TypeFilter(typeof(ApiExceptionHandlingFilter))]
 [IgnoreAntiforgeryToken]
 [AllowAnonymous]
 public sealed class LuceneApiController : ControllerBase
