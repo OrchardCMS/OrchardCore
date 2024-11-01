@@ -387,6 +387,9 @@ public sealed class TemplateController : Controller
 
         if (string.IsNullOrWhiteSpace(model.Content))
         {
+            var placementsLink = Url.ActionLink("Index", "Admin", new { area = "OrchardCore.Placements" });
+            var docsLink = "https://docs.orchardcore.net/en/main/reference/modules/Placements/";
+            await _notifier.WarningAsync(H["If you left the content empty because you want to hide the shape, use <a href=\"{0}\">Placements</a> instead. See <a href=\"{1}\">the docs</a> for more info about this feature.", placementsLink, docsLink]);
             ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
         }
     }
