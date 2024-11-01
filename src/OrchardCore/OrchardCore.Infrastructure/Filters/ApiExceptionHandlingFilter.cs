@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http.Json;
 using Json.More;
 namespace OrchardCore.Infrastructure.Filters;
 
-public class ApiExceptionHandlingFilter : IAsyncExceptionFilter
+public class ApiExceptionHandlingFilter : IExceptionFilter
 {
     private static readonly JsonSerializerOptions _jsonOptions = new()
     {
@@ -24,7 +24,7 @@ public class ApiExceptionHandlingFilter : IAsyncExceptionFilter
 
     }
 
-    public async Task OnExceptionAsync(ExceptionContext context)
+    public void OnException(ExceptionContext context)
     {
         var response = new ProblemDetails
         {
