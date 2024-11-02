@@ -46,7 +46,6 @@ public class AutoSetupMiddlewareTests
 
         var httpContext = new DefaultHttpContext();
         var nextCalled = false;
-
         var middleware = new AutoSetupMiddleware(
             next: (innerHttpContext) => { nextCalled = true; return Task.CompletedTask; },
             _mockShellHost.Object,
