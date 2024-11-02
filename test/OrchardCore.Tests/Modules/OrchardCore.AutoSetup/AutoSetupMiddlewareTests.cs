@@ -32,9 +32,9 @@ public class AutoSetupMiddlewareTests
         {
             LockOptions = new LockOptions(),
             Tenants = new List<TenantSetupOptions>
-                {
-                    new TenantSetupOptions { ShellName = ShellSettings.DefaultShellName }
-                }
+            {
+                new TenantSetupOptions { ShellName = ShellSettings.DefaultShellName }
+            }
         });
     }
 
