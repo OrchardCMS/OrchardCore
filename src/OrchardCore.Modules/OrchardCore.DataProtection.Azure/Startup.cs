@@ -39,6 +39,8 @@ public sealed class Startup : StartupBase
                         options.ContainerName,
                         options.BlobName);
                 });
+
+            services.AddScoped<IModularTenantEvents, BlobModularTenantEvents>();
         }
         else
         {

@@ -11,15 +11,15 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
 /// <summary>
 /// This recipe step resets an Elasticsearch index.
 /// </summary>
-public sealed class ElasticIndexResetStep : IRecipeStepHandler
+public sealed class ElasticIndexResetStep : NamedRecipeStepHandler
 {
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    public ElasticIndexResetStep()
+        : base("elastic-index-reset")
     {
-        if (!string.Equals(context.Name, "elastic-index-reset", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
+    }
 
+    protected override async Task HandleAsync(RecipeExecutionContext context)
+    {
         var model = context.Step.ToObject<ElasticIndexResetDeploymentStep>();
 
         if (model != null && (model.IncludeAll || model.Indices.Length > 0))

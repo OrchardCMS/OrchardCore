@@ -4,7 +4,19 @@ namespace OrchardCore.DisplayManagement.Descriptors;
 
 public class PlacementInfo
 {
-    private static readonly char[] _delimiters = [':', '#', '@', '%', '|'];
+    public const string HiddenLocation = "-";
+
+    public const char PositionDelimiter = ':';
+
+    public const char TabDelimiter = '#';
+
+    public const char GroupDelimiter = '@';
+
+    public const char CardDelimiter = '%';
+
+    public const char ColumnDelimiter = '|';
+
+    private static readonly char[] _delimiters = [PositionDelimiter, TabDelimiter, GroupDelimiter, CardDelimiter, ColumnDelimiter];
 
     public string Location { get; set; }
     public string Source { get; set; }
@@ -15,7 +27,13 @@ public class PlacementInfo
 
     public bool IsLayoutZone()
     {
-        return Location.StartsWith("/", StringComparison.OrdinalIgnoreCase);
+        return Location.StartsWith('/');
+    }
+
+    public bool IsHidden()
+    {
+        // If there are no placement or it's explicitly noop then its hidden.
+        return string.IsNullOrEmpty(Location) || Location == HiddenLocation;
     }
 
     /// <summary>
@@ -49,7 +67,7 @@ public class PlacementInfo
 
     public string GetPosition()
     {
-        var contentDelimiter = Location.IndexOf(':');
+        var contentDelimiter = Location.IndexOf(PositionDelimiter);
         if (contentDelimiter == -1)
         {
             return DefaultPosition ?? "";
@@ -66,7 +84,7 @@ public class PlacementInfo
 
     public string GetTab()
     {
-        var tabDelimiter = Location.IndexOf('#');
+        var tabDelimiter = Location.IndexOf(TabDelimiter);
         if (tabDelimiter == -1)
         {
             return "";
@@ -87,7 +105,7 @@ public class PlacementInfo
     /// </summary>
     public string GetGroup()
     {
-        var groupDelimiter = Location.IndexOf('@');
+        var groupDelimiter = Location.IndexOf(GroupDelimiter);
         if (groupDelimiter == -1)
         {
             return null;
@@ -108,7 +126,7 @@ public class PlacementInfo
     /// </summary>
     public string GetCard()
     {
-        var cardDelimiter = Location.IndexOf('%');
+        var cardDelimiter = Location.IndexOf(CardDelimiter);
         if (cardDelimiter == -1)
         {
             return null;
@@ -129,18 +147,18 @@ public class PlacementInfo
     /// </summary>
     public string GetColumn()
     {
-        var colDelimeter = Location.IndexOf('|');
-        if (colDelimeter == -1)
+        var colDelimiter = Location.IndexOf(ColumnDelimiter);
+        if (colDelimiter == -1)
         {
             return null;
         }
 
-        var nextDelimiter = Location.IndexOfAny(_delimiters, colDelimeter + 1);
+        var nextDelimiter = Location.IndexOfAny(_delimiters, colDelimiter + 1);
         if (nextDelimiter == -1)
         {
-            return Location[(colDelimeter + 1)..];
+            return Location[(colDelimiter + 1)..];
         }
 
-        return Location[(colDelimeter + 1)..nextDelimiter];
+        return Location[(colDelimiter + 1)..nextDelimiter];
     }
 }

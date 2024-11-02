@@ -30,7 +30,7 @@
     <PackageVersion Include="JsonPath.Net" Version="1.1.6" />
     <PackageVersion Include="HtmlSanitizer" Version="8.2.871-beta" />
     <PackageVersion Include="Irony" Version="1.5.3" />
-    <PackageVersion Include="libphonenumber-csharp" Version="8.13.46" />
+    <PackageVersion Include="libphonenumber-csharp" Version="8.13.47" />
     <PackageVersion Include="Lorem.Universal.NET" Version="4.0.80" />
     <PackageVersion Include="Lucene.Net" Version="4.8.0-beta00016" />
     <PackageVersion Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00016" />
@@ -57,7 +57,7 @@
     <PackageVersion Include="NEST" Version="7.17.5" />
     <PackageVersion Include="NJsonSchema" Version="11.0.2" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="5.3.14" />
-    <PackageVersion Include="NodaTime" Version="3.1.12" />
+    <PackageVersion Include="NodaTime" Version="3.2.0" />
     <PackageVersion Include="OpenIddict.Core" Version="5.8.0" />
     <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="5.8.0" />
     <PackageVersion Include="OpenIddict.Server.DataProtection" Version="5.8.0" />
@@ -124,8 +124,8 @@
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
   <!-- Versions are preset for the default TFM (there may be no TFM in an evaluation phase) -->
   <PropertyGroup>
-    <AspNetCorePackagesVersion>8.0.8</AspNetCorePackagesVersion>
-    <MicrosoftExtensionsPackagesVersion>8.0.8</MicrosoftExtensionsPackagesVersion>
+    <AspNetCorePackagesVersion>8.0.10</AspNetCorePackagesVersion>
+    <MicrosoftExtensionsPackagesVersion>8.0.10</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
   <!-- When dual-targeting frameworks, add both of them to CommonTargetFrameworks above, when add PropertyGroups like
   below. -->

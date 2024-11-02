@@ -86,6 +86,11 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
         {
             context.Builder.Listable(model.Listable);
         }
+
+        if (options.ShowDraftable)
+        {
+            context.Builder.Draftable(model.Draftable);
+        }
     }
 
     private async Task<ContentTypeDefinitionDriverOptions> GetOptionsAsync(ContentTypeDefinition contentTypeDefinition, string stereotype)

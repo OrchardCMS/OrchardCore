@@ -8,7 +8,8 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Deployment;
 
-public class AllRolesDeploymentSource : IDeploymentSource
+public class AllRolesDeploymentSource
+    : DeploymentSourceBase<AllRolesDeploymentStep>
 {
     private readonly RoleManager<IRole> _roleManager;
     private readonly IRoleService _roleService;
@@ -21,15 +22,8 @@ public class AllRolesDeploymentSource : IDeploymentSource
         _roleService = roleService;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(AllRolesDeploymentStep step, DeploymentPlanResult result)
     {
-        var allRolesStep = step as AllRolesDeploymentStep;
-
-        if (allRolesStep == null)
-        {
-            return;
-        }
-
         // Get all roles
         var allRoles = await _roleService.GetRolesAsync();
         var permissions = new JsonArray();
