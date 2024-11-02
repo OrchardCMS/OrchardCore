@@ -11,14 +11,14 @@ public interface IUserTimeZoneService
     /// Gets the time zone for the given user.
     /// </summary>
     /// <param name="user">The <see cref="IUser"/>.</param>
-    [Obsolete("This method is obsolete and will be removed in future release. Instead use GetAsync(userName).")]
+    [Obsolete("This method is deprecated and will be removed in a future release. Please use GetAsync(userName) instead..")]
     ValueTask<ITimeZone> GetAsync(IUser user);
 
     /// <summary>
     /// Updates the time zone for the given user.
     /// </summary>
     /// <param name="user">The <see cref="IUser"/>.</param>
-    [Obsolete("This method is obsolete and will be removed in future release. Instead use ForgetCacheAsync(userName).")]
+    [Obsolete("This method is obsolete and will be removed in a future release. Cache invalidation is now handled automatically.")]
     ValueTask UpdateAsync(IUser user);
 
     /// <summary>
@@ -27,11 +27,4 @@ public interface IUserTimeZoneService
     /// <param name="userName">The user name.</param>
     ValueTask<ITimeZone> GetAsync(string userName)
         => ValueTask.FromResult<ITimeZone>(null);
-
-    /// <summary>
-    /// Forget the time zone for the given user.
-    /// </summary>
-    /// <param name="userName">The user name.</param>
-    ValueTask ForgetCacheAsync(string userName)
-        => ValueTask.CompletedTask;
 }

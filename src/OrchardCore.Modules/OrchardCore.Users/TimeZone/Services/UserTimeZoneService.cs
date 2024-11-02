@@ -2,15 +2,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.TimeZone.Models;
 
 namespace OrchardCore.Users.TimeZone.Services;
 
-public class UserTimeZoneService : IUserTimeZoneService
+public class UserTimeZoneService : UserEventHandlerBase, IUserTimeZoneService
 {
     private const string CacheKey = "UserTimeZone/";
-    private const string EmptyTimeZone = "empty";
+    private const string EmptyTimeZone = "NoTimeZoneFound";
 
     private static readonly DistributedCacheEntryOptions _slidingExpiration = new()
     {
@@ -46,21 +47,14 @@ public class UserTimeZoneService : IUserTimeZoneService
         return _clock.GetTimeZone(currentTimeZoneId);
     }
 
-    /// <inheritdoc/>
-    public async ValueTask ForgetCacheAsync(string userName)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(userName);
-
-        await _distributedCache.RemoveAsync(GetCacheKey(userName));
-    }
 
     /// <inheritdoc/>
     public ValueTask<ITimeZone> GetAsync(IUser user)
         => GetAsync(user?.UserName);
 
     /// <inheritdoc/>
-    public ValueTask UpdateAsync(IUser user)
-        => ForgetCacheAsync(user?.UserName);
+    public async ValueTask UpdateAsync(IUser user)
+        => await ForgetCacheAsync(user?.UserName);
 
     /// <inheritdoc/>
     private async ValueTask<string> GetTimeZoneIdAsync(string userName)
@@ -99,6 +93,22 @@ public class UserTimeZoneService : IUserTimeZoneService
         }
 
         return timeZoneId;
+    }
+
+    public override Task DeletedAsync(UserDeleteContext context)
+        => ForgetCacheAsync(context.User.UserName);
+
+    public override Task UpdatedAsync(UserUpdateContext context)
+        => ForgetCacheAsync(context.User.UserName);
+
+    public override Task DisabledAsync(UserContext context)
+        => ForgetCacheAsync(context.User.UserName);
+
+    private Task ForgetCacheAsync(string userName)
+    {
+        var key = GetCacheKey(userName);
+
+        return _distributedCache.RemoveAsync(key);
     }
 
     private static string GetCacheKey(string userName)
