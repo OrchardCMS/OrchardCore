@@ -78,7 +78,7 @@ public static class AzureKeyVaultConfigurationExtension
 
         Uri keyVaultEndpointUri;
 
-        if ((!string.IsNullOrWhiteSpace(vaultURI) && !Uri.TryCreate($"{vaultURI}", UriKind.Absolute, out keyVaultEndpointUri)) || 
+        if ((!string.IsNullOrWhiteSpace(vaultURI) && !Uri.TryCreate(vaultURI, UriKind.Absolute, out keyVaultEndpointUri)) || 
             !Uri.TryCreate($"https://{keyVaultName}.vault.azure.net", UriKind.Absolute, out keyVaultEndpointUri))
         {
             throw new Exception("Invalid value used for 'KeyVaultName' or 'VaultURI' property. Please provide a valid key-vault name " +
