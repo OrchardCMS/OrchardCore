@@ -46,9 +46,15 @@ public class FilesScriptEngine : IScriptingEngine
             }
 
             using var fileStream = fileInfo.CreateReadStream();
-            using var ms = MemoryStreamFactory.GetStream();
-            fileStream.CopyTo(ms);
-            return Convert.ToBase64String(ms.ToArray());
+            using var memoryStream = MemoryStreamFactory.GetStream();
+            fileStream.CopyTo(memoryStream);
+
+            if (memoryStream.TryGetBuffer(out var buffer))
+            {
+                return Convert.ToBase64String(new ReadOnlySpan<byte>(buffer.Array, buffer.Offset, buffer.Count));
+            }
+
+            return Convert.ToBase64String(memoryStream.ToArray());
         }
         else
         {
