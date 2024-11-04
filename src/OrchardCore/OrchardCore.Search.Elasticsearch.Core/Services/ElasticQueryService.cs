@@ -36,7 +36,7 @@ public class ElasticQueryService : IElasticQueryService
 
         try
         {
-            using var stream = MemoryStreamFactory.GetStream(Encoding.UTF8.GetBytes(query));
+            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(query));
             var deserializedSearchRequest = _elasticClient.RequestResponseSerializer.Deserialize<SearchRequest>(stream);
 
             var searchRequest = new SearchRequest(_elasticIndexManager.GetFullIndexName(indexName))

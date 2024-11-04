@@ -33,6 +33,6 @@ public class ContentFileInfo : IFileInfo
 
     public Stream CreateReadStream()
     {
-        return MemoryStreamFactory.GetStream(_content);
+        return new MemoryStream(_content);
     }
 }

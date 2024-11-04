@@ -84,19 +84,19 @@ public class BlobShellConfigurationSources : IShellConfigurationSources
         }
 
         var configurationString = configData.ToJsonObject().ToJsonString(JOptions.Default);
-        using var memoryStream = MemoryStreamFactory.GetStream(Encoding.UTF8.GetBytes(configurationString));
+        using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(configurationString));
 
         await _shellsFileStore.CreateFileFromStreamAsync(appsettings, memoryStream);
     }
 
     public async Task RemoveAsync(string tenant)
     {
-        var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
+        var appSettings = IFileStoreExtensions.Combine(null, _container, tenant, OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
 
-        var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings);
+        var fileInfo = await _shellsFileStore.GetFileInfoAsync(appSettings);
         if (fileInfo != null)
         {
-            await _shellsFileStore.RemoveFileAsync(appsettings);
+            await _shellsFileStore.RemoveFileAsync(appSettings);
         }
     }
 

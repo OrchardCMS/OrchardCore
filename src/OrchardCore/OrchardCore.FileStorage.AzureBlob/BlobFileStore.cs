@@ -438,7 +438,7 @@ public class BlobFileStore : IFileStore
         var placeholderBlob = GetBlobReference(this.Combine(path, DirectoryMarkerFileName));
 
         // Create a directory marker file to make this directory appear when listing directories.
-        using var stream = MemoryStreamFactory.GetStream(MarkerFileContent);
+        using var stream = new MemoryStream(MarkerFileContent);
 
         await placeholderBlob.UploadAsync(stream);
     }

@@ -156,7 +156,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
         Stream stream = null;
         try
         {
-            stream = MemoryStreamFactory.GetStream(bits);
+            stream = new MemoryStream(bits);
             filePath = await _mediaFileStore.CreateFileFromStreamAsync(filePath, stream);
         }
         finally

@@ -34,9 +34,10 @@ public class CommonGeneratorMethods : IGlobalMethodProvider
         Method = serviceProvider => (Func<string, string>)(encoded =>
         {
             var bytes = Convert.FromBase64String(encoded);
-            using var gzip = new GZipStream(MemoryStreamFactory.GetStream(bytes), CompressionMode.Decompress);
+            using var stream = new MemoryStream(bytes);
+            using var gzip = new GZipStream(stream, CompressionMode.Decompress);
 
-            var decompressed = MemoryStreamFactory.GetStream();
+            using var decompressed = MemoryStreamFactory.GetStream();
             var buffer = new byte[1024];
             int nRead;
 

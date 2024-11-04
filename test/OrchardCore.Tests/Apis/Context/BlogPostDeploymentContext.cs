@@ -67,7 +67,7 @@ public class BlogPostDeploymentContext : SiteContext
 
     public async Task<HttpResponseMessage> PostRecipeAsync(JsonObject recipe, bool ensureSuccess = true)
     {
-        using var zipStream = MemoryStreamFactory.GetStream();
+        await using var zipStream = MemoryStreamFactory.GetStream();
         using (var zip = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
         {
             var entry = zip.CreateEntry("Recipe.json");

@@ -101,7 +101,7 @@ public sealed class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSett
                 section.DefaultQuery = jsonObject.ToJsonString(JOptions.Indented);
                 try
                 {
-                    using var stream = MemoryStreamFactory.GetStream(Encoding.UTF8.GetBytes(model.DefaultQuery));
+                    using var stream = new MemoryStream(Encoding.UTF8.GetBytes(model.DefaultQuery));
                     var searchRequest = await _elasticClient.RequestResponseSerializer.DeserializeAsync<SearchRequest>(stream);
                 }
                 catch
