@@ -51,7 +51,7 @@ public class FilesScriptEngine : IScriptingEngine
 
             if (memoryStream.TryGetBuffer(out var buffer))
             {
-                return Convert.ToBase64String(new ReadOnlySpan<byte>(buffer.Array, buffer.Offset, buffer.Count));
+                return Convert.ToBase64String(buffer);
             }
 
             return Convert.ToBase64String(memoryStream.ToArray());
