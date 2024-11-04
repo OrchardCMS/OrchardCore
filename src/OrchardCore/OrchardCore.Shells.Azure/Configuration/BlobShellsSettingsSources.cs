@@ -82,7 +82,7 @@ public class BlobShellsSettingsSources : IShellsSettingsSources
         tenantsSettings[tenant] = settings;
 
         var tenantsSettingsString = tenantsSettings.ToJsonString(JOptions.Default);
-        using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(tenantsSettingsString));
+        using var memoryStream = MemoryStreamFactory.GetStream(Encoding.UTF8.GetBytes(tenantsSettingsString));
 
         await _shellsFileStore.CreateFileFromStreamAsync(OrchardCoreConstants.Shell.TenantsFileName, memoryStream);
     }
@@ -102,7 +102,7 @@ public class BlobShellsSettingsSources : IShellsSettingsSources
             tenantsSettings.Remove(tenant);
 
             var tenantsSettingsString = tenantsSettings.ToJsonString(JOptions.Default);
-            using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(tenantsSettingsString));
+            using var memoryStream = MemoryStreamFactory.GetStream(Encoding.UTF8.GetBytes(tenantsSettingsString));
 
             await _shellsFileStore.CreateFileFromStreamAsync(OrchardCoreConstants.Shell.TenantsFileName, memoryStream);
         }

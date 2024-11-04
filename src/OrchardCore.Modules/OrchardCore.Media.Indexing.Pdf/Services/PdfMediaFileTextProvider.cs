@@ -18,7 +18,7 @@ public class PdfMediaFileTextProvider : IMediaFileTextProvider
             {
                 // Since fileStream.Length might not be supported either, we can't preconfigure the capacity of the
                 // MemoryStream.
-                seekableStream = new MemoryStream();
+                seekableStream = MemoryStreamFactory.GetStream();
                 // While this involves loading the file into memory, we don't really have a choice.
                 await fileStream.CopyToAsync(seekableStream);
                 seekableStream.Position = 0;

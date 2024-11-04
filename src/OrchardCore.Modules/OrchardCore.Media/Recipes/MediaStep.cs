@@ -48,7 +48,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
 
             if (!string.IsNullOrWhiteSpace(file.Base64))
             {
-                stream = new MemoryStream(Convert.FromBase64String(file.Base64));
+                stream = MemoryStreamFactory.GetStream(Convert.FromBase64String(file.Base64));
             }
             else if (!string.IsNullOrWhiteSpace(file.SourcePath))
             {

@@ -42,7 +42,7 @@ public class DatabaseShellsSettingsSources : IShellsSettingsSources
         if (document.ShellsSettings is not null)
         {
             var shellsSettingsString = document.ShellsSettings.ToJsonString(JOptions.Default);
-            builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellsSettingsString)));
+            builder.AddTenantJsonStream(MemoryStreamFactory.GetStream(Encoding.UTF8.GetBytes(shellsSettingsString)));
         }
     }
 
@@ -53,7 +53,7 @@ public class DatabaseShellsSettingsSources : IShellsSettingsSources
         {
             var shellSettings = new JsonObject { [tenant] = document.ShellsSettings[tenant] };
             var shellSettingsString = shellSettings.ToJsonString(JOptions.Default);
-            builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellSettingsString)));
+            builder.AddTenantJsonStream(MemoryStreamFactory.GetStream(Encoding.UTF8.GetBytes(shellSettingsString)));
         }
     }
 

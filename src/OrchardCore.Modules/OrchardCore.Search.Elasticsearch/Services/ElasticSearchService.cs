@@ -98,7 +98,7 @@ public class ElasticsearchService : ISearchService
 
                 try
                 {
-                    using var stream = new MemoryStream(Encoding.UTF8.GetBytes(tokenizedContent));
+                    using var stream = MemoryStreamFactory.GetStream(Encoding.UTF8.GetBytes(tokenizedContent));
 
                     var searchRequest = await _elasticClient.RequestResponseSerializer.DeserializeAsync<SearchRequest>(stream);
 

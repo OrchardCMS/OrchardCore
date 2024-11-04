@@ -47,7 +47,7 @@ public sealed class HomeController : Controller
         };
 
         // Save to an intermediate MemoryStream to preserve the encoding declaration.
-        using var stream = new MemoryStream();
+        using var stream = MemoryStreamFactory.GetStream();
         using (var w = XmlWriter.Create(stream, settings))
         {
             var result = _writer.MapMethodResponse(methodResponse);

@@ -38,7 +38,7 @@ public class DefaultDocumentSerializer : IDocumentSerializer
             data = Decompress(data);
         }
 
-        using var ms = new MemoryStream(data);
+        using var ms = MemoryStreamFactory.GetStream(data);
 
         var document = JsonSerializer.Deserialize<TDocument>(ms, _serializerOptions);
 
@@ -59,8 +59,8 @@ public class DefaultDocumentSerializer : IDocumentSerializer
 
     internal static byte[] Compress(byte[] data)
     {
-        using var input = new MemoryStream(data);
-        using var output = new MemoryStream();
+        using var input = MemoryStreamFactory.GetStream(data);
+        using var output = MemoryStreamFactory.GetStream();
         using (var gzip = new GZipStream(output, CompressionMode.Compress))
         {
             input.CopyTo(gzip);
@@ -76,8 +76,8 @@ public class DefaultDocumentSerializer : IDocumentSerializer
 
     internal static byte[] Decompress(byte[] data)
     {
-        using var input = new MemoryStream(data);
-        using var output = new MemoryStream();
+        using var input = MemoryStreamFactory.GetStream(data);
+        using var output = MemoryStreamFactory.GetStream();
         using (var gzip = new GZipStream(input, CompressionMode.Decompress))
         {
             gzip.CopyTo(output);

@@ -28,15 +28,15 @@ public class CommonGeneratorMethods : IGlobalMethodProvider
     /// Converts a Base64 encoded gzip stream to an uncompressed Base64 string.
     /// See http://www.txtwizard.net/compression.
     /// </summary>
-    private static readonly GlobalMethod _gZip = new()
+    private readonly GlobalMethod _gZip = new()
     {
         Name = "gzip",
         Method = serviceProvider => (Func<string, string>)(encoded =>
         {
             var bytes = Convert.FromBase64String(encoded);
-            using var gzip = new GZipStream(new MemoryStream(bytes), CompressionMode.Decompress);
+            using var gzip = new GZipStream(MemoryStreamFactory.GetStream(bytes), CompressionMode.Decompress);
 
-            var decompressed = new MemoryStream();
+            var decompressed = MemoryStreamFactory.GetStream();
             var buffer = new byte[1024];
             int nRead;
 

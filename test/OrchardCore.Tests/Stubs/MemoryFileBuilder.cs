@@ -13,7 +13,7 @@ public class MemoryFileBuilder
 
     public async Task SetFileAsync(string subpath, Stream stream)
     {
-        using var ms = new MemoryStream();
+        using var ms = MemoryStreamFactory.GetStream();
         await stream.CopyToAsync(ms);
         VirtualFiles[subpath] = ms.ToArray();
     }

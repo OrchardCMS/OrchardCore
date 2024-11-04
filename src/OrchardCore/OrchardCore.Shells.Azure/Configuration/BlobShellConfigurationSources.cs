@@ -84,7 +84,7 @@ public class BlobShellConfigurationSources : IShellConfigurationSources
         }
 
         var configurationString = configData.ToJsonObject().ToJsonString(JOptions.Default);
-        using var memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(configurationString));
+        using var memoryStream = MemoryStreamFactory.GetStream(Encoding.UTF8.GetBytes(configurationString));
 
         await _shellsFileStore.CreateFileFromStreamAsync(appsettings, memoryStream);
     }
