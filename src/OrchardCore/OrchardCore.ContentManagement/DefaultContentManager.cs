@@ -567,6 +567,7 @@ public class DefaultContentManager : IContentManager
         if (options.IsDraft)
         {
             contentItem.Published = false;
+            contentItem.Latest = true;
         }
 
         // Build a context with the initialized instance to create
