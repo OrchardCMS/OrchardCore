@@ -76,13 +76,10 @@ public static class OpenIdExtensions
         builder.Services.TryAddScoped(typeof(OpenIdScopeStore<>));
         builder.Services.TryAddScoped(typeof(OpenIdTokenStore<>));
 
-        builder.Services.TryAddEnumerable(new[]
-        {
-            ServiceDescriptor.Singleton<IIndexProvider, OpenIdApplicationIndexProvider>(),
-            ServiceDescriptor.Singleton<IIndexProvider, OpenIdAuthorizationIndexProvider>(),
-            ServiceDescriptor.Singleton<IIndexProvider, OpenIdScopeIndexProvider>(),
-            ServiceDescriptor.Singleton<IIndexProvider, OpenIdTokenIndexProvider>()
-        });
+        builder.Services.AddIndexProvider<OpenIdApplicationIndexProvider>();
+        builder.Services.AddIndexProvider<OpenIdAuthorizationIndexProvider>();
+        builder.Services.AddIndexProvider<OpenIdScopeIndexProvider>();
+        builder.Services.AddIndexProvider<OpenIdTokenIndexProvider>();
 
         return builder;
     }
