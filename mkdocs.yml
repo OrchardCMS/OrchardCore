@@ -5,11 +5,12 @@ theme:
   logo: assets/images/orchard-logo.png
   favicon: assets/images/favicon.png
   features:
-    - navigation.footer
+    - content.tabs.link
     - header.autohide
+    - navigation.footer
     - navigation.instant
     - navigation.tabs
-    - content.tabs.link
+    - navigation.top
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -261,6 +262,7 @@ nav:
           - Workflows: reference/modules/Workflows/README.md
           - DataProtection (Azure Storage): reference/modules/DataProtection.Azure/README.md
           - Background Tasks: reference/modules/BackgroundTasks/README.md
+          - URL Rewriting: reference/modules/UrlRewriting/README.md
           - Reverse Proxy: reference/modules/ReverseProxy/README.md
   - Resources:
       - Learning: resources/README.md
@@ -272,6 +274,8 @@ nav:
       - Owners: resources/owners/README.md
       - Workshops: resources/workshops/README.md
   - Releases:
+      - 2.0.2: releases/2.0.2.md
+      - 2.0.1: releases/2.0.1.md
       - 2.0.0: releases/2.0.0.md
       - 1.8.4: releases/1.8.4.md
       - 1.8.3: releases/1.8.3.md

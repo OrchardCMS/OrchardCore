@@ -50,9 +50,6 @@ internal sealed class PermissionContextAuthorizationHandler : AuthorizationHandl
 
             GetGrantingNamesInternal(requirement.Permission, grantingNames);
 
-            // SiteOwner permission grants them all
-            grantingNames.Add(StandardPermissions.SiteOwner.Name);
-
             if (permissions.Any(p => grantingNames.Contains(p.Name)))
             {
                 context.Succeed(requirement);

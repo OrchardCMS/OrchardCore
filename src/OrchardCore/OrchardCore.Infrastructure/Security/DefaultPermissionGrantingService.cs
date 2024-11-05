@@ -20,9 +20,6 @@ public class DefaultPermissionGrantingService : IPermissionGrantingService
 
         GetGrantingNamesInternal(requirement.Permission, grantingNames);
 
-        // SiteOwner permission grants them all
-        grantingNames.Add(StandardPermissions.SiteOwner.Name);
-
         return claims.Any(claim => string.Equals(claim.Type, Permission.ClaimType, StringComparison.OrdinalIgnoreCase)
             && grantingNames.Contains(claim.Value));
     }

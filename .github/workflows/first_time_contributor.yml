@@ -16,6 +16,7 @@ jobs:
     # directly.
     - uses: OrchardCMS/welcome-action@task/update-to-node-20
       with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         FIRST_ISSUE_COMMENT: >
           Thank you for submitting your first issue, awesome! 🚀 We're thrilled to receive your input. If you haven't
           completed the template yet, please take a moment to do so. This ensures that we fully understand your feature

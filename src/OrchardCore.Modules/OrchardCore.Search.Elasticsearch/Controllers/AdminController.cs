@@ -265,7 +265,7 @@ public sealed class AdminController : Controller
             catch (Exception e)
             {
                 await _notifier.ErrorAsync(H["An error occurred while creating the index."]);
-                _logger.LogError(e, "An error occurred while creating index: {indexName}.", _elasticIndexManager.GetFullIndexName(model.IndexName));
+                _logger.LogError(e, "An error occurred while creating index: {IndexName}.", _elasticIndexManager.GetFullIndexName(model.IndexName));
 
                 await PopulateMenuOptionsAsync(model);
 
@@ -293,7 +293,7 @@ public sealed class AdminController : Controller
             catch (Exception e)
             {
                 await _notifier.ErrorAsync(H["An error occurred while editing the index."]);
-                _logger.LogError(e, "An error occurred while editing index: {indexName}.", _elasticIndexManager.GetFullIndexName(model.IndexName));
+                _logger.LogError(e, "An error occurred while editing index: {IndexName}.", _elasticIndexManager.GetFullIndexName(model.IndexName));
 
                 await PopulateMenuOptionsAsync(model);
 
@@ -398,7 +398,7 @@ public sealed class AdminController : Controller
         catch (Exception e)
         {
             await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
-            _logger.LogError(e, "An error occurred while deleting the index {indexName}", _elasticIndexManager.GetFullIndexName(model.IndexName));
+            _logger.LogError(e, "An error occurred while deleting the index {IndexName}", _elasticIndexManager.GetFullIndexName(model.IndexName));
         }
 
         return RedirectToAction("Index");
@@ -426,20 +426,21 @@ public sealed class AdminController : Controller
         catch (Exception e)
         {
             await _notifier.ErrorAsync(H["An error occurred while deleting the index."]);
-            _logger.LogError(e, "An error occurred while deleting the index {indexName}", _elasticIndexManager.GetFullIndexName(model.IndexName));
+            _logger.LogError(e, "An error occurred while deleting the index {IndexName}", _elasticIndexManager.GetFullIndexName(model.IndexName));
         }
 
         return RedirectToAction(nameof(Index));
     }
 
-    public async Task<IActionResult> Mappings(string indexName)
+    public async Task<IActionResult> IndexInfo(string indexName)
     {
-        var mappings = await _elasticIndexManager.GetIndexMappings(indexName);
-        var formattedJson = JNode.Parse(mappings).ToJsonString(JOptions.Indented);
-        return View(new MappingsViewModel
+        var info = await _elasticIndexManager.GetIndexInfo(indexName);
+
+        var formattedJson = JNode.Parse(info).ToJsonString(JOptions.Indented);
+        return View(new IndexInfoViewModel
         {
             IndexName = _elasticIndexManager.GetFullIndexName(indexName),
-            Mappings = formattedJson
+            IndexInfo = formattedJson
         });
     }
 

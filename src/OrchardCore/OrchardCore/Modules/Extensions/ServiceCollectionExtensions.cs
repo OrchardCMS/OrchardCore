@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -148,9 +149,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICalendarSelector, DefaultCalendarSelector>();
 
         services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
-
-        services.AddTransient<IConfigureOptions<Microsoft.AspNetCore.Http.Json.JsonOptions>, JsonOptionsConfigurations>();
         services.AddTransient<IConfigureOptions<DocumentJsonSerializerOptions>, DocumentJsonSerializerOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<MvcOptions>, MvcOptionsConfiguration>();
 
         services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
         services.AddSingleton<IClientIPAddressAccessor, DefaultClientIPAddressAccessor>();

@@ -81,7 +81,7 @@ public class TwilioSmsProvider : ISmsProvider
                     return SmsResult.Success;
                 }
 
-                _logger.LogError("Twilio service was unable to send SMS messages. Error, code: {errorCode}, message: {errorMessage}", result.ErrorCode, result.ErrorMessage);
+                _logger.LogError("Twilio service was unable to send SMS messages. Error, code: {ErrorCode}, message: {ErrorMessage}", result.ErrorCode, result.ErrorMessage);
             }
 
             return SmsResult.Failed(S["SMS message was not send."]);

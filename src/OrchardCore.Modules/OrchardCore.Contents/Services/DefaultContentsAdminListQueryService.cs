@@ -11,7 +11,7 @@ namespace OrchardCore.Contents.Services;
 
 public class DefaultContentsAdminListQueryService : IContentsAdminListQueryService
 {
-    private readonly static string[] _operators = ["OR", "AND", "||", "&&"];
+    private static readonly string[] _operators = ["OR", "AND", "||", "&&"];
 
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;

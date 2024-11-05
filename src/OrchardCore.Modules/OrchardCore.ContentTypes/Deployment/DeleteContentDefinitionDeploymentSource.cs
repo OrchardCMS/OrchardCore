@@ -3,20 +3,16 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.ContentTypes.Deployment;
 
-public class DeleteContentDefinitionDeploymentSource : IDeploymentSource
+public class DeleteContentDefinitionDeploymentSource
+    : DeploymentSourceBase<DeleteContentDefinitionDeploymentStep>
 {
-    public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override Task ProcessAsync(DeleteContentDefinitionDeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not DeleteContentDefinitionDeploymentStep deleteContentDefinitionStep)
-        {
-            return Task.CompletedTask;
-        }
-
         result.Steps.Add(new JsonObject
         {
             ["name"] = "DeleteContentDefinition",
-            ["ContentTypes"] = JArray.FromObject(deleteContentDefinitionStep.ContentTypes),
-            ["ContentParts"] = JArray.FromObject(deleteContentDefinitionStep.ContentParts),
+            ["ContentTypes"] = JArray.FromObject(step.ContentTypes),
+            ["ContentParts"] = JArray.FromObject(step.ContentParts),
         });
 
         return Task.CompletedTask;

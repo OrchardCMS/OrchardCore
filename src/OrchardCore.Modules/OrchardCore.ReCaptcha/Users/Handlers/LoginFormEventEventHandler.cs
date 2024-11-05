@@ -13,31 +13,37 @@ public class LoginFormEventEventHandler : ILoginFormEvent
         _reCaptchaService = reCaptchaService;
     }
 
-    public Task IsLockedOutAsync(IUser user) => Task.CompletedTask;
+    public Task IsLockedOutAsync(IUser user)
+        => Task.CompletedTask;
 
     public Task LoggedInAsync(IUser user)
     {
         _reCaptchaService.ThisIsAHuman();
+
         return Task.CompletedTask;
     }
 
-    public async Task LoggingInAsync(string userName, Action<string, string> reportError)
+    public Task LoggingInAsync(string userName, Action<string, string> reportError)
     {
         if (_reCaptchaService.IsThisARobot())
         {
-            await _reCaptchaService.ValidateCaptchaAsync(reportError);
+            return _reCaptchaService.ValidateCaptchaAsync(reportError);
         }
+
+        return Task.CompletedTask;
     }
 
     public Task LoggingInFailedAsync(string userName)
     {
         _reCaptchaService.MaybeThisIsARobot();
+
         return Task.CompletedTask;
     }
 
     public Task LoggingInFailedAsync(IUser user)
     {
         _reCaptchaService.MaybeThisIsARobot();
+
         return Task.CompletedTask;
     }
 }

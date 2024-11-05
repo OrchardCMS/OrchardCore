@@ -24,8 +24,6 @@ namespace OrchardCore.Users.Controllers;
 [Feature(UserConstants.Features.ExternalAuthentication)]
 public sealed class ExternalAuthenticationsController : AccountBaseController
 {
-    public const string DefaultExternalLoginProtector = "DefaultExternalLogin";
-
     private readonly SignInManager<IUser> _signInManager;
     private readonly UserManager<IUser> _userManager;
     private readonly ILogger _logger;
@@ -73,39 +71,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         H = htmlLocalizer;
         S = stringLocalizer;
-    }
-
-    [AllowAnonymous]
-    public async Task<IActionResult> DefaultExternalLogin(string protectedToken, string returnUrl = null)
-    {
-        if (_externalLoginOption.UseExternalProviderIfOnlyOneDefined)
-        {
-            var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
-            if (schemes.Count() == 1)
-            {
-                var dataProtector = _dataProtectionProvider.CreateProtector(DefaultExternalLoginProtector)
-                    .ToTimeLimitedDataProtector();
-
-                try
-                {
-                    if (Guid.TryParse(dataProtector.Unprotect(protectedToken), out var token))
-                    {
-                        var tokenBytes = await _distributedCache.GetAsync(token.ToString());
-                        var cacheToken = new Guid(tokenBytes);
-                        if (token.Equals(cacheToken))
-                        {
-                            return ExternalLogin(schemes.First().Name, returnUrl);
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "An error occurred while validating {defaultExternalLogin} token", DefaultExternalLoginProtector);
-                }
-            }
-        }
-
-        return RedirectToLogin();
     }
 
     [HttpPost]
@@ -352,7 +317,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                 var identityResult = await _signInManager.UserManager.AddLoginAsync(iUser, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
                 if (identityResult.Succeeded)
                 {
-                    _logger.LogInformation(3, "User account linked to {provider} provider.", info.LoginProvider);
+                    _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);
 
                     // The login info must be linked before we consider a redirect, or the login info is lost.
                     if (iUser is User user)
@@ -416,7 +381,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         if (user == null)
         {
-            _logger.LogWarning("Suspicious login detected from external provider. {provider} with key [{providerKey}] for {identity}",
+            _logger.LogWarning("Suspicious login detected from external provider. {LoginProvider} with key [{ProviderKey}] for {Identity}",
                 info.LoginProvider, info.ProviderKey, info.Principal?.Identity?.Name);
 
             return RedirectToLogin();
@@ -437,7 +402,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                 var identityResult = await _signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
                 if (identityResult.Succeeded)
                 {
-                    _logger.LogInformation(3, "User account linked to {provider} provider.", info.LoginProvider);
+                    _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);
                     // we have created/linked to the local user, so we must verify the login. If it does not succeed,
                     // the user is not allowed to login.
                     if ((await ExternalLoginSignInAsync(user, info)).Succeeded)
@@ -689,13 +654,13 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "{externalLoginHandler} - IExternalLoginHandler.GenerateUserName threw an exception", item.GetType());
+                _logger.LogError(ex, "{ExternalLoginHandler} - IExternalLoginHandler.GenerateUserName threw an exception", item.GetType());
             }
         }
 
         if (userNames.Count > 1)
         {
-            _logger.LogWarning("More than one IExternalLoginHandler generated username. Used first one registered, {externalLoginHandler}", userNames.FirstOrDefault().Key);
+            _logger.LogWarning("More than one IExternalLoginHandler generated username. Used first one registered, {ExternalLoginHandler}", userNames.FirstOrDefault().Key);
         }
 
         return ret;

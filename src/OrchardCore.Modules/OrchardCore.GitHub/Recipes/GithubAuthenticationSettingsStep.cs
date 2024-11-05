@@ -9,22 +9,18 @@ namespace OrchardCore.GitHub.Recipes;
 /// <summary>
 /// This recipe step sets GitHub Account settings.
 /// </summary>
-public sealed class GitHubAuthenticationSettingsStep : IRecipeStepHandler
+public sealed class GitHubAuthenticationSettingsStep : NamedRecipeStepHandler
 {
     private readonly IGitHubAuthenticationService _githubAuthenticationService;
 
     public GitHubAuthenticationSettingsStep(IGitHubAuthenticationService githubLoginService)
+        : base(nameof(GitHubAuthenticationSettings))
     {
         _githubAuthenticationService = githubLoginService;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, nameof(GitHubAuthenticationSettings), StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var model = context.Step.ToObject<GitHubLoginSettingsStepModel>();
         var settings = await _githubAuthenticationService.LoadSettingsAsync();
 

@@ -47,9 +47,6 @@
     <!-- Exception type is not sufficiently specific -->
     <NoWarn>$(NoWarn);CA2201</NoWarn>
 
-    <!-- Use PascalCase for named placeholders in the logging message template -->
-    <NoWarn>$(NoWarn);CA1727</NoWarn>
-
     <!-- CA1861: Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array -->
     <NoWarn>$(NoWarn);CA1861</NoWarn>
 
