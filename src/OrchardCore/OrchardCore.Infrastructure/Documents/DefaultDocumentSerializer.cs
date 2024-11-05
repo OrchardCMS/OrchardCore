@@ -38,9 +38,7 @@ public class DefaultDocumentSerializer : IDocumentSerializer
             data = Decompress(data);
         }
 
-        using var stream = new MemoryStream(data);
-
-        var document = JsonSerializer.Deserialize<TDocument>(stream, _serializerOptions);
+        var document = JsonSerializer.Deserialize<TDocument>(data, _serializerOptions);
 
         return Task.FromResult(document);
     }
