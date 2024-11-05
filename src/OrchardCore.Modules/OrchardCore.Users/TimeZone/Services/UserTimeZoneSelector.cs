@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Users.TimeZone.Services;
@@ -31,7 +30,7 @@ public class UserTimeZoneSelector : ITimeZoneSelector
                 {
                     var timeZone = await _userTimeZoneService.GetAsync(_httpContextAccessor.HttpContext.User.Identity.Name);
 
-                    return timeZone.TimeZoneId;
+                    return timeZone?.TimeZoneId;
                 },
             };
 
