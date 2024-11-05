@@ -414,7 +414,14 @@ public sealed class AdminController : Controller
 
         var typeViewModel = await _contentDefinitionService.LoadTypeAsync(id);
 
-        if (typeViewModel == null || !typeViewModel.TypeDefinition.Parts.Any(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase)))
+        if (typeViewModel == null)
+        {
+            return NotFound();
+        }
+
+        var partDefinition = typeViewModel.TypeDefinition.Parts.FirstOrDefault(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase));
+
+        if (partDefinition == null)
         {
             return NotFound();
         }
@@ -440,8 +447,8 @@ public sealed class AdminController : Controller
 
         return View(new ListContentPartsViewModel
         {
-            // only user-defined parts (not code as they are not configurable)
-            Parts = await _contentDefinitionService.GetPartsAsync(true/*metadataPartsOnly*/)
+            // Only user-defined parts (not code as they are not configurable).
+            Parts = await _contentDefinitionService.GetPartsAsync(metadataPartsOnly: true)
         });
     }
 

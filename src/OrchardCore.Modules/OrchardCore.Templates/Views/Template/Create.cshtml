@@ -53,6 +53,7 @@
         <label asp-for="Content" class="form-label">@T["Content"]</label>
         <div id="@Html.IdFor(x => x.Content)_editor" asp-for="Text" style="min-height: 600px;" class="form-control" dir="@culture.GetLanguageDirection()"></div>
         <textarea asp-for="Content" class="content-preview-text" hidden>@Html.Raw(Model.Content)</textarea>
+        <span asp-validation-for="Content"></span>
         <span class="hint">@T["The Liquid template."]</span>
     </div>
 </form>

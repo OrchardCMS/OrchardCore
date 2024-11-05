@@ -3213,6 +3213,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "denispetrische",
+      "name": "Denis",
+      "avatar_url": "https://avatars.githubusercontent.com/u/95141776?v=4",
+      "profile": "https://github.com/denispetrische",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
