@@ -16,7 +16,12 @@ internal sealed class CultureValue : FluidValue
 
     public override bool Equals(FluidValue other)
     {
-        throw new NotImplementedException();
+        if (other is null)
+        {
+            return false;
+        }
+
+        return ToStringValue() == other.ToStringValue();
     }
 
     public override bool ToBooleanValue() => false;
