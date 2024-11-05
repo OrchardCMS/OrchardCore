@@ -47,14 +47,8 @@ public class FilesScriptEngine : IScriptingEngine
 
             using var fileStream = fileInfo.CreateReadStream();
             using var memoryStream = MemoryStreamFactory.GetStream();
-            fileStream.CopyTo(memoryStream);
 
-            if (memoryStream.TryGetBuffer(out var buffer))
-            {
-                return Convert.ToBase64String(buffer);
-            }
-
-            return Convert.ToBase64String(memoryStream.ToArray());
+            return Convert.ToBase64String(memoryStream.GetBuffer());
         }
         else
         {
