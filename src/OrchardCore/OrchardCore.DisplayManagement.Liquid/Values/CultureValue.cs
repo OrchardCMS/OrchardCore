@@ -6,7 +6,7 @@ using OrchardCore.Localization;
 
 namespace OrchardCore.DisplayManagement.Liquid.Values;
 
-public class CultureValue : FluidValue
+private sealed class CultureValue : FluidValue
 {
     private readonly CultureInfo _culture;
 
