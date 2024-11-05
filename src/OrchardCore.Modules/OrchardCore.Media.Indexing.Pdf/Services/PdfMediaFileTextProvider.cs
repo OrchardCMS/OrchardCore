@@ -1,4 +1,5 @@
 using Cysharp.Text;
+using Microsoft.IO;
 using UglyToad.PdfPig;
 
 namespace OrchardCore.Media.Indexing;
@@ -11,7 +12,7 @@ public class PdfMediaFileTextProvider : IMediaFileTextProvider
         // https://github.com/UglyToad/PdfPig/blob/master/src/UglyToad.PdfPig.Core/StreamInputBytes.cs#L45.
         // Thus if it isn't, which is the case with e.g. Azure Blob Storage, we need to copy it to a new, seekable
         // Stream.
-        MemoryStream seekableStream = null;
+        RecyclableMemoryStream seekableStream = null;
         try
         {
             if (!fileStream.CanSeek)
