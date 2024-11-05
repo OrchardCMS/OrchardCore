@@ -8,11 +8,13 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Templates.Models;
 using OrchardCore.Templates.Services;
 using OrchardCore.Templates.ViewModels;
+using PlacementsAdminController = OrchardCore.Placements.Controllers.AdminController;
 
 namespace OrchardCore.Templates.Controllers;
 
@@ -164,26 +166,7 @@ public sealed class TemplateController : Controller
 
         if (ModelState.IsValid)
         {
-            if (string.IsNullOrWhiteSpace(model.Name))
-            {
-                ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
-            }
-            else if (string.IsNullOrWhiteSpace(model.Content))
-            {
-                ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
-            }
-            else
-            {
-                var templatesDocument = model.AdminTemplates
-                    ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
-                    : await _templatesManager.GetTemplatesDocumentAsync()
-                    ;
-
-                if (templatesDocument.Templates.ContainsKey(model.Name))
-                {
-                    ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
-                }
-            }
+            await ValidateModelAsync(model);
         }
 
         if (ModelState.IsValid)
@@ -265,18 +248,7 @@ public sealed class TemplateController : Controller
 
         if (ModelState.IsValid)
         {
-            if (string.IsNullOrWhiteSpace(model.Name))
-            {
-                ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
-            }
-            else if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) && templatesDocument.Templates.ContainsKey(model.Name))
-            {
-                ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
-            }
-            else if (string.IsNullOrWhiteSpace(model.Content))
-            {
-                ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
-            }
+            await ValidateModelAsync(model, templatesDocument, sourceName);
         }
 
         if (!templatesDocument.Templates.ContainsKey(sourceName))
@@ -393,6 +365,38 @@ public sealed class TemplateController : Controller
         else
         {
             return RedirectToAction(nameof(Index));
+        }
+    }
+
+    private async Task ValidateModelAsync(TemplateViewModel model, TemplatesDocument templatesDocument = null, string sourceName = null)
+    {
+        if (string.IsNullOrWhiteSpace(model.Name))
+        {
+            ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
+        }
+        else
+        {
+            templatesDocument ??= model.AdminTemplates
+                ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
+                : await _templatesManager.GetTemplatesDocumentAsync();
+
+            if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) &&
+                templatesDocument.Templates.ContainsKey(model.Name))
+            {
+                ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(model.Content))
+        {
+            var placementsLink = Url.ActionLink(
+                nameof(PlacementsAdminController.Index),
+                typeof(PlacementsAdminController).ControllerName(),
+                new { area = "OrchardCore.Placements" });
+            var docsLink = "https://docs.orchardcore.net/en/main/reference/modules/Placements/";
+
+            await _notifier.WarningAsync(H["If you left the content empty because you want to hide the shape, use <a href=\"{0}\">Placements</a> instead. See <a href=\"{1}\">the docs</a> for more info about this feature.", placementsLink, docsLink]);
+            ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
         }
     }
 }
