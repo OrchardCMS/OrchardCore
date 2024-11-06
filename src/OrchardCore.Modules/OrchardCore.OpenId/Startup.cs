@@ -30,7 +30,6 @@ using OrchardCore.OpenId.Services.Handlers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.Tasks;
 using OrchardCore.Recipes;
-using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -52,12 +51,8 @@ public sealed class Startup : StartupBase
                        .UseYesSql();
             });
 
-        // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
-        services.TryAddEnumerable(new[]
-        {
-            ServiceDescriptor.Scoped<IPermissionProvider, Permissions>(),
-            ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>(),
-        });
+        services.AddPermissionProvider<Permissions>();
+        services.AddNavigationProvider<AdminMenu>();
     }
 }
 
