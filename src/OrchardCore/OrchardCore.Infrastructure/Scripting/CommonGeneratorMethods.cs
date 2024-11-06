@@ -33,8 +33,19 @@ public class CommonGeneratorMethods : IGlobalMethodProvider
         Name = "gzip",
         Method = serviceProvider => (Func<string, string>)(encoded =>
         {
-            var bytes = Convert.FromBase64String(encoded);
-            using var stream = new MemoryStream(bytes);
+            var bytes = new Span<byte>();
+
+            var stream = MemoryStreamFactory.GetStream();
+
+            if (Convert.TryFromBase64String(encoded, bytes, out _))
+            {
+                stream.Write(bytes);
+            }
+            else
+            {
+                stream.Write(Convert.FromBase64String(encoded));
+            }
+
             using var gzip = new GZipStream(stream, CompressionMode.Decompress);
 
             using var decompressed = MemoryStreamFactory.GetStream();
@@ -46,7 +57,9 @@ public class CommonGeneratorMethods : IGlobalMethodProvider
                 decompressed.Write(buffer, 0, nRead);
             }
 
-            return Convert.ToBase64String(decompressed.ToArray());
+            stream.Dispose();
+
+            return Convert.ToBase64String(decompressed.GetBuffer());
         }),
     };
 
