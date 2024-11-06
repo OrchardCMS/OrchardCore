@@ -28,7 +28,6 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<Permissions>();
         services.AddSingleton<CorsService>();
 
-        services.TryAddEnumerable(ServiceDescriptor
-            .Transient<IConfigureOptions<CorsOptions>, CorsOptionsConfiguration>());
+        services.AddTransient<IConfigureOptions<CorsOptions>, CorsOptionsConfiguration>();
     }
 }
