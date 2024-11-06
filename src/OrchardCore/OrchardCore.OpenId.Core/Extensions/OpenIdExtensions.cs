@@ -19,8 +19,7 @@ public static class OpenIdExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        builder.Services.TryAddEnumerable(
-            ServiceDescriptor.Scoped<IDataMigration, OpenIdMigrations>());
+        builder.Services.AddDataMigration<OpenIdMigrations>();
 
         // Configure support for an OpenId collection.
         builder.Services.Configure<StoreCollectionOptions>(o => o.Collections.Add("OpenId"));
