@@ -11,16 +11,15 @@ public class PdfMediaFileTextProvider : IMediaFileTextProvider
         // https://github.com/UglyToad/PdfPig/blob/master/src/UglyToad.PdfPig.Core/StreamInputBytes.cs#L45.
         // Thus if it isn't, which is the case with e.g. Azure Blob Storage, we need to copy it to a new, seekable
         // Stream.
-        MemoryStream seekableStream = null;
+        FileStream seekableStream = null;
         try
         {
             if (!fileStream.CanSeek)
             {
-                // Since fileStream.Length might not be supported either, we can't preconfigure the capacity of the
-                // MemoryStream.
-                seekableStream = new MemoryStream();
-                // While this involves loading the file into memory, we don't really have a choice.
+                seekableStream = CreateTemporaryFile();
+
                 await fileStream.CopyToAsync(seekableStream);
+
                 seekableStream.Position = 0;
             }
 
@@ -39,7 +38,16 @@ public class PdfMediaFileTextProvider : IMediaFileTextProvider
             if (seekableStream != null)
             {
                 await seekableStream.DisposeAsync();
+
+                File.Delete(seekableStream.Name);
             }
         }
+    }
+
+    private static FileStream CreateTemporaryFile()
+    {
+        var tempFilePath = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
+
+        return new FileStream(tempFilePath, FileMode.Create, FileAccess.Write);
     }
 }
