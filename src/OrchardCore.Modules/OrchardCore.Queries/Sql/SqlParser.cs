@@ -265,6 +265,7 @@ public class SqlParser
                 if (funArgs.Term.Name == "funArgs" && funArgs.ChildNodes.Count == 0)
                 {
                     _builder.Append(_dialect.RandomOrderByClause);
+
                     continue;
                 }
             }
