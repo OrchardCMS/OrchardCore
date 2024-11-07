@@ -26,7 +26,7 @@ internal sealed class CultureValue : FluidValue
 
     public override object ToObjectValue() => ToStringValue();
 
-    public override string ToStringValue() => _culture.Name;
+    public override string ToStringValue() => CultureInfo.CurrentUICulture.Name;
 
 #pragma warning disable CS0672 // Member overrides obsolete member
     public override void WriteTo(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
@@ -34,7 +34,7 @@ internal sealed class CultureValue : FluidValue
         => writer.Write(ToStringValue());
 
     public async override ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
-        => await writer.WriteAsync(ToStringValue());
+        => await writer.WriteAsync(CultureInfo.CurrentUICulture.Name);
 
     protected override FluidValue GetValue(string name, TemplateContext context)
         => name switch
