@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-348-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-349-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -482,6 +482,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/XopcT"><img src="https://avatars.githubusercontent.com/u/8039133?v=4?s=100" width="100px;" alt="Vladimir Verbitsky"/><br /><sub><b>Vladimir Verbitsky</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=XopcT" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/matTrabolsi"><img src="https://avatars.githubusercontent.com/u/72926503?v=4?s=100" width="100px;" alt="matTrabolsi"/><br /><sub><b>matTrabolsi</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=matTrabolsi" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/denispetrische"><img src="https://avatars.githubusercontent.com/u/95141776?v=4?s=100" width="100px;" alt="Denis"/><br /><sub><b>Denis</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=denispetrische" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/mohit-naroliya"><img src="https://avatars.githubusercontent.com/u/151342309?v=4?s=100" width="100px;" alt="Mohit Naroliya"/><br /><sub><b>Mohit Naroliya</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=mohit-naroliya" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
