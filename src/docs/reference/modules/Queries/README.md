@@ -289,6 +289,12 @@ The SQL parser is also able to convert some specific functions to the intended d
 | `year(_date_)`   | Returns the years part of a date.   |
 | `now()`          | Returns current date time (utc).    |
 
+Order By clauses can also use the `random()` function (case insensitive) to order results randomly, e.g., 
+
+```
+SELECT * FROM ContentItemIndex ORDER BY random()
+```
+
 ## Scripting
 
 The following JavaScript functions are available with this module.
