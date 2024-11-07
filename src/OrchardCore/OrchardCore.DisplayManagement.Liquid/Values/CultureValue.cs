@@ -67,7 +67,7 @@ internal sealed class CultureValue : FluidValue
         };
     }
 
-    private async ValueTask<FluidValue> GetSupportedCulturesAsync(TemplateContext context)
+    private static async ValueTask<FluidValue> GetSupportedCulturesAsync(TemplateContext context)
     {
         var ctx = context as LiquidTemplateContext
             ?? throw new InvalidOperationException($"An implementation of '{nameof(LiquidTemplateContext)}' is required");
