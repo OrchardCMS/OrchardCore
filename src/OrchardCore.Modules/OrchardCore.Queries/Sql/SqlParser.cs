@@ -257,7 +257,7 @@ public class SqlParser
             var id = idList.ChildNodes[i].ChildNodes[0];
 
             // RANDOM() is a special case where we need to use the dialect's random function.
-            if (id.ChildNodes[0].Token?.ValueString == "RANDOM")
+            if (id.ChildNodes[0].Token != null && id.ChildNodes[0].Token.ValueString.Equals("RANDOM", StringComparison.OrdinalIgnoreCase))
             {
                 var funArgs = idList.ChildNodes[i].ChildNodes[1].ChildNodes[0];
 

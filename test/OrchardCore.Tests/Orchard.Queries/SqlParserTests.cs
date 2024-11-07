@@ -248,6 +248,7 @@ public class SqlParserTests
     [InlineData("select a order by RANDOM()", "SELECT [a] ORDER BY newid();")]
     [InlineData("select a order by random()", "SELECT [a] ORDER BY newid();")]
     [InlineData("select a order by RANDOM", "SELECT [a] ORDER BY [RANDOM];")]
+    [InlineData("select a order by random", "SELECT [a] ORDER BY [random];")]
     public void ShouldOrderByRandom(string sql, string expectedSql)
     {
         var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var errors);
