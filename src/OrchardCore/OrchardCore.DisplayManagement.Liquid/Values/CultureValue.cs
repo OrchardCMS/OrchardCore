@@ -78,7 +78,7 @@ internal sealed class CultureValue : FluidValue
         return new ArrayValue(supportedCultures.Select(x => new CultureValue(CultureInfo.GetCultureInfo(x))).ToArray());
     }
 
-    private async ValueTask<FluidValue> GetDefaultCultureAsync(TemplateContext context)
+    private static async ValueTask<FluidValue> GetDefaultCultureAsync(TemplateContext context)
     {
         var ctx = context as LiquidTemplateContext
             ?? throw new InvalidOperationException($"An implementation of '{nameof(LiquidTemplateContext)}' is required");
