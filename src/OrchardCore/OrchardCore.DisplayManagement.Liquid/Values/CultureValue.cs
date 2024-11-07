@@ -75,7 +75,8 @@ internal sealed class CultureValue : FluidValue
         var services = ctx.Services;
         var localizationService = services.GetRequiredService<ILocalizationService>();
         var supportedCultures = await localizationService.GetSupportedCulturesAsync();
-        return new ArrayValue(supportedCultures.Select(x => new CultureValue(CultureInfo.GetCultureInfo(x))).ToArray());
+
+        return new ArrayValue(supportedCultures.Select(c => new CultureValue(CultureInfo.GetCultureInfo(c))).ToArray());
     }
 
     private static async ValueTask<FluidValue> GetDefaultCultureAsync(TemplateContext context)
