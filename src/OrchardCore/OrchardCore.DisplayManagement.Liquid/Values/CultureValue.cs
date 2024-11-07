@@ -85,6 +85,7 @@ internal sealed class CultureValue : FluidValue
 
         var services = ctx.Services;
         var localizationService = services.GetRequiredService<ILocalizationService>();
+
         return new CultureValue(CultureInfo.GetCultureInfo(await localizationService.GetDefaultCultureAsync()));
     }
 }
