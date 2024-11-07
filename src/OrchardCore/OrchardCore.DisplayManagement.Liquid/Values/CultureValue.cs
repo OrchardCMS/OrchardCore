@@ -8,10 +8,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Values;
 
 internal sealed class CultureValue : FluidValue
 {
-    private readonly CultureInfo _culture;
-
-    public CultureValue() => _culture = CultureInfo.CurrentUICulture;
-
     public override FluidValues Type => FluidValues.Object;
 
     public override bool Equals(FluidValue other)
@@ -43,11 +39,11 @@ internal sealed class CultureValue : FluidValue
     protected override FluidValue GetValue(string name, TemplateContext context)
         => name switch
         {
-            nameof(CultureInfo.Name) => new StringValue(_culture.Name),
-            "Dir" => new StringValue(_culture.GetLanguageDirection()),
-            nameof(CultureInfo.NativeName) => new StringValue(_culture.NativeName),
-            nameof(CultureInfo.DisplayName) => new StringValue(_culture.DisplayName),
-            nameof(CultureInfo.TwoLetterISOLanguageName) => new StringValue(_culture.TwoLetterISOLanguageName),
+            nameof(CultureInfo.Name) => new StringValue(CultureInfo.CurrentUICulture.Name),
+            "Dir" => new StringValue(CultureInfo.CurrentUICulture.GetLanguageDirection()),
+            nameof(CultureInfo.NativeName) => new StringValue(CultureInfo.CurrentUICulture.NativeName),
+            nameof(CultureInfo.DisplayName) => new StringValue(CultureInfo.CurrentUICulture.DisplayName),
+            nameof(CultureInfo.TwoLetterISOLanguageName) => new StringValue(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName),
             _ => NilValue.Instance
         };
 }
