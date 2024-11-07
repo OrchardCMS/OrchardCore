@@ -67,9 +67,8 @@ public static class OrchardCoreBuilderExtensions
                 o.MemberAccessStrategy.Register<Shape>("*", new ShapeAccessor());
                 o.MemberAccessStrategy.Register<ZoneHolding>("*", new ShapeAccessor());
                 o.MemberAccessStrategy.Register<ShapeMetadata>();
-                o.MemberAccessStrategy.Register<CultureInfo>();
 
-                o.Scope.SetValue("Culture", new CultureValue());
+                o.Scope.SetValue("Culture", new CultureValue(null));
 
                 o.Scope.SetValue("Environment", new ObjectValue(new LiquidEnvironmentAccessor()));
                 o.MemberAccessStrategy.Register<LiquidEnvironmentAccessor, FluidValue>((obj, name, ctx) =>
@@ -163,6 +162,8 @@ public static class OrchardCoreBuilderExtensions
             .AddLiquidFilter<AppendVersionFilter>("append_version")
             .AddLiquidFilter<ResourceUrlFilter>("resource_url")
             .AddLiquidFilter<SanitizeHtmlFilter>("sanitize_html")
+
+            // Deprecated, remove in a future version.
             .AddLiquidFilter<SupportedCulturesFilter>("supported_cultures");
         });
 
