@@ -48,6 +48,7 @@ public static class OrchardCoreBuilderExtensions
             services.AddScoped<IRazorViewExtensionProvider, LiquidViewExtensionProvider>();
             services.AddSingleton<LiquidTagHelperFactory>();
 
+#pragma warning disable CS0618 // Type or member is obsolete
             services.Configure<TemplateOptions>(o =>
             {
                 o.ValueConverters.Add(x =>
@@ -68,7 +69,7 @@ public static class OrchardCoreBuilderExtensions
                 o.MemberAccessStrategy.Register<ZoneHolding>("*", new ShapeAccessor());
                 o.MemberAccessStrategy.Register<ShapeMetadata>();
 
-                o.Scope.SetValue("Culture", new CultureValue(null));
+                o.Scope.SetValue("Culture", new CultureValue());
 
                 o.Scope.SetValue("Environment", new ObjectValue(new LiquidEnvironmentAccessor()));
                 o.MemberAccessStrategy.Register<LiquidEnvironmentAccessor, FluidValue>((obj, name, ctx) =>
@@ -165,6 +166,7 @@ public static class OrchardCoreBuilderExtensions
 
             // Deprecated, remove in a future version.
             .AddLiquidFilter<SupportedCulturesFilter>("supported_cultures");
+#pragma warning restore CS0618 // Type or member is obsolete
         });
 
         return builder;

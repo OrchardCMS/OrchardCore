@@ -18,11 +18,20 @@ internal sealed class CultureValue : FluidValue
     public override FluidValues Type => FluidValues.Object;
 
     /// <summary>
-    /// Creates a new instance of a CultureValue.
+    /// Creates a new instance of a <see cref="CultureValue"/> that uses <see cref="CultureInfo.CurrentUICulture"/> when resolved.
     /// </summary>
-    /// <param name="culture">The culture it represents, or <see langword="null"/> for the current ui culture at the time of resolution.</param>
+    public CultureValue()
+    {
+        _culture = null;
+    }
+
+    /// <summary>
+    /// Creates a new instance of a <see cref="CultureValue"/> for the specified culture.
+    /// </summary>
     public CultureValue(CultureInfo culture)
     {
+        ArgumentNullException.ThrowIfNull(culture);
+
         _culture = culture;
     }
 
