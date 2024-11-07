@@ -146,7 +146,7 @@ public class SqlGrammar : Grammar
 
         // Create Index.
         orderList.Rule = MakePlusRule(orderList, comma, orderMember);
-        orderMember.Rule = Id + orderDirOptional;
+        orderMember.Rule = Id + (orderDirOptional | "(" + functionArguments + ")");
         orderDirOptional.Rule = Empty | "ASC" | "DESC";
 
         // Select stmt.
