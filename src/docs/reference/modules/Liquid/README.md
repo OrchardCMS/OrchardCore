@@ -512,7 +512,7 @@ The following properties are available on the `Culture` object.
 | `SupportedCultures` | `['en-US', 'fr' ]` | The list of the currently supported cultures in the site. Each result can be chained with other properties listed in this table. |
 | `DefaultCulture` | `en-US` | The default culture as defined in the settings. |
 
-##### Example
+##### Usage
 
 Here is an example of how to print the names of supported cultures and find which one is currently used:
 
