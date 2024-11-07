@@ -246,6 +246,7 @@ public class SqlParserTests
 
     [Theory]
     [InlineData("select a order by RANDOM()", "SELECT [a] ORDER BY newid();")]
+    [InlineData("select a order by random()", "SELECT [a] ORDER BY newid();")]
     [InlineData("select a order by RANDOM", "SELECT [a] ORDER BY [RANDOM];")]
     public void ShouldOrderByRandom(string sql, string expectedSql)
     {
