@@ -39,7 +39,7 @@ public class PdfMediaFileTextProvider : IMediaFileTextProvider
             {
                 await seekableStream.DisposeAsync();
 
-                await File.DeleteAsync(seekableStream.Name);
+                await Task.Run(() => File.Delete(seekableStream.Name));
             }
         }
     }
