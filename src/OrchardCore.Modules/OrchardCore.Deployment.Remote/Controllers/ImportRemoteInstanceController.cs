@@ -68,10 +68,10 @@ public sealed class ImportRemoteInstanceController : Controller
             return StatusCode((int)HttpStatusCode.BadRequest, "The Api Key was not recognized");
         }
 
-        // Create a temporary filename to save the archive
-        var tempArchiveName = Path.GetTempFileName() + ".zip";
+        // Create a temporary filename to save the archive.
+        var tempArchiveName = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName()) + ".zip";
 
-        // Create a temporary folder to extract the archive to
+        // Create a temporary folder to extract the archive to.
         var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
         try
