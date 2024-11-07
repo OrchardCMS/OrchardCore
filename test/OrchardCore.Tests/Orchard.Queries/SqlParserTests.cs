@@ -251,7 +251,10 @@ public class SqlParserTests
     [InlineData("select a order by random", "SELECT [a] ORDER BY [random];")]
     public void ShouldOrderByRandom(string sql, string expectedSql)
     {
+        // Arrange & Act
         var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var errors);
+        
+        // Assert
         Assert.True(result);
         Assert.Equal(expectedSql, FormatSql(rawQuery));
     }
