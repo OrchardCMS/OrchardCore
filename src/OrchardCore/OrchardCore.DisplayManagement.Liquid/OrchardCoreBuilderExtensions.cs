@@ -69,7 +69,7 @@ public static class OrchardCoreBuilderExtensions
                 o.MemberAccessStrategy.Register<ShapeMetadata>();
                 o.MemberAccessStrategy.Register<CultureInfo>();
 
-                o.Scope.SetValue("Culture", new CultureValue(CultureInfo.CurrentUICulture));
+                o.Scope.SetValue("Culture", new CultureValue());
 
                 o.Scope.SetValue("Environment", new ObjectValue(new LiquidEnvironmentAccessor()));
                 o.MemberAccessStrategy.Register<LiquidEnvironmentAccessor, FluidValue>((obj, name, ctx) =>

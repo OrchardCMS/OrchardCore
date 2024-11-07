@@ -10,7 +10,7 @@ internal sealed class CultureValue : FluidValue
 {
     private readonly CultureInfo _culture;
 
-    public CultureValue(CultureInfo culture) => _culture = culture;
+    public CultureValue() => _culture = CultureInfo.CurrentUICulture;
 
     public override FluidValues Type => FluidValues.Object;
 
