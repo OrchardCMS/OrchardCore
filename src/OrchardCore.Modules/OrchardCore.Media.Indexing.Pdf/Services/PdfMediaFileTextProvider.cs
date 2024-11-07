@@ -16,7 +16,7 @@ public class PdfMediaFileTextProvider : IMediaFileTextProvider
         {
             if (!fileStream.CanSeek)
             {
-                seekableStream = GetTemporaryFileStream();
+                seekableStream = new FileStream(Path.GetTempFileName(), FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.DeleteOnClose | FileOptions.Asynchronous);
 
                 await fileStream.CopyToAsync(seekableStream);
 
@@ -38,16 +38,7 @@ public class PdfMediaFileTextProvider : IMediaFileTextProvider
             if (seekableStream != null)
             {
                 await seekableStream.DisposeAsync();
-
-                await Task.Run(() => File.Delete(seekableStream.Name));
             }
         }
-    }
-
-    private static FileStream GetTemporaryFileStream()
-    {
-        var tempFilePath = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
-
-        return new FileStream(tempFilePath, FileMode.Create, FileAccess.Write);
     }
 }
