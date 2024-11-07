@@ -24,7 +24,10 @@ public class DefaultDocumentSerializer : IDocumentSerializer
         var data = JsonSerializer.SerializeToUtf8Bytes(document, _serializerOptions);
         if (data.Length >= compressThreshold)
         {
-            data = Compress(data).ToArray();
+            var stream = MemoryStreamFactory.GetStream();
+            var length = Compress(data, stream);
+
+            data = stream.GetBuffer().AsSpan().Slice(0, length).ToArray();
         }
 
         return Task.FromResult(data);
@@ -59,15 +62,14 @@ public class DefaultDocumentSerializer : IDocumentSerializer
         return false;
     }
 
-    internal static ReadOnlySpan<byte> Compress(byte[] data)
+    internal static int Compress(byte[] data, Stream output)
     {
         using var input = new MemoryStream(data);
-        using var output = MemoryStreamFactory.GetStream();
         using var gZip = new GZipStream(output, CompressionMode.Compress);
 
         input.CopyTo(gZip);
 
-        return output.GetBuffer().AsSpan().Slice(0, (int)gZip.Length);
+        return (int)gZip.Length;
     }
 
     internal static ReadOnlySpan<byte> Decompress(byte[] data)

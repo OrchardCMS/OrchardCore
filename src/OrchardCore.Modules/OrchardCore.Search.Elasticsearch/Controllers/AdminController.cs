@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Globalization;
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -466,7 +467,9 @@ public sealed class AdminController : Controller
         return await Query(new AdminQueryViewModel
         {
             IndexName = indexName,
-            DecodedQuery = string.IsNullOrWhiteSpace(query) ? string.Empty : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query))
+            DecodedQuery = string.IsNullOrWhiteSpace(query)
+            ? string.Empty
+            : Encoding.UTF8.GetString(Str.FromBase64String(query))
         });
     }
 

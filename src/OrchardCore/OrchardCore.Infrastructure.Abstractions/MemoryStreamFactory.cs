@@ -8,4 +8,7 @@ public static class MemoryStreamFactory
 
     public static RecyclableMemoryStream GetStream(string tag = null)
         => _manager.GetStream(tag);
+
+    public static RecyclableMemoryStream GetStream(int requiredSize, string tag = null)
+        => _manager.GetStream(tag, requiredSize);
 }

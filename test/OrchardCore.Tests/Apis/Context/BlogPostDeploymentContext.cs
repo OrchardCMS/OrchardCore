@@ -75,7 +75,7 @@ public class BlogPostDeploymentContext : SiteContext
             recipe.WriteTo(streamWriter);
         }
 
-        zipStream.Position = 0;
+        zipStream.Seek(0, SeekOrigin.Begin);
 
         using var requestContent = new MultipartFormDataContent
         {

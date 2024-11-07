@@ -80,6 +80,7 @@ public class TestMediaEventHandler : IMediaCreatingEventHandler
     {
         var outStream = MemoryStreamFactory.GetStream();
         await inputStream.CopyToAsync(outStream);
+        outStream.Seek(0, SeekOrigin.Begin);
 
         return outStream;
     }
