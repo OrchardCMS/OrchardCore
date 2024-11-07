@@ -24,7 +24,7 @@ public class DefaultDocumentSerializer : IDocumentSerializer
         var data = JsonSerializer.SerializeToUtf8Bytes(document, _serializerOptions);
         if (data.Length >= compressThreshold)
         {
-            data = Compress(data);
+            data = Compress(data).ToArray();
         }
 
         return Task.FromResult(data);
@@ -33,12 +33,16 @@ public class DefaultDocumentSerializer : IDocumentSerializer
     public Task<TDocument> DeserializeAsync<TDocument>(byte[] data)
         where TDocument : class, IDocument, new()
     {
+        TDocument document;
+
         if (IsCompressed(data))
         {
-            data = Decompress(data);
+            document = JsonSerializer.Deserialize<TDocument>(Decompress(data), _serializerOptions);
         }
-
-        var document = JsonSerializer.Deserialize<TDocument>(data, _serializerOptions);
+        else
+        {
+            document = JsonSerializer.Deserialize<TDocument>(data, _serializerOptions);
+        }
 
         return Task.FromResult(document);
     }
@@ -55,37 +59,24 @@ public class DefaultDocumentSerializer : IDocumentSerializer
         return false;
     }
 
-    internal static byte[] Compress(byte[] data)
+    internal static ReadOnlySpan<byte> Compress(byte[] data)
     {
         using var input = new MemoryStream(data);
         using var output = MemoryStreamFactory.GetStream();
-        using (var gzip = new GZipStream(output, CompressionMode.Compress))
-        {
-            input.CopyTo(gzip);
-        }
+        using var gZip = new GZipStream(output, CompressionMode.Compress);
 
-        if (output.TryGetBuffer(out var buffer))
-        {
-            return buffer.Array;
-        }
+        input.CopyTo(gZip);
 
-        return output.ToArray();
+        return output.GetBuffer().AsSpan().Slice(0, (int)gZip.Length);
     }
 
-    internal static byte[] Decompress(byte[] data)
+    internal static ReadOnlySpan<byte> Decompress(byte[] data)
     {
         using var input = new MemoryStream(data);
         using var output = MemoryStreamFactory.GetStream();
-        using (var gzip = new GZipStream(input, CompressionMode.Decompress))
-        {
-            gzip.CopyTo(output);
-        }
+        using var gZip = new GZipStream(input, CompressionMode.Decompress);
+        gZip.CopyTo(output);
 
-        if (output.TryGetBuffer(out var buffer))
-        {
-            return buffer.Array;
-        }
-
-        return output.ToArray();
+        return output.GetBuffer().AsSpan().Slice(0, (int)gZip.Length);
     }
 }

@@ -47,8 +47,10 @@ public class FilesScriptEngine : IScriptingEngine
 
             using var fileStream = fileInfo.CreateReadStream();
             using var memoryStream = MemoryStreamFactory.GetStream();
+            memoryStream.WriteTo(fileStream);
+            memoryStream.Seek(0, SeekOrigin.Begin);
 
-            return Convert.ToBase64String(memoryStream.GetBuffer());
+            return Convert.ToBase64String(memoryStream.GetBuffer().AsSpan().Slice(0, (int)memoryStream.Length));
         }
         else
         {

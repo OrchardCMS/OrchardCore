@@ -1,5 +1,4 @@
 using Cysharp.Text;
-using Microsoft.IO;
 using UglyToad.PdfPig;
 
 namespace OrchardCore.Media.Indexing;
@@ -18,7 +17,7 @@ public class PdfMediaFileTextProvider : IMediaFileTextProvider
             if (!fileStream.CanSeek)
             {
                 seekableStream = new FileStream(Path.GetTempFileName(), FileMode.OpenOrCreate, FileAccess.Write, FileShare.None, 4096, FileOptions.DeleteOnClose);
-                
+
                 await fileStream.CopyToAsync(seekableStream);
 
                 seekableStream.Position = 0;
