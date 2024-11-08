@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace OrchardCore;
 
 public static class Str
@@ -10,6 +8,7 @@ public static class Str
         {
             return [];
         }
+
         var neededLength = GetByteArrayLengthFromBase64(base64);
 
         using var memoryStream = MemoryStreamFactory.GetStream(neededLength);
@@ -23,33 +22,13 @@ public static class Str
         return bytes;
     }
 
-    public static bool TryFromBase64String(string base64, out ReadOnlySpan<byte> bytes)
-    {
-        if (string.IsNullOrEmpty(base64))
-        {
-            bytes = [];
-
-            return false;
-        }
-
-        Span<byte> data = new byte[GetByteArrayLengthFromBase64(base64)];
-
-        if (!Convert.TryFromBase64String(base64, data, out var _))
-        {
-            bytes = [];
-
-            return false;
-        }
-
-        bytes = data;
-
-        return true;
-    }
-
-    // Base64 string length gives us the original byte length. It encodes 3 bytes into 4 characters.
-    // The formula to calculate the number of bytes from the base64 string length is:
+    // The length of a Base64-encoded string corresponds to the original byte length. 
+    // Base64 encoding converts every 3 bytes of data into 4 characters. 
+    // To calculate the original byte length from the Base64 string, use the formula: 
+    // (length * 3) / 4. This ensures the correct byte count by multiplying the length by 3 
+    // before dividing by 4.
     private static int GetByteArrayLengthFromBase64(string base64String)
     {
-        return (base64String.Length * 3) / 4;
+        return base64String.Length * 3 / 4;
     }
 }
