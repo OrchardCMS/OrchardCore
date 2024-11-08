@@ -469,7 +469,7 @@ public sealed class AdminController : Controller
             IndexName = indexName,
             DecodedQuery = string.IsNullOrWhiteSpace(query)
             ? string.Empty
-            : Encoding.UTF8.GetString(Convert.FromBase64String(query))
+            : Base64.FromUTF8Base64String(query)
         });
     }
 

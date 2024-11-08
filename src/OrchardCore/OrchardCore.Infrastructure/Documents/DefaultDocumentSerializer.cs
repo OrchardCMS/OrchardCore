@@ -8,8 +8,10 @@ namespace OrchardCore.Documents;
 /// <summary>
 /// Serializes and deserializes an <see cref="IDocument"/> into and from a sequence of bytes.
 /// </summary>
-public class DefaultDocumentSerializer : IDocumentSerializer
+public sealed class DefaultDocumentSerializer : IDocumentSerializer
 {
+    private const string StreamTag = nameof(DefaultDocumentSerializer);
+
     private static readonly byte[] _gZipHeaderBytes = [0x1f, 0x8b];
 
     private readonly JsonSerializerOptions _serializerOptions;
@@ -19,19 +21,31 @@ public class DefaultDocumentSerializer : IDocumentSerializer
         _serializerOptions = serializerOptions;
     }
 
-    public Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = int.MaxValue)
+    public async Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = int.MaxValue)
         where TDocument : class, IDocument, new()
     {
-        var data = JsonSerializer.SerializeToUtf8Bytes(document, _serializerOptions);
-        if (data.Length >= compressThreshold)
-        {
-            var stream = MemoryStreamFactory.GetStream();
-            Compress(data, stream);
+        using var utf8Stream = MemoryStreamFactory.GetStream(StreamTag);
+        byte[] result;
 
-            data = stream.GetBuffer().AsSpan().Slice(0, (int)stream.Length).ToArray();
+        await JsonSerializer.SerializeAsync(utf8Stream, document, _serializerOptions);
+        utf8Stream.Seek(0, SeekOrigin.Begin);
+
+        if (utf8Stream.Length >= compressThreshold)
+        {
+            using var stream = MemoryStreamFactory.GetStream(StreamTag);
+            Compress(utf8Stream, stream);
+
+            result = new byte[stream.Length];
+            stream.Seek(0, SeekOrigin.Begin);
+            stream.CopyTo(new MemoryStream(result));
+        }
+        else
+        {
+            result = new byte[utf8Stream.Length];
+            utf8Stream.CopyTo(new MemoryStream(result));
         }
 
-        return Task.FromResult(data);
+        return result;
     }
 
     public Task<TDocument> DeserializeAsync<TDocument>(byte[] data)
@@ -41,12 +55,13 @@ public class DefaultDocumentSerializer : IDocumentSerializer
 
         if (IsCompressed(data))
         {
-            var stream = MemoryStreamFactory.GetStream();
+            // Assume the decompressed data could fill a twice as big buffer.
+            var stream = MemoryStreamFactory.GetStream(data.Length * 2, StreamTag);
+
             Decompress(data, stream);
+            stream.Seek(0, SeekOrigin.Begin);
 
-            var span = stream.GetBuffer().AsSpan().Slice(0, (int)stream.Length);
-
-            document = JsonSerializer.Deserialize<TDocument>(span, _serializerOptions);
+            document = JsonSerializer.Deserialize<TDocument>(stream, _serializerOptions);
         }
         else
         {
@@ -58,22 +73,15 @@ public class DefaultDocumentSerializer : IDocumentSerializer
 
     internal static bool IsCompressed(byte[] data)
     {
-        // Ensure data is at least as long as the GZip header
-        if (data.Length >= _gZipHeaderBytes.Length)
-        {
-            // Compare the header bytes.
-            return data.Take(_gZipHeaderBytes.Length).SequenceEqual(_gZipHeaderBytes);
-        }
+        ArgumentNullException.ThrowIfNull(data);
 
-        return false;
+        return data.AsSpan().StartsWith(_gZipHeaderBytes);
     }
 
-    internal static void Compress(byte[] data, RecyclableMemoryStream output)
+    internal static void Compress(Stream source, RecyclableMemoryStream output)
     {
-        using var input = new MemoryStream(data);
-        using var gZip = new GZipStream(output, CompressionMode.Compress);
-
-        input.CopyTo(gZip);
+        using var gZip = new GZipStream(output, CompressionMode.Compress, leaveOpen: true);
+        source.CopyTo(gZip);
     }
 
     internal static void Decompress(byte[] data, RecyclableMemoryStream output)
