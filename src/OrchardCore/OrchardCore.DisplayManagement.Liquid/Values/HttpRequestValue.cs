@@ -8,7 +8,7 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Values;
 
-internal sealed partial class HttpRequestValue : FluidValue
+internal sealed class HttpRequestValue : FluidValue
 {
     private readonly HttpRequest _request;
 

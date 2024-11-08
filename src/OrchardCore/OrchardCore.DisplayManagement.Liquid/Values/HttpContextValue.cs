@@ -8,7 +8,7 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Values;
 
-internal sealed partial class HttpContextValue : FluidValue
+internal sealed class HttpContextValue : FluidValue
 {
     private readonly HttpContext _context;
 
