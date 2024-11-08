@@ -68,7 +68,7 @@ public static class ServiceCollectionExtensions
         where TDisplayDriver : DisplayDriver<DeploymentStep, TStep>
         where TStep : DeploymentStep, new()
     {
-        services.AddScoped<IDisplayDriver<DeploymentStep>, TDisplayDriver>();
+        services.AddDisplayDriver<DeploymentStep, TDisplayDriver>();
 
         return services;
     }

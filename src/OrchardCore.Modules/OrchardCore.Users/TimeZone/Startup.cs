@@ -17,6 +17,6 @@ public sealed class Startup : StartupBase
         services.AddScoped<UserTimeZoneService>();
         services.AddScoped<IUserTimeZoneService>(sp => sp.GetRequiredService<UserTimeZoneService>());
         services.AddScoped<IUserEventHandler>(sp => sp.GetRequiredService<UserTimeZoneService>());
-        services.AddScoped<IDisplayDriver<User>, UserTimeZoneDisplayDriver>();
+        services.AddDisplayDriver<User, UserTimeZoneDisplayDriver>();
     }
 }
