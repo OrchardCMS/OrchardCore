@@ -13,7 +13,5 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddDisplayDriver<TModel, TDriver>(this IServiceCollection services)
         where TDriver : class, IDisplayDriver<TModel>
-    {
-        return services.AddScoped<IDisplayDriver<TModel>, TDriver>();
-    }
+    => services.AddScoped<IDisplayDriver<TModel>, TDriver>();
 }
