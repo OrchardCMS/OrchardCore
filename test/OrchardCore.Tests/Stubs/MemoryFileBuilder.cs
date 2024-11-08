@@ -17,7 +17,7 @@ public class MemoryFileBuilder
         await stream.CopyToAsync(ms);
         ms.Seek(0, SeekOrigin.Begin);
 
-        VirtualFiles[subpath] = ms.GetBuffer().AsSpan().Slice((int)ms.Length).ToArray();
+        VirtualFiles[subpath] = ms.GetBuffer().AsSpan().Slice(0, (int)ms.Length).ToArray();
     }
 
     /// <summary>

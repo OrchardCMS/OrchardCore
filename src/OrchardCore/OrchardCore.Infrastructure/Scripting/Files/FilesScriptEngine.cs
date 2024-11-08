@@ -50,7 +50,7 @@ public class FilesScriptEngine : IScriptingEngine
             memoryStream.WriteTo(fileStream);
             memoryStream.Seek(0, SeekOrigin.Begin);
 
-            return Convert.ToBase64String(memoryStream.GetBuffer().AsSpan().Slice(0, (int)memoryStream.Length));
+            return Convert.ToBase64String(memoryStream.GetBuffer(), 0, (int)memoryStream.Length);
         }
         else
         {

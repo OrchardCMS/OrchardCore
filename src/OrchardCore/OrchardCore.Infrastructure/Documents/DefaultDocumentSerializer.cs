@@ -44,7 +44,9 @@ public class DefaultDocumentSerializer : IDocumentSerializer
             var stream = MemoryStreamFactory.GetStream();
             Decompress(data, stream);
 
-            document = JsonSerializer.Deserialize<TDocument>(stream, _serializerOptions);
+            var span = stream.GetBuffer().AsSpan().Slice(0, (int)stream.Length);
+
+            document = JsonSerializer.Deserialize<TDocument>(span, _serializerOptions);
         }
         else
         {
@@ -74,12 +76,10 @@ public class DefaultDocumentSerializer : IDocumentSerializer
         input.CopyTo(gZip);
     }
 
-    internal static ReadOnlySpan<byte> Decompress(byte[] data, RecyclableMemoryStream output)
+    internal static void Decompress(byte[] data, RecyclableMemoryStream output)
     {
         using var input = new MemoryStream(data);
         using var gZip = new GZipStream(input, CompressionMode.Decompress);
         gZip.CopyTo(output);
-
-        return output.GetBuffer().AsSpan().Slice(0, (int)gZip.Length);
     }
 }
