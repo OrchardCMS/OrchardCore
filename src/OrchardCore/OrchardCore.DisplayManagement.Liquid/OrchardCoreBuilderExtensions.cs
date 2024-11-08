@@ -13,6 +13,7 @@ using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement.Liquid.Filters;
 using OrchardCore.DisplayManagement.Liquid.TagHelpers;
 using OrchardCore.DisplayManagement.Liquid.Tags;
+using OrchardCore.DisplayManagement.Liquid.Values;
 using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
@@ -47,6 +48,7 @@ public static class OrchardCoreBuilderExtensions
             services.AddScoped<IRazorViewExtensionProvider, LiquidViewExtensionProvider>();
             services.AddSingleton<LiquidTagHelperFactory>();
 
+#pragma warning disable CS0618 // Type or member is obsolete
             services.Configure<TemplateOptions>(o =>
             {
                 o.ValueConverters.Add(x =>
@@ -66,21 +68,8 @@ public static class OrchardCoreBuilderExtensions
                 o.MemberAccessStrategy.Register<Shape>("*", new ShapeAccessor());
                 o.MemberAccessStrategy.Register<ZoneHolding>("*", new ShapeAccessor());
                 o.MemberAccessStrategy.Register<ShapeMetadata>();
-                o.MemberAccessStrategy.Register<CultureInfo>();
 
-                o.Scope.SetValue("Culture", new ObjectValue(new LiquidCultureAccessor()));
-                o.MemberAccessStrategy.Register<LiquidCultureAccessor, FluidValue>((obj, name, ctx) =>
-                {
-                    return name switch
-                    {
-                        nameof(CultureInfo.Name) => new StringValue(CultureInfo.CurrentUICulture.Name),
-                        "Dir" => new StringValue(CultureInfo.CurrentUICulture.GetLanguageDirection()),
-                        nameof(CultureInfo.NativeName) => new StringValue(CultureInfo.CurrentUICulture.NativeName),
-                        nameof(CultureInfo.DisplayName) => new StringValue(CultureInfo.CurrentUICulture.DisplayName),
-                        nameof(CultureInfo.TwoLetterISOLanguageName) => new StringValue(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName),
-                        _ => NilValue.Instance
-                    };
-                });
+                o.Scope.SetValue("Culture", new CultureValue());
 
                 o.Scope.SetValue("Environment", new ObjectValue(new LiquidEnvironmentAccessor()));
                 o.MemberAccessStrategy.Register<LiquidEnvironmentAccessor, FluidValue>((obj, name, ctx) =>
@@ -174,7 +163,10 @@ public static class OrchardCoreBuilderExtensions
             .AddLiquidFilter<AppendVersionFilter>("append_version")
             .AddLiquidFilter<ResourceUrlFilter>("resource_url")
             .AddLiquidFilter<SanitizeHtmlFilter>("sanitize_html")
+
+            // Deprecated, remove in a future version.
             .AddLiquidFilter<SupportedCulturesFilter>("supported_cultures");
+#pragma warning restore CS0618 // Type or member is obsolete
         });
 
         return builder;
