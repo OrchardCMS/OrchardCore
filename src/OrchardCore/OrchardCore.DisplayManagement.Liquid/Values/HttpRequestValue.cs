@@ -18,11 +18,7 @@ internal sealed class HttpRequestValue : FluidValue
     /// Creates a new instance of a <see cref="HttpRequestValue"/> for the specified HTTP request.
     /// </summary>
     public HttpRequestValue(HttpRequest request = null)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-
-        _request = request;
-    }
+        => _request = request;
 
     public override bool Equals(FluidValue other)
     {
