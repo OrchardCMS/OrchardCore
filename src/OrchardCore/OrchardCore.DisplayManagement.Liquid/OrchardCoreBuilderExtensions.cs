@@ -71,25 +71,7 @@ public static class OrchardCoreBuilderExtensions
 
                 o.Scope.SetValue("Culture", new CultureValue());
 
-                o.Scope.SetValue("Environment", new ObjectValue(new LiquidEnvironmentAccessor()));
-                o.MemberAccessStrategy.Register<LiquidEnvironmentAccessor, FluidValue>((obj, name, ctx) =>
-                {
-                    var hostEnvironment = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHostEnvironment>();
-
-                    if (hostEnvironment != null)
-                    {
-                        return name switch
-                        {
-                            "IsDevelopment" => BooleanValue.Create(hostEnvironment.IsDevelopment()),
-                            "IsStaging" => BooleanValue.Create(hostEnvironment.IsStaging()),
-                            "IsProduction" => BooleanValue.Create(hostEnvironment.IsProduction()),
-                            "Name" => StringValue.Create(hostEnvironment.EnvironmentName),
-                            _ => NilValue.Instance
-                        };
-                    }
-
-                    return NilValue.Instance;
-                });
+                o.Scope.SetValue("Environment", new HostingEnvironmentValue());
 
                 o.Scope.SetValue("Request", new ObjectValue(new LiquidRequestAccessor()));
                 o.MemberAccessStrategy.Register<LiquidRequestAccessor, FluidValue>((obj, name, ctx) =>
