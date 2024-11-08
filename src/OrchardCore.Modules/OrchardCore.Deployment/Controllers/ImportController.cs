@@ -64,7 +64,7 @@ public sealed class ImportController : Controller
 
         if (importedPackage != null)
         {
-            var tempArchiveName = Path.GetTempFileName() + Path.GetExtension(importedPackage.FileName);
+            var tempArchiveName = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName()) + Path.GetExtension(importedPackage.FileName);
             var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
             try

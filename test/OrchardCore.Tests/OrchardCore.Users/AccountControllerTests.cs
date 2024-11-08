@@ -463,7 +463,7 @@ public class AccountControllerTests
                     featureIds.Add(UserConstants.Features.ExternalAuthentication);
                 }
 
-                var tempArchiveName = Path.GetTempFileName() + ".json";
+                var tempArchiveName = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName()) + ".json";
                 var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
                 var data = new JsonObject
