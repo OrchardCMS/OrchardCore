@@ -587,7 +587,6 @@ public sealed class ElasticIndexManager
                 var key = filterProperty.Key.Replace("_", string.Empty);
 
                 var property = properties.FirstOrDefault(p => p.Name.Equals(key, StringComparison.OrdinalIgnoreCase));
-                var propertyType = property.PropertyType;
 
                 if (property == null)
                 {
@@ -617,12 +616,12 @@ public sealed class ElasticIndexManager
 
                     if (filterProperty.Value is JsonArray jsonArray)
                     {
-                        var propertyValue = JsonSerializer.Deserialize(filterProperty.Value, propertyType);
+                        var propertyValue = JsonSerializer.Deserialize<IEnumerable<string>>(filterProperty.Value);
                         property.SetValue(tokenFilterBuildingInfo.TokenFilter, propertyValue);
                     }
                     else
                     {
-                        var propertyValue = JsonSerializer.Deserialize(filterProperty.Value, propertyType);
+                        var propertyValue = JsonSerializer.Deserialize<string>(filterProperty.Value);
                         property.SetValue(tokenFilterBuildingInfo.TokenFilter, propertyValue);
                     }
 
