@@ -46,7 +46,7 @@ public sealed class AdminController : Controller
     {
         query = string.IsNullOrWhiteSpace(query)
             ? ""
-            : Encoding.UTF8.GetString(Str.FromBase64String(query));
+            : Encoding.UTF8.GetString(Convert.FromBase64String(query));
 
         return Query(new AdminQueryViewModel
         {

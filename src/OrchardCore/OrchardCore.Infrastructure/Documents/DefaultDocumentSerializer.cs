@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Text.Json;
+using Microsoft.IO;
 using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Documents;
@@ -25,9 +26,9 @@ public class DefaultDocumentSerializer : IDocumentSerializer
         if (data.Length >= compressThreshold)
         {
             var stream = MemoryStreamFactory.GetStream();
-            var length = Compress(data, stream);
+            Compress(data, stream);
 
-            data = stream.GetBuffer().AsSpan().Slice(0, length).ToArray();
+            data = stream.GetBuffer().AsSpan().Slice(0, (int)stream.Length).ToArray();
         }
 
         return Task.FromResult(data);
@@ -40,7 +41,10 @@ public class DefaultDocumentSerializer : IDocumentSerializer
 
         if (IsCompressed(data))
         {
-            document = JsonSerializer.Deserialize<TDocument>(Decompress(data), _serializerOptions);
+            var stream = MemoryStreamFactory.GetStream();
+            Decompress(data, stream);
+
+            document = JsonSerializer.Deserialize<TDocument>(stream, _serializerOptions);
         }
         else
         {
@@ -62,20 +66,17 @@ public class DefaultDocumentSerializer : IDocumentSerializer
         return false;
     }
 
-    internal static int Compress(byte[] data, Stream output)
+    internal static void Compress(byte[] data, RecyclableMemoryStream output)
     {
         using var input = new MemoryStream(data);
         using var gZip = new GZipStream(output, CompressionMode.Compress);
 
         input.CopyTo(gZip);
-
-        return (int)gZip.Length;
     }
 
-    internal static ReadOnlySpan<byte> Decompress(byte[] data)
+    internal static ReadOnlySpan<byte> Decompress(byte[] data, RecyclableMemoryStream output)
     {
         using var input = new MemoryStream(data);
-        using var output = MemoryStreamFactory.GetStream();
         using var gZip = new GZipStream(input, CompressionMode.Decompress);
         gZip.CopyTo(output);
 
