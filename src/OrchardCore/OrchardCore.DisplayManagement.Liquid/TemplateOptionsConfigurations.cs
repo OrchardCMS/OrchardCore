@@ -46,21 +46,7 @@ public class TemplateOptionsConfigurations : IConfigureOptions<TemplateOptions>
 
         options.Scope.SetValue("Request", new HttpRequestValue());
 
-        options.Scope.SetValue("HttpContext", new ObjectValue(new LiquidHttpContextAccessor()));
-        options.MemberAccessStrategy.Register<LiquidHttpContextAccessor, FluidValue>((obj, name, ctx) =>
-        {
-            var httpContext = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext;
-            if (httpContext != null)
-            {
-                return name switch
-                {
-                    nameof(HttpContext.Items) => new ObjectValue(new HttpContextItemsWrapper(httpContext.Items)),
-                    _ => NilValue.Instance
-                };
-            }
-
-            return NilValue.Instance;
-        });
+        options.Scope.SetValue("HttpContext", new ObjectValue(new HttpContextValue()));
 
         options.MemberAccessStrategy.Register<FormCollection, FluidValue>((forms, name) =>
         {
