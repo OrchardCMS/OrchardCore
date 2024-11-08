@@ -45,7 +45,7 @@ internal sealed class CultureValue : FluidValue
         return ToStringValue() == other.ToStringValue();
     }
 
-    public override bool ToBooleanValue() => false;
+    public override bool ToBooleanValue() => true;
 
     public override decimal ToNumberValue() => 0;
 
