@@ -5,12 +5,11 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Liquid;
 using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.DisplayManagement.Liquid.Filters;
+namespace OrchardCore.Resources.Liquid;
 
 /// <summary>
 /// Returns the Cdn Base Url of the specified resource path.
 /// </summary>
-[Obsolete("This filter is obsolete. Use OrchardCore.Resources.Liquid.ResourceUrlFilter instead.")]
 public class ResourceUrlFilter : ILiquidFilter
 {
     private readonly IHttpContextAccessor _httpContextAccessor;

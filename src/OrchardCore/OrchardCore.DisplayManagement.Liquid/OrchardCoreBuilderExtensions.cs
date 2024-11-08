@@ -1,4 +1,3 @@
-using System.Globalization;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
@@ -6,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Liquid;
@@ -18,7 +16,6 @@ using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Liquid;
-using OrchardCore.Localization;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -160,8 +157,6 @@ public static class OrchardCoreBuilderExtensions
                 o.MemberAccessStrategy.Register<HeaderDictionaryWrapper, string[]>((headers, name) => headers.HeaderDictionary[name].ToArray());
                 o.MemberAccessStrategy.Register<RouteValueDictionaryWrapper, object>((headers, name) => headers.RouteValueDictionary[name]);
             })
-            .AddLiquidFilter<AppendVersionFilter>("append_version")
-            .AddLiquidFilter<ResourceUrlFilter>("resource_url")
             .AddLiquidFilter<SanitizeHtmlFilter>("sanitize_html")
 
             // Deprecated, remove in a future version.
