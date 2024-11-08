@@ -4,9 +4,8 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
-using OrchardCore.Localization;
 
-namespace OrchardCore.DisplayManagement.Liquid.Values;
+namespace OrchardCore.Localization.Liquid;
 
 internal sealed class CultureValue : FluidValue
 {

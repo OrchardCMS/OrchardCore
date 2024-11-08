@@ -1,4 +1,3 @@
-using System.Globalization;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
@@ -13,12 +12,10 @@ using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement.Liquid.Filters;
 using OrchardCore.DisplayManagement.Liquid.TagHelpers;
 using OrchardCore.DisplayManagement.Liquid.Tags;
-using OrchardCore.DisplayManagement.Liquid.Values;
 using OrchardCore.DisplayManagement.Razor;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Liquid;
-using OrchardCore.Localization;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -68,8 +65,6 @@ public static class OrchardCoreBuilderExtensions
                 o.MemberAccessStrategy.Register<Shape>("*", new ShapeAccessor());
                 o.MemberAccessStrategy.Register<ZoneHolding>("*", new ShapeAccessor());
                 o.MemberAccessStrategy.Register<ShapeMetadata>();
-
-                o.Scope.SetValue("Culture", new CultureValue());
 
                 o.Scope.SetValue("Environment", new ObjectValue(new LiquidEnvironmentAccessor()));
                 o.MemberAccessStrategy.Register<LiquidEnvironmentAccessor, FluidValue>((obj, name, ctx) =>

@@ -1,3 +1,4 @@
+using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,7 @@ using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Localization.Drivers;
+using OrchardCore.Localization.Liquid;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.Services;
 using OrchardCore.Modules;
@@ -95,5 +97,15 @@ public sealed class CulturePickerStartup : StartupBase
 
         services.Configure<RequestLocalizationOptions>(options =>
             options.AddInitialRequestCultureProvider(new AdminCookieCultureProvider(_shellSettings, _adminOptions)));
+    }
+}
+
+[RequireFeatures("OrchardCore.Liquid")]
+public sealed class LocalizationLiquidStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<TemplateOptions>(options
+            => options.Scope.SetValue("Culture", new CultureValue()));
     }
 }
