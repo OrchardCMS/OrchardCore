@@ -33,22 +33,22 @@ public sealed class DefaultDocumentSerializer : IDocumentSerializer
         if (utf8Stream.Length >= compressThreshold)
         {
             using var stream = MemoryStreamFactory.GetStream(StreamTag);
-            Compress(utf8Stream, stream);
+            await CompressAsync(utf8Stream, stream);
 
             result = new byte[stream.Length];
             stream.Seek(0, SeekOrigin.Begin);
-            stream.CopyTo(new MemoryStream(result));
+            await stream.CopyToAsync(new MemoryStream(result));
         }
         else
         {
             result = new byte[utf8Stream.Length];
-            utf8Stream.CopyTo(new MemoryStream(result));
+            await utf8Stream.CopyToAsync(new MemoryStream(result));
         }
 
         return result;
     }
 
-    public Task<TDocument> DeserializeAsync<TDocument>(byte[] data)
+    public async Task<TDocument> DeserializeAsync<TDocument>(byte[] data)
         where TDocument : class, IDocument, new()
     {
         TDocument document;
@@ -58,17 +58,17 @@ public sealed class DefaultDocumentSerializer : IDocumentSerializer
             // Assume the decompressed data could fill a twice as big buffer.
             var stream = MemoryStreamFactory.GetStream(data.Length * 2, StreamTag);
 
-            Decompress(data, stream);
+            await DecompressAsync(data, stream);
             stream.Seek(0, SeekOrigin.Begin);
 
-            document = JsonSerializer.Deserialize<TDocument>(stream, _serializerOptions);
+            document = await JsonSerializer.DeserializeAsync<TDocument>(stream, _serializerOptions);
         }
         else
         {
             document = JsonSerializer.Deserialize<TDocument>(data, _serializerOptions);
         }
 
-        return Task.FromResult(document);
+        return document;
     }
 
     internal static bool IsCompressed(byte[] data)
@@ -78,16 +78,16 @@ public sealed class DefaultDocumentSerializer : IDocumentSerializer
         return data.AsSpan().StartsWith(_gZipHeaderBytes);
     }
 
-    internal static void Compress(Stream source, RecyclableMemoryStream output)
+    internal static async Task CompressAsync(Stream source, RecyclableMemoryStream output)
     {
         using var gZip = new GZipStream(output, CompressionMode.Compress, leaveOpen: true);
-        source.CopyTo(gZip);
+        await source.CopyToAsync(gZip);
     }
 
-    internal static void Decompress(byte[] data, RecyclableMemoryStream output)
+    internal static async Task DecompressAsync(byte[] data, RecyclableMemoryStream output)
     {
         using var input = new MemoryStream(data);
         using var gZip = new GZipStream(input, CompressionMode.Decompress);
-        gZip.CopyTo(output);
+        await gZip.CopyToAsync(output);
     }
 }
