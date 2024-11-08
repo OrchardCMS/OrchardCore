@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Liquid;
