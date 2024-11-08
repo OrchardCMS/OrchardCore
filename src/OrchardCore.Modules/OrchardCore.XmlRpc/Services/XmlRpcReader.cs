@@ -37,7 +37,7 @@ public class XmlRpcReader : IXmlRpcReader
 
                         return new XRpcData<DateTime> { Value = parsedDateTime };
                     } },
-                { "base64", x => new XRpcData<byte[]> { Value = Str.FromBase64String((string)x).ToArray() } },
+                { "base64", x => new XRpcData<byte[]> { Value = Convert.FromBase64String((string)x) } },
                 { "struct", x => XRpcData.For(MapToStruct(x)) },
                 { "array", x => XRpcData.For(MapToArray(x)) },
             };

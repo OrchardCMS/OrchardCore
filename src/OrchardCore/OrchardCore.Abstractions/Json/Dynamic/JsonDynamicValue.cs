@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Numerics;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
-using OrchardCore;
 
 namespace System.Text.Json.Dynamic;
 
@@ -454,7 +453,7 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
     {
         if (value?._jsonValue.GetObjectValue() is string str)
         {
-            return Str.FromBase64String(str).ToArray();
+            return Convert.FromBase64String(str);
         }
 
         throw new InvalidCastException($"Cannot convert {value} to Byte array");

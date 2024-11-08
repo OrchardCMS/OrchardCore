@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text;
 using System.Text.Json;
 using Dapper;
 using Fluid;
@@ -45,7 +46,7 @@ public sealed class AdminController : Controller
     {
         query = string.IsNullOrWhiteSpace(query)
             ? ""
-            : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
+            : Encoding.UTF8.GetString(Convert.FromBase64String(query));
 
         return Query(new AdminQueryViewModel
         {
