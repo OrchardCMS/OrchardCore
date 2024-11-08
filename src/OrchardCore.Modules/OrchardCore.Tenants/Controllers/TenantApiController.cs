@@ -394,7 +394,7 @@ public sealed class TenantApiController : ControllerBase
                 return BadRequest(S["Either a 'recipe' file or 'RecipeName' is required."]);
             }
 
-            var tempFilename = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var tempFilename = PathExtensions.GetTempFileName();
 
             await System.IO.File.WriteAllTextAsync(tempFilename, model.Recipe);
 
