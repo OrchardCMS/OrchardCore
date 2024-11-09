@@ -15,7 +15,7 @@ public static class AdminMenuExtensions
     {
         services.AddAdminNode<TNode, TNodeBuilder>();
 
-        services.AddScoped<IDisplayDriver<MenuItem>, TNodeDriver>();
+        services.AddDisplayDriver<MenuItem, TNodeDriver>();
 
         return services;
     }
