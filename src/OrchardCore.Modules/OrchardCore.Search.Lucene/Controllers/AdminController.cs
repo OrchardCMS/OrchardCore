@@ -412,7 +412,7 @@ public sealed class AdminController : Controller
 
             try
             {
-                var parameterizedQuery = JsonNode.Parse(tokenizedContent).AsObject();
+                var parameterizedQuery = JsonNode.Parse(tokenizedContent, JOptions.Node, JOptions.Document).AsObject();
                 var luceneTopDocs = await _queryService.SearchAsync(context, parameterizedQuery);
 
                 if (luceneTopDocs != null)
