@@ -47,8 +47,8 @@ public sealed class Startup : StartupBase
         services.AddScoped<INotificationEvents, CoreNotificationEventsHandler>();
 
         services.AddPermissionProvider<NotificationPermissionsProvider>();
-        services.AddScoped<IDisplayDriver<ListNotificationOptions>, ListNotificationOptionsDisplayDriver>();
-        services.AddScoped<IDisplayDriver<Notification>, NotificationDisplayDriver>();
+        services.AddDisplayDriver<ListNotificationOptions, ListNotificationOptionsDisplayDriver>();
+        services.AddDisplayDriver<Notification, NotificationDisplayDriver>();
         services.AddTransient<INotificationAdminListFilterProvider, DefaultNotificationsAdminListFilterProvider>();
         services.AddSingleton<INotificationAdminListFilterParser>(sp =>
         {
@@ -67,8 +67,8 @@ public sealed class Startup : StartupBase
         services.Configure<NotificationOptions>(_shellConfiguration.GetSection("OrchardCore_Notifications"));
 
         services.AddTransient<IConfigureOptions<ResourceManagementOptions>, NotificationOptionsConfiguration>();
-        services.AddScoped<IDisplayDriver<User>, UserNotificationPreferencesPartDisplayDriver>();
-        services.AddScoped<IDisplayDriver<Navbar>, NotificationNavbarDisplayDriver>();
+        services.AddDisplayDriver<User, UserNotificationPreferencesPartDisplayDriver>();
+        services.AddDisplayDriver<Navbar, NotificationNavbarDisplayDriver>();
         services.AddScoped<INotificationEvents, CacheNotificationEventsHandler>();
     }
 

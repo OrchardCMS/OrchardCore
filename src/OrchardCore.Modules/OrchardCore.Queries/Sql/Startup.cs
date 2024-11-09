@@ -19,7 +19,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddPermissionProvider<Permissions>();
-        services.AddScoped<IDisplayDriver<Query>, SqlQueryDisplayDriver>();
+        services.AddDisplayDriver<Query, SqlQueryDisplayDriver>();
         services.AddQuerySource<SqlQuerySource>(SqlQuerySource.SourceName);
 
         services.AddNavigationProvider<AdminMenu>();

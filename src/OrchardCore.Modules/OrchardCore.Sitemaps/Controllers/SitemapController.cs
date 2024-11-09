@@ -86,7 +86,7 @@ public sealed class SitemapController : Controller
 
                     document.Declaration = new XDeclaration("1.0", "utf-8", null);
 
-                    var stream = new MemoryStream();
+                    using var stream = MemoryStreamFactory.GetStream();
                     await document.SaveAsync(stream, SaveOptions.None, cancellationToken);
 
                     if (stream.Length >= ErrorLength)

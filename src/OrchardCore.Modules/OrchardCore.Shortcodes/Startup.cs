@@ -49,7 +49,7 @@ public sealed class Startup : StartupBase
 
         services.AddOptions<ShortcodeOptions>();
         services.AddScoped<Sc.IShortcodeProvider, OptionsShortcodeProvider>();
-        services.AddScoped<IDisplayDriver<ShortcodeDescriptor>, ShortcodeDescriptorDisplayDriver>();
+        services.AddDisplayDriver<ShortcodeDescriptor, ShortcodeDescriptorDisplayDriver>();
     }
 }
 

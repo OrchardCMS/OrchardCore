@@ -83,7 +83,7 @@ public sealed class ContentsAdminListStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IContentsAdminListFilter, TaxonomyContentsAdminListFilter>();
-        services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, TaxonomyContentsAdminListDisplayDriver>();
+        services.AddDisplayDriver<ContentOptionsViewModel, TaxonomyContentsAdminListDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddSiteDisplayDriver<TaxonomyContentsAdminListSettingsDisplayDriver>();
     }
