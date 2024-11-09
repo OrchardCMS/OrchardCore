@@ -130,14 +130,34 @@ public class LuceneQueryTests
             // Should find articles with "Orchard" in the title
             var index = "ArticleIndex";
 
-            // { "from": 0, "size": 10, "query":{ "bool": { "should": [ { "wildcard": {  "Content.ContentItem.DisplayText.Normalized": { "value": "orch*", "boost": 2 } } },{ "wildcard": { "Content.BodyAspect.Body": { "value": "orchar*", "boost": 5 } } } ] } } }
-            var query =
-                "{ \"from\": 0, \"size\": 10, \"query\":" +
-                    "{ \"bool\": { \"should\": [ " +
-                        "{ \"wildcard\": {  \"Content.ContentItem.DisplayText.Normalized\": { \"value\": \"orch*\", \"boost\": 2 } } }," +
-                        "{ \"wildcard\": { \"Content.BodyAspect.Body\": { \"value\": \"orchar*\", \"boost\": 5 } } }" +
-                    "] } } }";
-
+            var query = """
+                {
+                    "from": 0,
+                    "size": 10,
+                    "query": {
+                        "bool": {
+                            "should": [
+                                {
+                                    "wildcard": {
+                                        "Content.ContentItem.DisplayText.Normalized": {
+                                            "value": "orch*",
+                                            "boost": 2
+                                        }
+                                    }
+                                },
+                                {
+                                    "wildcard": {
+                                        "Content.BodyAspect.Body": {
+                                            "value": "orchar*",
+                                            "boost": 5
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            """;
             var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
             var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
             var contentItems = queryResults.Items.Select(x => JObject.FromObject(x).Deserialize<ContentItem>());
