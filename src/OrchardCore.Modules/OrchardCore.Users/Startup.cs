@@ -41,6 +41,7 @@ using OrchardCore.Users.Controllers;
 using OrchardCore.Users.DataMigrations;
 using OrchardCore.Users.Deployment;
 using OrchardCore.Users.Drivers;
+using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
@@ -94,6 +95,7 @@ public sealed class Startup : StartupBase
         // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
         services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
 
+        services.AddSingleton<Microsoft.AspNetCore.Hosting.IStartupFilter, ExternalAuthenticationsStartupFilter>();
         services.AddUsers();
 
         services.ConfigureApplicationCookie(options =>
@@ -110,6 +112,7 @@ public sealed class Startup : StartupBase
             options.LogoutPath = "/" + userOptions.Value.LogoffPath;
             options.AccessDeniedPath = "/Error/403";
         });
+
         services.AddTransient<IPostConfigureOptions<SecurityStampValidatorOptions>, ConfigureSecurityStampOptions>();
         services.AddDataMigration<Migrations>();
 
@@ -248,6 +251,7 @@ public sealed class ExternalAuthenticationStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<ILoginFormEvent, ExternalLoginFormEvents>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
         services.AddScoped<IDisplayDriver<UserMenu>, ExternalAuthenticationUserMenuDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalRegistrationSettingsDisplayDriver>();
@@ -422,6 +426,7 @@ public sealed class RegistrationStartup : StartupBase
             o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
         });
 
+        services.AddScoped<IDisplayDriver<User>, UserRegistrationAdminDisplayDriver>();
         services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
 

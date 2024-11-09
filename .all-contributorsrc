@@ -3213,6 +3213,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "denispetrische",
+      "name": "Denis",
+      "avatar_url": "https://avatars.githubusercontent.com/u/95141776?v=4",
+      "profile": "https://github.com/denispetrische",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "mohit-naroliya",
+      "name": "Mohit Naroliya",
+      "avatar_url": "https://avatars.githubusercontent.com/u/151342309?v=4",
+      "profile": "https://github.com/mohit-naroliya",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

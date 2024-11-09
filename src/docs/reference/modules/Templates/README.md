@@ -109,6 +109,42 @@ This template is called when a widget is rendered on a page.
 | `Model.ContentItem.Content` | A JSON object containing all the data of the content item. |
 | `Model.Classes` | An array of all the classes attached to the widget. |
 
+### `Widget__Alias__[Alias]`
+
+This template is called when displaying a widget content item with a specific alias. It needs to have the `AliasPart` attached to it.
+
+#### Widget with Alias Examples
+
+| Template                   | Filename                       |
+|----------------------------|--------------------------------|
+| `Widget__Alias__example`  | `Widget-Alias-example.cshtml` |
+| `Widget__Alias__my__page` | `Widget-Alias-my-page.cshtml` |
+
+#### Widget with Alias and Display Type Examples
+
+| Template                           | Filename                               |
+|------------------------------------|----------------------------------------|
+| `Widget_Summary__Alias__example`  | `Widget-Alias-example.Summary.cshtml` |
+| `Widget_Summary__Alias__my__page` | `Widget-Alias-my-page.Summary.cshtml` |
+
+### `Widget__Slug__[Slug]`
+
+This template is called when displaying a widget content item with a specific slug (i.e., a path is assigned to the item). It needs to have the `AutoroutePart` attached to it.
+
+#### Widget with Slug Examples
+
+| Template                        | Filename                           |
+|---------------------------------|------------------------------------|
+| `Widget__Slug__example`        | `Widget-Slug-example.cshtml`      |
+| `Widget__Slug__blog__my__post` | `Widget-Slug-blog-my-post.cshtml` |
+
+#### Widget with Slug and Display Type Examples
+
+| Template                          | Filename                               |
+|-----------------------------------|----------------------------------------|
+| `Widget_Summary__Slug__example`  | `Widget-Slug-example.Summary.cshtml` |
+| `Widget_Summary__Slug__blog__my__post` | `Widget-Slug-blog-my-post.Summary.cshtml` |
+
 ## Content Part templates
 
 Each driver is free to return a shape type of its choosing, but the usage is

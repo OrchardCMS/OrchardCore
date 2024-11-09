@@ -20,7 +20,7 @@ public sealed class MicrosoftAccountDeploymentSource
 
         result.Steps.Add(new JsonObject
         {
-            ["name"] = "Settings",
+            ["name"] = nameof(MicrosoftAccountSettings),
             ["MicrosoftAccountSettings"] = JObject.FromObject(microsoftAccountSettings),
         });
     }
