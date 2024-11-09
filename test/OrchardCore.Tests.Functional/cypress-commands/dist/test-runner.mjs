@@ -6,12 +6,20 @@ const path = require("path");
 global.log = function (msg) {
     let now = new Date().toLocaleTimeString();
     console.log(`[${now}] ${msg}\n`);
+
+    if (msg.indexOf("Exception") >= 0) {
+        throw new Error("An exception was detected");
+    }
+
+    if (msg.indexOf("fail:") == 0) {
+        throw new Error("An error was logged");
+    }
 };
 
 // Build the dotnet application in release mode
-function build(dir) {
+function build(dir, dotnetVersion) {
     global.log("Building ...");
-    child_process.spawnSync("dotnet", ["build", "-c", "Release"], { cwd: dir });
+    child_process.spawnSync("dotnet", ["build", "-c", "Release", "-f", dotnetVersion], { cwd: dir });
 }
 
 // destructive action that deletes the App_Data folder
@@ -20,12 +28,29 @@ function deleteDirectory(dir) {
     global.log(`${dir} deleted`);
 }
 
+// Copy the migrations recipe.
+function copyMigrationsRecipeFile(dir) {
+
+    const recipeFilePath = 'Recipes/migrations.recipe.json';
+
+    if (!fs.existsSync(`./${recipeFilePath}`) || fs.existsSync(`${dir}/${recipeFilePath}`)) {
+        return;
+    }
+
+    if (!fs.existsSync(`${dir}/Recipes`)) {
+        fs.mkdirSync(`${dir}/Recipes`);
+    }
+
+    fs.copyFile(`./${recipeFilePath}`, `${dir}/${recipeFilePath}`);
+    global.log(`migrations recipe copied to ${dir}/Recipes`);
+}
+
 // Host the dotnet application, does not rebuild
 function host(dir, assembly, { appDataLocation = './App_Data', dotnetVersion = 'net8.0' } = {}) {
     if (fs.existsSync(path.join(dir, `bin/Release/${dotnetVersion}/`, assembly))) {
         global.log("Application already built, skipping build");
     } else {
-        build(dir);
+        build(dir, dotnetVersion);
     }
     global.log("Starting application ...");
 
@@ -54,6 +79,7 @@ function host(dir, assembly, { appDataLocation = './App_Data', dotnetVersion = '
 
 // combines the functions above, useful when triggering tests from CI
 function e2e(dir, assembly, { dotnetVersion = 'net8.0' } = {}) {
+    copyMigrationsRecipeFile(dir);
     deleteDirectory(path.join(dir, "App_Data_Tests"));
     var server = host(dir, assembly, { appDataLocation: "./App_Data_Tests", dotnetVersion });
 
