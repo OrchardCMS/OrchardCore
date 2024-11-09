@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="JsonPath.Net" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" />
     <PackageReference Include="ZString" />
   </ItemGroup>
 

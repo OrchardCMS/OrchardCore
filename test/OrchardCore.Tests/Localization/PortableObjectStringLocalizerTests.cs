@@ -163,7 +163,7 @@ public class PortableObjectStringLocalizerTests
         {
             var htmlLocalizer = new PortableObjectHtmlLocalizer(localizer);
             var unformatted = htmlLocalizer["The page (ID:{0}) was deleted.", "{1}"];
-            var memStream = new MemoryStream();
+            var memStream = MemoryStreamFactory.GetStream();
             var textWriter = new StreamWriter(memStream);
             var textReader = new StreamReader(memStream);
 
