@@ -190,7 +190,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IContentsAdminListQueryService, DefaultContentsAdminListQueryService>();
 
-        services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ContentOptionsDisplayDriver>();
+        services.AddDisplayDriver<ContentOptionsViewModel, ContentOptionsDisplayDriver>();
 
         services.AddScoped(typeof(IContentItemRecursionHelper<>), typeof(ContentItemRecursionHelper<>));
 
@@ -279,7 +279,7 @@ public sealed class SitemapsStartup : StartupBase
         services.AddScoped<ISitemapSourceBuilder, ContentTypesSitemapSourceBuilder>();
         services.AddScoped<ISitemapSourceUpdateHandler, ContentTypesSitemapSourceUpdateHandler>();
         services.AddScoped<ISitemapSourceModifiedDateProvider, ContentTypesSitemapSourceModifiedDateProvider>();
-        services.AddScoped<IDisplayDriver<SitemapSource>, ContentTypesSitemapSourceDriver>();
+        services.AddDisplayDriver<SitemapSource, ContentTypesSitemapSourceDriver>();
         services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<ContentTypesSitemapSource>>();
         services.AddScoped<IContentItemsQueryProvider, DefaultContentItemsQueryProvider>();
         services.AddScoped<IContentHandler, ContentTypesSitemapUpdateHandler>();
