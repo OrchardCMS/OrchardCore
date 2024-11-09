@@ -168,11 +168,10 @@ public class LuceneQueryTests
         var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={queryTemplate}");
         var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
 
-        // Test
+        // Assert
         Assert.NotNull(queryResults);
         Assert.NotEmpty(queryResults.Items);
 
-        Console.WriteLine(queryResults.Items);
         var contentItems = queryResults.Items.Select(x => JObject.FromObject(x).Deserialize<ContentItem>());
 
         Assert.Contains("Orchard", contentItems.First().DisplayText, StringComparison.OrdinalIgnoreCase);
