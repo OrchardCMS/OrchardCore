@@ -246,20 +246,37 @@ public class SqlParser
         var idList = parseTreeNode.ChildNodes[2];
 
         _modes.Push(FormattingModes.SelectClause);
+
         for (var i = 0; i < idList.ChildNodes.Count; i++)
         {
-            var id = idList.ChildNodes[i].ChildNodes[0];
-
             if (i > 0)
             {
                 _builder.Append(", ");
             }
 
+            var id = idList.ChildNodes[i].ChildNodes[0];
+
+            // RANDOM() is a special case where we need to use the dialect's random function.
+            if (id.ChildNodes[0].Token != null && id.ChildNodes[0].Token.ValueString.Equals("RANDOM", StringComparison.OrdinalIgnoreCase))
+            {
+                var funArgs = idList.ChildNodes[i].ChildNodes[1].ChildNodes[0];
+
+                // "RANDOM" + {funArgs} + no arguments?
+                if (funArgs.Term.Name == "funArgs" && funArgs.ChildNodes.Count == 0)
+                {
+                    _builder.Append(_dialect.RandomOrderByClause);
+
+                    continue;
+                }
+            }
+
             EvaluateId(id);
 
-            if (idList.ChildNodes[i].ChildNodes[1].ChildNodes.Count > 0)
+            var orderDirOpt = idList.ChildNodes[i].ChildNodes[1].ChildNodes[0];
+
+            if (orderDirOpt.Term.Name == "orderDirOpt" && orderDirOpt.ChildNodes.Count > 0)
             {
-                _builder.Append(' ').Append(idList.ChildNodes[i].ChildNodes[1].ChildNodes[0].Term.Name);
+                _builder.Append(' ').Append(orderDirOpt.ChildNodes[0].Term.Name);
             }
         }
 
@@ -805,7 +822,7 @@ public class SqlParser
                 var orderMember = orderList.ChildNodes[i];
                 var id = orderMember.ChildNodes[0];
                 EvaluateSelectId(id);
-                var orderDirOpt = orderMember.ChildNodes[1];
+                var orderDirOpt = orderMember.ChildNodes[1].ChildNodes[0];
                 if (orderDirOpt.ChildNodes.Count > 0)
                 {
                     _builder.Append(' ').Append(orderDirOpt.ChildNodes[0].Term.Name);

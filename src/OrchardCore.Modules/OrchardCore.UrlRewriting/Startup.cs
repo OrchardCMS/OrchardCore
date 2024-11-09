@@ -29,17 +29,17 @@ public sealed class Startup : StartupBase
             .AddNavigationProvider<AdminMenu>()
             .AddPermissionProvider<UrlRewritingPermissionProvider>()
             .AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>()
-            .AddScoped<IDisplayDriver<RewriteRule>, RewriteRulesDisplayDriver>();
+            .AddDisplayDriver<RewriteRule, RewriteRulesDisplayDriver>();
 
         // Add Apache Mod Redirect Rule.
         services.AddRewriteRuleSource<UrlRedirectRuleSource>(UrlRedirectRuleSource.SourceName)
             .AddScoped<IRewriteRuleHandler, UrlRedirectRuleHandler>()
-            .AddScoped<IDisplayDriver<RewriteRule>, UrlRedirectRuleDisplayDriver>();
+            .AddDisplayDriver<RewriteRule, UrlRedirectRuleDisplayDriver>();
 
         // Add Apache Mod Rewrite Rule.
         services.AddRewriteRuleSource<UrlRewriteRuleSource>(UrlRewriteRuleSource.SourceName)
             .AddScoped<IRewriteRuleHandler, UrlRewriteRuleHandler>()
-            .AddScoped<IDisplayDriver<RewriteRule>, UrlRewriteRuleDisplayDriver>();
+            .AddDisplayDriver<RewriteRule, UrlRewriteRuleDisplayDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

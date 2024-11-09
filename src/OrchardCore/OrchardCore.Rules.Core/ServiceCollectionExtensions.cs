@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
         where TDisplayDriver : class, IDisplayDriver<Condition>
     {
         return services.AddRuleCondition<TCondition, TEvaluator>()
-                .AddScoped<IDisplayDriver<Condition>, TDisplayDriver>();
+                .AddDisplayDriver<Condition, TDisplayDriver>();
     }
 
     public static IServiceCollection AddRuleConditionOperator<TOperator>(this IServiceCollection services)
