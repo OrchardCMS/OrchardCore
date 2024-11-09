@@ -30,10 +30,14 @@ If the tests require a fresh tenant, create a new file in  `./cms-tests/cypres/i
 
 Open any file from `./cms-tests/cypres/integration` and add some assertions.
 
-## Updating the available commands
+## Cypress commands for Orchard Core
 
-Each test scenarios file uses some special OC commands (`loging`, `createTenant`, ...). These are specified in the `./cypress-commands` folder. To update them, change the files in `./cypress-commands/src` and not `./cypress-commands/dist`. The latter are generated from the `src` folder. To regenerate them use the `npm run build` inside the `./cypress-commands` folder.
+Each test scenarios file uses commands specific to Orchard Core like `loging`, `createTenant`, ...
+They are defined in the `./cypress-commands/src` folder.
 
-Both folders needs to be checked in source control.
+However to use them a `rollup` script aggregates them in the `.cypress-commands/dist` folder. To regenerate them use the `npm run build` from within the `./cypress-commands` folder.
+Both these folders need to be checked in source control (`./src` and `./dist`).
 
-NB: The `./cypress-commands` contains an npm package that was [released on npmjs.com](https://www.npmjs.com/package/cypress-orchardcore) by [@jptissot](https://github.com/jptissot) with the intent of allowing other OC applications use the testing framework.
+## NPM package
+
+The `./cypress-commands` contains an npm package that was [released on npmjs.com](https://www.npmjs.com/package/cypress-orchardcore) by [@jptissot](https://github.com/jptissot) with the intent of allowing other OC applications use the testing framework.
