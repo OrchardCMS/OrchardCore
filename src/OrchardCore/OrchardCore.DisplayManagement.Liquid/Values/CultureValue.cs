@@ -58,7 +58,7 @@ internal sealed class CultureValue : FluidValue
 #pragma warning restore CS0672 // Member overrides obsolete member
         => writer.Write(Culture.Name);
 
-    public async override ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
+    public override async ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
         => await writer.WriteAsync(Culture.Name);
 
     public override ValueTask<FluidValue> GetValueAsync(string name, TemplateContext context)

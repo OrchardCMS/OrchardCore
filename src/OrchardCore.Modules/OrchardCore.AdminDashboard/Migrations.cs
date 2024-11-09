@@ -1,6 +1,5 @@
 using OrchardCore.AdminDashboard.Indexes;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
