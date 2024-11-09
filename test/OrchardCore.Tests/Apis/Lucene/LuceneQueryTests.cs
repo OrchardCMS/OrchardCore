@@ -160,9 +160,7 @@ public class LuceneQueryTests
         await context.InitializeAsync();
 
         // Act
-        // Queries containing special characters and spaces should not fail.
         var index = "ArticleIndex";
-
         var queryTemplate = "\r\r\n{% assign testVariable = \"48yvsghn194eft8axztaves25h\" %}\n\n{\n  \"query\": {\n    \"bool\": {\n      \"must\": [\n        { \"term\" : { \"Content.ContentItem.ContentType\" : \"Article\" } },\n        { \"term\": { \"Content.ContentItem.Published\" : \"true\" } },\n      ]\n    }\n  }\n}";
 
         var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={queryTemplate}");
