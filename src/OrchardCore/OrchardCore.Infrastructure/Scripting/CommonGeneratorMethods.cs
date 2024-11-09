@@ -3,7 +3,7 @@ using System.Net;
 
 namespace OrchardCore.Scripting;
 
-internal sealed class CommonGeneratorMethods : IGlobalMethodProvider
+public class CommonGeneratorMethods : IGlobalMethodProvider
 {
     private static readonly GlobalMethod[] _allMethods;
 
