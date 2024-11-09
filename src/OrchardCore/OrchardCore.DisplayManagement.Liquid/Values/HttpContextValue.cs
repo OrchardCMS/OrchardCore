@@ -10,19 +10,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Values;
 
 internal sealed class HttpContextValue : FluidValue
 {
-    private readonly HttpContext _context;
-
     public override FluidValues Type => FluidValues.Object;
-
-    /// <summary>
-    /// Creates a new instance of a <see cref="HttpContextValue"/> for the specified HTTP context.
-    /// </summary>
-    public HttpContextValue(HttpContext context = null)
-    {
-        ArgumentNullException.ThrowIfNull(context);
-
-        _context = context;
-    }
 
     public override bool Equals(FluidValue other)
     {
@@ -31,28 +19,33 @@ internal sealed class HttpContextValue : FluidValue
             return false;
         }
 
-        return ToObjectValue() == other.ToObjectValue();
+        return other is HttpContextValue;
     }
 
     public override bool ToBooleanValue() => true;
 
     public override decimal ToNumberValue() => 0;
 
-    public override object ToObjectValue() => _context;
+    public override object ToObjectValue() => null;
 
-    public override string ToStringValue() => _context?.ToString();
+    public override string ToStringValue() => "HttpContext";
 
 #pragma warning disable CS0672 // Member overrides obsolete member
     public override void WriteTo(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
 #pragma warning restore CS0672 // Member overrides obsolete member
-        => writer.Write(_context?.ToString());
+        => writer.Write(ToStringValue());
 
     public async override ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
-        => await writer.WriteAsync(_context?.ToString());
+        => await writer.WriteAsync(ToStringValue());
 
     public override ValueTask<FluidValue> GetValueAsync(string name, TemplateContext context)
     {
-        var httpContext = _context ?? GetHttpContext(context).ToObjectValue() as HttpContext;
+        var httpContext = GetHttpContext(context);
+
+        if (httpContext is null)
+        {
+            return new ValueTask<FluidValue>(NilValue.Instance);
+        }
 
         return name switch
         {
@@ -61,13 +54,13 @@ internal sealed class HttpContextValue : FluidValue
         };
     }
 
-    private static ObjectValue GetHttpContext(TemplateContext context)
+    private static HttpContext GetHttpContext(TemplateContext context)
     {
         var ctx = context as LiquidTemplateContext
             ?? throw new InvalidOperationException($"An implementation of '{nameof(LiquidTemplateContext)}' is required");
 
         var httpContextAccessor = ctx.Services.GetRequiredService<IHttpContextAccessor>();
 
-        return new ObjectValue(httpContextAccessor.HttpContext);
+        return httpContextAccessor.HttpContext;
     }
 }

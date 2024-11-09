@@ -46,7 +46,7 @@ public class TemplateOptionsConfigurations : IConfigureOptions<TemplateOptions>
 
         options.Scope.SetValue("Request", new HttpRequestValue());
 
-        options.Scope.SetValue("HttpContext", new ObjectValue(new HttpContextValue()));
+        options.Scope.SetValue("HttpContext", new HttpContextValue());
 
         options.MemberAccessStrategy.Register<FormCollection, FluidValue>((forms, name) =>
         {
