@@ -15,7 +15,7 @@ public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefiniti
     /// </summary>
     public void ContentTypeBuilding(ContentTypeBuildingContext context)
     {
-        if (!context.Record.Settings.TryGetPropertyValue(nameof(ContentTypeSettings), out var node))
+        if (context?.Record?.Settings is null || !context.Record.Settings.TryGetPropertyValue(nameof(ContentTypeSettings), out var node))
         {
             return;
         }
@@ -52,7 +52,7 @@ public sealed class DashboardPartContentTypeDefinitionHandler : IContentDefiniti
     /// </summary>
     public void ContentTypePartBuilding(ContentTypePartBuildingContext context)
     {
-        if (!context.Record.PartName.EqualsOrdinalIgnoreCase(nameof(DashboardPart)))
+        if (context?.Record?.Settings is null || !context.Record.PartName.EqualsOrdinalIgnoreCase(nameof(DashboardPart)))
         {
             return;
         }
