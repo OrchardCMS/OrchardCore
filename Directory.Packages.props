@@ -117,13 +117,22 @@
     <!-- When removing this, remove the corresponding ignore in dependabot.yml too. -->
     <PackageVersion Include="System.Drawing.Common" Version="4.7.2" />
     <!--
-      Microsoft.AspNetCore.DataProtection.StackExchangeRedis (v8.0.8)
-      └─ Microsoft.AspNetCore.DataProtection (v8.0.8)
-         └─ System.Security.Cryptography.Xml (v8.0.1)
-            └─ System.Security.Cryptography.Pkcs (v8.0.0)
-               └─ System.Formats.Asn1 (v8.0.0)
+       OrchardCore.Media.Indexing.OpenXML (v2.1.0-preview)
+        └─ DocumentFormat.OpenXml (v3.1.0)
+          └─ DocumentFormat.OpenXml.Framework (v3.1.0)
+              └─ System.IO.Packaging (v8.0.0)
     -->
-    <PackageVersion Include="System.Formats.Asn1" Version="8.0.1" />
+    <PackageVersion Include="System.IO.Packaging" Version="8.0.1" />
+
+    <!--
+      YesSql (v5.1.1)
+      └─ YesSql.Provider.SqlServer (v5.1.1)
+          └─ Microsoft.Data.SqlClient (v5.2.1)
+            └─ System.Runtime.Caching (v8.0.0)
+    -->
+    <PackageVersion Include="System.Runtime.Caching" Version="8.0.1" />
+
+    <PackageVersion Include="System.Private.Uri" Version="4.3.2" />
   </ItemGroup>
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
   <!-- Versions are preset for the default TFM (there may be no TFM in an evaluation phase) -->
