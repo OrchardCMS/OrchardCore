@@ -133,7 +133,14 @@
     <PackageVersion Include="System.Runtime.Caching" Version="8.0.1" />
 
     <PackageVersion Include="System.Private.Uri" Version="4.3.2" />
+    
+    <!-- Several transitive dependencies on 8.0.4 and lower which has known vulnerabilities -->
+    <PackageVersion Include="System.Text.Json" Version="8.0.5" />
+    
+    <!-- Several transitive dependencies on 8.0.0 which has known vulnerabilities -->
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
   </ItemGroup>
+
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
   <!-- Versions are preset for the default TFM (there may be no TFM in an evaluation phase) -->
   <PropertyGroup>
