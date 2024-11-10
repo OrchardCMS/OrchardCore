@@ -95,7 +95,7 @@ public sealed class UrlRedirectRuleHandler : RewriteRuleHandlerBase
         {
             metadata.RedirectType = redirectType.Value;
         }
-        else if (!Enum.IsDefined(typeof(RedirectType), metadata.RedirectType))
+        else if (!Enum.IsDefined<RedirectType>(metadata.RedirectType))
         {
             metadata.RedirectType = RedirectType.Found;
         }

@@ -39,7 +39,6 @@
     <PackageVersion Include="MailKit" Version="4.8.0" />
     <PackageVersion Include="Markdig" Version="0.37.0" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.7.5" />
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.9.1" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="3.2.0" />
     <!--
       Important: the version of the Microsoft.IdentityModel.Protocols.OpenIdConnect package MUST
@@ -85,11 +84,15 @@
     <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.1.1" />
     <PackageVersion Include="YesSql.Filters.Query" Version="5.1.1" />
     <PackageVersion Include="ZString" Version="2.6.0" />
+    
+    <!-- dotnet/extensions -->
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
   </ItemGroup>
   <ItemGroup>
     <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <GlobalPackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="4.11.0" />
   </ItemGroup>
+  
   <!-- These versions are used for tansitive dependency forced upgrades only. E.g. when a package references a vulnerable version. -->
   <!-- To list all vulnerable direct references run 'dotnet list package -vulnerable' (use double dash, just XML comments can't contain it) -->
   <!-- To list all vulnerable transitive references run 'dotnet list package -vulnerable -include-transitive' (use double dash, just XML comments can't contain it) -->
