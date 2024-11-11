@@ -42,7 +42,7 @@ public sealed class ElasticIndexManager
         { ElasticsearchConstants.StopAnalyzer, () => new StopAnalyzer() },
     };
 
-    private List<string> _tokenFilterNames = new List<string>()
+    private readonly List<string> _tokenFilterNames = new List<string>()
     {
         "asciifolding",
         "common_grams",
@@ -457,7 +457,7 @@ public sealed class ElasticIndexManager
             {
                 var analyzer = CreateAnalyzer(analyzerProperties);
                 analysisDescriptor.Analyzers(a => a.UserDefined(analyzerName, analyzer));
-            }               
+            }
 
             indexSettingsDescriptor = new IndexSettingsDescriptor();
             indexSettingsDescriptor.Analysis(an => analysisDescriptor);
