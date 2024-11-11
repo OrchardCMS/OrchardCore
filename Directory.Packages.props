@@ -138,6 +138,9 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'" >
     <!-- Several transitive dependencies on 8.0.4 and lower which is vulnerable -->
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
+
+    <!-- Several transitive dependencies on 8.0.0 which has known vulnerabilities -->
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'" >
