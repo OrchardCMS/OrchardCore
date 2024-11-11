@@ -12,17 +12,11 @@ public class DefaultMediaFileStoreCacheEventHandler : MediaEventHandlerBase
     }
 
     public override Task MediaDeletedDirectoryAsync(MediaDeletedContext context)
-    {
-        return _mediaFileStoreCacheFileProvider.TryDeleteDirectoryAsync(context.Path);
-    }
+        => _mediaFileStoreCacheFileProvider.TryDeleteDirectoryAsync(context.Path);
 
     public override Task MediaDeletedFileAsync(MediaDeletedContext context)
-    {
-        return _mediaFileStoreCacheFileProvider.TryDeleteFileAsync(context.Path);
-    }
+        => _mediaFileStoreCacheFileProvider.TryDeleteFileAsync(context.Path);
 
     public override Task MediaMovedAsync(MediaMoveContext context)
-    {
-        return _mediaFileStoreCacheFileProvider.TryDeleteFileAsync(context.OldPath);
-    }
+        => _mediaFileStoreCacheFileProvider.TryDeleteFileAsync(context.OldPath);
 }
