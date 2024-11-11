@@ -1,43 +1,48 @@
-# Cypress e2e testing suite
+# Cypress E2E Testing Suite
 
-## Prerequisistes
+## Prerequisites
 
-Install the required packages by running the following command:
+To get started, install the required packages by running:
 
 ```bash
-npm install 
+npm install
 ```
 
-## Available commands
+## Available Commands
 
-- `npm run cms:test` runs the CMS tests (usually the only command to run)
-- `npm run mvc:test` runs the MVC tests
-- `npm run cms:cypress` runs the cms tests in the cypress UI
-- `npm run mvc:cypress` run the mvc tests in the cypress UI
-- `npm run cms:build` build or rebuild Orchard Core
-- `npm run cms:host` starts Orchard Core
-- `npm run gen:blog` generates randomg data for the blog recipe
+The following commands are defined in `package.json`:
 
-These commands are defined in `packages.json`
+- **Run CMS Tests**: `npm run cms:test` - Executes CMS-specific tests. *(This is usually the primary command to use)*
+- **Run MVC Tests**: `npm run mvc:test` - Runs tests for MVC.
+- **Run CMS Tests in UI**: `npm run cms:cypress` - Launches CMS tests in the Cypress interactive UI.
+- **Run MVC Tests in UI**: `npm run mvc:cypress` - Launches MVC tests in the Cypress UI.
+- **Build Orchard Core**: `npm run cms:build` - Builds or rebuilds the Orchard Core environment.
+- **Host Orchard Core**: `npm run cms:host` - Starts the Orchard Core server.
+- **Generate Blog Data**: `npm run gen:blog` - Generates sample data for the blog recipe.
 
-## Creating a new CMS test
+## Creating a New CMS Test
 
-### Adding a new set of tests
+### Adding a New Test Suite
 
-If the tests require a fresh tenant, create a new file in  `./cms-tests/cypres/integration`. The files in this folder are executed in alphabetical order.
+For tests requiring a fresh tenant, create a new file in `./cms-tests/cypress/integration`. Tests in this folder execute in alphabetical order.
 
-### Adding a test to an existing scenario
+### Adding a Test to an Existing Suite
 
-Open any file from `./cms-tests/cypres/integration` and add some assertions.
+To add tests to an existing scenario, open any file in `./cms-tests/cypress/integration` and include the necessary assertions.
 
-## Cypress commands for Orchard Core
+## Cypress Commands for Orchard Core
 
-Each test scenarios file uses commands specific to Orchard Core like `loging`, `createTenant`, ...
-They are defined in the `./cypress-commands/src` folder.
+Each test scenario uses custom commands tailored for Orchard Core, such as `login` and `createTenant`. These commands are located in `./cypress-commands/src`.
 
-However to use them a `rollup` script aggregates them in the `.cypress-commands/dist` folder. To regenerate them use the `npm run build` from within the `./cypress-commands` folder.
-Both these folders need to be checked in source control (`./src` and `./dist`).
+To update these commands, use the `rollup` script to bundle them into the `./cypress-commands/dist` folder:
 
-## NPM package
+```bash
+cd ./cypress-commands
+npm run build
+```
 
-The `./cypress-commands` contains an npm package that was [released on npmjs.com](https://www.npmjs.com/package/cypress-orchardcore) by [@jptissot](https://github.com/jptissot) with the intent of allowing other OC applications use the testing framework.
+Both the `src` and `dist` folders should be included in source control.
+
+## NPM Package
+
+The `./cypress-commands` folder contains an npm package, [cypress-orchardcore](https://www.npmjs.com/package/cypress-orchardcore), published by [@jptissot](https://github.com/jptissot). This package allows other Orchard Core applications to leverage the testing framework.
