@@ -207,48 +207,49 @@
 	.palette-color-5 { fill: #47A042 !important; }
 	.palette-color-6 { fill: #328533 !important; }
 	.palette-color-7 { fill: #1D6A23 !important; }
-	.nl { fill: #6AB356; }
-	.se { fill: #6AB356; }
-	.be { fill: #6AB356; }
-	.fi { fill: #6AB356; }
-	.hu { fill: #47A042; }
-	.cn { fill: #47A042; }
-	.au { fill: #47A042; }
-	.nz { fill: #47A042; }
-	.ye { fill: #328533; }
-	.ca { fill: #328533; }
-	.us { fill: #328533; }
-	.gb { fill: #328533; }
-	.fr { fill: #1D6A23; }
-	.tr { fill: #D9E887; }
-	.bg { fill: #D9E887; }
 	.ee { fill: #D9E887; }
-	.no { fill: #D9E887; }
+	.bg { fill: #D9E887; }
+	.cy { fill: #D9E887; }
+	.ro { fill: #D9E887; }
 	.ba { fill: #D9E887; }
 	.ru { fill: #D9E887; }
-	.ro { fill: #D9E887; }
-	.vn { fill: #D9E887; }
-	.cy { fill: #D9E887; }
-	.il { fill: #D9E887; }
-	.dk { fill: #D9E887; }
-	.im { fill: #D9E887; }
 	.sg { fill: #D9E887; }
-	.pk { fill: #B3D778; }
-	.rs { fill: #B3D778; }
-	.ua { fill: #B3D778; }
-	.in { fill: #B3D778; }
-	.ch { fill: #B3D778; }
-	.za { fill: #B3D778; }
+	.am { fill: #D9E887; }
+	.tr { fill: #D9E887; }
+	.im { fill: #D9E887; }
+	.no { fill: #D9E887; }
+	.vn { fill: #D9E887; }
+	.dk { fill: #D9E887; }
+	.il { fill: #D9E887; }
 	.it { fill: #B3D778; }
-	.pl { fill: #B3D778; }
-	.at { fill: #B3D778; }
-	.jp { fill: #B3D778; }
 	.es { fill: #B3D778; }
+	.rs { fill: #B3D778; }
+	.pl { fill: #B3D778; }
+	.za { fill: #B3D778; }
+	.pk { fill: #B3D778; }
+	.ch { fill: #B3D778; }
+	.jp { fill: #B3D778; }
+	.in { fill: #B3D778; }
+	.at { fill: #B3D778; }
+	.ua { fill: #B3D778; }
+	.de { fill: #8CC569; }
 	.th { fill: #8CC569; }
 	.pt { fill: #8CC569; }
 	.hr { fill: #8CC569; }
-	.de { fill: #8CC569; }
 	.tn { fill: #8CC569; }
+	.se { fill: #6AB356; }
+	.fi { fill: #6AB356; }
+	.nl { fill: #6AB356; }
+	.be { fill: #6AB356; }
+	.nz { fill: #47A042; }
+	.cn { fill: #47A042; }
+	.hu { fill: #47A042; }
+	.au { fill: #47A042; }
+	.ye { fill: #328533; }
+	.us { fill: #328533; }
+	.gb { fill: #328533; }
+	.ca { fill: #328533; }
+	.fr { fill: #1D6A23; }
 #legend7 { display: inline !important; }</style>
 
   <path
@@ -5137,7 +5138,7 @@
      class="landxx eaeu am"
      d="m 1609.2569,-145.9558 c 0.77,-0.05 2.96,0.53 4.24,0.01 1.84,-0.734 4.04,-0.384 5.98,-0.363 -0.1,-0.384 0.5,-0.677 0.89,-0.736 0.23,0.228 2.65,1.937 0.69,1.528 1.33,1.011 3.38,1.026 4.04,2.809 -2.59,0.81 0.29,3.115 1.42,3.786 0.59,0.354 1.93,0.589 2.09,1.394 0.31,1.565 -1.67,1.316 -2.51,1.66 0.87,0.333 4.19,3.74 5.08,3.381 0.46,-0.183 2.6,0.493 1.79,0.979 -1.2,0.723 0.86,1.698 1.27,2.192 -1.26,0.155 -0.55,2.271 -0.1,2.848 -0.15,0.125 -2.56,0.636 -2.7,0.254 -0.79,-1.285 -1.24,-3.185 -2.56,-3.928 -0.57,-0.319 -0.12,-1.678 -1.01,-1.864 -0.56,-0.116 -0.98,-0.1 -1.8,0.138 -1.04,0.294 -1.54,-0.912 -2.42,-0.4 0.13,-2.079 -2.16,-1.121 -2.96,-1.082 -1.11,-0.83 -2.57,-2.897 -4.11,-2.85 -1.59,0.05 -2.95,-0.02 -4.38,-0.747 0.56,-0.379 0.21,-1.14 0,-1.673 -0.45,-0.992 -0.48,-1.205 -0.11,-2.096 0.68,-1.663 -2.25,-2.243 -2.81,-5.263">
     <title
-       id="title7816">Armenia<!-- am_contributions -->
+       id="title7816">Armenia (1 contributions)
 </title>
   </path>
   <path
