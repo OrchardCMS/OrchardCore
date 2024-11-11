@@ -174,7 +174,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             sqlBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
         }
 
-        return sqlBuilder.ToString();
+        return sqlBuilder.ToSqlString();
     }
 
     private static (IConnectionFactory connectionFactory, ISqlDialect sqlDialect) GetFactoryAndSqlDialect(
