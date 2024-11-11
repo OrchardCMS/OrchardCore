@@ -36,13 +36,10 @@ public sealed class GitHubLoginStartup : StartupBase
         services.AddTransient<IConfigureOptions<GitHubAuthenticationSettings>, GitHubAuthenticationSettingsConfiguration>();
 
         // Register the options initializers required by the GitHub Handler.
-        services.TryAddEnumerable(new[]
-        {
-            // Orchard-specific initializers:
-            ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, GitHubOptionsConfiguration>(),
-            ServiceDescriptor.Transient<IConfigureOptions<GitHubOptions>, GitHubOptionsConfiguration>(),
-            // Built-in initializers:
-            ServiceDescriptor.Transient<IPostConfigureOptions<GitHubOptions>, OAuthPostConfigureOptions<GitHubOptions, GitHubHandler>>()
-        });
+        // Orchard-specific initializers:
+        services.AddTransient<IConfigureOptions<AuthenticationOptions>, GitHubOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<GitHubOptions>, GitHubOptionsConfiguration>();
+        // Built-in initializers:
+        services.AddTransient<IPostConfigureOptions<GitHubOptions>, OAuthPostConfigureOptions<GitHubOptions, GitHubHandler>>();
     }
 }

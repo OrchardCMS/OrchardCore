@@ -9,7 +9,6 @@ using OrchardCore.OpenId.YesSql.Migrations;
 using OrchardCore.OpenId.YesSql.Models;
 using OrchardCore.OpenId.YesSql.Resolvers;
 using OrchardCore.OpenId.YesSql.Stores;
-using YesSql.Indexes;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -19,8 +18,7 @@ public static class OpenIdExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        builder.Services.TryAddEnumerable(
-            ServiceDescriptor.Scoped<IDataMigration, OpenIdMigrations>());
+        builder.Services.AddDataMigration<OpenIdMigrations>();
 
         // Configure support for an OpenId collection.
         builder.Services.Configure<StoreCollectionOptions>(o => o.Collections.Add("OpenId"));

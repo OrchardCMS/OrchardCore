@@ -4,7 +4,7 @@ namespace OrchardCore.Deployment;
 /// Represents a base class for deployment source.
 /// </summary>
 /// <typeparam name="TStep">The deployment step type.</typeparam>
-public abstract class DeploymentSourceBase<TStep> : IDeploymentSource 
+public abstract class DeploymentSourceBase<TStep> : IDeploymentSource
     where TStep : DeploymentStep
 {
     /// <inheritdoc/>

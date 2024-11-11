@@ -116,7 +116,7 @@ public class ShapeResult : IDisplayResult
         // If no specific group is requested, use "" as it represents "any group" when applied on a shape.
         // This allows to render shapes when no shape constraints are set and also on specific groups.
         var requestedGroup = context.GroupId ?? string.Empty;
-        
+
         // If the shape's group doesn't match the currently rendered one, return.
         if (hasGroupConstraints && !_groupIds.Contains(requestedGroup, StringComparer.OrdinalIgnoreCase))
         {

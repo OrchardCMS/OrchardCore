@@ -28,6 +28,6 @@ public sealed class Startup : Modules.StartupBase
 
         services.AddDataMigration<Migrations>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, PreviewPartSettingsDisplayDriver>();
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, PreviewStartupFilter>());
+        services.AddSingleton<IStartupFilter, PreviewStartupFilter>();
     }
 }
