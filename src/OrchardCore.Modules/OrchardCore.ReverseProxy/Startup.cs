@@ -32,8 +32,7 @@ public sealed class Startup : StartupBase
 
         services.AddSingleton<ReverseProxyService>();
 
-        services.TryAddEnumerable(ServiceDescriptor
-            .Transient<IConfigureOptions<ForwardedHeadersOptions>, ForwardedHeadersOptionsConfiguration>());
+        services.AddTransient<IConfigureOptions<ForwardedHeadersOptions>, ForwardedHeadersOptionsConfiguration>();
     }
 }
 

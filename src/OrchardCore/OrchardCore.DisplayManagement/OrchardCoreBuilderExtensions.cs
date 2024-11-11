@@ -71,8 +71,7 @@ public static class OrchardCoreBuilderExtensions
 
                 services.AddScoped<IShapePlacementProvider, ShapeTablePlacementProvider>();
 
-                services.TryAddEnumerable(
-                    ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>, ShapeTemplateOptionsSetup>());
+                services.AddTransient<IConfigureOptions<ShapeTemplateOptions>, ShapeTemplateOptionsSetup>();
                 services.TryAddSingleton<IShapeTemplateFileProviderAccessor, ShapeTemplateFileProviderAccessor>();
 
                 services.AddShapeAttributes<CoreShapes>();

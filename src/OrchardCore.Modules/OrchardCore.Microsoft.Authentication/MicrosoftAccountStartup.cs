@@ -23,7 +23,7 @@ public sealed class MicrosoftAccountStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.TryAddEnumerable(new ServiceDescriptor(typeof(IPermissionProvider), typeof(Permissions), ServiceLifetime.Scoped));
+        services.AddPermissionProvider<Permissions>();
 
         services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
         services.AddSiteDisplayDriver<MicrosoftAccountSettingsDisplayDriver>();

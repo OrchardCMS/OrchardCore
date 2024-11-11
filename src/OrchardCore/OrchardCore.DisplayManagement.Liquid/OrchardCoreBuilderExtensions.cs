@@ -27,13 +27,9 @@ public static class OrchardCoreBuilderExtensions
 
             services.AddTransient<IConfigureOptions<TemplateOptions>, TemplateOptionsFileProviderSetup>();
 
-            services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<LiquidViewOptions>,
-                LiquidViewOptionsSetup>());
+            services.AddTransient<IConfigureOptions<LiquidViewOptions>, LiquidViewOptionsSetup>();
 
-            services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>,
-                LiquidShapeTemplateOptionsSetup>());
+            services.AddTransient<IConfigureOptions<ShapeTemplateOptions>, LiquidShapeTemplateOptionsSetup>();
 
             services.AddSingleton<IApplicationFeatureProvider<ViewsFeature>, LiquidViewsFeatureProvider>();
             services.AddScoped<IRazorViewExtensionProvider, LiquidViewExtensionProvider>();

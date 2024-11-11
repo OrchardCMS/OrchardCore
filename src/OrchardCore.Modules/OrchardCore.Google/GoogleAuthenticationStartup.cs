@@ -35,14 +35,12 @@ public sealed class GoogleAuthenticationStartup : StartupBase
         services.AddNavigationProvider<GoogleAuthenticationAdminMenu>();
 
         // Register the options initializers required by the Google Handler.
-        services.TryAddEnumerable(new[]
-        {
-            // Orchard-specific initializers:
-            ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, GoogleOptionsConfiguration>(),
-            ServiceDescriptor.Transient<IConfigureOptions<GoogleOptions>, GoogleOptionsConfiguration>(),
-            // Built-in initializers:
-            ServiceDescriptor.Transient<IPostConfigureOptions<GoogleOptions>, OAuthPostConfigureOptions<GoogleOptions, GoogleHandler>>()
-        });
+        // Orchard-specific initializers:
+        services.AddTransient<IConfigureOptions<AuthenticationOptions>, GoogleOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<GoogleOptions>, GoogleOptionsConfiguration>();
+
+        // Built-in initializers:
+        services.AddTransient<IPostConfigureOptions<GoogleOptions>, OAuthPostConfigureOptions<GoogleOptions, GoogleHandler>>();
 
         services.AddTransient<IConfigureOptions<GoogleAuthenticationSettings>, GoogleAuthenticationSettingsConfiguration>();
     }
