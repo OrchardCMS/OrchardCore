@@ -133,8 +133,7 @@ public class AutoSetupMiddlewareTests
     }
 
     private AutoSetupMiddleware CreateMiddleware()
-    {
-        return new AutoSetupMiddleware(
+        => new AutoSetupMiddleware(
                     next: (innerHttpContext) =>
                     {
                         _nextCalled = true;
@@ -146,5 +145,4 @@ public class AutoSetupMiddlewareTests
                     _mockShellSettingsManager.Object,
                     _mockDistributedLock.Object,
                     _mockOptions.Object);
-    }
 }
