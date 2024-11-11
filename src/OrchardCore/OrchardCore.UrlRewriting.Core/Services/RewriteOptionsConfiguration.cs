@@ -45,7 +45,7 @@ public sealed class RewriteOptionsConfiguration : IConfigureOptions<RewriteOptio
         {
             // Exclude URIs prefixed with 'admin' to prevent accidental access restrictions caused by the provided rules.
             var prefix = new PathString('/' + _adminOptions.AdminUrlPrefix.TrimStart('/'));
-            
+
             options.Rules.Insert(0, new ExcludeUrlPrefixRule(prefix));
         }
     }

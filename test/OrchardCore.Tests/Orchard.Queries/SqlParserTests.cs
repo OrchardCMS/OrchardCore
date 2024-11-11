@@ -252,8 +252,8 @@ public class SqlParserTests
     public void ShouldOrderByRandom(string sql, string expectedSql)
     {
         // Arrange & Act
-        var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var errors);
-        
+        var result = SqlParser.TryParse(sql, _schema, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out _);
+
         // Assert
         Assert.True(result);
         Assert.Equal(expectedSql, FormatSql(rawQuery));

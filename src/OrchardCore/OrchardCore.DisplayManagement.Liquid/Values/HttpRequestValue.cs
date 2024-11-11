@@ -38,7 +38,7 @@ internal sealed class HttpRequestValue : FluidValue
 #pragma warning restore CS0672 // Member overrides obsolete member
         => writer.Write(ToStringValue());
 
-    public async override ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
+    public override async ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
         => await writer.WriteAsync(ToStringValue());
 
     public override ValueTask<FluidValue> GetValueAsync(string name, TemplateContext context)

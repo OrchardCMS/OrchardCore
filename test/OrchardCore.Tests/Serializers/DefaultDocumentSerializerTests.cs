@@ -22,7 +22,7 @@ public class DefaultDocumentSerializerTests
         // Data should be gzipped
         Assert.Equal([0x1f, 0x8b], data.AsSpan().Slice(0, 2).ToArray());
 
-         var settings2 = await serializer.DeserializeAsync<SiteSettings>(data);
+        var settings2 = await serializer.DeserializeAsync<SiteSettings>(data);
 
         Assert.Equal(settings.AppendVersion, settings2.AppendVersion);
         Assert.Equal(settings.BaseUrl, settings2.BaseUrl);

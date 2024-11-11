@@ -6,7 +6,7 @@ public class RewriteValidateResult
 {
     private readonly List<ValidationResult> _errors = [];
 
-    public IReadOnlyList<ValidationResult> Errors 
+    public IReadOnlyList<ValidationResult> Errors
         => _errors;
 
     /// <summary>

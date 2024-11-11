@@ -9,7 +9,6 @@ using OrchardCore.OpenId.YesSql.Migrations;
 using OrchardCore.OpenId.YesSql.Models;
 using OrchardCore.OpenId.YesSql.Resolvers;
 using OrchardCore.OpenId.YesSql.Stores;
-using YesSql.Indexes;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
