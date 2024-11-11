@@ -17,7 +17,8 @@ public class AutoSetupMiddlewareTests
     private readonly Mock<IDistributedLock> _mockDistributedLock;
     private readonly Mock<IOptions<AutoSetupOptions>> _mockOptions;
     private readonly Mock<IAutoSetupService> _mockAutoSetupService;
-
+    private bool _nextCalled;
+    private AutoSetupMiddleware _middleware;
     public AutoSetupMiddlewareTests()
     {
         _shellSettings = new ShellSettings();
@@ -36,6 +37,19 @@ public class AutoSetupMiddlewareTests
                 new TenantSetupOptions { ShellName = ShellSettings.DefaultShellName }
             }
         });
+
+        _middleware = new AutoSetupMiddleware(
+            next: (innerHttpContext) =>
+            {
+                _nextCalled = true;
+
+                return Task.CompletedTask;
+            },
+            _mockShellHost.Object,
+            _shellSettings,
+            _mockShellSettingsManager.Object,
+            _mockDistributedLock.Object,
+            _mockOptions.Object);
     }
 
     [Fact]
@@ -45,25 +59,12 @@ public class AutoSetupMiddlewareTests
         _shellSettings.State = TenantState.Running;
 
         var httpContext = new DefaultHttpContext();
-        var nextCalled = false;
-        var middleware = new AutoSetupMiddleware(
-            next: (innerHttpContext) =>
-            {
-                nextCalled = true;
-                
-                return Task.CompletedTask;
-            },
-            _mockShellHost.Object,
-            _shellSettings,
-            _mockShellSettingsManager.Object,
-            _mockDistributedLock.Object,
-            _mockOptions.Object);
 
         // Act
-        await middleware.InvokeAsync(httpContext);
+        await _middleware.InvokeAsync(httpContext);
 
         // Assert
-        Assert.True(nextCalled);
+        Assert.True(_nextCalled);
         _mockAutoSetupService.Verify(s => s.SetupTenantAsync(It.IsAny<TenantSetupOptions>(), It.IsAny<ShellSettings>()), Times.Never);
     }
 
@@ -84,16 +85,8 @@ public class AutoSetupMiddlewareTests
             .AddSingleton(_mockAutoSetupService.Object)
             .BuildServiceProvider();
 
-        var middleware = new AutoSetupMiddleware(
-            next: (innerHttpContext) => Task.CompletedTask,
-            _mockShellHost.Object,
-            _shellSettings,
-            _mockShellSettingsManager.Object,
-            _mockDistributedLock.Object,
-            _mockOptions.Object);
-
         // Act
-        await middleware.InvokeAsync(httpContext);
+        await _middleware.InvokeAsync(httpContext);
 
         // Assert
         Assert.Equal(StatusCodes.Status503ServiceUnavailable, httpContext.Response.StatusCode);
@@ -116,16 +109,8 @@ public class AutoSetupMiddlewareTests
             .AddSingleton(_mockAutoSetupService.Object)
             .BuildServiceProvider();
 
-        var middleware = new AutoSetupMiddleware(
-            next: (innerHttpContext) => Task.CompletedTask,
-            _mockShellHost.Object,
-            _shellSettings,
-            _mockShellSettingsManager.Object,
-            _mockDistributedLock.Object,
-            _mockOptions.Object);
-
         // Act
-        await middleware.InvokeAsync(httpContext);
+        await _middleware.InvokeAsync(httpContext);
 
         // Assert
         Assert.Equal(StatusCodes.Status302Found, httpContext.Response.StatusCode); // Redirect
@@ -142,16 +127,8 @@ public class AutoSetupMiddlewareTests
 
         var httpContext = new DefaultHttpContext();
 
-        var middleware = new AutoSetupMiddleware(
-            next: (innerHttpContext) => Task.CompletedTask,
-            _mockShellHost.Object,
-            _shellSettings,
-            _mockShellSettingsManager.Object,
-            _mockDistributedLock.Object,
-            _mockOptions.Object);
-
         // Act & Assert
-        await Assert.ThrowsAsync<TimeoutException>(() => middleware.InvokeAsync(httpContext));
+        await Assert.ThrowsAsync<TimeoutException>(() => _middleware.InvokeAsync(httpContext));
     }
 
     private void SetupDistributedLockMock(bool acquireLock)
@@ -162,4 +139,3 @@ public class AutoSetupMiddlewareTests
             .ReturnsAsync((mockLocker.Object, acquireLock));
     }
 }
-
