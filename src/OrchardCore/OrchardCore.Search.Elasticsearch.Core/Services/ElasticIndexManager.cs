@@ -939,6 +939,8 @@ public sealed class ElasticIndexManager
 
             if (searchResponse.IsValid)
             {
+                elasticTopDocs.Count = searchResponse.Hits.Count;
+
                 var documents = searchResponse.Documents.GetEnumerator();
                 var hits = searchResponse.Hits.GetEnumerator();
 
@@ -966,8 +968,6 @@ public sealed class ElasticIndexManager
 
             _timestamps[fullIndexName] = _clock.UtcNow;
         }
-
-        elasticTopDocs.Count = elasticTopDocs.TopDocs.Count;
 
         return elasticTopDocs;
     }
