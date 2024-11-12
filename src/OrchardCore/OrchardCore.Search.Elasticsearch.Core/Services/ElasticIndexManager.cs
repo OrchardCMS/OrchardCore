@@ -6,6 +6,7 @@ using Elasticsearch.Net;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nest;
+using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
@@ -26,7 +27,7 @@ public sealed class ElasticIndexManager
     private readonly ShellSettings _shellSettings;
     private readonly IClock _clock;
     private readonly ILogger _logger;
-    private readonly ElasticsearchOptions _elasticsearchOptions;
+    private readonly ElasticsearchOptions _elasticSearchOptions;
     private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
     private readonly string _lastTaskId = "last_task_id";
     private readonly Dictionary<string, Func<IAnalyzer>> _analyzerGetter = new(StringComparer.OrdinalIgnoreCase)
@@ -409,7 +410,7 @@ public sealed class ElasticIndexManager
         _shellSettings = shellSettings;
         _clock = clock;
         _logger = logger;
-        _elasticsearchOptions = elasticsearchOptions.Value;
+        _elasticSearchOptions = elasticsearchOptions.Value;
     }
 
     /// <summary>
@@ -438,11 +439,11 @@ public sealed class ElasticIndexManager
         ? null
         : elasticIndexSettings.AnalyzerName) ?? ElasticsearchConstants.DefaultAnalyzer;
 
-        if (_elasticsearchOptions.Analyzers.TryGetValue(analyzerName, out var analyzerProperties))
+        if (_elasticSearchOptions.Analyzers.TryGetValue(analyzerName, out var analyzerProperties))
         {
-            if (_elasticsearchOptions.Filter is not null)
+            if (_elasticSearchOptions.Filter is not null)
             {
-                var tokenFiltersDescriptor = GetTokenFilterDescriptor(_elasticsearchOptions.Filter);
+                var tokenFiltersDescriptor = GetTokenFilterDescriptor(_elasticSearchOptions.Filter);
                 analysisDescriptor.TokenFilters(f => tokenFiltersDescriptor);
             }
 
@@ -914,7 +915,13 @@ public sealed class ElasticIndexManager
     /// <returns><see cref="ElasticTopDocs"/>.</returns>
     public async Task<ElasticTopDocs> SearchAsync(string indexName, QueryContainer query, List<ISort> sort, int from, int size)
     {
-        var elasticTopDocs = new ElasticTopDocs();
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentNullException.ThrowIfNull(query);
+
+        var elasticTopDocs = new ElasticTopDocs()
+        {
+            TopDocs = [],
+        };
 
         if (await ExistsAsync(indexName))
         {
@@ -925,7 +932,7 @@ public sealed class ElasticIndexManager
                 Query = query,
                 From = from,
                 Size = size,
-                Sort = sort
+                Sort = sort ?? [],
             };
 
             var searchResponse = await _elasticClient.SearchAsync<Dictionary<string, object>>(searchRequest);
@@ -933,8 +940,6 @@ public sealed class ElasticIndexManager
             if (searchResponse.IsValid)
             {
                 elasticTopDocs.Count = searchResponse.Hits.Count;
-
-                var topDocs = new List<Dictionary<string, object>>();
 
                 var documents = searchResponse.Documents.GetEnumerator();
                 var hits = searchResponse.Hits.GetEnumerator();
@@ -945,7 +950,7 @@ public sealed class ElasticIndexManager
 
                     if (document != null)
                     {
-                        topDocs.Add(document);
+                        elasticTopDocs.TopDocs.Add(document);
 
                         continue;
                     }
@@ -954,13 +959,11 @@ public sealed class ElasticIndexManager
 
                     var topDoc = new Dictionary<string, object>
                     {
-                        { "ContentItemId", hit.Id }
+                        { nameof(ContentItem.ContentItemId), hit.Id },
                     };
 
-                    topDocs.Add(topDoc);
+                    elasticTopDocs.TopDocs.Add(topDoc);
                 }
-
-                elasticTopDocs.TopDocs = topDocs;
             }
 
             _timestamps[fullIndexName] = _clock.UtcNow;
@@ -974,6 +977,8 @@ public sealed class ElasticIndexManager
     /// </summary>
     public async Task SearchAsync(string indexName, Func<IElasticClient, Task> elasticClient)
     {
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+
         if (await ExistsAsync(indexName))
         {
             await elasticClient(_elasticClient);
@@ -994,14 +999,14 @@ public sealed class ElasticIndexManager
         {
             switch (entry.Type)
             {
-                case DocumentIndex.Types.Boolean:
+                case DocumentIndexBase.Types.Boolean:
                     if (entry.Value is bool boolValue)
                     {
                         AddValue(entries, entry.Name, boolValue);
                     }
                     break;
 
-                case DocumentIndex.Types.DateTime:
+                case DocumentIndexBase.Types.DateTime:
 
                     if (entry.Value is DateTimeOffset offsetValue)
                     {
@@ -1014,7 +1019,7 @@ public sealed class ElasticIndexManager
 
                     break;
 
-                case DocumentIndex.Types.Integer:
+                case DocumentIndexBase.Types.Integer:
                     if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
                     {
                         AddValue(entries, entry.Name, value);
@@ -1022,14 +1027,14 @@ public sealed class ElasticIndexManager
 
                     break;
 
-                case DocumentIndex.Types.Number:
+                case DocumentIndexBase.Types.Number:
                     if (entry.Value != null)
                     {
                         AddValue(entries, entry.Name, Convert.ToDouble(entry.Value));
                     }
                     break;
 
-                case DocumentIndex.Types.Text:
+                case DocumentIndexBase.Types.Text:
                     if (entry.Value != null)
                     {
                         var stringValue = Convert.ToString(entry.Value);
@@ -1040,8 +1045,8 @@ public sealed class ElasticIndexManager
                         }
                     }
                     break;
-                case DocumentIndex.Types.GeoPoint:
-                    if (entry.Value is DocumentIndex.GeoPoint point)
+                case DocumentIndexBase.Types.GeoPoint:
+                    if (entry.Value is DocumentIndexBase.GeoPoint point)
                     {
                         AddValue(entries, entry.Name, new GeoLocation((double)point.Latitude, (double)point.Longitude));
                     }
@@ -1093,9 +1098,9 @@ public sealed class ElasticIndexManager
         {
             var parts = new List<string>();
 
-            if (!string.IsNullOrWhiteSpace(_elasticsearchOptions.IndexPrefix))
+            if (!string.IsNullOrWhiteSpace(_elasticSearchOptions.IndexPrefix))
             {
-                parts.Add(_elasticsearchOptions.IndexPrefix.ToLowerInvariant());
+                parts.Add(_elasticSearchOptions.IndexPrefix.ToLowerInvariant());
             }
 
             parts.Add(_shellSettings.Name.ToLowerInvariant());
