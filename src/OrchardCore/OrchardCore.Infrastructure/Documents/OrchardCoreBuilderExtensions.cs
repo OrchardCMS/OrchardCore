@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents;
