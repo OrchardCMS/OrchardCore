@@ -11,6 +11,7 @@ Orchard Core consists of two distinct projects:
 [![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://docs.orchardcore.net/)
 [![Crowdin](https://badges.crowdin.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
 [![Discord](https://img.shields.io/discord/551136772243980291?color=%237289DA&label=OrchardCore&logo=discord&logoColor=white&style=flat-square)](https://orchardcore.net/discord)
+[![Gurubase](https://img.shields.io/badge/Gurubase-Ask%20Orchard%20Core%20Guru-006BFF)](https://gurubase.io/g/orchard-core)
 
 ## Build Status
 
