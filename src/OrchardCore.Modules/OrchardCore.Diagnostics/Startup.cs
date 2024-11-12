@@ -10,7 +10,7 @@ public sealed class Startup : Modules.StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, DiagnosticsStartupFilter>());
+        services.AddSingleton<IStartupFilter, DiagnosticsStartupFilter>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

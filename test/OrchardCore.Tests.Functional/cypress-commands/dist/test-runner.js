@@ -1,7 +1,5 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', { value: true });
-
 // This module was originally build by the OrchardCore team
 const child_process = require("child_process");
 const fs = require("fs-extra");
@@ -10,6 +8,14 @@ const path = require("path");
 global.log = function (msg) {
     let now = new Date().toLocaleTimeString();
     console.log(`[${now}] ${msg}\n`);
+
+    if (msg.indexOf("Exception") >= 0) {
+        throw new Error("An exception was detected");
+    }
+
+    if (msg.indexOf("fail:") == 0) {
+        throw new Error("An error was logged");
+    }
 };
 
 // Build the dotnet application in release mode
