@@ -2,5 +2,16 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": [
+        // We'll update GraphQL for v3 because it's breaking, see https://github.com/OrchardCMS/OrchardCore/issues/16826.
+        "GraphQL*",
+        // See the corresponding comment in Directory.Packages.props.
+        "System.Drawing.Common"
+      ],
+      "enabled": false
+    }
   ]
 }
