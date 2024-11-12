@@ -146,6 +146,8 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'" >
     <!-- Several transitive dependencies on 8.0.4 and lower which is vulnerable -->
     <PackageVersion Include="System.Text.Json" Version="9.0.0-rc.2.24473.5" />
+
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0-rc.2.24473.5" />
   </ItemGroup>
 
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
