@@ -40,7 +40,7 @@ public sealed class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<Arc
     {
         var httpContext = _httpContextAccessor.HttpContext;
 
-        if (await _authorizationService.AuthorizeAsync(HttpContext.User, CommonPermissions.PublishContent, part.ContentItem))
+        if (await _authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.PublishContent, part.ContentItem))
         {
             var viewModel = new ArchiveLaterPartViewModel();
 
