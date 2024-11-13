@@ -1,17 +1,19 @@
-{
+module.exports = {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
   ],
   "packageRules": [
     {
-      "description": "We'll update GraphQL for v3 because it's breaking, see https://github.com/OrchardCMS/OrchardCore/issues/16826. For System.Drawing.Common see the corresponding comment in Directory.Packages.props",
       "matchPackageNames": [
+        // We'll update GraphQL for v3 because it's breaking, see https://github.com/OrchardCMS/OrchardCore/issues/16826.
         "GraphQL*",
+        // // See the corresponding comment in Directory.Packages.props.
         "System.Drawing.Common"
       ],
       "enabled": false
     }
   ],
+  // Once a week is enough.
   "schedule": ["before 5am on Sunday"]
-}
+};
