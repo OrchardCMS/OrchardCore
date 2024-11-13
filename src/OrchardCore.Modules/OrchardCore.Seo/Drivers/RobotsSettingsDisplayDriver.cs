@@ -39,7 +39,7 @@ public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettin
 
     public override async Task<IDisplayResult> EditAsync(ISite site, RobotsSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, SeoConstants.ManageSeoSettings))
         {
@@ -64,7 +64,7 @@ public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettin
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, RobotsSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
 
         if (!context.GroupId.Equals(SeoConstants.RobotsSettingsGroupId, StringComparison.OrdinalIgnoreCase)
             || !await _authorizationService.AuthorizeAsync(user, SeoConstants.ManageSeoSettings))

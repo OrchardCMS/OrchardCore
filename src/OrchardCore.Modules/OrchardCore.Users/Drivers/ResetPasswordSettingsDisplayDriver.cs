@@ -28,7 +28,7 @@ public sealed class ResetPasswordSettingsDisplayDriver : SiteDisplayDriver<Reset
 
     public override async Task<IDisplayResult> EditAsync(ISite site, ResetPasswordSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
         {
@@ -45,7 +45,7 @@ public sealed class ResetPasswordSettingsDisplayDriver : SiteDisplayDriver<Reset
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, ResetPasswordSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
         {

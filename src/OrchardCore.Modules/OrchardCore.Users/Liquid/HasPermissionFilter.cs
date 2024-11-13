@@ -22,7 +22,7 @@ public class HasPermissionFilter : ILiquidFilter
     {
         if (input.ToObjectValue() is LiquidUserAccessor)
         {
-            var user = _httpContextAccessor.HttpContext?.User;
+            var user = _httpContextAccessor.HttpContext.User;
             if (user != null && arguments.Count > 0)
             {
                 var permissionName = arguments["permission"].Or(arguments.At(0)).ToStringValue();

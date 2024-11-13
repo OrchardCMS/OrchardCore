@@ -33,7 +33,7 @@ public sealed class OwnerEditorDriver : ContentPartDisplayDriver<CommonPart>
 
     public override async Task<IDisplayResult> EditAsync(CommonPart part, BuildPartEditorContext context)
     {
-        var currentUser = _httpContextAccessor.HttpContext?.User;
+        var currentUser = _httpContextAccessor.HttpContext.User;
 
         if (!await _authorizationService.AuthorizeAsync(currentUser, CommonPermissions.EditContentOwner, part.ContentItem))
         {
@@ -61,7 +61,7 @@ public sealed class OwnerEditorDriver : ContentPartDisplayDriver<CommonPart>
 
     public override async Task<IDisplayResult> UpdateAsync(CommonPart part, UpdatePartEditorContext context)
     {
-        var currentUser = _httpContextAccessor.HttpContext?.User;
+        var currentUser = _httpContextAccessor.HttpContext.User;
 
         if (!await _authorizationService.AuthorizeAsync(currentUser, CommonPermissions.EditContentOwner, part.ContentItem))
         {

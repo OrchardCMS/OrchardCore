@@ -22,7 +22,7 @@ public class RolesAdminListFilterProvider : IUsersAdminListFilterProvider
                         var authorizationService = context.ServiceProvider.GetRequiredService<IAuthorizationService>();
                         var roleService = context.ServiceProvider.GetRequiredService<IRoleService>();
 
-                        var user = httpContextAccessor.HttpContext?.User;
+                        var user = httpContextAccessor.HttpContext.User;
 
                         if (user != null && !await authorizationService.AuthorizeAsync(user, CommonPermissions.ListUsers))
                         {

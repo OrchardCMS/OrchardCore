@@ -67,7 +67,7 @@ public class CustomSettingsService
 
     public Task<bool> CanUserCreateSettingsAsync(ContentTypeDefinition settingsType)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
 
         return _authorizationService.AuthorizeAsync(user, Permissions.CreatePermissionForType(settingsType));
     }

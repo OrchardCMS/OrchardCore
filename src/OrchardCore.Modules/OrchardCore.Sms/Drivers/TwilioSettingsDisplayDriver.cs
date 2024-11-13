@@ -62,13 +62,13 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
             model.AccountSID = settings.AccountSID;
             model.HasAuthToken = !string.IsNullOrEmpty(settings.AuthToken);
         }).Location("Content:5#Twilio")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, SmsPermissions.ManageSmsSettings))
         .OnGroup(SettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, TwilioSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
         {

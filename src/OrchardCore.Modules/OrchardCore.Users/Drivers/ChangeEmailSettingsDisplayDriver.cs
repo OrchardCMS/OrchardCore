@@ -28,7 +28,7 @@ public sealed class ChangeEmailSettingsDisplayDriver : SiteDisplayDriver<ChangeE
 
     public override async Task<IDisplayResult> EditAsync(ISite site, ChangeEmailSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
         {
@@ -44,7 +44,7 @@ public sealed class ChangeEmailSettingsDisplayDriver : SiteDisplayDriver<ChangeE
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, ChangeEmailSettings section, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
         {

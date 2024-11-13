@@ -34,7 +34,7 @@ public sealed class TaxonomyContentsAdminListSettingsDisplayDriver : SiteDisplay
 
     public override async Task<IDisplayResult> EditAsync(ISite site, TaxonomyContentsAdminListSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTaxonomies))
         {
             return null;

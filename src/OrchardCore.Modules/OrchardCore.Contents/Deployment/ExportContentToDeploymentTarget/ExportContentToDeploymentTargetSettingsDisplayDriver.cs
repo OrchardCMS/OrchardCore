@@ -27,7 +27,7 @@ public sealed class ExportContentToDeploymentTargetSettingsDisplayDriver : SiteD
 
     public override async Task<IDisplayResult> EditAsync(ISite site, ExportContentToDeploymentTargetSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
         if (!await _authorizationService.AuthorizeAsync(user, OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan))
         {
             return null;

@@ -33,7 +33,7 @@ public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTr
 
     public override async Task<IDisplayResult> EditAsync(ISite model, WorkflowTrimmingSettings settings, BuildEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageWorkflowSettings))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageWorkflowSettings))
         {
             return null;
         }
@@ -54,7 +54,7 @@ public sealed class WorkflowTrimmingDisplayDriver : SiteDisplayDriver<WorkflowTr
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, WorkflowTrimmingSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageWorkflowSettings))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageWorkflowSettings))
         {
             return null;
         }

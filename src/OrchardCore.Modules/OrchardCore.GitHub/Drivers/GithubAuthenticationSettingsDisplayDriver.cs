@@ -40,7 +40,7 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
 
     public override async Task<IDisplayResult> EditAsync(ISite site, GitHubAuthenticationSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGitHubAuthentication))
         {
             return null;
@@ -78,7 +78,7 @@ public sealed class GitHubAuthenticationSettingsDisplayDriver : SiteDisplayDrive
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, GitHubAuthenticationSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGitHubAuthentication))
         {
             return null;

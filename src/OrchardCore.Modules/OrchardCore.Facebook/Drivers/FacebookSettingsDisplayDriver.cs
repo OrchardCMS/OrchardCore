@@ -41,7 +41,7 @@ public sealed class FacebookSettingsDisplayDriver : SiteDisplayDriver<FacebookSe
 
     public override async Task<IDisplayResult> EditAsync(ISite site, FacebookSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
         {
             return null;
@@ -75,7 +75,7 @@ public sealed class FacebookSettingsDisplayDriver : SiteDisplayDriver<FacebookSe
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, FacebookSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageFacebookApp))
         {

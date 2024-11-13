@@ -25,7 +25,7 @@ public sealed class AuditTrailTrimmingSettingsDisplayDriver : SiteDisplayDriver<
 
     public override async Task<IDisplayResult> EditAsync(ISite site, AuditTrailTrimmingSettings section, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
         if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
         {
             return null;
@@ -42,7 +42,7 @@ public sealed class AuditTrailTrimmingSettingsDisplayDriver : SiteDisplayDriver<
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AuditTrailTrimmingSettings section, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
         if (!await _authorizationService.AuthorizeAsync(user, AuditTrailPermissions.ManageAuditTrailSettings))
         {
             return null;

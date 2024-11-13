@@ -56,7 +56,7 @@ public sealed class AzureAISearchSettingsDisplayDriver : SiteDisplayDriver<Azure
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureAISearchSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return null;
         }

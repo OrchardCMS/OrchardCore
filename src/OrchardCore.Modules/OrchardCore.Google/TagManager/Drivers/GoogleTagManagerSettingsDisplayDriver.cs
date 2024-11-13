@@ -27,7 +27,7 @@ public sealed class GoogleTagManagerSettingsDisplayDriver : SiteDisplayDriver<Go
 
     public override async Task<IDisplayResult> EditAsync(ISite site, GoogleTagManagerSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleTagManager))
         {
             return null;
@@ -42,7 +42,7 @@ public sealed class GoogleTagManagerSettingsDisplayDriver : SiteDisplayDriver<Go
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, GoogleTagManagerSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleTagManager))
         {
             return null;

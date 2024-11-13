@@ -23,7 +23,7 @@ public class UserEmailFilter : ILiquidFilter
         var value = input.ToObjectValue();
         if (value is LiquidUserAccessor)
         {
-            var claimsPrincipal = _httpContextAccessor.HttpContext?.User;
+            var claimsPrincipal = _httpContextAccessor.HttpContext.User;
             if (claimsPrincipal != null)
             {
                 // Todo: Use 'IdentityOptions.ClaimsIdentity.EmailClaimType' that will be supported in a future version.

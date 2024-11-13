@@ -73,7 +73,7 @@ public sealed class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSett
             return null;
         }
 
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
         {
             return null;
         }

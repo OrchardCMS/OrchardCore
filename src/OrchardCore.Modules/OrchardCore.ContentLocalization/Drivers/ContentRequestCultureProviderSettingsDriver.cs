@@ -28,7 +28,7 @@ public sealed class ContentRequestCultureProviderSettingsDriver : SiteDisplayDri
 
     public override async Task<IDisplayResult> EditAsync(ISite site, ContentRequestCultureProviderSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageContentCulturePicker))
         {
@@ -44,7 +44,7 @@ public sealed class ContentRequestCultureProviderSettingsDriver : SiteDisplayDri
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, ContentRequestCultureProviderSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext?.User;
+        var user = _httpContextAccessor.HttpContext.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageContentCulturePicker))
         {
