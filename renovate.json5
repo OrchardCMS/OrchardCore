@@ -3,6 +3,8 @@
     "extends": [
         "config:recommended"
     ],
+    // See https://docs.renovatebot.com/configuration-options/#configmigration.
+    "configMigration": true,
     "packageRules": [
         {
             "matchPackageNames": [
@@ -14,5 +16,6 @@
             "enabled": false
         }
     ],
+    // We only need updates once a week.
     "schedule": [ "before 5am on Sunday" ]
 }
