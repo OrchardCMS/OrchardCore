@@ -14,6 +14,11 @@
                 "System.Drawing.Common"
             ],
             "enabled": false
+        },
+        {
+            // See https://github.com/OrchardCMS/OrchardCore/issues/16318 on why we have NPM updates disabled.
+            "managers": [ "npm" ],
+            "enabled": false
         }
     ],
     // We only need updates once a week.
