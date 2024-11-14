@@ -75,13 +75,13 @@ public class QueryBasedContentDeploymentSource
         try
         {
             queryParameters = JConvert.DeserializeObject<Dictionary<string, object>>(parameters) ?? [];
-            
+
             return true;
         }
         catch (JsonException)
         {
             queryParameters = [];
-            
+
             return false;
         }
     }

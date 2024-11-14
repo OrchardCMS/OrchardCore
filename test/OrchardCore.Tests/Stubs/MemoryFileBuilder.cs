@@ -6,16 +6,16 @@ namespace OrchardCore.Tests.Stubs;
 /// In memory file builder that uses a dictionary as virtual file system.
 /// Intended for unit testing.
 /// </summary>
-public class MemoryFileBuilder
-    : IFileBuilder
+public class MemoryFileBuilder : IFileBuilder
 {
     public Dictionary<string, byte[]> VirtualFiles { get; private set; } = [];
 
     public async Task SetFileAsync(string subpath, Stream stream)
     {
-        using var ms = new MemoryStream();
+        var buffer = new byte[stream.Length];
+        using var ms = new MemoryStream(buffer);
         await stream.CopyToAsync(ms);
-        VirtualFiles[subpath] = ms.ToArray();
+        VirtualFiles[subpath] = buffer;
     }
 
     /// <summary>

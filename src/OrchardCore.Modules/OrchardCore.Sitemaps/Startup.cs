@@ -75,7 +75,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<ISitemapSourceBuilder, CustomPathSitemapSourceBuilder>();
         services.AddScoped<ISitemapSourceUpdateHandler, CustomPathSitemapSourceUpdateHandler>();
         services.AddScoped<ISitemapSourceModifiedDateProvider, CustomPathSitemapSourceModifiedDateProvider>();
-        services.AddScoped<IDisplayDriver<SitemapSource>, CustomPathSitemapSourceDriver>();
+        services.AddDisplayDriver<SitemapSource, CustomPathSitemapSourceDriver>();
         services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<CustomPathSitemapSource>>();
 
         services.AddRecipeExecutionStep<SitemapsStep>();

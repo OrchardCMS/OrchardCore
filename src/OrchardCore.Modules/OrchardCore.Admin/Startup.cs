@@ -58,7 +58,7 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<PermissionsAdminSettings>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();
-        services.AddScoped<IDisplayDriver<Navbar>, VisitSiteNavbarDisplayDriver>();
+        services.AddDisplayDriver<Navbar, VisitSiteNavbarDisplayDriver>();
 
         services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore_Admin"));
     }
