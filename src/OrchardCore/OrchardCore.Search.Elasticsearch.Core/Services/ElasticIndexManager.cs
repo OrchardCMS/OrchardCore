@@ -156,14 +156,14 @@ public sealed class ElasticIndexManager
 
         if (_elasticSearchOptions.Analyzers is not null && _elasticSearchOptions.Analyzers.TryGetValue(analyzerName, out var analyzerProperties))
         {
-            var analyzer = CreateAnalyzer(analyzerProperties);
+            var analyzer = GetAnalyzer(analyzerProperties);
 
             analysisDescriptor.Analyzers(a => a.UserDefined(analyzerName, analyzer));
         }
 
         if (_elasticSearchOptions.TokenFilters is not null && _elasticSearchOptions.TokenFilters.Count > 0)
         {
-            var tokenFiltersDescriptor = GetTokenFilters(_elasticSearchOptions.TokenFilters);
+            var tokenFiltersDescriptor = GetTokenFiltersDescriptor(_elasticSearchOptions.TokenFilters);
 
             analysisDescriptor.TokenFilters(d => tokenFiltersDescriptor);
         }
@@ -269,11 +269,10 @@ public sealed class ElasticIndexManager
         return response.Acknowledged;
     }
 
-    private TokenFiltersDescriptor GetTokenFilters(Dictionary<string, JsonObject> filters)
+    private TokenFiltersDescriptor GetTokenFiltersDescriptor(Dictionary<string, JsonObject> filters)
     {
         var descriptor = new TokenFiltersDescriptor();
 
-        ITokenFilter tokenFilter = null;
         foreach (var filter in filters)
         {
             if (!filter.Value.TryGetPropertyValue("type", out var typeObject) ||
@@ -282,7 +281,7 @@ public sealed class ElasticIndexManager
                 continue;
             }
 
-            tokenFilter = tokenFilterBuildingInfo.Invoke();
+            var tokenFilter = tokenFilterBuildingInfo.Invoke();
 
             var filterDescriptor = new TokenFiltersDescriptor();
             var properties = tokenFilter.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
@@ -318,7 +317,7 @@ public sealed class ElasticIndexManager
         return descriptor;
     }
 
-    private IAnalyzer CreateAnalyzer(JsonObject analyzerProperties)
+    private IAnalyzer GetAnalyzer(JsonObject analyzerProperties)
     {
         IAnalyzer analyzer = null;
 
