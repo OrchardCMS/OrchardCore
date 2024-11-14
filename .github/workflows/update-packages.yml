@@ -1,0 +1,48 @@
+name: Update NuGet packages
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Every Sunday at 8am
+    - cron: '0 8 * * Sun'
+
+permissions:
+  issues: write
+  pull-requests: write
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    name: Check Versions and Create PR 
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run dotnet outdated
+      id: dotnet_outdated
+      run: |
+        dotnet tool install --global dotnet-outdated-tool
+        OUTPUT=$(dotnet-outdated --version-lock major --upgrade --exclude "Microsoft.AspNetCore --exclude Microsoft.Extensions.Caching.StackExchangeRedis" )
+        if [[ $OUTPUT =~ "No outdated dependencies were detected" ]]; then
+            echo "::set-output name=updated::false"
+        else
+            echo "::set-output name=updated::true"
+        fi
+        echo $OUTPUT
+      shell: bash
+    - name: Create pull request
+      if: steps.dotnet_outdated.outputs.updated == 'true'
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git checkout -b outdated
+        git commit -am "Update NuGet packages"
+        git push origin HEAD --force
+        #gh pr create --base main -H outdated --title 'Update NuGet packages' --body ''
+
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
