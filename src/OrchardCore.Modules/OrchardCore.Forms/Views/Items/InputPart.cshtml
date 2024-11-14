@@ -14,7 +14,7 @@
     {
         if (Model.Value.Type == "checkbox")
         {
-            isChecked = fieldEntry.AttemptedValue == fieldValue;
+            isChecked = fieldEntry.AttemptedValue == (fieldValue ?? "on");
         }
         else
         {
