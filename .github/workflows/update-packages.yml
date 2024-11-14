@@ -33,9 +33,9 @@ jobs:
         exec 5>&1 
         OUTPUT=$(dotnet-outdated --version-lock major --output-format markdown --no-restore --output ${{ runner.temp }}/build_logs/dotnet-updated.md --upgrade --exclude "Microsoft.AspNetCore" --exclude "Microsoft.Extensions.Caching.StackExchangeRedis"|tee /dev/fd/5)
         if [[ $OUTPUT =~ "No outdated dependencies were detected" ]]; then
-            echo "::set-output name=updated::false"
+            echo "{updated}={false}" >> $GITHUB_OUTPUT
         else
-            echo "::set-output name=updated::true"
+            echo "{updated}={true}" >> $GITHUB_OUTPUT
         fi
         echo $OUTPUT
       shell: bash
@@ -45,6 +45,7 @@ jobs:
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
         git checkout -b gh/outdated
+        git pull
         git commit -am "Update NuGet packages"
         git push origin HEAD
         gh pr create --base main --head gh/outdated --title 'Update NuGet packages' --body-file ${{ runner.temp }}/build_logs/dotnet-updated.md
