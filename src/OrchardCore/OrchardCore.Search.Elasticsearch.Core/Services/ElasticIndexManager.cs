@@ -283,7 +283,6 @@ public sealed class ElasticIndexManager
 
             var tokenFilter = tokenFilterBuildingInfo.Invoke();
 
-            var filterDescriptor = new TokenFiltersDescriptor();
             var properties = tokenFilter.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
             foreach (var filterProperty in filter.Value)
