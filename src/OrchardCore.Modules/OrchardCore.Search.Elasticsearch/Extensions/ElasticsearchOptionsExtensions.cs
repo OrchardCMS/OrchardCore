@@ -45,7 +45,7 @@ internal static class ElasticsearchOptionsExtensions
         return options;
     }
 
-    internal static ElasticsearchOptions AddFilter(this ElasticsearchOptions options, IConfigurationSection configuration)
+    internal static ElasticsearchOptions AddTokenFilters(this ElasticsearchOptions options, IConfigurationSection configuration)
     {
         var jsonNode = configuration.GetSection(nameof(options.TokenFilters)).AsJsonNode();
         var jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonNode);

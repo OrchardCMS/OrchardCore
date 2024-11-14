@@ -47,13 +47,13 @@ public sealed class Startup : StartupBase
             return new ElasticClient(options.GetConnectionSettings() ?? new ConnectionSettings());
         });
 
-        services.Configure<ElasticsearchOptions>(o =>
+        services.Configure<ElasticsearchOptions>(options =>
         {
             var configuration = _shellConfiguration.GetSection(ElasticConnectionOptionsConfigurations.ConfigSectionName);
 
-            o.AddIndexPrefix(configuration);
-            o.AddFilter(configuration);
-            o.AddAnalyzers(configuration);
+            options.AddIndexPrefix(configuration);
+            options.AddTokenFilters(configuration);
+            options.AddAnalyzers(configuration);
         });
 
         services.AddElasticServices();

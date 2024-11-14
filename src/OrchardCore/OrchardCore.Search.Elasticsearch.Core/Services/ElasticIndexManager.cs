@@ -383,7 +383,6 @@ public sealed class ElasticIndexManager
         }
 
         var analysisDescriptor = new AnalysisDescriptor();
-        var analyzersDescriptor = new AnalyzersDescriptor();
         var indexSettingsDescriptor = new IndexSettingsDescriptor();
 
         // The name "standardanalyzer" is a legacy used prior OC 1.6 release. It can be removed in future releases.
@@ -395,13 +394,17 @@ public sealed class ElasticIndexManager
         {
             var analyzer = CreateAnalyzer(analyzerProperties);
 
-            indexSettingsDescriptor.Analysis(descriptor => descriptor.Analyzers(a => a.UserDefined(analyzerName, analyzer)));
+            analysisDescriptor.Analyzers(a => a.UserDefined(analyzerName, analyzer));
         }
 
         if (_elasticSearchOptions.TokenFilters is not null && _elasticSearchOptions.TokenFilters.Count > 0)
         {
-            indexSettingsDescriptor.Analysis(descriptor => descriptor.TokenFilters(tokenFiltersDescriptor => ConfigureTokenFilters(tokenFiltersDescriptor, _elasticSearchOptions.TokenFilters)));
+            var tokenFiltersDescriptor = GetTokenFilters(_elasticSearchOptions.TokenFilters);
+
+            analysisDescriptor.TokenFilters(d => tokenFiltersDescriptor);
         }
+
+        indexSettingsDescriptor.Analysis(a => analysisDescriptor);
 
         // Custom metadata to store the last indexing task id.
         var IndexingState = new FluentDictionary<string, object>()
@@ -502,8 +505,10 @@ public sealed class ElasticIndexManager
         return response.Acknowledged;
     }
 
-    private TokenFiltersDescriptor ConfigureTokenFilters(TokenFiltersDescriptor descriptor, Dictionary<string, JsonObject> filters)
+    private TokenFiltersDescriptor GetTokenFilters(Dictionary<string, JsonObject> filters)
     {
+        var descriptor = new TokenFiltersDescriptor();
+
         foreach (var filter in filters)
         {
             if (!filter.Value.TryGetPropertyValue("type", out var typeObject) ||
