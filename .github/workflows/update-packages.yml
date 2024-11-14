@@ -33,9 +33,9 @@ jobs:
         exec 5>&1 
         OUTPUT=$(dotnet-outdated --version-lock major --output-format markdown --no-restore --output ${{ runner.temp }}/build_logs/dotnet-updated.md --upgrade --exclude "Microsoft.AspNetCore" --exclude "Microsoft.Extensions.Caching.StackExchangeRedis"|tee /dev/fd/5)
         if [[ $OUTPUT =~ "No outdated dependencies were detected" ]]; then
-            echo "{updated}={false}" >> $GITHUB_OUTPUT
+            echo "updated=false" >> $GITHUB_OUTPUT
         else
-            echo "{updated}={true}" >> $GITHUB_OUTPUT
+            echo "updated=true" >> $GITHUB_OUTPUT
         fi
         echo $OUTPUT
       shell: bash
