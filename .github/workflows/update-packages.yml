@@ -26,7 +26,8 @@ jobs:
       id: dotnet_outdated
       run: |
         dotnet tool install --global dotnet-outdated-tool
-        OUTPUT=$(dotnet-outdated --version-lock major --upgrade --exclude "Microsoft.AspNetCore --exclude Microsoft.Extensions.Caching.StackExchangeRedis" )
+        exec 5>&1 
+        OUTPUT=$(dotnet-outdated --version-lock major --upgrade --exclude "Microsoft.AspNetCore --exclude Microsoft.Extensions.Caching.StackExchangeRedis"|tee /dev/fd/5)
         if [[ $OUTPUT =~ "No outdated dependencies were detected" ]]; then
             echo "::set-output name=updated::false"
         else
@@ -39,10 +40,9 @@ jobs:
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
-        git checkout -b outdated
+        git checkout -b gh/outdated
         git commit -am "Update NuGet packages"
-        git push origin HEAD --force
-        #gh pr create --base main -H outdated --title 'Update NuGet packages' --body ''
+        #gh pr create --base main -H gh/outdated --title 'Update NuGet packages' --body ''
 
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
