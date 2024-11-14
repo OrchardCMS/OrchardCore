@@ -33,7 +33,7 @@ internal sealed class HttpRequestValue : FluidValue
 
     public override string ToStringValue() => "Request";
 
-    public async override ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
+    public override async ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
         => await writer.WriteAsync(ToStringValue());
 
     public override ValueTask<FluidValue> GetValueAsync(string name, TemplateContext context)
