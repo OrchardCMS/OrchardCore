@@ -32,8 +32,6 @@ jobs:
       shell: bash
     - name: Create pull request
       run: |
-        git checkout main
-        git pull
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
         git branch -D outdated || true
