@@ -34,8 +34,6 @@ jobs:
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
-        git branch -D outdated || true
-        git branch -c outdated
         git checkout -b outdated
         git commit -am "Update NuGet packages"
         git push origin HEAD --force
