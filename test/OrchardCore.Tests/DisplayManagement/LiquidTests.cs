@@ -117,12 +117,11 @@ public class LiquidTests
         await context.InitializeAsync();
         await context.UsingTenantScopeAsync(async scope =>
         {
-            var template =
-"""
-unsorted:{% for action in Model %}{{ action.Content.HotActionsPart.Order.Value }}{% endfor %}
-{% assign hotActions = Model | sort: "Content.HotActionsPart.Order.Value" %}
-sorted:{% for action in hotActions %}{{ action.Content.HotActionsPart.Order.Value }}{% endfor %}
-""";
+            var template = """
+                unsorted:{% for action in Model %}{{ action.Content.HotActionsPart.Order.Value }}{% endfor %}
+                {% assign hotActions = Model | sort: "Content.HotActionsPart.Order.Value" %}
+                sorted:{% for action in hotActions %}{{ action.Content.HotActionsPart.Order.Value }}{% endfor %}
+                """;
 
             var json = JConvert.SerializeObject(FakeContentItems);
 
@@ -144,12 +143,11 @@ sorted:{% for action in hotActions %}{{ action.Content.HotActionsPart.Order.Valu
         await context.InitializeAsync();
         await context.UsingTenantScopeAsync(async scope =>
         {
-            var template =
-"""
-total:{{Model | size}}
-{% assign hotActions = Model | where: "Content.HotActionsPart.AddtoHotActionsMenu.Value", true %}
-filtered:{{ hotActions | size }}
-""";
+            var template = """
+                total:{{Model | size}}
+                {% assign hotActions = Model | where: "Content.HotActionsPart.AddtoHotActionsMenu.Value", true %}
+                filtered:{{ hotActions | size }}
+                """;
 
             var json = JConvert.SerializeObject(FakeContentItems);
 
@@ -171,12 +169,11 @@ filtered:{{ hotActions | size }}
         await context.InitializeAsync();
         await context.UsingTenantScopeAsync(async scope =>
         {
-            var template =
-"""
-original:{% for action in Model%}{{ action.Content.HotActionsPart.Order.Value }}{% endfor %}
-{% assign hotActions = Model | where: "Content.HotActionsPart.AddtoHotActionsMenu.Value", True %}
-filtered_sorted:{% for action in hotActions %}{{ action.Content.HotActionsPart.Order.Value }}{% endfor %}
-""";
+            var template = """
+                original:{% for action in Model%}{{ action.Content.HotActionsPart.Order.Value }}{% endfor %}
+                {% assign hotActions = Model | where: "Content.HotActionsPart.AddtoHotActionsMenu.Value", true | sort: "Content.HotActionsPart.Order.Value" %}
+                filtered_sorted:{% for action in hotActions %}{{ action.Content.HotActionsPart.Order.Value }}{% endfor %}
+                """;
 
             var json = JConvert.SerializeObject(FakeContentItems);
 
