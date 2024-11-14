@@ -43,57 +43,8 @@ public sealed class ElasticIndexManager
         { ElasticsearchConstants.StopAnalyzer, () => new StopAnalyzer() },
     };
 
-    private readonly List<string> _tokenFilterNames = new List<string>()
-    {
-        "asciifolding",
-        "common_grams",
-        "condition",
-        "delimited_payload",
-        "dictionary_decompounder",
-        "edge_ngram",
-        "elision",
-        "fingerprint",
-        "hunspell",
-        "hyphenation_decompounder",
-        "icu_collation",
-        "icu_folding",
-        "icu_normalizer",
-        "icu_transform",
-        "keep_types",
-        "keep",
-        "keyword_marker",
-        "kstem",
-        "kuromoji_part_of_speech",
-        "kuromoji_readingform",
-        "kuromoji_stemmer",
-        "length",
-        "limit",
-        "lowercase",
-        "multiplexer",
-        "ngram",
-        "nori_part_of_speech",
-        "pattern_capture",
-        "pattern_replace",
-        "phonetic",
-        "porter_stem",
-        "predicate_token_filter",
-        "remove_duplicates",
-        "reverse",
-        "shingle",
-        "snowball",
-        "stemmer_override",
-        "stemmer",
-        "stop",
-        "synonym_graph",
-        "synonym",
-        "trim",
-        "truncate",
-        "unique",
-        "uppercase",
-        "word_delimiter_graph",
-        "word_delimiter"
-    };
     private sealed record TokenFilterBuildingInfo(ITokenFilter TokenFilter, Func<TokenFiltersDescriptor, ITokenFilter, string, TokenFiltersDescriptor> AddTokenFilter);
+
     private readonly Dictionary<string, TokenFilterBuildingInfo> _tokenFilterBuildingInfoGetter = new(StringComparer.OrdinalIgnoreCase)
     {
         {
@@ -439,17 +390,16 @@ public sealed class ElasticIndexManager
         ? null
         : elasticIndexSettings.AnalyzerName) ?? ElasticsearchConstants.DefaultAnalyzer;
 
-        if (_elasticSearchOptions.Analyzers.TryGetValue(analyzerName, out var analyzerProperties))
+        if (_elasticSearchOptions.Analyzers is not null && _elasticSearchOptions.Analyzers.TryGetValue(analyzerName, out var analyzerProperties))
         {
             var analyzer = CreateAnalyzer(analyzerProperties);
 
-            indexSettingsDescriptor.Analysis(analysisDescriptor => analysisDescriptor.Analyzers(a => a.UserDefined(analyzerName, analyzer)));
+            indexSettingsDescriptor.Analysis(descriptor => descriptor.Analyzers(a => a.UserDefined(analyzerName, analyzer)));
         }
 
-        if (_elasticSearchOptions.Filter is not null)
+        if (_elasticSearchOptions.TokenFilters is not null && _elasticSearchOptions.TokenFilters.Count > 0)
         {
-            var tokenFiltersDescriptor = GetTokenFilterDescriptor(_elasticSearchOptions.Filter);
-            analysisDescriptor.TokenFilters(f => tokenFiltersDescriptor);
+            indexSettingsDescriptor.Analysis(descriptor => descriptor.TokenFilters(tokenFiltersDescriptor => ConfigureTokenFilters(tokenFiltersDescriptor, _elasticSearchOptions.TokenFilters)));
         }
 
         // Custom metadata to store the last indexing task id.
@@ -551,23 +501,20 @@ public sealed class ElasticIndexManager
         return response.Acknowledged;
     }
 
-    private TokenFiltersDescriptor GetTokenFilterDescriptor(Dictionary<string, JsonObject> filter)
+    private TokenFiltersDescriptor ConfigureTokenFilters(TokenFiltersDescriptor descriptor, Dictionary<string, JsonObject> filters)
     {
-        var descriptor = new TokenFiltersDescriptor();
-
-        foreach (var filterName in filter.Keys)
+        foreach (var filter in filters)
         {
-            var filterProps = filter[filterName];
-
-            if (!filterProps.TryGetPropertyValue("type", out var typeObject) ||
+            if (!filter.Value.TryGetPropertyValue("type", out var typeObject) ||
                 !_tokenFilterBuildingInfoGetter.TryGetValue(typeObject.ToString(), out var tokenFilterBuildingInfo))
             {
                 continue;
             }
 
-            var properties = tokenFilterBuildingInfo.TokenFilter.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var properties = tokenFilterBuildingInfo.TokenFilter.GetType()
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-            foreach (var filterProperty in filterProps)
+            foreach (var filterProperty in filter.Value)
             {
                 if (filterProperty.Value == null || string.Equals(filterProperty.Key, "type", StringComparison.OrdinalIgnoreCase))
                 {
@@ -575,9 +522,7 @@ public sealed class ElasticIndexManager
                 }
 
                 var key = filterProperty.Key.Replace(_separator, string.Empty);
-
                 var property = properties.FirstOrDefault(p => p.Name.Equals(key, StringComparison.OrdinalIgnoreCase));
-                var propertyType = property.PropertyType;
 
                 if (property == null)
                 {
@@ -586,45 +531,16 @@ public sealed class ElasticIndexManager
 
                 try
                 {
-                    if (property.PropertyType == typeof(StopWords))
-                    {
-                        if (filterProperty.Value is JsonArray)
-                        {
-                            var propertyValue = JsonSerializer.Deserialize<IEnumerable<string>>(filterProperty.Value);
-                            property.SetValue(tokenFilterBuildingInfo.TokenFilter, new StopWords(propertyValue));
-                        }
-                        else
-                        {
-                            var propertyValue = JsonSerializer.Deserialize<string>(filterProperty.Value);
-                            property.SetValue(tokenFilterBuildingInfo.TokenFilter, new StopWords(propertyValue));
-                        }
+                    var propertyValue = JsonSerializer.Deserialize(filterProperty.Value, property.PropertyType);
+                    property.SetValue(tokenFilterBuildingInfo.TokenFilter, propertyValue);
 
-                        tokenFilterBuildingInfo.AddTokenFilter(descriptor, tokenFilterBuildingInfo.TokenFilter, filterName);
-                        _tokenFilterNames.Add(filterName);
-
-                        continue;
-                    }
-
-                    if (filterProperty.Value is JsonArray jsonArray)
-                    {
-                        var propertyValue = JsonSerializer.Deserialize(filterProperty.Value, propertyType);
-                        property.SetValue(tokenFilterBuildingInfo.TokenFilter, propertyValue);
-                    }
-                    else
-                    {
-                        var propertyValue = JsonSerializer.Deserialize(filterProperty.Value, propertyType);
-                        property.SetValue(tokenFilterBuildingInfo.TokenFilter, propertyValue);
-                    }
-
-                    tokenFilterBuildingInfo.AddTokenFilter(descriptor, tokenFilterBuildingInfo.TokenFilter, filterName);
-                    _tokenFilterNames.Add(filterName);
+                    tokenFilterBuildingInfo.AddTokenFilter(descriptor, tokenFilterBuildingInfo.TokenFilter, filter.Key);
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Unable to parse token filter for Elasticsearch.");
+                    _logger.LogError(e, "Unable to parse token filter for Elasticsearch (Filter: {Key}).", filter.Key);
                 }
             }
-
         }
 
         return descriptor;
