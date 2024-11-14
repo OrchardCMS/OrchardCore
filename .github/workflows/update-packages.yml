@@ -14,9 +14,11 @@ env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 jobs:
-  setup:
+  main:
     runs-on: ubuntu-latest
-    name: Setup
+    name: Check Versions and Create PR 
+    permissions:
+      contents: write
     steps:
     - uses: actions/checkout@v4
     - name: Run dotnet outdated
@@ -37,7 +39,7 @@ jobs:
         git checkout -b outdated
         git commit -am "Update NuGet packages"
         git push origin HEAD --force
-        gh pr create -B main -H outdated --title 'Update NuGet packages' --body 'Created by Github action'
+        gh pr create --base main -H outdated --title 'Update NuGet packages' --body 'Created by Github action'
 
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
