@@ -9,22 +9,18 @@ namespace OrchardCore.OpenId.Recipes;
 /// <summary>
 /// This recipe step sets Token Validation OpenID Connect settings.
 /// </summary>
-public sealed class OpenIdValidationSettingsStep : IRecipeStepHandler
+public sealed class OpenIdValidationSettingsStep : NamedRecipeStepHandler
 {
     private readonly IOpenIdValidationService _validationService;
 
     public OpenIdValidationSettingsStep(IOpenIdValidationService validationService)
+        : base(nameof(OpenIdValidationSettings))
     {
         _validationService = validationService;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, nameof(OpenIdValidationSettings), StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var model = context.Step.ToObject<OpenIdValidationSettingsStepModel>();
         var settings = await _validationService.LoadSettingsAsync();
 

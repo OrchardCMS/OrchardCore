@@ -1,21 +1,29 @@
 using System.IO.Compression;
 using System.Net;
-using System.Text;
 
 namespace OrchardCore.Scripting;
 
 public class CommonGeneratorMethods : IGlobalMethodProvider
 {
-    private static readonly GlobalMethod _base64 = new()
+    private static readonly GlobalMethod[] _allMethods;
+
+    public IEnumerable<GlobalMethod> GetMethods() => _allMethods;
+
+    static CommonGeneratorMethods()
+    {
+        _allMethods = [_base64, _html, _gZip];
+    }
+
+    internal static readonly GlobalMethod _base64 = new()
     {
         Name = "base64",
         Method = serviceProvider => (Func<string, string>)(encoded =>
         {
-            return Encoding.UTF8.GetString(Convert.FromBase64String(encoded));
+            return Base64.FromUTF8Base64String(encoded);
         }),
     };
 
-    private static readonly GlobalMethod _html = new()
+    internal static readonly GlobalMethod _html = new()
     {
         Name = "html",
         Method = serviceProvider => (Func<string, string>)(encoded =>
@@ -28,26 +36,21 @@ public class CommonGeneratorMethods : IGlobalMethodProvider
     /// Converts a Base64 encoded gzip stream to an uncompressed Base64 string.
     /// See http://www.txtwizard.net/compression.
     /// </summary>
-    private static readonly GlobalMethod _gZip = new()
+    internal static readonly GlobalMethod _gZip = new()
     {
         Name = "gzip",
         Method = serviceProvider => (Func<string, string>)(encoded =>
         {
-            var bytes = Convert.FromBase64String(encoded);
-            using var gzip = new GZipStream(new MemoryStream(bytes), CompressionMode.Decompress);
+            var compressedStream = Base64.DecodedToStream(encoded);
+            compressedStream.Seek(0, SeekOrigin.Begin);
 
-            var decompressed = new MemoryStream();
-            var buffer = new byte[1024];
-            int nRead;
+            using var gZip = new GZipStream(compressedStream, CompressionMode.Decompress, leaveOpen: true);
 
-            while ((nRead = gzip.Read(buffer, 0, buffer.Length)) > 0)
-            {
-                decompressed.Write(buffer, 0, nRead);
-            }
+            // The decompressed stream will be bigger that the source.
+            using var uncompressedStream = MemoryStreamFactory.GetStream((int)compressedStream.Length);
+            gZip.CopyTo(uncompressedStream);
 
-            return Convert.ToBase64String(decompressed.ToArray());
+            return Convert.ToBase64String(uncompressedStream.GetBuffer(), 0, (int)uncompressedStream.Length);
         }),
     };
-
-    public IEnumerable<GlobalMethod> GetMethods() => new[] { _base64, _html, _gZip };
 }

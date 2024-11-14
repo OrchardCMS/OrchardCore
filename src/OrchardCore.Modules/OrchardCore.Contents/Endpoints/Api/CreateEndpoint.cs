@@ -5,10 +5,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Json;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Contents.Endpoints.Api;
@@ -37,6 +39,7 @@ public static class CreateEndpoint
         IContentDefinitionManager contentDefinitionManager,
         IUpdateModelAccessor updateModelAccessor,
         HttpContext httpContext,
+        IOptions<DocumentJsonSerializerOptions> options,
         bool draft = false)
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi))
@@ -123,7 +126,7 @@ public static class CreateEndpoint
             await contentManager.SaveDraftAsync(contentItem);
         }
 
-        return TypedResults.Ok(contentItem);
+        return Results.Json(contentItem, options.Value.SerializerOptions);
     }
 
     private static void AddValidationErrorsToModelState(ContentValidateResult result, ModelStateDictionary modelState)

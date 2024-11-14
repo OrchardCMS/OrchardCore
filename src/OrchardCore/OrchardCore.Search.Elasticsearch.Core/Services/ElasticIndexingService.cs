@@ -297,7 +297,7 @@ public class ElasticIndexingService
 
                         if (included is not null && (bool)included)
                         {
-                            partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>()));
+                            partDefinition.Settings[nameof(ElasticContentIndexSettings)] = JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>());
                         }
                     }
                 });
@@ -316,7 +316,7 @@ public class ElasticIndexingService
 
                     if (included != null && (bool)included)
                     {
-                        partDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>()));
+                        partDefinition.Settings[nameof(ElasticContentIndexSettings)] = JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>());
                     }
                 }
 
@@ -328,7 +328,7 @@ public class ElasticIndexingService
 
                         if (included != null && (bool)included)
                         {
-                            fieldDefinition.Settings.Add(nameof(ElasticContentIndexSettings), JNode.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>()));
+                            fieldDefinition.Settings[nameof(ElasticContentIndexSettings)] = JNode.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>());
                         }
                     }
                 }

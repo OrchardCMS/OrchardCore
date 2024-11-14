@@ -10,7 +10,7 @@ namespace OrchardCore.Media.Recipes;
 /// <summary>
 /// This recipe step creates a set of queries.
 /// </summary>
-public sealed class MediaStep : IRecipeStepHandler
+public sealed class MediaStep : NamedRecipeStepHandler
 {
     private readonly IMediaFileStore _mediaFileStore;
     private readonly HashSet<string> _allowedFileExtensions;
@@ -23,6 +23,7 @@ public sealed class MediaStep : IRecipeStepHandler
         IOptions<MediaOptions> options,
         IHttpClientFactory httpClientFactory,
         IStringLocalizer<MediaStep> stringLocalizer)
+        : base("media")
     {
         _mediaFileStore = mediaFileStore;
         _allowedFileExtensions = options.Value.AllowedFileExtensions;
@@ -30,13 +31,8 @@ public sealed class MediaStep : IRecipeStepHandler
         S = stringLocalizer;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "media", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var model = context.Step.ToObject<MediaStepModel>();
 
         foreach (var file in model.Files)
@@ -50,35 +46,38 @@ public sealed class MediaStep : IRecipeStepHandler
 
             Stream stream = null;
 
-            if (!string.IsNullOrWhiteSpace(file.Base64))
+            try
             {
-                stream = new MemoryStream(Convert.FromBase64String(file.Base64));
-            }
-            else if (!string.IsNullOrWhiteSpace(file.SourcePath))
-            {
-                var fileInfo = context.RecipeDescriptor.FileProvider.GetRelativeFileInfo(context.RecipeDescriptor.BasePath, file.SourcePath);
-
-                stream = fileInfo.CreateReadStream();
-            }
-            else if (!string.IsNullOrWhiteSpace(file.SourceUrl))
-            {
-                var httpClient = _httpClientFactory.CreateClient();
-
-                var response = await httpClient.GetAsync(file.SourceUrl);
-
-                if (response.IsSuccessStatusCode)
+                if (!string.IsNullOrWhiteSpace(file.Base64))
                 {
-                    stream = await response.Content.ReadAsStreamAsync();
+                    stream = Base64.DecodedToStream(file.Base64);
                 }
-            }
+                else if (!string.IsNullOrWhiteSpace(file.SourcePath))
+                {
+                    var fileInfo = context.RecipeDescriptor.FileProvider.GetRelativeFileInfo(context.RecipeDescriptor.BasePath, file.SourcePath);
 
-            if (stream != null)
-            {
-                try
+                    stream = fileInfo.CreateReadStream();
+                }
+                else if (!string.IsNullOrWhiteSpace(file.SourceUrl))
+                {
+                    var httpClient = _httpClientFactory.CreateClient();
+
+                    var response = await httpClient.GetAsync(file.SourceUrl);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        stream = await response.Content.ReadAsStreamAsync();
+                    }
+                }
+
+                if (stream != null)
                 {
                     await _mediaFileStore.CreateFileFromStreamAsync(file.TargetPath, stream, true);
                 }
-                finally
+            }
+            finally
+            {
+                if (stream != null)
                 {
                     await stream.DisposeAsync();
                 }

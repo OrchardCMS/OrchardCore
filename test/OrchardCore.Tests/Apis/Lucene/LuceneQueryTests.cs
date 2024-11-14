@@ -130,14 +130,34 @@ public class LuceneQueryTests
             // Should find articles with "Orchard" in the title
             var index = "ArticleIndex";
 
-            // { "from": 0, "size": 10, "query":{ "bool": { "should": [ { "wildcard": {  "Content.ContentItem.DisplayText.Normalized": { "value": "orch*", "boost": 2 } } },{ "wildcard": { "Content.BodyAspect.Body": { "value": "orchar*", "boost": 5 } } } ] } } }
-            var query =
-                "{ \"from\": 0, \"size\": 10, \"query\":" +
-                    "{ \"bool\": { \"should\": [ " +
-                        "{ \"wildcard\": {  \"Content.ContentItem.DisplayText.Normalized\": { \"value\": \"orch*\", \"boost\": 2 } } }," +
-                        "{ \"wildcard\": { \"Content.BodyAspect.Body\": { \"value\": \"orchar*\", \"boost\": 5 } } }" +
-                    "] } } }";
-
+            var query = """
+                {
+                    "from": 0,
+                    "size": 10,
+                    "query": {
+                        "bool": {
+                            "should": [
+                                {
+                                    "wildcard": {
+                                        "Content.ContentItem.DisplayText.Normalized": {
+                                            "value": "orch*",
+                                            "boost": 2
+                                        }
+                                    }
+                                },
+                                {
+                                    "wildcard": {
+                                        "Content.BodyAspect.Body": {
+                                            "value": "orchar*",
+                                            "boost": 5
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            """;
             var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={query}");
             var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
             var contentItems = queryResults.Items.Select(x => JObject.FromObject(x).Deserialize<ContentItem>());
@@ -151,5 +171,27 @@ public class LuceneQueryTests
             Assert.Contains("Orchard", contentItems.ElementAt(2).DisplayText, StringComparison.OrdinalIgnoreCase);
             Assert.Contains("Orchard", contentItems.ElementAt(3).DisplayText, StringComparison.OrdinalIgnoreCase);
         };
+    }
+
+    [Fact]
+    public async Task LuceneQueryTemplateWithSpecialCharactersShouldNotThrowError()
+    {
+        using var context = new LuceneContext();
+        await context.InitializeAsync();
+
+        // Act
+        var index = "ArticleIndex";
+        var queryTemplate = "\r\r\n{% assign testVariable = \"48yvsghn194eft8axztaves25h\" %}\n\n{\n  \"query\": {\n    \"bool\": {\n      \"must\": [\n        { \"term\" : { \"Content.ContentItem.ContentType\" : \"Article\" } },\n        { \"term\": { \"Content.ContentItem.Published\" : \"true\" } },\n      ]\n    }\n  }\n}";
+
+        var content = await context.Client.GetAsync($"api/lucene/content?indexName={index}&query={queryTemplate}");
+        var queryResults = await content.Content.ReadAsAsync<LuceneQueryResults>();
+
+        // Assert
+        Assert.NotNull(queryResults);
+        Assert.NotEmpty(queryResults.Items);
+
+        var contentItems = queryResults.Items.Select(x => JObject.FromObject(x).Deserialize<ContentItem>());
+
+        Assert.Contains("Orchard", contentItems.First().DisplayText, StringComparison.OrdinalIgnoreCase);
     }
 }

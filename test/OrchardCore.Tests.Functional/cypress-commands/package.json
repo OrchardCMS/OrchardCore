@@ -22,7 +22,7 @@
     "testing"
   ],
   "scripts": {
-    "build": "rollup -c",
+    "build": "rollup -c --bundleConfigAsCjs",
     "watch": "rollup -c -w"
   },
   "dependencies": {
