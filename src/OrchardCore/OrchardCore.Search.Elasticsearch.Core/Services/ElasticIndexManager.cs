@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Elasticsearch.Net;
+using Json.Path;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nest;
@@ -531,8 +532,7 @@ public sealed class ElasticIndexManager
 
                 try
                 {
-                    var propertyValue = JsonSerializer.Deserialize(filterProperty.Value, property.PropertyType);
-                    property.SetValue(tokenFilterBuildingInfo.TokenFilter, propertyValue);
+                    PopulateValue(tokenFilterBuildingInfo.TokenFilter, property, filterProperty.Value);
 
                     tokenFilterBuildingInfo.AddTokenFilter(descriptor, tokenFilterBuildingInfo.TokenFilter, filter.Key);
                 }
@@ -575,30 +575,7 @@ public sealed class ElasticIndexManager
 
                 try
                 {
-                    if (property.PropertyType == typeof(StopWords))
-                    {
-                        if (analyzerProperty.Value is JsonArray)
-                        {
-                            var values = analyzerProperty.Value.Values<string>().ToArray();
-
-                            property.SetValue(analyzer, new StopWords(values));
-                        }
-
-                        continue;
-                    }
-
-                    if (analyzerProperty.Value is JsonArray jsonArray)
-                    {
-                        var values = jsonArray.Values<string>().ToArray();
-
-                        property.SetValue(analyzer, values);
-                    }
-                    else
-                    {
-                        var value = JNode.ToObject(analyzerProperty.Value, property.PropertyType);
-
-                        property.SetValue(analyzer, value);
-                    }
+                    PopulateValue(analyzer, property, analyzerProperty.Value);
                 }
                 catch (Exception e)
                 {
@@ -972,6 +949,38 @@ public sealed class ElasticIndexManager
         ArgumentException.ThrowIfNullOrEmpty(indexName);
 
         return GetIndexPrefix() + _separator + indexName;
+    }
+
+    private static void PopulateValue(object destination, PropertyInfo property, JsonNode value)
+    {
+        if (property.PropertyType == typeof(StopWords))
+        {
+            if (value is JsonArray)
+            {
+                var values = value.Values<string>().ToArray();
+
+                property.SetValue(destination, new StopWords(values));
+            }
+            else if (value.TryGetValue<string>(out var saveValue))
+            {
+                property.SetValue(destination, new StopWords(saveValue));
+            }
+
+            return;
+        }
+
+        if (value is JsonArray jsonArray)
+        {
+            var values = jsonArray.Values<string>().ToArray();
+
+            property.SetValue(destination, values);
+        }
+        else
+        {
+            var safeValue = JNode.ToObject(value, property.PropertyType);
+
+            property.SetValue(destination, safeValue);
+        }
     }
 
     private static void AddValue(Dictionary<string, object> entries, string key, object value)
