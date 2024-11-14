@@ -5,7 +5,8 @@ on:
   schedule:
     # Every Sunday at 8am
     - cron: '0 8 * * Sun'
-
+  push:
+  
 permissions:
   issues: write
   pull-requests: write
