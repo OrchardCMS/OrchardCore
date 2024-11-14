@@ -22,7 +22,8 @@ jobs:
     - name: Run dotnet outdated
       run: |
         dotnet tool install --global dotnet-outdated-tool
-        OUTPUT=$(dotnet outdated --version-lock minor --upgrade)
+        cd ./src/OrchardCore.Modules/OrchardCore.Markdown
+        OUTPUT=$(dotnet-outdated --version-lock major --upgrade)
         if [[ $OUTPUT =~ "No outdated dependencies were detected" ]]; then
             echo "::set-output name=updated::false"
         else
