@@ -43,7 +43,7 @@ public sealed class ElasticIndexManager
         { ElasticsearchConstants.StopAnalyzer, () => new StopAnalyzer() },
     };
 
-    private readonly List<string> _tokenFilterNames = new List<string>()
+    private readonly List<string> _defaultTokenFilterNames = new List<string>()
     {
         "asciifolding",
         "common_grams",
@@ -98,283 +98,283 @@ public sealed class ElasticIndexManager
     {
         {
             "asciifolding",
-            new TokenFilterBuildingInfo( new AsciiFoldingTokenFilter(),
+            new TokenFilterBuildingInfo(new AsciiFoldingTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.AsciiFolding(name, f => (AsciiFoldingTokenFilter)tokenFilter) )
         },
         {
             "common_grams",
-            new TokenFilterBuildingInfo( new CommonGramsTokenFilter(),
+            new TokenFilterBuildingInfo(new CommonGramsTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.CommonGrams(name, f => (CommonGramsTokenFilter)tokenFilter) )
         },
         {
             "condition",
-            new TokenFilterBuildingInfo( new ConditionTokenFilter(),
+            new TokenFilterBuildingInfo(new ConditionTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Condition(name, f => (ConditionTokenFilter)tokenFilter) )
         },
         {
             "delimited_payload",
-            new TokenFilterBuildingInfo( new DelimitedPayloadTokenFilter(),
+            new TokenFilterBuildingInfo(new DelimitedPayloadTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.DelimitedPayload(name, f => (DelimitedPayloadTokenFilter)tokenFilter) )
         },
         {
             "dictionary_decompounder",
-            new TokenFilterBuildingInfo( new DictionaryDecompounderTokenFilter(),
+            new TokenFilterBuildingInfo(new DictionaryDecompounderTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.DictionaryDecompounder(name, f => (DictionaryDecompounderTokenFilter)tokenFilter) )
         },
         {
             "edge_ngram",
-            new TokenFilterBuildingInfo( new EdgeNGramTokenFilter(),
+            new TokenFilterBuildingInfo(new EdgeNGramTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.EdgeNGram(name, f => (EdgeNGramTokenFilter)tokenFilter) )
         },
         {
             "elision",
-            new TokenFilterBuildingInfo( new ElisionTokenFilter(),
+            new TokenFilterBuildingInfo(new ElisionTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Elision(name, f => (ElisionTokenFilter)tokenFilter) )
         },
         {
             "fingerprint",
-            new TokenFilterBuildingInfo( new FingerprintTokenFilter(),
+            new TokenFilterBuildingInfo(new FingerprintTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Fingerprint(name, f => (FingerprintTokenFilter)tokenFilter) )
         },
         {
             "hunspell",
-            new TokenFilterBuildingInfo( new HunspellTokenFilter(),
+            new TokenFilterBuildingInfo(new HunspellTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Hunspell(name, f => (HunspellTokenFilter)tokenFilter) )
         },
         {
             "hyphenation_decompounder",
-            new TokenFilterBuildingInfo( new HyphenationDecompounderTokenFilter(),
+            new TokenFilterBuildingInfo(new HyphenationDecompounderTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.HyphenationDecompounder(name, f => (HyphenationDecompounderTokenFilter)tokenFilter) )
         },
         {
             "icu_collation",
-            new TokenFilterBuildingInfo( new IcuCollationTokenFilter(),
+            new TokenFilterBuildingInfo(new IcuCollationTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.IcuCollation(name, f => (IcuCollationTokenFilter)tokenFilter) )
         },
         {
             "icu_folding",
-            new TokenFilterBuildingInfo( new IcuFoldingTokenFilter(),
+            new TokenFilterBuildingInfo(new IcuFoldingTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.IcuFolding(name, f => (IcuFoldingTokenFilter)tokenFilter) )
         },
         {
             "icu_normalizer",
-            new TokenFilterBuildingInfo( new IcuNormalizationTokenFilter(),
+            new TokenFilterBuildingInfo(new IcuNormalizationTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.IcuNormalization(name, f => (IcuNormalizationTokenFilter)tokenFilter) )
         },
         {
             "icu_transform",
-            new TokenFilterBuildingInfo( new IcuTransformTokenFilter(),
+            new TokenFilterBuildingInfo(new IcuTransformTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.IcuTransform(name, f => (IcuTransformTokenFilter)tokenFilter) )
         },
         {
             "keep_types",
-            new TokenFilterBuildingInfo( new KeepTypesTokenFilter(),
+            new TokenFilterBuildingInfo(new KeepTypesTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.KeepTypes(name, f => (KeepTypesTokenFilter)tokenFilter) )
         },
         {
             "keep",
-            new TokenFilterBuildingInfo( new KeepWordsTokenFilter(),
+            new TokenFilterBuildingInfo(new KeepWordsTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.KeepWords(name, f => (KeepWordsTokenFilter)tokenFilter) )
         },
         {
             "keyword_marker",
-            new TokenFilterBuildingInfo( new KeywordMarkerTokenFilter(),
+            new TokenFilterBuildingInfo(new KeywordMarkerTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.KeywordMarker(name, f => (KeywordMarkerTokenFilter)tokenFilter) )
         },
         {
             "kstem",
-            new TokenFilterBuildingInfo( new KStemTokenFilter(),
+            new TokenFilterBuildingInfo(new KStemTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.KStem(name, f => (KStemTokenFilter)tokenFilter) )
         },
         {
             "kuromoji_part_of_speech",
-            new TokenFilterBuildingInfo( new KuromojiPartOfSpeechTokenFilter(),
+            new TokenFilterBuildingInfo(new KuromojiPartOfSpeechTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.KuromojiPartOfSpeech(name, f => (KuromojiPartOfSpeechTokenFilter)tokenFilter) )
         },
         {
             "kuromoji_readingform",
-            new TokenFilterBuildingInfo( new KuromojiReadingFormTokenFilter(),
+            new TokenFilterBuildingInfo(new KuromojiReadingFormTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.KuromojiReadingForm(name, f => (KuromojiReadingFormTokenFilter)tokenFilter) )
         },
         {
             "kuromoji_stemmer",
-            new TokenFilterBuildingInfo( new KuromojiStemmerTokenFilter(),
+            new TokenFilterBuildingInfo(new KuromojiStemmerTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.KuromojiStemmer(name, f => (KuromojiStemmerTokenFilter)tokenFilter) )
         },
         {
             "length",
-            new TokenFilterBuildingInfo( new LengthTokenFilter(),
+            new TokenFilterBuildingInfo(new LengthTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Length(name, f => (LengthTokenFilter)tokenFilter) )
         },
         {
             "limit",
-            new TokenFilterBuildingInfo( new LimitTokenCountTokenFilter(),
+            new TokenFilterBuildingInfo(new LimitTokenCountTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.LimitTokenCount(name, f => (LimitTokenCountTokenFilter)tokenFilter) )
         },
         {
             "lowercase",
-            new TokenFilterBuildingInfo( new LowercaseTokenFilter(),
+            new TokenFilterBuildingInfo(new LowercaseTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Lowercase(name, f => (LowercaseTokenFilter)tokenFilter) )
         },
         {
             "multiplexer",
-            new TokenFilterBuildingInfo( new MultiplexerTokenFilter(),
+            new TokenFilterBuildingInfo(new MultiplexerTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Multiplexer(name, f => (MultiplexerTokenFilter)tokenFilter) )
         },
         {
             "ngram",
-            new TokenFilterBuildingInfo( new NGramTokenFilter(),
+            new TokenFilterBuildingInfo(new NGramTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.NGram(name, f => (NGramTokenFilter)tokenFilter) )
         },
         {
             "nori_part_of_speech",
-            new TokenFilterBuildingInfo( new NoriPartOfSpeechTokenFilter(),
+            new TokenFilterBuildingInfo(new NoriPartOfSpeechTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.NoriPartOfSpeech(name, f => (NoriPartOfSpeechTokenFilter)tokenFilter) )
         },
         {
             "pattern_capture",
-            new TokenFilterBuildingInfo( new PatternCaptureTokenFilter(),
+            new TokenFilterBuildingInfo(new PatternCaptureTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.PatternCapture(name, f => (PatternCaptureTokenFilter)tokenFilter) )
         },
         {
             "pattern_replace",
-            new TokenFilterBuildingInfo( new PatternReplaceTokenFilter(),
+            new TokenFilterBuildingInfo(new PatternReplaceTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.PatternReplace(name, f => (PatternReplaceTokenFilter)tokenFilter) )
         },
         {
             "phonetic",
-            new TokenFilterBuildingInfo( new PhoneticTokenFilter(),
+            new TokenFilterBuildingInfo(new PhoneticTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Phonetic(name, f => (PhoneticTokenFilter)tokenFilter) )
         },
         {
             "porter_stem",
-            new TokenFilterBuildingInfo( new PorterStemTokenFilter(),
+            new TokenFilterBuildingInfo(new PorterStemTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.PorterStem(name, f => (PorterStemTokenFilter)tokenFilter) )
         },
         {
             "predicate_token_filter",
-            new TokenFilterBuildingInfo( new PredicateTokenFilter(),
+            new TokenFilterBuildingInfo(new PredicateTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Predicate(name, f => (PredicateTokenFilter)tokenFilter) )
         },
         {
             "remove_duplicates",
-            new TokenFilterBuildingInfo( new RemoveDuplicatesTokenFilter(),
+            new TokenFilterBuildingInfo(new RemoveDuplicatesTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.RemoveDuplicates(name, f => (RemoveDuplicatesTokenFilter)tokenFilter) )
         },
         {
             "reverse",
-            new TokenFilterBuildingInfo( new ReverseTokenFilter(),
+            new TokenFilterBuildingInfo(new ReverseTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Reverse(name, f => (ReverseTokenFilter)tokenFilter) )
         },
         {
             "shingle",
-            new TokenFilterBuildingInfo( new ShingleTokenFilter(),
+            new TokenFilterBuildingInfo(new ShingleTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Shingle(name, f => (ShingleTokenFilter)tokenFilter) )
         },
         {
             "snowball",
-            new TokenFilterBuildingInfo( new SnowballTokenFilter(),
+            new TokenFilterBuildingInfo(new SnowballTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Snowball(name, f => (SnowballTokenFilter)tokenFilter) )
         },
         {
             "stemmer_override",
-            new TokenFilterBuildingInfo( new StemmerOverrideTokenFilterDescriptor(),
+            new TokenFilterBuildingInfo(new StemmerOverrideTokenFilterDescriptor(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.StemmerOverride(name, f => (StemmerOverrideTokenFilterDescriptor)tokenFilter) )
         },
         {
             "stemmer",
-            new TokenFilterBuildingInfo( new StemmerTokenFilter(),
+            new TokenFilterBuildingInfo(new StemmerTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Stemmer(name, f => (StemmerTokenFilter)tokenFilter) )
         },
         {
             "stop",
-            new TokenFilterBuildingInfo( new StopTokenFilter(),
+            new TokenFilterBuildingInfo(new StopTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Stop(name, f => (StopTokenFilter)tokenFilter) )
         },
         {
             "synonym_graph",
-            new TokenFilterBuildingInfo( new SynonymGraphTokenFilter(),
+            new TokenFilterBuildingInfo(new SynonymGraphTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.SynonymGraph(name, f => (SynonymGraphTokenFilter)tokenFilter) )
         },
         {
             "synonym",
-            new TokenFilterBuildingInfo( new SynonymTokenFilter(),
+            new TokenFilterBuildingInfo(new SynonymTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Synonym(name, f => (SynonymTokenFilter)tokenFilter) )
         },
         {
             "trim",
-            new TokenFilterBuildingInfo( new TrimTokenFilter(),
+            new TokenFilterBuildingInfo(new TrimTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Trim(name, f => (TrimTokenFilter)tokenFilter) )
         },
         {
             "truncate",
-            new TokenFilterBuildingInfo( new TruncateTokenFilter(),
+            new TokenFilterBuildingInfo(new TruncateTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Truncate(name, f => (TruncateTokenFilter)tokenFilter) )
         },
         {
             "unique",
-            new TokenFilterBuildingInfo( new UniqueTokenFilter(),
+            new TokenFilterBuildingInfo(new UniqueTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Unique(name, f => (UniqueTokenFilter)tokenFilter) )
         },
         {
             "uppercase",
-            new TokenFilterBuildingInfo( new UppercaseTokenFilter(),
+            new TokenFilterBuildingInfo(new UppercaseTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.Uppercase(name, f => (UppercaseTokenFilter)tokenFilter) )
         },
         {
             "word_delimiter_graph",
-            new TokenFilterBuildingInfo( new WordDelimiterGraphTokenFilter(),
+            new TokenFilterBuildingInfo(new WordDelimiterGraphTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.WordDelimiterGraph(name, f => (WordDelimiterGraphTokenFilter)tokenFilter) )
         },
         {
             "word_delimiter",
-            new TokenFilterBuildingInfo( new WordDelimiterTokenFilter(),
+            new TokenFilterBuildingInfo(new WordDelimiterTokenFilter(),
                 (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
                     d.WordDelimiter(name, f => (WordDelimiterTokenFilter)tokenFilter) )
         }
@@ -397,6 +397,8 @@ public sealed class ElasticIndexManager
     ];
 
     private string _indexPrefix;
+
+    private List<string> _customTokenFilterNames = new List<string>();
 
     public ElasticIndexManager(
         IElasticClient elasticClient,
@@ -439,35 +441,32 @@ public sealed class ElasticIndexManager
         ? null
         : elasticIndexSettings.AnalyzerName) ?? ElasticsearchConstants.DefaultAnalyzer;
 
+        if (_elasticSearchOptions.Filter is not null && _elasticSearchOptions.Filter.Count > 0)
+        {
+            var tokenFiltersDescriptor = GetTokenFilterDescriptor(_elasticSearchOptions.Filter);
+            analysisDescriptor.TokenFilters(f => tokenFiltersDescriptor);
+        }
+
         if (_elasticSearchOptions.Analyzers.TryGetValue(analyzerName, out var analyzerProperties))
         {
-            if (_elasticSearchOptions.Filter is not null)
-            {
-                var tokenFiltersDescriptor = GetTokenFilterDescriptor(_elasticSearchOptions.Filter);
-                analysisDescriptor.TokenFilters(f => tokenFiltersDescriptor);
-            }
+            var analyzer = CreateAnalyzer(analyzerProperties);
 
-            if (analyzerProperties.TryGetPropertyValue("filter", out var filterResult))
+            if (IsAnalyzerContainsCustomTokenFilters(analyzer))
             {
-                var filterCollection = JsonSerializer.Deserialize<IEnumerable<string>>(filterResult);
-
-                var existingFilters = filterCollection.Where(f => _tokenFilterNames.Contains(f));
-                analysisDescriptor.Analyzers(a => a.Custom("default", c => c.Tokenizer("standard").Filters(existingFilters)));
+                var existingCustomTokenFilters = (analyzer as CustomAnalyzer).Filter.ToList();
+                indexSettingsDescriptor.Analysis(descriptor => analysisDescriptor.Analyzers(a => a.Custom(analyzerName, c => c.Tokenizer("standard").Filters(existingCustomTokenFilters))));
             }
             else
             {
-                var analyzer = CreateAnalyzer(analyzerProperties);
-                analysisDescriptor.Analyzers(a => a.UserDefined(analyzerName, analyzer));
+                indexSettingsDescriptor.Analysis(descriptor => analysisDescriptor.Analyzers(a => a.UserDefined(analyzerName, analyzer)));
             }
-
-            indexSettingsDescriptor = new IndexSettingsDescriptor();
-            indexSettingsDescriptor.Analysis(an => analysisDescriptor);
         }
 
         // Custom metadata to store the last indexing task id.
-        var IndexingState = new FluentDictionary<string, object>() {
-                { _lastTaskId, 0 }
-            };
+        var IndexingState = new FluentDictionary<string, object>()
+        {
+            { _lastTaskId, 0 },
+        };
         var fullIndexName = GetFullIndexName(elasticIndexSettings.IndexName);
         var createIndexDescriptor = new CreateIndexDescriptor(fullIndexName)
             .Settings(s => indexSettingsDescriptor)
@@ -562,6 +561,38 @@ public sealed class ElasticIndexManager
         return response.Acknowledged;
     }
 
+    private bool IsAnalyzerContainsCustomTokenFilters(IAnalyzer analyzer)
+    {
+        if (analyzer.GetType() != typeof(CustomAnalyzer))
+        {
+            return false;
+        }
+
+        var filterProperty = analyzer.GetType().GetProperty("Filter");
+
+        if (filterProperty == null)
+        {
+            return false;
+        }
+
+        var filterNames = filterProperty.GetValue(analyzer) as IEnumerable<string>;
+
+        if (!filterNames.Any())
+        {
+            return false;
+        }
+
+        foreach (var filterName in filterNames)
+        {
+            if (_customTokenFilterNames.Contains(filterName))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private TokenFiltersDescriptor GetTokenFilterDescriptor(Dictionary<string, JsonObject> filter)
     {
         var descriptor = new TokenFiltersDescriptor();
@@ -570,8 +601,8 @@ public sealed class ElasticIndexManager
         {
             var filterProps = filter[filterName];
 
-            if (filterProps.TryGetPropertyValue("type", out var typeObject) is false
-             || _tokenFilterBuildingInfoGetter.TryGetValue(typeObject.ToString(), out var tokenFilterBuildingInfo) is false)
+            if (!filterProps.TryGetPropertyValue("type", out var typeObject) ||
+                !_tokenFilterBuildingInfoGetter.TryGetValue(typeObject.ToString(), out var tokenFilterBuildingInfo))
             {
                 continue;
             }
@@ -585,7 +616,7 @@ public sealed class ElasticIndexManager
                     continue;
                 }
 
-                var key = filterProperty.Key.Replace("_", string.Empty);
+                var key = filterProperty.Key.Replace(_separator, string.Empty);
 
                 var property = properties.FirstOrDefault(p => p.Name.Equals(key, StringComparison.OrdinalIgnoreCase));
                 var propertyType = property.PropertyType;
@@ -611,7 +642,7 @@ public sealed class ElasticIndexManager
                         }
 
                         tokenFilterBuildingInfo.AddTokenFilter(descriptor, tokenFilterBuildingInfo.TokenFilter, filterName);
-                        _tokenFilterNames.Add(filterName);
+                        _customTokenFilterNames.Add(filterName);
 
                         continue;
                     }
@@ -628,11 +659,11 @@ public sealed class ElasticIndexManager
                     }
 
                     tokenFilterBuildingInfo.AddTokenFilter(descriptor, tokenFilterBuildingInfo.TokenFilter, filterName);
-                    _tokenFilterNames.Add(filterName);
+                    _customTokenFilterNames.Add(filterName);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    _logger.LogError(e, "Unable to parse token filter for Elasticsearch.");
                 }
             }
 
@@ -695,7 +726,10 @@ public sealed class ElasticIndexManager
                         property.SetValue(analyzer, value);
                     }
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Unable to parse an analyzer for Elasticsearch.");
+                }
             }
         }
 
@@ -757,8 +791,9 @@ public sealed class ElasticIndexManager
     /// </summary>
     public async Task SetLastTaskId(string indexName, long lastTaskId)
     {
-        var IndexingState = new FluentDictionary<string, object>() {
-            { _lastTaskId, lastTaskId }
+        var IndexingState = new FluentDictionary<string, object>()
+        {
+            { _lastTaskId, lastTaskId },
         };
 
         var putMappingRequest = new PutMappingRequest(GetFullIndexName(indexName))
