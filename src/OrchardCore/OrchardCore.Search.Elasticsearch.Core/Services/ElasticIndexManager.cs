@@ -31,7 +31,8 @@ public sealed class ElasticIndexManager
     private readonly ElasticsearchOptions _elasticSearchOptions;
     private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
     private readonly string _lastTaskId = "last_task_id";
-    private readonly Dictionary<string, Func<IAnalyzer>> _analyzerGetter = new(StringComparer.OrdinalIgnoreCase)
+
+    private static readonly Dictionary<string, Func<IAnalyzer>> _analyzerGetter = new(StringComparer.OrdinalIgnoreCase)
     {
         { ElasticsearchConstants.DefaultAnalyzer, () => new StandardAnalyzer() },
         { ElasticsearchConstants.SimpleAnalyzer, () => new SimpleAnalyzer() },
@@ -44,293 +45,56 @@ public sealed class ElasticIndexManager
         { ElasticsearchConstants.StopAnalyzer, () => new StopAnalyzer() },
     };
 
-    private sealed record TokenFilterBuildingInfo(ITokenFilter TokenFilter, Func<TokenFiltersDescriptor, ITokenFilter, string, TokenFiltersDescriptor> AddTokenFilter);
-
-    private readonly Dictionary<string, TokenFilterBuildingInfo> _tokenFilterBuildingInfoGetter = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly Dictionary<string, Func<ITokenFilter>> _tokenFilterGetter = new(StringComparer.OrdinalIgnoreCase)
     {
-        {
-            "asciifolding",
-            new TokenFilterBuildingInfo(new AsciiFoldingTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.AsciiFolding(name, f => (AsciiFoldingTokenFilter)tokenFilter) )
-        },
-        {
-            "common_grams",
-            new TokenFilterBuildingInfo(new CommonGramsTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.CommonGrams(name, f => (CommonGramsTokenFilter)tokenFilter) )
-        },
-        {
-            "condition",
-            new TokenFilterBuildingInfo(new ConditionTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Condition(name, f => (ConditionTokenFilter)tokenFilter) )
-        },
-        {
-            "delimited_payload",
-            new TokenFilterBuildingInfo(new DelimitedPayloadTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.DelimitedPayload(name, f => (DelimitedPayloadTokenFilter)tokenFilter) )
-        },
-        {
-            "dictionary_decompounder",
-            new TokenFilterBuildingInfo(new DictionaryDecompounderTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.DictionaryDecompounder(name, f => (DictionaryDecompounderTokenFilter)tokenFilter) )
-        },
-        {
-            "edge_ngram",
-            new TokenFilterBuildingInfo(new EdgeNGramTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.EdgeNGram(name, f => (EdgeNGramTokenFilter)tokenFilter) )
-        },
-        {
-            "elision",
-            new TokenFilterBuildingInfo(new ElisionTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Elision(name, f => (ElisionTokenFilter)tokenFilter) )
-        },
-        {
-            "fingerprint",
-            new TokenFilterBuildingInfo(new FingerprintTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Fingerprint(name, f => (FingerprintTokenFilter)tokenFilter) )
-        },
-        {
-            "hunspell",
-            new TokenFilterBuildingInfo(new HunspellTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Hunspell(name, f => (HunspellTokenFilter)tokenFilter) )
-        },
-        {
-            "hyphenation_decompounder",
-            new TokenFilterBuildingInfo(new HyphenationDecompounderTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.HyphenationDecompounder(name, f => (HyphenationDecompounderTokenFilter)tokenFilter) )
-        },
-        {
-            "icu_collation",
-            new TokenFilterBuildingInfo(new IcuCollationTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.IcuCollation(name, f => (IcuCollationTokenFilter)tokenFilter) )
-        },
-        {
-            "icu_folding",
-            new TokenFilterBuildingInfo(new IcuFoldingTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.IcuFolding(name, f => (IcuFoldingTokenFilter)tokenFilter) )
-        },
-        {
-            "icu_normalizer",
-            new TokenFilterBuildingInfo(new IcuNormalizationTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.IcuNormalization(name, f => (IcuNormalizationTokenFilter)tokenFilter) )
-        },
-        {
-            "icu_transform",
-            new TokenFilterBuildingInfo(new IcuTransformTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.IcuTransform(name, f => (IcuTransformTokenFilter)tokenFilter) )
-        },
-        {
-            "keep_types",
-            new TokenFilterBuildingInfo(new KeepTypesTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.KeepTypes(name, f => (KeepTypesTokenFilter)tokenFilter) )
-        },
-        {
-            "keep",
-            new TokenFilterBuildingInfo(new KeepWordsTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.KeepWords(name, f => (KeepWordsTokenFilter)tokenFilter) )
-        },
-        {
-            "keyword_marker",
-            new TokenFilterBuildingInfo(new KeywordMarkerTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.KeywordMarker(name, f => (KeywordMarkerTokenFilter)tokenFilter) )
-        },
-        {
-            "kstem",
-            new TokenFilterBuildingInfo(new KStemTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.KStem(name, f => (KStemTokenFilter)tokenFilter) )
-        },
-        {
-            "kuromoji_part_of_speech",
-            new TokenFilterBuildingInfo(new KuromojiPartOfSpeechTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.KuromojiPartOfSpeech(name, f => (KuromojiPartOfSpeechTokenFilter)tokenFilter) )
-        },
-        {
-            "kuromoji_readingform",
-            new TokenFilterBuildingInfo(new KuromojiReadingFormTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.KuromojiReadingForm(name, f => (KuromojiReadingFormTokenFilter)tokenFilter) )
-        },
-        {
-            "kuromoji_stemmer",
-            new TokenFilterBuildingInfo(new KuromojiStemmerTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.KuromojiStemmer(name, f => (KuromojiStemmerTokenFilter)tokenFilter) )
-        },
-        {
-            "length",
-            new TokenFilterBuildingInfo(new LengthTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Length(name, f => (LengthTokenFilter)tokenFilter) )
-        },
-        {
-            "limit",
-            new TokenFilterBuildingInfo(new LimitTokenCountTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.LimitTokenCount(name, f => (LimitTokenCountTokenFilter)tokenFilter) )
-        },
-        {
-            "lowercase",
-            new TokenFilterBuildingInfo(new LowercaseTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Lowercase(name, f => (LowercaseTokenFilter)tokenFilter) )
-        },
-        {
-            "multiplexer",
-            new TokenFilterBuildingInfo(new MultiplexerTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Multiplexer(name, f => (MultiplexerTokenFilter)tokenFilter) )
-        },
-        {
-            "ngram",
-            new TokenFilterBuildingInfo(new NGramTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.NGram(name, f => (NGramTokenFilter)tokenFilter) )
-        },
-        {
-            "nori_part_of_speech",
-            new TokenFilterBuildingInfo(new NoriPartOfSpeechTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.NoriPartOfSpeech(name, f => (NoriPartOfSpeechTokenFilter)tokenFilter) )
-        },
-        {
-            "pattern_capture",
-            new TokenFilterBuildingInfo(new PatternCaptureTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.PatternCapture(name, f => (PatternCaptureTokenFilter)tokenFilter) )
-        },
-        {
-            "pattern_replace",
-            new TokenFilterBuildingInfo(new PatternReplaceTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.PatternReplace(name, f => (PatternReplaceTokenFilter)tokenFilter) )
-        },
-        {
-            "phonetic",
-            new TokenFilterBuildingInfo(new PhoneticTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Phonetic(name, f => (PhoneticTokenFilter)tokenFilter) )
-        },
-        {
-            "porter_stem",
-            new TokenFilterBuildingInfo(new PorterStemTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.PorterStem(name, f => (PorterStemTokenFilter)tokenFilter) )
-        },
-        {
-            "predicate_token_filter",
-            new TokenFilterBuildingInfo(new PredicateTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Predicate(name, f => (PredicateTokenFilter)tokenFilter) )
-        },
-        {
-            "remove_duplicates",
-            new TokenFilterBuildingInfo(new RemoveDuplicatesTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.RemoveDuplicates(name, f => (RemoveDuplicatesTokenFilter)tokenFilter) )
-        },
-        {
-            "reverse",
-            new TokenFilterBuildingInfo(new ReverseTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Reverse(name, f => (ReverseTokenFilter)tokenFilter) )
-        },
-        {
-            "shingle",
-            new TokenFilterBuildingInfo(new ShingleTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Shingle(name, f => (ShingleTokenFilter)tokenFilter) )
-        },
-        {
-            "snowball",
-            new TokenFilterBuildingInfo(new SnowballTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Snowball(name, f => (SnowballTokenFilter)tokenFilter) )
-        },
-        {
-            "stemmer_override",
-            new TokenFilterBuildingInfo(new StemmerOverrideTokenFilterDescriptor(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.StemmerOverride(name, f => (StemmerOverrideTokenFilterDescriptor)tokenFilter) )
-        },
-        {
-            "stemmer",
-            new TokenFilterBuildingInfo(new StemmerTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Stemmer(name, f => (StemmerTokenFilter)tokenFilter) )
-        },
-        {
-            "stop",
-            new TokenFilterBuildingInfo(new StopTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Stop(name, f => (StopTokenFilter)tokenFilter) )
-        },
-        {
-            "synonym_graph",
-            new TokenFilterBuildingInfo(new SynonymGraphTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.SynonymGraph(name, f => (SynonymGraphTokenFilter)tokenFilter) )
-        },
-        {
-            "synonym",
-            new TokenFilterBuildingInfo(new SynonymTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Synonym(name, f => (SynonymTokenFilter)tokenFilter) )
-        },
-        {
-            "trim",
-            new TokenFilterBuildingInfo(new TrimTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Trim(name, f => (TrimTokenFilter)tokenFilter) )
-        },
-        {
-            "truncate",
-            new TokenFilterBuildingInfo(new TruncateTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Truncate(name, f => (TruncateTokenFilter)tokenFilter) )
-        },
-        {
-            "unique",
-            new TokenFilterBuildingInfo(new UniqueTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Unique(name, f => (UniqueTokenFilter)tokenFilter) )
-        },
-        {
-            "uppercase",
-            new TokenFilterBuildingInfo(new UppercaseTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.Uppercase(name, f => (UppercaseTokenFilter)tokenFilter) )
-        },
-        {
-            "word_delimiter_graph",
-            new TokenFilterBuildingInfo(new WordDelimiterGraphTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.WordDelimiterGraph(name, f => (WordDelimiterGraphTokenFilter)tokenFilter) )
-        },
-        {
-            "word_delimiter",
-            new TokenFilterBuildingInfo(new WordDelimiterTokenFilter(),
-                (TokenFiltersDescriptor d, ITokenFilter tokenFilter, string name) =>
-                    d.WordDelimiter(name, f => (WordDelimiterTokenFilter)tokenFilter) )
-        }
+        { "asciifolding", () => new AsciiFoldingTokenFilter() },
+        { "common_grams", () => new CommonGramsTokenFilter() },
+        { "condition", () => new ConditionTokenFilter() },
+        { "delimited_payload", () => new DelimitedPayloadTokenFilter() },
+        { "dictionary_decompounder", () => new DictionaryDecompounderTokenFilter() },
+        { "edge_ngram", () => new EdgeNGramTokenFilter() },
+        { "elision", () => new ElisionTokenFilter() },
+        { "fingerprint", () => new FingerprintTokenFilter() },
+        { "hunspell", () => new HunspellTokenFilter() },
+        { "hyphenation_decompounder", () => new HyphenationDecompounderTokenFilter() },
+        { "icu_collation", () => new IcuCollationTokenFilter() },
+        { "icu_folding", () => new IcuFoldingTokenFilter() },
+        { "icu_normalizer", () => new IcuNormalizationTokenFilter() },
+        { "icu_transform", () => new IcuTransformTokenFilter() },
+        { "keep_types", () => new KeepTypesTokenFilter() },
+        { "keep", () => new KeepWordsTokenFilter() },
+        { "keyword_marker", () => new KeywordMarkerTokenFilter() },
+        { "kstem", () => new KStemTokenFilter() },
+        { "kuromoji_part_of_speech", () => new KuromojiPartOfSpeechTokenFilter() },
+        { "kuromoji_readingform", () => new KuromojiReadingFormTokenFilter() },
+        { "kuromoji_stemmer", () => new KuromojiStemmerTokenFilter() },
+        { "length", () => new LengthTokenFilter() },
+        { "limit", () => new LimitTokenCountTokenFilter() },
+        { "lowercase", () => new LowercaseTokenFilter() },
+        { "multiplexer", () => new MultiplexerTokenFilter() },
+        { "ngram", () => new NGramTokenFilter() },
+        { "nori_part_of_speech", () => new NoriPartOfSpeechTokenFilter() },
+        { "pattern_capture", () => new PatternCaptureTokenFilter() },
+        { "pattern_replace", () => new PatternReplaceTokenFilter() },
+        { "phonetic", () => new PhoneticTokenFilter() },
+        { "porter_stem", () => new PorterStemTokenFilter() },
+        { "remove_duplicates", () => new RemoveDuplicatesTokenFilter() },
+        { "reverse", () => new ReverseTokenFilter() },
+        { "shingle", () => new ShingleTokenFilter() },
+        { "snowball", () => new SnowballTokenFilter() },
+        { "stemmer_override", () => new StemmerOverrideTokenFilterDescriptor() },
+        { "stemmer", () => new StemmerTokenFilter() },
+        { "stop", () => new StopTokenFilter() },
+        { "synonym_graph", () => new SynonymGraphTokenFilter() },
+        { "synonym", () => new SynonymTokenFilter() },
+        { "trim", () => new TrimTokenFilter() },
+        { "truncate", () => new TruncateTokenFilter() },
+        { "unique", () => new UniqueTokenFilter() },
+        { "uppercase", () => new UppercaseTokenFilter() },
+        { "word_delimiter_graph", () => new WordDelimiterGraphTokenFilter() },
+        { "word_delimiter", () => new WordDelimiterTokenFilter() }
     };
+
     private static readonly List<char> _charsToRemove =
     [
         '\\',
@@ -509,16 +273,19 @@ public sealed class ElasticIndexManager
     {
         var descriptor = new TokenFiltersDescriptor();
 
+        ITokenFilter tokenFilter = null;
         foreach (var filter in filters)
         {
             if (!filter.Value.TryGetPropertyValue("type", out var typeObject) ||
-                !_tokenFilterBuildingInfoGetter.TryGetValue(typeObject.ToString(), out var tokenFilterBuildingInfo))
+                !_tokenFilterGetter.TryGetValue(typeObject.ToString(), out var tokenFilterBuildingInfo))
             {
                 continue;
             }
 
-            var properties = tokenFilterBuildingInfo.TokenFilter.GetType()
-                .GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            tokenFilter = tokenFilterBuildingInfo.Invoke();
+
+            var filterDescriptor = new TokenFiltersDescriptor();
+            var properties = tokenFilter.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
             foreach (var filterProperty in filter.Value)
             {
@@ -537,9 +304,9 @@ public sealed class ElasticIndexManager
 
                 try
                 {
-                    PopulateValue(tokenFilterBuildingInfo.TokenFilter, property, filterProperty.Value);
+                    PopulateValue(tokenFilter, property, filterProperty.Value);
 
-                    tokenFilterBuildingInfo.AddTokenFilter(descriptor, tokenFilterBuildingInfo.TokenFilter, filter.Key);
+                    descriptor.UserDefined(filter.Key, tokenFilter);
                 }
                 catch (Exception e)
                 {
