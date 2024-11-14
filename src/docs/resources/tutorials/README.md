@@ -1,6 +1,7 @@
 # Tutorials
 
 If you want to learn or improve your knowledge about Orchard Core, you can follow some tutorials.
+You can also [Ask Orchard Core Guru](https://gurubase.io/g/orchard-core) for help. It is Orchard Core focused AI to answer your questions.
 
 ## Lombiq
 
