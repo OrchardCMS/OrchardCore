@@ -686,7 +686,7 @@ public sealed class ElasticIndexManager
                 }
                 catch (Exception e)
                 {
-                    _logger.LogError(e, "Unable to parse token filter for Elasticsearch.");
+                    _logger.LogError(e, "Unable to parse an analyzer for Elasticsearch.");
                 }
             }
         }
