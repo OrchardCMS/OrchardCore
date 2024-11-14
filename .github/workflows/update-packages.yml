@@ -47,7 +47,7 @@ jobs:
         git checkout -b gh/outdated
         git commit -am "Update NuGet packages"
         git push origin HEAD
-        gh pr create --dry-run --base main --head gh/outdated --title 'Update NuGet packages' --body-file ${{ runner.temp }}/build_logs/dotnet-updated.md
+        gh pr create --base main --head gh/outdated --title 'Update NuGet packages' --body-file ${{ runner.temp }}/build_logs/dotnet-updated.md
 
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
