@@ -133,7 +133,7 @@ sorted:{% for action in hotActions %}{{ action.Content.HotActionsPart.Order.Valu
                 NullEncoder.Default,
                 testModel);
 
-            Assert.Equal("unsorted:302040605010\r\n\r\nsorted:102030405060", result);
+            Assert.Equal("unsorted:302040605010sorted:102030405060", result.ReplaceLineEndings(""));
         });
     }
 
@@ -159,8 +159,8 @@ filtered:{{ hotActions | size }}
             var result = await liquidTemplateManager.RenderStringAsync(template,
                 NullEncoder.Default,
                 testModel);
-            
-            Assert.Equal("total:6\r\n\r\nfiltered:5", result);
+
+            Assert.Equal("total:6filtered:5", result.ReplaceLineEndings(""));
         });
     }
 
@@ -187,7 +187,7 @@ filtered_sorted:{% for action in hotActions %}{{ action.Content.HotActionsPart.O
                 NullEncoder.Default,
                 testModel);
 
-            Assert.Equal("original:302040605010\r\n\r\nfiltered_sorted:1030405060", result);
+            Assert.Equal("original:302040605010filtered_sorted:1030405060", result.ReplaceLineEndings(""));
         });
     }
 
