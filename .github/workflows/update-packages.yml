@@ -19,6 +19,7 @@ jobs:
     name: Check Versions and Create PR 
     permissions:
       contents: write
+      pull-requests: write
     steps:
     - uses: actions/checkout@v4
     - name: Run dotnet outdated
