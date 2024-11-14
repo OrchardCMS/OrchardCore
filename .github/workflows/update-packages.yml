@@ -36,9 +36,10 @@ jobs:
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
         git branch -D outdated || true
+        git branch -c outdated
         git checkout -b outdated
-        git commit -a -m "Update NuGet packages"
-        git push -f
+        git commit -am "Update NuGet packages"
+        git push origin HEAD --force
         gh pr create -B main -H outdated --title 'Update NuGet packages' --body 'Created by Github action'
 
       env:
