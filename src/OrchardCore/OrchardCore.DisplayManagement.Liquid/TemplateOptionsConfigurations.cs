@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json.Dynamic;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
@@ -37,6 +38,7 @@ public class TemplateOptionsConfigurations : IConfigureOptions<TemplateOptions>
         options.MemberAccessStrategy.Register<ZoneHolding>("*", new ShapeAccessor());
         options.MemberAccessStrategy.Register<ShapeMetadata>();
         options.MemberAccessStrategy.Register<CultureInfo>();
+        options.MemberAccessStrategy.Register<JsonDynamicObject, object>((json, name) => json[name]);
 
         options.Scope.SetValue("Culture", new CultureValue());
 
