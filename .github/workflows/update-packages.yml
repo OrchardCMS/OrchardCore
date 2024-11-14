@@ -45,9 +45,8 @@ jobs:
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
         git checkout -b gh/outdated
-        git pull
         git commit -am "Update NuGet packages"
-        git push origin HEAD
+        git push origin HEAD -f
         gh pr create --base main --head gh/outdated --title 'Update NuGet packages' --body-file ${{ runner.temp }}/build_logs/dotnet-updated.md
 
       env:
