@@ -1,17 +1,17 @@
 using System.Text;
+using Elastic.Clients.Elasticsearch;
 using Microsoft.Extensions.Logging;
-using Nest;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
 public class ElasticQueryService : IElasticQueryService
 {
-    private readonly IElasticClient _elasticClient;
+    private readonly ElasticsearchClient _elasticClient;
     private readonly ElasticIndexManager _elasticIndexManager;
     private readonly ILogger _logger;
 
     public ElasticQueryService(
-        IElasticClient elasticClient,
+        ElasticsearchClient elasticClient,
         ElasticIndexManager elasticIndexManager,
         ILogger<ElasticQueryService> logger
         )
@@ -60,14 +60,14 @@ public class ElasticQueryService : IElasticQueryService
 
                     foreach (var keyValuePair in hit.Fields)
                     {
-                        row[keyValuePair.Key] = keyValuePair.Value.As<string[]>();
+                        row[keyValuePair.Key] = keyValuePair.Value;
                     }
 
                     hits.Add(row);
                 }
             }
 
-            if (searchResponse.IsValid)
+            if (searchResponse.IsValidResponse)
             {
                 elasticTopDocs.Count = searchResponse.Total;
                 elasticTopDocs.TopDocs = new List<Dictionary<string, object>>(searchResponse.Documents);
@@ -75,7 +75,7 @@ public class ElasticQueryService : IElasticQueryService
             }
             else
             {
-                _logger.LogError("Received failure response from Elasticsearch: {ServerError}", searchResponse.ServerError);
+                _logger.LogError("Received failure response from Elasticsearch.");
             }
         }
         catch (Exception ex)

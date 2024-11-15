@@ -1,11 +1,11 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Elastic.Clients.Elasticsearch;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Nest;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -25,7 +25,7 @@ public sealed class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSett
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly ElasticConnectionOptions _elasticConnectionOptions;
-    private readonly IElasticClient _elasticClient;
+    private readonly ElasticsearchClient _elasticClient;
 
     internal readonly IStringLocalizer S;
 
@@ -37,7 +37,7 @@ public sealed class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSett
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IOptions<ElasticConnectionOptions> elasticConnectionOptions,
-        IElasticClient elasticClient,
+        ElasticsearchClient elasticClient,
         IStringLocalizer<ElasticSettingsDisplayDriver> stringLocalizer
         )
     {

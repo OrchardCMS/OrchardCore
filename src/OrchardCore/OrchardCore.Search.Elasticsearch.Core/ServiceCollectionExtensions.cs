@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<ElasticIndexManager>();
         services.AddScoped<ElasticIndexingService>();
         services.AddScoped<IModularTenantEvents, ElasticIndexInitializerService>();
-        services.AddScoped<IElasticSearchQueryService, ElasticSearchQueryService>();
+        services.AddScoped<ElasticSearchQueryService>();
         services.AddScoped<IElasticQueryService, ElasticQueryService>();
         services.AddScoped<IContentHandler, ElasticIndexingContentHandler>();
 

@@ -1,9 +1,10 @@
-using Nest;
+using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.QueryDsl;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
-public class ElasticSearchQueryService : IElasticSearchQueryService
+public class ElasticSearchQueryService
 {
     private readonly ElasticIndexManager _elasticIndexManager;
 
@@ -12,7 +13,7 @@ public class ElasticSearchQueryService : IElasticSearchQueryService
         _elasticIndexManager = elasticIndexManager;
     }
 
-    public async Task<IList<string>> ExecuteQueryAsync(string indexName, QueryContainer query, List<ISort> sort, int from, int size)
+    public async Task<IList<string>> ExecuteQueryAsync(string indexName, Query query, List<SortOptions> sort, int from, int size)
     {
         var results = await _elasticIndexManager.SearchAsync(indexName, query, sort, from, size);
 

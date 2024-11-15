@@ -1,12 +1,16 @@
 using System.Collections.Concurrent;
-using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Elasticsearch.Net;
-using Json.Path;
+using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.Analysis;
+using Elastic.Clients.Elasticsearch.Core.Bulk;
+using Elastic.Clients.Elasticsearch.Fluent;
+using Elastic.Clients.Elasticsearch.IndexManagement;
+using Elastic.Clients.Elasticsearch.Mapping;
+using Elastic.Clients.Elasticsearch.QueryDsl;
+using Elastic.Transport.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Nest;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Environment.Shell;
@@ -24,75 +28,76 @@ public sealed class ElasticIndexManager
 {
     private const string _separator = "_";
 
-    private readonly IElasticClient _elasticClient;
+    private readonly ElasticsearchClient _elasticClient;
     private readonly ShellSettings _shellSettings;
     private readonly IClock _clock;
     private readonly ILogger _logger;
     private readonly ElasticsearchOptions _elasticSearchOptions;
     private readonly ConcurrentDictionary<string, DateTime> _timestamps = new(StringComparer.OrdinalIgnoreCase);
-    private readonly string _lastTaskId = "last_task_id";
 
-    private static readonly Dictionary<string, Func<IAnalyzer>> _analyzerGetter = new(StringComparer.OrdinalIgnoreCase)
+    private const string _lastTaskId = "last_task_id";
+
+    private static readonly Dictionary<string, Type> _analyzerGetter = new(StringComparer.OrdinalIgnoreCase)
     {
-        { ElasticsearchConstants.DefaultAnalyzer, () => new StandardAnalyzer() },
-        { ElasticsearchConstants.SimpleAnalyzer, () => new SimpleAnalyzer() },
-        { ElasticsearchConstants.KeywordAnalyzer, () => new KeywordAnalyzer() },
-        { ElasticsearchConstants.WhitespaceAnalyzer, () => new WhitespaceAnalyzer() },
-        { ElasticsearchConstants.PatternAnalyzer, () => new PatternAnalyzer() },
-        { ElasticsearchConstants.LanguageAnalyzer, () => new LanguageAnalyzer() },
-        { ElasticsearchConstants.FingerprintAnalyzer, () => new FingerprintAnalyzer() },
-        { ElasticsearchConstants.CustomAnalyzer, () => new CustomAnalyzer() },
-        { ElasticsearchConstants.StopAnalyzer, () => new StopAnalyzer() },
+        { ElasticsearchConstants.DefaultAnalyzer, typeof(StandardAnalyzer) },
+        { ElasticsearchConstants.SimpleAnalyzer, typeof(SimpleAnalyzer) },
+        { ElasticsearchConstants.KeywordAnalyzer, typeof(KeywordAnalyzer) },
+        { ElasticsearchConstants.WhitespaceAnalyzer, typeof(WhitespaceAnalyzer) },
+        { ElasticsearchConstants.PatternAnalyzer, typeof(PatternAnalyzer) },
+        { ElasticsearchConstants.LanguageAnalyzer, typeof(LanguageAnalyzer) },
+        { ElasticsearchConstants.FingerprintAnalyzer, typeof(FingerprintAnalyzer) },
+        { ElasticsearchConstants.CustomAnalyzer, typeof(CustomAnalyzer) },
+        { ElasticsearchConstants.StopAnalyzer, typeof(StopAnalyzer) },
     };
 
-    private static readonly Dictionary<string, Func<ITokenFilter>> _tokenFilterGetter = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly Dictionary<string, Type> _tokenFilterGetter = new(StringComparer.OrdinalIgnoreCase)
     {
-        { "asciifolding", () => new AsciiFoldingTokenFilter() },
-        { "common_grams", () => new CommonGramsTokenFilter() },
-        { "condition", () => new ConditionTokenFilter() },
-        { "delimited_payload", () => new DelimitedPayloadTokenFilter() },
-        { "dictionary_decompounder", () => new DictionaryDecompounderTokenFilter() },
-        { "edge_ngram", () => new EdgeNGramTokenFilter() },
-        { "elision", () => new ElisionTokenFilter() },
-        { "fingerprint", () => new FingerprintTokenFilter() },
-        { "hunspell", () => new HunspellTokenFilter() },
-        { "hyphenation_decompounder", () => new HyphenationDecompounderTokenFilter() },
-        { "icu_collation", () => new IcuCollationTokenFilter() },
-        { "icu_folding", () => new IcuFoldingTokenFilter() },
-        { "icu_normalizer", () => new IcuNormalizationTokenFilter() },
-        { "icu_transform", () => new IcuTransformTokenFilter() },
-        { "keep_types", () => new KeepTypesTokenFilter() },
-        { "keep", () => new KeepWordsTokenFilter() },
-        { "keyword_marker", () => new KeywordMarkerTokenFilter() },
-        { "kstem", () => new KStemTokenFilter() },
-        { "kuromoji_part_of_speech", () => new KuromojiPartOfSpeechTokenFilter() },
-        { "kuromoji_readingform", () => new KuromojiReadingFormTokenFilter() },
-        { "kuromoji_stemmer", () => new KuromojiStemmerTokenFilter() },
-        { "length", () => new LengthTokenFilter() },
-        { "limit", () => new LimitTokenCountTokenFilter() },
-        { "lowercase", () => new LowercaseTokenFilter() },
-        { "multiplexer", () => new MultiplexerTokenFilter() },
-        { "ngram", () => new NGramTokenFilter() },
-        { "nori_part_of_speech", () => new NoriPartOfSpeechTokenFilter() },
-        { "pattern_capture", () => new PatternCaptureTokenFilter() },
-        { "pattern_replace", () => new PatternReplaceTokenFilter() },
-        { "phonetic", () => new PhoneticTokenFilter() },
-        { "porter_stem", () => new PorterStemTokenFilter() },
-        { "remove_duplicates", () => new RemoveDuplicatesTokenFilter() },
-        { "reverse", () => new ReverseTokenFilter() },
-        { "shingle", () => new ShingleTokenFilter() },
-        { "snowball", () => new SnowballTokenFilter() },
-        { "stemmer_override", () => new StemmerOverrideTokenFilterDescriptor() },
-        { "stemmer", () => new StemmerTokenFilter() },
-        { "stop", () => new StopTokenFilter() },
-        { "synonym_graph", () => new SynonymGraphTokenFilter() },
-        { "synonym", () => new SynonymTokenFilter() },
-        { "trim", () => new TrimTokenFilter() },
-        { "truncate", () => new TruncateTokenFilter() },
-        { "unique", () => new UniqueTokenFilter() },
-        { "uppercase", () => new UppercaseTokenFilter() },
-        { "word_delimiter_graph", () => new WordDelimiterGraphTokenFilter() },
-        { "word_delimiter", () => new WordDelimiterTokenFilter() }
+        { "asciifolding", typeof(AsciiFoldingTokenFilter) },
+        { "common_grams", typeof(CommonGramsTokenFilter) },
+        { "condition", typeof(ConditionTokenFilter) },
+        { "delimited_payload", typeof(DelimitedPayloadTokenFilter) },
+        { "dictionary_decompounder", typeof(DictionaryDecompounderTokenFilter) },
+        { "edge_ngram", typeof(EdgeNGramTokenFilter) },
+        { "elision", typeof(ElisionTokenFilter) },
+        { "fingerprint", typeof(FingerprintTokenFilter) },
+        { "hunspell", typeof(HunspellTokenFilter) },
+        { "hyphenation_decompounder", typeof(HyphenationDecompounderTokenFilter) },
+        { "icu_collation", typeof(IcuCollationTokenFilter) },
+        { "icu_folding", typeof(IcuFoldingTokenFilter) },
+        { "icu_normalizer", typeof(IcuNormalizationTokenFilter) },
+        { "icu_transform", typeof(IcuTransformTokenFilter) },
+        { "keep_types", typeof(KeepTypesTokenFilter) },
+        { "keep", typeof(KeepWordsTokenFilter) },
+        { "keyword_marker", typeof(KeywordMarkerTokenFilter) },
+        { "kstem", typeof(KStemTokenFilter) },
+        { "kuromoji_part_of_speech", typeof(KuromojiPartOfSpeechTokenFilter) },
+        { "kuromoji_readingform", typeof(KuromojiReadingFormTokenFilter) },
+        { "kuromoji_stemmer", typeof(KuromojiStemmerTokenFilter) },
+        { "length", typeof(LengthTokenFilter) },
+        { "limit", typeof(LimitTokenCountTokenFilter) },
+        { "lowercase", typeof(LowercaseTokenFilter) },
+        { "multiplexer", typeof(MultiplexerTokenFilter) },
+        { "ngram", typeof(NGramTokenFilter) },
+        { "nori_part_of_speech", typeof(NoriPartOfSpeechTokenFilter) },
+        { "pattern_capture", typeof(PatternCaptureTokenFilter) },
+        { "pattern_replace", typeof(PatternReplaceTokenFilter) },
+        { "phonetic", typeof(PhoneticTokenFilter) },
+        { "porter_stem", typeof(PorterStemTokenFilter) },
+        { "remove_duplicates", typeof(RemoveDuplicatesTokenFilter) },
+        { "reverse", typeof(ReverseTokenFilter) },
+        { "shingle", typeof(ShingleTokenFilter) },
+        { "snowball", typeof(SnowballTokenFilter) },
+        { "stemmer_override", typeof(StemmerOverrideTokenFilter) },
+        { "stemmer", typeof(StemmerTokenFilter) },
+        { "stop", typeof(StopTokenFilter) },
+        { "synonym_graph", typeof(SynonymGraphTokenFilter) },
+        { "synonym", typeof(SynonymTokenFilter) },
+        { "trim", typeof(TrimTokenFilter) },
+        { "truncate", typeof(TruncateTokenFilter) },
+        { "unique", typeof(UniqueTokenFilter) },
+        { "uppercase", typeof(UppercaseTokenFilter) },
+        { "word_delimiter_graph", typeof(WordDelimiterGraphTokenFilter) },
+        { "word_delimiter", typeof(WordDelimiterTokenFilter) }
     };
 
     private static readonly List<char> _charsToRemove =
@@ -115,7 +120,7 @@ public sealed class ElasticIndexManager
     private string _indexPrefix;
 
     public ElasticIndexManager(
-        IElasticClient elasticClient,
+        ElasticsearchClient elasticClient,
         ShellSettings shellSettings,
         IOptions<ElasticsearchOptions> elasticsearchOptions,
         IClock clock,
@@ -146,8 +151,14 @@ public sealed class ElasticIndexManager
             return true;
         }
 
-        var analysisDescriptor = new AnalysisDescriptor();
-        var indexSettingsDescriptor = new IndexSettingsDescriptor();
+        var indexSettings = new IndexSettings
+        {
+            Analysis = new IndexSettingsAnalysis()
+            {
+                Analyzers = new Analyzers(),
+                TokenFilters = new TokenFilters(),
+            },
+        };
 
         // The name "standardanalyzer" is a legacy used prior OC 1.6 release. It can be removed in future releases.
         var analyzerName = (elasticIndexSettings.AnalyzerName == "standardanalyzer"
@@ -158,251 +169,227 @@ public sealed class ElasticIndexManager
         {
             var analyzer = GetAnalyzer(analyzerProperties);
 
-            analysisDescriptor.Analyzers(a => a.UserDefined(analyzerName, analyzer));
+            indexSettings.Analysis.Analyzers.Add(analyzerName, analyzer);
         }
 
         if (_elasticSearchOptions.TokenFilters is not null && _elasticSearchOptions.TokenFilters.Count > 0)
         {
-            var tokenFiltersDescriptor = GetTokenFiltersDescriptor(_elasticSearchOptions.TokenFilters);
+            foreach (var filter in _elasticSearchOptions.TokenFilters)
+            {
+                if (!filter.Value.TryGetPropertyValue("type", out var typeObject) ||
+                    !_tokenFilterGetter.TryGetValue(typeObject.ToString(), out var tokenFilterType))
+                {
+                    continue;
+                }
 
-            analysisDescriptor.TokenFilters(d => tokenFiltersDescriptor);
+                RemoveTypeNode(filter.Value);
+
+                var tokenFilter = filter.Value.ToObject(tokenFilterType) as ITokenFilter;
+
+                if (tokenFilter is not null)
+                {
+                    indexSettings.Analysis.TokenFilters.Add(filter.Key, tokenFilter);
+                }
+            }
         }
-
-        indexSettingsDescriptor.Analysis(a => analysisDescriptor);
 
         // Custom metadata to store the last indexing task id.
         var IndexingState = new FluentDictionary<string, object>()
         {
             { _lastTaskId, 0 },
         };
-        var fullIndexName = GetFullIndexName(elasticIndexSettings.IndexName);
-        var createIndexDescriptor = new CreateIndexDescriptor(fullIndexName)
-            .Settings(s => indexSettingsDescriptor)
-            .Map(m => m
-                .SourceField(s => s
-                    .Enabled(elasticIndexSettings.StoreSourceData)
-                    .Excludes([IndexingConstants.DisplayTextAnalyzedKey]))
-                .Meta(me => IndexingState));
 
-        var response = await _elasticClient.Indices.CreateAsync(createIndexDescriptor);
+        var createIndexRequest = new CreateIndexRequest(GetFullIndexName(elasticIndexSettings.IndexName))
+        {
+            Settings = indexSettings,
+            Mappings = new TypeMapping
+            {
+                Source = new SourceField()
+                {
+                    Enabled = elasticIndexSettings.StoreSourceData,
+                    Excludes = [IndexingConstants.DisplayTextAnalyzedKey],
+                },
+                Meta = IndexingState,
+                Properties = new Properties
+                {
+                    [IndexingConstants.ContentItemIdKey] = new KeywordProperty(),
+                    [IndexingConstants.ContentItemVersionIdKey] = new KeywordProperty(),
+                    [IndexingConstants.OwnerKey] = new KeywordProperty(),
+                    [IndexingConstants.FullTextKey] = new TextProperty(),
+                    [IndexingConstants.ContainedPartKey] = new ObjectProperty()
+                    {
+                        Properties = new Properties()
+                        {
+                            [nameof(ContainedPartModel.Ids)] = new KeywordProperty(),
+                            [nameof(ContainedPartModel.Order)] = new FloatNumberProperty(),
+                        }
+                    },
 
-        // We force some mappings for common fields.
-        await _elasticClient.MapAsync<string>(p => p
-            .Index(fullIndexName)
-            .Properties(p => p
-                .Keyword(obj => obj
-                    .Name(IndexingConstants.ContentItemIdKey)
-                )
-                .Keyword(obj => obj
-                    .Name(IndexingConstants.ContentItemVersionIdKey)
-                )
-                .Keyword(obj => obj
-                    .Name(IndexingConstants.OwnerKey)
-                )
-                .Text(obj => obj
-                    .Name(IndexingConstants.FullTextKey)
-                )
-            ));
+                    // We map DisplayText here because we have 3 different fields with it.
+                    // We can't have Content.ContentItem.DisplayText as it is mapped as an Object in Elasticsearch.
+                    [IndexingConstants.DisplayTextKey] = new ObjectProperty()
+                    {
+                        Properties = new Properties()
+                        {
+                            [nameof(DisplayTextModel.Analyzed)] = new TextProperty(),
+                            [nameof(DisplayTextModel.Normalized)] = new KeywordProperty(),
+                            [nameof(DisplayTextModel.Keyword)] = new KeywordProperty(),
+                        }
+                    },
 
-        // ContainedPart mappings.
-        await _elasticClient.MapAsync<ContainedPartModel>(p => p
-            .Index(fullIndexName)
-            .Properties(p => p
-                .Object<ContainedPartModel>(obj => obj
-                    .Name(IndexingConstants.ContainedPartKey)
-                    .AutoMap()
-                )
-            ));
+                    // We map ContentType as a keyword because else the automatic mapping will break the queries.
+                    // We need to access it with Content.ContentItem.ContentType as a keyword
+                    // for the ContentPickerResultProvider(s).
+                    [IndexingConstants.ContentTypeKey] = new KeywordProperty(),
+                },
 
-        // We map DisplayText here because we have 3 different fields with it.
-        // We can't have Content.ContentItem.DisplayText as it is mapped as an Object in Elasticsearch.
-        await _elasticClient.MapAsync<DisplayTextModel>(p => p
-            .Index(fullIndexName)
-            .Properties(p => p
-                .Object<DisplayTextModel>(obj => obj
-                    .Name(IndexingConstants.DisplayTextKey)
-                    .AutoMap()
-                )
-            ));
+                DynamicTemplates = new List<IDictionary<string, DynamicTemplate>>()
+            }
+        };
 
-        // We map ContentType as a keyword because else the automatic mapping will break the queries.
-        // We need to access it with Content.ContentItem.ContentType as a keyword
-        // for the ContentPickerResultProvider(s).
-        await _elasticClient.MapAsync<string>(p => p
-            .Index(fullIndexName)
-            .Properties(p => p
-                .Keyword(obj => obj
-                    .Name(IndexingConstants.ContentTypeKey)
-                )
-            ));
+        var inheritedPostfixPattern = "*" + IndexingConstants.InheritedKey;
+        var inheritedPostfix = DynamicTemplate.Mapping(new KeywordProperty());
+        inheritedPostfix.PathMatch = [inheritedPostfixPattern];
+        inheritedPostfix.MatchMappingType = ["string"];
+        createIndexRequest.Mappings.DynamicTemplates.Add(new Dictionary<string, DynamicTemplate>()
+        {
+            { inheritedPostfixPattern, inheritedPostfix },
+        });
 
-        // DynamicTemplates mapping for Taxonomy indexing mostly.
-        await _elasticClient.MapAsync<string>(p => p
-            .Index(fullIndexName)
-            .DynamicTemplates(d => d
-                .DynamicTemplate("*.Inherited", dyn => dyn
-                    .MatchMappingType("string")
-                    .PathMatch("*" + IndexingConstants.InheritedKey)
-                    .Mapping(m => m
-                        .Keyword(k => k))
-                )
-                .DynamicTemplate("*.Ids", dyn => dyn
-                    .MatchMappingType("string")
-                    .PathMatch("*" + IndexingConstants.IdsKey)
-                    .Mapping(m => m
-                        .Keyword(k => k))
-                    )
-                )
-            );
-        // DynamicTemplates mapping for Geo fields, the GeoPointFieldIndexHandler adds a Location index by default.
-        await _elasticClient.MapAsync<object>(p => p
-            .Index(fullIndexName)
-            .DynamicTemplates(d => d
-                .DynamicTemplate("*.Location", dyn => dyn
-                    .MatchMappingType("object")
-                    .PathMatch("*" + ".Location")
-                    .Mapping(m => m.GeoPoint(g => g))
-                    )
-                )
-            );
+        var idsPostfixPattern = "*" + IndexingConstants.IdsKey;
+        var idsPostfix = DynamicTemplate.Mapping(new KeywordProperty());
+        idsPostfix.PathMatch = [idsPostfixPattern];
+        idsPostfix.MatchMappingType = ["string"];
+        createIndexRequest.Mappings.DynamicTemplates.Add(new Dictionary<string, DynamicTemplate>()
+        {
+            { idsPostfixPattern, idsPostfix },
+        });
+
+        var locationPostFixPattern = "*.Location";
+        var locationPostfix = DynamicTemplate.Mapping(new GeoPointProperty());
+        locationPostfix.PathMatch = [locationPostFixPattern];
+        locationPostfix.MatchMappingType = ["object"];
+        createIndexRequest.Mappings.DynamicTemplates.Add(new Dictionary<string, DynamicTemplate>()
+        {
+            { locationPostFixPattern, locationPostfix },
+        });
+
+        var response = await _elasticClient.Indices.CreateAsync(createIndexRequest);
 
         return response.Acknowledged;
     }
 
-    private TokenFiltersDescriptor GetTokenFiltersDescriptor(Dictionary<string, JsonObject> filters)
-    {
-        var descriptor = new TokenFiltersDescriptor();
 
-        foreach (var filter in filters)
-        {
-            if (!filter.Value.TryGetPropertyValue("type", out var typeObject) ||
-                !_tokenFilterGetter.TryGetValue(typeObject.ToString(), out var tokenFilterBuildingInfo))
-            {
-                continue;
-            }
-
-            var tokenFilter = tokenFilterBuildingInfo.Invoke();
-
-            var properties = tokenFilter.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-            foreach (var filterProperty in filter.Value)
-            {
-                if (filterProperty.Value == null || string.Equals(filterProperty.Key, "type", StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
-                var key = filterProperty.Key.Replace(_separator, string.Empty);
-                var property = properties.FirstOrDefault(p => p.Name.Equals(key, StringComparison.OrdinalIgnoreCase));
-
-                if (property == null)
-                {
-                    continue;
-                }
-
-                try
-                {
-                    PopulateValue(tokenFilter, property, filterProperty.Value);
-
-                    descriptor.UserDefined(filter.Key, tokenFilter);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "Unable to parse token filter for Elasticsearch (Filter: {Key}).", filter.Key);
-                }
-            }
-        }
-
-        return descriptor;
-    }
-
-    private IAnalyzer GetAnalyzer(JsonObject analyzerProperties)
+    private static IAnalyzer GetAnalyzer(JsonObject analyzerProperties)
     {
         IAnalyzer analyzer = null;
 
         if (analyzerProperties.TryGetPropertyValue("type", out var typeObject)
-            && _analyzerGetter.TryGetValue(typeObject.ToString(), out var getter))
+            && _analyzerGetter.TryGetValue(typeObject.ToString(), out var analyzerType))
         {
-            analyzer = getter.Invoke();
+            RemoveTypeNode(analyzerProperties);
 
-            var properties = analyzer.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-            foreach (var analyzerProperty in analyzerProperties)
-            {
-                if (analyzerProperty.Value == null || string.Equals(analyzerProperty.Key, "type", StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
-                var key = analyzerProperty.Key.Replace(_separator, string.Empty);
-
-                var property = properties.FirstOrDefault(p => p.Name.Equals(key, StringComparison.OrdinalIgnoreCase));
-
-                if (property == null)
-                {
-                    continue;
-                }
-
-                try
-                {
-                    PopulateValue(analyzer, property, analyzerProperty.Value);
-                }
-                catch (Exception e)
-                {
-                    _logger.LogError(e, "Unable to parse an analyzer for Elasticsearch.");
-                }
-            }
+            analyzer = analyzerProperties.ToObject(analyzerType) as IAnalyzer;
         }
 
         if (analyzer == null)
         {
-            if (_analyzerGetter.TryGetValue(ElasticsearchConstants.DefaultAnalyzer, out getter))
+            if (_analyzerGetter.TryGetValue(ElasticsearchConstants.DefaultAnalyzer, out analyzerType))
             {
-                analyzer = getter.Invoke();
+                RemoveTypeNode(analyzerProperties);
+
+                analyzer = analyzerProperties.ToObject(analyzerType) as IAnalyzer;
             }
             else
             {
-                analyzer = _analyzerGetter.First().Value.Invoke();
+                RemoveTypeNode(analyzerProperties);
+
+                analyzer = analyzerProperties.ToObject(_analyzerGetter.First().Value) as IAnalyzer;
             }
         }
 
         return analyzer;
     }
 
+    private static void RemoveTypeNode(JsonObject analyzerProperties)
+    {
+        var typeKey = analyzerProperties.FirstOrDefault(x => x.Key.Equals("type", StringComparison.OrdinalIgnoreCase)).Key;
+
+        if (typeKey is not null)
+        {
+            analyzerProperties.Remove(typeKey);
+        }
+    }
+
     public async Task<string> GetIndexMappings(string indexName)
     {
-        var response = await _elasticClient.LowLevel.Indices.GetMappingAsync<StringResponse>(GetFullIndexName(indexName));
+        IndexName indexFullName = GetFullIndexName(indexName);
 
-        if (!response.Success)
+        var response = await _elasticClient.Indices.GetMappingAsync<GetMappingResponse>(indexFullName);
+
+        if (!response.IsValidResponse)
         {
-            _logger.LogWarning("There were issues retrieving index mappings from Elasticsearch. {OriginalException}", response.OriginalException);
+            if (response.TryGetOriginalException(out var ex))
+            {
+                _logger.LogWarning("There were issues retrieving index mappings from Elasticsearch. Exception: {OriginalException}", ex);
+            }
+            else
+            {
+                _logger.LogWarning("There were issues retrieving index mappings from Elasticsearch.");
+            }
+
+            return null;
         }
 
-        return response.Body;
+        var mappings = response.Indices[indexFullName].Mappings;
+
+        return _elasticClient.RequestResponseSerializer.SerializeToString(mappings);
     }
 
     public async Task<string> GetIndexSettings(string indexName)
     {
-        var response = await _elasticClient.LowLevel.Indices.GetSettingsAsync<StringResponse>(GetFullIndexName(indexName));
+        IndexName fullName = GetFullIndexName(indexName);
 
-        if (!response.Success)
+        var response = await _elasticClient.Indices.GetAsync<GetIndexResponse>(fullName);
+
+        if (!response.IsValidResponse)
         {
-            _logger.LogWarning("There were issues retrieving index settings from Elasticsearch. {OriginalException}", response.OriginalException);
+            if (response.TryGetOriginalException(out var ex))
+            {
+                _logger.LogWarning("There were issues retrieving index settings from Elasticsearch. Exception: {OriginalException}", ex);
+            }
+            else
+            {
+                _logger.LogWarning("There were issues retrieving index settings from Elasticsearch.");
+            }
         }
 
-        return response.Body;
+        var settings = response.Indices[fullName].Settings;
+
+        return _elasticClient.RequestResponseSerializer.SerializeToString(settings);
     }
 
     public async Task<string> GetIndexInfo(string indexName)
     {
-        var response = await _elasticClient.LowLevel.Indices.GetAsync<StringResponse>(GetFullIndexName(indexName));
+        IndexName fullName = GetFullIndexName(indexName);
 
-        if (!response.Success)
+        var response = await _elasticClient.Indices.GetAsync<GetIndexResponse>(fullName);
+
+        if (!response.IsValidResponse)
         {
-            _logger.LogWarning("There were issues retrieving index info from Elasticsearch. {OriginalException}", response.OriginalException);
+            if (response.TryGetOriginalException(out var ex))
+            {
+                _logger.LogWarning("There were issues retrieving index info from Elasticsearch. Exception: {OriginalException}", ex);
+            }
+            else
+            {
+                _logger.LogWarning("There were issues retrieving index info from Elasticsearch.");
+            }
         }
 
-        return response.Body;
+        var info = response.Indices[fullName];
+
+        return _elasticClient.RequestResponseSerializer.SerializeToString(info);
     }
 
     /// <summary>
@@ -431,10 +418,10 @@ public sealed class ElasticIndexManager
     /// </summary>
     public async Task<long> GetLastTaskId(string indexName)
     {
-        var jsonDocument = JsonDocument.Parse(await GetIndexMappings(indexName));
-        jsonDocument.RootElement.TryGetProperty(GetFullIndexName(indexName), out var jsonElement);
-        jsonElement.TryGetProperty("mappings", out var mappings);
-        mappings.TryGetProperty("_meta", out var meta);
+        var mappings = await GetIndexMappings(indexName);
+
+        var jsonDocument = JsonDocument.Parse(mappings);
+        jsonDocument.RootElement.TryGetProperty("_meta", out var meta);
         meta.TryGetProperty(_lastTaskId, out var lastTaskId);
         lastTaskId.TryGetInt64(out var longValue);
 
@@ -443,31 +430,33 @@ public sealed class ElasticIndexManager
 
     public async Task<bool> DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
     {
-        var success = true;
-
         if (contentItemIds.Any())
         {
-            var descriptor = new BulkDescriptor();
+            IndexName fullName = GetFullIndexName(indexName);
+
+            // Create a new BulkRequest for the specified index
+            var bulkRequest = new BulkRequest(fullName)
+            {
+                Operations = new List<IBulkOperation>(),
+            };
 
             foreach (var id in contentItemIds)
             {
-                descriptor.Delete<Dictionary<string, object>>(d => d
-                    .Index(GetFullIndexName(indexName))
-                    .Id(id)
-                );
+                bulkRequest.Operations.Add(new BulkDeleteOperation<Dictionary<string, object>>(new Dictionary<string, object>()
+                {
+                    { IndexingConstants.ContentItemIdKey, id },
+                })
+                {
+                    Index = fullName,
+                });
             }
 
-            var response = await _elasticClient.BulkAsync(descriptor);
+            var response = await _elasticClient.BulkAsync(bulkRequest);
 
-            if (response.Errors)
-            {
-                _logger.LogWarning("There were issues deleting documents from Elasticsearch. {OriginalException}", response.OriginalException);
-            }
-
-            success = response.IsValid;
+            return response.IsValidResponse;
         }
 
-        return success;
+        return true;
     }
 
     /// <summary>
@@ -476,12 +465,14 @@ public sealed class ElasticIndexManager
     /// </summary>
     public async Task<bool> DeleteAllDocumentsAsync(string indexName)
     {
+        IndexName fullName = GetFullIndexName(indexName);
+
         var response = await _elasticClient.DeleteByQueryAsync<Dictionary<string, object>>(del => del
-            .Index(GetFullIndexName(indexName))
-            .Query(q => q.MatchAll())
+            .Indices(fullName)
+            .Query(q => q.MatchAll(new MatchAllQuery()))
         );
 
-        return response.IsValid;
+        return response.IsValidResponse;
     }
 
     public async Task<bool> DeleteIndex(string indexName)
@@ -529,8 +520,13 @@ public sealed class ElasticIndexManager
         return indexName;
     }
 
-    public async Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
+    public Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
     {
+        if (indexDocuments == null || !indexDocuments.Any())
+        {
+            return Task.CompletedTask;
+        }
+
         var documents = new List<Dictionary<string, object>>();
 
         foreach (var indexDocument in indexDocuments)
@@ -538,26 +534,11 @@ public sealed class ElasticIndexManager
             documents.Add(CreateElasticDocument(indexDocument));
         }
 
-        if (documents.Count > 0)
-        {
-            var descriptor = new BulkDescriptor();
-
-            foreach (var document in documents)
-            {
-                descriptor.Index<Dictionary<string, object>>(op => op
-                    .Id(document.GetValueOrDefault("ContentItemId").ToString())
-                    .Document(document)
-                    .Index(GetFullIndexName(indexName))
-                );
-            }
-
-            var result = await _elasticClient.BulkAsync(d => descriptor);
-
-            if (result.Errors)
-            {
-                _logger.LogWarning("There were issues reported indexing the documents. {ServerError}", result.ServerError);
-            }
-        }
+        return _elasticClient.BulkAsync(b => b
+            .Index(GetFullIndexName(indexName))
+            .IndexMany(documents)
+            .Refresh(Refresh.True)
+        );
     }
 
     /// <summary>
@@ -569,7 +550,7 @@ public sealed class ElasticIndexManager
     /// <param name="from"></param>
     /// <param name="size"></param>
     /// <returns><see cref="ElasticTopDocs"/>.</returns>
-    public async Task<ElasticTopDocs> SearchAsync(string indexName, QueryContainer query, List<ISort> sort, int from, int size)
+    public async Task<ElasticTopDocs> SearchAsync(string indexName, Query query, List<SortOptions> sort, int from, int size)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
         ArgumentNullException.ThrowIfNull(query);
@@ -593,7 +574,7 @@ public sealed class ElasticIndexManager
 
             var searchResponse = await _elasticClient.SearchAsync<Dictionary<string, object>>(searchRequest);
 
-            if (searchResponse.IsValid)
+            if (searchResponse.IsValidResponse)
             {
                 elasticTopDocs.Count = searchResponse.Hits.Count;
 
@@ -631,7 +612,7 @@ public sealed class ElasticIndexManager
     /// <summary>
     /// Returns results from a search made with NEST Fluent DSL query.
     /// </summary>
-    public async Task SearchAsync(string indexName, Func<IElasticClient, Task> elasticClient)
+    public async Task SearchAsync(string indexName, Func<ElasticsearchClient, Task> elasticClient)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
 
@@ -704,7 +685,11 @@ public sealed class ElasticIndexManager
                 case DocumentIndexBase.Types.GeoPoint:
                     if (entry.Value is DocumentIndexBase.GeoPoint point)
                     {
-                        AddValue(entries, entry.Name, new GeoLocation((double)point.Latitude, (double)point.Longitude));
+                        AddValue(entries, entry.Name, GeoLocation.LatitudeLongitude(new LatLonGeoLocation
+                        {
+                            Lat = (double)point.Latitude,
+                            Lon = (double)point.Longitude,
+                        }));
                     }
 
                     break;
@@ -719,38 +704,6 @@ public sealed class ElasticIndexManager
         ArgumentException.ThrowIfNullOrEmpty(indexName);
 
         return GetIndexPrefix() + _separator + indexName;
-    }
-
-    private static void PopulateValue(object destination, PropertyInfo property, JsonNode value)
-    {
-        if (property.PropertyType == typeof(StopWords))
-        {
-            if (value is JsonArray)
-            {
-                var values = value.Values<string>().ToArray();
-
-                property.SetValue(destination, new StopWords(values));
-            }
-            else if (value.TryGetValue<string>(out var saveValue))
-            {
-                property.SetValue(destination, new StopWords(saveValue));
-            }
-
-            return;
-        }
-
-        if (value is JsonArray jsonArray)
-        {
-            var values = jsonArray.Values<string>().ToArray();
-
-            property.SetValue(destination, values);
-        }
-        else
-        {
-            var safeValue = JNode.ToObject(value, property.PropertyType);
-
-            property.SetValue(destination, safeValue);
-        }
     }
 
     private static void AddValue(Dictionary<string, object> entries, string key, object value)

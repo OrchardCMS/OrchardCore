@@ -21,6 +21,7 @@
     <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
     <PackageVersion Include="Castle.Core" Version="5.1.1" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.1.0" />
+    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.15.10" />
     <PackageVersion Include="Fluid.Core" Version="2.12.0" />
     <PackageVersion Include="GraphQL" Version="7.9.0" />
     <PackageVersion Include="GraphQL.DataLoader" Version="7.9.0" />
@@ -54,7 +55,6 @@
     <PackageVersion Include="MiniProfiler.AspNetCore.Mvc" Version="4.3.8" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="ncrontab" Version="3.3.3" />
-    <PackageVersion Include="NEST" Version="7.17.5" />
     <PackageVersion Include="NJsonSchema" Version="11.0.2" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="5.3.14" />
     <PackageVersion Include="NodaTime" Version="3.2.0" />
@@ -84,7 +84,6 @@
     <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.1.1" />
     <PackageVersion Include="YesSql.Filters.Query" Version="5.1.1" />
     <PackageVersion Include="ZString" Version="2.6.0" />
-    
     <!-- dotnet/extensions -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
   </ItemGroup>
@@ -92,7 +91,6 @@
     <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <GlobalPackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="4.11.0" />
   </ItemGroup>
-  
   <!-- These versions are used for tansitive dependency forced upgrades only. E.g. when a package references a vulnerable version. -->
   <!-- To list all vulnerable direct references run 'dotnet list package -vulnerable' (use double dash, just XML comments can't contain it) -->
   <!-- To list all vulnerable transitive references run 'dotnet list package -vulnerable -include-transitive' (use double dash, just XML comments can't contain it) -->
@@ -123,7 +121,6 @@
               └─ System.IO.Packaging (v8.0.0)
     -->
     <PackageVersion Include="System.IO.Packaging" Version="8.0.1" />
-
     <!--
       YesSql (v5.1.1)
       └─ YesSql.Provider.SqlServer (v5.1.1)
@@ -131,16 +128,12 @@
             └─ System.Runtime.Caching (v8.0.0)
     -->
     <PackageVersion Include="System.Runtime.Caching" Version="8.0.1" />
-
     <PackageVersion Include="System.Private.Uri" Version="4.3.2" />
-    
     <!-- Several transitive dependencies on 8.0.4 and lower which has known vulnerabilities -->
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
-    
     <!-- Several transitive dependencies on 8.0.0 which has known vulnerabilities -->
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
   </ItemGroup>
-
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
   <!-- Versions are preset for the default TFM (there may be no TFM in an evaluation phase) -->
   <PropertyGroup>

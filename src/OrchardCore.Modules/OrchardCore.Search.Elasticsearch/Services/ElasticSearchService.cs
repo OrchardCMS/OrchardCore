@@ -1,9 +1,10 @@
 using System.Text;
 using System.Text.Encodings.Web;
+using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.QueryDsl;
 using Fluid.Values;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Nest;
 using OrchardCore.Liquid;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -19,8 +20,8 @@ public class ElasticsearchService : ISearchService
     private readonly ISiteService _siteService;
     private readonly ElasticIndexManager _elasticIndexManager;
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-    private readonly IElasticSearchQueryService _elasticsearchQueryService;
-    private readonly IElasticClient _elasticClient;
+    private readonly ElasticSearchQueryService _elasticsearchQueryService;
+    private readonly ElasticsearchClient _elasticClient;
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly ElasticConnectionOptions _elasticConnectionOptions;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -30,8 +31,8 @@ public class ElasticsearchService : ISearchService
         ISiteService siteService,
         ElasticIndexManager elasticIndexManager,
         ElasticIndexSettingsService elasticIndexSettingsService,
-        IElasticSearchQueryService elasticsearchQueryService,
-        IElasticClient elasticClient,
+        ElasticSearchQueryService elasticsearchQueryService,
+        ElasticsearchClient elasticClient,
         JavaScriptEncoder javaScriptEncoder,
         IOptions<ElasticConnectionOptions> elasticConnectionOptions,
         ILiquidTemplateManager liquidTemplateManager,
@@ -86,7 +87,7 @@ public class ElasticsearchService : ISearchService
         try
         {
             var searchType = searchSettings.GetSearchType();
-            QueryContainer query = null;
+            Query query = null;
 
             if (searchType == ElasticSettings.CustomSearchType && !string.IsNullOrWhiteSpace(searchSettings.DefaultQuery))
             {

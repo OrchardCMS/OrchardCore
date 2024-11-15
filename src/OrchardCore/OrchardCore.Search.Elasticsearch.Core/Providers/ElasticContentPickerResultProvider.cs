@@ -1,5 +1,6 @@
+using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch.QueryDsl;
 using Microsoft.Extensions.Options;
-using Nest;
 using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -10,15 +11,12 @@ namespace OrchardCore.Search.Elasticsearch.Core.Providers;
 public class ElasticContentPickerResultProvider : IContentPickerResultProvider
 {
     private readonly ElasticIndexManager _elasticIndexManager;
-    private readonly string _indexPrefix;
     private readonly ElasticConnectionOptions _elasticConnectionOptions;
 
     public ElasticContentPickerResultProvider(
-        ShellSettings shellSettings,
         IOptions<ElasticConnectionOptions> elasticConnectionOptions,
         ElasticIndexManager elasticIndexManager)
     {
-        _indexPrefix = shellSettings.Name.ToLowerInvariant() + "_";
         _elasticConnectionOptions = elasticConnectionOptions.Value;
         _elasticIndexManager = elasticIndexManager;
     }
@@ -50,19 +48,19 @@ public class ElasticContentPickerResultProvider : IContentPickerResultProvider
 
         await _elasticIndexManager.SearchAsync(indexName, async elasticClient =>
         {
-            ISearchResponse<Dictionary<string, object>> searchResponse = null;
+            SearchResponse<Dictionary<string, object>> searchResponse = null;
             var elasticTopDocs = new ElasticTopDocs();
 
             if (string.IsNullOrWhiteSpace(searchContext.Query))
             {
                 searchResponse = await elasticClient.SearchAsync<Dictionary<string, object>>(s => s
-                    .Index(_indexPrefix + indexName)
+                    .Index(_elasticIndexManager.GetFullIndexName(indexName))
                     .Query(q => q
                         .Bool(b => b
                             .Filter(f => f
                                 .Terms(t => t
                                     .Field("Content.ContentItem.ContentType")
-                                    .Terms(searchContext.ContentTypes.ToArray())
+                                    .Term(new TermsQueryField(searchContext.ContentTypes.Select(contentType => FieldValue.String(contentType)).ToArray()))
                                 )
                             )
                         )
@@ -72,13 +70,13 @@ public class ElasticContentPickerResultProvider : IContentPickerResultProvider
             else
             {
                 searchResponse = await elasticClient.SearchAsync<Dictionary<string, object>>(s => s
-                    .Index(_indexPrefix + indexName)
+                    .Index(_elasticIndexManager.GetFullIndexName(indexName))
                     .Query(q => q
                         .Bool(b => b
                             .Filter(f => f
                                 .Terms(t => t
                                     .Field("Content.ContentItem.ContentType")
-                                    .Terms(searchContext.ContentTypes.ToArray())
+                                    .Term(new TermsQueryField(searchContext.ContentTypes.Select(contentType => FieldValue.String(contentType)).ToArray()))
                                 )
                             )
                             .Should(s => s
@@ -92,7 +90,7 @@ public class ElasticContentPickerResultProvider : IContentPickerResultProvider
                 );
             }
 
-            if (searchResponse.IsValid)
+            if (searchResponse.IsValidResponse)
             {
                 elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
             }
@@ -105,7 +103,7 @@ public class ElasticContentPickerResultProvider : IContentPickerResultProvider
                     {
                         ContentItemId = doc["ContentItemId"].ToString(),
                         DisplayText = doc["Content.ContentItem.DisplayText.keyword"].ToString(),
-                        HasPublished = doc["Content.ContentItem.Published"].ToString().ToLowerInvariant().Equals("true", StringComparison.Ordinal)
+                        HasPublished = doc["Content.ContentItem.Published"].ToString().Equals("true", StringComparison.OrdinalIgnoreCase)
                     });
                 }
             }

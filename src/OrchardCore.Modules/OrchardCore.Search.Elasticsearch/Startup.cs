@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Nest;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentTypes.Editors;
@@ -40,11 +39,11 @@ public sealed class Startup : StartupBase
     {
         services.AddTransient<IConfigureOptions<ElasticConnectionOptions>, ElasticConnectionOptionsConfigurations>();
 
-        services.AddSingleton<IElasticClient>((sp) =>
+        services.AddSingleton((sp) =>
         {
             var options = sp.GetRequiredService<IOptions<ElasticConnectionOptions>>().Value;
 
-            return new ElasticClient(options.GetConnectionSettings() ?? new ConnectionSettings());
+            return ElasticSearchClientFactory.Create(options);
         });
 
         services.Configure<ElasticsearchOptions>(options =>

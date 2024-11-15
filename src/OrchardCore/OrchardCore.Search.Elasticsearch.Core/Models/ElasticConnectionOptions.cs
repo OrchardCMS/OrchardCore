@@ -1,5 +1,3 @@
-using Nest;
-
 namespace OrchardCore.Search.Elasticsearch.Core.Models;
 
 public class ElasticConnectionOptions
@@ -40,26 +38,13 @@ public class ElasticConnectionOptions
     public string CertificateFingerprint { get; set; }
 
     /// <summary>
-    /// Enables compatibility mode for Elasticsearch 8.x.
-    /// </summary>
-    public bool EnableApiVersioningHeader { get; set; }
-
-    /// <summary>
     /// Whether the configuration section exists.
     /// </summary>
     private bool _fileConfigurationExists { get; set; }
-
-    private IConnectionSettingsValues _conntectionSettings;
 
     public void SetFileConfigurationExists(bool fileConfigurationExists)
         => _fileConfigurationExists = fileConfigurationExists;
 
     public bool FileConfigurationExists()
         => _fileConfigurationExists;
-
-    public void SetConnectionSettings(IConnectionSettingsValues settings)
-     => _conntectionSettings = settings;
-
-    public IConnectionSettingsValues GetConnectionSettings()
-        => _conntectionSettings;
 }
