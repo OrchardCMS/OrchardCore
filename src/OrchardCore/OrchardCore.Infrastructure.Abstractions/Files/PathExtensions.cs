@@ -129,4 +129,13 @@ public static class PathExtensions
 
         return builder.ToString();
     }
+
+    /// <summary>
+    /// Gets the full path of a unique file in the system's temporary directory.
+    /// </summary>
+    /// <remarks>
+    /// The generated file name does not contains an extension.
+    /// </remarks>
+    public static string GetTempFileName()
+        => Combine(Path.GetTempPath(), Path.GetRandomFileName());
 }

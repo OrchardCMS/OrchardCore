@@ -1,4 +1,5 @@
 using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using Fluid;
 using Fluid.Values;
@@ -60,7 +61,7 @@ public sealed class LuceneQuerySource : IQuerySource
         {
             var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(metadata.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
 
-            var parameterizedQuery = JsonNode.Parse(tokenizedContent).AsObject();
+            var parameterizedQuery = JsonNode.Parse(tokenizedContent, JOptions.Node, JOptions.Document).AsObject();
 
             var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(metadata.Index));
             var context = new LuceneQueryContext(searcher, LuceneSettings.DefaultVersion, analyzer);

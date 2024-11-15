@@ -45,7 +45,7 @@ internal sealed class CultureValue : FluidValue
         return ToStringValue() == other.ToStringValue();
     }
 
-    public override bool ToBooleanValue() => false;
+    public override bool ToBooleanValue() => true;
 
     public override decimal ToNumberValue() => 0;
 
@@ -53,12 +53,7 @@ internal sealed class CultureValue : FluidValue
 
     public override string ToStringValue() => Culture.Name;
 
-#pragma warning disable CS0672 // Member overrides obsolete member
-    public override void WriteTo(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
-#pragma warning restore CS0672 // Member overrides obsolete member
-        => writer.Write(Culture.Name);
-
-    public async override ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
+    public override async ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
         => await writer.WriteAsync(Culture.Name);
 
     public override ValueTask<FluidValue> GetValueAsync(string name, TemplateContext context)
