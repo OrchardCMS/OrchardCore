@@ -20,7 +20,6 @@ public class ElasticsearchService : ISearchService
     private readonly ISiteService _siteService;
     private readonly ElasticIndexManager _elasticIndexManager;
     private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-    private readonly ElasticSearchQueryService _elasticsearchQueryService;
     private readonly ElasticsearchClient _elasticClient;
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly ElasticConnectionOptions _elasticConnectionOptions;
@@ -31,7 +30,6 @@ public class ElasticsearchService : ISearchService
         ISiteService siteService,
         ElasticIndexManager elasticIndexManager,
         ElasticIndexSettingsService elasticIndexSettingsService,
-        ElasticSearchQueryService elasticsearchQueryService,
         ElasticsearchClient elasticClient,
         JavaScriptEncoder javaScriptEncoder,
         IOptions<ElasticConnectionOptions> elasticConnectionOptions,
@@ -42,7 +40,6 @@ public class ElasticsearchService : ISearchService
         _siteService = siteService;
         _elasticIndexManager = elasticIndexManager;
         _elasticIndexSettingsService = elasticIndexSettingsService;
-        _elasticsearchQueryService = elasticsearchQueryService;
         _elasticClient = elasticClient;
         _javaScriptEncoder = javaScriptEncoder;
         _elasticConnectionOptions = elasticConnectionOptions.Value;
@@ -65,7 +62,9 @@ public class ElasticsearchService : ISearchService
 
         var searchSettings = await _siteService.GetSettingsAsync<ElasticSettings>();
 
-        var index = !string.IsNullOrWhiteSpace(indexName) ? indexName.Trim() : searchSettings.SearchIndex;
+        var index = !string.IsNullOrWhiteSpace(indexName)
+            ? indexName.Trim()
+            : searchSettings.SearchIndex ?? (await _elasticIndexSettingsService.GetSettingsAsync()).FirstOrDefault()?.IndexName;
 
         if (index == null || !await _elasticIndexManager.ExistsAsync(index))
         {
@@ -124,7 +123,9 @@ public class ElasticsearchService : ISearchService
                 Query = term
             };
 
-            result.ContentItemIds = await _elasticsearchQueryService.ExecuteQueryAsync(index, query, null, start, pageSize);
+            var queryService = new ElasticSearchQueryService(_elasticIndexManager);
+            result.ContentItemIds = await queryService.ExecuteQueryAsync(index, query, null, start, pageSize);
+
             result.Success = true;
         }
         catch (Exception e)

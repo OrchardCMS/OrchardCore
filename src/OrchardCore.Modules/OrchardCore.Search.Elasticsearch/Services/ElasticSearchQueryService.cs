@@ -4,7 +4,7 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
-public class ElasticSearchQueryService
+internal class ElasticSearchQueryService
 {
     private readonly ElasticIndexManager _elasticIndexManager;
 

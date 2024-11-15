@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Analysis;
-using Elastic.Clients.Elasticsearch.Core.Bulk;
 using Elastic.Clients.Elasticsearch.Fluent;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 using Elastic.Clients.Elasticsearch.Mapping;
@@ -279,48 +278,6 @@ public sealed class ElasticIndexManager
         return response.Acknowledged;
     }
 
-
-    private static IAnalyzer GetAnalyzer(JsonObject analyzerProperties)
-    {
-        IAnalyzer analyzer = null;
-
-        if (analyzerProperties.TryGetPropertyValue("type", out var typeObject)
-            && _analyzerGetter.TryGetValue(typeObject.ToString(), out var analyzerType))
-        {
-            RemoveTypeNode(analyzerProperties);
-
-            analyzer = analyzerProperties.ToObject(analyzerType) as IAnalyzer;
-        }
-
-        if (analyzer == null)
-        {
-            if (_analyzerGetter.TryGetValue(ElasticsearchConstants.DefaultAnalyzer, out analyzerType))
-            {
-                RemoveTypeNode(analyzerProperties);
-
-                analyzer = analyzerProperties.ToObject(analyzerType) as IAnalyzer;
-            }
-            else
-            {
-                RemoveTypeNode(analyzerProperties);
-
-                analyzer = analyzerProperties.ToObject(_analyzerGetter.First().Value) as IAnalyzer;
-            }
-        }
-
-        return analyzer;
-    }
-
-    private static void RemoveTypeNode(JsonObject analyzerProperties)
-    {
-        var typeKey = analyzerProperties.FirstOrDefault(x => x.Key.Equals("type", StringComparison.OrdinalIgnoreCase)).Key;
-
-        if (typeKey is not null)
-        {
-            analyzerProperties.Remove(typeKey);
-        }
-    }
-
     public async Task<string> GetIndexMappings(string indexName)
     {
         IndexName indexFullName = GetFullIndexName(indexName);
@@ -399,12 +356,14 @@ public sealed class ElasticIndexManager
     /// </summary>
     public async Task SetLastTaskId(string indexName, long lastTaskId)
     {
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+
         var IndexingState = new FluentDictionary<string, object>()
         {
             { _lastTaskId, lastTaskId },
         };
 
-        var putMappingRequest = new PutMappingRequest(GetFullIndexName(indexName))
+        var putMappingRequest = new PutMappingRequest(GetFullIndexNameInternal(indexName))
         {
             Meta = IndexingState
         };
@@ -418,6 +377,8 @@ public sealed class ElasticIndexManager
     /// </summary>
     public async Task<long> GetLastTaskId(string indexName)
     {
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+
         var mappings = await GetIndexMappings(indexName);
 
         var jsonDocument = JsonDocument.Parse(mappings);
@@ -428,30 +389,31 @@ public sealed class ElasticIndexManager
         return longValue;
     }
 
+    /// <summary>
+    /// Deletes documents from the index using the specified contentItemIds in a single request.
+    /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/docs-delete-by-query.html"/>.
+    /// </summary>
     public async Task<bool> DeleteDocumentsAsync(string indexName, IEnumerable<string> contentItemIds)
     {
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentNullException.ThrowIfNull(contentItemIds);
+
         if (contentItemIds.Any())
         {
             IndexName fullName = GetFullIndexName(indexName);
 
-            // Create a new BulkRequest for the specified index
-            var bulkRequest = new BulkRequest(fullName)
-            {
-                Operations = new List<IBulkOperation>(),
-            };
-
-            foreach (var id in contentItemIds)
-            {
-                bulkRequest.Operations.Add(new BulkDeleteOperation<Dictionary<string, object>>(new Dictionary<string, object>()
-                {
-                    { IndexingConstants.ContentItemIdKey, id },
-                })
-                {
-                    Index = fullName,
-                });
-            }
-
-            var response = await _elasticClient.BulkAsync(bulkRequest);
+            var response = await _elasticClient.DeleteByQueryAsync<Dictionary<string, object>>(fullName, descriptor => descriptor
+                .Query(q => q
+                    .Bool(b => b
+                        .Filter(f => f
+                            .Terms(t => t
+                                .Field(IndexingConstants.ContentItemIdKey)
+                                .Term(new TermsQueryField(contentItemIds.Select(id => FieldValue.String(id)).ToArray()))
+                            )
+                        )
+                    )
+                )
+            );
 
             return response.IsValidResponse;
         }
@@ -460,16 +422,17 @@ public sealed class ElasticIndexManager
     }
 
     /// <summary>
-    /// Deletes all documents in an index in one request.
+    /// Deletes all documents from the index in a single request.
     /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/master/docs-delete-by-query.html"/>.
     /// </summary>
     public async Task<bool> DeleteAllDocumentsAsync(string indexName)
     {
         IndexName fullName = GetFullIndexName(indexName);
 
-        var response = await _elasticClient.DeleteByQueryAsync<Dictionary<string, object>>(del => del
-            .Indices(fullName)
-            .Query(q => q.MatchAll(new MatchAllQuery()))
+        var response = await _elasticClient.DeleteByQueryAsync<Dictionary<string, object>>(fullName, descriptor => descriptor
+            .Query(q => q
+                .MatchAll(new MatchAllQuery())
+             )
         );
 
         return response.IsValidResponse;
@@ -497,7 +460,7 @@ public sealed class ElasticIndexManager
             return false;
         }
 
-        var existResponse = await _elasticClient.Indices.ExistsAsync(GetFullIndexName(indexName));
+        var existResponse = await _elasticClient.Indices.ExistsAsync(GetFullIndexNameInternal(indexName));
 
         return existResponse.Exists;
     }
@@ -508,6 +471,8 @@ public sealed class ElasticIndexManager
     /// </summary>
     public static string ToSafeIndexName(string indexName)
     {
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+
         indexName = indexName.ToLowerInvariant();
 
         if (indexName[0] == '-' || indexName[0] == '_' || indexName[0] == '+' || indexName[0] == '.')
@@ -522,21 +487,16 @@ public sealed class ElasticIndexManager
 
     public Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
     {
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentNullException.ThrowIfNull(indexDocuments);
+
         if (indexDocuments == null || !indexDocuments.Any())
         {
             return Task.CompletedTask;
         }
 
-        var documents = new List<Dictionary<string, object>>();
-
-        foreach (var indexDocument in indexDocuments)
-        {
-            documents.Add(CreateElasticDocument(indexDocument));
-        }
-
-        return _elasticClient.BulkAsync(b => b
-            .Index(GetFullIndexName(indexName))
-            .IndexMany(documents)
+        return _elasticClient.BulkAsync(GetFullIndexNameInternal(indexName), descriptor => descriptor
+            .IndexMany(indexDocuments.Select(CreateElasticDocument))
             .Refresh(Refresh.True)
         );
     }
@@ -615,6 +575,7 @@ public sealed class ElasticIndexManager
     public async Task SearchAsync(string indexName, Func<ElasticsearchClient, Task> elasticClient)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentNullException.ThrowIfNull(elasticClient);
 
         if (await ExistsAsync(indexName))
         {
@@ -703,8 +664,42 @@ public sealed class ElasticIndexManager
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
 
-        return GetIndexPrefix() + _separator + indexName;
+        return GetFullIndexNameInternal(indexName);
     }
+
+    private static IAnalyzer GetAnalyzer(JsonObject analyzerProperties)
+    {
+        IAnalyzer analyzer = null;
+
+        if (analyzerProperties.TryGetPropertyValue("type", out var typeObject)
+            && _analyzerGetter.TryGetValue(typeObject.ToString(), out var analyzerType))
+        {
+            RemoveTypeNode(analyzerProperties);
+
+            analyzer = analyzerProperties.ToObject(analyzerType) as IAnalyzer;
+        }
+
+        if (analyzer == null)
+        {
+            if (_analyzerGetter.TryGetValue(ElasticsearchConstants.DefaultAnalyzer, out analyzerType))
+            {
+                RemoveTypeNode(analyzerProperties);
+
+                analyzer = analyzerProperties.ToObject(analyzerType) as IAnalyzer;
+            }
+            else
+            {
+                RemoveTypeNode(analyzerProperties);
+
+                analyzer = analyzerProperties.ToObject(_analyzerGetter.First().Value) as IAnalyzer;
+            }
+        }
+
+        return analyzer;
+    }
+
+    private string GetFullIndexNameInternal(string indexName)
+        => GetIndexPrefix() + _separator + indexName;
 
     private static void AddValue(Dictionary<string, object> entries, string key, object value)
     {
@@ -750,5 +745,15 @@ public sealed class ElasticIndexManager
         }
 
         return _indexPrefix;
+    }
+
+    private static void RemoveTypeNode(JsonObject analyzerProperties)
+    {
+        var typeKey = analyzerProperties.FirstOrDefault(x => x.Key.Equals("type", StringComparison.OrdinalIgnoreCase)).Key;
+
+        if (typeKey is not null)
+        {
+            analyzerProperties.Remove(typeKey);
+        }
     }
 }
