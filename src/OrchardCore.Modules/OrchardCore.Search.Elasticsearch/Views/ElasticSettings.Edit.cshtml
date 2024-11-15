@@ -3,7 +3,7 @@
 @using OrchardCore.Search.Elasticsearch.Core.Models
 
 @model ElasticSettingsViewModel
-@inject IOptions<ElasticConnectionOptions> ElasticConnectionOptions
+@inject IOptions<ElasticsearchConnectionOptions> ElasticConnectionOptions
 
 @if (!ElasticConnectionOptions.Value.FileConfigurationExists())
 {

@@ -5,9 +5,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 /// <summary>
 /// Adds reset Elasticsearch index task to a <see cref="DeploymentPlanResult"/>.
 /// </summary>
-public class ElasticIndexResetDeploymentStep : DeploymentStep
+public sealed class ElasticsearchIndexResetDeploymentStep : DeploymentStep
 {
-    public ElasticIndexResetDeploymentStep()
+    public ElasticsearchIndexResetDeploymentStep()
     {
         Name = "ElasticIndexReset";
     }

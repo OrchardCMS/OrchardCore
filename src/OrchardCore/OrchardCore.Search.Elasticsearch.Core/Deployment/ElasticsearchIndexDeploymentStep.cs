@@ -5,9 +5,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 /// <summary>
 /// Adds layers to a <see cref="DeploymentPlanResult"/>.
 /// </summary>
-public class ElasticIndexDeploymentStep : DeploymentStep
+public sealed class ElasticsearchIndexDeploymentStep : DeploymentStep
 {
-    public ElasticIndexDeploymentStep()
+    public ElasticsearchIndexDeploymentStep()
     {
         Name = "ElasticIndexSettings";
     }

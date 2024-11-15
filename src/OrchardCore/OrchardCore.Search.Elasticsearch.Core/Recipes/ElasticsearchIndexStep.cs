@@ -9,14 +9,14 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
 /// <summary>
 /// This recipe step creates a Elasticsearch index.
 /// </summary>
-public sealed class ElasticIndexStep : NamedRecipeStepHandler
+public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
 {
-    private readonly ElasticIndexingService _elasticIndexingService;
-    private readonly ElasticIndexManager _elasticIndexManager;
+    private readonly ElasticsearchIndexingService _elasticIndexingService;
+    private readonly ElasticsearchIndexManager _elasticIndexManager;
 
-    public ElasticIndexStep(
-        ElasticIndexingService elasticIndexingService,
-        ElasticIndexManager elasticIndexManager
+    public ElasticsearchIndexStep(
+        ElasticsearchIndexingService elasticIndexingService,
+        ElasticsearchIndexManager elasticIndexManager
         )
         : base("ElasticIndexSettings")
     {

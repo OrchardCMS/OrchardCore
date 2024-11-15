@@ -13,20 +13,21 @@ namespace OrchardCore.Search.Elasticsearch;
 /// Provides a way to initialize Elasticsearch index on startup of the application
 /// if the index is not found on the Elasticsearch server.
 /// </summary>
-public class ElasticIndexInitializerService : ModularTenantEvents
+public class ElasticsearchIndexInitializerService : ModularTenantEvents
 {
     private readonly ShellSettings _shellSettings;
-    private readonly ElasticIndexManager _elasticIndexManager;
-    private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-    protected readonly IStringLocalizer S;
+    private readonly ElasticsearchIndexManager _elasticIndexManager;
+    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
     private readonly ILogger _logger;
 
-    public ElasticIndexInitializerService(
+    protected readonly IStringLocalizer S;
+
+    public ElasticsearchIndexInitializerService(
         ShellSettings shellSettings,
-        ElasticIndexManager elasticIndexManager,
-        ElasticIndexSettingsService elasticIndexSettingsService,
-        IStringLocalizer<ElasticIndexInitializerService> localizer,
-        ILogger<ElasticIndexInitializerService> logger)
+        ElasticsearchIndexManager elasticIndexManager,
+        ElasticsearchIndexSettingsService elasticIndexSettingsService,
+        IStringLocalizer<ElasticsearchIndexInitializerService> localizer,
+        ILogger<ElasticsearchIndexInitializerService> logger)
     {
         _shellSettings = shellSettings;
         _elasticIndexManager = elasticIndexManager;
@@ -44,9 +45,9 @@ public class ElasticIndexInitializerService : ModularTenantEvents
 
         await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-initialize", async scope =>
         {
-            var elasticIndexSettingsService = scope.ServiceProvider.GetRequiredService<ElasticIndexSettingsService>();
-            var elasticIndexingService = scope.ServiceProvider.GetRequiredService<ElasticIndexingService>();
-            var indexManager = scope.ServiceProvider.GetRequiredService<ElasticIndexManager>();
+            var elasticIndexSettingsService = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexSettingsService>();
+            var elasticIndexingService = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexingService>();
+            var indexManager = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexManager>();
 
             var elasticIndexSettings = await elasticIndexSettingsService.GetSettingsAsync();
             var createdIndexes = new List<string>();

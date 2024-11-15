@@ -37,18 +37,18 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IConfigureOptions<ElasticConnectionOptions>, ElasticConnectionOptionsConfigurations>();
+        services.AddTransient<IConfigureOptions<ElasticsearchConnectionOptions>, ElasticsearchConnectionOptionsConfigurations>();
 
         services.AddSingleton((sp) =>
         {
-            var options = sp.GetRequiredService<IOptions<ElasticConnectionOptions>>().Value;
+            var options = sp.GetRequiredService<IOptions<ElasticsearchConnectionOptions>>().Value;
 
-            return ElasticSearchClientFactory.Create(options);
+            return ElasticsearchClientFactory.Create(options);
         });
 
         services.Configure<ElasticsearchOptions>(options =>
         {
-            var configuration = _shellConfiguration.GetSection(ElasticConnectionOptionsConfigurations.ConfigSectionName);
+            var configuration = _shellConfiguration.GetSection(ElasticsearchConnectionOptionsConfigurations.ConfigSectionName);
 
             options.AddIndexPrefix(configuration);
             options.AddTokenFilters(configuration);
@@ -80,10 +80,10 @@ public sealed class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDeployment<ElasticIndexDeploymentSource, ElasticIndexDeploymentStep, ElasticIndexDeploymentStepDriver>();
+        services.AddDeployment<ElasticsearchIndexDeploymentSource, ElasticsearchIndexDeploymentStep, ElasticIndexDeploymentStepDriver>();
         services.AddDeployment<ElasticSettingsDeploymentSource, ElasticSettingsDeploymentStep, ElasticSettingsDeploymentStepDriver>();
-        services.AddDeployment<ElasticIndexRebuildDeploymentSource, ElasticIndexRebuildDeploymentStep, ElasticIndexRebuildDeploymentStepDriver>();
-        services.AddDeployment<ElasticIndexResetDeploymentSource, ElasticIndexResetDeploymentStep, ElasticIndexResetDeploymentStepDriver>();
+        services.AddDeployment<ElasticsearchIndexRebuildDeploymentSource, ElasticsearchIndexRebuildDeploymentStep, ElasticIndexRebuildDeploymentStepDriver>();
+        services.AddDeployment<ElasticsearchIndexResetDeploymentSource, ElasticsearchIndexResetDeploymentStep, ElasticIndexResetDeploymentStepDriver>();
     }
 }
 
@@ -101,7 +101,7 @@ public sealed class ElasticContentPickerStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IContentPickerResultProvider, ElasticContentPickerResultProvider>();
+        services.AddScoped<IContentPickerResultProvider, ElasticsearchContentPickerResultProvider>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldElasticEditorSettingsDriver>();
         services.AddShapeAttributes<ElasticContentPickerShapeProvider>();
     }

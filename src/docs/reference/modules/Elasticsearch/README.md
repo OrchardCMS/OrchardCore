@@ -209,7 +209,7 @@ Verbs: `POST` and `GET`
 
 ## Elasticsearch Queries
 
-The Elasticsearch module provides a management UI and APIs for querying Elasticsearch data using ElasticSearch Queries.
+The Elasticsearch module provides a management UI and APIs for querying Elasticsearch data using Elasticsearch Queries.
 See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html>
 
 ## Elasticsearch configuration

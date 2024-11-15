@@ -2,7 +2,7 @@ using OrchardCore.Queries;
 
 namespace OrchardCore.Search.Elasticsearch;
 
-public interface IElasticQueryService
+public interface IElasticsearchQueryService
 {
     /// <summary>
     /// <para>Provides a way to execute an OC <see cref="Query"/> in Elasticsearch.</para>
@@ -14,6 +14,6 @@ public interface IElasticQueryService
     /// <see href="https://www.elastic.co/guide/en/elasticsearch/reference/7.17/search-fields.html#source-filtering">The _source option</see>.
     /// </para>
     /// </summary>
-    /// <returns><see cref="ElasticTopDocs"/>.</returns>
-    Task<ElasticTopDocs> SearchAsync(string indexName, string query);
+    /// <returns><see cref="ElasticsearchTopDocs"/>.</returns>
+    Task<ElasticsearchTopDocs> SearchAsync(string indexName, string query);
 }

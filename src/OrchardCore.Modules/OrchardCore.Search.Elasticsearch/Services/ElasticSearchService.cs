@@ -18,21 +18,21 @@ public class ElasticsearchService : ISearchService
     public const string Key = "Elasticsearch";
 
     private readonly ISiteService _siteService;
-    private readonly ElasticIndexManager _elasticIndexManager;
-    private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+    private readonly ElasticsearchIndexManager _elasticIndexManager;
+    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
     private readonly ElasticsearchClient _elasticClient;
     private readonly JavaScriptEncoder _javaScriptEncoder;
-    private readonly ElasticConnectionOptions _elasticConnectionOptions;
+    private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly ILogger _logger;
 
     public ElasticsearchService(
         ISiteService siteService,
-        ElasticIndexManager elasticIndexManager,
-        ElasticIndexSettingsService elasticIndexSettingsService,
+        ElasticsearchIndexManager elasticIndexManager,
+        ElasticsearchIndexSettingsService elasticIndexSettingsService,
         ElasticsearchClient elasticClient,
         JavaScriptEncoder javaScriptEncoder,
-        IOptions<ElasticConnectionOptions> elasticConnectionOptions,
+        IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
         ILiquidTemplateManager liquidTemplateManager,
         ILogger<ElasticsearchService> logger
         )
@@ -123,7 +123,7 @@ public class ElasticsearchService : ISearchService
                 Query = term
             };
 
-            var queryService = new ElasticSearchQueryService(_elasticIndexManager);
+            var queryService = new ElasticsearchQueryService(_elasticIndexManager);
             result.ContentItemIds = await queryService.ExecuteQueryAsync(index, query, null, start, pageSize);
 
             result.Success = true;

@@ -5,17 +5,17 @@ using OrchardCore.Search.Elasticsearch.Core.Services;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 
-public class ElasticIndexDeploymentSource
-    : DeploymentSourceBase<ElasticIndexDeploymentStep>
+public sealed class ElasticsearchIndexDeploymentSource
+    : DeploymentSourceBase<ElasticsearchIndexDeploymentStep>
 {
-    private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
 
-    public ElasticIndexDeploymentSource(ElasticIndexSettingsService elasticIndexSettingsService)
+    public ElasticsearchIndexDeploymentSource(ElasticsearchIndexSettingsService elasticIndexSettingsService)
     {
         _elasticIndexSettingsService = elasticIndexSettingsService;
     }
 
-    protected override async Task ProcessAsync(ElasticIndexDeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(ElasticsearchIndexDeploymentStep step, DeploymentPlanResult result)
     {
         var indexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
 

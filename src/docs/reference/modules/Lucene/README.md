@@ -84,7 +84,7 @@ If you are running on Azure App Services or if you are using Elasticsearch, then
 
 ## Lucene Queries
 
-The Lucene module provides a management UI and APIs for querying Lucene data using ElasticSearch Queries.
+The Lucene module provides a management UI and APIs for querying Lucene data using Elasticsearch Queries.
 See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html>
 
 ## Recipe step
@@ -318,7 +318,7 @@ So you can use:
 - `terms`
 - `wildcard`
 
-See ElasticSearch documentation for more details:
+See Elasticsearch documentation for more details:
 <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html>
 
 ## Automatic mapping

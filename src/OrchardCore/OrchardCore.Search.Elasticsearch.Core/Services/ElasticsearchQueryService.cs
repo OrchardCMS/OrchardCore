@@ -4,16 +4,16 @@ using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
-public class ElasticQueryService : IElasticQueryService
+public class ElasticsearchQueryService : IElasticsearchQueryService
 {
     private readonly ElasticsearchClient _elasticClient;
-    private readonly ElasticIndexManager _elasticIndexManager;
+    private readonly ElasticsearchIndexManager _elasticIndexManager;
     private readonly ILogger _logger;
 
-    public ElasticQueryService(
+    public ElasticsearchQueryService(
         ElasticsearchClient elasticClient,
-        ElasticIndexManager elasticIndexManager,
-        ILogger<ElasticQueryService> logger
+        ElasticsearchIndexManager elasticIndexManager,
+        ILogger<ElasticsearchQueryService> logger
         )
     {
         _elasticClient = elasticClient;
@@ -21,11 +21,11 @@ public class ElasticQueryService : IElasticQueryService
         _logger = logger;
     }
 
-    public async Task<ElasticTopDocs> SearchAsync(string indexName, string query)
+    public async Task<ElasticsearchTopDocs> SearchAsync(string indexName, string query)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
 
-        var elasticTopDocs = new ElasticTopDocs();
+        var elasticTopDocs = new ElasticsearchTopDocs();
 
         if (_elasticClient == null)
         {

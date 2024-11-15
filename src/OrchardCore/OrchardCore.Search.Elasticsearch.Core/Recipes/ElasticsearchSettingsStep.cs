@@ -7,11 +7,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
 /// <summary>
 /// This recipe step is used to sync Elasticsearch and Lucene settings.
 /// </summary>
-public sealed class ElasticSettingsStep : NamedRecipeStepHandler
+public sealed class ElasticsearchSettingsStep : NamedRecipeStepHandler
 {
-    private readonly ElasticIndexingService _elasticIndexingService;
+    private readonly ElasticsearchIndexingService _elasticIndexingService;
 
-    public ElasticSettingsStep(ElasticIndexingService elasticIndexingService)
+    public ElasticsearchSettingsStep(ElasticsearchIndexingService elasticIndexingService)
         : base("Settings")
     {
         _elasticIndexingService = elasticIndexingService;

@@ -14,18 +14,18 @@ using YesSql.Services;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
-public sealed class ElasticQuerySource : IQuerySource
+public sealed class ElasticsearchQuerySource : IQuerySource
 {
     public const string SourceName = "Elasticsearch";
 
-    private readonly IElasticQueryService _queryService;
+    private readonly IElasticsearchQueryService _queryService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly ISession _session;
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly TemplateOptions _templateOptions;
 
-    public ElasticQuerySource(
-        IElasticQueryService queryService,
+    public ElasticsearchQuerySource(
+        IElasticsearchQueryService queryService,
         ILiquidTemplateManager liquidTemplateManager,
         ISession session,
         JavaScriptEncoder javaScriptEncoder,
@@ -44,7 +44,7 @@ public sealed class ElasticQuerySource : IQuerySource
     public async Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
     {
         var metadata = query.As<ElasticsearchQueryMetadata>();
-        var elasticQueryResults = new ElasticQueryResults();
+        var elasticQueryResults = new ElasticsearchQueryResults();
 
         var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(metadata?.Template, _javaScriptEncoder, parameters.Select(x => new KeyValuePair<string, FluidValue>(x.Key, FluidValue.Create(x.Value, _templateOptions))));
         var docs = await _queryService.SearchAsync(metadata?.Index, tokenizedContent);

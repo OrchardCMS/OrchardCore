@@ -1,6 +1,6 @@
 namespace OrchardCore.Search.Elasticsearch.Core.Models;
 
-public class ElasticConnectionOptions
+public class ElasticsearchConnectionOptions
 {
     /// <summary>
     /// The server url.
@@ -15,7 +15,7 @@ public class ElasticConnectionOptions
     /// <summary>
     /// The server connection type.
     /// </summary>
-    public string ConnectionType { get; set; }
+    public ElasticsearchConnectionType ConnectionType { get; set; }
 
     /// <summary>
     /// The Elasticsearch cloud service CloudId.

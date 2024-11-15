@@ -21,10 +21,10 @@ public sealed class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSett
 {
     private static readonly char[] _separator = [',', ' '];
 
-    private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly ElasticConnectionOptions _elasticConnectionOptions;
+    private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
     private readonly ElasticsearchClient _elasticClient;
 
     internal readonly IStringLocalizer S;
@@ -33,10 +33,10 @@ public sealed class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSett
         => SearchConstants.SearchSettingsGroupId;
 
     public ElasticSettingsDisplayDriver(
-        ElasticIndexSettingsService elasticIndexSettingsService,
+        ElasticsearchIndexSettingsService elasticIndexSettingsService,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IOptions<ElasticConnectionOptions> elasticConnectionOptions,
+        IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
         ElasticsearchClient elasticClient,
         IStringLocalizer<ElasticSettingsDisplayDriver> stringLocalizer
         )

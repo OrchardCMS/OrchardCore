@@ -12,13 +12,13 @@ namespace OrchardCore.Search.Elasticsearch.Drivers;
 
 public sealed class ElasticQueryDisplayDriver : DisplayDriver<Query>
 {
-    private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
 
     internal readonly IStringLocalizer S;
 
     public ElasticQueryDisplayDriver(
         IStringLocalizer<ElasticQueryDisplayDriver> stringLocalizer,
-        ElasticIndexSettingsService elasticIndexSettingsService)
+        ElasticsearchIndexSettingsService elasticIndexSettingsService)
     {
         _elasticIndexSettingsService = elasticIndexSettingsService;
         S = stringLocalizer;
@@ -26,7 +26,7 @@ public sealed class ElasticQueryDisplayDriver : DisplayDriver<Query>
 
     public override IDisplayResult Display(Query query, BuildDisplayContext context)
     {
-        if (query.Source != ElasticQuerySource.SourceName)
+        if (query.Source != ElasticsearchQuerySource.SourceName)
         {
             return null;
         }
@@ -39,7 +39,7 @@ public sealed class ElasticQueryDisplayDriver : DisplayDriver<Query>
 
     public override IDisplayResult Edit(Query query, BuildEditorContext context)
     {
-        if (query.Source != ElasticQuerySource.SourceName)
+        if (query.Source != ElasticsearchQuerySource.SourceName)
         {
             return null;
         }
@@ -63,7 +63,7 @@ public sealed class ElasticQueryDisplayDriver : DisplayDriver<Query>
 
     public override async Task<IDisplayResult> UpdateAsync(Query query, UpdateEditorContext context)
     {
-        if (query.Source != ElasticQuerySource.SourceName)
+        if (query.Source != ElasticsearchQuerySource.SourceName)
         {
             return null;
         }

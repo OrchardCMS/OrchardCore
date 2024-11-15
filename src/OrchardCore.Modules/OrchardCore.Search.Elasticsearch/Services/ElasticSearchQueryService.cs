@@ -4,11 +4,11 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
-internal class ElasticSearchQueryService
+internal class ElasticsearchQueryService
 {
-    private readonly ElasticIndexManager _elasticIndexManager;
+    private readonly ElasticsearchIndexManager _elasticIndexManager;
 
-    public ElasticSearchQueryService(ElasticIndexManager elasticIndexManager)
+    public ElasticsearchQueryService(ElasticsearchIndexManager elasticIndexManager)
     {
         _elasticIndexManager = elasticIndexManager;
     }

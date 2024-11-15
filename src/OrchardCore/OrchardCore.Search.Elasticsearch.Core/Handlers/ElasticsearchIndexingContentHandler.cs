@@ -13,10 +13,16 @@ using OrchardCore.Search.Elasticsearch.Core.Services;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Handlers;
 
-public class ElasticIndexingContentHandler(IHttpContextAccessor httpContextAccessor) : ContentHandlerBase
+public sealed class ElasticsearchIndexingContentHandler : ContentHandlerBase
 {
     private readonly List<ContentContextBase> _contexts = [];
-    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public ElasticsearchIndexingContentHandler(IHttpContextAccessor httpContextAccessor)
+    {
+        _httpContextAccessor = httpContextAccessor;
+    }
 
     public override Task PublishedAsync(PublishContentContext context)
         => AddContextAsync(context);
@@ -65,9 +71,9 @@ public class ElasticIndexingContentHandler(IHttpContextAccessor httpContextAcces
         var services = scope.ServiceProvider;
         var contentManager = services.GetRequiredService<IContentManager>();
         var contentItemIndexHandlers = services.GetServices<IContentItemIndexHandler>();
-        var elasticIndexManager = services.GetRequiredService<ElasticIndexManager>();
-        var elasticIndexSettingsService = services.GetRequiredService<ElasticIndexSettingsService>();
-        var logger = services.GetRequiredService<ILogger<ElasticIndexingContentHandler>>();
+        var elasticIndexManager = services.GetRequiredService<ElasticsearchIndexManager>();
+        var elasticIndexSettingsService = services.GetRequiredService<ElasticsearchIndexSettingsService>();
+        var logger = services.GetRequiredService<ILogger<ElasticsearchIndexingContentHandler>>();
 
         // Multiple items may have been updated in the same scope, e.g through a recipe.
         var contextsGroupById = contexts.GroupBy(c => c.ContentItem.ContentItemId, c => c);
@@ -109,7 +115,7 @@ public class ElasticIndexingContentHandler(IHttpContextAccessor httpContextAcces
                     }
                     else
                     {
-                        var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, [contentItem.ContentType], new ElasticContentIndexSettings());
+                        var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, [contentItem.ContentType], new ElasticsearchContentIndexSettings());
                         await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
 
                         await elasticIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, [contentItem.ContentItemId]);

@@ -5,9 +5,9 @@ namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 /// <summary>
 /// Adds rebuild Elasticsearch index task to a <see cref="DeploymentPlanResult"/>.
 /// </summary>
-public class ElasticIndexRebuildDeploymentStep : DeploymentStep
+public sealed class ElasticsearchIndexRebuildDeploymentStep : DeploymentStep
 {
-    public ElasticIndexRebuildDeploymentStep()
+    public ElasticsearchIndexRebuildDeploymentStep()
     {
         Name = "ElasticIndexRebuild";
     }

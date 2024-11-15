@@ -16,19 +16,19 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddElasticServices(this IServiceCollection services)
     {
-        services.AddSingleton<ElasticIndexSettingsService>();
-        services.AddSingleton<ElasticIndexManager>();
-        services.AddScoped<ElasticIndexingService>();
-        services.AddScoped<IModularTenantEvents, ElasticIndexInitializerService>();
-        services.AddScoped<IElasticQueryService, ElasticQueryService>();
-        services.AddScoped<IContentHandler, ElasticIndexingContentHandler>();
+        services.AddSingleton<ElasticsearchIndexSettingsService>();
+        services.AddSingleton<ElasticsearchIndexManager>();
+        services.AddScoped<ElasticsearchIndexingService>();
+        services.AddScoped<IModularTenantEvents, ElasticsearchIndexInitializerService>();
+        services.AddScoped<IElasticsearchQueryService, ElasticsearchQueryService>();
+        services.AddScoped<IContentHandler, ElasticsearchIndexingContentHandler>();
 
-        services.AddQuerySource<ElasticQuerySource>(ElasticQuerySource.SourceName);
+        services.AddQuerySource<ElasticsearchQuerySource>(ElasticsearchQuerySource.SourceName);
 
-        services.AddRecipeExecutionStep<ElasticIndexStep>();
-        services.AddRecipeExecutionStep<ElasticSettingsStep>();
-        services.AddRecipeExecutionStep<ElasticIndexRebuildStep>();
-        services.AddRecipeExecutionStep<ElasticIndexResetStep>();
+        services.AddRecipeExecutionStep<ElasticsearchIndexStep>();
+        services.AddRecipeExecutionStep<ElasticsearchSettingsStep>();
+        services.AddRecipeExecutionStep<ElasticsearchIndexRebuildStep>();
+        services.AddRecipeExecutionStep<ElasticsearchIndexResetStep>();
 
         return services;
     }

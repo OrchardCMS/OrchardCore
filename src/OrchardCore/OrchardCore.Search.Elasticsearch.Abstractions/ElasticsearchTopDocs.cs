@@ -1,6 +1,6 @@
 namespace OrchardCore.Search.Elasticsearch;
 
-public class ElasticTopDocs
+public class ElasticsearchTopDocs
 {
     public List<Dictionary<string, object>> TopDocs { get; set; }
     public List<Dictionary<string, object>> Fields { get; set; }

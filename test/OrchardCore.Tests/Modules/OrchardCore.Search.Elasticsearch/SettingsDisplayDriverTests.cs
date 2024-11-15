@@ -79,7 +79,7 @@ public partial class SettingsDisplayDriverTests
 
             // Act
             var contentDefinition = DisplayDriverTestHelper.GetContentPartDefinition<ContentPickerField>(field => field.WithSettings(settings));
-            var elasticService = new ElasticIndexSettingsService();
+            var elasticService = new ElasticsearchIndexSettingsService();
             var shapeResult = await DisplayDriverTestHelper.GetShapeResultAsync(_shapeFactory, contentDefinition, new ContentPickerFieldElasticEditorSettingsDriver(elasticService));
             var shape = (ContentPickerFieldElasticEditorSettings)shapeResult.Shape;
 

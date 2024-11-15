@@ -5,13 +5,14 @@ using OrchardCore.Search.Elasticsearch.Core.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
-public class ElasticIndexSettingsService
+public class ElasticsearchIndexSettingsService
 {
     /// <summary>
     /// Loads the index settings document from the store for updating and that should not be cached.
     /// </summary>
 #pragma warning disable CA1822 // Mark members as static
-    public Task<ElasticIndexSettingsDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
+    public Task<ElasticIndexSettingsDocument> LoadDocumentAsync()
+        => DocumentManager.GetOrCreateMutableAsync();
 #pragma warning restore CA1822 // Mark members as static
 
     /// <summary>

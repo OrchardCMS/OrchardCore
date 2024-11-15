@@ -23,7 +23,7 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services;
 /// <summary>
 /// Provides methods to manage Elasticsearch indices.
 /// </summary>
-public sealed class ElasticIndexManager
+public sealed class ElasticsearchIndexManager
 {
     private const string _separator = "_";
 
@@ -118,12 +118,12 @@ public sealed class ElasticIndexManager
 
     private string _indexPrefix;
 
-    public ElasticIndexManager(
+    public ElasticsearchIndexManager(
         ElasticsearchClient elasticClient,
         ShellSettings shellSettings,
         IOptions<ElasticsearchOptions> elasticsearchOptions,
         IClock clock,
-        ILogger<ElasticIndexManager> logger
+        ILogger<ElasticsearchIndexManager> logger
         )
     {
         _elasticClient = elasticClient;
@@ -509,13 +509,13 @@ public sealed class ElasticIndexManager
     /// <param name="sort"></param>
     /// <param name="from"></param>
     /// <param name="size"></param>
-    /// <returns><see cref="ElasticTopDocs"/>.</returns>
-    public async Task<ElasticTopDocs> SearchAsync(string indexName, Query query, List<SortOptions> sort, int from, int size)
+    /// <returns><see cref="ElasticsearchTopDocs"/>.</returns>
+    public async Task<ElasticsearchTopDocs> SearchAsync(string indexName, Query query, List<SortOptions> sort, int from, int size)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
         ArgumentNullException.ThrowIfNull(query);
 
-        var elasticTopDocs = new ElasticTopDocs()
+        var elasticTopDocs = new ElasticsearchTopDocs()
         {
             TopDocs = [],
         };

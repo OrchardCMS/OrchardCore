@@ -11,24 +11,24 @@ namespace OrchardCore.Search.Elasticsearch.Core.Recipes;
 /// <summary>
 /// This recipe step resets an Elasticsearch index.
 /// </summary>
-public sealed class ElasticIndexResetStep : NamedRecipeStepHandler
+public sealed class ElasticsearchIndexResetStep : NamedRecipeStepHandler
 {
-    public ElasticIndexResetStep()
+    public ElasticsearchIndexResetStep()
         : base("elastic-index-reset")
     {
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        var model = context.Step.ToObject<ElasticIndexResetDeploymentStep>();
+        var model = context.Step.ToObject<ElasticsearchIndexResetDeploymentStep>();
 
         if (model != null && (model.IncludeAll || model.Indices.Length > 0))
         {
             await HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("elastic-index-reset", async scope =>
             {
-                var elasticIndexingService = scope.ServiceProvider.GetService<ElasticIndexingService>();
-                var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticIndexSettingsService>();
-                var elasticIndexManager = scope.ServiceProvider.GetRequiredService<ElasticIndexManager>();
+                var elasticIndexingService = scope.ServiceProvider.GetService<ElasticsearchIndexingService>();
+                var elasticIndexSettingsService = scope.ServiceProvider.GetService<ElasticsearchIndexSettingsService>();
+                var elasticIndexManager = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexManager>();
 
                 var indexNames = model.IncludeAll
                 ? (await elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName).ToArray()

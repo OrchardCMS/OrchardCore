@@ -41,16 +41,16 @@ public sealed class AdminController : Controller
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IElasticQueryService _queryService;
-    private readonly ElasticIndexManager _elasticIndexManager;
-    private readonly ElasticIndexingService _elasticIndexingService;
-    private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+    private readonly IElasticsearchQueryService _queryService;
+    private readonly ElasticsearchIndexManager _elasticIndexManager;
+    private readonly ElasticsearchIndexingService _elasticIndexingService;
+    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly ElasticsearchOptions _elasticSearchOptions;
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
     private readonly IOptions<TemplateOptions> _templateOptions;
-    private readonly ElasticConnectionOptions _elasticConnectionOptions;
+    private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
     private readonly IShapeFactory _shapeFactory;
     private readonly ILocalizationService _localizationService;
 
@@ -63,16 +63,16 @@ public sealed class AdminController : Controller
         ILiquidTemplateManager liquidTemplateManager,
         IContentDefinitionManager contentDefinitionManager,
         IAuthorizationService authorizationService,
-        IElasticQueryService queryService,
-        ElasticIndexManager elasticIndexManager,
-        ElasticIndexingService elasticIndexingService,
-        ElasticIndexSettingsService elasticIndexSettingsService,
+        IElasticsearchQueryService queryService,
+        ElasticsearchIndexManager elasticIndexManager,
+        ElasticsearchIndexingService elasticIndexingService,
+        ElasticsearchIndexSettingsService elasticIndexSettingsService,
         JavaScriptEncoder javaScriptEncoder,
         IOptions<ElasticsearchOptions> elasticSearchOptions,
         INotifier notifier,
         ILogger<AdminController> logger,
         IOptions<TemplateOptions> templateOptions,
-        IOptions<ElasticConnectionOptions> elasticConnectionOptions,
+        IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
         IShapeFactory shapeFactory,
         ILocalizationService localizationService,
         IStringLocalizer<AdminController> stringLocalizer,
@@ -618,7 +618,7 @@ public sealed class AdminController : Controller
         {
             ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["The index name is required."]);
         }
-        else if (ElasticIndexManager.ToSafeIndexName(model.IndexName) != model.IndexName)
+        else if (ElasticsearchIndexManager.ToSafeIndexName(model.IndexName) != model.IndexName)
         {
             ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["The index name contains forbidden characters."]);
         }
@@ -644,7 +644,7 @@ public sealed class AdminController : Controller
     private static Task ProcessContentItemsAsync(string indexName)
         => HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-elasticsearch-" + indexName, async (scope) =>
         {
-            var indexingService = scope.ServiceProvider.GetRequiredService<ElasticIndexingService>();
+            var indexingService = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexingService>();
             await indexingService.ProcessContentItemsAsync(indexName);
         });
 }

@@ -38,7 +38,7 @@ public class ElasticQueryFieldTypeProvider : ISchemaBuilder
     {
         var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
 
-        var queries = await queryManager.ListQueriesBySourceAsync(ElasticQuerySource.SourceName);
+        var queries = await queryManager.ListQueriesBySourceAsync(ElasticsearchQuerySource.SourceName);
 
         foreach (var query in queries)
         {

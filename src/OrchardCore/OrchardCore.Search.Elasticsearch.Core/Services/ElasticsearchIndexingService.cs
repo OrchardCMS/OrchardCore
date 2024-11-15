@@ -18,16 +18,16 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services;
 /// <summary>
 /// This class provides services to update all the Elasticsearch indices.
 /// </summary>
-public class ElasticIndexingService
+public class ElasticsearchIndexingService
 {
     private const int BatchSize = 100;
 
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
-    private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
-    private readonly ElasticIndexManager _indexManager;
+    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
+    private readonly ElasticsearchIndexManager _indexManager;
     private readonly IIndexingTaskManager _indexingTaskManager;
-    private readonly ElasticConnectionOptions _elasticConnectionOptions;
+    private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
     private readonly ISiteService _siteService;
     private readonly IContentManager _contentManager;
     private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
@@ -35,19 +35,19 @@ public class ElasticIndexingService
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly ILogger _logger;
 
-    public ElasticIndexingService(
+    public ElasticsearchIndexingService(
         IShellHost shellHost,
         ShellSettings shellSettings,
-        ElasticIndexSettingsService elasticIndexSettingsService,
-        ElasticIndexManager indexManager,
+        ElasticsearchIndexSettingsService elasticIndexSettingsService,
+        ElasticsearchIndexManager indexManager,
         IIndexingTaskManager indexingTaskManager,
-        IOptions<ElasticConnectionOptions> elasticConnectionOptions,
+        IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
         ISiteService siteService,
         IContentManager contentManager,
         IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
         IStore store,
         IContentDefinitionManager contentDefinitionManager,
-        ILogger<ElasticIndexingService> logger)
+        ILogger<ElasticsearchIndexingService> logger)
     {
         _shellHost = shellHost;
         _shellSettings = shellSettings;
@@ -152,13 +152,13 @@ public class ElasticIndexingService
 
                 if (allPublished != null && allPublished.TryGetValue(task.ContentItemId, out var publishedContentItem))
                 {
-                    publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, publishedContentItem.ContentItemVersionId), publishedContentItem, [publishedContentItem.ContentType], new ElasticContentIndexSettings());
+                    publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, publishedContentItem.ContentItemVersionId), publishedContentItem, [publishedContentItem.ContentType], new ElasticsearchContentIndexSettings());
                     await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), _logger);
                 }
 
                 if (allLatest != null && allLatest.TryGetValue(task.ContentItemId, out var latestContentItem))
                 {
-                    latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, latestContentItem.ContentItemVersionId), latestContentItem, [latestContentItem.ContentType], new ElasticContentIndexSettings());
+                    latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, latestContentItem.ContentItemVersionId), latestContentItem, [latestContentItem.ContentType], new ElasticsearchContentIndexSettings());
                     await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), _logger);
                 }
 
@@ -297,7 +297,7 @@ public class ElasticIndexingService
 
                         if (included is not null && (bool)included)
                         {
-                            partDefinition.Settings[nameof(ElasticContentIndexSettings)] = JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>());
+                            partDefinition.Settings[nameof(ElasticsearchContentIndexSettings)] = JNode.FromObject(existingPartSettings.ToObject<ElasticsearchContentIndexSettings>());
                         }
                     }
                 });
@@ -316,7 +316,7 @@ public class ElasticIndexingService
 
                     if (included != null && (bool)included)
                     {
-                        partDefinition.Settings[nameof(ElasticContentIndexSettings)] = JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>());
+                        partDefinition.Settings[nameof(ElasticsearchContentIndexSettings)] = JNode.FromObject(existingPartSettings.ToObject<ElasticsearchContentIndexSettings>());
                     }
                 }
 
@@ -328,7 +328,7 @@ public class ElasticIndexingService
 
                         if (included != null && (bool)included)
                         {
-                            fieldDefinition.Settings[nameof(ElasticContentIndexSettings)] = JNode.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>());
+                            fieldDefinition.Settings[nameof(ElasticsearchContentIndexSettings)] = JNode.FromObject(existingFieldSettings.ToObject<ElasticsearchContentIndexSettings>());
                         }
                     }
                 }

@@ -3,10 +3,10 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 
-public class ElasticIndexRebuildDeploymentSource
-    : DeploymentSourceBase<ElasticIndexRebuildDeploymentStep>
+public sealed class ElasticsearchIndexRebuildDeploymentSource
+    : DeploymentSourceBase<ElasticsearchIndexRebuildDeploymentStep>
 {
-    protected override Task ProcessAsync(ElasticIndexRebuildDeploymentStep step, DeploymentPlanResult result)
+    protected override Task ProcessAsync(ElasticsearchIndexRebuildDeploymentStep step, DeploymentPlanResult result)
     {
         var indicesToRebuild = step.IncludeAll ? [] : step.Indices;
 

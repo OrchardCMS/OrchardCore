@@ -9,9 +9,9 @@ public sealed class Permissions : IPermissionProvider
 
     public static readonly Permission QueryElasticApi = new("QueryElasticsearchApi", "Query Elasticsearch Api", [ManageElasticIndexes]);
 
-    private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
 
-    public Permissions(ElasticIndexSettingsService elasticIndexSettingsService)
+    public Permissions(ElasticsearchIndexSettingsService elasticIndexSettingsService)
     {
         _elasticIndexSettingsService = elasticIndexSettingsService;
     }

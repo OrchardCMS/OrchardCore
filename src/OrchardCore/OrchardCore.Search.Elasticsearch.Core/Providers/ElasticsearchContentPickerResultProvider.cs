@@ -2,20 +2,19 @@ using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Providers;
 
-public class ElasticContentPickerResultProvider : IContentPickerResultProvider
+public class ElasticsearchContentPickerResultProvider : IContentPickerResultProvider
 {
-    private readonly ElasticIndexManager _elasticIndexManager;
-    private readonly ElasticConnectionOptions _elasticConnectionOptions;
+    private readonly ElasticsearchIndexManager _elasticIndexManager;
+    private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
 
-    public ElasticContentPickerResultProvider(
-        IOptions<ElasticConnectionOptions> elasticConnectionOptions,
-        ElasticIndexManager elasticIndexManager)
+    public ElasticsearchContentPickerResultProvider(
+        IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
+        ElasticsearchIndexManager elasticIndexManager)
     {
         _elasticConnectionOptions = elasticConnectionOptions.Value;
         _elasticIndexManager = elasticIndexManager;
@@ -49,7 +48,7 @@ public class ElasticContentPickerResultProvider : IContentPickerResultProvider
         await _elasticIndexManager.SearchAsync(indexName, async elasticClient =>
         {
             SearchResponse<Dictionary<string, object>> searchResponse = null;
-            var elasticTopDocs = new ElasticTopDocs();
+            var elasticTopDocs = new ElasticsearchTopDocs();
 
             if (string.IsNullOrWhiteSpace(searchContext.Query))
             {
