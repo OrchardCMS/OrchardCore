@@ -1,7 +1,6 @@
 # Tutorials
 
 If you want to learn or improve your knowledge about Orchard Core, you can follow some tutorials.
-You can also [Ask Orchard Core Guru](https://gurubase.io/g/orchard-core) for help. It is Orchard Core focused AI to answer your questions.
 
 ## Lombiq
 
@@ -13,3 +12,7 @@ You can also [Ask Orchard Core Guru](https://gurubase.io/g/orchard-core) for hel
 
 !!! warning
     The Orchard Core Training Demo module assumes that you have a good understanding of basic Orchard Core concepts, and that you can get around the Orchard admin area. You should also be familiar with how to use Visual Studio and write C#, as well as the concepts of ASP.NET Core MVC.
+
+## Gurubase
+
+You can also ask the [Orchard Core Guru on Gurubase](https://gurubase.io/g/orchard-core) for help. It is Orchard Core-focused AI to answer your questions.
