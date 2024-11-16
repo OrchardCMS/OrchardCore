@@ -24,7 +24,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
 
     public async Task<IEnumerable<ContentPickerResult>> Search(ContentPickerSearchContext searchContext)
     {
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return [];
         }
@@ -50,6 +50,8 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
             SearchResponse<Dictionary<string, object>> searchResponse = null;
             var elasticTopDocs = new ElasticsearchTopDocs();
 
+            var valuesQuery = new TermsQueryField(searchContext.ContentTypes.Select(contentType => FieldValue.String(contentType)).ToArray());
+
             if (string.IsNullOrWhiteSpace(searchContext.Query))
             {
                 searchResponse = await elasticClient.SearchAsync<Dictionary<string, object>>(s => s
@@ -59,7 +61,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
                             .Filter(f => f
                                 .Terms(t => t
                                     .Field("Content.ContentItem.ContentType")
-                                    .Term(new TermsQueryField(searchContext.ContentTypes.Select(contentType => FieldValue.String(contentType)).ToArray()))
+                                    .Term(valuesQuery)
                                 )
                             )
                         )
@@ -75,7 +77,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
                             .Filter(f => f
                                 .Terms(t => t
                                     .Field("Content.ContentItem.ContentType")
-                                    .Term(new TermsQueryField(searchContext.ContentTypes.Select(contentType => FieldValue.String(contentType)).ToArray()))
+                                    .Term(valuesQuery)
                                 )
                             )
                             .Should(s => s
@@ -102,7 +104,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
                     {
                         ContentItemId = doc["ContentItemId"].ToString(),
                         DisplayText = doc["Content.ContentItem.DisplayText.keyword"].ToString(),
-                        HasPublished = doc["Content.ContentItem.Published"].ToString().Equals("true", StringComparison.OrdinalIgnoreCase)
+                        HasPublished = string.Equals("true", doc["Content.ContentItem.Published"].ToString(), StringComparison.OrdinalIgnoreCase)
                     });
                 }
             }

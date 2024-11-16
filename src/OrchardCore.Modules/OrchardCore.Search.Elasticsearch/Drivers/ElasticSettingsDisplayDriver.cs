@@ -64,17 +64,17 @@ public sealed class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSett
                 new(S["Custom Query"], ElasticSettings.CustomSearchType),
             ];
         }).Location("Content:2#Elasticsearch;10")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, PermissionProvider.ManageElasticIndexes))
         .OnGroup(SettingsGroupId);
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, ElasticSettings section, UpdateEditorContext context)
     {
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return null;
         }
 
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, PermissionProvider.ManageElasticIndexes))
         {
             return null;
         }

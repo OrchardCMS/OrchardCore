@@ -10,14 +10,14 @@ using OrchardCore.Search.Elasticsearch.ViewModels;
 
 namespace OrchardCore.Search.Elasticsearch.Drivers;
 
-public sealed class ElasticQueryDisplayDriver : DisplayDriver<Query>
+public sealed class ElasticsearchQueryDisplayDriver : DisplayDriver<Query>
 {
     private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
 
     internal readonly IStringLocalizer S;
 
-    public ElasticQueryDisplayDriver(
-        IStringLocalizer<ElasticQueryDisplayDriver> stringLocalizer,
+    public ElasticsearchQueryDisplayDriver(
+        IStringLocalizer<ElasticsearchQueryDisplayDriver> stringLocalizer,
         ElasticsearchIndexSettingsService elasticIndexSettingsService)
     {
         _elasticIndexSettingsService = elasticIndexSettingsService;

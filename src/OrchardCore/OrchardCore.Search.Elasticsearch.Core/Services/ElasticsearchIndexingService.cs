@@ -65,7 +65,7 @@ public class ElasticsearchIndexingService
 
     public async Task ProcessContentItemsAsync(params string[] indexNames)
     {
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return;
         }

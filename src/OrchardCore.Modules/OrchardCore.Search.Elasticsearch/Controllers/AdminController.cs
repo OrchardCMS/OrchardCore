@@ -49,10 +49,8 @@ public sealed class AdminController : Controller
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
     private readonly IOptions<TemplateOptions> _templateOptions;
-    private readonly ElasticsearchQueryService _elasticsearchQueryService;
+    private readonly ElasticsearchQueryService _elasticQueryService;
     private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
-    private readonly IShapeFactory _shapeFactory;
-    private readonly IServiceProvider _serviceProvider;
     private readonly ILocalizationService _localizationService;
 
     internal readonly IStringLocalizer S;
@@ -73,9 +71,7 @@ public sealed class AdminController : Controller
         ILogger<AdminController> logger,
         IOptions<TemplateOptions> templateOptions,
         IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
-        ElasticsearchQueryService elasticsearchQueryService,
-        IShapeFactory shapeFactory,
-        IServiceProvider serviceProvider,
+        ElasticsearchQueryService elasticQueryService,
         ILocalizationService localizationService,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
@@ -93,23 +89,24 @@ public sealed class AdminController : Controller
         _notifier = notifier;
         _logger = logger;
         _templateOptions = templateOptions;
-        _elasticsearchQueryService = elasticsearchQueryService;
+        _elasticQueryService = elasticQueryService;
         _elasticConnectionOptions = elasticConnectionOptions.Value;
-        _shapeFactory = shapeFactory;
-        _serviceProvider = serviceProvider;
         _localizationService = localizationService;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IShapeFactory shapeFactory)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, PermissionProvider.ManageElasticIndexes))
         {
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return NotConfigured();
         }
@@ -140,7 +137,7 @@ public sealed class AdminController : Controller
             routeData.Values.TryAdd(_optionsSearch, options.Search);
         }
 
-        var pagerShape = await _shapeFactory.PagerAsync(pager, totalIndexes, routeData);
+        var pagerShape = await shapeFactory.PagerAsync(pager, totalIndexes, routeData);
 
         var model = new AdminIndexViewModel
         {
@@ -156,7 +153,6 @@ public sealed class AdminController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-
         return View(model);
     }
 
@@ -165,7 +161,7 @@ public sealed class AdminController : Controller
     public IActionResult IndexFilterPOST(AdminIndexViewModel model)
         => RedirectToAction(nameof(Index), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     public async Task<IActionResult> Edit(string indexName = null)
@@ -173,12 +169,12 @@ public sealed class AdminController : Controller
         var IsCreate = string.IsNullOrWhiteSpace(indexName);
         var settings = new ElasticIndexSettings();
 
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, PermissionProvider.ManageElasticIndexes))
         {
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return NotConfigured();
         }
@@ -212,12 +208,12 @@ public sealed class AdminController : Controller
     [HttpPost, ActionName(nameof(Edit))]
     public async Task<ActionResult> EditPost(ElasticIndexSettingsViewModel model, string[] indexedContentTypes)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, PermissionProvider.ManageElasticIndexes))
         {
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -312,12 +308,12 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<ActionResult> Reset(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, PermissionProvider.ManageElasticIndexes))
         {
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -338,12 +334,12 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<ActionResult> Rebuild(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, PermissionProvider.ManageElasticIndexes))
         {
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -376,12 +372,12 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<ActionResult> Delete(ElasticIndexSettingsViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, PermissionProvider.ManageElasticIndexes))
         {
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -410,12 +406,12 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<ActionResult> ForceDelete(ElasticIndexSettingsViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, PermissionProvider.ManageElasticIndexes))
         {
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -449,7 +445,7 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> SyncSettings()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, PermissionProvider.ManageElasticIndexes))
         {
             return Forbid();
         }
@@ -461,7 +457,7 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> Query(string indexName, string query)
     {
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return NotConfigured();
         }
@@ -478,12 +474,12 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Query(AdminQueryViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, PermissionProvider.ManageElasticIndexes))
         {
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -524,7 +520,7 @@ public sealed class AdminController : Controller
 
         try
         {
-            var elasticTopDocs = await _elasticsearchQueryService.SearchAsync(model.IndexName, tokenizedContent);
+            var elasticTopDocs = await _elasticQueryService.SearchAsync(model.IndexName, tokenizedContent);
 
             if (elasticTopDocs != null)
             {
@@ -548,12 +544,12 @@ public sealed class AdminController : Controller
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, PermissionProvider.ManageElasticIndexes))
         {
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return BadRequest();
         }

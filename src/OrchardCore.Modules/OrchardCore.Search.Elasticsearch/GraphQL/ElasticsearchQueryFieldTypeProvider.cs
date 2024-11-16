@@ -16,12 +16,14 @@ using OrchardCore.Search.Elasticsearch.Models;
 
 namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries;
 
-public class ElasticQueryFieldTypeProvider : ISchemaBuilder
+public class ElasticsearchQueryFieldTypeProvider : ISchemaBuilder
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
 
-    public ElasticQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<ElasticQueryFieldTypeProvider> logger)
+    public ElasticsearchQueryFieldTypeProvider(
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<ElasticsearchQueryFieldTypeProvider> logger)
     {
         _httpContextAccessor = httpContextAccessor;
         _logger = logger;

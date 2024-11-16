@@ -45,6 +45,19 @@ public class ElasticsearchConnectionOptions
     public void SetFileConfigurationExists(bool fileConfigurationExists)
         => _fileConfigurationExists = fileConfigurationExists;
 
+    private bool? _isConfigured;
+
+    public bool ConfigurationExists()
+    {
+        if (!_isConfigured.HasValue)
+        {
+            _isConfigured = !string.IsNullOrEmpty(Url) &&
+                Uri.TryCreate(Url, UriKind.Absolute, out var _);
+        }
+
+        return _isConfigured.Value;
+    }
+
     public bool FileConfigurationExists()
         => _fileConfigurationExists;
 }

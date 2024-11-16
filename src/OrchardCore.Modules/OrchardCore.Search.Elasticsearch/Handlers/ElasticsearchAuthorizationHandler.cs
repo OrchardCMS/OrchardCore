@@ -9,9 +9,14 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Lucene.Handler;
 
-public class ElasticsearchAuthorizationHandler(IServiceProvider serviceProvider) : AuthorizationHandler<PermissionRequirement>
+public sealed class ElasticsearchAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
-    private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly IServiceProvider _serviceProvider;
+
+    public ElasticsearchAuthorizationHandler(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
 
     private IAuthorizationService _authorizationService;
     private ISiteService _siteService;

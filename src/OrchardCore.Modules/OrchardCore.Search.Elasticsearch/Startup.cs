@@ -55,9 +55,9 @@ public sealed class Startup : StartupBase
         });
 
         services.AddElasticsearchServices();
-        services.AddPermissionProvider<Permissions>();
+        services.AddPermissionProvider<PermissionProvider>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddDisplayDriver<Query, ElasticQueryDisplayDriver>();
+        services.AddDisplayDriver<Query, ElasticsearchQueryDisplayDriver>();
         services.AddDataMigration<ElasticsearchQueryMigrations>();
         services.AddScoped<IQueryHandler, ElasticsearchQueryHandler>();
     }
