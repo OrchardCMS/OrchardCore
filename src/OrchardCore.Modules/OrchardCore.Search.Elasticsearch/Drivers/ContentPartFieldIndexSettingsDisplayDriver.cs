@@ -31,7 +31,7 @@ public sealed class ContentPartFieldIndexSettingsDisplayDriver : ContentPartFiel
 
         return Initialize<ElasticContentIndexSettingsViewModel>("ElasticContentIndexSettings_Edit", model =>
         {
-            model.ElasticContentIndexSettings = contentPartFieldDefinition.GetSettings<ElasticsearchContentIndexSettings>();
+            model.ElasticContentIndexSettings = contentPartFieldDefinition.GetSettings<ElasticContentIndexSettings>();
         }).Location("Content:10");
     }
 

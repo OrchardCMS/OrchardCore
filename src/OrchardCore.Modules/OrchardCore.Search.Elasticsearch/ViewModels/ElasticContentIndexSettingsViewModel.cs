@@ -4,5 +4,5 @@ namespace OrchardCore.Search.Elasticsearch.ViewModels;
 
 public class ElasticContentIndexSettingsViewModel
 {
-    public ElasticsearchContentIndexSettings ElasticContentIndexSettings { get; set; }
+    public ElasticContentIndexSettings ElasticContentIndexSettings { get; set; }
 }

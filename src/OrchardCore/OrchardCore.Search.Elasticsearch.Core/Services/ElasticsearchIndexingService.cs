@@ -152,13 +152,13 @@ public class ElasticsearchIndexingService
 
                 if (allPublished != null && allPublished.TryGetValue(task.ContentItemId, out var publishedContentItem))
                 {
-                    publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, publishedContentItem.ContentItemVersionId), publishedContentItem, [publishedContentItem.ContentType], new ElasticsearchContentIndexSettings());
+                    publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, publishedContentItem.ContentItemVersionId), publishedContentItem, [publishedContentItem.ContentType], new ElasticContentIndexSettings());
                     await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), _logger);
                 }
 
                 if (allLatest != null && allLatest.TryGetValue(task.ContentItemId, out var latestContentItem))
                 {
-                    latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, latestContentItem.ContentItemVersionId), latestContentItem, [latestContentItem.ContentType], new ElasticsearchContentIndexSettings());
+                    latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId, latestContentItem.ContentItemVersionId), latestContentItem, [latestContentItem.ContentType], new ElasticContentIndexSettings());
                     await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), _logger);
                 }
 
@@ -297,7 +297,7 @@ public class ElasticsearchIndexingService
 
                         if (included is not null && (bool)included)
                         {
-                            partDefinition.Settings[nameof(ElasticsearchContentIndexSettings)] = JNode.FromObject(existingPartSettings.ToObject<ElasticsearchContentIndexSettings>());
+                            partDefinition.Settings[nameof(ElasticContentIndexSettings)] = JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>());
                         }
                     }
                 });
@@ -316,7 +316,7 @@ public class ElasticsearchIndexingService
 
                     if (included != null && (bool)included)
                     {
-                        partDefinition.Settings[nameof(ElasticsearchContentIndexSettings)] = JNode.FromObject(existingPartSettings.ToObject<ElasticsearchContentIndexSettings>());
+                        partDefinition.Settings[nameof(ElasticContentIndexSettings)] = JNode.FromObject(existingPartSettings.ToObject<ElasticContentIndexSettings>());
                     }
                 }
 
@@ -328,7 +328,7 @@ public class ElasticsearchIndexingService
 
                         if (included != null && (bool)included)
                         {
-                            fieldDefinition.Settings[nameof(ElasticsearchContentIndexSettings)] = JNode.FromObject(existingFieldSettings.ToObject<ElasticsearchContentIndexSettings>());
+                            fieldDefinition.Settings[nameof(ElasticContentIndexSettings)] = JNode.FromObject(existingFieldSettings.ToObject<ElasticContentIndexSettings>());
                         }
                     }
                 }

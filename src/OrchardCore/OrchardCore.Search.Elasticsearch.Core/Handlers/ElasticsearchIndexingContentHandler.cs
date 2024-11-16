@@ -115,7 +115,7 @@ public sealed class ElasticsearchIndexingContentHandler : ContentHandlerBase
                     }
                     else
                     {
-                        var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, [contentItem.ContentType], new ElasticsearchContentIndexSettings());
+                        var buildIndexContext = new BuildIndexContext(new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId), contentItem, [contentItem.ContentType], new ElasticContentIndexSettings());
                         await contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), logger);
 
                         await elasticIndexManager.DeleteDocumentsAsync(indexSettings.IndexName, [contentItem.ContentItemId]);

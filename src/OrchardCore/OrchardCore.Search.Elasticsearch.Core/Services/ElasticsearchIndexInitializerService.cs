@@ -13,26 +13,26 @@ namespace OrchardCore.Search.Elasticsearch;
 /// Provides a way to initialize Elasticsearch index on startup of the application
 /// if the index is not found on the Elasticsearch server.
 /// </summary>
-public class ElasticsearchIndexInitializerService : ModularTenantEvents
+public sealed class ElasticsearchIndexInitializerService : ModularTenantEvents
 {
     private readonly ShellSettings _shellSettings;
     private readonly ElasticsearchIndexManager _elasticIndexManager;
     private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
     private readonly ILogger _logger;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public ElasticsearchIndexInitializerService(
         ShellSettings shellSettings,
         ElasticsearchIndexManager elasticIndexManager,
         ElasticsearchIndexSettingsService elasticIndexSettingsService,
-        IStringLocalizer<ElasticsearchIndexInitializerService> localizer,
+        IStringLocalizer<ElasticsearchIndexInitializerService> stringLocalizer,
         ILogger<ElasticsearchIndexInitializerService> logger)
     {
         _shellSettings = shellSettings;
         _elasticIndexManager = elasticIndexManager;
         _elasticIndexSettingsService = elasticIndexSettingsService;
-        S = localizer;
+        S = stringLocalizer;
         _logger = logger;
     }
 
