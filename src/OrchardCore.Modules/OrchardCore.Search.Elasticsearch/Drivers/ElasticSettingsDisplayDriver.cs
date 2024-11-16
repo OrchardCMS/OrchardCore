@@ -57,7 +57,8 @@ public sealed class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSett
             model.SearchIndexes = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
             model.DefaultQuery = settings.DefaultQuery;
             model.SearchType = settings.GetSearchType();
-            model.SearchTypes = [
+            model.SearchTypes =
+            [
                 new(S["Multi-Match Query (Default)"], string.Empty),
                 new(S["Query String Query"], ElasticSettings.QueryStringSearchType),
                 new(S["Custom Query"], ElasticSettings.CustomSearchType),

@@ -38,7 +38,6 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddTransient<IConfigureOptions<ElasticsearchConnectionOptions>, ElasticsearchConnectionOptionsConfigurations>();
-
         services.AddSingleton((sp) =>
         {
             var options = sp.GetRequiredService<IOptions<ElasticsearchConnectionOptions>>().Value;
@@ -55,7 +54,7 @@ public sealed class Startup : StartupBase
             options.AddAnalyzers(configuration);
         });
 
-        services.AddElasticServices();
+        services.AddElasticsearchServices();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddDisplayDriver<Query, ElasticQueryDisplayDriver>();

@@ -14,13 +14,15 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Adds Elastic services.
     /// </summary>
-    public static IServiceCollection AddElasticServices(this IServiceCollection services)
+    public static IServiceCollection AddElasticsearchServices(this IServiceCollection services)
     {
         services.AddSingleton<ElasticsearchIndexSettingsService>();
         services.AddSingleton<ElasticsearchIndexManager>();
         services.AddScoped<ElasticsearchIndexingService>();
+        services.AddScoped<ElasticsearchQueryService>();
+        services.AddScoped<ElasticsearchQueryService>();
+
         services.AddScoped<IModularTenantEvents, ElasticsearchIndexInitializerService>();
-        services.AddScoped<IElasticsearchQueryService, ElasticsearchQueryService>();
         services.AddScoped<IContentHandler, ElasticsearchIndexingContentHandler>();
 
         services.AddQuerySource<ElasticsearchQuerySource>(ElasticsearchQuerySource.SourceName);

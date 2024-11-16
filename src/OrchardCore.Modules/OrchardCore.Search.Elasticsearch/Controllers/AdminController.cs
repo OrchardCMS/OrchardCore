@@ -41,7 +41,6 @@ public sealed class AdminController : Controller
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IElasticsearchQueryService _queryService;
     private readonly ElasticsearchIndexManager _elasticIndexManager;
     private readonly ElasticsearchIndexingService _elasticIndexingService;
     private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
@@ -50,8 +49,10 @@ public sealed class AdminController : Controller
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
     private readonly IOptions<TemplateOptions> _templateOptions;
+    private readonly ElasticsearchQueryService _elasticsearchQueryService;
     private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
     private readonly IShapeFactory _shapeFactory;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ILocalizationService _localizationService;
 
     internal readonly IStringLocalizer S;
@@ -63,7 +64,6 @@ public sealed class AdminController : Controller
         ILiquidTemplateManager liquidTemplateManager,
         IContentDefinitionManager contentDefinitionManager,
         IAuthorizationService authorizationService,
-        IElasticsearchQueryService queryService,
         ElasticsearchIndexManager elasticIndexManager,
         ElasticsearchIndexingService elasticIndexingService,
         ElasticsearchIndexSettingsService elasticIndexSettingsService,
@@ -73,7 +73,9 @@ public sealed class AdminController : Controller
         ILogger<AdminController> logger,
         IOptions<TemplateOptions> templateOptions,
         IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
+        ElasticsearchQueryService elasticsearchQueryService,
         IShapeFactory shapeFactory,
+        IServiceProvider serviceProvider,
         ILocalizationService localizationService,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
@@ -83,7 +85,6 @@ public sealed class AdminController : Controller
         _liquidTemplateManager = liquidTemplateManager;
         _contentDefinitionManager = contentDefinitionManager;
         _authorizationService = authorizationService;
-        _queryService = queryService;
         _elasticIndexManager = elasticIndexManager;
         _elasticIndexingService = elasticIndexingService;
         _elasticIndexSettingsService = elasticIndexSettingsService;
@@ -92,8 +93,10 @@ public sealed class AdminController : Controller
         _notifier = notifier;
         _logger = logger;
         _templateOptions = templateOptions;
+        _elasticsearchQueryService = elasticsearchQueryService;
         _elasticConnectionOptions = elasticConnectionOptions.Value;
         _shapeFactory = shapeFactory;
+        _serviceProvider = serviceProvider;
         _localizationService = localizationService;
         S = stringLocalizer;
         H = htmlLocalizer;
@@ -521,7 +524,7 @@ public sealed class AdminController : Controller
 
         try
         {
-            var elasticTopDocs = await _queryService.SearchAsync(model.IndexName, tokenizedContent);
+            var elasticTopDocs = await _elasticsearchQueryService.SearchAsync(model.IndexName, tokenizedContent);
 
             if (elasticTopDocs != null)
             {

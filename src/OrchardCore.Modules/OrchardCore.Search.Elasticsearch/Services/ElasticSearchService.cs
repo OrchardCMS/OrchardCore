@@ -24,6 +24,7 @@ public class ElasticsearchService : ISearchService
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
+    private readonly ElasticsearchQueryService _elasticsQueryService;
     private readonly ILogger _logger;
 
     public ElasticsearchService(
@@ -34,6 +35,7 @@ public class ElasticsearchService : ISearchService
         JavaScriptEncoder javaScriptEncoder,
         IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
         ILiquidTemplateManager liquidTemplateManager,
+        ElasticsearchQueryService elasticQueryService,
         ILogger<ElasticsearchService> logger
         )
     {
@@ -44,6 +46,7 @@ public class ElasticsearchService : ISearchService
         _javaScriptEncoder = javaScriptEncoder;
         _elasticConnectionOptions = elasticConnectionOptions.Value;
         _liquidTemplateManager = liquidTemplateManager;
+        _elasticsQueryService = elasticQueryService;
         _logger = logger;
     }
 
@@ -123,8 +126,7 @@ public class ElasticsearchService : ISearchService
                 Query = term
             };
 
-            var queryService = new ElasticsearchQueryService(_elasticIndexManager);
-            result.ContentItemIds = await queryService.ExecuteQueryAsync(index, query, null, start, pageSize);
+            result.ContentItemIds = await _elasticsQueryService.ExecuteQueryAsync(index, query, null, start, pageSize);
 
             result.Success = true;
         }

@@ -18,14 +18,14 @@ public sealed class ElasticsearchQuerySource : IQuerySource
 {
     public const string SourceName = "Elasticsearch";
 
-    private readonly IElasticsearchQueryService _queryService;
+    private readonly ElasticsearchQueryService _queryService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly ISession _session;
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly TemplateOptions _templateOptions;
 
     public ElasticsearchQuerySource(
-        IElasticsearchQueryService queryService,
+        ElasticsearchQueryService queryService,
         ILiquidTemplateManager liquidTemplateManager,
         ISession session,
         JavaScriptEncoder javaScriptEncoder,
