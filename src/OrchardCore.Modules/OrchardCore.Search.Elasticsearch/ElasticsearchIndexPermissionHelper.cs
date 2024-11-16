@@ -4,10 +4,7 @@ namespace OrchardCore.Search.Elasticsearch;
 
 public static class ElasticsearchIndexPermissionHelper
 {
-    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Search.Elasticsearch.Permissions.ManageElasticIndexes'.")]
-    public static readonly Permission ManageElasticIndexes = PermissionProvider.ManageElasticIndexes;
-
-    private static readonly Permission _indexPermissionTemplate = new("QueryElasticsearch{0}Index", "Query Elasticsearch {0} Index", [PermissionProvider.ManageElasticIndexes]);
+    private static readonly Permission _indexPermissionTemplate = new("QueryElasticsearch{0}Index", "Query Elasticsearch {0} Index", [Permissions.ManageElasticIndexes]);
 
     private static readonly Dictionary<string, Permission> _permissions = [];
 
