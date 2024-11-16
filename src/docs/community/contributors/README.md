@@ -485,7 +485,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/mohit-naroliya"><img src="https://avatars.githubusercontent.com/u/151342309?v=4?s=100" width="100px;" alt="Mohit Naroliya"/><br /><sub><b>Mohit Naroliya</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=mohit-naroliya" title="Code">💻</a></td>
-      <td align="center" valign="top" width="16.66%"><a href="https://github.com/kursataktas"><img src="https://avatars.githubusercontent.com/u/17837825?v=4?s=100" width="100px;" alt="Kursat Aktas"/><br /><sub><b>Kursat Aktas</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=kursataktas" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/kursataktas"><img src="https://avatars.githubusercontent.com/u/17837825?v=4?s=100" width="100px;" alt="Kursat Aktas"/><br /><sub><b>Kursat Aktas</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=kursataktas" title="Code">💻</a> <a href="https://github.com/OrchardCMS/OrchardCore/commits?author=kursataktas" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
