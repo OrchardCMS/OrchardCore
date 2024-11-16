@@ -3231,6 +3231,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "kursataktas",
+      "name": "Kursat Aktas",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17837825?v=4",
+      "profile": "https://github.com/kursataktas",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
