@@ -47,7 +47,15 @@
                                     {
                                         <a asp-route-action="EditField" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
                                     }
-                                    @if (!settings.IsSystemDefined)
+                                    @if (settings.IsSystemDefined)
+                                    {
+                                        <div class="d-inline" data-bs-toggle="tooltip" data-bs-title="@T["System-defined fields are integral components of the system and cannot be removed."]">
+                                            <button type="button" class="btn btn-danger btn-sm" disabled>
+                                                @T["Remove"]
+                                            </button>
+                                        </div>
+                                    }
+                                    else
                                     {
                                         <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                                     }
