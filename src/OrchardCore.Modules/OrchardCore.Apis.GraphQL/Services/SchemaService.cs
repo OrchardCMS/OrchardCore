@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Globalization;
 using GraphQL.MicrosoftDI;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,8 +13,7 @@ public class SchemaService : ISchemaFactory
     private readonly IServiceProvider _serviceProvider;
     private readonly SemaphoreSlim _schemaGenerationSemaphore = new(1, 1);
     private readonly ConcurrentDictionary<ISchemaBuilder, string> _identifiers = new();
-
-    private ISchema _schema;
+    private readonly ConcurrentDictionary<CultureInfo, ISchema> _schemas = new ();
 
     public SchemaService(IEnumerable<ISchemaBuilder> schemaBuilders, IServiceProvider serviceProvider)
     {
@@ -24,6 +24,7 @@ public class SchemaService : ISchemaFactory
     public async Task<ISchema> GetSchemaAsync()
     {
         var hasChanged = false;
+        var culture = CultureInfo.CurrentUICulture;
 
         foreach (var builder in _schemaBuilders)
         {
@@ -34,9 +35,9 @@ public class SchemaService : ISchemaFactory
             }
         }
 
-        if (_schema is object && !hasChanged)
+        if (!hasChanged && _schemas.TryGetValue(culture, out var existingSchema))
         {
-            return _schema;
+            return existingSchema;
         }
 
         await _schemaGenerationSemaphore.WaitAsync();
@@ -52,9 +53,9 @@ public class SchemaService : ISchemaFactory
                 }
             }
 
-            if (_schema is object && !hasChanged)
+            if (!hasChanged && _schemas.TryGetValue(culture, out existingSchema))
             {
-                return _schema;
+                return existingSchema;
             }
 
             var serviceProvider = ShellScope.Services;
@@ -110,7 +111,7 @@ public class SchemaService : ISchemaFactory
             }
 
             schema.Initialize();
-            return _schema = schema;
+            return _schemas[culture] = schema;
         }
         finally
         {

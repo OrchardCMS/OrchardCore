@@ -8,6 +8,7 @@ namespace OrchardCore.Alias.GraphQL;
 public class AliasInputObjectType : WhereInputObjectGraphType<AliasPart>
 {
     public AliasInputObjectType(IStringLocalizer<AliasInputObjectType> S)
+        : base(S)
     {
         Name = "AliasPartInput";
         Description = S["the alias part of the content item"];

@@ -5,6 +5,7 @@ using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
@@ -20,10 +21,12 @@ public class ElasticQueryFieldTypeProvider : ISchemaBuilder
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
+    protected readonly IStringLocalizer S;
 
-    public ElasticQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<ElasticQueryFieldTypeProvider> logger)
+    public ElasticQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, IStringLocalizer<ElasticQueryFieldTypeProvider> localizer, ILogger<ElasticQueryFieldTypeProvider> logger)
     {
         _httpContextAccessor = httpContextAccessor;
+        S = localizer;
         _logger = logger;
     }
 
@@ -85,7 +88,7 @@ public class ElasticQueryFieldTypeProvider : ISchemaBuilder
         }
     }
 
-    private static FieldType BuildSchemaBasedFieldType(Query query, JsonNode querySchema, string fieldTypeName)
+    private FieldType BuildSchemaBasedFieldType(Query query, JsonNode querySchema, string fieldTypeName)
     {
         var properties = querySchema["properties"]?.AsObject();
         if (properties == null)
@@ -146,7 +149,7 @@ public class ElasticQueryFieldTypeProvider : ISchemaBuilder
                 new QueryArgument<StringGraphType> { Name = "parameters" }
             ),
             Name = fieldTypeName,
-            Description = "Represents the " + query.Source + " Query : " + query.Name,
+            Description = S["Represents the {0} Query : {1}", query.Source, query.Name],
             ResolvedType = new ListGraphType(typeType),
             Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
             Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>)
@@ -172,7 +175,7 @@ public class ElasticQueryFieldTypeProvider : ISchemaBuilder
         return fieldType;
     }
 
-    private static FieldType BuildContentTypeFieldType(ISchema schema, string contentType, Query query, string fieldTypeName)
+    private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, Query query, string fieldTypeName)
     {
         var typeType = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
 
@@ -187,7 +190,7 @@ public class ElasticQueryFieldTypeProvider : ISchemaBuilder
                 new QueryArgument<StringGraphType> { Name = "parameters" }
             ),
             Name = fieldTypeName,
-            Description = "Represents the " + query.Source + " Query : " + query.Name,
+            Description = S["Represents the {0} Query : {1}", query.Source, query.Name],
             ResolvedType = typeType.ResolvedType,
             Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
             Type = typeType.Type

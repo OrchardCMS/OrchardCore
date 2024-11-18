@@ -8,6 +8,7 @@ namespace OrchardCore.ContentLocalization.GraphQL;
 public class LocalizationInputObjectType : WhereInputObjectGraphType<LocalizationPart>
 {
     public LocalizationInputObjectType(IStringLocalizer<LocalizationInputObjectType> S)
+        : base(S)
     {
         Name = "LocalizationInputObjectType";
         Description = S["the localization part of the content item"];
