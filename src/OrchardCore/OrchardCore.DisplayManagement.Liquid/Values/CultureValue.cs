@@ -53,11 +53,6 @@ internal sealed class CultureValue : FluidValue
 
     public override string ToStringValue() => Culture.Name;
 
-#pragma warning disable CS0672 // Member overrides obsolete member
-    public override void WriteTo(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
-#pragma warning restore CS0672 // Member overrides obsolete member
-        => writer.Write(Culture.Name);
-
     public override async ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
         => await writer.WriteAsync(Culture.Name);
 

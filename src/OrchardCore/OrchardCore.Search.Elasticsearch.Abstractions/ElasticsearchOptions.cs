@@ -8,5 +8,5 @@ public class ElasticsearchOptions
 
     public Dictionary<string, JsonObject> Analyzers { get; } = [];
 
-    public Dictionary<string, JsonObject> Filter { get; } = [];
+    public Dictionary<string, JsonObject> TokenFilters { get; } = [];
 }
