@@ -13,7 +13,7 @@ public class BackgroundServiceOptions
     public TimeSpan PollingTime { get; set; } = TimeSpan.FromMinutes(1);
 
     /// <summary>
-    /// Gets or set the minimum idle time before the background task is triggered.
+    /// Gets or sets the minimum idle time before the background tasks of a tenant are triggered, similar to <see cref="PollingTime" />.
     /// </summary>
     public TimeSpan MinimumIdelTime { get; set; } = TimeSpan.FromSeconds(10);
 }
