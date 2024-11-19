@@ -63,7 +63,7 @@ internal sealed class ModularBackgroundService : BackgroundService
         {
             try
             {
-                await Task.Delay(_options.MinimumIdelTime, stoppingToken);
+                await Task.Delay(_options.MinimumIdleTime, stoppingToken);
             }
             catch (TaskCanceledException)
             {
