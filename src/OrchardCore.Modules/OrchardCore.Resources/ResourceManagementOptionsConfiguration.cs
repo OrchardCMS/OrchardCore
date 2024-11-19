@@ -376,6 +376,27 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
             .SetVersion("5.15.4");
 
         manifest
+            .DefineStyle("font-awesome")
+            .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/css/all.min.css", "~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/css/all.css")
+            .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.css")
+            .SetCdnIntegrity("sha384-h/hnnw1Bi4nbpD6kE7nYfCXzovi622sY5WBxww8ARKwpdLj5kUWjRuyiXaD1U2JT", "sha384-vMdawx0r3BjxHQwcfWi0YSemtW6u5mKxTKPPh1ogUICPLaEa/6e42yg2wRYzzJtx")
+            .SetVersion("6.6.0");
+
+        manifest
+            .DefineScript("font-awesome")
+            .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/js/all.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/js/all.js")
+            .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/all.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/all.js")
+            .SetCdnIntegrity("sha384-dgEl3vRKux81M373f/TdgoDTV5oZj+yjHrr/1qR5b4btG5q63kYS62t5kod+7Q6v", "sha384-v72QeVpDL6Ne4X2S+fwIXCOLhO57lwIR/qRV05SHAExDg1QoyJGWDxx6VQO3rzlC")
+            .SetVersion("6.6.0");
+
+        manifest
+            .DefineScript("font-awesome-v4-shims")
+            .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/js/v4-shims.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/js/v4-shims.js")
+            .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/v4-shims.js")
+            .SetCdnIntegrity("sha384-M9y++reQwf5nddw5loUHChCbGE4kwaeHzeEM2yWidMfaRMQeHM6MSwwPuiSnSMHF", "sha384-WrIndr6nwB5l/sVUyZkWDlpNS9Vx/Y+zhmjZNP+j2UJOBmy36ufaIIqd7o2kL0BL")
+            .SetVersion("6.6.0");
+
+        manifest
             .DefineScript("font-awesome-v4-shims")
             .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/js/v4-shims.js")
             .SetCdnIntegrity("sha384-bx00wqJq+zY9QLCMa/zViZPu1f0GJ3VXwF4GSw3GbfjwO28QCFr4qadCrNmJQ/9N", "sha384-SGuqaGE4bcW7Xl5T06BsUPUA91qaNtT53uGOcGpavQMje3goIFJbDsC0VAwtgL5g")
