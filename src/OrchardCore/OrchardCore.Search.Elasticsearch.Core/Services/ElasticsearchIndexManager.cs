@@ -249,7 +249,6 @@ public sealed class ElasticsearchIndexManager
             }
         };
 
-
         var inheritedPostfix = DynamicTemplate.Mapping(new KeywordProperty());
         inheritedPostfix.PathMatch = [_inheritedPostfixPattern];
         inheritedPostfix.MatchMappingType = ["string"];
