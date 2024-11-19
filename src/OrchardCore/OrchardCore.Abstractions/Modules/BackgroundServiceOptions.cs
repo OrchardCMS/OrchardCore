@@ -8,7 +8,7 @@ public class BackgroundServiceOptions
     public bool ShellWarmup { get; set; }
 
     /// <summary>
-    /// Gets or sets the polling time for the background task.
+    /// Gets or sets the polling time for the background tasks, i.e. how much to wait between executing all the background tasks of a given tenant.
     /// </summary>
     public TimeSpan PollingTime { get; set; } = TimeSpan.FromMinutes(1);
 
