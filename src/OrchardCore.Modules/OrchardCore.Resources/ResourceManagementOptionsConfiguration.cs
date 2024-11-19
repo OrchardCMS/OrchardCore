@@ -384,23 +384,23 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
         manifest
             .DefineStyle("font-awesome")
             .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/css/all.min.css", "~/OrchardCore.Resources/Vendor/fontawesome-free/css/all.css")
-            .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.css")
-            .SetCdnIntegrity("sha384-h/hnnw1Bi4nbpD6kE7nYfCXzovi622sY5WBxww8ARKwpdLj5kUWjRuyiXaD1U2JT", "sha384-vMdawx0r3BjxHQwcfWi0YSemtW6u5mKxTKPPh1ogUICPLaEa/6e42yg2wRYzzJtx")
-            .SetVersion("6.6.0");
+            .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.0/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.0/css/all.css")
+            .SetCdnIntegrity("sha384-nMrp5ZsUTqQhbYtRk9ykIA4NlAIb530sj9RpfUkoGv/2gV+x0ZzFdUnT7Q8J8EgH", "sha384-0iKPqUZiI32tW4Zt7ZCVDZ9/K+Fq+seKdNQMJAx9B/DdWZRb1r2a1hkpQ1tBBKmC")
+            .SetVersion("6.7.0");
 
         manifest
             .DefineScript("font-awesome")
             .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.js")
-            .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/all.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/all.js")
-            .SetCdnIntegrity("sha384-dgEl3vRKux81M373f/TdgoDTV5oZj+yjHrr/1qR5b4btG5q63kYS62t5kod+7Q6v", "sha384-v72QeVpDL6Ne4X2S+fwIXCOLhO57lwIR/qRV05SHAExDg1QoyJGWDxx6VQO3rzlC")
-            .SetVersion("6.6.0");
+            .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.0/js/all.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.0/js/all.js")
+            .SetCdnIntegrity("sha384-W/RULPqPfRI1AFuJTFpd4KXbd0zUede93robiDPaDUqCTsmfpAdkGQLJL2y51XNt", "sha384-AjoNRHHqBsFy0PdzEq39g6pMyqEXkpFiWYbbt04/k5CKZojZ3DXAJ0YCTaHwX2S/")
+            .SetVersion("6.7.0");
 
         manifest
             .DefineScript("font-awesome-v4-shims")
             .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/js/v4-shims.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free/js/v4-shims.js")
-            .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/v4-shims.js")
-            .SetCdnIntegrity("sha384-M9y++reQwf5nddw5loUHChCbGE4kwaeHzeEM2yWidMfaRMQeHM6MSwwPuiSnSMHF", "sha384-WrIndr6nwB5l/sVUyZkWDlpNS9Vx/Y+zhmjZNP+j2UJOBmy36ufaIIqd7o2kL0BL")
-            .SetVersion("6.6.0");
+            .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.0/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.0/js/v4-shims.js")
+            .SetCdnIntegrity("sha384-uXhYgYbJWEDWnahlKFxLmGQwC19Ja7mkY/RG+tVIz1EnwNAoSxwg3YGyS1943jYf", "sha384-gC9tp8BArKEMtmNCCZd6Voxn1gOT2R6OCiMValFoj79Ye0A3DtRMR9XIywZgAnL4")
+            .SetVersion("6.7.0");
 
         manifest
             .DefineScript("jquery-resizable")

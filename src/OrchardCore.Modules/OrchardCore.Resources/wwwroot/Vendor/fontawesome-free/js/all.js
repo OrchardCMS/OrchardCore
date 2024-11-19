@@ -1,5 +1,5 @@
 /*!
- * Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 6.7.0 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  * Copyright 2024 Fonticons, Inc.
  */
@@ -8,12 +8,10 @@
 
   let _WINDOW = {};
   let _DOCUMENT = {};
-
   try {
     if (typeof window !== 'undefined') _WINDOW = window;
     if (typeof document !== 'undefined') _DOCUMENT = document;
   } catch (e) {}
-
   const {
     userAgent = ''
   } = _WINDOW.navigator || {};
@@ -23,152 +21,243 @@
   const IS_DOM = !!DOCUMENT.documentElement && !!DOCUMENT.head && typeof DOCUMENT.addEventListener === 'function' && typeof DOCUMENT.createElement === 'function';
   const IS_IE = ~userAgent.indexOf('MSIE') || ~userAgent.indexOf('Trident/');
 
-  var a = "classic",
-      r = "sharp",
-      o = "sharp-duotone";
+  function _defineProperty(e, r, t) {
+    return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+      value: t,
+      enumerable: !0,
+      configurable: !0,
+      writable: !0
+    }) : e[r] = t, e;
+  }
+  function ownKeys(e, r) {
+    var t = Object.keys(e);
+    if (Object.getOwnPropertySymbols) {
+      var o = Object.getOwnPropertySymbols(e);
+      r && (o = o.filter(function (r) {
+        return Object.getOwnPropertyDescriptor(e, r).enumerable;
+      })), t.push.apply(t, o);
+    }
+    return t;
+  }
+  function _objectSpread2(e) {
+    for (var r = 1; r < arguments.length; r++) {
+      var t = null != arguments[r] ? arguments[r] : {};
+      r % 2 ? ownKeys(Object(t), !0).forEach(function (r) {
+        _defineProperty(e, r, t[r]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) {
+        Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r));
+      });
+    }
+    return e;
+  }
+  function _toPrimitive(t, r) {
+    if ("object" != typeof t || !t) return t;
+    var e = t[Symbol.toPrimitive];
+    if (void 0 !== e) {
+      var i = e.call(t, r || "default");
+      if ("object" != typeof i) return i;
+      throw new TypeError("@@toPrimitive must return a primitive value.");
+    }
+    return ("string" === r ? String : Number)(t);
+  }
+  function _toPropertyKey(t) {
+    var i = _toPrimitive(t, "string");
+    return "symbol" == typeof i ? i : i + "";
+  }
 
-  var et$1 = {
-    classic: {
-      900: "fas",
-      400: "far",
-      normal: "far",
-      300: "fal",
-      100: "fat"
-    },
-    sharp: {
-      900: "fass",
-      400: "fasr",
-      300: "fasl",
-      100: "fast"
-    },
-    "sharp-duotone": {
-      900: "fasds"
-    }
-  };
-  var bt = {
-    kit: {
-      fak: "kit",
-      "fa-kit": "kit"
-    },
-    "kit-duotone": {
-      fakd: "kit-duotone",
-      "fa-kit-duotone": "kit-duotone"
-    }
-  };
-  var lo = {
-    classic: {
-      "fa-brands": "fab",
-      "fa-duotone": "fad",
-      "fa-light": "fal",
-      "fa-regular": "far",
-      "fa-solid": "fas",
-      "fa-thin": "fat"
-    },
-    sharp: {
-      "fa-solid": "fass",
-      "fa-regular": "fasr",
-      "fa-light": "fasl",
-      "fa-thin": "fast"
-    },
-    "sharp-duotone": {
-      "fa-solid": "fasds"
-    }
-  },
-      no = {
-    classic: {
-      fab: "fa-brands",
-      fad: "fa-duotone",
-      fal: "fa-light",
-      far: "fa-regular",
-      fas: "fa-solid",
-      fat: "fa-thin"
-    },
-    sharp: {
-      fass: "fa-solid",
-      fasr: "fa-regular",
-      fasl: "fa-light",
-      fast: "fa-thin"
-    },
-    "sharp-duotone": {
-      fasds: "fa-solid"
-    }
-  },
-      fo = {
-    classic: {
-      solid: "fas",
-      regular: "far",
-      light: "fal",
-      thin: "fat",
-      duotone: "fad",
-      brands: "fab"
-    },
-    sharp: {
-      solid: "fass",
-      regular: "fasr",
-      light: "fasl",
-      thin: "fast"
-    },
-    "sharp-duotone": {
-      solid: "fasds"
-    }
-  },
-      ho = {
-    classic: {
-      fa: "solid",
-      fas: "solid",
-      "fa-solid": "solid",
-      far: "regular",
-      "fa-regular": "regular",
-      fal: "light",
-      "fa-light": "light",
-      fat: "thin",
-      "fa-thin": "thin",
-      fad: "duotone",
-      "fa-duotone": "duotone",
-      fab: "brands",
-      "fa-brands": "brands"
-    },
-    sharp: {
-      fa: "solid",
-      fass: "solid",
-      "fa-solid": "solid",
-      fasr: "regular",
-      "fa-regular": "regular",
-      fasl: "light",
-      "fa-light": "light",
-      fast: "thin",
-      "fa-thin": "thin"
-    },
-    "sharp-duotone": {
-      fa: "solid",
-      fasds: "solid",
-      "fa-solid": "solid"
-    }
-  };
-  var Io = {
+  var S = {
+      classic: {
+        fa: "solid",
+        fas: "solid",
+        "fa-solid": "solid",
+        far: "regular",
+        "fa-regular": "regular",
+        fal: "light",
+        "fa-light": "light",
+        fat: "thin",
+        "fa-thin": "thin",
+        fab: "brands",
+        "fa-brands": "brands"
+      },
+      duotone: {
+        fa: "solid",
+        fad: "solid",
+        "fa-solid": "solid",
+        "fa-duotone": "solid",
+        fadr: "regular",
+        "fa-regular": "regular",
+        fadl: "light",
+        "fa-light": "light",
+        fadt: "thin",
+        "fa-thin": "thin"
+      },
+      sharp: {
+        fa: "solid",
+        fass: "solid",
+        "fa-solid": "solid",
+        fasr: "regular",
+        "fa-regular": "regular",
+        fasl: "light",
+        "fa-light": "light",
+        fast: "thin",
+        "fa-thin": "thin"
+      },
+      "sharp-duotone": {
+        fa: "solid",
+        fasds: "solid",
+        "fa-solid": "solid",
+        fasdr: "regular",
+        "fa-regular": "regular",
+        fasdl: "light",
+        "fa-light": "light",
+        fasdt: "thin",
+        "fa-thin": "thin"
+      }
+    };
+  var s = "classic";
+  var G = {
+      classic: {
+        900: "fas",
+        400: "far",
+        normal: "far",
+        300: "fal",
+        100: "fat"
+      },
+      duotone: {
+        900: "fad",
+        400: "fadr",
+        300: "fadl",
+        100: "fadt"
+      },
+      sharp: {
+        900: "fass",
+        400: "fasr",
+        300: "fasl",
+        100: "fast"
+      },
+      "sharp-duotone": {
+        900: "fasds",
+        400: "fasdr",
+        300: "fasdl",
+        100: "fasdt"
+      }
+    };
+  var xt = {
+      classic: {
+        solid: "fas",
+        regular: "far",
+        light: "fal",
+        thin: "fat",
+        brands: "fab"
+      },
+      duotone: {
+        solid: "fad",
+        regular: "fadr",
+        light: "fadl",
+        thin: "fadt"
+      },
+      sharp: {
+        solid: "fass",
+        regular: "fasr",
+        light: "fasl",
+        thin: "fast"
+      },
+      "sharp-duotone": {
+        solid: "fasds",
+        regular: "fasdr",
+        light: "fasdl",
+        thin: "fasdt"
+      }
+    };
+  var St = {
+      kit: {
+        fak: "kit",
+        "fa-kit": "kit"
+      },
+      "kit-duotone": {
+        fakd: "kit-duotone",
+        "fa-kit-duotone": "kit-duotone"
+      }
+    };
+  var Ct = {
     kit: {
       "fa-kit": "fak"
     },
     "kit-duotone": {
       "fa-kit-duotone": "fakd"
     }
-  },
-      Fo = {
-    kit: {
-      fak: "fa-kit"
-    },
-    "kit-duotone": {
-      fakd: "fa-kit-duotone"
-    }
-  },
-      So = {
-    kit: {
-      kit: "fak"
-    },
-    "kit-duotone": {
-      "kit-duotone": "fakd"
-    }
   };
+  var Wt = {
+      kit: {
+        fak: "fa-kit"
+      },
+      "kit-duotone": {
+        fakd: "fa-kit-duotone"
+      }
+    };
+  var Et = {
+      kit: {
+        kit: "fak"
+      },
+      "kit-duotone": {
+        "kit-duotone": "fakd"
+      }
+    };
+
+  var po = {
+      classic: {
+        "fa-brands": "fab",
+        "fa-duotone": "fad",
+        "fa-light": "fal",
+        "fa-regular": "far",
+        "fa-solid": "fas",
+        "fa-thin": "fat"
+      },
+      duotone: {
+        "fa-regular": "fadr",
+        "fa-light": "fadl",
+        "fa-thin": "fadt"
+      },
+      sharp: {
+        "fa-solid": "fass",
+        "fa-regular": "fasr",
+        "fa-light": "fasl",
+        "fa-thin": "fast"
+      },
+      "sharp-duotone": {
+        "fa-solid": "fasds",
+        "fa-regular": "fasdr",
+        "fa-light": "fasdl",
+        "fa-thin": "fasdt"
+      }
+    },
+    co = {
+      classic: {
+        fab: "fa-brands",
+        fad: "fa-duotone",
+        fal: "fa-light",
+        far: "fa-regular",
+        fas: "fa-solid",
+        fat: "fa-thin"
+      },
+      duotone: {
+        fadr: "fa-regular",
+        fadl: "fa-light",
+        fadt: "fa-thin"
+      },
+      sharp: {
+        fass: "fa-solid",
+        fasr: "fa-regular",
+        fasl: "fa-light",
+        fast: "fa-thin"
+      },
+      "sharp-duotone": {
+        fasds: "fa-solid",
+        fasdr: "fa-regular",
+        fasdl: "fa-light",
+        fasdt: "fa-thin"
+      }
+    };
 
   const NAMESPACE_IDENTIFIER = '___FONT_AWESOME___';
   const PRODUCTION = (() => {
@@ -178,57 +267,45 @@
       return false;
     }
   })();
-
   function familyProxy(obj) {
     // Defaults to the classic family if family is not available
     return new Proxy(obj, {
       get(target, prop) {
-        return prop in target ? target[prop] : target[a];
+        return prop in target ? target[prop] : target[s];
       }
-
     });
   }
+  const _PREFIX_TO_STYLE = _objectSpread2({}, S);
 
-  const _PREFIX_TO_STYLE = { ...ho
-  };
-  _PREFIX_TO_STYLE[a] = { ...ho[a],
-    ...bt['kit'],
-    ...bt['kit-duotone']
-  };
+  // We changed FACSSClassesToStyleId in the icons repo to be canonical and as such, "classic" family does not have any
+  // duotone styles.  But we do still need duotone in _PREFIX_TO_STYLE below, so we are manually adding
+  // {'fa-duotone': 'duotone'}
+  _PREFIX_TO_STYLE[s] = _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, {
+    'fa-duotone': 'duotone'
+  }), S[s]), St['kit']), St['kit-duotone']);
   const PREFIX_TO_STYLE = familyProxy(_PREFIX_TO_STYLE);
-  const _STYLE_TO_PREFIX = { ...fo
-  };
-  _STYLE_TO_PREFIX[a] = { ..._STYLE_TO_PREFIX[a],
-    ...So['kit'],
-    ...So['kit-duotone']
-  };
+  const _STYLE_TO_PREFIX = _objectSpread2({}, xt);
+
+  // We changed FAStyleIdToShortPrefixId in the icons repo to be canonical and as such, "classic" family does not have any
+  // duotone styles.  But we do still need duotone in _STYLE_TO_PREFIX below, so we are manually adding {duotone: 'fad'}
+  _STYLE_TO_PREFIX[s] = _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, {
+    duotone: 'fad'
+  }), _STYLE_TO_PREFIX[s]), Et['kit']), Et['kit-duotone']);
   const STYLE_TO_PREFIX = familyProxy(_STYLE_TO_PREFIX);
-  const _PREFIX_TO_LONG_STYLE = { ...no
-  };
-  _PREFIX_TO_LONG_STYLE[a] = { ..._PREFIX_TO_LONG_STYLE[a],
-    ...Fo['kit']
-  };
+  const _PREFIX_TO_LONG_STYLE = _objectSpread2({}, co);
+  _PREFIX_TO_LONG_STYLE[s] = _objectSpread2(_objectSpread2({}, _PREFIX_TO_LONG_STYLE[s]), Wt['kit']);
   const PREFIX_TO_LONG_STYLE = familyProxy(_PREFIX_TO_LONG_STYLE);
-  const _LONG_STYLE_TO_PREFIX = { ...lo
-  };
-  _LONG_STYLE_TO_PREFIX[a] = { ..._LONG_STYLE_TO_PREFIX[a],
-    ...Io['kit']
-  };
+  const _LONG_STYLE_TO_PREFIX = _objectSpread2({}, po);
+  _LONG_STYLE_TO_PREFIX[s] = _objectSpread2(_objectSpread2({}, _LONG_STYLE_TO_PREFIX[s]), Ct['kit']);
   const LONG_STYLE_TO_PREFIX = familyProxy(_LONG_STYLE_TO_PREFIX);
-  const _FONT_WEIGHT_TO_PREFIX = { ...et$1
-  };
+  const _FONT_WEIGHT_TO_PREFIX = _objectSpread2({}, G);
   const FONT_WEIGHT_TO_PREFIX = familyProxy(_FONT_WEIGHT_TO_PREFIX);
-  const prefixes = new Set();
-  Object.keys(STYLE_TO_PREFIX[a]).map(prefixes.add.bind(prefixes));
-  Object.keys(STYLE_TO_PREFIX[r]).map(prefixes.add.bind(prefixes));
-  Object.keys(STYLE_TO_PREFIX[o]).map(prefixes.add.bind(prefixes));
 
   function bunker(fn) {
     try {
       for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         args[_key - 1] = arguments[_key];
       }
-
       fn(...args);
     } catch (e) {
       if (!PRODUCTION) {
@@ -237,50 +314,43 @@
     }
   }
 
-  const w$1 = WINDOW || {};
-  if (!w$1[NAMESPACE_IDENTIFIER]) w$1[NAMESPACE_IDENTIFIER] = {};
-  if (!w$1[NAMESPACE_IDENTIFIER].styles) w$1[NAMESPACE_IDENTIFIER].styles = {};
-  if (!w$1[NAMESPACE_IDENTIFIER].hooks) w$1[NAMESPACE_IDENTIFIER].hooks = {};
-  if (!w$1[NAMESPACE_IDENTIFIER].shims) w$1[NAMESPACE_IDENTIFIER].shims = [];
-  var namespace = w$1[NAMESPACE_IDENTIFIER];
+  const w = WINDOW || {};
+  if (!w[NAMESPACE_IDENTIFIER]) w[NAMESPACE_IDENTIFIER] = {};
+  if (!w[NAMESPACE_IDENTIFIER].styles) w[NAMESPACE_IDENTIFIER].styles = {};
+  if (!w[NAMESPACE_IDENTIFIER].hooks) w[NAMESPACE_IDENTIFIER].hooks = {};
+  if (!w[NAMESPACE_IDENTIFIER].shims) w[NAMESPACE_IDENTIFIER].shims = [];
+  var namespace = w[NAMESPACE_IDENTIFIER];
 
   function normalizeIcons(icons) {
     return Object.keys(icons).reduce((acc, iconName) => {
       const icon = icons[iconName];
       const expanded = !!icon.icon;
-
       if (expanded) {
         acc[icon.iconName] = icon.icon;
       } else {
         acc[iconName] = icon;
       }
-
       return acc;
     }, {});
   }
-
   function defineIcons(prefix, icons) {
     let params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     const {
       skipHooks = false
     } = params;
     const normalized = normalizeIcons(icons);
-
     if (typeof namespace.hooks.addPack === 'function' && !skipHooks) {
       namespace.hooks.addPack(prefix, normalizeIcons(icons));
     } else {
-      namespace.styles[prefix] = { ...(namespace.styles[prefix] || {}),
-        ...normalized
-      };
+      namespace.styles[prefix] = _objectSpread2(_objectSpread2({}, namespace.styles[prefix] || {}), normalized);
     }
+
     /**
      * Font Awesome 4 used the prefix of `fa` for all icons. With the introduction
      * of new styles we needed to differentiate between them. Prefix `fa` is now an alias
      * for `fas` so we'll ease the upgrade process for our users by automatically defining
      * this as well.
      */
-
-
     if (prefix === 'fas') {
       defineIcons('fa', icons);
     }
@@ -399,6 +469,7 @@
     "debian": [448, 512, [], "e60b", "M380.2 245.6c3-7.6 5.5-14 5.2-24.4l-4.3 9c4.4-13.2 4-27.1 3.6-40.4c-.2-6-.3-11.8 0-17.4l-1.8-.5c-1.5-45.2-40.6-93.1-75.3-109.4c-30-13.8-76.1-16.2-97.3-5.8c1.3-1.1 4.2-2 6.8-2.7l.3-.1c3.3-1 6-1.7 4-2.9c-19.2 1.9-24.9 5.5-31.1 9.4l-.1 0c-4.6 2.9-9.5 6-20.3 8.7c-3.5 3.4 1.7 2 5.8 .9l0 0c4.1-1.1 7.2-1.9-.1 2.4c-3.5 1-6.6 1.3-9.6 1.6l-.1 0c-8.3 .8-15.8 1.6-30.7 17c.8 1.3 3.4-.2 5.3-1.3l.1-.1c2.3-1.4 3.4-2-1.7 4.4c-19.1-2.4-60.3 43.7-69.1 59l4.6 .8c-3.2 8-6.8 14.8-10 20.8c-4.3 8.1-7.9 14.9-8.7 21.3c-.3 5.1-1 11-1.7 17.3l0 0c-.1 1-.2 2-.3 3l-.1 .6c-3 27.3-6.7 60.8 3.9 73l-1.3 13c.6 1.2 1.1 2.3 1.6 3.5c.2 .4 .4 .8 .5 1.1l0 0 0 0 0 0 0 0 0 0 0 0 0 0c1 2.1 2 4.2 3.3 6.2l-3 .2c7 22.1 10.8 22.5 15.1 22.9l0 0c4.4 .4 9.3 .9 18.7 24.2c-2.7-.9-5.5-1.9-9.4-7.2c-.5 4.1 5.8 16.3 13.1 25.8l-3.1 3.6c2.1 3.7 4.8 6.2 7.6 8.8l0 0 0 0c1 .9 2.1 1.9 3.1 2.9c-11.9-6.5 3.2 13.7 11.9 25.2c.8 1.1 1.5 2 2.2 2.9l0 0 0 0 0 0 0 0 0 0c1.4 1.9 2.5 3.4 2.9 4.1l2.4-4.2c-.3 6.1 4.3 13.9 13.1 24.7l7.3-.3c3 6 14 16.7 20.7 17.2l-4.4 5.8c8.1 2.6 10.3 4.3 12.7 6.2c2.6 2.1 5.4 4.3 16.1 8.1l-4.2-7.4c3.5 3 6.2 5.9 8.8 8.7l.1 .1c5.2 5.6 9.9 10.6 19.7 15.3c10.7 3.7 16.6 4.7 22.7 5.8c.3 0 .6 .1 .9 .1c5.4 .8 11.2 1.8 20.8 4.5c-1.1-.1-2.2-.1-3.3-.1h0c-2.3-.1-4.7-.1-7-.1l0 0 0 0 0 0 0 0 0 0 0 0 0 0c-14.4-.2-29.2-.4-42.7-5.2C107.8 480.5 19.5 367.2 26 250.6c-.6-9.9-.3-20.9 0-30.7c.4-13.5 .7-24.8-1.6-28.3l1-3.1c5.3-17.4 11.7-38.2 23.8-62.8l-.1-.2v-.1c.4 .4 3.4 3.4 8.8-5.8c.8-1.8 1.6-3.7 2.4-5.6c.5-1.1 .9-2.2 1.4-3.2c2.5-6.1 5.1-12.3 8.4-17.9l2.6-.6c1.7-10.1 17-23.8 29.8-35.2l1.1-1c5.7-5.1 10.7-9.7 13.6-13.1l.7 4.4c17-15.9 44.6-27.5 65.6-36.4l.5-.2c4.8-2 9.3-3.9 13.3-5.7c-3.4 3.8 2.2 2.7 10 1c4.8-1 10.4-2.1 15.3-2.4l-3.9 2.1c-2.7 1.4-5.4 2.8-8 4.6c8.1-2 11.7-1.4 15.7-.8l.3 0c3.5 .6 7.3 1.2 14.6 .2c-5.6 .8-12.3 3-11.2 3.8c7.9 .9 12.8-.1 17.2-1l.2 0c5.5-1.1 10.3-2 19.3 .9l-1-4.8c7.3 2.6 12.7 4.3 17.5 5.8l.5 .1c10 3 17.6 5.3 34.2 14.1c3.2 .2 5.3-.5 7.4-1.2l.1 0c3.6-1.1 7-2.1 15.2 1.2c.3 .5 .5 1 .7 1.4c.1 .2 .2 .5 .3 .7l0 .1c1 2.6 1.8 4.6 14.6 12.1c1.7-.7-2.7-4.7-6.4-8.2c0 0 0 0-.1-.1c-.2-.1-.3-.3-.5-.4c32.2 17.3 67.3 54.1 78 93.5c-6-11.1-5.2-5.5-4.3 .5c.6 4 1.2 8.1-.2 7.5c4.5 12.1 8.1 24.5 10.4 37.4l-.8-2.9-.1-.3c-3.3-11.9-9.6-34.3-19.9-49.3c-.4 4.3-2.8 3.9-5.2 3.5l-.1 0 0 0c-3.3-.6-6.2-1.1-1.9 12.6c2.6 3.8 3.1 2.4 3.5 1.1l0 0c.5-1.5 .9-2.7 4.7 5.2c.1 4.1 1 8.2 2.1 12.7l0 0 0 0 .1 .6c.1 .3 .1 .5 .2 .8l.1 .6c.6 2.6 1.3 5.4 1.8 8.4c-1.1-.2-2.3-2.2-3.4-4.2c-1.4-2.4-2.8-4.7-3.7-3.2c2.4 11.5 6.5 17.4 8 18.3c-.3 .6-.6 .7-1.1 .7c-.8 0-1.8 .1-1.9 5.3c.7 13.7 3.3 12.5 5.3 11.6l0 0c.6-.3 1.2-.6 1.7-.4c-.6 2.5-1.6 5.1-2.7 7.9c-2.8 7.1-6 15.4-3.4 26.1c-.8-3-2-6-3.1-8.9l-.1-.4c-.2-.5-.4-1-.6-1.5l0 0c-.3-.8-.6-1.6-.9-2.3c-.6 4.4-.3 7.7-.1 10.6c0 .2 0 .5 0 .7c.4 5.3 .7 10-3 19.9c4.3-14.2 3.8-26.9-.2-20.8c1 10.9-3.7 20.4-8 28.9l-.1 .2c-3.6 7.1-6.8 13.5-5.9 19.3l-5.2-7.1c-7.5 10.9-7 13.3-6.5 15.5l0 .1c.5 1.9 1 3.8-3.4 10.8c1.7-2.9 1.3-3.6 1-4.2l0 0c-.4-.8-.7-1.5 1.7-5.1c-1.6 .1-5.5 3.9-10.1 8.5c-3.9 3.9-8.5 8.4-12.8 11.8c-37.5 30.1-82.3 34-125.6 17.8c.2-1-.2-2.1-3.1-4.1c-36.8-28.2-58.5-52.1-50.9-107.5c2.1-1.6 3.6-5.8 5.3-10.8l0 0 0 0 .2-.4 .1-.3 0-.1c2.9-8.4 6.5-18.8 14.3-23.8c7.8-17.3 31.3-33.3 56.4-33.7c25.6-1.4 47.2 13.7 58.1 27.9c-19.8-18.4-52.1-24-79.7-10.4c-28.2 12.7-45 43.8-42.5 74.7c.3-.4 .6-.6 .9-.8l0 0s0 0 0 0c0 0 .1-.1 .1-.1l.1-.1c.6-.5 1.1-.9 1.4-3.3c-.9 60.2 64.8 104.3 112.1 82l.6 1.3c12.7-3.5 15.9-6.5 20.3-10.7l.1-.1 0 0c2.2-2.1 4.7-4.5 8.9-7.3c-.3 .7-1.3 1.7-2.4 2.7c-2.2 2.1-4.6 4.5-1.6 4.6c5-1.3 18.5-13.4 28.5-22.3l0 0 0 0c.6-.5 1.2-1 1.7-1.5c1.5-1.3 2.8-2.5 4-3.6l0 0 .3-.3c1.9-4.2 1.6-5.6 1.3-7l0-.1c-.4-1.6-.8-3.3 2.4-9.6l7.3-3.7c.8-2.1 1.5-4.1 2.2-6c.2-.6 .5-1.2 .7-1.8l-.4-.2zM349.3 34.3l-.2-.1 .2 .1 0 0zM247.8 334.1c-6-3-13.7-8.9-14.8-11.4l-.4 .3c-.3 .6-.5 1.3-.2 2.2c-12.2-5.7-23.4-14.3-32.6-24.9c4.9 7.1 10.1 14.1 17 19.5c-6.9-2.3-15.1-11.8-21.6-19.3l-.1-.1c-4.3-5-7.9-9.1-9.7-9.5c19.8 35.5 80.5 62.3 112.3 49c-14.7 .5-33.4 .3-49.9-5.8zm79.3-119.7l-.1-.2c-.5-1.5-1.1-3.1-1.7-3.4c1.4-5.8 5.4-10.7 4.4 4.6c-1 3.8-1.8 1.5-2.6-1zm-4.2 22.2c-1.3 7.9-5 15.5-10.1 22.5c.2-2-1.2-2.4-2.6-2.8l0 0c-2.9-.8-5.9-1.6 5.6-16.1c-.5 1.9-2.1 4.6-3.7 7.3l0 0 0 0-.3 .4c-3.6 5.9-6.7 11 4 4.3l1-1.8c2.6-4.5 5-8.8 6-13.8h.1zm-55.6 33.9c7.1 .6 14.1 .6 21-1.1c-2.5 2.4-5.2 4.8-8.3 7.2c-11.1-1.7-21.2-6-12.7-6.1zm-92.6 11.6c3.6 7.1 6.4 11.5 9 15.7l.1 .2c2.3 3.7 4.4 7.1 6.8 11.7c-5.1-4.2-8.7-9.5-12.5-15l-.3-.5c-1.4-2.1-2.8-4.2-4.4-6.2l1.2-5.9h.1zm7.5-9.6c1.6 3.3 3.2 6.4 5.7 9.1l2.6 7.7-1.3-2.1c-3.2-5.3-6.3-10.6-8-16.7l.8 1.6 .2 .4zm238.9-41.6c-2.3 17.4-7.7 34.6-16 50.3c7.6-14.9 12.5-30.9 14.8-47.2l1.2-3.1zM35.6 110.6c.4 .8 1.4 .5 2.3 .3c1.9-.5 3.6-.9-.1 7.6c-.5 .3-1 .7-1.5 1l0 0 0 0c-1.4 .9-2.8 1.9-3.9 3c1.9-3.8 3.5-7.4 3.2-11.9zM25.3 152.3c-.7 3.7-1.5 7.9-3.4 13.9c.2-1.9 0-3.5-.2-4.9l0-.1c-.4-3.4-.7-6.3 4.3-12.8c-.3 1.2-.5 2.5-.7 3.8v.1z"],
     "openid": [448, 512, [], "f19b", "M271.5 432l-68 32C88.5 453.7 0 392.5 0 318.2c0-71.5 82.5-131 191.7-144.3v43c-71.5 12.5-124 53-124 101.3 0 51 58.5 93.3 135.7 103v-340l68-33.2v384zM448 291l-131.3-28.5 36.8-20.7c-19.5-11.5-43.5-20-70-24.8v-43c46.2 5.5 87.7 19.5 120.3 39.3l35-19.8L448 291z"],
     "instalod": [512, 512, [], "e081", "M153.384,480H387.113L502.554,275.765,204.229,333.211ZM504.726,240.078,387.113,32H155.669L360.23,267.9ZM124.386,48.809,7.274,256,123.236,461.154,225.627,165.561Z"],
+    "files-pinwheel": [512, 512, [], "e69f", "M253.2 246.4L136.9 130.2c-.6-.6-1-1.3-1.4-2s-.5-1.6-.5-2.4s.2-1.6 .5-2.4s.8-1.4 1.4-2L253.3 5.1c.9-.9 2-1.5 3.2-1.7s2.5-.1 3.6 .3s2.1 1.3 2.8 2.3s1.1 2.2 1.1 3.5L264 242c0 1.3-.3 2.5-1 3.6s-1.7 1.9-2.9 2.4s-2.5 .6-3.7 .3s-2.4-.9-3.2-1.9zm40.3-4.4l0-134.4c0-.8 .1-1.6 .5-2.4s.8-1.5 1.3-2.1s1.3-1.1 2-1.4s1.6-.5 2.4-.5l134.4 0c1.2 0 2.5 .4 3.5 1.1s1.8 1.7 2.3 2.8s.6 2.4 .3 3.6s-.9 2.3-1.7 3.2L304 246.4c-.9 .8-2 1.4-3.2 1.6s-2.4 .1-3.5-.4s-2.1-1.3-2.8-2.3s-1.1-2.2-1.1-3.4zm30.6 35c-1.2 0-2.5-.3-3.5-1s-1.9-1.6-2.4-2.8s-.6-2.4-.4-3.6s.8-2.3 1.7-3.2l84.2-84.2c.6-.6 1.3-1 2-1.4s1.6-.5 2.4-.5s1.6 .2 2.4 .5s1.4 .8 2 1.4l84.4 84.2c.9 .9 1.5 2 1.7 3.2s.1 2.5-.3 3.6s-1.3 2.1-2.3 2.8s-2.2 1.1-3.5 1.1l-168.5 0zM414.8 408l-95.3-95.2c-.9-.9-1.5-2-1.7-3.2s-.1-2.5 .4-3.7s1.3-2.1 2.4-2.8s2.3-1 3.5-1l95.2 0c1.7 0 3.2 .7 4.4 1.8s1.8 2.8 1.8 4.4l0 95.3c0 1.2-.4 2.5-1.1 3.5s-1.7 1.8-2.8 2.3s-2.4 .6-3.6 .3s-2.3-.9-3.2-1.7zM16.5 302.1l216.9 0c1.2 0 2.5 .4 3.5 1.1s1.8 1.7 2.3 2.8s.6 2.4 .3 3.6s-.8 2.3-1.7 3.2L129.4 421.2c-.6 .6-1.3 1-2 1.4s-1.6 .5-2.4 .5s-1.6-.2-2.4-.5s-1.4-.8-2-1.4L12 312.8c-.9-.9-1.5-2-1.7-3.2s-.1-2.5 .4-3.6s1.3-2.1 2.3-2.8s2.3-1 3.5-1zM264 465.3c0 .8-.2 1.6-.5 2.4s-.8 1.5-1.4 2s-1.3 1-2 1.4s-1.6 .5-2.4 .5l-128 0c-1.2 0-2.5-.4-3.5-1.1s-1.8-1.7-2.3-2.8s-.6-2.4-.3-3.6s.8-2.3 1.7-3.2l128-128c.9-.9 2-1.5 3.2-1.7s2.5-.1 3.6 .3s2.1 1.3 2.8 2.3s1.1 2.2 1.1 3.5l0 128zm40-132.5l82.8 82.7c.6 .6 1 1.3 1.4 2s.5 1.6 .5 2.4s-.2 1.6-.5 2.4s-.8 1.4-1.4 2L304 507c-.9 .9-2 1.5-3.2 1.7s-2.5 .1-3.6-.3s-2.1-1.3-2.8-2.3s-1.1-2.2-1.1-3.5l0-165.4c0-1.2 .4-2.5 1.1-3.5s1.7-1.8 2.8-2.3s2.4-.6 3.6-.3s2.3 .8 3.2 1.7zM78.7 122.4c0-1.2 .3-2.5 1-3.5s1.7-1.8 2.8-2.3s2.4-.6 3.6-.4s2.3 .8 3.2 1.7L237.8 266.4c.9 .9 1.5 2 1.7 3.2s.1 2.5-.3 3.6s-1.3 2.1-2.3 2.8s-2.2 1.1-3.5 1.1L85 277.1c-1.7 0-3.2-.7-4.4-1.8s-1.8-2.8-1.8-4.4l0-148.4z"],
     "expeditedssl": [496, 512, [], "f23e", "M248 43.4C130.6 43.4 35.4 138.6 35.4 256S130.6 468.6 248 468.6 460.6 373.4 460.6 256 365.4 43.4 248 43.4zm-97.4 132.9c0-53.7 43.7-97.4 97.4-97.4s97.4 43.7 97.4 97.4v26.6c0 5-3.9 8.9-8.9 8.9h-17.7c-5 0-8.9-3.9-8.9-8.9v-26.6c0-82.1-124-82.1-124 0v26.6c0 5-3.9 8.9-8.9 8.9h-17.7c-5 0-8.9-3.9-8.9-8.9v-26.6zM389.7 380c0 9.7-8 17.7-17.7 17.7H124c-9.7 0-17.7-8-17.7-17.7V238.3c0-9.7 8-17.7 17.7-17.7h248c9.7 0 17.7 8 17.7 17.7V380zm-248-137.3v132.9c0 2.5-1.9 4.4-4.4 4.4h-8.9c-2.5 0-4.4-1.9-4.4-4.4V242.7c0-2.5 1.9-4.4 4.4-4.4h8.9c2.5 0 4.4 1.9 4.4 4.4zm141.7 48.7c0 13-7.2 24.4-17.7 30.4v31.6c0 5-3.9 8.9-8.9 8.9h-17.7c-5 0-8.9-3.9-8.9-8.9v-31.6c-10.5-6.1-17.7-17.4-17.7-30.4 0-19.7 15.8-35.4 35.4-35.4s35.5 15.8 35.5 35.4zM248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 478.3C121 486.3 17.7 383 17.7 256S121 25.7 248 25.7 478.3 129 478.3 256 375 486.3 248 486.3z"],
     "sellcast": [448, 512, [], "f2da", "M353.4 32H94.7C42.6 32 0 74.6 0 126.6v258.7C0 437.4 42.6 480 94.7 480h258.7c52.1 0 94.7-42.6 94.7-94.6V126.6c0-52-42.6-94.6-94.7-94.6zm-50 316.4c-27.9 48.2-89.9 64.9-138.2 37.2-22.9 39.8-54.9 8.6-42.3-13.2l15.7-27.2c5.9-10.3 19.2-13.9 29.5-7.9 18.6 10.8-.1-.1 18.5 10.7 27.6 15.9 63.4 6.3 79.4-21.3 15.9-27.6 6.3-63.4-21.3-79.4-17.8-10.2-.6-.4-18.6-10.6-24.6-14.2-3.4-51.9 21.6-37.5 18.6 10.8-.1-.1 18.5 10.7 48.4 28 65.1 90.3 37.2 138.5zm21.8-208.8c-17 29.5-16.3 28.8-19 31.5-6.5 6.5-16.3 8.7-26.5 3.6-18.6-10.8.1.1-18.5-10.7-27.6-15.9-63.4-6.3-79.4 21.3s-6.3 63.4 21.3 79.4c0 0 18.5 10.6 18.6 10.6 24.6 14.2 3.4 51.9-21.6 37.5-18.6-10.8.1.1-18.5-10.7-48.2-27.8-64.9-90.1-37.1-138.4 27.9-48.2 89.9-64.9 138.2-37.2l4.8-8.4c14.3-24.9 52-3.3 37.7 21.5z"],
     "square-twitter": [448, 512, ["twitter-square"], "f081", "M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM351.3 199.3v0c0 86.7-66 186.6-186.6 186.6c-37.2 0-71.7-10.8-100.7-29.4c5.3 .6 10.4 .8 15.8 .8c30.7 0 58.9-10.4 81.4-28c-28.8-.6-53-19.5-61.3-45.5c10.1 1.5 19.2 1.5 29.6-1.2c-30-6.1-52.5-32.5-52.5-64.4v-.8c8.7 4.9 18.9 7.9 29.6 8.3c-9-6-16.4-14.1-21.5-23.6s-7.8-20.2-7.7-31c0-12.2 3.2-23.4 8.9-33.1c32.3 39.8 80.8 65.8 135.2 68.6c-9.3-44.5 24-80.6 64-80.6c18.9 0 35.9 7.9 47.9 20.7c14.8-2.8 29-8.3 41.6-15.8c-4.9 15.2-15.2 28-28.8 36.1c13.2-1.4 26-5.1 37.8-10.2c-8.9 13.1-20.1 24.7-32.9 34c.2 2.8 .2 5.7 .2 8.5z"],
@@ -674,7 +745,7 @@
     "apper": [640, 512, [], "f371", "M42.1 239.1c22.2 0 29 2.8 33.5 14.6h.8v-22.9c0-11.3-4.8-15.4-17.9-15.4-11.3 0-14.4 2.5-15.1 12.8H4.8c.3-13.9 1.5-19.1 5.8-24.4C17.9 195 29.5 192 56.7 192c33 0 47.1 5 53.9 18.9 2 4.3 4 15.6 4 23.7v76.3H76.3l1.3-19.1h-1c-5.3 15.6-13.6 20.4-35.5 20.4-30.3 0-41.1-10.1-41.1-37.3 0-25.2 12.3-35.8 42.1-35.8zm17.1 48.1c13.1 0 16.9-3 16.9-13.4 0-9.1-4.3-11.6-19.6-11.6-13.1 0-17.9 3-17.9 12.1-.1 10.4 3.7 12.9 20.6 12.9zm77.8-94.9h38.3l-1.5 20.6h.8c9.1-17.1 15.9-20.9 37.5-20.9 14.4 0 24.7 3 31.5 9.1 9.8 8.6 12.8 20.4 12.8 48.1 0 30-3 43.1-12.1 52.9-6.8 7.3-16.4 10.1-33.2 10.1-20.4 0-29.2-5.5-33.8-21.2h-.8v70.3H137v-169zm80.9 60.7c0-27.5-3.3-32.5-20.7-32.5-16.9 0-20.7 5-20.7 28.7 0 28 3.5 33.5 21.2 33.5 16.4 0 20.2-5.6 20.2-29.7zm57.9-60.7h38.3l-1.5 20.6h.8c9.1-17.1 15.9-20.9 37.5-20.9 14.4 0 24.7 3 31.5 9.1 9.8 8.6 12.8 20.4 12.8 48.1 0 30-3 43.1-12.1 52.9-6.8 7.3-16.4 10.1-33.3 10.1-20.4 0-29.2-5.5-33.8-21.2h-.8v70.3h-39.5v-169zm80.9 60.7c0-27.5-3.3-32.5-20.7-32.5-16.9 0-20.7 5-20.7 28.7 0 28 3.5 33.5 21.2 33.5 16.4 0 20.2-5.6 20.2-29.7zm53.8-3.8c0-25.4 3.3-37.8 12.3-45.8 8.8-8.1 22.2-11.3 45.1-11.3 42.8 0 55.7 12.8 55.7 55.7v11.1h-75.3c-.3 2-.3 4-.3 4.8 0 16.9 4.5 21.9 20.1 21.9 13.9 0 17.9-3 17.9-13.9h37.5v2.3c0 9.8-2.5 18.9-6.8 24.7-7.3 9.8-19.6 13.6-44.3 13.6-27.5 0-41.6-3.3-50.6-12.3-8.5-8.5-11.3-21.3-11.3-50.8zm76.4-11.6c-.3-1.8-.3-3.3-.3-3.8 0-12.3-3.3-14.6-19.6-14.6-14.4 0-17.1 3-18.1 15.1l-.3 3.3h38.3zm55.6-45.3h38.3l-1.8 19.9h.7c6.8-14.9 14.4-20.2 29.7-20.2 10.8 0 19.1 3.3 23.4 9.3 5.3 7.3 6.8 14.4 6.8 34 0 1.5 0 5 .2 9.3h-35c.3-1.8.3-3.3.3-4 0-15.4-2-19.4-10.3-19.4-6.3 0-10.8 3.3-13.1 9.3-1 3-1 4.3-1 12.3v68h-38.3V192.3z"],
     "fort-awesome": [512, 512, [], "f286", "M489.2 287.9h-27.4c-2.6 0-4.6 2-4.6 4.6v32h-36.6V146.2c0-2.6-2-4.6-4.6-4.6h-27.4c-2.6 0-4.6 2-4.6 4.6v32h-36.6v-32c0-2.6-2-4.6-4.6-4.6h-27.4c-2.6 0-4.6 2-4.6 4.6v32h-36.6v-32c0-6-8-4.6-11.7-4.6v-38c8.3-2 17.1-3.4 25.7-3.4 10.9 0 20.9 4.3 31.4 4.3 4.6 0 27.7-1.1 27.7-8v-60c0-2.6-2-4.6-4.6-4.6-5.1 0-15.1 4.3-24 4.3-9.7 0-20.9-4.3-32.6-4.3-8 0-16 1.1-23.7 2.9v-4.9c5.4-2.6 9.1-8.3 9.1-14.3 0-20.7-31.4-20.8-31.4 0 0 6 3.7 11.7 9.1 14.3v111.7c-3.7 0-11.7-1.4-11.7 4.6v32h-36.6v-32c0-2.6-2-4.6-4.6-4.6h-27.4c-2.6 0-4.6 2-4.6 4.6v32H128v-32c0-2.6-2-4.6-4.6-4.6H96c-2.6 0-4.6 2-4.6 4.6v178.3H54.8v-32c0-2.6-2-4.6-4.6-4.6H22.8c-2.6 0-4.6 2-4.6 4.6V512h182.9v-96c0-72.6 109.7-72.6 109.7 0v96h182.9V292.5c.1-2.6-1.9-4.6-4.5-4.6zm-288.1-4.5c0 2.6-2 4.6-4.6 4.6h-27.4c-2.6 0-4.6-2-4.6-4.6v-64c0-2.6 2-4.6 4.6-4.6h27.4c2.6 0 4.6 2 4.6 4.6v64zm146.4 0c0 2.6-2 4.6-4.6 4.6h-27.4c-2.6 0-4.6-2-4.6-4.6v-64c0-2.6 2-4.6 4.6-4.6h27.4c2.6 0 4.6 2 4.6 4.6v64z"],
     "waze": [512, 512, [], "f83f", "M502.17 201.67C516.69 287.53 471.23 369.59 389 409.8c13 34.1-12.4 70.2-48.32 70.2a51.68 51.68 0 0 1-51.57-49c-6.44.19-64.2 0-76.33-.64A51.69 51.69 0 0 1 159 479.92c-33.86-1.36-57.95-34.84-47-67.92-37.21-13.11-72.54-34.87-99.62-70.8-13-17.28-.48-41.8 20.84-41.8 46.31 0 32.22-54.17 43.15-110.26C94.8 95.2 193.12 32 288.09 32c102.48 0 197.15 70.67 214.08 169.67zM373.51 388.28c42-19.18 81.33-56.71 96.29-102.14 40.48-123.09-64.15-228-181.71-228-83.45 0-170.32 55.42-186.07 136-9.53 48.91 5 131.35-68.75 131.35C58.21 358.6 91.6 378.11 127 389.54c24.66-21.8 63.87-15.47 79.83 14.34 14.22 1 79.19 1.18 87.9.82a51.69 51.69 0 0 1 78.78-16.42zM205.12 187.13c0-34.74 50.84-34.75 50.84 0s-50.84 34.74-50.84 0zm116.57 0c0-34.74 50.86-34.75 50.86 0s-50.86 34.75-50.86 0zm-122.61 70.69c-3.44-16.94 22.18-22.18 25.62-5.21l.06.28c4.14 21.42 29.85 44 64.12 43.07 35.68-.94 59.25-22.21 64.11-42.77 4.46-16.05 28.6-10.36 25.47 6-5.23 22.18-31.21 62-91.46 62.9-42.55 0-80.88-27.84-87.9-64.25z"],
-    "bluesky": [576, 512, [], "e671", "M407.8 294.7c-3.3-.4-6.7-.8-10-1.3c3.4 .4 6.7 .9 10 1.3zM288 227.1C261.9 176.4 190.9 81.9 124.9 35.3C61.6-9.4 37.5-1.7 21.6 5.5C3.3 13.8 0 41.9 0 58.4S9.1 194 15 213.9c19.5 65.7 89.1 87.9 153.2 80.7c3.3-.5 6.6-.9 10-1.4c-3.3 .5-6.6 1-10 1.4C74.3 308.6-9.1 342.8 100.3 464.5C220.6 589.1 265.1 437.8 288 361.1c22.9 76.7 49.2 222.5 185.6 103.4c102.4-103.4 28.1-156-65.8-169.9c-3.3-.4-6.7-.8-10-1.3c3.4 .4 6.7 .9 10 1.3c64.1 7.1 133.6-15.1 153.2-80.7C566.9 194 576 75 576 58.4s-3.3-44.7-21.6-52.9c-15.8-7.1-40-14.9-103.2 29.8C385.1 81.9 314.1 176.4 288 227.1z"],
+    "bluesky": [576, 512, [], "e671", "M123.6 34.5c66.4 50.1 137.9 151.5 164.2 206C314 186 385.5 84.5 452 34.5c48-36.1 125.6-64.1 125.6 24.9c0 17.8-10.1 149.2-16.1 170.5c-20.7 74.2-96.1 93.1-163.1 81.6c117.2 20 147 86.3 82.6 152.6C358.7 590 305.2 432.5 291.5 392.1c-2.5-7.5-3.7-10.9-3.7-7.9c0-3.1-1.2 .4-3.7 7.9C270.4 432.5 216.9 590 94.6 464.1C30.2 397.8 60 331.5 177.2 311.5C110.2 322.9 34.8 304 14.1 229.8C8.1 208.5-2 77.1-2 59.3c0-88.9 77.7-61 125.6-24.9z"],
     "cc-jcb": [576, 512, [], "f24b", "M431.5 244.3V212c41.2 0 38.5.2 38.5.2 7.3 1.3 13.3 7.3 13.3 16 0 8.8-6 14.5-13.3 15.8-1.2.4-3.3.3-38.5.3zm42.8 20.2c-2.8-.7-3.3-.5-42.8-.5v35c39.6 0 40 .2 42.8-.5 7.5-1.5 13.5-8 13.5-17 0-8.7-6-15.5-13.5-17zM576 80v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V80c0-26.5 21.5-48 48-48h480c26.5 0 48 21.5 48 48zM182 192.3h-57c0 67.1 10.7 109.7-35.8 109.7-19.5 0-38.8-5.7-57.2-14.8v28c30 8.3 68 8.3 68 8.3 97.9 0 82-47.7 82-131.2zm178.5 4.5c-63.4-16-165-14.9-165 59.3 0 77.1 108.2 73.6 165 59.2V287C312.9 311.7 253 309 253 256s59.8-55.6 107.5-31.2v-28zM544 286.5c0-18.5-16.5-30.5-38-32v-.8c19.5-2.7 30.3-15.5 30.3-30.2 0-19-15.7-30-37-31 0 0 6.3-.3-120.3-.3v127.5h122.7c24.3.1 42.3-12.9 42.3-33.2z"],
     "snapchat": [512, 512, [62124, "snapchat-ghost"], "f2ab", "M496.926,366.6c-3.373-9.176-9.8-14.086-17.112-18.153-1.376-.806-2.641-1.451-3.72-1.947-2.182-1.128-4.414-2.22-6.634-3.373-22.8-12.09-40.609-27.341-52.959-45.42a102.889,102.889,0,0,1-9.089-16.12c-1.054-3.013-1-4.724-.248-6.287a10.221,10.221,0,0,1,2.914-3.038c3.918-2.591,7.96-5.22,10.7-6.993,4.885-3.162,8.754-5.667,11.246-7.44,9.362-6.547,15.909-13.5,20-21.278a42.371,42.371,0,0,0,2.1-35.191c-6.2-16.318-21.613-26.449-40.287-26.449a55.543,55.543,0,0,0-11.718,1.24c-1.029.224-2.059.459-3.063.72.174-11.16-.074-22.94-1.066-34.534-3.522-40.758-17.794-62.123-32.674-79.16A130.167,130.167,0,0,0,332.1,36.443C309.515,23.547,283.91,17,256,17S202.6,23.547,180,36.443a129.735,129.735,0,0,0-33.281,26.783c-14.88,17.038-29.152,38.44-32.673,79.161-.992,11.594-1.24,23.435-1.079,34.533-1-.26-2.021-.5-3.051-.719a55.461,55.461,0,0,0-11.717-1.24c-18.687,0-34.125,10.131-40.3,26.449a42.423,42.423,0,0,0,2.046,35.228c4.105,7.774,10.652,14.731,20.014,21.278,2.48,1.736,6.361,4.24,11.246,7.44,2.641,1.711,6.5,4.216,10.28,6.72a11.054,11.054,0,0,1,3.3,3.311c.794,1.624.818,3.373-.36,6.6a102.02,102.02,0,0,1-8.94,15.785c-12.077,17.669-29.363,32.648-51.434,44.639C32.355,348.608,20.2,352.75,15.069,366.7c-3.868,10.528-1.339,22.506,8.494,32.6a49.137,49.137,0,0,0,12.4,9.387,134.337,134.337,0,0,0,30.342,12.139,20.024,20.024,0,0,1,6.126,2.741c3.583,3.137,3.075,7.861,7.849,14.78a34.468,34.468,0,0,0,8.977,9.127c10.019,6.919,21.278,7.353,33.207,7.811,10.776.41,22.989.881,36.939,5.481,5.778,1.91,11.78,5.605,18.736,9.92C194.842,480.951,217.707,495,255.973,495s61.292-14.123,78.118-24.428c6.907-4.24,12.872-7.9,18.489-9.758,13.949-4.613,26.163-5.072,36.939-5.481,11.928-.459,23.187-.893,33.206-7.812a34.584,34.584,0,0,0,10.218-11.16c3.434-5.84,3.348-9.919,6.572-12.771a18.971,18.971,0,0,1,5.753-2.629A134.893,134.893,0,0,0,476.02,408.71a48.344,48.344,0,0,0,13.019-10.193l.124-.149C498.389,388.5,500.708,376.867,496.926,366.6Zm-34.013,18.277c-20.745,11.458-34.533,10.23-45.259,17.137-9.114,5.865-3.72,18.513-10.342,23.076-8.134,5.617-32.177-.4-63.239,9.858-25.618,8.469-41.961,32.822-88.038,32.822s-62.036-24.3-88.076-32.884c-31-10.255-55.092-4.241-63.239-9.858-6.609-4.563-1.24-17.211-10.341-23.076-10.739-6.907-24.527-5.679-45.26-17.075-13.206-7.291-5.716-11.8-1.314-13.937,75.143-36.381,87.133-92.552,87.666-96.719.645-5.046,1.364-9.014-4.191-14.148-5.369-4.96-29.189-19.7-35.8-24.316-10.937-7.638-15.748-15.264-12.2-24.638,2.48-6.485,8.531-8.928,14.879-8.928a27.643,27.643,0,0,1,5.965.67c12,2.6,23.659,8.617,30.392,10.242a10.749,10.749,0,0,0,2.48.335c3.6,0,4.86-1.811,4.612-5.927-.768-13.132-2.628-38.725-.558-62.644,2.84-32.909,13.442-49.215,26.04-63.636,6.051-6.932,34.484-36.976,88.857-36.976s82.88,29.92,88.931,36.827c12.611,14.421,23.225,30.727,26.04,63.636,2.071,23.919.285,49.525-.558,62.644-.285,4.327,1.017,5.927,4.613,5.927a10.648,10.648,0,0,0,2.48-.335c6.745-1.624,18.4-7.638,30.4-10.242a27.641,27.641,0,0,1,5.964-.67c6.386,0,12.4,2.48,14.88,8.928,3.546,9.374-1.24,17-12.189,24.639-6.609,4.612-30.429,19.343-35.8,24.315-5.568,5.134-4.836,9.1-4.191,14.149.533,4.228,12.511,60.4,87.666,96.718C468.629,373.011,476.119,377.524,462.913,384.877Z"],
     "fantasy-flight-games": [512, 512, [], "f6dc", "M256 32.86L32.86 256 256 479.14 479.14 256 256 32.86zM88.34 255.83c1.96-2 11.92-12.3 96.49-97.48 41.45-41.75 86.19-43.77 119.77-18.69 24.63 18.4 62.06 58.9 62.15 59 .68.74 1.07 2.86.58 3.38-11.27 11.84-22.68 23.54-33.5 34.69-34.21-32.31-40.52-38.24-48.51-43.95-17.77-12.69-41.4-10.13-56.98 5.1-2.17 2.13-1.79 3.43.12 5.35 2.94 2.95 28.1 28.33 35.09 35.78-11.95 11.6-23.66 22.97-35.69 34.66-12.02-12.54-24.48-25.53-36.54-38.11-21.39 21.09-41.69 41.11-61.85 60.99zm234.82 101.6c-35.49 35.43-78.09 38.14-106.99 20.47-22.08-13.5-39.38-32.08-72.93-66.84 12.05-12.37 23.79-24.42 35.37-36.31 33.02 31.91 37.06 36.01 44.68 42.09 18.48 14.74 42.52 13.67 59.32-1.8 3.68-3.39 3.69-3.64.14-7.24-10.59-10.73-21.19-21.44-31.77-32.18-1.32-1.34-3.03-2.48-.8-4.69 10.79-10.71 21.48-21.52 32.21-32.29.26-.26.65-.38 1.91-1.07 12.37 12.87 24.92 25.92 37.25 38.75 21.01-20.73 41.24-40.68 61.25-60.42 13.68 13.4 27.13 26.58 40.86 40.03-20.17 20.86-81.68 82.71-100.5 101.5zM256 0L0 256l256 256 256-256L256 0zM16 256L256 16l240 240-240 240L16 256z"],
@@ -792,12 +863,10 @@
 
   let _WINDOW = {};
   let _DOCUMENT = {};
-
   try {
     if (typeof window !== 'undefined') _WINDOW = window;
     if (typeof document !== 'undefined') _DOCUMENT = document;
   } catch (e) {}
-
   const {
     userAgent = ''
   } = _WINDOW.navigator || {};
@@ -807,152 +876,243 @@
   const IS_DOM = !!DOCUMENT.documentElement && !!DOCUMENT.head && typeof DOCUMENT.addEventListener === 'function' && typeof DOCUMENT.createElement === 'function';
   const IS_IE = ~userAgent.indexOf('MSIE') || ~userAgent.indexOf('Trident/');
 
-  var a = "classic",
-      r = "sharp",
-      o = "sharp-duotone";
+  function _defineProperty(e, r, t) {
+    return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+      value: t,
+      enumerable: !0,
+      configurable: !0,
+      writable: !0
+    }) : e[r] = t, e;
+  }
+  function ownKeys(e, r) {
+    var t = Object.keys(e);
+    if (Object.getOwnPropertySymbols) {
+      var o = Object.getOwnPropertySymbols(e);
+      r && (o = o.filter(function (r) {
+        return Object.getOwnPropertyDescriptor(e, r).enumerable;
+      })), t.push.apply(t, o);
+    }
+    return t;
+  }
+  function _objectSpread2(e) {
+    for (var r = 1; r < arguments.length; r++) {
+      var t = null != arguments[r] ? arguments[r] : {};
+      r % 2 ? ownKeys(Object(t), !0).forEach(function (r) {
+        _defineProperty(e, r, t[r]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) {
+        Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r));
+      });
+    }
+    return e;
+  }
+  function _toPrimitive(t, r) {
+    if ("object" != typeof t || !t) return t;
+    var e = t[Symbol.toPrimitive];
+    if (void 0 !== e) {
+      var i = e.call(t, r || "default");
+      if ("object" != typeof i) return i;
+      throw new TypeError("@@toPrimitive must return a primitive value.");
+    }
+    return ("string" === r ? String : Number)(t);
+  }
+  function _toPropertyKey(t) {
+    var i = _toPrimitive(t, "string");
+    return "symbol" == typeof i ? i : i + "";
+  }
 
-  var et$1 = {
-    classic: {
-      900: "fas",
-      400: "far",
-      normal: "far",
-      300: "fal",
-      100: "fat"
-    },
-    sharp: {
-      900: "fass",
-      400: "fasr",
-      300: "fasl",
-      100: "fast"
-    },
-    "sharp-duotone": {
-      900: "fasds"
-    }
-  };
-  var bt = {
-    kit: {
-      fak: "kit",
-      "fa-kit": "kit"
-    },
-    "kit-duotone": {
-      fakd: "kit-duotone",
-      "fa-kit-duotone": "kit-duotone"
-    }
-  };
-  var lo = {
-    classic: {
-      "fa-brands": "fab",
-      "fa-duotone": "fad",
-      "fa-light": "fal",
-      "fa-regular": "far",
-      "fa-solid": "fas",
-      "fa-thin": "fat"
-    },
-    sharp: {
-      "fa-solid": "fass",
-      "fa-regular": "fasr",
-      "fa-light": "fasl",
-      "fa-thin": "fast"
-    },
-    "sharp-duotone": {
-      "fa-solid": "fasds"
-    }
-  },
-      no = {
-    classic: {
-      fab: "fa-brands",
-      fad: "fa-duotone",
-      fal: "fa-light",
-      far: "fa-regular",
-      fas: "fa-solid",
-      fat: "fa-thin"
-    },
-    sharp: {
-      fass: "fa-solid",
-      fasr: "fa-regular",
-      fasl: "fa-light",
-      fast: "fa-thin"
-    },
-    "sharp-duotone": {
-      fasds: "fa-solid"
-    }
-  },
-      fo = {
-    classic: {
-      solid: "fas",
-      regular: "far",
-      light: "fal",
-      thin: "fat",
-      duotone: "fad",
-      brands: "fab"
-    },
-    sharp: {
-      solid: "fass",
-      regular: "fasr",
-      light: "fasl",
-      thin: "fast"
-    },
-    "sharp-duotone": {
-      solid: "fasds"
-    }
-  },
-      ho = {
-    classic: {
-      fa: "solid",
-      fas: "solid",
-      "fa-solid": "solid",
-      far: "regular",
-      "fa-regular": "regular",
-      fal: "light",
-      "fa-light": "light",
-      fat: "thin",
-      "fa-thin": "thin",
-      fad: "duotone",
-      "fa-duotone": "duotone",
-      fab: "brands",
-      "fa-brands": "brands"
-    },
-    sharp: {
-      fa: "solid",
-      fass: "solid",
-      "fa-solid": "solid",
-      fasr: "regular",
-      "fa-regular": "regular",
-      fasl: "light",
-      "fa-light": "light",
-      fast: "thin",
-      "fa-thin": "thin"
-    },
-    "sharp-duotone": {
-      fa: "solid",
-      fasds: "solid",
-      "fa-solid": "solid"
-    }
-  };
-  var Io = {
+  var S = {
+      classic: {
+        fa: "solid",
+        fas: "solid",
+        "fa-solid": "solid",
+        far: "regular",
+        "fa-regular": "regular",
+        fal: "light",
+        "fa-light": "light",
+        fat: "thin",
+        "fa-thin": "thin",
+        fab: "brands",
+        "fa-brands": "brands"
+      },
+      duotone: {
+        fa: "solid",
+        fad: "solid",
+        "fa-solid": "solid",
+        "fa-duotone": "solid",
+        fadr: "regular",
+        "fa-regular": "regular",
+        fadl: "light",
+        "fa-light": "light",
+        fadt: "thin",
+        "fa-thin": "thin"
+      },
+      sharp: {
+        fa: "solid",
+        fass: "solid",
+        "fa-solid": "solid",
+        fasr: "regular",
+        "fa-regular": "regular",
+        fasl: "light",
+        "fa-light": "light",
+        fast: "thin",
+        "fa-thin": "thin"
+      },
+      "sharp-duotone": {
+        fa: "solid",
+        fasds: "solid",
+        "fa-solid": "solid",
+        fasdr: "regular",
+        "fa-regular": "regular",
+        fasdl: "light",
+        "fa-light": "light",
+        fasdt: "thin",
+        "fa-thin": "thin"
+      }
+    };
+  var s = "classic";
+  var G = {
+      classic: {
+        900: "fas",
+        400: "far",
+        normal: "far",
+        300: "fal",
+        100: "fat"
+      },
+      duotone: {
+        900: "fad",
+        400: "fadr",
+        300: "fadl",
+        100: "fadt"
+      },
+      sharp: {
+        900: "fass",
+        400: "fasr",
+        300: "fasl",
+        100: "fast"
+      },
+      "sharp-duotone": {
+        900: "fasds",
+        400: "fasdr",
+        300: "fasdl",
+        100: "fasdt"
+      }
+    };
+  var xt = {
+      classic: {
+        solid: "fas",
+        regular: "far",
+        light: "fal",
+        thin: "fat",
+        brands: "fab"
+      },
+      duotone: {
+        solid: "fad",
+        regular: "fadr",
+        light: "fadl",
+        thin: "fadt"
+      },
+      sharp: {
+        solid: "fass",
+        regular: "fasr",
+        light: "fasl",
+        thin: "fast"
+      },
+      "sharp-duotone": {
+        solid: "fasds",
+        regular: "fasdr",
+        light: "fasdl",
+        thin: "fasdt"
+      }
+    };
+  var St = {
+      kit: {
+        fak: "kit",
+        "fa-kit": "kit"
+      },
+      "kit-duotone": {
+        fakd: "kit-duotone",
+        "fa-kit-duotone": "kit-duotone"
+      }
+    };
+  var Ct = {
     kit: {
       "fa-kit": "fak"
     },
     "kit-duotone": {
       "fa-kit-duotone": "fakd"
     }
-  },
-      Fo = {
-    kit: {
-      fak: "fa-kit"
-    },
-    "kit-duotone": {
-      fakd: "fa-kit-duotone"
-    }
-  },
-      So = {
-    kit: {
-      kit: "fak"
-    },
-    "kit-duotone": {
-      "kit-duotone": "fakd"
-    }
   };
+  var Wt = {
+      kit: {
+        fak: "fa-kit"
+      },
+      "kit-duotone": {
+        fakd: "fa-kit-duotone"
+      }
+    };
+  var Et = {
+      kit: {
+        kit: "fak"
+      },
+      "kit-duotone": {
+        "kit-duotone": "fakd"
+      }
+    };
+
+  var po = {
+      classic: {
+        "fa-brands": "fab",
+        "fa-duotone": "fad",
+        "fa-light": "fal",
+        "fa-regular": "far",
+        "fa-solid": "fas",
+        "fa-thin": "fat"
+      },
+      duotone: {
+        "fa-regular": "fadr",
+        "fa-light": "fadl",
+        "fa-thin": "fadt"
+      },
+      sharp: {
+        "fa-solid": "fass",
+        "fa-regular": "fasr",
+        "fa-light": "fasl",
+        "fa-thin": "fast"
+      },
+      "sharp-duotone": {
+        "fa-solid": "fasds",
+        "fa-regular": "fasdr",
+        "fa-light": "fasdl",
+        "fa-thin": "fasdt"
+      }
+    },
+    co = {
+      classic: {
+        fab: "fa-brands",
+        fad: "fa-duotone",
+        fal: "fa-light",
+        far: "fa-regular",
+        fas: "fa-solid",
+        fat: "fa-thin"
+      },
+      duotone: {
+        fadr: "fa-regular",
+        fadl: "fa-light",
+        fadt: "fa-thin"
+      },
+      sharp: {
+        fass: "fa-solid",
+        fasr: "fa-regular",
+        fasl: "fa-light",
+        fast: "fa-thin"
+      },
+      "sharp-duotone": {
+        fasds: "fa-solid",
+        fasdr: "fa-regular",
+        fasdl: "fa-light",
+        fasdt: "fa-thin"
+      }
+    };
 
   const NAMESPACE_IDENTIFIER = '___FONT_AWESOME___';
   const PRODUCTION = (() => {
@@ -962,57 +1122,45 @@
       return false;
     }
   })();
-
   function familyProxy(obj) {
     // Defaults to the classic family if family is not available
     return new Proxy(obj, {
       get(target, prop) {
-        return prop in target ? target[prop] : target[a];
+        return prop in target ? target[prop] : target[s];
       }
-
     });
   }
+  const _PREFIX_TO_STYLE = _objectSpread2({}, S);
 
-  const _PREFIX_TO_STYLE = { ...ho
-  };
-  _PREFIX_TO_STYLE[a] = { ...ho[a],
-    ...bt['kit'],
-    ...bt['kit-duotone']
-  };
+  // We changed FACSSClassesToStyleId in the icons repo to be canonical and as such, "classic" family does not have any
+  // duotone styles.  But we do still need duotone in _PREFIX_TO_STYLE below, so we are manually adding
+  // {'fa-duotone': 'duotone'}
+  _PREFIX_TO_STYLE[s] = _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, {
+    'fa-duotone': 'duotone'
+  }), S[s]), St['kit']), St['kit-duotone']);
   const PREFIX_TO_STYLE = familyProxy(_PREFIX_TO_STYLE);
-  const _STYLE_TO_PREFIX = { ...fo
-  };
-  _STYLE_TO_PREFIX[a] = { ..._STYLE_TO_PREFIX[a],
-    ...So['kit'],
-    ...So['kit-duotone']
-  };
+  const _STYLE_TO_PREFIX = _objectSpread2({}, xt);
+
+  // We changed FAStyleIdToShortPrefixId in the icons repo to be canonical and as such, "classic" family does not have any
+  // duotone styles.  But we do still need duotone in _STYLE_TO_PREFIX below, so we are manually adding {duotone: 'fad'}
+  _STYLE_TO_PREFIX[s] = _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, {
+    duotone: 'fad'
+  }), _STYLE_TO_PREFIX[s]), Et['kit']), Et['kit-duotone']);
   const STYLE_TO_PREFIX = familyProxy(_STYLE_TO_PREFIX);
-  const _PREFIX_TO_LONG_STYLE = { ...no
-  };
-  _PREFIX_TO_LONG_STYLE[a] = { ..._PREFIX_TO_LONG_STYLE[a],
-    ...Fo['kit']
-  };
+  const _PREFIX_TO_LONG_STYLE = _objectSpread2({}, co);
+  _PREFIX_TO_LONG_STYLE[s] = _objectSpread2(_objectSpread2({}, _PREFIX_TO_LONG_STYLE[s]), Wt['kit']);
   const PREFIX_TO_LONG_STYLE = familyProxy(_PREFIX_TO_LONG_STYLE);
-  const _LONG_STYLE_TO_PREFIX = { ...lo
-  };
-  _LONG_STYLE_TO_PREFIX[a] = { ..._LONG_STYLE_TO_PREFIX[a],
-    ...Io['kit']
-  };
+  const _LONG_STYLE_TO_PREFIX = _objectSpread2({}, po);
+  _LONG_STYLE_TO_PREFIX[s] = _objectSpread2(_objectSpread2({}, _LONG_STYLE_TO_PREFIX[s]), Ct['kit']);
   const LONG_STYLE_TO_PREFIX = familyProxy(_LONG_STYLE_TO_PREFIX);
-  const _FONT_WEIGHT_TO_PREFIX = { ...et$1
-  };
+  const _FONT_WEIGHT_TO_PREFIX = _objectSpread2({}, G);
   const FONT_WEIGHT_TO_PREFIX = familyProxy(_FONT_WEIGHT_TO_PREFIX);
-  const prefixes = new Set();
-  Object.keys(STYLE_TO_PREFIX[a]).map(prefixes.add.bind(prefixes));
-  Object.keys(STYLE_TO_PREFIX[r]).map(prefixes.add.bind(prefixes));
-  Object.keys(STYLE_TO_PREFIX[o]).map(prefixes.add.bind(prefixes));
 
   function bunker(fn) {
     try {
       for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         args[_key - 1] = arguments[_key];
       }
-
       fn(...args);
     } catch (e) {
       if (!PRODUCTION) {
@@ -1021,50 +1169,43 @@
     }
   }
 
-  const w$1 = WINDOW || {};
-  if (!w$1[NAMESPACE_IDENTIFIER]) w$1[NAMESPACE_IDENTIFIER] = {};
-  if (!w$1[NAMESPACE_IDENTIFIER].styles) w$1[NAMESPACE_IDENTIFIER].styles = {};
-  if (!w$1[NAMESPACE_IDENTIFIER].hooks) w$1[NAMESPACE_IDENTIFIER].hooks = {};
-  if (!w$1[NAMESPACE_IDENTIFIER].shims) w$1[NAMESPACE_IDENTIFIER].shims = [];
-  var namespace = w$1[NAMESPACE_IDENTIFIER];
+  const w = WINDOW || {};
+  if (!w[NAMESPACE_IDENTIFIER]) w[NAMESPACE_IDENTIFIER] = {};
+  if (!w[NAMESPACE_IDENTIFIER].styles) w[NAMESPACE_IDENTIFIER].styles = {};
+  if (!w[NAMESPACE_IDENTIFIER].hooks) w[NAMESPACE_IDENTIFIER].hooks = {};
+  if (!w[NAMESPACE_IDENTIFIER].shims) w[NAMESPACE_IDENTIFIER].shims = [];
+  var namespace = w[NAMESPACE_IDENTIFIER];
 
   function normalizeIcons(icons) {
     return Object.keys(icons).reduce((acc, iconName) => {
       const icon = icons[iconName];
       const expanded = !!icon.icon;
-
       if (expanded) {
         acc[icon.iconName] = icon.icon;
       } else {
         acc[iconName] = icon;
       }
-
       return acc;
     }, {});
   }
-
   function defineIcons(prefix, icons) {
     let params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     const {
       skipHooks = false
     } = params;
     const normalized = normalizeIcons(icons);
-
     if (typeof namespace.hooks.addPack === 'function' && !skipHooks) {
       namespace.hooks.addPack(prefix, normalizeIcons(icons));
     } else {
-      namespace.styles[prefix] = { ...(namespace.styles[prefix] || {}),
-        ...normalized
-      };
+      namespace.styles[prefix] = _objectSpread2(_objectSpread2({}, namespace.styles[prefix] || {}), normalized);
     }
+
     /**
      * Font Awesome 4 used the prefix of `fa` for all icons. With the introduction
      * of new styles we needed to differentiate between them. Prefix `fa` is now an alias
      * for `fas` so we'll ease the upgrade process for our users by automatically defining
      * this as well.
      */
-
-
     if (prefix === 'fas') {
       defineIcons('fa', icons);
     }
@@ -1184,7 +1325,7 @@
     "face-grin-squint-tears": [512, 512, [129315, "grin-squint-tears"], "f586", "M426.8 14.2C446-5 477.5-4.6 497.1 14.9s20 51 .7 70.3c-14.8 14.8-65.7 23.6-88.3 26.7c-5.6 .9-10.3-3.9-9.5-9.5C403.3 79.9 412 29 426.8 14.2zM75 75C158.2-8.3 284.5-22.2 382.2 33.2c-1.5 4.8-2.9 9.6-4.1 14.3c-3.1 12.2-5.5 24.6-7.3 35c-80.8-53.6-190.7-44.8-261.9 26.4C37.7 180.1 28.9 290 82.5 370.8c-10.5 1.8-22.9 4.2-35 7.3c-4.7 1.2-9.5 2.5-14.3 4.1C-22.2 284.5-8.2 158.2 75 75zm389.6 58.9c4.7-1.2 9.5-2.5 14.3-4.1C534.2 227.5 520.2 353.8 437 437c-83.2 83.2-209.5 97.2-307.2 41.8c1.5-4.8 2.8-9.6 4-14.3c3.1-12.2 5.5-24.6 7.3-35c80.8 53.6 190.7 44.8 261.9-26.4c71.2-71.2 80-181.1 26.4-261.9c10.5-1.8 22.9-4.2 35-7.3zm-105.4 93c10.1-16.3 33.9-16.9 37.9 1.9c9.5 44.4-3.7 93.5-39.3 129.1s-84.8 48.8-129.1 39.3c-18.7-4-18.2-27.8-1.9-37.9c25.2-15.7 50.2-35.4 73.6-58.8s43.1-48.4 58.8-73.6zM92 265.3l97.4-29.7c11.6-3.5 22.5 7.3 19 19l-29.7 97.4c-2.6 8.6-13.4 11.3-19.8 4.9c-2-2-3.2-4.6-3.4-7.3l-5.1-56.1-56.1-5.1c-2.8-.3-5.4-1.5-7.3-3.4c-6.3-6.3-3.6-17.2 4.9-19.8zm193-178.2c2 2 3.2 4.6 3.4 7.3l5.1 56.1 56.1 5.1c2.8 .3 5.4 1.5 7.3 3.4c6.3 6.3 3.6 17.2-4.9 19.8l-97.4 29.7c-11.6 3.5-22.5-7.3-19-19L265.3 92c2.6-8.6 13.4-11.3 19.8-4.9zM14.9 497.1c-19.6-19.6-20-51-.7-70.3C29 412 79.8 403.2 102.4 400.1c5.6-.9 10.3 3.9 9.5 9.5c-3.2 22.5-11.9 73.5-26.7 88.3C66 517 34.5 516.6 14.9 497.1z"],
     "rectangle-list": [576, 512, ["list-alt"], "f022", "M64 80c-8.8 0-16 7.2-16 16l0 320c0 8.8 7.2 16 16 16l448 0c8.8 0 16-7.2 16-16l0-320c0-8.8-7.2-16-16-16L64 80zM0 96C0 60.7 28.7 32 64 32l448 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zm96 64a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm104 0c0-13.3 10.7-24 24-24l224 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-224 0c-13.3 0-24-10.7-24-24zm0 96c0-13.3 10.7-24 24-24l224 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-224 0c-13.3 0-24-10.7-24-24zm0 96c0-13.3 10.7-24 24-24l224 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-224 0c-13.3 0-24-10.7-24-24zm-72-64a32 32 0 1 1 0-64 32 32 0 1 1 0 64zM96 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"],
     "calendar-plus": [448, 512, [], "f271", "M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40L64 64C28.7 64 0 92.7 0 128l0 16 0 48L0 448c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-256 0-48 0-16c0-35.3-28.7-64-64-64l-40 0 0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40L152 64l0-40zM48 192l352 0 0 256c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256zm176 40c-13.3 0-24 10.7-24 24l0 48-48 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l48 0 0 48c0 13.3 10.7 24 24 24s24-10.7 24-24l0-48 48 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-48 0 0-48c0-13.3-10.7-24-24-24z"],
-    "circle-left": [512, 512, [61840, "arrow-alt-circle-left"], "f359", "M48 256a208 208 0 1 1 416 0A208 208 0 1 1 48 256zm464 0A256 256 0 1 0 0 256a256 256 0 1 0 512 0zM256 128l-32 0L96 256 224 384l32 0 0-80 128 0 0-96-128 0 0-80z"],
+    "circle-left": [512, 512, [61840, "arrow-alt-circle-left"], "f359", "M48 256a208 208 0 1 1 416 0A208 208 0 1 1 48 256zm464 0A256 256 0 1 0 0 256a256 256 0 1 0 512 0zM217.4 376.9c4.2 4.5 10.1 7.1 16.3 7.1c12.3 0 22.3-10 22.3-22.3l0-57.7 96 0c17.7 0 32-14.3 32-32l0-32c0-17.7-14.3-32-32-32l-96 0 0-57.7c0-12.3-10-22.3-22.3-22.3c-6.2 0-12.1 2.6-16.3 7.1L117.5 242.2c-3.5 3.8-5.5 8.7-5.5 13.8s2 10.1 5.5 13.8l99.9 107.1z"],
     "money-bill-1": [576, 512, ["money-bill-alt"], "f3d1", "M112 112c0 35.3-28.7 64-64 64l0 160c35.3 0 64 28.7 64 64l352 0c0-35.3 28.7-64 64-64l0-160c-35.3 0-64-28.7-64-64l-352 0zM0 128C0 92.7 28.7 64 64 64l448 0c35.3 0 64 28.7 64 64l0 256c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 128zM176 256a112 112 0 1 1 224 0 112 112 0 1 1 -224 0zm80-48c0 8.8 7.2 16 16 16l0 64-8 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l24 0 24 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-8 0 0-80c0-8.8-7.2-16-16-16l-16 0c-8.8 0-16 7.2-16 16z"],
     "clock": [512, 512, [128339, "clock-four"], "f017", "M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120l0 136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2 280 120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"],
     "keyboard": [576, 512, [9000], "f11c", "M64 112c-8.8 0-16 7.2-16 16l0 256c0 8.8 7.2 16 16 16l448 0c8.8 0 16-7.2 16-16l0-256c0-8.8-7.2-16-16-16L64 112zM0 128C0 92.7 28.7 64 64 64l448 0c35.3 0 64 28.7 64 64l0 256c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 128zM176 320l224 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-224 0c-8.8 0-16-7.2-16-16l0-16c0-8.8 7.2-16 16-16zm-72-72c0-8.8 7.2-16 16-16l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16zm16-96l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16c0-8.8 7.2-16 16-16zm64 96c0-8.8 7.2-16 16-16l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16zm16-96l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16c0-8.8 7.2-16 16-16zm64 96c0-8.8 7.2-16 16-16l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16zm16-96l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16c0-8.8 7.2-16 16-16zm64 96c0-8.8 7.2-16 16-16l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16zm16-96l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16c0-8.8 7.2-16 16-16zm64 96c0-8.8 7.2-16 16-16l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16zm16-96l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16c0-8.8 7.2-16 16-16z"],
@@ -1195,7 +1336,7 @@
     "id-card": [576, 512, [62147, "drivers-license"], "f2c2", "M528 160l0 256c0 8.8-7.2 16-16 16l-192 0c0-44.2-35.8-80-80-80l-64 0c-44.2 0-80 35.8-80 80l-32 0c-8.8 0-16-7.2-16-16l0-256 480 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l448 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM272 256a64 64 0 1 0 -128 0 64 64 0 1 0 128 0zm104-48c-13.3 0-24 10.7-24 24s10.7 24 24 24l80 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-80 0zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24l80 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-80 0z"],
     "sun": [512, 512, [9728], "f185", "M375.7 19.7c-1.5-8-6.9-14.7-14.4-17.8s-16.1-2.2-22.8 2.4L256 61.1 173.5 4.2c-6.7-4.6-15.3-5.5-22.8-2.4s-12.9 9.8-14.4 17.8l-18.1 98.5L19.7 136.3c-8 1.5-14.7 6.9-17.8 14.4s-2.2 16.1 2.4 22.8L61.1 256 4.2 338.5c-4.6 6.7-5.5 15.3-2.4 22.8s9.8 13 17.8 14.4l98.5 18.1 18.1 98.5c1.5 8 6.9 14.7 14.4 17.8s16.1 2.2 22.8-2.4L256 450.9l82.5 56.9c6.7 4.6 15.3 5.5 22.8 2.4s12.9-9.8 14.4-17.8l18.1-98.5 98.5-18.1c8-1.5 14.7-6.9 17.8-14.4s2.2-16.1-2.4-22.8L450.9 256l56.9-82.5c4.6-6.7 5.5-15.3 2.4-22.8s-9.8-12.9-17.8-14.4l-98.5-18.1L375.7 19.7zM269.6 110l65.6-45.2 14.4 78.3c1.8 9.8 9.5 17.5 19.3 19.3l78.3 14.4L402 242.4c-5.7 8.2-5.7 19 0 27.2l45.2 65.6-78.3 14.4c-9.8 1.8-17.5 9.5-19.3 19.3l-14.4 78.3L269.6 402c-8.2-5.7-19-5.7-27.2 0l-65.6 45.2-14.4-78.3c-1.8-9.8-9.5-17.5-19.3-19.3L64.8 335.2 110 269.6c5.7-8.2 5.7-19 0-27.2L64.8 176.8l78.3-14.4c9.8-1.8 17.5-9.5 19.3-19.3l14.4-78.3L242.4 110c8.2 5.7 19 5.7 27.2 0zM256 368a112 112 0 1 0 0-224 112 112 0 1 0 0 224zM192 256a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"],
     "face-laugh-wink": [512, 512, ["laugh-wink"], "f59c", "M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm130.7 57.9c-4.2-13.6 7.1-25.9 21.3-25.9l212.5 0c14.2 0 25.5 12.4 21.3 25.9C369 368.4 318.2 408 258.2 408s-110.8-39.6-127.5-94.1zM144.4 192a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm165.8 21.7c-7.6 8.1-20.2 8.5-28.3 .9s-8.5-20.2-.9-28.3c14.5-15.5 35.2-22.3 54.6-22.3s40.1 6.8 54.6 22.3c7.6 8.1 7.1 20.7-.9 28.3s-20.7 7.1-28.3-.9c-5.5-5.8-14.8-9.7-25.4-9.7s-19.9 3.8-25.4 9.7z"],
-    "circle-down": [512, 512, [61466, "arrow-alt-circle-down"], "f358", "M256 464a208 208 0 1 1 0-416 208 208 0 1 1 0 416zM256 0a256 256 0 1 0 0 512A256 256 0 1 0 256 0zM128 256l0 32L256 416 384 288l0-32-80 0 0-128-96 0 0 128-80 0z"],
+    "circle-down": [512, 512, [61466, "arrow-alt-circle-down"], "f358", "M256 464a208 208 0 1 1 0-416 208 208 0 1 1 0 416zM256 0a256 256 0 1 0 0 512A256 256 0 1 0 256 0zM376.9 294.6c4.5-4.2 7.1-10.1 7.1-16.3c0-12.3-10-22.3-22.3-22.3L304 256l0-96c0-17.7-14.3-32-32-32l-32 0c-17.7 0-32 14.3-32 32l0 96-57.7 0C138 256 128 266 128 278.3c0 6.2 2.6 12.1 7.1 16.3l107.1 99.9c3.8 3.5 8.7 5.5 13.8 5.5s10.1-2 13.8-5.5l107.1-99.9z"],
     "thumbs-down": [512, 512, [128078, 61576], "f165", "M323.8 477.2c-38.2 10.9-78.1-11.2-89-49.4l-5.7-20c-3.7-13-10.4-25-19.5-35l-51.3-56.4c-8.9-9.8-8.2-25 1.6-33.9s25-8.2 33.9 1.6l51.3 56.4c14.1 15.5 24.4 34 30.1 54.1l5.7 20c3.6 12.7 16.9 20.1 29.7 16.5s20.1-16.9 16.5-29.7l-5.7-20c-5.7-19.9-14.7-38.7-26.6-55.5c-5.2-7.3-5.8-16.9-1.7-24.9s12.3-13 21.3-13L448 288c8.8 0 16-7.2 16-16c0-6.8-4.3-12.7-10.4-15c-7.4-2.8-13-9-14.9-16.7s.1-15.8 5.3-21.7c2.5-2.8 4-6.5 4-10.6c0-7.8-5.6-14.3-13-15.7c-8.2-1.6-15.1-7.3-18-15.2s-1.6-16.7 3.6-23.3c2.1-2.7 3.4-6.1 3.4-9.9c0-6.7-4.2-12.6-10.2-14.9c-11.5-4.5-17.7-16.9-14.4-28.8c.4-1.3 .6-2.8 .6-4.3c0-8.8-7.2-16-16-16l-97.5 0c-12.6 0-25 3.7-35.5 10.7l-61.7 41.1c-11 7.4-25.9 4.4-33.3-6.7s-4.4-25.9 6.7-33.3l61.7-41.1c18.4-12.3 40-18.8 62.1-18.8L384 32c34.7 0 62.9 27.6 64 62c14.6 11.7 24 29.7 24 50c0 4.5-.5 8.8-1.3 13c15.4 11.7 25.3 30.2 25.3 51c0 6.5-1 12.8-2.8 18.7C504.8 238.3 512 254.3 512 272c0 35.3-28.6 64-64 64l-92.3 0c4.7 10.4 8.7 21.2 11.8 32.2l5.7 20c10.9 38.2-11.2 78.1-49.4 89zM32 384c-17.7 0-32-14.3-32-32L0 128c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224c0 17.7-14.3 32-32 32l-64 0z"],
     "chess-pawn": [320, 512, [9823], "f443", "M232 152A72 72 0 1 0 88 152a72 72 0 1 0 144 0zm24 120l-12.6 0 10.7 80-48.4 0L195 272l-35 0-35 0-10.7 80-48.4 0 10.7-80L64 272c-13.3 0-24-10.7-24-24s10.7-24 24-24c-15.1-20.1-24-45-24-72C40 85.7 93.7 32 160 32s120 53.7 120 120c0 27-8.9 51.9-24 72c13.3 0 24 10.7 24 24s-10.7 24-24 24zM52.7 464l214.7 0-16.6-32L69.2 432 52.7 464zm207.9-80c12 0 22.9 6.7 28.4 17.3l26.5 51.2c3 5.8 4.6 12.2 4.6 18.7c0 22.5-18.2 40.8-40.8 40.8L40.8 512C18.2 512 0 493.8 0 471.2c0-6.5 1.6-12.9 4.6-18.7l26.5-51.2C36.5 390.7 47.5 384 59.5 384l201 0z"],
     "credit-card": [576, 512, [128179, 62083, "credit-card-alt"], "f09d", "M512 80c8.8 0 16 7.2 16 16l0 32L48 128l0-32c0-8.8 7.2-16 16-16l448 0zm16 144l0 192c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16l0-192 480 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l448 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zm56 304c-13.3 0-24 10.7-24 24s10.7 24 24 24l48 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-48 0zm128 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l112 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-112 0z"],
@@ -1247,12 +1388,10 @@
 
   let _WINDOW = {};
   let _DOCUMENT = {};
-
   try {
     if (typeof window !== 'undefined') _WINDOW = window;
     if (typeof document !== 'undefined') _DOCUMENT = document;
   } catch (e) {}
-
   const {
     userAgent = ''
   } = _WINDOW.navigator || {};
@@ -1262,152 +1401,243 @@
   const IS_DOM = !!DOCUMENT.documentElement && !!DOCUMENT.head && typeof DOCUMENT.addEventListener === 'function' && typeof DOCUMENT.createElement === 'function';
   const IS_IE = ~userAgent.indexOf('MSIE') || ~userAgent.indexOf('Trident/');
 
-  var a = "classic",
-      r = "sharp",
-      o = "sharp-duotone";
+  function _defineProperty(e, r, t) {
+    return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+      value: t,
+      enumerable: !0,
+      configurable: !0,
+      writable: !0
+    }) : e[r] = t, e;
+  }
+  function ownKeys(e, r) {
+    var t = Object.keys(e);
+    if (Object.getOwnPropertySymbols) {
+      var o = Object.getOwnPropertySymbols(e);
+      r && (o = o.filter(function (r) {
+        return Object.getOwnPropertyDescriptor(e, r).enumerable;
+      })), t.push.apply(t, o);
+    }
+    return t;
+  }
+  function _objectSpread2(e) {
+    for (var r = 1; r < arguments.length; r++) {
+      var t = null != arguments[r] ? arguments[r] : {};
+      r % 2 ? ownKeys(Object(t), !0).forEach(function (r) {
+        _defineProperty(e, r, t[r]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) {
+        Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r));
+      });
+    }
+    return e;
+  }
+  function _toPrimitive(t, r) {
+    if ("object" != typeof t || !t) return t;
+    var e = t[Symbol.toPrimitive];
+    if (void 0 !== e) {
+      var i = e.call(t, r || "default");
+      if ("object" != typeof i) return i;
+      throw new TypeError("@@toPrimitive must return a primitive value.");
+    }
+    return ("string" === r ? String : Number)(t);
+  }
+  function _toPropertyKey(t) {
+    var i = _toPrimitive(t, "string");
+    return "symbol" == typeof i ? i : i + "";
+  }
 
-  var et$1 = {
-    classic: {
-      900: "fas",
-      400: "far",
-      normal: "far",
-      300: "fal",
-      100: "fat"
-    },
-    sharp: {
-      900: "fass",
-      400: "fasr",
-      300: "fasl",
-      100: "fast"
-    },
-    "sharp-duotone": {
-      900: "fasds"
-    }
-  };
-  var bt = {
-    kit: {
-      fak: "kit",
-      "fa-kit": "kit"
-    },
-    "kit-duotone": {
-      fakd: "kit-duotone",
-      "fa-kit-duotone": "kit-duotone"
-    }
-  };
-  var lo = {
-    classic: {
-      "fa-brands": "fab",
-      "fa-duotone": "fad",
-      "fa-light": "fal",
-      "fa-regular": "far",
-      "fa-solid": "fas",
-      "fa-thin": "fat"
-    },
-    sharp: {
-      "fa-solid": "fass",
-      "fa-regular": "fasr",
-      "fa-light": "fasl",
-      "fa-thin": "fast"
-    },
-    "sharp-duotone": {
-      "fa-solid": "fasds"
-    }
-  },
-      no = {
-    classic: {
-      fab: "fa-brands",
-      fad: "fa-duotone",
-      fal: "fa-light",
-      far: "fa-regular",
-      fas: "fa-solid",
-      fat: "fa-thin"
-    },
-    sharp: {
-      fass: "fa-solid",
-      fasr: "fa-regular",
-      fasl: "fa-light",
-      fast: "fa-thin"
-    },
-    "sharp-duotone": {
-      fasds: "fa-solid"
-    }
-  },
-      fo = {
-    classic: {
-      solid: "fas",
-      regular: "far",
-      light: "fal",
-      thin: "fat",
-      duotone: "fad",
-      brands: "fab"
-    },
-    sharp: {
-      solid: "fass",
-      regular: "fasr",
-      light: "fasl",
-      thin: "fast"
-    },
-    "sharp-duotone": {
-      solid: "fasds"
-    }
-  },
-      ho = {
-    classic: {
-      fa: "solid",
-      fas: "solid",
-      "fa-solid": "solid",
-      far: "regular",
-      "fa-regular": "regular",
-      fal: "light",
-      "fa-light": "light",
-      fat: "thin",
-      "fa-thin": "thin",
-      fad: "duotone",
-      "fa-duotone": "duotone",
-      fab: "brands",
-      "fa-brands": "brands"
-    },
-    sharp: {
-      fa: "solid",
-      fass: "solid",
-      "fa-solid": "solid",
-      fasr: "regular",
-      "fa-regular": "regular",
-      fasl: "light",
-      "fa-light": "light",
-      fast: "thin",
-      "fa-thin": "thin"
-    },
-    "sharp-duotone": {
-      fa: "solid",
-      fasds: "solid",
-      "fa-solid": "solid"
-    }
-  };
-  var Io = {
+  var S = {
+      classic: {
+        fa: "solid",
+        fas: "solid",
+        "fa-solid": "solid",
+        far: "regular",
+        "fa-regular": "regular",
+        fal: "light",
+        "fa-light": "light",
+        fat: "thin",
+        "fa-thin": "thin",
+        fab: "brands",
+        "fa-brands": "brands"
+      },
+      duotone: {
+        fa: "solid",
+        fad: "solid",
+        "fa-solid": "solid",
+        "fa-duotone": "solid",
+        fadr: "regular",
+        "fa-regular": "regular",
+        fadl: "light",
+        "fa-light": "light",
+        fadt: "thin",
+        "fa-thin": "thin"
+      },
+      sharp: {
+        fa: "solid",
+        fass: "solid",
+        "fa-solid": "solid",
+        fasr: "regular",
+        "fa-regular": "regular",
+        fasl: "light",
+        "fa-light": "light",
+        fast: "thin",
+        "fa-thin": "thin"
+      },
+      "sharp-duotone": {
+        fa: "solid",
+        fasds: "solid",
+        "fa-solid": "solid",
+        fasdr: "regular",
+        "fa-regular": "regular",
+        fasdl: "light",
+        "fa-light": "light",
+        fasdt: "thin",
+        "fa-thin": "thin"
+      }
+    };
+  var s = "classic";
+  var G = {
+      classic: {
+        900: "fas",
+        400: "far",
+        normal: "far",
+        300: "fal",
+        100: "fat"
+      },
+      duotone: {
+        900: "fad",
+        400: "fadr",
+        300: "fadl",
+        100: "fadt"
+      },
+      sharp: {
+        900: "fass",
+        400: "fasr",
+        300: "fasl",
+        100: "fast"
+      },
+      "sharp-duotone": {
+        900: "fasds",
+        400: "fasdr",
+        300: "fasdl",
+        100: "fasdt"
+      }
+    };
+  var xt = {
+      classic: {
+        solid: "fas",
+        regular: "far",
+        light: "fal",
+        thin: "fat",
+        brands: "fab"
+      },
+      duotone: {
+        solid: "fad",
+        regular: "fadr",
+        light: "fadl",
+        thin: "fadt"
+      },
+      sharp: {
+        solid: "fass",
+        regular: "fasr",
+        light: "fasl",
+        thin: "fast"
+      },
+      "sharp-duotone": {
+        solid: "fasds",
+        regular: "fasdr",
+        light: "fasdl",
+        thin: "fasdt"
+      }
+    };
+  var St = {
+      kit: {
+        fak: "kit",
+        "fa-kit": "kit"
+      },
+      "kit-duotone": {
+        fakd: "kit-duotone",
+        "fa-kit-duotone": "kit-duotone"
+      }
+    };
+  var Ct = {
     kit: {
       "fa-kit": "fak"
     },
     "kit-duotone": {
       "fa-kit-duotone": "fakd"
     }
-  },
-      Fo = {
-    kit: {
-      fak: "fa-kit"
-    },
-    "kit-duotone": {
-      fakd: "fa-kit-duotone"
-    }
-  },
-      So = {
-    kit: {
-      kit: "fak"
-    },
-    "kit-duotone": {
-      "kit-duotone": "fakd"
-    }
   };
+  var Wt = {
+      kit: {
+        fak: "fa-kit"
+      },
+      "kit-duotone": {
+        fakd: "fa-kit-duotone"
+      }
+    };
+  var Et = {
+      kit: {
+        kit: "fak"
+      },
+      "kit-duotone": {
+        "kit-duotone": "fakd"
+      }
+    };
+
+  var po = {
+      classic: {
+        "fa-brands": "fab",
+        "fa-duotone": "fad",
+        "fa-light": "fal",
+        "fa-regular": "far",
+        "fa-solid": "fas",
+        "fa-thin": "fat"
+      },
+      duotone: {
+        "fa-regular": "fadr",
+        "fa-light": "fadl",
+        "fa-thin": "fadt"
+      },
+      sharp: {
+        "fa-solid": "fass",
+        "fa-regular": "fasr",
+        "fa-light": "fasl",
+        "fa-thin": "fast"
+      },
+      "sharp-duotone": {
+        "fa-solid": "fasds",
+        "fa-regular": "fasdr",
+        "fa-light": "fasdl",
+        "fa-thin": "fasdt"
+      }
+    },
+    co = {
+      classic: {
+        fab: "fa-brands",
+        fad: "fa-duotone",
+        fal: "fa-light",
+        far: "fa-regular",
+        fas: "fa-solid",
+        fat: "fa-thin"
+      },
+      duotone: {
+        fadr: "fa-regular",
+        fadl: "fa-light",
+        fadt: "fa-thin"
+      },
+      sharp: {
+        fass: "fa-solid",
+        fasr: "fa-regular",
+        fasl: "fa-light",
+        fast: "fa-thin"
+      },
+      "sharp-duotone": {
+        fasds: "fa-solid",
+        fasdr: "fa-regular",
+        fasdl: "fa-light",
+        fasdt: "fa-thin"
+      }
+    };
 
   const NAMESPACE_IDENTIFIER = '___FONT_AWESOME___';
   const PRODUCTION = (() => {
@@ -1417,57 +1647,45 @@
       return false;
     }
   })();
-
   function familyProxy(obj) {
     // Defaults to the classic family if family is not available
     return new Proxy(obj, {
       get(target, prop) {
-        return prop in target ? target[prop] : target[a];
+        return prop in target ? target[prop] : target[s];
       }
-
     });
   }
+  const _PREFIX_TO_STYLE = _objectSpread2({}, S);
 
-  const _PREFIX_TO_STYLE = { ...ho
-  };
-  _PREFIX_TO_STYLE[a] = { ...ho[a],
-    ...bt['kit'],
-    ...bt['kit-duotone']
-  };
+  // We changed FACSSClassesToStyleId in the icons repo to be canonical and as such, "classic" family does not have any
+  // duotone styles.  But we do still need duotone in _PREFIX_TO_STYLE below, so we are manually adding
+  // {'fa-duotone': 'duotone'}
+  _PREFIX_TO_STYLE[s] = _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, {
+    'fa-duotone': 'duotone'
+  }), S[s]), St['kit']), St['kit-duotone']);
   const PREFIX_TO_STYLE = familyProxy(_PREFIX_TO_STYLE);
-  const _STYLE_TO_PREFIX = { ...fo
-  };
-  _STYLE_TO_PREFIX[a] = { ..._STYLE_TO_PREFIX[a],
-    ...So['kit'],
-    ...So['kit-duotone']
-  };
+  const _STYLE_TO_PREFIX = _objectSpread2({}, xt);
+
+  // We changed FAStyleIdToShortPrefixId in the icons repo to be canonical and as such, "classic" family does not have any
+  // duotone styles.  But we do still need duotone in _STYLE_TO_PREFIX below, so we are manually adding {duotone: 'fad'}
+  _STYLE_TO_PREFIX[s] = _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, {
+    duotone: 'fad'
+  }), _STYLE_TO_PREFIX[s]), Et['kit']), Et['kit-duotone']);
   const STYLE_TO_PREFIX = familyProxy(_STYLE_TO_PREFIX);
-  const _PREFIX_TO_LONG_STYLE = { ...no
-  };
-  _PREFIX_TO_LONG_STYLE[a] = { ..._PREFIX_TO_LONG_STYLE[a],
-    ...Fo['kit']
-  };
+  const _PREFIX_TO_LONG_STYLE = _objectSpread2({}, co);
+  _PREFIX_TO_LONG_STYLE[s] = _objectSpread2(_objectSpread2({}, _PREFIX_TO_LONG_STYLE[s]), Wt['kit']);
   const PREFIX_TO_LONG_STYLE = familyProxy(_PREFIX_TO_LONG_STYLE);
-  const _LONG_STYLE_TO_PREFIX = { ...lo
-  };
-  _LONG_STYLE_TO_PREFIX[a] = { ..._LONG_STYLE_TO_PREFIX[a],
-    ...Io['kit']
-  };
+  const _LONG_STYLE_TO_PREFIX = _objectSpread2({}, po);
+  _LONG_STYLE_TO_PREFIX[s] = _objectSpread2(_objectSpread2({}, _LONG_STYLE_TO_PREFIX[s]), Ct['kit']);
   const LONG_STYLE_TO_PREFIX = familyProxy(_LONG_STYLE_TO_PREFIX);
-  const _FONT_WEIGHT_TO_PREFIX = { ...et$1
-  };
+  const _FONT_WEIGHT_TO_PREFIX = _objectSpread2({}, G);
   const FONT_WEIGHT_TO_PREFIX = familyProxy(_FONT_WEIGHT_TO_PREFIX);
-  const prefixes = new Set();
-  Object.keys(STYLE_TO_PREFIX[a]).map(prefixes.add.bind(prefixes));
-  Object.keys(STYLE_TO_PREFIX[r]).map(prefixes.add.bind(prefixes));
-  Object.keys(STYLE_TO_PREFIX[o]).map(prefixes.add.bind(prefixes));
 
   function bunker(fn) {
     try {
       for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         args[_key - 1] = arguments[_key];
       }
-
       fn(...args);
     } catch (e) {
       if (!PRODUCTION) {
@@ -1476,50 +1694,43 @@
     }
   }
 
-  const w$1 = WINDOW || {};
-  if (!w$1[NAMESPACE_IDENTIFIER]) w$1[NAMESPACE_IDENTIFIER] = {};
-  if (!w$1[NAMESPACE_IDENTIFIER].styles) w$1[NAMESPACE_IDENTIFIER].styles = {};
-  if (!w$1[NAMESPACE_IDENTIFIER].hooks) w$1[NAMESPACE_IDENTIFIER].hooks = {};
-  if (!w$1[NAMESPACE_IDENTIFIER].shims) w$1[NAMESPACE_IDENTIFIER].shims = [];
-  var namespace = w$1[NAMESPACE_IDENTIFIER];
+  const w = WINDOW || {};
+  if (!w[NAMESPACE_IDENTIFIER]) w[NAMESPACE_IDENTIFIER] = {};
+  if (!w[NAMESPACE_IDENTIFIER].styles) w[NAMESPACE_IDENTIFIER].styles = {};
+  if (!w[NAMESPACE_IDENTIFIER].hooks) w[NAMESPACE_IDENTIFIER].hooks = {};
+  if (!w[NAMESPACE_IDENTIFIER].shims) w[NAMESPACE_IDENTIFIER].shims = [];
+  var namespace = w[NAMESPACE_IDENTIFIER];
 
   function normalizeIcons(icons) {
     return Object.keys(icons).reduce((acc, iconName) => {
       const icon = icons[iconName];
       const expanded = !!icon.icon;
-
       if (expanded) {
         acc[icon.iconName] = icon.icon;
       } else {
         acc[iconName] = icon;
       }
-
       return acc;
     }, {});
   }
-
   function defineIcons(prefix, icons) {
     let params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     const {
       skipHooks = false
     } = params;
     const normalized = normalizeIcons(icons);
-
     if (typeof namespace.hooks.addPack === 'function' && !skipHooks) {
       namespace.hooks.addPack(prefix, normalizeIcons(icons));
     } else {
-      namespace.styles[prefix] = { ...(namespace.styles[prefix] || {}),
-        ...normalized
-      };
+      namespace.styles[prefix] = _objectSpread2(_objectSpread2({}, namespace.styles[prefix] || {}), normalized);
     }
+
     /**
      * Font Awesome 4 used the prefix of `fa` for all icons. With the introduction
      * of new styles we needed to differentiate between them. Prefix `fa` is now an alias
      * for `fas` so we'll ease the upgrade process for our users by automatically defining
      * this as well.
      */
-
-
     if (prefix === 'fas') {
       defineIcons('fa', icons);
     }
@@ -1959,6 +2170,7 @@
     "square-nfi": [448, 512, [], "e576", "M0 96C0 60.7 28.7 32 64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zm75.7 64.6C68.8 162.5 64 168.8 64 176l0 160c0 8.8 7.2 16 16 16s16-7.2 16-16l0-102.2 66.3 110.5c3.7 6.2 11.1 9.1 18 7.2s11.7-8.2 11.7-15.4l0-160c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 102.2L93.7 167.8c-3.7-6.2-11.1-9.1-18-7.2zM224 176l0 64 0 96c0 8.8 7.2 16 16 16s16-7.2 16-16l0-80 48 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-48 0 0-32 48 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-64 0c-8.8 0-16 7.2-16 16zm160 0c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 160c0 8.8 7.2 16 16 16s16-7.2 16-16l0-160z"],
     "arrow-up-from-ground-water": [576, 512, [], "e4b5", "M288 352c17.7 0 32-14.3 32-32l0-210.7 25.4 25.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-80-80c-12.5-12.5-32.8-12.5-45.3 0l-80 80c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L256 109.3 256 320c0 17.7 14.3 32 32 32zm-18.5 69.9C247 437.4 219.5 448 192 448c-26.9 0-55.3-10.8-77.4-26.1c0 0 0 0 0 0c-11.9-8.5-28.1-7.8-39.2 1.7c-14.4 11.9-32.5 21-50.6 25.2c-17.2 4-27.9 21.2-23.9 38.4s21.2 27.9 38.4 23.9c24.5-5.7 44.9-16.5 58.2-25C126.5 501.7 159 512 192 512c31.9 0 60.6-9.9 80.4-18.9c5.8-2.7 11.1-5.3 15.6-7.7c4.5 2.4 9.7 5.1 15.6 7.7c19.8 9 48.5 18.9 80.4 18.9c33 0 65.5-10.3 94.5-25.8c13.4 8.4 33.7 19.3 58.2 25c17.2 4 34.4-6.7 38.4-23.9s-6.7-34.4-23.9-38.4c-18.1-4.2-36.2-13.3-50.6-25.2c-11.1-9.4-27.3-10.1-39.2-1.7c0 0 0 0 0 0C439.4 437.2 410.9 448 384 448c-27.5 0-55-10.6-77.5-26.1c-11.1-7.9-25.9-7.9-37 0zM192 192L48 192c-26.5 0-48 21.5-48 48L0 425c5.3-3.1 11.2-5.4 17.5-6.9c13.1-3.1 26.7-9.8 37.3-18.6c22.2-18.7 54.3-20.1 78.1-3.4c18 12.4 40.1 20.3 59.1 20.3L192 192zm384 48c0-26.5-21.5-48-48-48l-144 0 0 224.5s0 0 0 0c19 0 41.2-7.9 59.2-20.3c23.8-16.7 55.8-15.4 78.1 3.4c10.6 8.8 24.2 15.6 37.3 18.6c6.3 1.5 12.1 3.8 17.5 6.9l0-185z"],
     "martini-glass": [512, 512, [127864, "glass-martini-alt"], "f57b", "M32 0C19.1 0 7.4 7.8 2.4 19.8s-2.2 25.7 6.9 34.9L224 269.3 224 448l-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0 96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0 0-178.7L502.6 54.6c9.2-9.2 11.9-22.9 6.9-34.9S492.9 0 480 0L32 0zM173.3 128l-64-64 293.5 0-64 64-165.5 0z"],
+    "square-binary": [448, 512, [], "e69b", "M0 96C0 60.7 28.7 32 64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zm144 4c-24.3 0-44 19.7-44 44l0 48c0 24.3 19.7 44 44 44l32 0c24.3 0 44-19.7 44-44l0-48c0-24.3-19.7-44-44-44l-32 0zm-4 44c0-2.2 1.8-4 4-4l32 0c2.2 0 4 1.8 4 4l0 48c0 2.2-1.8 4-4 4l-32 0c-2.2 0-4-1.8-4-4l0-48zm140-44c-11 0-20 9-20 20c0 9.7 6.9 17.7 16 19.6l0 76.4c0 11 9 20 20 20s20-9 20-20l0-96c0-11-9-20-20-20l-16 0zM132 296c0 9.7 6.9 17.7 16 19.6l0 76.4c0 11 9 20 20 20s20-9 20-20l0-96c0-11-9-20-20-20l-16 0c-11 0-20 9-20 20zm96 24l0 48c0 24.3 19.7 44 44 44l32 0c24.3 0 44-19.7 44-44l0-48c0-24.3-19.7-44-44-44l-32 0c-24.3 0-44 19.7-44 44zm44-4l32 0c2.2 0 4 1.8 4 4l0 48c0 2.2-1.8 4-4 4l-32 0c-2.2 0-4-1.8-4-4l0-48c0-2.2 1.8-4 4-4z"],
     "rotate-left": [512, 512, ["rotate-back", "rotate-backward", "undo-alt"], "f2ea", "M48.5 224L40 224c-13.3 0-24-10.7-24-24L16 72c0-9.7 5.8-18.5 14.8-22.2s19.3-1.7 26.2 5.2L98.6 96.6c87.6-86.5 228.7-86.2 315.8 1c87.5 87.5 87.5 229.3 0 316.8s-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3c-62.2-62.2-162.7-62.5-225.3-1L185 183c6.9 6.9 8.9 17.2 5.2 26.2s-12.5 14.8-22.2 14.8L48.5 224z"],
     "table-columns": [512, 512, ["columns"], "f0db", "M0 96C0 60.7 28.7 32 64 32l384 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zm64 64l0 256 160 0 0-256L64 160zm384 0l-160 0 0 256 160 0 0-256z"],
     "lemon": [448, 512, [127819], "f094", "M448 96c0-35.3-28.7-64-64-64c-6.6 0-13 1-19 2.9c-22.5 7-48.1 14.9-71 9c-75.2-19.1-156.4 11-213.7 68.3S-7.2 250.8 11.9 326c5.8 22.9-2 48.4-9 71C1 403 0 409.4 0 416c0 35.3 28.7 64 64 64c6.6 0 13-1 19.1-2.9c22.5-7 48.1-14.9 71-9c75.2 19.1 156.4-11 213.7-68.3s87.5-138.5 68.3-213.7c-5.8-22.9 2-48.4 9-71c1.9-6 2.9-12.4 2.9-19.1zM212.5 127.4c-54.6 16-101.1 62.5-117.1 117.1C92.9 253 84 257.8 75.5 255.4S62.2 244 64.6 235.5c19.1-65.1 73.7-119.8 138.9-138.9c8.5-2.5 17.4 2.4 19.9 10.9s-2.4 17.4-10.9 19.9z"],
@@ -2258,6 +2470,7 @@
     "diamond": [512, 512, [9830], "f219", "M284.3 11.7c-15.6-15.6-40.9-15.6-56.6 0l-216 216c-15.6 15.6-15.6 40.9 0 56.6l216 216c15.6 15.6 40.9 15.6 56.6 0l216-216c15.6-15.6 15.6-40.9 0-56.6l-216-216z"],
     "face-grin-squint": [512, 512, [128518, "grin-squint"], "f585", "M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM388.1 312.8c12.3-3.8 24.3 6.9 19.3 18.7C382.4 390.6 324.2 432 256.3 432s-126.2-41.4-151.1-100.5c-5-11.8 7-22.5 19.3-18.7c39.7 12.2 84.5 19 131.8 19s92.1-6.8 131.8-19zM133.5 146.7l89.9 47.9c10.7 5.7 10.7 21.1 0 26.8l-89.9 47.9c-7.9 4.2-17.5-1.5-17.5-10.5c0-2.8 1-5.5 2.8-7.6l36-43.2-36-43.2c-1.8-2.1-2.8-4.8-2.8-7.6c0-9 9.6-14.7 17.5-10.5zM396 157.1c0 2.8-1 5.5-2.8 7.6l-36 43.2 36 43.2c1.8 2.1 2.8 4.8 2.8 7.6c0 9-9.6 14.7-17.5 10.5l-89.9-47.9c-10.7-5.7-10.7-21.1 0-26.8l89.9-47.9c7.9-4.2 17.5 1.5 17.5 10.5z"],
     "hand-holding-dollar": [576, 512, ["hand-holding-usd"], "f4c0", "M312 24l0 10.5c6.4 1.2 12.6 2.7 18.2 4.2c12.8 3.4 20.4 16.6 17 29.4s-16.6 20.4-29.4 17c-10.9-2.9-21.1-4.9-30.2-5c-7.3-.1-14.7 1.7-19.4 4.4c-2.1 1.3-3.1 2.4-3.5 3c-.3 .5-.7 1.2-.7 2.8c0 .3 0 .5 0 .6c.2 .2 .9 1.2 3.3 2.6c5.8 3.5 14.4 6.2 27.4 10.1l.9 .3s0 0 0 0c11.1 3.3 25.9 7.8 37.9 15.3c13.7 8.6 26.1 22.9 26.4 44.9c.3 22.5-11.4 38.9-26.7 48.5c-6.7 4.1-13.9 7-21.3 8.8l0 10.6c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-11.4c-9.5-2.3-18.2-5.3-25.6-7.8c-2.1-.7-4.1-1.4-6-2c-12.6-4.2-19.4-17.8-15.2-30.4s17.8-19.4 30.4-15.2c2.6 .9 5 1.7 7.3 2.5c13.6 4.6 23.4 7.9 33.9 8.3c8 .3 15.1-1.6 19.2-4.1c1.9-1.2 2.8-2.2 3.2-2.9c.4-.6 .9-1.8 .8-4.1l0-.2c0-1 0-2.1-4-4.6c-5.7-3.6-14.3-6.4-27.1-10.3l-1.9-.6c-10.8-3.2-25-7.5-36.4-14.4c-13.5-8.1-26.5-22-26.6-44.1c-.1-22.9 12.9-38.6 27.7-47.4c6.4-3.8 13.3-6.4 20.2-8.2L264 24c0-13.3 10.7-24 24-24s24 10.7 24 24zM568.2 336.3c13.1 17.8 9.3 42.8-8.5 55.9L433.1 485.5c-23.4 17.2-51.6 26.5-80.7 26.5L192 512 32 512c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l36.8 0 44.9-36c22.7-18.2 50.9-28 80-28l78.3 0 16 0 64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0-16 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l120.6 0 119.7-88.2c17.8-13.1 42.8-9.3 55.9 8.5zM193.6 384c0 0 0 0 0 0l-.9 0c.3 0 .6 0 .9 0z"],
+    "chart-diagram": [512, 512, [], "e695", "M80 32C53.5 32 32 53.5 32 80s21.5 48 48 48l152 0 0 40-48 48-56 0c-48.6 0-88 39.4-88 88l0 48-8 0c-17.7 0-32 14.3-32 32l0 64c0 17.7 14.3 32 32 32l64 0c17.7 0 32-14.3 32-32l0-64c0-17.7-14.3-32-32-32l-8 0 0-48c0-22.1 17.9-40 40-40l56 0 48 48 0 40-8 0c-17.7 0-32 14.3-32 32l0 64c0 17.7 14.3 32 32 32l64 0c17.7 0 32-14.3 32-32l0-64c0-17.7-14.3-32-32-32l-8 0 0-40 48-48 56 0c22.1 0 40 17.9 40 40l0 48-8 0c-17.7 0-32 14.3-32 32l0 64c0 17.7 14.3 32 32 32l64 0c17.7 0 32-14.3 32-32l0-64c0-17.7-14.3-32-32-32l-8 0 0-48c0-48.6-39.4-88-88-88l-56 0-48-48 0-40 152 0c26.5 0 48-21.5 48-48s-21.5-48-48-48L80 32z"],
     "bacterium": [512, 512, [], "e05a", "M423.1 30.6c3.6-12.7-3.7-26-16.5-29.7s-26 3.7-29.7 16.5l-4.2 14.7c-9.8-.4-19.9 .5-29.9 2.8c-12.1 2.8-23.7 5.9-34.9 9.4l-5.9-13.7c-5.2-12.2-19.3-17.8-31.5-12.6s-17.8 19.3-12.6 31.5l4.9 11.3c-22 9.4-42 20.1-60.2 31.8L196 82.7c-7.4-11-22.3-14-33.3-6.7s-14 22.3-6.7 33.3l7.8 11.6c-18 15-33.7 30.8-47.3 47.1L103 157.3c-10.4-8.3-25.5-6.6-33.7 3.7s-6.6 25.5 3.7 33.7l15 12c-2.1 3.2-4.1 6.5-6 9.7c-9.4 15.7-17 31-23.2 45.3l-9.9-3.9c-12.3-4.9-26.3 1.1-31.2 13.4s1.1 26.3 13.4 31.2l11.6 4.6c-.3 1.1-.6 2.1-.9 3.1c-3.5 12.5-5.7 23.2-7.1 31.3c-.7 4.1-1.2 7.5-1.6 10.3c-.2 1.4-.3 2.6-.4 3.6l-.1 1.4-.1 .6 0 .3 0 .1c0 0 0 .1 39.2 3.7c0 0 0 0 0 0l-39.2-3.6c-.5 5-.6 10-.4 14.9l-14.7 4.2C4.7 380.6-2.7 393.8 .9 406.6s16.9 20.1 29.7 16.5l13.8-3.9c10.6 20.7 27.6 37.8 48.5 48.5l-3.9 13.7c-3.6 12.7 3.7 26 16.5 29.7s26-3.7 29.7-16.5l4.2-14.7c23.8 1 46.3-5.5 65.1-17.6L215 473c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-10.6-10.6c9.1-14.1 15.1-30.5 17-48.3l.1-.8c.3-1.7 1-5.1 2.3-9.8l.2-.8 12.6 5.4c12.2 5.2 26.3-.4 31.5-12.6s-.4-26.3-12.6-31.5l-11.3-4.8c9.9-14.9 24.9-31.6 48.6-46l2.1 7.5c3.6 12.7 16.9 20.1 29.7 16.5s20.1-16.9 16.5-29.7L371 259.2c6.9-2.2 14.3-4.3 22.2-6.1c12.9-3 24.7-8 35.2-14.8L439 249c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-10.6-10.6c12.2-19 18.6-41.6 17.6-65.1l14.7-4.2c12.7-3.6 20.1-16.9 16.5-29.7s-16.9-20.1-29.7-16.5l-13.7 3.9c-10.8-21.2-28-38-48.5-48.5l3.9-13.8zM92.1 363.3s0 0 0 0L144 368l-51.9-4.7zM112 320a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zM240 184a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"],
     "hand-pointer": [448, 512, [], "f25a", "M128 40c0-22.1 17.9-40 40-40s40 17.9 40 40l0 148.2c8.5-7.6 19.7-12.2 32-12.2c20.6 0 38.2 13 45 31.2c8.8-9.3 21.2-15.2 35-15.2c25.3 0 46 19.5 47.9 44.3c8.5-7.7 19.8-12.3 32.1-12.3c26.5 0 48 21.5 48 48l0 48 0 16 0 48c0 70.7-57.3 128-128 128l-16 0-64 0-.1 0-5.2 0c-5 0-9.9-.3-14.7-1c-55.3-5.6-106.2-34-140-79L8 336c-13.3-17.7-9.7-42.7 8-56s42.7-9.7 56 8l56 74.7L128 40zM240 304c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 96c0 8.8 7.2 16 16 16s16-7.2 16-16l0-96zm48-16c-8.8 0-16 7.2-16 16l0 96c0 8.8 7.2 16 16 16s16-7.2 16-16l0-96c0-8.8-7.2-16-16-16zm80 16c0-8.8-7.2-16-16-16s-16 7.2-16 16l0 96c0 8.8 7.2 16 16 16s16-7.2 16-16l0-96z"],
     "drum-steelpan": [576, 512, [], "f56a", "M288 32c159.1 0 288 48 288 128l0 192c0 80-128.9 128-288 128S0 432 0 352L0 160C0 80 128.9 32 288 32zM528 160c0-9.9-8-29.9-55-49.8c-18.6-7.9-40.9-14.4-66-19.4l-27.8 43.6c-7.3 11.5-11.2 24.8-11.2 38.4c0 17.5 6.4 34.4 18.1 47.5l9.8 11c29.8-5.2 55.9-12.5 77.2-21.5c47.1-19.9 55-39.9 55-49.8zM349.2 237.3c-8-26.2-32.4-45.3-61.2-45.3s-53.3 19.1-61.2 45.3c19.4 1.7 39.9 2.7 61.2 2.7s41.8-.9 61.2-2.7zM169 90.8c-25.2 5-47.4 11.6-66 19.4C56 130.1 48 150.1 48 160s8 29.9 55 49.8c21.3 9 47.4 16.3 77.2 21.5l9.8-11c11.6-13.1 18.1-30 18.1-47.5c0-13.6-3.9-26.9-11.2-38.4L169 90.8zm56.3-8C224.5 87 224 91.5 224 96c0 35.3 28.7 64 64 64s64-28.7 64-64c0-4.5-.5-9-1.4-13.2C330.8 81 309.8 80 288 80s-42.8 1-62.6 2.8z"],
@@ -2282,6 +2495,7 @@
     "shield-virus": [512, 512, [], "e06c", "M269.4 2.9C265.2 1 260.7 0 256 0s-9.2 1-13.4 2.9L54.3 82.8c-22 9.3-38.4 31-38.3 57.2c.5 99.2 41.3 280.7 213.6 363.2c16.7 8 36.1 8 52.8 0C454.7 420.7 495.5 239.2 496 140c.1-26.2-16.3-47.9-38.3-57.2L269.4 2.9zM256 112c8.8 0 16 7.2 16 16c0 33 39.9 49.5 63.2 26.2c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6C334.5 200.1 351 240 384 240c8.8 0 16 7.2 16 16s-7.2 16-16 16c-33 0-49.5 39.9-26.2 63.2c6.2 6.2 6.2 16.4 0 22.6s-16.4 6.2-22.6 0C311.9 334.5 272 351 272 384c0 8.8-7.2 16-16 16s-16-7.2-16-16c0-33-39.9-49.5-63.2-26.2c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6C177.5 311.9 161 272 128 272c-8.8 0-16-7.2-16-16s7.2-16 16-16c33 0 49.5-39.9 26.2-63.2c-6.2-6.2-6.2-16.4 0-22.6s16.4-6.2 22.6 0C200.1 177.5 240 161 240 128c0-8.8 7.2-16 16-16zM232 256a24 24 0 1 0 0-48 24 24 0 1 0 0 48zm72 32a16 16 0 1 0 -32 0 16 16 0 1 0 32 0z"],
     "dice-six": [448, 512, [9861], "f526", "M0 96C0 60.7 28.7 32 64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zm160 64a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zM128 288a32 32 0 1 0 0-64 32 32 0 1 0 0 64zm32 64a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zM320 192a32 32 0 1 0 0-64 32 32 0 1 0 0 64zm32 64a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zM320 384a32 32 0 1 0 0-64 32 32 0 1 0 0 64z"],
     "mosquito-net": [640, 512, [], "e52c", "M168.8 462.3c-7.9-4-11.1-13.6-7.2-21.5L192 380.2l0-44.2c0-4.2 1.7-8.3 4.7-11.3L256 265.4l0-23.1L139.2 344C87.8 395.3 0 358.9 0 286.3c0-41.1 30.6-75.8 71.4-80.9l159.9-23.9-49.6-41.3c-5.1-4.2-7-11.1-4.9-17.4l13.9-41.7-29-58.1c-4-7.9-.7-17.5 7.2-21.5s17.5-.7 21.5 7.2l32 64c1.9 3.8 2.2 8.2 .9 12.2l-12.5 37.6L256 160.5l0-22.6c0-14.9 10.1-27.3 23.8-31l0-43.3c0-4.5 3.7-8.2 8.2-8.2s8.2 3.7 8.2 8.2l0 43.3c13.7 3.6 23.8 16.1 23.8 31l0 22.6 45.4-37.8L352.8 85.1c-1.3-4-1-8.4 .9-12.2l32-64c4-7.9 13.6-11.1 21.5-7.2s11.1 13.6 7.2 21.5l-29 58.1 13.9 41.7c2.1 6.2 .1 13.1-4.9 17.4l-49.6 41.3 159.9 23.9c22.5 2.8 41.8 14.6 54.7 31.4c-2.7 2.6-5.2 5.4-7.3 8.6c-8.6-12.9-23.3-21.5-40-21.5s-31.4 8.5-40 21.5c-8.6-12.9-23.3-21.5-40-21.5c-21.7 0-40 14.3-45.9 34.1c-10.7 3.2-19.8 10.1-25.9 19.2l-40.2-35 0 23.1 32.4 32.4c-.3 2-.4 4.1-.4 6.2c0 16.7 8.5 31.4 21.5 40c-4 2.6-7.5 5.9-10.6 9.5L320 310.6l0 50c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-50-32 32 0 41.4c0 2.5-.6 4.9-1.7 7.2l-32 64c-4 7.9-13.6 11.1-21.5 7.2zM512 256c8.8 0 16 7.2 16 16l0 16 48 0 0-16c0-8.8 7.2-16 16-16s16 7.2 16 16l0 16 16 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-16 0 0 48 16 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-16 0 0 48 16 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-16 0 0 16c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-16-48 0 0 16c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-16-48 0 0 16c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-16-16 0c-8.8 0-16-7.2-16-16s7.2-16 16-16l16 0 0-48-16 0c-8.8 0-16-7.2-16-16s7.2-16 16-16l16 0 0-48-16 0c-8.8 0-16-7.2-16-16s7.2-16 16-16l16 0 0-16c0-8.8 7.2-16 16-16s16 7.2 16 16l0 16 48 0 0-16c0-8.8 7.2-16 16-16zm16 112l48 0 0-48-48 0 0 48zm0 80l48 0 0-48-48 0 0 48zM448 320l0 48 48 0 0-48-48 0zm0 80l0 48 48 0 0-48-48 0z"],
+    "file-fragment": [384, 512, [], "e697", "M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 288c0 35.3-28.7 64-64 64l-128 0 0-128c0-35.3-28.7-64-64-64L0 320 0 64zm384 64l-128 0L256 0 384 128zM32 352l96 0c17.7 0 32 14.3 32 32l0 96c0 17.7-14.3 32-32 32l-96 0c-17.7 0-32-14.3-32-32l0-96c0-17.7 14.3-32 32-32z"],
     "bridge-water": [576, 512, [], "e4ce", "M0 96C0 78.3 14.3 64 32 64l512 0c17.7 0 32 14.3 32 32l0 35.6c0 15.7-12.7 28.4-28.4 28.4c-37.3 0-67.6 30.2-67.6 67.6l0 124.9c-12.9 0-25.8 3.9-36.8 11.7c-18 12.4-40.1 20.3-59.2 20.3c0 0 0 0 0 0l0-.5 0-128c0-53-43-96-96-96s-96 43-96 96l0 128 0 .5c-19 0-41.2-7.9-59.1-20.3c-11.1-7.8-24-11.7-36.9-11.7l0-124.9C96 190.2 65.8 160 28.4 160C12.7 160 0 147.3 0 131.6L0 96zM306.5 389.9C329 405.4 356.5 416 384 416c26.9 0 55.4-10.8 77.4-26.1c0 0 0 0 0 0c11.9-8.5 28.1-7.8 39.2 1.7c14.4 11.9 32.5 21 50.6 25.2c17.2 4 27.9 21.2 23.9 38.4s-21.2 27.9-38.4 23.9c-24.5-5.7-44.9-16.5-58.2-25C449.5 469.7 417 480 384 480c-31.9 0-60.6-9.9-80.4-18.9c-5.8-2.7-11.1-5.3-15.6-7.7c-4.5 2.4-9.7 5.1-15.6 7.7c-19.8 9-48.5 18.9-80.4 18.9c-33 0-65.5-10.3-94.5-25.8c-13.4 8.4-33.7 19.3-58.2 25c-17.2 4-34.4-6.7-38.4-23.9s6.7-34.4 23.9-38.4c18.1-4.2 36.2-13.3 50.6-25.2c11.1-9.4 27.3-10.1 39.2-1.7c0 0 0 0 0 0C136.7 405.2 165.1 416 192 416c27.5 0 55-10.6 77.5-26.1c11.1-7.9 25.9-7.9 37 0z"],
     "person-booth": [576, 512, [], "f756", "M256 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 160 64 0 0-160zm320 0c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 448c0 17.7 14.3 32 32 32s32-14.3 32-32l0-448zM224 512c17.7 0 32-14.3 32-32l0-160-64 0 0 160c0 17.7 14.3 32 32 32zM320 0c-9.3 0-18.1 4-24.2 11s-8.8 16.3-7.5 25.5l31.2 218.6L288.6 409.7c-3.5 17.3 7.8 34.2 25.1 37.7s34.2-7.8 37.7-25.1l.7-3.6c1.3 16.4 15.1 29.4 31.9 29.4c17.7 0 32-14.3 32-32c0 17.7 14.3 32 32 32s32-14.3 32-32l0-384c0-17.7-14.3-32-32-32L320 0zM112 80A48 48 0 1 0 16 80a48 48 0 1 0 96 0zm0 261.3l0-72.1 4.7 4.7c9 9 21.2 14.1 33.9 14.1l73.4 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-66.7 0-41.6-41.6c-14.3-14.3-33.8-22.4-54-22.4C27.6 160 0 187.6 0 221.6l0 55.7 0 .9L0 480c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96 32 42.7L96 480c0 17.7 14.3 32 32 32s32-14.3 32-32l0-58.7c0-10.4-3.4-20.5-9.6-28.8L112 341.3z"],
     "text-width": [448, 512, [], "f035", "M64 128l0-32 128 0 0 128-16 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-16 0 0-128 128 0 0 32c0 17.7 14.3 32 32 32s32-14.3 32-32l0-48c0-26.5-21.5-48-48-48L224 32 48 32C21.5 32 0 53.5 0 80l0 48c0 17.7 14.3 32 32 32s32-14.3 32-32zM9.4 361.4c-12.5 12.5-12.5 32.8 0 45.3l64 64c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6l0-32 192 0 0 32c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l64-64c12.5-12.5 12.5-32.8 0-45.3l-64-64c-9.2-9.2-22.9-11.9-34.9-6.9s-19.8 16.6-19.8 29.6l0 32-192 0 0-32c0-12.9-7.8-24.6-19.8-29.6s-25.7-2.2-34.9 6.9l-64 64z"],
@@ -2410,6 +2624,7 @@
     "plug-circle-plus": [576, 512, [], "e55f", "M96 0C78.3 0 64 14.3 64 32l0 96 64 0 0-96c0-17.7-14.3-32-32-32zM288 0c-17.7 0-32 14.3-32 32l0 96 64 0 0-96c0-17.7-14.3-32-32-32zM32 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l0 32c0 77.4 55 142 128 156.8l0 67.2c0 17.7 14.3 32 32 32s32-14.3 32-32l0-67.2c12.3-2.5 24.1-6.4 35.1-11.5c-2.1-10.8-3.1-21.9-3.1-33.3c0-80.3 53.8-148 127.3-169.2c.5-2.2 .7-4.5 .7-6.8c0-17.7-14.3-32-32-32L32 160zM432 512a144 144 0 1 0 0-288 144 144 0 1 0 0 288zm16-208l0 48 48 0c8.8 0 16 7.2 16 16s-7.2 16-16 16l-48 0 0 48c0 8.8-7.2 16-16 16s-16-7.2-16-16l0-48-48 0c-8.8 0-16-7.2-16-16s7.2-16 16-16l48 0 0-48c0-8.8 7.2-16 16-16s16 7.2 16 16z"],
     "place-of-worship": [640, 512, [], "f67f", "M224 109.3l0 108.3L183.3 242c-14.5 8.7-23.3 24.3-23.3 41.2L160 512l96 0 0-96c0-35.3 28.7-64 64-64s64 28.7 64 64l0 96 96 0 0-228.8c0-16.9-8.8-32.5-23.3-41.2L416 217.6l0-108.3c0-8.5-3.4-16.6-9.4-22.6L331.3 11.3c-6.2-6.2-16.4-6.2-22.6 0L233.4 86.6c-6 6-9.4 14.1-9.4 22.6zM24.9 330.3C9.5 338.8 0 354.9 0 372.4L0 464c0 26.5 21.5 48 48 48l80 0 0-238.4L24.9 330.3zM592 512c26.5 0 48-21.5 48-48l0-91.6c0-17.5-9.5-33.6-24.9-42.1L512 273.6 512 512l80 0z"],
     "grip-vertical": [320, 512, [], "f58e", "M40 352l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zm192 0l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 320c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 192l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 160c-22.1 0-40-17.9-40-40L0 72C0 49.9 17.9 32 40 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40z"],
+    "hexagon-nodes": [448, 512, [], "e699", "M248 106.6c18.9-9 32-28.3 32-50.6c0-30.9-25.1-56-56-56s-56 25.1-56 56c0 22.3 13.1 41.6 32 50.6l0 98.8c-2.8 1.3-5.5 2.9-8 4.7l-80.1-45.8c1.6-20.8-8.6-41.6-27.9-52.8C57.2 96 23 105.2 7.5 132S1.2 193 28 208.5c1.3 .8 2.6 1.5 4 2.1l0 90.8c-1.3 .6-2.7 1.3-4 2.1C1.2 319-8 353.2 7.5 380S57.2 416 84 400.5c19.3-11.1 29.4-32 27.8-52.8l50.5-28.9c-11.5-11.2-19.9-25.6-23.8-41.7L88 306.1c-2.6-1.8-5.2-3.3-8-4.7l0-90.8c2.8-1.3 5.5-2.9 8-4.7l80.1 45.8c-.1 1.4-.2 2.8-.2 4.3c0 22.3 13.1 41.6 32 50.6l0 98.8c-18.9 9-32 28.3-32 50.6c0 30.9 25.1 56 56 56s56-25.1 56-56c0-22.3-13.1-41.6-32-50.6l0-98.8c2.8-1.3 5.5-2.9 8-4.7l80.1 45.8c-1.6 20.8 8.6 41.6 27.8 52.8c26.8 15.5 61 6.3 76.5-20.5s6.3-61-20.5-76.5c-1.3-.8-2.7-1.5-4-2.1l0-90.8c1.4-.6 2.7-1.3 4-2.1c26.8-15.5 36-49.7 20.5-76.5S390.8 96 364 111.5c-19.3 11.1-29.4 32-27.8 52.8l-50.6 28.9c11.5 11.2 19.9 25.6 23.8 41.7L360 205.9c2.6 1.8 5.2 3.3 8 4.7l0 90.8c-2.8 1.3-5.5 2.9-8 4.6l-80.1-45.8c.1-1.4 .2-2.8 .2-4.3c0-22.3-13.1-41.6-32-50.6l0-98.8z"],
     "arrow-turn-up": [384, 512, ["level-up"], "f148", "M32 448c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c53 0 96-43 96-96l0-306.7 73.4 73.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 109.3 160 416c0 17.7-14.3 32-32 32l-96 0z"],
     "u": [384, 512, [117], "55", "M32 32c17.7 0 32 14.3 32 32l0 224c0 70.7 57.3 128 128 128s128-57.3 128-128l0-224c0-17.7 14.3-32 32-32s32 14.3 32 32l0 224c0 106-86 192-192 192S0 394 0 288L0 64C0 46.3 14.3 32 32 32z"],
     "square-root-variable": [576, 512, ["square-root-alt"], "f698", "M282.6 78.1c8-27.3 33-46.1 61.4-46.1l200 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L344 96 238.7 457c-3.6 12.3-14.1 21.2-26.8 22.8s-25.1-4.6-31.5-15.6L77.6 288 32 288c-17.7 0-32-14.3-32-32s14.3-32 32-32l45.6 0c22.8 0 43.8 12.1 55.3 31.8l65.2 111.8L282.6 78.1zM393.4 233.4c12.5-12.5 32.8-12.5 45.3 0L480 274.7l41.4-41.4c12.5-12.5 32.8-12.5 45.3 0s12.5 32.8 0 45.3L525.3 320l41.4 41.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L480 365.3l-41.4 41.4c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L434.7 320l-41.4-41.4c-12.5-12.5-12.5-32.8 0-45.3z"],
@@ -2675,6 +2890,7 @@
     "rocket": [512, 512, [], "f135", "M156.6 384.9L125.7 354c-8.5-8.5-11.5-20.8-7.7-32.2c3-8.9 7-20.5 11.8-33.8L24 288c-8.6 0-16.6-4.6-20.9-12.1s-4.2-16.7 .2-24.1l52.5-88.5c13-21.9 36.5-35.3 61.9-35.3l82.3 0c2.4-4 4.8-7.7 7.2-11.3C289.1-4.1 411.1-8.1 483.9 5.3c11.6 2.1 20.6 11.2 22.8 22.8c13.4 72.9 9.3 194.8-111.4 276.7c-3.5 2.4-7.3 4.8-11.3 7.2l0 82.3c0 25.4-13.4 49-35.3 61.9l-88.5 52.5c-7.4 4.4-16.6 4.5-24.1 .2s-12.1-12.2-12.1-20.9l0-107.2c-14.1 4.9-26.4 8.9-35.7 11.9c-11.2 3.6-23.4 .5-31.8-7.8zM384 168a40 40 0 1 0 0-80 40 40 0 1 0 0 80z"],
     "photo-film": [640, 512, ["photo-video"], "f87c", "M256 0L576 0c35.3 0 64 28.7 64 64l0 224c0 35.3-28.7 64-64 64l-320 0c-35.3 0-64-28.7-64-64l0-224c0-35.3 28.7-64 64-64zM476 106.7C471.5 100 464 96 456 96s-15.5 4-20 10.7l-56 84L362.7 169c-4.6-5.7-11.5-9-18.7-9s-14.2 3.3-18.7 9l-64 80c-5.8 7.2-6.9 17.1-2.9 25.4s12.4 13.6 21.6 13.6l80 0 48 0 144 0c8.9 0 17-4.9 21.2-12.7s3.7-17.3-1.2-24.6l-96-144zM336 96a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zM64 128l96 0 0 256 0 32c0 17.7 14.3 32 32 32l128 0c17.7 0 32-14.3 32-32l0-32 160 0 0 64c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 192c0-35.3 28.7-64 64-64zm8 64c-8.8 0-16 7.2-16 16l0 16c0 8.8 7.2 16 16 16l16 0c8.8 0 16-7.2 16-16l0-16c0-8.8-7.2-16-16-16l-16 0zm0 104c-8.8 0-16 7.2-16 16l0 16c0 8.8 7.2 16 16 16l16 0c8.8 0 16-7.2 16-16l0-16c0-8.8-7.2-16-16-16l-16 0zm0 104c-8.8 0-16 7.2-16 16l0 16c0 8.8 7.2 16 16 16l16 0c8.8 0 16-7.2 16-16l0-16c0-8.8-7.2-16-16-16l-16 0zm336 16l0 16c0 8.8 7.2 16 16 16l16 0c8.8 0 16-7.2 16-16l0-16c0-8.8-7.2-16-16-16l-16 0c-8.8 0-16 7.2-16 16z"],
     "folder-minus": [512, 512, [], "f65d", "M448 480L64 480c-35.3 0-64-28.7-64-64L0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l160 0c35.3 0 64 28.7 64 64l0 256c0 35.3-28.7 64-64 64zM184 272c-13.3 0-24 10.7-24 24s10.7 24 24 24l144 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-144 0z"],
+    "hexagon-nodes-bolt": [576, 512, [], "e69a", "M248 106.6c18.9-9 32-28.3 32-50.6c0-30.9-25.1-56-56-56s-56 25.1-56 56c0 22.3 13.1 41.6 32 50.6l0 98.8c-2.8 1.3-5.5 2.9-8 4.7l-80.1-45.8c1.6-20.8-8.6-41.6-27.9-52.8C57.2 96 23 105.2 7.5 132S1.2 193 28 208.5c1.3 .8 2.6 1.5 4 2.1l0 90.8c-1.3 .6-2.7 1.3-4 2.1C1.2 319-8 353.2 7.5 380S57.2 416 84 400.5c19.3-11.1 29.4-32 27.8-52.8l50.5-28.9c-11.5-11.2-19.9-25.6-23.8-41.7L88 306.1c-2.6-1.8-5.2-3.3-8-4.7l0-90.8c2.8-1.3 5.5-2.9 8-4.7l80.1 45.8c-.1 1.4-.2 2.8-.2 4.3c0 22.3 13.1 41.6 32 50.6l0 98.8c-18.9 9-32 28.3-32 50.6c0 30.9 25.1 56 56 56c30.7 0 55.6-24.7 56-55.2c-7.5-12.9-13.5-26.8-17.6-41.5c-4.2-4-9.1-7.3-14.4-9.9l0-98.8c2.8-1.3 5.5-2.9 8-4.7l10.5 6c5.5-15.3 13.1-29.5 22.4-42.5l-9.1-5.2c.1-1.4 .2-2.8 .2-4.3c0-22.3-13.1-41.6-32-50.6l0-98.8zM440.5 132C425 105.2 390.8 96 364 111.5c-19.3 11.1-29.4 32-27.8 52.8l-50.6 28.9c11.5 11.2 19.9 25.6 23.8 41.7L360 205.9c.4 .3 .8 .6 1.3 .9c21.7-9.5 45.6-14.8 70.8-14.8c2 0 4 0 5.9 .1c12.1-17.3 13.8-40.6 2.6-60.1zM432 512a144 144 0 1 0 0-288 144 144 0 1 0 0 288zm47.9-225c4.3 3.7 5.4 9.9 2.6 14.9L452.4 356l35.6 0c5.2 0 9.8 3.3 11.4 8.2s-.1 10.3-4.2 13.4l-96 72c-4.5 3.4-10.8 3.2-15.1-.6s-5.4-9.9-2.6-14.9L411.6 380 376 380c-5.2 0-9.8-3.3-11.4-8.2s.1-10.3 4.2-13.4l96-72c4.5-3.4 10.8-3.2 15.1 .6z"],
     "store": [576, 512, [], "f54e", "M547.6 103.8L490.3 13.1C485.2 5 476.1 0 466.4 0L109.6 0C99.9 0 90.8 5 85.7 13.1L28.3 103.8c-29.6 46.8-3.4 111.9 51.9 119.4c4 .5 8.1 .8 12.1 .8c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.2 0 49.3-11.4 65.2-29c16 17.6 39.1 29 65.2 29c4.1 0 8.1-.3 12.1-.8c55.5-7.4 81.8-72.5 52.1-119.4zM499.7 254.9c0 0 0 0-.1 0c-5.3 .7-10.7 1.1-16.2 1.1c-12.4 0-24.3-1.9-35.4-5.3L448 384l-320 0 0-133.4c-11.2 3.5-23.2 5.4-35.6 5.4c-5.5 0-11-.4-16.3-1.1l-.1 0c-4.1-.6-8.1-1.3-12-2.3L64 384l0 64c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-64 0-131.4c-4 1-8 1.8-12.3 2.3z"],
     "arrow-trend-up": [576, 512, [], "e098", "M384 160c-17.7 0-32-14.3-32-32s14.3-32 32-32l160 0c17.7 0 32 14.3 32 32l0 160c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-82.7L342.6 374.6c-12.5 12.5-32.8 12.5-45.3 0L192 269.3 54.6 406.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160c12.5-12.5 32.8-12.5 45.3 0L320 306.7 466.7 160 384 160z"],
     "plug-circle-minus": [576, 512, [], "e55e", "M96 0C78.3 0 64 14.3 64 32l0 96 64 0 0-96c0-17.7-14.3-32-32-32zM288 0c-17.7 0-32 14.3-32 32l0 96 64 0 0-96c0-17.7-14.3-32-32-32zM32 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l0 32c0 77.4 55 142 128 156.8l0 67.2c0 17.7 14.3 32 32 32s32-14.3 32-32l0-67.2c12.3-2.5 24.1-6.4 35.1-11.5c-2.1-10.8-3.1-21.9-3.1-33.3c0-80.3 53.8-148 127.3-169.2c.5-2.2 .7-4.5 .7-6.8c0-17.7-14.3-32-32-32L32 160zM576 368a144 144 0 1 0 -288 0 144 144 0 1 0 288 0zm-64 0c0 8.8-7.2 16-16 16l-128 0c-8.8 0-16-7.2-16-16s7.2-16 16-16l128 0c8.8 0 16 7.2 16 16z"],
@@ -2741,6 +2957,7 @@
     "file-export": [576, 512, ["arrow-right-from-file"], "f56e", "M0 64C0 28.7 28.7 0 64 0L224 0l0 128c0 17.7 14.3 32 32 32l128 0 0 128-168 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l168 0 0 112c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 64zM384 336l0-48 110.1 0-39-39c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l80 80c9.4 9.4 9.4 24.6 0 33.9l-80 80c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l39-39L384 336zm0-208l-128 0L256 0 384 128z"],
     "shield": [512, 512, [128737, "shield-blank"], "f132", "M256 0c4.6 0 9.2 1 13.4 2.9L457.7 82.8c22 9.3 38.4 31 38.3 57.2c-.5 99.2-41.3 280.7-213.6 363.2c-16.7 8-36.1 8-52.8 0C57.3 420.7 16.5 239.2 16 140c-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.8 1 251.4 0 256 0z"],
     "arrow-up-short-wide": [576, 512, ["sort-amount-up-alt"], "f885", "M151.6 42.4C145.5 35.8 137 32 128 32s-17.5 3.8-23.6 10.4l-88 96c-11.9 13-11.1 33.3 2 45.2s33.3 11.1 45.2-2L96 146.3 96 448c0 17.7 14.3 32 32 32s32-14.3 32-32l0-301.7 32.4 35.4c11.9 13 32.2 13.9 45.2 2s13.9-32.2 2-45.2l-88-96zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32l32 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-32 0zm0 128c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0zm0 128c-17.7 0-32 14.3-32 32s14.3 32 32 32l160 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-160 0zm0 128c-17.7 0-32 14.3-32 32s14.3 32 32 32l224 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-224 0z"],
+    "comment-nodes": [640, 512, [], "e696", "M256 448c10.8 0 21.5-.5 32-1.6c.3-15.8 4.4-31.7 12.9-46.4c16-27.7 43.7-44.4 73.2-47.5l16.7-29.2c-4.3-11-6.7-22.9-6.7-35.4c0-53 43-96 96-96c9.1 0 17.8 1.3 26.2 3.6C481.1 102.1 378.6 32 256 32C114.6 32 0 125.1 0 240c0 45.1 17.7 86.8 47.7 120.9c-1.9 24.5-11.4 46.3-21.4 62.9c-5.5 9.2-11.1 16.6-15.2 21.6c-2.1 2.5-3.7 4.4-4.9 5.7c-.2 .3-.4 .5-.6 .7c-.3 .3-.5 .5-.6 .7l-.3 .3c0 0 0 0 0 0c0 0 0 0 0 0s0 0 0 0s0 0 0 0c-4.6 4.6-5.9 11.4-3.4 17.4c2.5 6 8.3 9.9 14.8 9.9c28.7 0 57.6-8.9 81.6-19.3c22.9-10 42.4-21.9 54.3-30.6c31.8 11.5 67 17.9 104.1 17.9zm72.6-32c-17.7 30.6-7.2 69.7 23.4 87.4s69.7 7.2 87.4-23.4c1.5-2.6 2.8-5.3 3.9-8l73.3 0c1.1 2.7 2.4 5.4 3.9 8c17.7 30.6 56.8 41.1 87.4 23.4s41.1-56.8 23.4-87.4c-13.4-23.2-39.1-34.8-64-31.4l-17.6-30.7c-11 11.7-25 20.6-40.6 25.6l16.5 28.9c-3.8 4.8-6.8 10-9 15.6l-73.4 0c-2.2-5.6-5.3-10.8-9-15.6l33-57.7c4.1 .8 8.4 1.3 12.8 1.3c35.3 0 64-28.7 64-64s-28.7-64-64-64s-64 28.7-64 64c0 13.4 4.1 25.8 11.2 36.1l-34.6 60.5c-25-3.4-50.6 8.3-64 31.4z"],
     "house-medical": [576, 512, [], "e3b2", "M543.8 287.6c17 0 32-14 32-32.1c1-9-3-17-11-24L309.5 7c-6-5-14-7-21-7s-15 1-22 8L10 231.5c-7 7-10 15-10 24c0 18 14 32.1 32 32.1l32 0 0 160.4c0 35.3 28.7 64 64 64l320.4 0c35.5 0 64.2-28.8 64-64.3l-.7-160.2 32 0zM256 208c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16l0 48 48 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-48 0 0 48c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-48-48 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16l48 0 0-48z"],
     "golf-ball-tee": [384, 512, ["golf-ball"], "f450", "M384 192c0 66.8-34.1 125.6-85.8 160L85.8 352C34.1 317.6 0 258.8 0 192C0 86 86 0 192 0S384 86 384 192zM242.1 256.6c0 18.5-15 33.5-33.5 33.5c-4.9 0-9.1 5.1-5.4 8.4c5.9 5.2 13.7 8.4 22.1 8.4c18.5 0 33.5-15 33.5-33.5c0-8.5-3.2-16.2-8.4-22.1c-3.3-3.7-8.4 .5-8.4 5.4zm-52.3-49.3c-4.9 0-9.1 5.1-5.4 8.4c5.9 5.2 13.7 8.4 22.1 8.4c18.5 0 33.5-15 33.5-33.5c0-8.5-3.2-16.2-8.4-22.1c-3.3-3.7-8.4 .5-8.4 5.4c0 18.5-15 33.5-33.5 33.5zm113.5-17.5c0 18.5-15 33.5-33.5 33.5c-4.9 0-9.1 5.1-5.4 8.4c5.9 5.2 13.7 8.4 22.1 8.4c18.5 0 33.5-15 33.5-33.5c0-8.5-3.2-16.2-8.4-22.1c-3.3-3.7-8.4 .5-8.4 5.4zM96 416c0-17.7 14.3-32 32-32l64 0 64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-16 0c-8.8 0-16 7.2-16 16l0 16c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-16c0-8.8-7.2-16-16-16l-16 0c-17.7 0-32-14.3-32-32z"],
     "circle-chevron-left": [512, 512, ["chevron-circle-left"], "f137", "M512 256A256 256 0 1 0 0 256a256 256 0 1 0 512 0zM271 135c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-87 87 87 87c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L167 273c-9.4-9.4-9.4-24.6 0-33.9L271 135z"],
@@ -2873,6 +3090,7 @@
     "window-minimize": [512, 512, [128469], "f2d1", "M32 416c-17.7 0-32 14.3-32 32s14.3 32 32 32l448 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 416z"],
     "mug-saucer": [640, 512, ["coffee"], "f0f4", "M96 64c0-17.7 14.3-32 32-32l320 0 64 0c70.7 0 128 57.3 128 128s-57.3 128-128 128l-32 0c0 53-43 96-96 96l-192 0c-53 0-96-43-96-96L96 64zM480 224l32 0c35.3 0 64-28.7 64-64s-28.7-64-64-64l-32 0 0 128zM32 416l512 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 480c-17.7 0-32-14.3-32-32s14.3-32 32-32z"],
     "brush": [384, 512, [], "f55d", "M162.4 6c-1.5-3.6-5-6-8.9-6l-19 0c-3.9 0-7.5 2.4-8.9 6L104.9 57.7c-3.2 8-14.6 8-17.8 0L66.4 6c-1.5-3.6-5-6-8.9-6L48 0C21.5 0 0 21.5 0 48L0 224l0 22.4L0 256l9.6 0 364.8 0 9.6 0 0-9.6 0-22.4 0-176c0-26.5-21.5-48-48-48L230.5 0c-3.9 0-7.5 2.4-8.9 6L200.9 57.7c-3.2 8-14.6 8-17.8 0L162.4 6zM0 288l0 32c0 35.3 28.7 64 64 64l64 0 0 64c0 35.3 28.7 64 64 64s64-28.7 64-64l0-64 64 0c35.3 0 64-28.7 64-64l0-32L0 288zM192 432a16 16 0 1 1 0 32 16 16 0 1 1 0-32z"],
+    "file-half-dashed": [384, 512, [], "e698", "M64 0C28.7 0 0 28.7 0 64L0 320l384 0 0-160-128 0c-17.7 0-32-14.3-32-32L224 0 64 0zM256 0l0 128 128 0L256 0zM0 416l64 0 0-64L0 352l0 64zm288 32l-80 0 0 64 80 0 0-64zm-112 0l-80 0 0 64 80 0 0-64zM64 448L0 448c0 35.3 28.7 64 64 64l0-64zm256 0l0 64c35.3 0 64-28.7 64-64l-64 0zm64-32l0-64-64 0 0 64 64 0z"],
     "mask": [576, 512, [], "f6fa", "M288 64C64 64 0 160 0 272S80 448 176 448l8.4 0c24.2 0 46.4-13.7 57.2-35.4l23.2-46.3c4.4-8.8 13.3-14.3 23.2-14.3s18.8 5.5 23.2 14.3l23.2 46.3c10.8 21.7 33 35.4 57.2 35.4l8.4 0c96 0 176-64 176-176s-64-208-288-208zM96 256a64 64 0 1 1 128 0A64 64 0 1 1 96 256zm320-64a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"],
     "magnifying-glass-minus": [512, 512, ["search-minus"], "f010", "M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM136 184c-13.3 0-24 10.7-24 24s10.7 24 24 24l144 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-144 0z"],
     "ruler-vertical": [256, 512, [], "f548", "M0 48C0 21.5 21.5 0 48 0L208 0c26.5 0 48 21.5 48 48l0 48-80 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l80 0 0 64-80 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l80 0 0 64-80 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l80 0 0 64-80 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l80 0 0 48c0 26.5-21.5 48-48 48L48 512c-26.5 0-48-21.5-48-48L0 48z"],
@@ -2932,8 +3150,115 @@
 (function () {
   'use strict';
 
-  const noop = () => {};
+  function _defineProperty(e, r, t) {
+    return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+      value: t,
+      enumerable: !0,
+      configurable: !0,
+      writable: !0
+    }) : e[r] = t, e;
+  }
+  function _inherits(t, e) {
+    if ("function" != typeof e && null !== e) throw new TypeError("Super expression must either be null or a function");
+    t.prototype = Object.create(e && e.prototype, {
+      constructor: {
+        value: t,
+        writable: !0,
+        configurable: !0
+      }
+    }), Object.defineProperty(t, "prototype", {
+      writable: !1
+    }), e && _setPrototypeOf(t, e);
+  }
+  function ownKeys(e, r) {
+    var t = Object.keys(e);
+    if (Object.getOwnPropertySymbols) {
+      var o = Object.getOwnPropertySymbols(e);
+      r && (o = o.filter(function (r) {
+        return Object.getOwnPropertyDescriptor(e, r).enumerable;
+      })), t.push.apply(t, o);
+    }
+    return t;
+  }
+  function _objectSpread2(e) {
+    for (var r = 1; r < arguments.length; r++) {
+      var t = null != arguments[r] ? arguments[r] : {};
+      r % 2 ? ownKeys(Object(t), !0).forEach(function (r) {
+        _defineProperty(e, r, t[r]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) {
+        Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r));
+      });
+    }
+    return e;
+  }
+  function _setPrototypeOf(t, e) {
+    return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) {
+      return t.__proto__ = e, t;
+    }, _setPrototypeOf(t, e);
+  }
+  function _toPrimitive(t, r) {
+    if ("object" != typeof t || !t) return t;
+    var e = t[Symbol.toPrimitive];
+    if (void 0 !== e) {
+      var i = e.call(t, r || "default");
+      if ("object" != typeof i) return i;
+      throw new TypeError("@@toPrimitive must return a primitive value.");
+    }
+    return ("string" === r ? String : Number)(t);
+  }
+  function _toPropertyKey(t) {
+    var i = _toPrimitive(t, "string");
+    return "symbol" == typeof i ? i : i + "";
+  }
+  function _wrapRegExp() {
+    _wrapRegExp = function (e, r) {
+      return new BabelRegExp(e, void 0, r);
+    };
+    var e = RegExp.prototype,
+      r = new WeakMap();
+    function BabelRegExp(e, t, p) {
+      var o = RegExp(e, t);
+      return r.set(o, p || r.get(e)), _setPrototypeOf(o, BabelRegExp.prototype);
+    }
+    function buildGroups(e, t) {
+      var p = r.get(t);
+      return Object.keys(p).reduce(function (r, t) {
+        var o = p[t];
+        if ("number" == typeof o) r[t] = e[o];else {
+          for (var i = 0; void 0 === e[o[i]] && i + 1 < o.length;) i++;
+          r[t] = e[o[i]];
+        }
+        return r;
+      }, Object.create(null));
+    }
+    return _inherits(BabelRegExp, RegExp), BabelRegExp.prototype.exec = function (r) {
+      var t = e.exec.call(this, r);
+      if (t) {
+        t.groups = buildGroups(t, this);
+        var p = t.indices;
+        p && (p.groups = buildGroups(p, this));
+      }
+      return t;
+    }, BabelRegExp.prototype[Symbol.replace] = function (t, p) {
+      if ("string" == typeof p) {
+        var o = r.get(this);
+        return e[Symbol.replace].call(this, t, p.replace(/\$<([^>]+)>/g, function (e, r) {
+          var t = o[r];
+          return "$" + (Array.isArray(t) ? t.join("$") : t);
+        }));
+      }
+      if ("function" == typeof p) {
+        var i = this;
+        return e[Symbol.replace].call(this, t, function () {
+          var e = arguments;
+          return "object" != typeof e[e.length - 1] && (e = [].slice.call(e)).push(buildGroups(e, i)), p.apply(this, e);
+        });
+      }
+      return e[Symbol.replace].call(this, t, p);
+    }, _wrapRegExp.apply(this, arguments);
+  }
 
+  const noop = () => {};
   let _WINDOW = {};
   let _DOCUMENT = {};
   let _MUTATION_OBSERVER = null;
@@ -2941,14 +3266,12 @@
     mark: noop,
     measure: noop
   };
-
   try {
     if (typeof window !== 'undefined') _WINDOW = window;
     if (typeof document !== 'undefined') _DOCUMENT = document;
     if (typeof MutationObserver !== 'undefined') _MUTATION_OBSERVER = MutationObserver;
     if (typeof performance !== 'undefined') _PERFORMANCE = performance;
   } catch (e) {}
-
   const {
     userAgent = ''
   } = _WINDOW.navigator || {};
@@ -2960,231 +3283,327 @@
   const IS_DOM = !!DOCUMENT.documentElement && !!DOCUMENT.head && typeof DOCUMENT.addEventListener === 'function' && typeof DOCUMENT.createElement === 'function';
   const IS_IE = ~userAgent.indexOf('MSIE') || ~userAgent.indexOf('Trident/');
 
-  var a = "classic",
-      t = "duotone",
-      r = "sharp",
-      o = "sharp-duotone",
-      c = [a, t, r, o];
-
-  var et$1 = {
-    classic: {
-      900: "fas",
-      400: "far",
-      normal: "far",
-      300: "fal",
-      100: "fat"
+  var p = /fa(s|r|l|t|d|dr|dl|dt|b|k|kd|ss|sr|sl|st|sds|sdr|sdl|sdt)?[\-\ ]/,
+    g = /Font ?Awesome ?([56 ]*)(Solid|Regular|Light|Thin|Duotone|Brands|Free|Pro|Sharp Duotone|Sharp|Kit)?.*/i;
+  var S = {
+      classic: {
+        fa: "solid",
+        fas: "solid",
+        "fa-solid": "solid",
+        far: "regular",
+        "fa-regular": "regular",
+        fal: "light",
+        "fa-light": "light",
+        fat: "thin",
+        "fa-thin": "thin",
+        fab: "brands",
+        "fa-brands": "brands"
+      },
+      duotone: {
+        fa: "solid",
+        fad: "solid",
+        "fa-solid": "solid",
+        "fa-duotone": "solid",
+        fadr: "regular",
+        "fa-regular": "regular",
+        fadl: "light",
+        "fa-light": "light",
+        fadt: "thin",
+        "fa-thin": "thin"
+      },
+      sharp: {
+        fa: "solid",
+        fass: "solid",
+        "fa-solid": "solid",
+        fasr: "regular",
+        "fa-regular": "regular",
+        fasl: "light",
+        "fa-light": "light",
+        fast: "thin",
+        "fa-thin": "thin"
+      },
+      "sharp-duotone": {
+        fa: "solid",
+        fasds: "solid",
+        "fa-solid": "solid",
+        fasdr: "regular",
+        "fa-regular": "regular",
+        fasdl: "light",
+        "fa-light": "light",
+        fasdt: "thin",
+        "fa-thin": "thin"
+      }
     },
-    sharp: {
-      900: "fass",
-      400: "fasr",
-      300: "fasl",
-      100: "fast"
+    A = {
+      GROUP: "duotone-group",
+      SWAP_OPACITY: "swap-opacity",
+      PRIMARY: "primary",
+      SECONDARY: "secondary"
     },
-    "sharp-duotone": {
-      900: "fasds"
-    }
-  };
-  var bt = {
-    kit: {
-      fak: "kit",
-      "fa-kit": "kit"
+    P = ["fa-classic", "fa-duotone", "fa-sharp", "fa-sharp-duotone"];
+  var s = "classic",
+    t = "duotone",
+    r = "sharp",
+    o = "sharp-duotone",
+    L = [s, t, r, o];
+  var G = {
+      classic: {
+        900: "fas",
+        400: "far",
+        normal: "far",
+        300: "fal",
+        100: "fat"
+      },
+      duotone: {
+        900: "fad",
+        400: "fadr",
+        300: "fadl",
+        100: "fadt"
+      },
+      sharp: {
+        900: "fass",
+        400: "fasr",
+        300: "fasl",
+        100: "fast"
+      },
+      "sharp-duotone": {
+        900: "fasds",
+        400: "fasdr",
+        300: "fasdl",
+        100: "fasdt"
+      }
+    };
+  var lt = {
+      "Font Awesome 6 Free": {
+        900: "fas",
+        400: "far"
+      },
+      "Font Awesome 6 Pro": {
+        900: "fas",
+        400: "far",
+        normal: "far",
+        300: "fal",
+        100: "fat"
+      },
+      "Font Awesome 6 Brands": {
+        400: "fab",
+        normal: "fab"
+      },
+      "Font Awesome 6 Duotone": {
+        900: "fad",
+        400: "fadr",
+        normal: "fadr",
+        300: "fadl",
+        100: "fadt"
+      },
+      "Font Awesome 6 Sharp": {
+        900: "fass",
+        400: "fasr",
+        normal: "fasr",
+        300: "fasl",
+        100: "fast"
+      },
+      "Font Awesome 6 Sharp Duotone": {
+        900: "fasds",
+        400: "fasdr",
+        normal: "fasdr",
+        300: "fasdl",
+        100: "fasdt"
+      }
+    };
+  var pt = new Map([["classic", {
+      defaultShortPrefixId: "fas",
+      defaultStyleId: "solid",
+      styleIds: ["solid", "regular", "light", "thin", "brands"],
+      futureStyleIds: [],
+      defaultFontWeight: 900
+    }], ["sharp", {
+      defaultShortPrefixId: "fass",
+      defaultStyleId: "solid",
+      styleIds: ["solid", "regular", "light", "thin"],
+      futureStyleIds: [],
+      defaultFontWeight: 900
+    }], ["duotone", {
+      defaultShortPrefixId: "fad",
+      defaultStyleId: "solid",
+      styleIds: ["solid", "regular", "light", "thin"],
+      futureStyleIds: [],
+      defaultFontWeight: 900
+    }], ["sharp-duotone", {
+      defaultShortPrefixId: "fasds",
+      defaultStyleId: "solid",
+      styleIds: ["solid", "regular", "light", "thin"],
+      futureStyleIds: [],
+      defaultFontWeight: 900
+    }]]),
+    xt = {
+      classic: {
+        solid: "fas",
+        regular: "far",
+        light: "fal",
+        thin: "fat",
+        brands: "fab"
+      },
+      duotone: {
+        solid: "fad",
+        regular: "fadr",
+        light: "fadl",
+        thin: "fadt"
+      },
+      sharp: {
+        solid: "fass",
+        regular: "fasr",
+        light: "fasl",
+        thin: "fast"
+      },
+      "sharp-duotone": {
+        solid: "fasds",
+        regular: "fasdr",
+        light: "fasdl",
+        thin: "fasdt"
+      }
+    };
+  var Ft = ["fak", "fa-kit", "fakd", "fa-kit-duotone"],
+    St = {
+      kit: {
+        fak: "kit",
+        "fa-kit": "kit"
+      },
+      "kit-duotone": {
+        fakd: "kit-duotone",
+        "fa-kit-duotone": "kit-duotone"
+      }
     },
-    "kit-duotone": {
-      fakd: "kit-duotone",
-      "fa-kit-duotone": "kit-duotone"
-    }
-  },
-      Ct = ["kit"];
-  var Dt = /fa(s|r|l|t|d|b|k|kd|ss|sr|sl|st|sds)?[\-\ ]/,
-      Kt = /Font ?Awesome ?([56 ]*)(Solid|Regular|Light|Thin|Duotone|Brands|Free|Pro|Sharp Duotone|Sharp|Kit)?.*/i;
-  var ao = {
-    "Font Awesome 5 Free": {
-      900: "fas",
-      400: "far"
-    },
-    "Font Awesome 5 Pro": {
-      900: "fas",
-      400: "far",
-      normal: "far",
-      300: "fal"
-    },
-    "Font Awesome 5 Brands": {
-      400: "fab",
-      normal: "fab"
-    },
-    "Font Awesome 5 Duotone": {
-      900: "fad"
-    }
-  };
-  var eo = {
-    "Font Awesome 6 Free": {
-      900: "fas",
-      400: "far"
-    },
-    "Font Awesome 6 Pro": {
-      900: "fas",
-      400: "far",
-      normal: "far",
-      300: "fal",
-      100: "fat"
-    },
-    "Font Awesome 6 Brands": {
-      400: "fab",
-      normal: "fab"
-    },
-    "Font Awesome 6 Duotone": {
-      900: "fad"
-    },
-    "Font Awesome 6 Sharp": {
-      900: "fass",
-      400: "fasr",
-      normal: "fasr",
-      300: "fasl",
-      100: "fast"
-    },
-    "Font Awesome 6 Sharp Duotone": {
-      900: "fasds"
-    }
-  },
-      lo = {
-    classic: {
-      "fa-brands": "fab",
-      "fa-duotone": "fad",
-      "fa-light": "fal",
-      "fa-regular": "far",
-      "fa-solid": "fas",
-      "fa-thin": "fat"
-    },
-    sharp: {
-      "fa-solid": "fass",
-      "fa-regular": "fasr",
-      "fa-light": "fasl",
-      "fa-thin": "fast"
-    },
-    "sharp-duotone": {
-      "fa-solid": "fasds"
-    }
-  },
-      y = {
-    classic: ["fas", "far", "fal", "fat"],
-    sharp: ["fass", "fasr", "fasl", "fast"],
-    "sharp-duotone": ["fasds"]
-  },
-      no = {
-    classic: {
-      fab: "fa-brands",
-      fad: "fa-duotone",
-      fal: "fa-light",
-      far: "fa-regular",
-      fas: "fa-solid",
-      fat: "fa-thin"
-    },
-    sharp: {
-      fass: "fa-solid",
-      fasr: "fa-regular",
-      fasl: "fa-light",
-      fast: "fa-thin"
-    },
-    "sharp-duotone": {
-      fasds: "fa-solid"
-    }
-  },
-      fo = {
-    classic: {
-      solid: "fas",
-      regular: "far",
-      light: "fal",
-      thin: "fat",
-      duotone: "fad",
-      brands: "fab"
-    },
-    sharp: {
-      solid: "fass",
-      regular: "fasr",
-      light: "fasl",
-      thin: "fast"
-    },
-    "sharp-duotone": {
-      solid: "fasds"
-    }
-  },
-      ho = {
-    classic: {
-      fa: "solid",
-      fas: "solid",
-      "fa-solid": "solid",
-      far: "regular",
-      "fa-regular": "regular",
-      fal: "light",
-      "fa-light": "light",
-      fat: "thin",
-      "fa-thin": "thin",
-      fad: "duotone",
-      "fa-duotone": "duotone",
-      fab: "brands",
-      "fa-brands": "brands"
-    },
-    sharp: {
-      fa: "solid",
-      fass: "solid",
-      "fa-solid": "solid",
-      fasr: "regular",
-      "fa-regular": "regular",
-      fasl: "light",
-      "fa-light": "light",
-      fast: "thin",
-      "fa-thin": "thin"
-    },
-    "sharp-duotone": {
-      fa: "solid",
-      fasds: "solid",
-      "fa-solid": "solid"
-    }
-  },
-      x$1 = ["solid", "regular", "light", "thin", "duotone", "brands"],
-      u$1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-      m$1 = u$1.concat([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]),
-      t$1 = {
-    GROUP: "duotone-group",
-    SWAP_OPACITY: "swap-opacity",
-    PRIMARY: "primary",
-    SECONDARY: "secondary"
-  },
-      yo = [...Object.keys(y), ...x$1, "2xs", "xs", "sm", "lg", "xl", "2xl", "beat", "border", "fade", "beat-fade", "bounce", "flip-both", "flip-horizontal", "flip-vertical", "flip", "fw", "inverse", "layers-counter", "layers-text", "layers", "li", "pull-left", "pull-right", "pulse", "rotate-180", "rotate-270", "rotate-90", "rotate-by", "shake", "spin-pulse", "spin-reverse", "spin", "stack-1x", "stack-2x", "stack", "ul", t$1.GROUP, t$1.SWAP_OPACITY, t$1.PRIMARY, t$1.SECONDARY].concat(u$1.map(o => "".concat(o, "x"))).concat(m$1.map(o => "w-".concat(o)));
-  var mo = {
-    "Font Awesome Kit": {
-      400: "fak",
-      normal: "fak"
-    },
-    "Font Awesome Kit Duotone": {
-      400: "fakd",
-      normal: "fakd"
-    }
-  },
-      Io = {
+    At = ["kit"];
+  var Ct = {
     kit: {
       "fa-kit": "fak"
     },
     "kit-duotone": {
       "fa-kit-duotone": "fakd"
     }
-  },
-      Fo = {
-    kit: {
-      fak: "fa-kit"
-    },
-    "kit-duotone": {
-      fakd: "fa-kit-duotone"
-    }
-  },
-      So = {
-    kit: {
-      kit: "fak"
-    },
-    "kit-duotone": {
-      "kit-duotone": "fakd"
-    }
   };
+  var Lt = ["fak", "fakd"],
+    Wt = {
+      kit: {
+        fak: "fa-kit"
+      },
+      "kit-duotone": {
+        fakd: "fa-kit-duotone"
+      }
+    };
+  var Et = {
+      kit: {
+        kit: "fak"
+      },
+      "kit-duotone": {
+        "kit-duotone": "fakd"
+      }
+    };
+
+  var t$1 = {
+      GROUP: "duotone-group",
+      SWAP_OPACITY: "swap-opacity",
+      PRIMARY: "primary",
+      SECONDARY: "secondary"
+    },
+    r$1 = ["fa-classic", "fa-duotone", "fa-sharp", "fa-sharp-duotone"];
+  var bt$1 = ["fak", "fa-kit", "fakd", "fa-kit-duotone"];
+  var Yt = {
+      "Font Awesome Kit": {
+        400: "fak",
+        normal: "fak"
+      },
+      "Font Awesome Kit Duotone": {
+        400: "fakd",
+        normal: "fakd"
+      }
+    };
+  var po = {
+      classic: {
+        "fa-brands": "fab",
+        "fa-duotone": "fad",
+        "fa-light": "fal",
+        "fa-regular": "far",
+        "fa-solid": "fas",
+        "fa-thin": "fat"
+      },
+      duotone: {
+        "fa-regular": "fadr",
+        "fa-light": "fadl",
+        "fa-thin": "fadt"
+      },
+      sharp: {
+        "fa-solid": "fass",
+        "fa-regular": "fasr",
+        "fa-light": "fasl",
+        "fa-thin": "fast"
+      },
+      "sharp-duotone": {
+        "fa-solid": "fasds",
+        "fa-regular": "fasdr",
+        "fa-light": "fasdl",
+        "fa-thin": "fasdt"
+      }
+    },
+    I$1 = {
+      classic: ["fas", "far", "fal", "fat", "fad"],
+      duotone: ["fadr", "fadl", "fadt"],
+      sharp: ["fass", "fasr", "fasl", "fast"],
+      "sharp-duotone": ["fasds", "fasdr", "fasdl", "fasdt"]
+    },
+    co = {
+      classic: {
+        fab: "fa-brands",
+        fad: "fa-duotone",
+        fal: "fa-light",
+        far: "fa-regular",
+        fas: "fa-solid",
+        fat: "fa-thin"
+      },
+      duotone: {
+        fadr: "fa-regular",
+        fadl: "fa-light",
+        fadt: "fa-thin"
+      },
+      sharp: {
+        fass: "fa-solid",
+        fasr: "fa-regular",
+        fasl: "fa-light",
+        fast: "fa-thin"
+      },
+      "sharp-duotone": {
+        fasds: "fa-solid",
+        fasdr: "fa-regular",
+        fasdl: "fa-light",
+        fasdt: "fa-thin"
+      }
+    },
+    x = ["fa-solid", "fa-regular", "fa-light", "fa-thin", "fa-duotone", "fa-brands"],
+    xo = ["fa", "fas", "far", "fal", "fat", "fad", "fadr", "fadl", "fadt", "fab", "fass", "fasr", "fasl", "fast", "fasds", "fasdr", "fasdl", "fasdt", ...r$1, ...x],
+    m$1 = ["solid", "regular", "light", "thin", "duotone", "brands"],
+    c$1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    F$1 = c$1.concat([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]),
+    Fo = [...Object.keys(I$1), ...m$1, "2xs", "xs", "sm", "lg", "xl", "2xl", "beat", "border", "fade", "beat-fade", "bounce", "flip-both", "flip-horizontal", "flip-vertical", "flip", "fw", "inverse", "layers-counter", "layers-text", "layers", "li", "pull-left", "pull-right", "pulse", "rotate-180", "rotate-270", "rotate-90", "rotate-by", "shake", "spin-pulse", "spin-reverse", "spin", "stack-1x", "stack-2x", "stack", "ul", t$1.GROUP, t$1.SWAP_OPACITY, t$1.PRIMARY, t$1.SECONDARY].concat(c$1.map(o => "".concat(o, "x"))).concat(F$1.map(o => "w-".concat(o)));
+  var ko = {
+      "Font Awesome 5 Free": {
+        900: "fas",
+        400: "far"
+      },
+      "Font Awesome 5 Pro": {
+        900: "fas",
+        400: "far",
+        normal: "far",
+        300: "fal"
+      },
+      "Font Awesome 5 Brands": {
+        400: "fab",
+        normal: "fab"
+      },
+      "Font Awesome 5 Duotone": {
+        900: "fad"
+      }
+    };
 
   const NAMESPACE_IDENTIFIER = '___FONT_AWESOME___';
   const UNITS_IN_GRID = 16;
@@ -3205,69 +3624,54 @@
       return false;
     }
   })();
-  const FAMILIES = [a, r, o];
-
   function familyProxy(obj) {
     // Defaults to the classic family if family is not available
     return new Proxy(obj, {
       get(target, prop) {
-        return prop in target ? target[prop] : target[a];
+        return prop in target ? target[prop] : target[s];
       }
-
     });
   }
+  const _PREFIX_TO_STYLE = _objectSpread2({}, S);
 
-  const _PREFIX_TO_STYLE = { ...ho
-  };
-  _PREFIX_TO_STYLE[a] = { ...ho[a],
-    ...bt['kit'],
-    ...bt['kit-duotone']
-  };
+  // We changed FACSSClassesToStyleId in the icons repo to be canonical and as such, "classic" family does not have any
+  // duotone styles.  But we do still need duotone in _PREFIX_TO_STYLE below, so we are manually adding
+  // {'fa-duotone': 'duotone'}
+  _PREFIX_TO_STYLE[s] = _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, {
+    'fa-duotone': 'duotone'
+  }), S[s]), St['kit']), St['kit-duotone']);
   const PREFIX_TO_STYLE = familyProxy(_PREFIX_TO_STYLE);
-  const _STYLE_TO_PREFIX = { ...fo
-  };
-  _STYLE_TO_PREFIX[a] = { ..._STYLE_TO_PREFIX[a],
-    ...So['kit'],
-    ...So['kit-duotone']
-  };
+  const _STYLE_TO_PREFIX = _objectSpread2({}, xt);
+
+  // We changed FAStyleIdToShortPrefixId in the icons repo to be canonical and as such, "classic" family does not have any
+  // duotone styles.  But we do still need duotone in _STYLE_TO_PREFIX below, so we are manually adding {duotone: 'fad'}
+  _STYLE_TO_PREFIX[s] = _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, {
+    duotone: 'fad'
+  }), _STYLE_TO_PREFIX[s]), Et['kit']), Et['kit-duotone']);
   const STYLE_TO_PREFIX = familyProxy(_STYLE_TO_PREFIX);
-  const _PREFIX_TO_LONG_STYLE = { ...no
-  };
-  _PREFIX_TO_LONG_STYLE[a] = { ..._PREFIX_TO_LONG_STYLE[a],
-    ...Fo['kit']
-  };
+  const _PREFIX_TO_LONG_STYLE = _objectSpread2({}, co);
+  _PREFIX_TO_LONG_STYLE[s] = _objectSpread2(_objectSpread2({}, _PREFIX_TO_LONG_STYLE[s]), Wt['kit']);
   const PREFIX_TO_LONG_STYLE = familyProxy(_PREFIX_TO_LONG_STYLE);
-  const _LONG_STYLE_TO_PREFIX = { ...lo
-  };
-  _LONG_STYLE_TO_PREFIX[a] = { ..._LONG_STYLE_TO_PREFIX[a],
-    ...Io['kit']
-  };
+  const _LONG_STYLE_TO_PREFIX = _objectSpread2({}, po);
+  _LONG_STYLE_TO_PREFIX[s] = _objectSpread2(_objectSpread2({}, _LONG_STYLE_TO_PREFIX[s]), Ct['kit']);
   const LONG_STYLE_TO_PREFIX = familyProxy(_LONG_STYLE_TO_PREFIX);
-  const ICON_SELECTION_SYNTAX_PATTERN = Dt; // eslint-disable-line no-useless-escape
+  const ICON_SELECTION_SYNTAX_PATTERN = p; // eslint-disable-line no-useless-escape
 
   const LAYERS_TEXT_CLASSNAME = 'fa-layers-text';
-  const FONT_FAMILY_PATTERN = Kt;
-  const _FONT_WEIGHT_TO_PREFIX = { ...et$1
-  };
+  const FONT_FAMILY_PATTERN = g;
+  const _FONT_WEIGHT_TO_PREFIX = _objectSpread2({}, G);
   const FONT_WEIGHT_TO_PREFIX = familyProxy(_FONT_WEIGHT_TO_PREFIX);
   const ATTRIBUTES_WATCHED_FOR_MUTATION = ['class', 'data-prefix', 'data-icon', 'data-fa-transform', 'data-fa-mask'];
-  const DUOTONE_CLASSES = t$1;
-  const prefixes = new Set();
-  Object.keys(STYLE_TO_PREFIX[a]).map(prefixes.add.bind(prefixes));
-  Object.keys(STYLE_TO_PREFIX[r]).map(prefixes.add.bind(prefixes));
-  Object.keys(STYLE_TO_PREFIX[o]).map(prefixes.add.bind(prefixes));
-  const RESERVED_CLASSES = [...Ct, ...yo];
+  const DUOTONE_CLASSES = A;
+  const RESERVED_CLASSES = [...At, ...Fo];
 
   const initial = WINDOW.FontAwesomeConfig || {};
-
   function getAttrConfig(attr) {
     var element = DOCUMENT.querySelector('script[' + attr + ']');
-
     if (element) {
       return element.getAttribute(attr);
     }
   }
-
   function coerce(val) {
     // Getting an empty string will occur if the attribute is set on the HTML tag but without a value
     // We'll assume that this is an indication that it should be toggled to true
@@ -3276,22 +3680,19 @@
     if (val === 'true') return true;
     return val;
   }
-
   if (DOCUMENT && typeof DOCUMENT.querySelector === 'function') {
     const attrs = [['data-family-prefix', 'familyPrefix'], ['data-css-prefix', 'cssPrefix'], ['data-family-default', 'familyDefault'], ['data-style-default', 'styleDefault'], ['data-replacement-class', 'replacementClass'], ['data-auto-replace-svg', 'autoReplaceSvg'], ['data-auto-add-css', 'autoAddCss'], ['data-auto-a11y', 'autoA11y'], ['data-search-pseudo-elements', 'searchPseudoElements'], ['data-observe-mutations', 'observeMutations'], ['data-mutate-approach', 'mutateApproach'], ['data-keep-original-source', 'keepOriginalSource'], ['data-measure-performance', 'measurePerformance'], ['data-show-missing-icons', 'showMissingIcons']];
     attrs.forEach(_ref => {
       let [attr, key] = _ref;
       const val = coerce(getAttrConfig(attr));
-
       if (val !== undefined && val !== null) {
         initial[key] = val;
       }
     });
   }
-
   const _default = {
     styleDefault: 'solid',
-    familyDefault: 'classic',
+    familyDefault: s,
     cssPrefix: DEFAULT_CSS_PREFIX,
     replacementClass: DEFAULT_REPLACEMENT_CLASS,
     autoReplaceSvg: true,
@@ -3303,15 +3704,13 @@
     keepOriginalSource: true,
     measurePerformance: false,
     showMissingIcons: true
-  }; // familyPrefix is deprecated but we must still support it if present
+  };
 
+  // familyPrefix is deprecated but we must still support it if present
   if (initial.familyPrefix) {
     initial.cssPrefix = initial.familyPrefix;
   }
-
-  const _config = { ..._default,
-    ...initial
-  };
+  const _config = _objectSpread2(_objectSpread2({}, _default), initial);
   if (!_config.autoReplaceSvg) _config.observeMutations = false;
   const config = {};
   Object.keys(_default).forEach(key => {
@@ -3319,20 +3718,19 @@
       enumerable: true,
       set: function (val) {
         _config[key] = val;
-
         _onChangeCb.forEach(cb => cb(config));
       },
       get: function () {
         return _config[key];
       }
     });
-  }); // familyPrefix is deprecated as of 6.2.0 and should be removed in 7.0.0
+  });
 
+  // familyPrefix is deprecated as of 6.2.0 and should be removed in 7.0.0
   Object.defineProperty(config, 'familyPrefix', {
     enumerable: true,
     set: function (val) {
       _config.cssPrefix = val;
-
       _onChangeCb.forEach(cb => cb(config));
     },
     get: function () {
@@ -3343,7 +3741,6 @@
   const _onChangeCb = [];
   function onChange(cb) {
     _onChangeCb.push(cb);
-
     return () => {
       _onChangeCb.splice(_onChangeCb.indexOf(cb), 1);
     };
@@ -3363,7 +3760,6 @@
       for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         args[_key - 1] = arguments[_key];
       }
-
       fn(...args);
     } catch (e) {
       if (!PRODUCTION) {
@@ -3375,22 +3771,18 @@
     if (!css || !IS_DOM) {
       return;
     }
-
     const style = DOCUMENT.createElement('style');
     style.setAttribute('type', 'text/css');
     style.innerHTML = css;
     const headChildren = DOCUMENT.head.childNodes;
     let beforeChild = null;
-
     for (let i = headChildren.length - 1; i > -1; i--) {
       const child = headChildren[i];
       const tagName = (child.tagName || '').toUpperCase();
-
       if (['STYLE', 'LINK'].indexOf(tagName) > -1) {
         beforeChild = child;
       }
     }
-
     DOCUMENT.head.insertBefore(style, beforeChild);
     return css;
   }
@@ -3398,20 +3790,16 @@
   function nextUniqueId() {
     let size = 12;
     let id = '';
-
     while (size-- > 0) {
       id += idPool[Math.random() * 62 | 0];
     }
-
     return id;
   }
   function toArray(obj) {
     const array = [];
-
     for (let i = (obj || []).length >>> 0; i--;) {
       array[i] = obj[i];
     }
-
     return array;
   }
   function classArray(node) {
@@ -3469,7 +3857,6 @@
       startCentered = false
     } = _ref2;
     let val = '';
-
     if (startCentered && IS_IE) {
       val += "translate(".concat(transform.x / d$2 - width / 2, "em, ").concat(transform.y / d$2 - height / 2, "em) ");
     } else if (startCentered) {
@@ -3477,13 +3864,12 @@
     } else {
       val += "translate(".concat(transform.x / d$2, "em, ").concat(transform.y / d$2, "em) ");
     }
-
     val += "scale(".concat(transform.size / d$2 * (transform.flipX ? -1 : 1), ", ").concat(transform.size / d$2 * (transform.flipY ? -1 : 1), ") ");
     val += "rotate(".concat(transform.rotate, "deg) ");
     return val;
   }
 
-  var baseStyles = ":host,:root{--fa-font-solid:normal 900 1em/1 \"Font Awesome 6 Free\";--fa-font-regular:normal 400 1em/1 \"Font Awesome 6 Free\";--fa-font-light:normal 300 1em/1 \"Font Awesome 6 Pro\";--fa-font-thin:normal 100 1em/1 \"Font Awesome 6 Pro\";--fa-font-duotone:normal 900 1em/1 \"Font Awesome 6 Duotone\";--fa-font-brands:normal 400 1em/1 \"Font Awesome 6 Brands\";--fa-font-sharp-solid:normal 900 1em/1 \"Font Awesome 6 Sharp\";--fa-font-sharp-regular:normal 400 1em/1 \"Font Awesome 6 Sharp\";--fa-font-sharp-light:normal 300 1em/1 \"Font Awesome 6 Sharp\";--fa-font-sharp-thin:normal 100 1em/1 \"Font Awesome 6 Sharp\";--fa-font-sharp-duotone-solid:normal 900 1em/1 \"Font Awesome 6 Sharp Duotone\"}svg:not(:host).svg-inline--fa,svg:not(:root).svg-inline--fa{overflow:visible;box-sizing:content-box}.svg-inline--fa{display:var(--fa-display,inline-block);height:1em;overflow:visible;vertical-align:-.125em}.svg-inline--fa.fa-2xs{vertical-align:.1em}.svg-inline--fa.fa-xs{vertical-align:0}.svg-inline--fa.fa-sm{vertical-align:-.0714285705em}.svg-inline--fa.fa-lg{vertical-align:-.2em}.svg-inline--fa.fa-xl{vertical-align:-.25em}.svg-inline--fa.fa-2xl{vertical-align:-.3125em}.svg-inline--fa.fa-pull-left{margin-right:var(--fa-pull-margin,.3em);width:auto}.svg-inline--fa.fa-pull-right{margin-left:var(--fa-pull-margin,.3em);width:auto}.svg-inline--fa.fa-li{width:var(--fa-li-width,2em);top:.25em}.svg-inline--fa.fa-fw{width:var(--fa-fw-width,1.25em)}.fa-layers svg.svg-inline--fa{bottom:0;left:0;margin:auto;position:absolute;right:0;top:0}.fa-layers-counter,.fa-layers-text{display:inline-block;position:absolute;text-align:center}.fa-layers{display:inline-block;height:1em;position:relative;text-align:center;vertical-align:-.125em;width:1em}.fa-layers svg.svg-inline--fa{transform-origin:center center}.fa-layers-text{left:50%;top:50%;transform:translate(-50%,-50%);transform-origin:center center}.fa-layers-counter{background-color:var(--fa-counter-background-color,#ff253a);border-radius:var(--fa-counter-border-radius,1em);box-sizing:border-box;color:var(--fa-inverse,#fff);line-height:var(--fa-counter-line-height,1);max-width:var(--fa-counter-max-width,5em);min-width:var(--fa-counter-min-width,1.5em);overflow:hidden;padding:var(--fa-counter-padding,.25em .5em);right:var(--fa-right,0);text-overflow:ellipsis;top:var(--fa-top,0);transform:scale(var(--fa-counter-scale,.25));transform-origin:top right}.fa-layers-bottom-right{bottom:var(--fa-bottom,0);right:var(--fa-right,0);top:auto;transform:scale(var(--fa-layers-scale,.25));transform-origin:bottom right}.fa-layers-bottom-left{bottom:var(--fa-bottom,0);left:var(--fa-left,0);right:auto;top:auto;transform:scale(var(--fa-layers-scale,.25));transform-origin:bottom left}.fa-layers-top-right{top:var(--fa-top,0);right:var(--fa-right,0);transform:scale(var(--fa-layers-scale,.25));transform-origin:top right}.fa-layers-top-left{left:var(--fa-left,0);right:auto;top:var(--fa-top,0);transform:scale(var(--fa-layers-scale,.25));transform-origin:top left}.fa-1x{font-size:1em}.fa-2x{font-size:2em}.fa-3x{font-size:3em}.fa-4x{font-size:4em}.fa-5x{font-size:5em}.fa-6x{font-size:6em}.fa-7x{font-size:7em}.fa-8x{font-size:8em}.fa-9x{font-size:9em}.fa-10x{font-size:10em}.fa-2xs{font-size:.625em;line-height:.1em;vertical-align:.225em}.fa-xs{font-size:.75em;line-height:.0833333337em;vertical-align:.125em}.fa-sm{font-size:.875em;line-height:.0714285718em;vertical-align:.0535714295em}.fa-lg{font-size:1.25em;line-height:.05em;vertical-align:-.075em}.fa-xl{font-size:1.5em;line-height:.0416666682em;vertical-align:-.125em}.fa-2xl{font-size:2em;line-height:.03125em;vertical-align:-.1875em}.fa-fw{text-align:center;width:1.25em}.fa-ul{list-style-type:none;margin-left:var(--fa-li-margin,2.5em);padding-left:0}.fa-ul>li{position:relative}.fa-li{left:calc(-1 * var(--fa-li-width,2em));position:absolute;text-align:center;width:var(--fa-li-width,2em);line-height:inherit}.fa-border{border-color:var(--fa-border-color,#eee);border-radius:var(--fa-border-radius,.1em);border-style:var(--fa-border-style,solid);border-width:var(--fa-border-width,.08em);padding:var(--fa-border-padding,.2em .25em .15em)}.fa-pull-left{float:left;margin-right:var(--fa-pull-margin,.3em)}.fa-pull-right{float:right;margin-left:var(--fa-pull-margin,.3em)}.fa-beat{animation-name:fa-beat;animation-delay:var(--fa-animation-delay,0s);animation-direction:var(--fa-animation-direction,normal);animation-duration:var(--fa-animation-duration,1s);animation-iteration-count:var(--fa-animation-iteration-count,infinite);animation-timing-function:var(--fa-animation-timing,ease-in-out)}.fa-bounce{animation-name:fa-bounce;animation-delay:var(--fa-animation-delay,0s);animation-direction:var(--fa-animation-direction,normal);animation-duration:var(--fa-animation-duration,1s);animation-iteration-count:var(--fa-animation-iteration-count,infinite);animation-timing-function:var(--fa-animation-timing,cubic-bezier(.28,.84,.42,1))}.fa-fade{animation-name:fa-fade;animation-delay:var(--fa-animation-delay,0s);animation-direction:var(--fa-animation-direction,normal);animation-duration:var(--fa-animation-duration,1s);animation-iteration-count:var(--fa-animation-iteration-count,infinite);animation-timing-function:var(--fa-animation-timing,cubic-bezier(.4,0,.6,1))}.fa-beat-fade{animation-name:fa-beat-fade;animation-delay:var(--fa-animation-delay,0s);animation-direction:var(--fa-animation-direction,normal);animation-duration:var(--fa-animation-duration,1s);animation-iteration-count:var(--fa-animation-iteration-count,infinite);animation-timing-function:var(--fa-animation-timing,cubic-bezier(.4,0,.6,1))}.fa-flip{animation-name:fa-flip;animation-delay:var(--fa-animation-delay,0s);animation-direction:var(--fa-animation-direction,normal);animation-duration:var(--fa-animation-duration,1s);animation-iteration-count:var(--fa-animation-iteration-count,infinite);animation-timing-function:var(--fa-animation-timing,ease-in-out)}.fa-shake{animation-name:fa-shake;animation-delay:var(--fa-animation-delay,0s);animation-direction:var(--fa-animation-direction,normal);animation-duration:var(--fa-animation-duration,1s);animation-iteration-count:var(--fa-animation-iteration-count,infinite);animation-timing-function:var(--fa-animation-timing,linear)}.fa-spin{animation-name:fa-spin;animation-delay:var(--fa-animation-delay,0s);animation-direction:var(--fa-animation-direction,normal);animation-duration:var(--fa-animation-duration,2s);animation-iteration-count:var(--fa-animation-iteration-count,infinite);animation-timing-function:var(--fa-animation-timing,linear)}.fa-spin-reverse{--fa-animation-direction:reverse}.fa-pulse,.fa-spin-pulse{animation-name:fa-spin;animation-direction:var(--fa-animation-direction,normal);animation-duration:var(--fa-animation-duration,1s);animation-iteration-count:var(--fa-animation-iteration-count,infinite);animation-timing-function:var(--fa-animation-timing,steps(8))}@media (prefers-reduced-motion:reduce){.fa-beat,.fa-beat-fade,.fa-bounce,.fa-fade,.fa-flip,.fa-pulse,.fa-shake,.fa-spin,.fa-spin-pulse{animation-delay:-1ms;animation-duration:1ms;animation-iteration-count:1;transition-delay:0s;transition-duration:0s}}@keyframes fa-beat{0%,90%{transform:scale(1)}45%{transform:scale(var(--fa-beat-scale,1.25))}}@keyframes fa-bounce{0%{transform:scale(1,1) translateY(0)}10%{transform:scale(var(--fa-bounce-start-scale-x,1.1),var(--fa-bounce-start-scale-y,.9)) translateY(0)}30%{transform:scale(var(--fa-bounce-jump-scale-x,.9),var(--fa-bounce-jump-scale-y,1.1)) translateY(var(--fa-bounce-height,-.5em))}50%{transform:scale(var(--fa-bounce-land-scale-x,1.05),var(--fa-bounce-land-scale-y,.95)) translateY(0)}57%{transform:scale(1,1) translateY(var(--fa-bounce-rebound,-.125em))}64%{transform:scale(1,1) translateY(0)}100%{transform:scale(1,1) translateY(0)}}@keyframes fa-fade{50%{opacity:var(--fa-fade-opacity,.4)}}@keyframes fa-beat-fade{0%,100%{opacity:var(--fa-beat-fade-opacity,.4);transform:scale(1)}50%{opacity:1;transform:scale(var(--fa-beat-fade-scale,1.125))}}@keyframes fa-flip{50%{transform:rotate3d(var(--fa-flip-x,0),var(--fa-flip-y,1),var(--fa-flip-z,0),var(--fa-flip-angle,-180deg))}}@keyframes fa-shake{0%{transform:rotate(-15deg)}4%{transform:rotate(15deg)}24%,8%{transform:rotate(-18deg)}12%,28%{transform:rotate(18deg)}16%{transform:rotate(-22deg)}20%{transform:rotate(22deg)}32%{transform:rotate(-12deg)}36%{transform:rotate(12deg)}100%,40%{transform:rotate(0)}}@keyframes fa-spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}.fa-rotate-90{transform:rotate(90deg)}.fa-rotate-180{transform:rotate(180deg)}.fa-rotate-270{transform:rotate(270deg)}.fa-flip-horizontal{transform:scale(-1,1)}.fa-flip-vertical{transform:scale(1,-1)}.fa-flip-both,.fa-flip-horizontal.fa-flip-vertical{transform:scale(-1,-1)}.fa-rotate-by{transform:rotate(var(--fa-rotate-angle,0))}.fa-stack{display:inline-block;vertical-align:middle;height:2em;position:relative;width:2.5em}.fa-stack-1x,.fa-stack-2x{bottom:0;left:0;margin:auto;position:absolute;right:0;top:0;z-index:var(--fa-stack-z-index,auto)}.svg-inline--fa.fa-stack-1x{height:1em;width:1.25em}.svg-inline--fa.fa-stack-2x{height:2em;width:2.5em}.fa-inverse{color:var(--fa-inverse,#fff)}.fa-sr-only,.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}.fa-sr-only-focusable:not(:focus),.sr-only-focusable:not(:focus){position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}.svg-inline--fa .fa-primary{fill:var(--fa-primary-color,currentColor);opacity:var(--fa-primary-opacity,1)}.svg-inline--fa .fa-secondary{fill:var(--fa-secondary-color,currentColor);opacity:var(--fa-secondary-opacity,.4)}.svg-inline--fa.fa-swap-opacity .fa-primary{opacity:var(--fa-secondary-opacity,.4)}.svg-inline--fa.fa-swap-opacity .fa-secondary{opacity:var(--fa-primary-opacity,1)}.svg-inline--fa mask .fa-primary,.svg-inline--fa mask .fa-secondary{fill:#000}.fa-duotone.fa-inverse,.fad.fa-inverse{color:var(--fa-inverse,#fff)}";
+  var baseStyles = ":host,:root{--fa-font-solid:normal 900 1em/1 \"Font Awesome 6 Free\";--fa-font-regular:normal 400 1em/1 \"Font Awesome 6 Free\";--fa-font-light:normal 300 1em/1 \"Font Awesome 6 Pro\";--fa-font-thin:normal 100 1em/1 \"Font Awesome 6 Pro\";--fa-font-duotone:normal 900 1em/1 \"Font Awesome 6 Duotone\";--fa-font-duotone-regular:normal 400 1em/1 \"Font Awesome 6 Duotone\";--fa-font-duotone-light:normal 300 1em/1 \"Font Awesome 6 Duotone\";--fa-font-duotone-thin:normal 100 1em/1 \"Font Awesome 6 Duotone\";--fa-font-brands:normal 400 1em/1 \"Font Awesome 6 Brands\";--fa-font-sharp-solid:normal 900 1em/1 \"Font Awesome 6 Sharp\";--fa-font-sharp-regular:normal 400 1em/1 \"Font Awesome 6 Sharp\";--fa-font-sharp-light:normal 300 1em/1 \"Font Awesome 6 Sharp\";--fa-font-sharp-thin:normal 100 1em/1 \"Font Awesome 6 Sharp\";--fa-font-sharp-duotone-solid:normal 900 1em/1 \"Font Awesome 6 Sharp Duotone\";--fa-font-sharp-duotone-regular:normal 400 1em/1 \"Font Awesome 6 Sharp Duotone\";--fa-font-sharp-duotone-light:normal 300 1em/1 \"Font Awesome 6 Sharp Duotone\";--fa-font-sharp-duotone-thin:normal 100 1em/1 \"Font Awesome 6 Sharp Duotone\"}svg:not(:host).svg-inline--fa,svg:not(:root).svg-inline--fa{overflow:visible;box-sizing:content-box}.svg-inline--fa{display:var(--fa-display,inline-block);height:1em;overflow:visible;vertical-align:-.125em}.svg-inline--fa.fa-2xs{vertical-align:.1em}.svg-inline--fa.fa-xs{vertical-align:0}.svg-inline--fa.fa-sm{vertical-align:-.0714285705em}.svg-inline--fa.fa-lg{vertical-align:-.2em}.svg-inline--fa.fa-xl{vertical-align:-.25em}.svg-inline--fa.fa-2xl{vertical-align:-.3125em}.svg-inline--fa.fa-pull-left{margin-right:var(--fa-pull-margin,.3em);width:auto}.svg-inline--fa.fa-pull-right{margin-left:var(--fa-pull-margin,.3em);width:auto}.svg-inline--fa.fa-li{width:var(--fa-li-width,2em);top:.25em}.svg-inline--fa.fa-fw{width:var(--fa-fw-width,1.25em)}.fa-layers svg.svg-inline--fa{bottom:0;left:0;margin:auto;position:absolute;right:0;top:0}.fa-layers-counter,.fa-layers-text{display:inline-block;position:absolute;text-align:center}.fa-layers{display:inline-block;height:1em;position:relative;text-align:center;vertical-align:-.125em;width:1em}.fa-layers svg.svg-inline--fa{transform-origin:center center}.fa-layers-text{left:50%;top:50%;transform:translate(-50%,-50%);transform-origin:center center}.fa-layers-counter{background-color:var(--fa-counter-background-color,#ff253a);border-radius:var(--fa-counter-border-radius,1em);box-sizing:border-box;color:var(--fa-inverse,#fff);line-height:var(--fa-counter-line-height,1);max-width:var(--fa-counter-max-width,5em);min-width:var(--fa-counter-min-width,1.5em);overflow:hidden;padding:var(--fa-counter-padding,.25em .5em);right:var(--fa-right,0);text-overflow:ellipsis;top:var(--fa-top,0);transform:scale(var(--fa-counter-scale,.25));transform-origin:top right}.fa-layers-bottom-right{bottom:var(--fa-bottom,0);right:var(--fa-right,0);top:auto;transform:scale(var(--fa-layers-scale,.25));transform-origin:bottom right}.fa-layers-bottom-left{bottom:var(--fa-bottom,0);left:var(--fa-left,0);right:auto;top:auto;transform:scale(var(--fa-layers-scale,.25));transform-origin:bottom left}.fa-layers-top-right{top:var(--fa-top,0);right:var(--fa-right,0);transform:scale(var(--fa-layers-scale,.25));transform-origin:top right}.fa-layers-top-left{left:var(--fa-left,0);right:auto;top:var(--fa-top,0);transform:scale(var(--fa-layers-scale,.25));transform-origin:top left}.fa-1x{font-size:1em}.fa-2x{font-size:2em}.fa-3x{font-size:3em}.fa-4x{font-size:4em}.fa-5x{font-size:5em}.fa-6x{font-size:6em}.fa-7x{font-size:7em}.fa-8x{font-size:8em}.fa-9x{font-size:9em}.fa-10x{font-size:10em}.fa-2xs{font-size:.625em;line-height:.1em;vertical-align:.225em}.fa-xs{font-size:.75em;line-height:.0833333337em;vertical-align:.125em}.fa-sm{font-size:.875em;line-height:.0714285718em;vertical-align:.0535714295em}.fa-lg{font-size:1.25em;line-height:.05em;vertical-align:-.075em}.fa-xl{font-size:1.5em;line-height:.0416666682em;vertical-align:-.125em}.fa-2xl{font-size:2em;line-height:.03125em;vertical-align:-.1875em}.fa-fw{text-align:center;width:1.25em}.fa-ul{list-style-type:none;margin-left:var(--fa-li-margin,2.5em);padding-left:0}.fa-ul>li{position:relative}.fa-li{left:calc(-1 * var(--fa-li-width,2em));position:absolute;text-align:center;width:var(--fa-li-width,2em);line-height:inherit}.fa-border{border-color:var(--fa-border-color,#eee);border-radius:var(--fa-border-radius,.1em);border-style:var(--fa-border-style,solid);border-width:var(--fa-border-width,.08em);padding:var(--fa-border-padding,.2em .25em .15em)}.fa-pull-left{float:left;margin-right:var(--fa-pull-margin,.3em)}.fa-pull-right{float:right;margin-left:var(--fa-pull-margin,.3em)}.fa-beat{animation-name:fa-beat;animation-delay:var(--fa-animation-delay,0s);animation-direction:var(--fa-animation-direction,normal);animation-duration:var(--fa-animation-duration,1s);animation-iteration-count:var(--fa-animation-iteration-count,infinite);animation-timing-function:var(--fa-animation-timing,ease-in-out)}.fa-bounce{animation-name:fa-bounce;animation-delay:var(--fa-animation-delay,0s);animation-direction:var(--fa-animation-direction,normal);animation-duration:var(--fa-animation-duration,1s);animation-iteration-count:var(--fa-animation-iteration-count,infinite);animation-timing-function:var(--fa-animation-timing,cubic-bezier(.28,.84,.42,1))}.fa-fade{animation-name:fa-fade;animation-delay:var(--fa-animation-delay,0s);animation-direction:var(--fa-animation-direction,normal);animation-duration:var(--fa-animation-duration,1s);animation-iteration-count:var(--fa-animation-iteration-count,infinite);animation-timing-function:var(--fa-animation-timing,cubic-bezier(.4,0,.6,1))}.fa-beat-fade{animation-name:fa-beat-fade;animation-delay:var(--fa-animation-delay,0s);animation-direction:var(--fa-animation-direction,normal);animation-duration:var(--fa-animation-duration,1s);animation-iteration-count:var(--fa-animation-iteration-count,infinite);animation-timing-function:var(--fa-animation-timing,cubic-bezier(.4,0,.6,1))}.fa-flip{animation-name:fa-flip;animation-delay:var(--fa-animation-delay,0s);animation-direction:var(--fa-animation-direction,normal);animation-duration:var(--fa-animation-duration,1s);animation-iteration-count:var(--fa-animation-iteration-count,infinite);animation-timing-function:var(--fa-animation-timing,ease-in-out)}.fa-shake{animation-name:fa-shake;animation-delay:var(--fa-animation-delay,0s);animation-direction:var(--fa-animation-direction,normal);animation-duration:var(--fa-animation-duration,1s);animation-iteration-count:var(--fa-animation-iteration-count,infinite);animation-timing-function:var(--fa-animation-timing,linear)}.fa-spin{animation-name:fa-spin;animation-delay:var(--fa-animation-delay,0s);animation-direction:var(--fa-animation-direction,normal);animation-duration:var(--fa-animation-duration,2s);animation-iteration-count:var(--fa-animation-iteration-count,infinite);animation-timing-function:var(--fa-animation-timing,linear)}.fa-spin-reverse{--fa-animation-direction:reverse}.fa-pulse,.fa-spin-pulse{animation-name:fa-spin;animation-direction:var(--fa-animation-direction,normal);animation-duration:var(--fa-animation-duration,1s);animation-iteration-count:var(--fa-animation-iteration-count,infinite);animation-timing-function:var(--fa-animation-timing,steps(8))}@media (prefers-reduced-motion:reduce){.fa-beat,.fa-beat-fade,.fa-bounce,.fa-fade,.fa-flip,.fa-pulse,.fa-shake,.fa-spin,.fa-spin-pulse{animation-delay:-1ms;animation-duration:1ms;animation-iteration-count:1;transition-delay:0s;transition-duration:0s}}@keyframes fa-beat{0%,90%{transform:scale(1)}45%{transform:scale(var(--fa-beat-scale,1.25))}}@keyframes fa-bounce{0%{transform:scale(1,1) translateY(0)}10%{transform:scale(var(--fa-bounce-start-scale-x,1.1),var(--fa-bounce-start-scale-y,.9)) translateY(0)}30%{transform:scale(var(--fa-bounce-jump-scale-x,.9),var(--fa-bounce-jump-scale-y,1.1)) translateY(var(--fa-bounce-height,-.5em))}50%{transform:scale(var(--fa-bounce-land-scale-x,1.05),var(--fa-bounce-land-scale-y,.95)) translateY(0)}57%{transform:scale(1,1) translateY(var(--fa-bounce-rebound,-.125em))}64%{transform:scale(1,1) translateY(0)}100%{transform:scale(1,1) translateY(0)}}@keyframes fa-fade{50%{opacity:var(--fa-fade-opacity,.4)}}@keyframes fa-beat-fade{0%,100%{opacity:var(--fa-beat-fade-opacity,.4);transform:scale(1)}50%{opacity:1;transform:scale(var(--fa-beat-fade-scale,1.125))}}@keyframes fa-flip{50%{transform:rotate3d(var(--fa-flip-x,0),var(--fa-flip-y,1),var(--fa-flip-z,0),var(--fa-flip-angle,-180deg))}}@keyframes fa-shake{0%{transform:rotate(-15deg)}4%{transform:rotate(15deg)}24%,8%{transform:rotate(-18deg)}12%,28%{transform:rotate(18deg)}16%{transform:rotate(-22deg)}20%{transform:rotate(22deg)}32%{transform:rotate(-12deg)}36%{transform:rotate(12deg)}100%,40%{transform:rotate(0)}}@keyframes fa-spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}.fa-rotate-90{transform:rotate(90deg)}.fa-rotate-180{transform:rotate(180deg)}.fa-rotate-270{transform:rotate(270deg)}.fa-flip-horizontal{transform:scale(-1,1)}.fa-flip-vertical{transform:scale(1,-1)}.fa-flip-both,.fa-flip-horizontal.fa-flip-vertical{transform:scale(-1,-1)}.fa-rotate-by{transform:rotate(var(--fa-rotate-angle,0))}.fa-stack{display:inline-block;vertical-align:middle;height:2em;position:relative;width:2.5em}.fa-stack-1x,.fa-stack-2x{bottom:0;left:0;margin:auto;position:absolute;right:0;top:0;z-index:var(--fa-stack-z-index,auto)}.svg-inline--fa.fa-stack-1x{height:1em;width:1.25em}.svg-inline--fa.fa-stack-2x{height:2em;width:2.5em}.fa-inverse{color:var(--fa-inverse,#fff)}.fa-sr-only,.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}.fa-sr-only-focusable:not(:focus),.sr-only-focusable:not(:focus){position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}.svg-inline--fa .fa-primary{fill:var(--fa-primary-color,currentColor);opacity:var(--fa-primary-opacity,1)}.svg-inline--fa .fa-secondary{fill:var(--fa-secondary-color,currentColor);opacity:var(--fa-secondary-opacity,.4)}.svg-inline--fa.fa-swap-opacity .fa-primary{opacity:var(--fa-secondary-opacity,.4)}.svg-inline--fa.fa-swap-opacity .fa-secondary{opacity:var(--fa-primary-opacity,1)}.svg-inline--fa mask .fa-primary,.svg-inline--fa mask .fa-secondary{fill:#000}";
 
   function css() {
     const dcp = DEFAULT_CSS_PREFIX;
@@ -3491,26 +3877,21 @@
     const fp = config.cssPrefix;
     const rc = config.replacementClass;
     let s = baseStyles;
-
     if (fp !== dcp || rc !== drc) {
       const dPatt = new RegExp("\\.".concat(dcp, "\\-"), 'g');
       const customPropPatt = new RegExp("\\--".concat(dcp, "\\-"), 'g');
       const rPatt = new RegExp("\\.".concat(drc), 'g');
       s = s.replace(dPatt, ".".concat(fp, "-")).replace(customPropPatt, "--".concat(fp, "-")).replace(rPatt, ".".concat(rc));
     }
-
     return s;
   }
-
   let _cssInserted = false;
-
   function ensureCss() {
     if (config.autoAddCss && !_cssInserted) {
       insertCss(css());
       _cssInserted = true;
     }
   }
-
   var InjectCSS = {
     mixout() {
       return {
@@ -3520,44 +3901,36 @@
         }
       };
     },
-
     hooks() {
       return {
         beforeDOMElementCreation() {
           ensureCss();
         },
-
         beforeI2svg() {
           ensureCss();
         }
-
       };
     }
-
   };
 
-  const w$1 = WINDOW || {};
-  if (!w$1[NAMESPACE_IDENTIFIER]) w$1[NAMESPACE_IDENTIFIER] = {};
-  if (!w$1[NAMESPACE_IDENTIFIER].styles) w$1[NAMESPACE_IDENTIFIER].styles = {};
-  if (!w$1[NAMESPACE_IDENTIFIER].hooks) w$1[NAMESPACE_IDENTIFIER].hooks = {};
-  if (!w$1[NAMESPACE_IDENTIFIER].shims) w$1[NAMESPACE_IDENTIFIER].shims = [];
-  var namespace = w$1[NAMESPACE_IDENTIFIER];
+  const w = WINDOW || {};
+  if (!w[NAMESPACE_IDENTIFIER]) w[NAMESPACE_IDENTIFIER] = {};
+  if (!w[NAMESPACE_IDENTIFIER].styles) w[NAMESPACE_IDENTIFIER].styles = {};
+  if (!w[NAMESPACE_IDENTIFIER].hooks) w[NAMESPACE_IDENTIFIER].hooks = {};
+  if (!w[NAMESPACE_IDENTIFIER].shims) w[NAMESPACE_IDENTIFIER].shims = [];
+  var namespace = w[NAMESPACE_IDENTIFIER];
 
   const functions = [];
-
   const listener = function () {
     DOCUMENT.removeEventListener('DOMContentLoaded', listener);
     loaded = 1;
     functions.map(fn => fn());
   };
-
   let loaded = false;
-
   if (IS_DOM) {
     loaded = (DOCUMENT.documentElement.doScroll ? /^loaded|^c/ : /^loaded|^i|^c/).test(DOCUMENT.readyState);
     if (!loaded) DOCUMENT.addEventListener('DOMContentLoaded', listener);
   }
-
   function domready (fn) {
     if (!IS_DOM) return;
     loaded ? setTimeout(fn, 0) : functions.push(fn);
@@ -3569,7 +3942,6 @@
       attributes = {},
       children = []
     } = abstractNodes;
-
     if (typeof abstractNodes === 'string') {
       return htmlEscape(abstractNodes);
     } else {
@@ -3591,7 +3963,6 @@
    * Internal helper to bind a function known to have 4 arguments
    * to a given context.
    */
-
   var bindInternal4 = function bindInternal4(func, thisContext) {
     return function (a, b, c, d) {
       return func.call(thisContext, a, b, c, d);
@@ -3609,16 +3980,13 @@
    * @param  {Object}   thisContext  The context for the reducer.
    * @return {mixed}                 The final result.
    */
-
-
   var reduce = function fastReduceObject(subject, fn, initialValue, thisContext) {
     var keys = Object.keys(subject),
-        length = keys.length,
-        iterator = thisContext !== undefined ? bindInternal4(fn, thisContext) : fn,
-        i,
-        key,
-        result;
-
+      length = keys.length,
+      iterator = thisContext !== undefined ? bindInternal4(fn, thisContext) : fn,
+      i,
+      key,
+      result;
     if (initialValue === undefined) {
       i = 1;
       result = subject[keys[0]];
@@ -3626,12 +3994,10 @@
       i = 0;
       result = initialValue;
     }
-
     for (; i < length; i++) {
       key = keys[i];
       result = iterator(result, subject[key], key, subject);
     }
-
     return result;
   };
 
@@ -3659,17 +4025,15 @@
    * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
    * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
    */
+
   function ucs2decode(string) {
     const output = [];
     let counter = 0;
     const length = string.length;
-
     while (counter < length) {
       const value = string.charCodeAt(counter++);
-
       if (value >= 0xD800 && value <= 0xDBFF && counter < length) {
         const extra = string.charCodeAt(counter++);
-
         if ((extra & 0xFC00) == 0xDC00) {
           // eslint-disable-line eqeqeq
           output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
@@ -3681,10 +4045,8 @@
         output.push(value);
       }
     }
-
     return output;
   }
-
   function toHex(unicode) {
     const decoded = ucs2decode(unicode);
     return decoded.length === 1 ? decoded[0].toString(16) : null;
@@ -3693,15 +4055,12 @@
     const size = string.length;
     let first = string.charCodeAt(index);
     let second;
-
     if (first >= 0xD800 && first <= 0xDBFF && size > index + 1) {
       second = string.charCodeAt(index + 1);
-
       if (second >= 0xDC00 && second <= 0xDFFF) {
         return (first - 0xD800) * 0x400 + second - 0xDC00 + 0x10000;
       }
     }
-
     return first;
   }
 
@@ -3709,74 +4068,72 @@
     return Object.keys(icons).reduce((acc, iconName) => {
       const icon = icons[iconName];
       const expanded = !!icon.icon;
-
       if (expanded) {
         acc[icon.iconName] = icon.icon;
       } else {
         acc[iconName] = icon;
       }
-
       return acc;
     }, {});
   }
-
   function defineIcons(prefix, icons) {
     let params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     const {
       skipHooks = false
     } = params;
     const normalized = normalizeIcons(icons);
-
     if (typeof namespace.hooks.addPack === 'function' && !skipHooks) {
       namespace.hooks.addPack(prefix, normalizeIcons(icons));
     } else {
-      namespace.styles[prefix] = { ...(namespace.styles[prefix] || {}),
-        ...normalized
-      };
+      namespace.styles[prefix] = _objectSpread2(_objectSpread2({}, namespace.styles[prefix] || {}), normalized);
     }
+
     /**
      * Font Awesome 4 used the prefix of `fa` for all icons. With the introduction
      * of new styles we needed to differentiate between them. Prefix `fa` is now an alias
      * for `fas` so we'll ease the upgrade process for our users by automatically defining
      * this as well.
      */
-
-
     if (prefix === 'fas') {
       defineIcons('fa', icons);
     }
   }
 
+  const duotonePathRe = [/*#__PURE__*/_wrapRegExp(/path d="([^"]+)".*path d="([^"]+)"/, {
+    d1: 1,
+    d2: 2
+  }), /*#__PURE__*/_wrapRegExp(/path class="([^"]+)".*d="([^"]+)".*path class="([^"]+)".*d="([^"]+)"/, {
+    cls1: 1,
+    d1: 2,
+    cls2: 3,
+    d2: 4
+  }), /*#__PURE__*/_wrapRegExp(/path class="([^"]+)".*d="([^"]+)"/, {
+    cls1: 1,
+    d1: 2
+  })];
+
   const {
     styles,
     shims
   } = namespace;
-  const LONG_STYLE = {
-    [a]: Object.values(PREFIX_TO_LONG_STYLE[a]),
-    [r]: Object.values(PREFIX_TO_LONG_STYLE[r]),
-    [o]: Object.values(PREFIX_TO_LONG_STYLE[o])
-  };
+  const FAMILY_NAMES = Object.keys(PREFIX_TO_LONG_STYLE);
+  const PREFIXES_FOR_FAMILY = FAMILY_NAMES.reduce((acc, familyId) => {
+    acc[familyId] = Object.keys(PREFIX_TO_LONG_STYLE[familyId]);
+    return acc;
+  }, {});
   let _defaultUsablePrefix = null;
   let _byUnicode = {};
   let _byLigature = {};
   let _byOldName = {};
   let _byOldUnicode = {};
   let _byAlias = {};
-  const PREFIXES = {
-    [a]: Object.keys(PREFIX_TO_STYLE[a]),
-    [r]: Object.keys(PREFIX_TO_STYLE[r]),
-    [o]: Object.keys(PREFIX_TO_STYLE[o])
-  };
-
   function isReserved(name) {
     return ~RESERVED_CLASSES.indexOf(name);
   }
-
   function getIconName(cssPrefix, cls) {
     const parts = cls.split('-');
     const prefix = parts[0];
     const iconName = parts.slice(1).join('-');
-
     if (prefix === cssPrefix && iconName !== '' && !isReserved(iconName)) {
       return iconName;
     } else {
@@ -3790,12 +4147,10 @@
         return o$$1;
       }, {});
     };
-
     _byUnicode = lookup((acc, icon, iconName) => {
       if (icon[3]) {
         acc[icon[3]] = iconName;
       }
-
       if (icon[2]) {
         const aliases = icon[2].filter(a$$1 => {
           return typeof a$$1 === 'number';
@@ -3804,12 +4159,10 @@
           acc[alias.toString(16)] = iconName;
         });
       }
-
       return acc;
     });
     _byLigature = lookup((acc, icon, iconName) => {
       acc[iconName] = iconName;
-
       if (icon[2]) {
         const aliases = icon[2].filter(a$$1 => {
           return typeof a$$1 === 'string';
@@ -3818,7 +4171,6 @@
           acc[alias] = iconName;
         });
       }
-
       return acc;
     });
     _byAlias = lookup((acc, icon, iconName) => {
@@ -3828,33 +4180,30 @@
         acc[alias] = iconName;
       });
       return acc;
-    }); // If we have a Kit, we can't determine if regular is available since we
-    // could be auto-fetching it. We'll have to assume that it is available.
+    });
 
+    // If we have a Kit, we can't determine if regular is available since we
+    // could be auto-fetching it. We'll have to assume that it is available.
     const hasRegular = 'far' in styles || config.autoFetchSvg;
     const shimLookups = reduce(shims, (acc, shim) => {
       const maybeNameMaybeUnicode = shim[0];
       let prefix = shim[1];
       const iconName = shim[2];
-
       if (prefix === 'far' && !hasRegular) {
         prefix = 'fas';
       }
-
       if (typeof maybeNameMaybeUnicode === 'string') {
         acc.names[maybeNameMaybeUnicode] = {
           prefix,
           iconName
         };
       }
-
       if (typeof maybeNameMaybeUnicode === 'number') {
         acc.unicodes[maybeNameMaybeUnicode.toString(16)] = {
           prefix,
           iconName
         };
       }
-
       return acc;
     }, {
       names: {},
@@ -3908,103 +4257,146 @@
       rest: []
     };
   };
+  function getFamilyId(values) {
+    let family = s;
+    const famProps = FAMILY_NAMES.reduce((acc, familyId) => {
+      acc[familyId] = "".concat(config.cssPrefix, "-").concat(familyId);
+      return acc;
+    }, {});
+    L.forEach(familyId => {
+      if (values.includes(famProps[familyId]) || values.some(v$$1 => PREFIXES_FOR_FAMILY[familyId].includes(v$$1))) {
+        family = familyId;
+      }
+    });
+    return family;
+  }
   function getCanonicalPrefix(styleOrPrefix) {
     let params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     const {
-      family = a
+      family = s
     } = params;
     const style = PREFIX_TO_STYLE[family][styleOrPrefix];
+
+    // handles the exception of passing in only a family of 'duotone' with no style
+    if (family === t && !styleOrPrefix) {
+      return 'fad';
+    }
     const prefix = STYLE_TO_PREFIX[family][styleOrPrefix] || STYLE_TO_PREFIX[family][style];
     const defined = styleOrPrefix in namespace.styles ? styleOrPrefix : null;
     const result = prefix || defined || null;
     return result;
   }
-  const PREFIXES_FOR_FAMILY = {
-    [a]: Object.keys(PREFIX_TO_LONG_STYLE[a]),
-    [r]: Object.keys(PREFIX_TO_LONG_STYLE[r]),
-    [o]: Object.keys(PREFIX_TO_LONG_STYLE[o])
-  };
+  function moveNonFaClassesToRest(classNames) {
+    let rest = [];
+    let iconName = null;
+    classNames.forEach(cls => {
+      const result = getIconName(config.cssPrefix, cls);
+      if (result) {
+        iconName = result;
+      } else if (cls) {
+        rest.push(cls);
+      }
+    });
+    return {
+      iconName,
+      rest
+    };
+  }
+  function sortedUniqueValues(arr) {
+    return arr.sort().filter((value, index, arr) => {
+      return arr.indexOf(value) === index;
+    });
+  }
   function getCanonicalIcon(values) {
     let params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     const {
       skipLookups = false
     } = params;
-    const famProps = {
-      [a]: "".concat(config.cssPrefix, "-").concat(a),
-      [r]: "".concat(config.cssPrefix, "-").concat(r),
-      [o]: "".concat(config.cssPrefix, "-").concat(o)
-    };
     let givenPrefix = null;
-    let family = a;
-    const nonDuotoneFamilyIds = c.filter(familyId => familyId !== t);
-    nonDuotoneFamilyIds.forEach(familyId => {
-      if (values.includes(famProps[familyId]) || values.some(v$$1 => PREFIXES_FOR_FAMILY[familyId].includes(v$$1))) {
-        family = familyId;
-      }
+    const faCombinedClasses = xo.concat(bt$1);
+    const faStyleOrFamilyClasses = sortedUniqueValues(values.filter(cls => faCombinedClasses.includes(cls)));
+    const nonStyleOrFamilyClasses = sortedUniqueValues(values.filter(cls => !xo.includes(cls)));
+    const faStyles = faStyleOrFamilyClasses.filter(cls => {
+      givenPrefix = cls;
+      return !P.includes(cls);
     });
-    const canonical = values.reduce((acc, cls) => {
-      const iconName = getIconName(config.cssPrefix, cls);
-
-      if (styles[cls]) {
-        cls = LONG_STYLE[family].includes(cls) ? LONG_STYLE_TO_PREFIX[family][cls] : cls;
-        givenPrefix = cls;
-        acc.prefix = cls;
-      } else if (PREFIXES[family].indexOf(cls) > -1) {
-        givenPrefix = cls;
-        acc.prefix = getCanonicalPrefix(cls, {
-          family
-        });
-      } else if (iconName) {
-        acc.iconName = iconName;
-      } else if (cls !== config.replacementClass && !nonDuotoneFamilyIds.some(familyName => cls === famProps[familyName])) {
-        acc.rest.push(cls);
-      }
-
-      if (!skipLookups && acc.prefix && acc.iconName) {
-        const shim = givenPrefix === 'fa' ? byOldName(acc.iconName) : {};
-        const aliasIconName = byAlias(acc.prefix, acc.iconName);
-
-        if (shim.prefix) {
-          givenPrefix = null;
-        }
-
-        acc.iconName = shim.iconName || aliasIconName || acc.iconName;
-        acc.prefix = shim.prefix || acc.prefix;
-
-        if (acc.prefix === 'far' && !styles['far'] && styles['fas'] && !config.autoFetchSvg) {
-          // Allow a fallback from the regular style to solid if regular is not available
-          // but only if we aren't auto-fetching SVGs
-          acc.prefix = 'fas';
-        }
-      }
-
-      return acc;
-    }, emptyCanonicalIcon());
-
+    const [styleFromValues = null] = faStyles;
+    const family = getFamilyId(faStyleOrFamilyClasses);
+    const canonical = _objectSpread2(_objectSpread2({}, moveNonFaClassesToRest(nonStyleOrFamilyClasses)), {}, {
+      prefix: getCanonicalPrefix(styleFromValues, {
+        family
+      })
+    });
+    return _objectSpread2(_objectSpread2(_objectSpread2({}, canonical), getDefaultCanonicalPrefix({
+      values,
+      family,
+      styles,
+      config,
+      canonical,
+      givenPrefix
+    })), applyShimAndAlias(skipLookups, givenPrefix, canonical));
+  }
+  function applyShimAndAlias(skipLookups, givenPrefix, canonical) {
+    let {
+      prefix,
+      iconName
+    } = canonical;
+    if (skipLookups || !prefix || !iconName) {
+      return {
+        prefix,
+        iconName
+      };
+    }
+    const shim = givenPrefix === 'fa' ? byOldName(iconName) : {};
+    const aliasIconName = byAlias(prefix, iconName);
+    iconName = shim.iconName || aliasIconName || iconName;
+    prefix = shim.prefix || prefix;
+    if (prefix === 'far' && !styles['far'] && styles['fas'] && !config.autoFetchSvg) {
+      // Allow a fallback from the regular style to solid if regular is not available
+      // but only if we aren't auto-fetching SVGs
+      prefix = 'fas';
+    }
+    return {
+      prefix,
+      iconName
+    };
+  }
+  const newCanonicalFamilies = L.filter(familyId => {
+    return familyId !== s || familyId !== t;
+  });
+  const newCanonicalStyles = Object.keys(co).filter(key => key !== s).map(key => Object.keys(co[key])).flat();
+  function getDefaultCanonicalPrefix(prefixOptions) {
+    const {
+      values,
+      family,
+      canonical,
+      givenPrefix = '',
+      styles = {},
+      config: config$$1 = {}
+    } = prefixOptions;
+    const isDuotoneFamily = family === t;
+    const valuesHasDuotone = values.includes('fa-duotone') || values.includes('fad');
+    const defaultFamilyIsDuotone = config$$1.familyDefault === 'duotone';
+    const canonicalPrefixIsDuotone = canonical.prefix === 'fad' || canonical.prefix === 'fa-duotone';
+    if (!isDuotoneFamily && (valuesHasDuotone || defaultFamilyIsDuotone || canonicalPrefixIsDuotone)) {
+      canonical.prefix = 'fad';
+    }
     if (values.includes('fa-brands') || values.includes('fab')) {
       canonical.prefix = 'fab';
     }
-
-    if (values.includes('fa-duotone') || values.includes('fad')) {
-      canonical.prefix = 'fad';
+    if (!canonical.prefix && newCanonicalFamilies.includes(family)) {
+      const validPrefix = Object.keys(styles).find(key => newCanonicalStyles.includes(key));
+      if (validPrefix || config$$1.autoFetchSvg) {
+        const defaultPrefix = pt.get(family).defaultShortPrefixId;
+        canonical.prefix = defaultPrefix;
+        canonical.iconName = byAlias(canonical.prefix, canonical.iconName) || canonical.iconName;
+      }
     }
-
-    if (!canonical.prefix && family === r && (styles['fass'] || config.autoFetchSvg)) {
-      canonical.prefix = 'fass';
-      canonical.iconName = byAlias(canonical.prefix, canonical.iconName) || canonical.iconName;
-    }
-
-    if (!canonical.prefix && family === o && (styles['fasds'] || config.autoFetchSvg)) {
-      canonical.prefix = 'fasds';
-      canonical.iconName = byAlias(canonical.prefix, canonical.iconName) || canonical.iconName;
-    }
-
     if (canonical.prefix === 'fa' || givenPrefix === 'fa') {
       // The fa prefix is not canonical. So if it has made it through until this point
       // we will shift it to the correct prefix.
       canonical.prefix = getDefaultUsablePrefix() || 'fas';
     }
-
     return canonical;
   }
 
@@ -4012,29 +4404,24 @@
     constructor() {
       this.definitions = {};
     }
-
     add() {
       for (var _len = arguments.length, definitions = new Array(_len), _key = 0; _key < _len; _key++) {
         definitions[_key] = arguments[_key];
       }
-
       const additions = definitions.reduce(this._pullDefinitions, {});
       Object.keys(additions).forEach(key => {
-        this.definitions[key] = { ...(this.definitions[key] || {}),
-          ...additions[key]
-        };
-        defineIcons(key, additions[key]); // TODO can we stop doing this? We can't get the icons by 'fa-solid' any longer so this probably needs to change
+        this.definitions[key] = _objectSpread2(_objectSpread2({}, this.definitions[key] || {}), additions[key]);
+        defineIcons(key, additions[key]);
 
-        const longPrefix = PREFIX_TO_LONG_STYLE[a][key];
+        // TODO can we stop doing this? We can't get the icons by 'fa-solid' any longer so this probably needs to change
+        const longPrefix = PREFIX_TO_LONG_STYLE[s][key];
         if (longPrefix) defineIcons(longPrefix, additions[key]);
         build();
       });
     }
-
     reset() {
       this.definitions = {};
     }
-
     _pullDefinitions(additions, definition) {
       const normalized = definition.prefix && definition.iconName && definition.icon ? {
         0: definition
@@ -4047,7 +4434,6 @@
         } = normalized[key];
         const aliases = icon[2];
         if (!additions[prefix]) additions[prefix] = {};
-
         if (aliases.length > 0) {
           aliases.forEach(alias => {
             if (typeof alias === 'string') {
@@ -4055,12 +4441,10 @@
             }
           });
         }
-
         additions[prefix][iconName] = icon;
       });
       return additions;
     }
-
   }
 
   let _plugins = [];
@@ -4078,48 +4462,40 @@
         delete providers[k];
       }
     });
-
     _plugins.forEach(plugin => {
       const mixout = plugin.mixout ? plugin.mixout() : {};
       Object.keys(mixout).forEach(tk => {
         if (typeof mixout[tk] === 'function') {
           obj[tk] = mixout[tk];
         }
-
         if (typeof mixout[tk] === 'object') {
           Object.keys(mixout[tk]).forEach(sk => {
             if (!obj[tk]) {
               obj[tk] = {};
             }
-
             obj[tk][sk] = mixout[tk][sk];
           });
         }
       });
-
       if (plugin.hooks) {
         const hooks = plugin.hooks();
         Object.keys(hooks).forEach(hook => {
           if (!_hooks[hook]) {
             _hooks[hook] = [];
           }
-
           _hooks[hook].push(hooks[hook]);
         });
       }
-
       if (plugin.provides) {
         plugin.provides(providers);
       }
     });
-
     return obj;
   }
   function chainHooks(hook, accumulator) {
     for (var _len = arguments.length, args = new Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
       args[_key - 2] = arguments[_key];
     }
-
     const hookFns = _hooks[hook] || [];
     hookFns.forEach(hookFn => {
       accumulator = hookFn.apply(null, [accumulator, ...args]); // eslint-disable-line no-useless-call
@@ -4130,7 +4506,6 @@
     for (var _len2 = arguments.length, args = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
       args[_key2 - 1] = arguments[_key2];
     }
-
     const hookFns = _hooks[hook] || [];
     hookFns.forEach(hookFn => {
       hookFn.apply(null, args);
@@ -4147,7 +4522,6 @@
     if (iconLookup.prefix === 'fa') {
       iconLookup.prefix = 'fas';
     }
-
     let {
       iconName
     } = iconLookup;
@@ -4165,7 +4539,6 @@
   const dom = {
     i2svg: function () {
       let params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
       if (IS_DOM) {
         callHooks('beforeI2svg', params);
         callProvided('pseudoElements2svg', params);
@@ -4179,11 +4552,9 @@
       const {
         autoReplaceSvgRoot
       } = params;
-
       if (config.autoReplaceSvg === false) {
         config.autoReplaceSvg = true;
       }
-
       config.observeMutations = true;
       domready(() => {
         autoReplace({
@@ -4198,14 +4569,12 @@
       if (icon === null) {
         return null;
       }
-
       if (typeof icon === 'object' && icon.prefix && icon.iconName) {
         return {
           prefix: icon.prefix,
           iconName: byAlias(icon.prefix, icon.iconName) || icon.iconName
         };
       }
-
       if (Array.isArray(icon) && icon.length === 2) {
         const iconName = icon[1].indexOf('fa-') === 0 ? icon[1].slice(3) : icon[1];
         const prefix = getCanonicalPrefix(icon[0]);
@@ -4214,7 +4583,6 @@
           iconName: byAlias(prefix, iconName) || iconName
         };
       }
-
       if (typeof icon === 'string' && (icon.indexOf("".concat(config.cssPrefix, "-")) > -1 || icon.match(ICON_SELECTION_SYNTAX_PATTERN))) {
         const canonicalIcon = getCanonicalIcon(icon.split(' '), {
           skipLookups: true
@@ -4224,7 +4592,6 @@
           iconName: byAlias(canonicalIcon.prefix, canonicalIcon.iconName) || canonicalIcon.iconName
         };
       }
-
       if (typeof icon === 'string') {
         const prefix = getDefaultUsablePrefix();
         return {
@@ -4243,7 +4610,6 @@
     findIconDefinition,
     toHtml
   };
-
   const autoReplace = function () {
     let params = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     const {
@@ -4253,33 +4619,26 @@
       node: autoReplaceSvgRoot
     });
   };
-
   function bootstrap(plugins) {
     if (IS_BROWSER) {
       if (!WINDOW.FontAwesome) {
         WINDOW.FontAwesome = api;
       }
-
       domready(() => {
         autoReplace();
         callHooks('bootstrap');
       });
     }
-
-    namespace.hooks = { ...namespace.hooks,
+    namespace.hooks = _objectSpread2(_objectSpread2({}, namespace.hooks), {}, {
       addPack: (prefix, icons) => {
-        namespace.styles[prefix] = { ...(namespace.styles[prefix] || {}),
-          ...icons
-        };
+        namespace.styles[prefix] = _objectSpread2(_objectSpread2({}, namespace.styles[prefix] || {}), icons);
         build();
         autoReplace();
       },
       addPacks: packs => {
         packs.forEach(_ref => {
           let [prefix, icons] = _ref;
-          namespace.styles[prefix] = { ...(namespace.styles[prefix] || {}),
-            ...icons
-          };
+          namespace.styles[prefix] = _objectSpread2(_objectSpread2({}, namespace.styles[prefix] || {}), icons);
         });
         build();
         autoReplace();
@@ -4289,7 +4648,7 @@
         build();
         autoReplace();
       }
-    };
+    });
   }
 
   function domVariants(val, abstractCreator) {
@@ -4321,7 +4680,6 @@
       styles,
       transform
     } = _ref;
-
     if (transformIsMeaningful(transform) && main.found && !mask.found) {
       const {
         width,
@@ -4331,11 +4689,10 @@
         x: width / height / 2,
         y: 0.5
       };
-      attributes['style'] = joinStyles({ ...styles,
+      attributes['style'] = joinStyles(_objectSpread2(_objectSpread2({}, styles), {}, {
         'transform-origin': "".concat(offset.x + transform.x / 16, "em ").concat(offset.y + transform.y / 16, "em")
-      });
+      }));
     }
-
     return [{
       tag: 'svg',
       attributes,
@@ -4359,9 +4716,9 @@
       },
       children: [{
         tag: 'symbol',
-        attributes: { ...attributes,
+        attributes: _objectSpread2(_objectSpread2({}, attributes), {}, {
           id
-        },
+        }),
         children
       }]
     }];
@@ -4387,27 +4744,25 @@
       width,
       height
     } = mask.found ? mask : main;
-    const isUploadedIcon = prefix === 'fak';
-    const attrClass = [config.replacementClass, iconName ? "".concat(config.cssPrefix, "-").concat(iconName) : ''].filter(c => extra.classes.indexOf(c) === -1).filter(c => c !== '' || !!c).concat(extra.classes).join(' ');
+    const isUploadedIcon = Lt.includes(prefix);
+    const attrClass = [config.replacementClass, iconName ? "".concat(config.cssPrefix, "-").concat(iconName) : ''].filter(c$$1 => extra.classes.indexOf(c$$1) === -1).filter(c$$1 => c$$1 !== '' || !!c$$1).concat(extra.classes).join(' ');
     let content = {
       children: [],
-      attributes: { ...extra.attributes,
+      attributes: _objectSpread2(_objectSpread2({}, extra.attributes), {}, {
         'data-prefix': prefix,
         'data-icon': iconName,
         'class': attrClass,
         'role': extra.attributes.role || 'img',
         'xmlns': 'http://www.w3.org/2000/svg',
         'viewBox': "0 0 ".concat(width, " ").concat(height)
-      }
+      })
     };
     const uploadedIconWidthStyle = isUploadedIcon && !~extra.classes.indexOf('fa-fw') ? {
       width: "".concat(width / height * 16 * 0.0625, "em")
     } : {};
-
     if (watchable) {
       content.attributes[DATA_FA_I2SVG] = '';
     }
-
     if (title) {
       content.children.push({
         tag: 'title',
@@ -4418,8 +4773,7 @@
       });
       delete content.attributes.title;
     }
-
-    const args = { ...content,
+    const args = _objectSpread2(_objectSpread2({}, content), {}, {
       prefix,
       iconName,
       main,
@@ -4427,10 +4781,8 @@
       maskId,
       transform,
       symbol,
-      styles: { ...uploadedIconWidthStyle,
-        ...extra.styles
-      }
-    };
+      styles: _objectSpread2(_objectSpread2({}, uploadedIconWidthStyle), extra.styles)
+    });
     const {
       children,
       attributes
@@ -4443,7 +4795,6 @@
     };
     args.children = children;
     args.attributes = attributes;
-
     if (symbol) {
       return asSymbol(args);
     } else {
@@ -4460,20 +4811,15 @@
       extra,
       watchable = false
     } = params;
-    const attributes = { ...extra.attributes,
-      ...(title ? {
-        'title': title
-      } : {}),
+    const attributes = _objectSpread2(_objectSpread2(_objectSpread2({}, extra.attributes), title ? {
+      'title': title
+    } : {}), {}, {
       'class': extra.classes.join(' ')
-    };
-
+    });
     if (watchable) {
       attributes[DATA_FA_I2SVG] = '';
     }
-
-    const styles = { ...extra.styles
-    };
-
+    const styles = _objectSpread2({}, extra.styles);
     if (transformIsMeaningful(transform)) {
       styles['transform'] = transformForCss({
         transform,
@@ -4483,20 +4829,16 @@
       });
       styles['-webkit-transform'] = styles['transform'];
     }
-
     const styleString = joinStyles(styles);
-
     if (styleString.length > 0) {
       attributes['style'] = styleString;
     }
-
     const val = [];
     val.push({
       tag: 'span',
       attributes,
       children: [content]
     });
-
     if (title) {
       val.push({
         tag: 'span',
@@ -4506,7 +4848,6 @@
         children: [title]
       });
     }
-
     return val;
   }
   function makeLayersCounterAbstract(params) {
@@ -4515,25 +4856,21 @@
       title,
       extra
     } = params;
-    const attributes = { ...extra.attributes,
-      ...(title ? {
-        'title': title
-      } : {}),
+    const attributes = _objectSpread2(_objectSpread2(_objectSpread2({}, extra.attributes), title ? {
+      'title': title
+    } : {}), {}, {
       'class': extra.classes.join(' ')
-    };
+    });
     const styleString = joinStyles(extra.styles);
-
     if (styleString.length > 0) {
       attributes['style'] = styleString;
     }
-
     const val = [];
     val.push({
       tag: 'span',
       attributes,
       children: [content]
     });
-
     if (title) {
       val.push({
         tag: 'span',
@@ -4543,7 +4880,6 @@
         children: [title]
       });
     }
-
     return val;
   }
 
@@ -4555,7 +4891,6 @@
     const height = icon[1];
     const [vectorData] = icon.slice(4);
     let element = null;
-
     if (Array.isArray(vectorData)) {
       element = {
         tag: 'g',
@@ -4587,7 +4922,6 @@
         }
       };
     }
-
     return {
       found: true,
       width,
@@ -4600,106 +4934,86 @@
     width: 512,
     height: 512
   };
-
   function maybeNotifyMissing(iconName, prefix) {
     if (!PRODUCTION && !config.showMissingIcons && iconName) {
       console.error("Icon with name \"".concat(iconName, "\" and prefix \"").concat(prefix, "\" is missing."));
     }
   }
-
   function findIcon(iconName, prefix) {
     let givenPrefix = prefix;
-
     if (prefix === 'fa' && config.styleDefault !== null) {
       prefix = getDefaultUsablePrefix();
     }
-
     return new Promise((resolve, reject) => {
       if (givenPrefix === 'fa') {
         const shim = byOldName(iconName) || {};
         iconName = shim.iconName || iconName;
         prefix = shim.prefix || prefix;
       }
-
       if (iconName && prefix && styles$1[prefix] && styles$1[prefix][iconName]) {
         const icon = styles$1[prefix][iconName];
         return resolve(asFoundIcon(icon));
       }
-
       maybeNotifyMissing(iconName, prefix);
-      resolve({ ...missingIconResolutionMixin,
+      resolve(_objectSpread2(_objectSpread2({}, missingIconResolutionMixin), {}, {
         icon: config.showMissingIcons && iconName ? callProvided('missingIconAbstract') || {} : {}
-      });
+      }));
     });
   }
 
   const noop$1 = () => {};
-
   const p$2 = config.measurePerformance && PERFORMANCE && PERFORMANCE.mark && PERFORMANCE.measure ? PERFORMANCE : {
     mark: noop$1,
     measure: noop$1
   };
-  const preamble = "FA \"6.6.0\"";
-
+  const preamble = "FA \"6.7.0\"";
   const begin = name => {
     p$2.mark("".concat(preamble, " ").concat(name, " begins"));
     return () => end(name);
   };
-
   const end = name => {
     p$2.mark("".concat(preamble, " ").concat(name, " ends"));
     p$2.measure("".concat(preamble, " ").concat(name), "".concat(preamble, " ").concat(name, " begins"), "".concat(preamble, " ").concat(name, " ends"));
   };
-
   var perf = {
     begin,
     end
   };
 
   const noop$2 = () => {};
-
   function isWatched(node) {
     const i2svg = node.getAttribute ? node.getAttribute(DATA_FA_I2SVG) : null;
     return typeof i2svg === 'string';
   }
-
   function hasPrefixAndIcon(node) {
     const prefix = node.getAttribute ? node.getAttribute(DATA_PREFIX) : null;
     const icon = node.getAttribute ? node.getAttribute(DATA_ICON) : null;
     return prefix && icon;
   }
-
   function hasBeenReplaced(node) {
     return node && node.classList && node.classList.contains && node.classList.contains(config.replacementClass);
   }
-
   function getMutator() {
     if (config.autoReplaceSvg === true) {
       return mutators.replace;
     }
-
     const mutator = mutators[config.autoReplaceSvg];
     return mutator || mutators.replace;
   }
-
   function createElementNS(tag) {
     return DOCUMENT.createElementNS('http://www.w3.org/2000/svg', tag);
   }
-
   function createElement(tag) {
     return DOCUMENT.createElement(tag);
   }
-
   function convertSVG(abstractObj) {
     let params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     const {
       ceFn = abstractObj.tag === 'svg' ? createElementNS : createElement
     } = params;
-
     if (typeof abstractObj === 'string') {
       return DOCUMENT.createTextNode(abstractObj);
     }
-
     const tag = ceFn(abstractObj.tag);
     Object.keys(abstractObj.attributes || []).forEach(function (key) {
       tag.setAttribute(key, abstractObj.attributes[key]);
@@ -4712,26 +5026,20 @@
     });
     return tag;
   }
-
   function nodeAsComment(node) {
     let comment = " ".concat(node.outerHTML, " ");
     /* BEGIN.ATTRIBUTION */
-
     comment = "".concat(comment, "Font Awesome fontawesome.com ");
     /* END.ATTRIBUTION */
-
     return comment;
   }
-
   const mutators = {
     replace: function (mutation) {
       const node = mutation[0];
-
       if (node.parentNode) {
         mutation[1].forEach(abstract => {
           node.parentNode.insertBefore(convertSVG(abstract), node);
         });
-
         if (node.getAttribute(DATA_FA_I2SVG) === null && config.keepOriginalSource) {
           let comment = DOCUMENT.createComment(nodeAsComment(node));
           node.parentNode.replaceChild(comment, node);
@@ -4742,16 +5050,15 @@
     },
     nest: function (mutation) {
       const node = mutation[0];
-      const abstract = mutation[1]; // If we already have a replaced node we do not want to continue nesting within it.
-      // Short-circuit to the standard replacement
+      const abstract = mutation[1];
 
+      // If we already have a replaced node we do not want to continue nesting within it.
+      // Short-circuit to the standard replacement
       if (~classArray(node).indexOf(config.replacementClass)) {
         return mutators.replace(mutation);
       }
-
       const forSvg = new RegExp("".concat(config.cssPrefix, "-.*"));
       delete abstract[0].attributes.id;
-
       if (abstract[0].attributes.class) {
         const splitClasses = abstract[0].attributes.class.split(' ').reduce((acc, cls) => {
           if (cls === config.replacementClass || cls.match(forSvg)) {
@@ -4759,43 +5066,35 @@
           } else {
             acc.toNode.push(cls);
           }
-
           return acc;
         }, {
           toNode: [],
           toSvg: []
         });
         abstract[0].attributes.class = splitClasses.toSvg.join(' ');
-
         if (splitClasses.toNode.length === 0) {
           node.removeAttribute('class');
         } else {
           node.setAttribute('class', splitClasses.toNode.join(' '));
         }
       }
-
       const newInnerHTML = abstract.map(a => toHtml(a)).join('\n');
       node.setAttribute(DATA_FA_I2SVG, '');
       node.innerHTML = newInnerHTML;
     }
   };
-
   function performOperationSync(op) {
     op();
   }
-
   function perform(mutations, callback) {
     const callbackFunction = typeof callback === 'function' ? callback : noop$2;
-
     if (mutations.length === 0) {
       callbackFunction();
     } else {
       let frame = performOperationSync;
-
       if (config.mutateApproach === MUTATION_APPROACH_ASYNC) {
         frame = WINDOW.requestAnimationFrame || performOperationSync;
       }
-
       frame(() => {
         const mutator = getMutator();
         const mark = perf.begin('mutate');
@@ -4817,11 +5116,9 @@
     if (!MUTATION_OBSERVER) {
       return;
     }
-
     if (!config.observeMutations) {
       return;
     }
-
     const {
       treeCallback = noop$2,
       nodeCallback = noop$2,
@@ -4836,14 +5133,11 @@
           if (config.searchPseudoElements) {
             pseudoElementsCallback(mutationRecord.target);
           }
-
           treeCallback(mutationRecord.target);
         }
-
         if (mutationRecord.type === 'attributes' && mutationRecord.target.parentNode && config.searchPseudoElements) {
           pseudoElementsCallback(mutationRecord.target.parentNode);
         }
-
         if (mutationRecord.type === 'attributes' && isWatched(mutationRecord.target) && ~ATTRIBUTES_WATCHED_FOR_MUTATION.indexOf(mutationRecord.attributeName)) {
           if (mutationRecord.attributeName === 'class' && hasPrefixAndIcon(mutationRecord.target)) {
             const {
@@ -4874,21 +5168,17 @@
   function styleParser (node) {
     const style = node.getAttribute('style');
     let val = [];
-
     if (style) {
       val = style.split(';').reduce((acc, style) => {
         const styles = style.split(':');
         const prop = styles[0];
         const value = styles.slice(1);
-
         if (prop && value.length > 0) {
           acc[prop] = value.join(':').trim();
         }
-
         return acc;
       }, {});
     }
-
     return val;
   }
 
@@ -4897,28 +5187,22 @@
     const existingIconName = node.getAttribute('data-icon');
     const innerText = node.innerText !== undefined ? node.innerText.trim() : '';
     let val = getCanonicalIcon(classArray(node));
-
     if (!val.prefix) {
       val.prefix = getDefaultUsablePrefix();
     }
-
     if (existingPrefix && existingIconName) {
       val.prefix = existingPrefix;
       val.iconName = existingIconName;
     }
-
     if (val.iconName && val.prefix) {
       return val;
     }
-
     if (val.prefix && innerText.length > 0) {
       val.iconName = byLigature(val.prefix, node.innerText) || byUnicode(val.prefix, toHex(node.innerText));
     }
-
     if (!val.iconName && config.autoFetchSvg && node.firstChild && node.firstChild.nodeType === Node.TEXT_NODE) {
       val.iconName = node.firstChild.data;
     }
-
     return val;
   }
 
@@ -4927,12 +5211,10 @@
       if (acc.name !== 'class' && acc.name !== 'style') {
         acc[attr.name] = attr.value;
       }
-
       return acc;
     }, {});
     const title = node.getAttribute('title');
     const titleId = node.getAttribute('data-fa-title-id');
-
     if (config.autoA11y) {
       if (title) {
         extraAttributes['aria-labelledby'] = "".concat(config.replacementClass, "-title-").concat(titleId || nextUniqueId());
@@ -4941,7 +5223,6 @@
         extraAttributes['focusable'] = 'false';
       }
     }
-
     return extraAttributes;
   }
 
@@ -4978,7 +5259,7 @@
     const extraAttributes = attributesParser(node);
     const pluginMeta = chainHooks('parseNodeAttributes', {}, node);
     let extraStyles = parser.styleParser ? styleParser(node) : [];
-    return {
+    return _objectSpread2({
       iconName,
       title: node.getAttribute('title'),
       titleId: node.getAttribute('data-fa-title-id'),
@@ -4995,76 +5276,56 @@
         classes: extraClasses,
         styles: extraStyles,
         attributes: extraAttributes
-      },
-      ...pluginMeta
-    };
+      }
+    }, pluginMeta);
   }
 
   const {
     styles: styles$2
   } = namespace;
-
   function generateMutation(node) {
     const nodeMeta = config.autoReplaceSvg === 'nest' ? parseMeta(node, {
       styleParser: false
     }) : parseMeta(node);
-
     if (~nodeMeta.extra.classes.indexOf(LAYERS_TEXT_CLASSNAME)) {
       return callProvided('generateLayersText', node, nodeMeta);
     } else {
       return callProvided('generateSvgReplacementMutation', node, nodeMeta);
     }
   }
-
-  let knownPrefixes = new Set();
-  FAMILIES.map(family => {
-    knownPrefixes.add("fa-".concat(family));
-  });
-  Object.keys(PREFIX_TO_STYLE[a]).map(knownPrefixes.add.bind(knownPrefixes));
-  Object.keys(PREFIX_TO_STYLE[r]).map(knownPrefixes.add.bind(knownPrefixes));
-  Object.keys(PREFIX_TO_STYLE[o]).map(knownPrefixes.add.bind(knownPrefixes));
-  knownPrefixes = [...knownPrefixes];
-
+  function getKnownPrefixes() {
+    return [...Ft, ...xo];
+  }
   function onTree(root) {
     let callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     if (!IS_DOM) return Promise.resolve();
     const htmlClassList = DOCUMENT.documentElement.classList;
-
     const hclAdd = suffix => htmlClassList.add("".concat(HTML_CLASS_I2SVG_BASE_CLASS, "-").concat(suffix));
-
     const hclRemove = suffix => htmlClassList.remove("".concat(HTML_CLASS_I2SVG_BASE_CLASS, "-").concat(suffix));
-
-    const prefixes = config.autoFetchSvg ? knownPrefixes : FAMILIES.map(f$$1 => "fa-".concat(f$$1)).concat(Object.keys(styles$2));
-
+    const prefixes = config.autoFetchSvg ? getKnownPrefixes() : P.concat(Object.keys(styles$2));
     if (!prefixes.includes('fa')) {
       prefixes.push('fa');
     }
-
     const prefixesDomQuery = [".".concat(LAYERS_TEXT_CLASSNAME, ":not([").concat(DATA_FA_I2SVG, "])")].concat(prefixes.map(p$$1 => ".".concat(p$$1, ":not([").concat(DATA_FA_I2SVG, "])"))).join(', ');
-
     if (prefixesDomQuery.length === 0) {
       return Promise.resolve();
     }
-
     let candidates = [];
-
     try {
       candidates = toArray(root.querySelectorAll(prefixesDomQuery));
-    } catch (e$$1) {// noop
+    } catch (e$$1) {
+      // noop
     }
-
     if (candidates.length > 0) {
       hclAdd('pending');
       hclRemove('complete');
     } else {
       return Promise.resolve();
     }
-
     const mark = perf.begin('onTree');
     const mutations = candidates.reduce((acc, node) => {
       try {
         const mutation = generateMutation(node);
-
         if (mutation) {
           acc.push(mutation);
         }
@@ -5075,7 +5336,6 @@
           }
         }
       }
-
       return acc;
     }, []);
     return new Promise((resolve, reject) => {
@@ -5094,7 +5354,6 @@
       });
     });
   }
-
   function onNode(node) {
     let callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
     generateMutation(node).then(mutation => {
@@ -5103,7 +5362,6 @@
       }
     });
   }
-
   function resolveIcons(next) {
     return function (maybeIconDefinition) {
       let params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -5111,17 +5369,14 @@
       let {
         mask
       } = params;
-
       if (mask) {
         mask = (mask || {}).icon ? mask : findIconDefinition(mask || {});
       }
-
-      return next(iconDefinition, { ...params,
+      return next(iconDefinition, _objectSpread2(_objectSpread2({}, params), {}, {
         mask
-      });
+      }));
     };
   }
-
   const render = function (iconDefinition) {
     let params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     const {
@@ -5141,15 +5396,13 @@
       iconName,
       icon
     } = iconDefinition;
-    return domVariants({
-      type: 'icon',
-      ...iconDefinition
-    }, () => {
+    return domVariants(_objectSpread2({
+      type: 'icon'
+    }, iconDefinition), () => {
       callHooks('beforeDOMElementCreation', {
         iconDefinition,
         params
       });
-
       if (config.autoA11y) {
         if (title) {
           attributes['aria-labelledby'] = "".concat(config.replacementClass, "-title-").concat(titleId || nextUniqueId());
@@ -5158,7 +5411,6 @@
           attributes['focusable'] = 'false';
         }
       }
-
       return makeInlineSvgAbstract({
         icons: {
           main: asFoundIcon(icon),
@@ -5171,9 +5423,7 @@
         },
         prefix,
         iconName,
-        transform: { ...meaninglessTransform,
-          ...transform
-        },
+        transform: _objectSpread2(_objectSpread2({}, meaninglessTransform), transform),
         symbol,
         title,
         maskId,
@@ -5192,7 +5442,6 @@
         icon: resolveIcons(render)
       };
     },
-
     hooks() {
       return {
         mutationObserverCallbacks(accumulator) {
@@ -5200,10 +5449,8 @@
           accumulator.nodeCallback = onNode;
           return accumulator;
         }
-
       };
     },
-
     provides(providers$$1) {
       providers$$1.i2svg = function (params) {
         const {
@@ -5212,7 +5459,6 @@
         } = params;
         return onTree(node, callback);
       };
-
       providers$$1.generateSvgReplacementMutation = function (node, nodeMeta) {
         const {
           iconName,
@@ -5251,7 +5497,6 @@
           }).catch(reject);
         });
       };
-
       providers$$1.generateAbstractIcon = function (_ref2) {
         let {
           children,
@@ -5261,13 +5506,10 @@
           styles
         } = _ref2;
         const styleString = joinStyles(styles);
-
         if (styleString.length > 0) {
           attributes['style'] = styleString;
         }
-
         let nextChild;
-
         if (transformIsMeaningful(transform)) {
           nextChild = callProvided('generateAbstractTransformGrouping', {
             main,
@@ -5276,7 +5518,6 @@
             iconWidth: main.width
           });
         }
-
         children.push(nextChild || main.icon);
         return {
           children,
@@ -5284,7 +5525,6 @@
         };
       };
     }
-
   };
 
   var Layers = {
@@ -5317,10 +5557,8 @@
             }];
           });
         }
-
       };
     }
-
   };
 
   var LayersCounter = {
@@ -5353,10 +5591,8 @@
             });
           });
         }
-
       };
     }
-
   };
 
   var LayersText = {
@@ -5381,9 +5617,7 @@
             });
             return makeLayersTextAbstract({
               content,
-              transform: { ...meaninglessTransform,
-                ...transform
-              },
+              transform: _objectSpread2(_objectSpread2({}, meaninglessTransform), transform),
               title,
               extra: {
                 attributes,
@@ -5393,10 +5627,8 @@
             });
           });
         }
-
       };
     },
-
     provides(providers$$1) {
       providers$$1.generateLayersText = function (node, nodeMeta) {
         const {
@@ -5406,18 +5638,15 @@
         } = nodeMeta;
         let width = null;
         let height = null;
-
         if (IS_IE) {
           const computedFontSize = parseInt(getComputedStyle(node).fontSize, 10);
           const boundingClientRect = node.getBoundingClientRect();
           width = boundingClientRect.width / computedFontSize;
           height = boundingClientRect.height / computedFontSize;
         }
-
         if (config.autoA11y && !title) {
           extra.attributes['aria-hidden'] = 'true';
         }
-
         return Promise.resolve([node, makeLayersTextAbstract({
           content: node.innerHTML,
           width,
@@ -5429,21 +5658,16 @@
         })]);
       };
     }
-
   };
 
   const CLEAN_CONTENT_PATTERN = new RegExp('\u{22}', 'ug');
   const SECONDARY_UNICODE_RANGE = [1105920, 1112319];
-  const _FONT_FAMILY_WEIGHT_TO_PREFIX = { ...{
-      FontAwesome: {
-        normal: 'fas',
-        400: 'fas'
-      }
-    },
-    ...eo,
-    ...ao,
-    ...mo
-  };
+  const _FONT_FAMILY_WEIGHT_TO_PREFIX = _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, {
+    FontAwesome: {
+      normal: 'fas',
+      400: 'fas'
+    }
+  }), lt), ko), Yt);
   const FONT_FAMILY_WEIGHT_TO_PREFIX = Object.keys(_FONT_FAMILY_WEIGHT_TO_PREFIX).reduce((acc, key) => {
     acc[key.toLowerCase()] = _FONT_FAMILY_WEIGHT_TO_PREFIX[key];
     return acc;
@@ -5469,7 +5693,6 @@
     const fontWeightSanitized = isNaN(fontWeightInteger) ? 'normal' : fontWeightInteger;
     return (FONT_FAMILY_WEIGHT_TO_PREFIX[fontFamilySanitized] || {})[fontWeightSanitized] || FONT_FAMILY_WEIGHT_FALLBACK[fontFamilySanitized];
   }
-
   function replaceForPosition(node, position) {
     const pendingAttribute = "".concat(DATA_FA_PSEUDO_ELEMENT_PENDING).concat(position.replace(':', '-'));
     return new Promise((resolve, reject) => {
@@ -5477,15 +5700,13 @@
         // This node is already being processed
         return resolve();
       }
-
       const children = toArray(node.children);
-      const alreadyProcessedPseudoElement = children.filter(c => c.getAttribute(DATA_FA_PSEUDO_ELEMENT) === position)[0];
+      const alreadyProcessedPseudoElement = children.filter(c$$1 => c$$1.getAttribute(DATA_FA_PSEUDO_ELEMENT) === position)[0];
       const styles = WINDOW.getComputedStyle(node, position);
       const fontFamily = styles.getPropertyValue('font-family');
       const fontFamilyMatch = fontFamily.match(FONT_FAMILY_PATTERN);
       const fontWeight = styles.getPropertyValue('font-weight');
       const content = styles.getPropertyValue('content');
-
       if (alreadyProcessedPseudoElement && !fontFamilyMatch) {
         // If we've already processed it but the current computed style does not result in a font-family,
         // that probably means that a class name that was previously present to make the icon has been
@@ -5502,33 +5723,29 @@
         const isV4 = fontFamilyMatch[0].startsWith('FontAwesome');
         let iconName = byUnicode(prefix, hexValue);
         let iconIdentifier = iconName;
-
         if (isV4) {
           const iconName4 = byOldUnicode(hexValue);
-
           if (iconName4.iconName && iconName4.prefix) {
             iconName = iconName4.iconName;
             prefix = iconName4.prefix;
           }
-        } // Only convert the pseudo element in this ::before/::after position into an icon if we haven't
+        }
+
+        // Only convert the pseudo element in this ::before/::after position into an icon if we haven't
         // already done so with the same prefix and iconName
-
-
         if (iconName && !isSecondary && (!alreadyProcessedPseudoElement || alreadyProcessedPseudoElement.getAttribute(DATA_PREFIX) !== prefix || alreadyProcessedPseudoElement.getAttribute(DATA_ICON) !== iconIdentifier)) {
           node.setAttribute(pendingAttribute, iconIdentifier);
-
           if (alreadyProcessedPseudoElement) {
             // Delete the old one, since we're replacing it with a new one
             node.removeChild(alreadyProcessedPseudoElement);
           }
-
           const meta = blankMeta();
           const {
             extra
           } = meta;
           extra.attributes[DATA_FA_PSEUDO_ELEMENT] = position;
           findIcon(iconName, prefix).then(main => {
-            const abstract = makeInlineSvgAbstract({ ...meta,
+            const abstract = makeInlineSvgAbstract(_objectSpread2(_objectSpread2({}, meta), {}, {
               icons: {
                 main,
                 mask: emptyCanonicalIcon()
@@ -5537,16 +5754,14 @@
               iconName: iconIdentifier,
               extra,
               watchable: true
-            });
+            }));
             const element = DOCUMENT.createElementNS('http://www.w3.org/2000/svg', 'svg');
-
             if (position === '::before') {
               node.insertBefore(element, node.firstChild);
             } else {
               node.appendChild(element);
             }
-
-            element.outerHTML = abstract.map(a => toHtml(a)).join('\n');
+            element.outerHTML = abstract.map(a$$1 => toHtml(a$$1)).join('\n');
             node.removeAttribute(pendingAttribute);
             resolve();
           }).catch(reject);
@@ -5558,15 +5773,12 @@
       }
     });
   }
-
   function replace(node) {
     return Promise.all([replaceForPosition(node, '::before'), replaceForPosition(node, '::after')]);
   }
-
   function processable(node) {
     return node.parentNode !== document.head && !~TAGNAMES_TO_SKIP_FOR_PSEUDOELEMENTS.indexOf(node.tagName.toUpperCase()) && !node.getAttribute(DATA_FA_PSEUDO_ELEMENT) && (!node.parentNode || node.parentNode.tagName !== 'svg');
   }
-
   function searchPseudoElements(root) {
     if (!IS_DOM) return;
     return new Promise((resolve, reject) => {
@@ -5584,7 +5796,6 @@
       });
     });
   }
-
   var PseudoElements = {
     hooks() {
       return {
@@ -5592,22 +5803,18 @@
           accumulator.pseudoElementsCallback = searchPseudoElements;
           return accumulator;
         }
-
       };
     },
-
     provides(providers) {
       providers.pseudoElements2svg = function (params) {
         const {
           node = DOCUMENT
         } = params;
-
         if (config.searchPseudoElements) {
           searchPseudoElements(node);
         }
       };
     }
-
   };
 
   let _unwatched = false;
@@ -5619,26 +5826,21 @@
             disableObservation();
             _unwatched = true;
           }
-
         }
       };
     },
-
     hooks() {
       return {
         bootstrap() {
           observe(chainHooks('mutationObserverCallbacks', {}));
         },
-
         noAuto() {
           disconnect();
         },
-
         watch(params) {
           const {
             observeMutationsRoot
           } = params;
-
           if (_unwatched) {
             enableObservation();
           } else {
@@ -5647,10 +5849,8 @@
             }));
           }
         }
-
       };
     }
-
   };
 
   const parseTransformString = transformString => {
@@ -5666,53 +5866,41 @@
       const parts = n.toLowerCase().split('-');
       const first = parts[0];
       let rest = parts.slice(1).join('-');
-
       if (first && rest === 'h') {
         acc.flipX = true;
         return acc;
       }
-
       if (first && rest === 'v') {
         acc.flipY = true;
         return acc;
       }
-
       rest = parseFloat(rest);
-
       if (isNaN(rest)) {
         return acc;
       }
-
       switch (first) {
         case 'grow':
           acc.size = acc.size + rest;
           break;
-
         case 'shrink':
           acc.size = acc.size - rest;
           break;
-
         case 'left':
           acc.x = acc.x - rest;
           break;
-
         case 'right':
           acc.x = acc.x + rest;
           break;
-
         case 'up':
           acc.y = acc.y - rest;
           break;
-
         case 'down':
           acc.y = acc.y + rest;
           break;
-
         case 'rotate':
           acc.rotate = acc.rotate + rest;
           break;
       }
-
       return acc;
     }, transform);
   };
@@ -5726,22 +5914,17 @@
         }
       };
     },
-
     hooks() {
       return {
         parseNodeAttributes(accumulator, node) {
           const transformString = node.getAttribute('data-fa-transform');
-
           if (transformString) {
             accumulator.transform = parseTransformString(transformString);
           }
-
           return accumulator;
         }
-
       };
     },
-
     provides(providers) {
       providers.generateAbstractTransformGrouping = function (_ref) {
         let {
@@ -5769,24 +5952,19 @@
         };
         return {
           tag: 'g',
-          attributes: { ...operations.outer
-          },
+          attributes: _objectSpread2({}, operations.outer),
           children: [{
             tag: 'g',
-            attributes: { ...operations.inner
-            },
+            attributes: _objectSpread2({}, operations.inner),
             children: [{
               tag: main.icon.tag,
               children: main.icon.children,
-              attributes: { ...main.icon.attributes,
-                ...operations.path
-              }
+              attributes: _objectSpread2(_objectSpread2({}, main.icon.attributes), operations.path)
             }]
           }]
         };
       };
     }
-
   };
 
   const ALL_SPACE = {
@@ -5795,17 +5973,13 @@
     width: '100%',
     height: '100%'
   };
-
   function fillBlack(abstract) {
     let force = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
     if (abstract.attributes && (abstract.attributes.fill || force)) {
       abstract.attributes.fill = 'black';
     }
-
     return abstract;
   }
-
   function deGroup(abstract) {
     if (abstract.tag === 'g') {
       return abstract.children;
@@ -5813,26 +5987,21 @@
       return [abstract];
     }
   }
-
   var Masks = {
     hooks() {
       return {
         parseNodeAttributes(accumulator, node) {
           const maskData = node.getAttribute('data-fa-mask');
           const mask = !maskData ? emptyCanonicalIcon() : getCanonicalIcon(maskData.split(' ').map(i => i.trim()));
-
           if (!mask.prefix) {
             mask.prefix = getDefaultUsablePrefix();
           }
-
           accumulator.mask = mask;
           accumulator.maskId = node.getAttribute('data-fa-mask-id');
           return accumulator;
         }
-
       };
     },
-
     provides(providers) {
       providers.generateAbstractMask = function (_ref) {
         let {
@@ -5858,40 +6027,35 @@
         });
         const maskRect = {
           tag: 'rect',
-          attributes: { ...ALL_SPACE,
+          attributes: _objectSpread2(_objectSpread2({}, ALL_SPACE), {}, {
             fill: 'white'
-          }
+          })
         };
         const maskInnerGroupChildrenMixin = mainPath.children ? {
           children: mainPath.children.map(fillBlack)
         } : {};
         const maskInnerGroup = {
           tag: 'g',
-          attributes: { ...trans.inner
-          },
-          children: [fillBlack({
+          attributes: _objectSpread2({}, trans.inner),
+          children: [fillBlack(_objectSpread2({
             tag: mainPath.tag,
-            attributes: { ...mainPath.attributes,
-              ...trans.path
-            },
-            ...maskInnerGroupChildrenMixin
-          })]
+            attributes: _objectSpread2(_objectSpread2({}, mainPath.attributes), trans.path)
+          }, maskInnerGroupChildrenMixin))]
         };
         const maskOuterGroup = {
           tag: 'g',
-          attributes: { ...trans.outer
-          },
+          attributes: _objectSpread2({}, trans.outer),
           children: [maskInnerGroup]
         };
         const maskId = "mask-".concat(explicitMaskId || nextUniqueId());
         const clipId = "clip-".concat(explicitMaskId || nextUniqueId());
         const maskTag = {
           tag: 'mask',
-          attributes: { ...ALL_SPACE,
+          attributes: _objectSpread2(_objectSpread2({}, ALL_SPACE), {}, {
             id: maskId,
             maskUnits: 'userSpaceOnUse',
             maskContentUnits: 'userSpaceOnUse'
-          },
+          }),
           children: [maskRect, maskOuterGroup]
         };
         const defs = {
@@ -5906,12 +6070,11 @@
         };
         children.push(defs, {
           tag: 'rect',
-          attributes: {
+          attributes: _objectSpread2({
             fill: 'currentColor',
             'clip-path': "url(#".concat(clipId, ")"),
-            mask: "url(#".concat(maskId, ")"),
-            ...ALL_SPACE
-          }
+            mask: "url(#".concat(maskId, ")")
+          }, ALL_SPACE)
         });
         return {
           children,
@@ -5919,17 +6082,14 @@
         };
       };
     }
-
   };
 
   var MissingIconIndicator = {
     provides(providers) {
       let reduceMotion = false;
-
       if (WINDOW.matchMedia) {
         reduceMotion = WINDOW.matchMedia('(prefers-reduced-motion: reduce)').matches;
       }
-
       providers.missingIconAbstract = function () {
         const gChildren = [];
         const FILL = {
@@ -5939,74 +6099,71 @@
           attributeType: 'XML',
           repeatCount: 'indefinite',
           dur: '2s'
-        }; // Ring
+        };
 
+        // Ring
         gChildren.push({
           tag: 'path',
-          attributes: { ...FILL,
+          attributes: _objectSpread2(_objectSpread2({}, FILL), {}, {
             d: 'M156.5,447.7l-12.6,29.5c-18.7-9.5-35.9-21.2-51.5-34.9l22.7-22.7C127.6,430.5,141.5,440,156.5,447.7z M40.6,272H8.5 c1.4,21.2,5.4,41.7,11.7,61.1L50,321.2C45.1,305.5,41.8,289,40.6,272z M40.6,240c1.4-18.8,5.2-37,11.1-54.1l-29.5-12.6 C14.7,194.3,10,216.7,8.5,240H40.6z M64.3,156.5c7.8-14.9,17.2-28.8,28.1-41.5L69.7,92.3c-13.7,15.6-25.5,32.8-34.9,51.5 L64.3,156.5z M397,419.6c-13.9,12-29.4,22.3-46.1,30.4l11.9,29.8c20.7-9.9,39.8-22.6,56.9-37.6L397,419.6z M115,92.4 c13.9-12,29.4-22.3,46.1-30.4l-11.9-29.8c-20.7,9.9-39.8,22.6-56.8,37.6L115,92.4z M447.7,355.5c-7.8,14.9-17.2,28.8-28.1,41.5 l22.7,22.7c13.7-15.6,25.5-32.9,34.9-51.5L447.7,355.5z M471.4,272c-1.4,18.8-5.2,37-11.1,54.1l29.5,12.6 c7.5-21.1,12.2-43.5,13.6-66.8H471.4z M321.2,462c-15.7,5-32.2,8.2-49.2,9.4v32.1c21.2-1.4,41.7-5.4,61.1-11.7L321.2,462z M240,471.4c-18.8-1.4-37-5.2-54.1-11.1l-12.6,29.5c21.1,7.5,43.5,12.2,66.8,13.6V471.4z M462,190.8c5,15.7,8.2,32.2,9.4,49.2h32.1 c-1.4-21.2-5.4-41.7-11.7-61.1L462,190.8z M92.4,397c-12-13.9-22.3-29.4-30.4-46.1l-29.8,11.9c9.9,20.7,22.6,39.8,37.6,56.9 L92.4,397z M272,40.6c18.8,1.4,36.9,5.2,54.1,11.1l12.6-29.5C317.7,14.7,295.3,10,272,8.5V40.6z M190.8,50 c15.7-5,32.2-8.2,49.2-9.4V8.5c-21.2,1.4-41.7,5.4-61.1,11.7L190.8,50z M442.3,92.3L419.6,115c12,13.9,22.3,29.4,30.5,46.1 l29.8-11.9C470,128.5,457.3,109.4,442.3,92.3z M397,92.4l22.7-22.7c-15.6-13.7-32.8-25.5-51.5-34.9l-12.6,29.5 C370.4,72.1,384.4,81.5,397,92.4z'
-          }
+          })
         });
-        const OPACITY_ANIMATE = { ...ANIMATION_BASE,
+        const OPACITY_ANIMATE = _objectSpread2(_objectSpread2({}, ANIMATION_BASE), {}, {
           attributeName: 'opacity'
-        };
+        });
         const dot = {
           tag: 'circle',
-          attributes: { ...FILL,
+          attributes: _objectSpread2(_objectSpread2({}, FILL), {}, {
             cx: '256',
             cy: '364',
             r: '28'
-          },
+          }),
           children: []
         };
-
         if (!reduceMotion) {
           dot.children.push({
             tag: 'animate',
-            attributes: { ...ANIMATION_BASE,
+            attributes: _objectSpread2(_objectSpread2({}, ANIMATION_BASE), {}, {
               attributeName: 'r',
               values: '28;14;28;28;14;28;'
-            }
+            })
           }, {
             tag: 'animate',
-            attributes: { ...OPACITY_ANIMATE,
+            attributes: _objectSpread2(_objectSpread2({}, OPACITY_ANIMATE), {}, {
               values: '1;0;1;1;0;1;'
-            }
+            })
           });
         }
-
         gChildren.push(dot);
         gChildren.push({
           tag: 'path',
-          attributes: { ...FILL,
+          attributes: _objectSpread2(_objectSpread2({}, FILL), {}, {
             opacity: '1',
             d: 'M263.7,312h-16c-6.6,0-12-5.4-12-12c0-71,77.4-63.9,77.4-107.8c0-20-17.8-40.2-57.4-40.2c-29.1,0-44.3,9.6-59.2,28.7 c-3.9,5-11.1,6-16.2,2.4l-13.1-9.2c-5.6-3.9-6.9-11.8-2.6-17.2c21.2-27.2,46.4-44.7,91.2-44.7c52.3,0,97.4,29.8,97.4,80.2 c0,67.6-77.4,63.5-77.4,107.8C275.7,306.6,270.3,312,263.7,312z'
-          },
+          }),
           children: reduceMotion ? [] : [{
             tag: 'animate',
-            attributes: { ...OPACITY_ANIMATE,
+            attributes: _objectSpread2(_objectSpread2({}, OPACITY_ANIMATE), {}, {
               values: '1;0;0;0;0;1;'
-            }
+            })
           }]
         });
-
         if (!reduceMotion) {
           // Exclamation
           gChildren.push({
             tag: 'path',
-            attributes: { ...FILL,
+            attributes: _objectSpread2(_objectSpread2({}, FILL), {}, {
               opacity: '0',
               d: 'M232.5,134.5l7,168c0.3,6.4,5.6,11.5,12,11.5h9c6.4,0,11.7-5.1,12-11.5l7-168c0.3-6.8-5.2-12.5-12-12.5h-23 C237.7,122,232.2,127.7,232.5,134.5z'
-            },
+            }),
             children: [{
               tag: 'animate',
-              attributes: { ...OPACITY_ANIMATE,
+              attributes: _objectSpread2(_objectSpread2({}, OPACITY_ANIMATE), {}, {
                 values: '0;0;1;1;0;0;'
-              }
+              })
             }]
           });
         }
-
         return {
           tag: 'g',
           attributes: {
@@ -6016,7 +6173,6 @@
         };
       };
     }
-
   };
 
   var SvgSymbols = {
@@ -6028,10 +6184,8 @@
           accumulator['symbol'] = symbol;
           return accumulator;
         }
-
       };
     }
-
   };
 
   var plugins = [InjectCSS, ReplaceElements, Layers, LayersCounter, LayersText, PseudoElements, MutationObserver$1, PowerTransforms, Masks, MissingIconIndicator, SvgSymbols];
