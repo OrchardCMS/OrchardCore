@@ -13,7 +13,7 @@
     @T["Dear {0},", Model.User.UserName]
 </p>
 
-<p>@T["Please <a href=\"{0}\">click here</a> to confirm your account.", Model.ConfirmEmailUrl]</p>
+<p>@T["Please <a href=\"{0}\">click here</a> to confirm your account.", Html.Raw(Model.ConfirmEmailUrl)]</p>
 
 <p>@T.Plural(totalMinutes, "Please be aware that this link will expire in {0} minute.", "Please be aware that this link will expire in {0} minutes.", totalMinutes)</p>
 

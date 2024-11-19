@@ -23,7 +23,7 @@ public sealed class FormElementLabelPartDisplayDriver : ContentPartDisplayDriver
         });
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(FormElementLabelPart part, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(FormElementLabelPart part, UpdatePartEditorContext context)
     {
         var viewModel = new FormElementLabelPartViewModel();
 

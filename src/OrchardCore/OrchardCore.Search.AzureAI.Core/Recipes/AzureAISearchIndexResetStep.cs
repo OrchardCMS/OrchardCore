@@ -8,15 +8,15 @@ using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Recipes;
 
-public sealed class AzureAISearchIndexResetStep : IRecipeStepHandler
+public sealed class AzureAISearchIndexResetStep : NamedRecipeStepHandler
 {
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    public AzureAISearchIndexResetStep()
+        : base(AzureAISearchIndexResetDeploymentSource.Name)
     {
-        if (!string.Equals(context.Name, AzureAISearchIndexResetDeploymentSource.Name, StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
+    }
 
+    protected override async Task HandleAsync(RecipeExecutionContext context)
+    {
         var model = context.Step.ToObject<AzureAISearchIndexResetDeploymentStep>();
 
         if (model == null)

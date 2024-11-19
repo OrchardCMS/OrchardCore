@@ -232,7 +232,7 @@ public class FeatureAttribute : Attribute
     /// <see cref="TrimEntries"/> | <see cref="RemoveEmptyEntries"/>, trim the entries, and
     /// remove the empty ones.
     /// </summary>
-    internal protected const StringSplitOptions DefaultSplitOptions = TrimEntries | RemoveEmptyEntries;
+    protected internal const StringSplitOptions DefaultSplitOptions = TrimEntries | RemoveEmptyEntries;
 
     /// <summary>
     /// Gets the default known ListDelims supporting <see cref="Dependencies"/> splits, etc.
@@ -241,7 +241,7 @@ public class FeatureAttribute : Attribute
     /// delimiters.
     /// </summary>
     /// <see cref="string.Split(char[], StringSplitOptions)"/>
-    internal protected static char[] ListDelims { get; } = GetValues(';', ',', ' ').ToArray();
+    protected internal static char[] ListDelims { get; } = GetValues(';', ',', ' ').ToArray();
 
     /// <summary>
     /// Set-only <see cref="Dependencies"/> property.

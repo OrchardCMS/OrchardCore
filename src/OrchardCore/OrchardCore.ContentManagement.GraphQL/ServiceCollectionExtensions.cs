@@ -34,9 +34,11 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddContentFieldsInputGraphQL(this IServiceCollection services)
     {
-        services.AddScoped<IIndexAliasProvider, DynamicContentFieldsIndexAliasProvider>();
+        services.AddScoped<DynamicContentFieldsIndexAliasProvider>()
+            .AddScoped<IIndexAliasProvider>(sp => sp.GetService<DynamicContentFieldsIndexAliasProvider>())
+            .AddScoped<IContentDefinitionEventHandler>(sp => sp.GetService<DynamicContentFieldsIndexAliasProvider>());
+
         services.AddScoped<IContentTypeBuilder, DynamicContentTypeWhereInputBuilder>();
-        services.AddScoped<IContentDefinitionEventHandler, DynamicContentFieldsIndexAliasProvider>();
 
         return services;
     }

@@ -3,8 +3,11 @@ namespace OrchardCore.Security;
 public class Role : IRole
 {
     public string RoleName { get; set; }
+
     public string RoleDescription { get; set; }
+
     public string NormalizedRoleName { get; set; }
+
     public List<RoleClaim> RoleClaims { get; set; } = [];
 
     public Role Clone()
@@ -18,7 +21,7 @@ public class Role : IRole
 
         foreach (var claim in RoleClaims)
         {
-            role.RoleClaims.Add(new RoleClaim() { ClaimType = claim.ClaimType, ClaimValue = claim.ClaimValue });
+            role.RoleClaims.Add(claim.Clone());
         }
 
         return role;

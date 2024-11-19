@@ -6,6 +6,7 @@ using OrchardCore.Localization;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters;
 
+[Obsolete("This filter is obsolete and will be removed in a future version. Use 'Culture.SupportedCultures' instead.")]
 public class SupportedCulturesFilter : ILiquidFilter
 {
     private readonly ILocalizationService _localizationService;

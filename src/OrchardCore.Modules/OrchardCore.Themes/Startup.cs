@@ -33,7 +33,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IThemeService, ThemeService>();
         services.AddScoped<ThemeTogglerService>();
         services.AddDeployment<ThemesDeploymentSource, ThemesDeploymentStep, ThemesDeploymentStepDriver>();
-        services.AddScoped<IDisplayDriver<Navbar>, ToggleThemeNavbarDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ThemeEntry>, ThemeEntryDisplayDriver>();
+        services.AddDisplayDriver<Navbar, ToggleThemeNavbarDisplayDriver>();
+        services.AddDisplayDriver<ThemeEntry, ThemeEntryDisplayDriver>();
     }
 }

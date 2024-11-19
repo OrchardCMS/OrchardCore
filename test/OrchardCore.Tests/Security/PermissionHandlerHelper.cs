@@ -6,17 +6,20 @@ namespace OrchardCore.Tests.Security;
 public static class PermissionHandlerHelper
 {
     public static AuthorizationHandlerContext CreateTestAuthorizationHandlerContext(Permission required, string[] allowed = null, bool authenticated = false, object resource = null)
+        => CreateTestAuthorizationHandlerContext(required, allowed?.Select(x => new Claim(Permission.ClaimType, x)) ?? [], authenticated, resource);
+
+    public static AuthorizationHandlerContext CreateTestAuthorizationHandlerContext(Permission required, IEnumerable<Claim> allowed, bool authenticated, object resource = null)
     {
-        var identity = authenticated ? new ClaimsIdentity("Test") : new ClaimsIdentity();
+        var identity = authenticated
+            ? new ClaimsIdentity("Test")
+            : new ClaimsIdentity();
 
         if (allowed != null)
         {
-            foreach (var permissionName in allowed)
+            foreach (var permission in allowed)
             {
-                var permission = new Permission(permissionName);
                 identity.AddClaim(permission);
             }
-
         }
 
         var principal = new ClaimsPrincipal(identity);

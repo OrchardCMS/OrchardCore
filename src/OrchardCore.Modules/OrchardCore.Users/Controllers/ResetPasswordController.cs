@@ -160,7 +160,7 @@ public sealed class ResetPasswordController : Controller
 
         if (ModelState.IsValid)
         {
-            var token = Encoding.UTF8.GetString(Convert.FromBase64String(model.ResetToken));
+            var token = Base64.FromUTF8Base64String(model.ResetToken);
 
             if (await _userService.ResetPasswordAsync(model.UsernameOrEmail, token, model.NewPassword, ModelState.AddModelError))
             {

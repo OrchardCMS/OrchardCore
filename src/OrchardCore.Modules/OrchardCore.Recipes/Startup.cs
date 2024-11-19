@@ -4,6 +4,7 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes.RecipeSteps;
 using OrchardCore.Recipes.Services;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Recipes;
 
@@ -15,7 +16,7 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddNavigationProvider<AdminMenu>();
-
+        services.AddPermissionProvider<RecipesPermissionProvider>();
         services.AddRecipeExecutionStep<CommandStep>();
         services.AddRecipeExecutionStep<RecipesStep>();
 

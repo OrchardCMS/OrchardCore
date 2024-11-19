@@ -18,7 +18,21 @@ public class SuperUserHandler : IAuthorizationHandler
 
     public async Task HandleAsync(AuthorizationHandlerContext context)
     {
-        var userId = context?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = context?.User;
+
+        if (user == null)
+        {
+            return;
+        }
+
+        if (user.HasClaim(StandardClaims.SiteOwner.Type, StandardClaims.SiteOwner.Value))
+        {
+            SucceedAllRequirements(context);
+
+            return;
+        }
+
+        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null)
         {
             return;

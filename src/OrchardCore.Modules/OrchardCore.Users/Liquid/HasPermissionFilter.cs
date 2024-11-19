@@ -23,13 +23,32 @@ public class HasPermissionFilter : ILiquidFilter
         if (input.ToObjectValue() is LiquidUserAccessor)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user != null)
+            if (user != null && arguments.Count > 0)
             {
                 var permissionName = arguments["permission"].Or(arguments.At(0)).ToStringValue();
-                var resource = arguments["resource"].Or(arguments.At(1)).ToObjectValue();
 
-                if (!string.IsNullOrEmpty(permissionName) &&
-                    await _authorizationService.AuthorizeAsync(user, new Permission(permissionName), resource))
+                if (string.IsNullOrWhiteSpace(permissionName))
+                {
+                    return BooleanValue.False;
+                }
+
+                var permission = new Permission(permissionName);
+
+                if (arguments.Count > 1)
+                {
+                    var resource = arguments["resource"].Or(arguments.At(1)).ToObjectValue();
+
+                    if (resource != null)
+                    {
+                        if (!string.IsNullOrEmpty(permissionName) &&
+                            await _authorizationService.AuthorizeAsync(user, permission, resource))
+                        {
+                            return BooleanValue.True;
+                        }
+                    }
+                }
+
+                if (await _authorizationService.AuthorizeAsync(user, permission))
                 {
                     return BooleanValue.True;
                 }
