@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using GraphQL;
 using GraphQL.MicrosoftDI;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -76,29 +77,8 @@ public class SchemaService : ISchemaFactory
                 NameConverter = new OrchardFieldNameConverter(),
             };
 
-            // Keep track of registered types to avoid duplicates.
-            var registeredTypes = new HashSet<string>();
-
-            foreach (var type in serviceProvider.GetServices<IInputObjectGraphType>())
-            {
-                if (!registeredTypes.Add(type.Name))
-                {
-                    continue;
-                }
-
-                schema.RegisterType(type);
-            }
-
-            foreach (var type in serviceProvider.GetServices<IObjectGraphType>())
-            {
-                // Only register if it's not already registered
-                if (!registeredTypes.Add(type.Name))
-                {
-                    continue;
-                }
-
-                schema.RegisterType(type);
-            }
+            schema.RegisterTypes(serviceProvider.GetServices<IInputObjectGraphType>().ToArray());
+            schema.RegisterTypes(serviceProvider.GetServices<IObjectGraphType>().ToArray());
 
             foreach (var builder in _schemaBuilders)
             {
