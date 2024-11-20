@@ -1,5 +1,5 @@
 /*!
- * Font Awesome Free 6.7.0 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  * Copyright 2024 Fonticons, Inc.
  */
@@ -1822,7 +1822,7 @@
     mark: noop$1,
     measure: noop$1
   };
-  const preamble = "FA \"6.7.0\"";
+  const preamble = "FA \"6.7.1\"";
   const begin = name => {
     p$2.mark("".concat(preamble, " ").concat(name, " begins"));
     return () => end(name);

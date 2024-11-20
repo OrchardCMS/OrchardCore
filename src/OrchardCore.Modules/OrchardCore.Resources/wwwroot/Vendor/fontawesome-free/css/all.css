@@ -1,5 +1,5 @@
 /*!
- * Font Awesome Free 6.7.0 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  * Copyright 2024 Fonticons, Inc.
  */
@@ -29,8 +29,7 @@
 .fa-regular::before,
 .fa-brands::before,
 .fa::before {
-  content: var(--fa);
-  content: var(--fa)/""; }
+  content: var(--fa); }
 
 .fa-classic,
 .fas,
@@ -8705,6 +8704,9 @@ readers do not read off random characters that represent icons */
 .fa-hips {
   --fa: "\f452"; }
 
+.fa-css {
+  --fa: "\e6a2"; }
+
 .fa-behance {
   --fa: "\f1b4"; }
 
@@ -9133,6 +9135,9 @@ readers do not read off random characters that represent icons */
 
 .fa-fly {
   --fa: "\f417"; }
+
+.fa-square-bluesky {
+  --fa: "\e6a3"; }
 
 .fa-aviato {
   --fa: "\f421"; }
