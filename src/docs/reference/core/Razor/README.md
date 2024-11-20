@@ -44,8 +44,9 @@ Many extensions methods are available in Razor with `@Orchard`.
 If you want to use an extension method in a view, you can inject an `IOrchardHelper` named `Orchard` at the top of your file:
 
 ```csharp
+// You can also put this into a _ViewImports.cshtml file so it's applied to all templates.
 @using OrchardCore
-@inject OrchardCore.IOrchardHelper Orchard
+@inject IOrchardHelper Orchard
 ```
 
 In `OrchardCore.DisplayManagement.Razor`, there is a RazorPage that already has a public property `Orchard` that you can use to call an extension method or the current `HttpContext`.
