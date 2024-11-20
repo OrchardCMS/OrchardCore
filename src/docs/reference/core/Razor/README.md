@@ -44,6 +44,7 @@ Many extensions methods are available in Razor with `@Orchard`.
 If you want to use an extension method in a view, you can inject an `IOrchardHelper` named `Orchard` at the top of your file:
 
 ```csharp
+@using OrchardCore
 @inject OrchardCore.IOrchardHelper Orchard
 ```
 
@@ -52,6 +53,7 @@ In `OrchardCore.DisplayManagement.Razor`, there is a RazorPage that already has 
 If you want to use an Orchard helper in a controller, you can inject an instance in the constructor:
 
 ```csharp
+using OrchardCore;
 private IOrchardHelper _orchard;
 
 public MyClass(IOrchardHelper orchard)
