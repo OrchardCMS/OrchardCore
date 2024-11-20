@@ -31,12 +31,12 @@ public class ContentItemQuery : ISchemaBuilder
             Name = "ContentItem",
             Description = S["Content items are instances of content types, just like objects are instances of classes."],
             Type = typeof(ContentItemInterface),
-            // ResolvedType = new NonNullGraphType<StringGraphType>(),
+            ResolvedType = new NonNullGraphType<StringGraphType>(),
             Arguments = new QueryArguments(
                 new QueryArgument<NonNullGraphType<StringGraphType>>
                 {
                     Name = "contentItemId",
-                    Description = S["Content item id"]
+                    Description = S["Content item id"],
                 }
             ),
             Resolver = new FuncFieldResolver<ContentItem>(ResolveAsync)

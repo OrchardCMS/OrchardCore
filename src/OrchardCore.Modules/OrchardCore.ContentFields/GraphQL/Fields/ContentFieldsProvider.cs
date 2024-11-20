@@ -150,7 +150,7 @@ public class ContentFieldsProvider : IContentFieldProvider
         return new FieldTypeIndexDescriptor
         {
             Index = fieldDescriptor.Index,
-            IndexType = fieldDescriptor.IndexType
+            IndexType = fieldDescriptor.IndexType,
         };
     }
 
