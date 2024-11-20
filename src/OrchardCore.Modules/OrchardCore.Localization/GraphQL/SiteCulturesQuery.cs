@@ -31,7 +31,8 @@ public class SiteCulturesQuery : ISchemaBuilder
         _graphQLContentOptions = graphQLContentOptions.Value;
     }
 
-    public Task<string> GetIdentifierAsync() => Task.FromResult(string.Empty);
+    public Task<string> GetIdentifierAsync()
+        => Task.FromResult(string.Empty);
 
     /// <inheritdocs/>
     public Task BuildAsync(ISchema schema)
@@ -46,7 +47,7 @@ public class SiteCulturesQuery : ISchemaBuilder
             Name = "SiteCultures",
             Description = S["The active cultures configured for the site."],
             Type = typeof(ListGraphType<CultureQueryObjectType>),
-            ResolvedType = new ListGraphType<CultureQueryObjectType>(),
+            ResolvedType = new CultureQueryObjectType(),
             Resolver = new LockedAsyncFieldResolver<IEnumerable<SiteCulture>>(ResolveAsync),
         };
 
