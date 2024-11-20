@@ -14,7 +14,8 @@ public class TypedContentTypeBuilder : IContentTypeBuilder
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly GraphQLContentOptions _contentOptions;
 
-    public TypedContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
+    public TypedContentTypeBuilder(
+        IHttpContextAccessor httpContextAccessor,
         IOptions<GraphQLContentOptions> contentOptionsAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
@@ -64,11 +65,13 @@ public class TypedContentTypeBuilder : IContentTypeBuilder
                             continue;
                         }
 
-                        var partType = typeActivator.GetTypeActivator(part.PartDefinition.Name).Type;
+                        var partActivator = typeActivator.GetTypeActivator(part.PartDefinition.Name);
+                        var partType = partActivator.Type;
                         var rolledUpField = new FieldType
                         {
                             Name = field.Name,
                             Type = field.Type,
+                            // ResolvedType = instance.CreateInstance(),
                             Description = field.Description,
                             DeprecationReason = field.DeprecationReason,
                             Arguments = field.Arguments,
@@ -93,13 +96,8 @@ public class TypedContentTypeBuilder : IContentTypeBuilder
                 }
                 else
                 {
-                    var field = new FieldType
-                    {
-                        Name = partFieldName,
-                        Type = queryGraphType.GetType(),
-                        Description = queryGraphType.Description,
-                    };
-                    contentItemType.Field(partFieldName, queryGraphType.GetType())
+                    contentItemType
+                        .Field(partFieldName, queryGraphType.GetType())
                         .Description(queryGraphType.Description)
                         .Resolve(context =>
                         {

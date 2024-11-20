@@ -20,7 +20,6 @@ public class MenuItemContentTypeBuilder : IContentTypeBuilder
         {
             Name = nameof(MenuItemsListPart).ToFieldName(),
             Type = typeof(MenuItemsListQueryObjectType),
-            ResolvedType = new MenuItemsListQueryObjectType(),
             Resolver = new FuncFieldResolver<ContentItem, MenuItemsListPart>(context => context.Source.As<MenuItemsListPart>()),
         });
 

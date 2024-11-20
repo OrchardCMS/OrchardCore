@@ -31,7 +31,7 @@ public class ContentItemQuery : ISchemaBuilder
             Name = "ContentItem",
             Description = S["Content items are instances of content types, just like objects are instances of classes."],
             Type = typeof(ContentItemInterface),
-            ResolvedType = new NonNullGraphType<StringGraphType>(),
+            ResolvedType = new ObjectGraphType<ContentItem>(),
             Arguments = new QueryArguments(
                 new QueryArgument<NonNullGraphType<StringGraphType>>
                 {

@@ -24,7 +24,8 @@ public class SiteLayersQuery : ISchemaBuilder
         _graphQLContentOptions = graphQLContentOptions.Value;
     }
 
-    public Task<string> GetIdentifierAsync() => Task.FromResult(string.Empty);
+    public Task<string> GetIdentifierAsync()
+        => Task.FromResult(string.Empty);
 
     public Task BuildAsync(ISchema schema)
     {
@@ -38,7 +39,7 @@ public class SiteLayersQuery : ISchemaBuilder
             Name = "SiteLayers",
             Description = S["Site layers define the rules and zone placement for widgets."],
             Type = typeof(ListGraphType<LayerQueryObjectType>),
-            ResolvedType = new ListGraphType<LayerQueryObjectType>(),
+            ResolvedType = new LayerQueryObjectType(),
             Resolver = new LockedAsyncFieldResolver<IEnumerable<Layer>>(ResolveAsync),
         };
 
@@ -50,7 +51,9 @@ public class SiteLayersQuery : ISchemaBuilder
     private async ValueTask<IEnumerable<Layer>> ResolveAsync(IResolveFieldContext resolveContext)
     {
         var layerService = resolveContext.RequestServices.GetService<ILayerService>();
+
         var allLayers = await layerService.GetLayersAsync();
+
         return allLayers.Layers;
     }
 }

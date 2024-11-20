@@ -19,6 +19,7 @@ public class ContentTypeQuery : ISchemaBuilder
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IOptions<GraphQLContentOptions> _contentOptionsAccessor;
     private readonly IOptions<GraphQLSettings> _settingsAccessor;
+
     protected readonly IStringLocalizer S;
 
     public ContentTypeQuery(IHttpContextAccessor httpContextAccessor,
@@ -55,14 +56,14 @@ public class ContentTypeQuery : ISchemaBuilder
             var typeType = new ContentItemType(_contentOptionsAccessor)
             {
                 Name = typeDefinition.Name,
-                Description = S["Represents a {0}.", typeDefinition.DisplayName]
+                Description = S["Represents a {0}.", typeDefinition.DisplayName],
             };
 
             var query = new ContentItemsFieldType(typeDefinition.Name, schema, _contentOptionsAccessor, _settingsAccessor)
             {
                 Name = typeDefinition.Name,
                 Description = S["Represents a {0}.", typeDefinition.DisplayName],
-                ResolvedType = new ListGraphType(typeType)
+                ResolvedType = typeType,
             };
 
             query.RequirePermission(CommonPermissions.ExecuteGraphQL);

@@ -100,7 +100,7 @@ public class SqlQueryFieldTypeProvider : ISchemaBuilder
 
         var typeType = new ObjectGraphType<JsonObject>
         {
-            Name = fieldTypeName
+            Name = fieldTypeName,
         };
 
         foreach (var child in properties)

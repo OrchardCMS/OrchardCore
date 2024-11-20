@@ -135,8 +135,9 @@ public class SchemaService : ISchemaFactory
 
             return _schema = schema;
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            var t = e;
             throw;
         }
         finally

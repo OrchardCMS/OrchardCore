@@ -37,6 +37,7 @@ public class MediaAssetQuery : ISchemaBuilder
             Name = "MediaAssets",
             Description = S["Media assets are items that are part of your media library."],
             Type = typeof(ListGraphType<MediaAssetObjectType>),
+            ResolvedType = new MediaAssetObjectType(),
             Arguments = new QueryArguments(
                 new QueryArgument<StringGraphType>
                 {
