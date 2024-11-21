@@ -355,7 +355,10 @@ public sealed class AdminController : Controller
 
     public Task<IActionResult> Query(string indexName, string query)
     {
-        query = string.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
+        query = string.IsNullOrWhiteSpace(query)
+            ? ""
+            : Base64.FromUTF8Base64String(query);
+
         return Query(new AdminQueryViewModel { IndexName = indexName, DecodedQuery = query });
     }
 
@@ -409,7 +412,7 @@ public sealed class AdminController : Controller
 
             try
             {
-                var parameterizedQuery = JsonNode.Parse(tokenizedContent).AsObject();
+                var parameterizedQuery = JsonNode.Parse(tokenizedContent, JOptions.Node, JOptions.Document).AsObject();
                 var luceneTopDocs = await _queryService.SearchAsync(context, parameterizedQuery);
 
                 if (luceneTopDocs != null)

@@ -466,7 +466,9 @@ public sealed class AdminController : Controller
         return await Query(new AdminQueryViewModel
         {
             IndexName = indexName,
-            DecodedQuery = string.IsNullOrWhiteSpace(query) ? string.Empty : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query))
+            DecodedQuery = string.IsNullOrWhiteSpace(query)
+            ? string.Empty
+            : Base64.FromUTF8Base64String(query)
         });
     }
 

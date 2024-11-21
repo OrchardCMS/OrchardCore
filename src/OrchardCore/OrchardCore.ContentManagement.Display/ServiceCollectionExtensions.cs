@@ -21,7 +21,8 @@ public static class ServiceCollectionExtensions
         });
 
         services.TryAddTransient<IContentItemDisplayManager, ContentItemDisplayManager>();
-        services.TryAddEnumerable(new ServiceDescriptor(typeof(IContentDisplayHandler), typeof(ContentItemDisplayCoordinator), ServiceLifetime.Scoped));
+
+        services.AddScoped<IContentDisplayHandler, ContentItemDisplayCoordinator>();
 
         services.AddScoped<IPlacementNodeFilterProvider, ContentTypePlacementNodeFilterProvider>();
         services.AddScoped<IPlacementNodeFilterProvider, ContentPartPlacementNodeFilterProvider>();

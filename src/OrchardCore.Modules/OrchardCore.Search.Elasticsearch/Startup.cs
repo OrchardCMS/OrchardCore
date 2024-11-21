@@ -1,7 +1,4 @@
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Nest;
@@ -50,19 +47,19 @@ public sealed class Startup : StartupBase
             return new ElasticClient(options.GetConnectionSettings() ?? new ConnectionSettings());
         });
 
-        services.Configure<ElasticsearchOptions>(o =>
+        services.Configure<ElasticsearchOptions>(options =>
         {
             var configuration = _shellConfiguration.GetSection(ElasticConnectionOptionsConfigurations.ConfigSectionName);
 
-            o.AddIndexPrefix(configuration);
-            o.AddFilter(configuration);
-            o.AddAnalyzers(configuration);
+            options.AddIndexPrefix(configuration);
+            options.AddTokenFilters(configuration);
+            options.AddAnalyzers(configuration);
         });
 
         services.AddElasticServices();
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddScoped<IDisplayDriver<Query>, ElasticQueryDisplayDriver>();
+        services.AddDisplayDriver<Query, ElasticQueryDisplayDriver>();
         services.AddDataMigration<ElasticsearchQueryMigrations>();
         services.AddScoped<IQueryHandler, ElasticsearchQueryHandler>();
     }

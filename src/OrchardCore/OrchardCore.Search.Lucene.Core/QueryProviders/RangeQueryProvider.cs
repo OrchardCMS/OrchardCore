@@ -43,11 +43,11 @@ public class RangeQueryProvider : ILuceneQueryProvider
                             break;
                         case "lt":
                             lt = element.Value;
-                            nodeKind = gt.GetValueKind();
+                            nodeKind = lt.GetValueKind();
                             break;
                         case "lte":
                             lt = element.Value;
-                            nodeKind = gt.GetValueKind();
+                            nodeKind = lt.GetValueKind();
                             includeUpper = true;
                             break;
                         case "boost":

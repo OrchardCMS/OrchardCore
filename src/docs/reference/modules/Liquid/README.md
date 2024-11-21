@@ -509,16 +509,17 @@ The following properties are available on the `Culture` object.
 | `DisplayName` | `English (United States)` | The display name of the current culture. |
 | `NativeName` | `English (United States)` | The native name of the current culture. |
 | `TwoLetterISOLanguageName` | `en` | The two-letter ISO language name of the current culture. |
+| `SupportedCultures` | `['en-US', 'fr' ]` | The list of the currently supported cultures in the site. Each result can be chained with other properties listed in this table. |
+| `DefaultCulture` | `en-US` | The default culture as defined in the settings. |
 
-##### supported_cultures filter
+##### Usage
 
-Returns the currently supported cultures. Here is an example of how to print the names of supported cultures using a list:
+Here is an example of how to print the names of supported cultures and find which one is currently used:
 
 ```liquid
-{% assign cultures = Culture | supported_cultures %}
 <ul>
-{% for culture in cultures %}
-    <li>{{ culture.Name }}</li>
+{% for culture in Culture.SupportedCultures %}
+    <li class="{% if culture == Culture %}active{% endif %}">{{ culture.Name }}</li>
 {% endfor %}
 </ul>
 ```

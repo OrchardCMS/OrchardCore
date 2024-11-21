@@ -9,7 +9,6 @@ using OrchardCore.OpenId.YesSql.Migrations;
 using OrchardCore.OpenId.YesSql.Models;
 using OrchardCore.OpenId.YesSql.Resolvers;
 using OrchardCore.OpenId.YesSql.Stores;
-using YesSql.Indexes;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -19,8 +18,7 @@ public static class OpenIdExtensions
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        builder.Services.TryAddEnumerable(
-            ServiceDescriptor.Scoped<IDataMigration, OpenIdMigrations>());
+        builder.Services.AddDataMigration<OpenIdMigrations>();
 
         // Configure support for an OpenId collection.
         builder.Services.Configure<StoreCollectionOptions>(o => o.Collections.Add("OpenId"));
@@ -76,13 +74,10 @@ public static class OpenIdExtensions
         builder.Services.TryAddScoped(typeof(OpenIdScopeStore<>));
         builder.Services.TryAddScoped(typeof(OpenIdTokenStore<>));
 
-        builder.Services.TryAddEnumerable(new[]
-        {
-            ServiceDescriptor.Singleton<IIndexProvider, OpenIdApplicationIndexProvider>(),
-            ServiceDescriptor.Singleton<IIndexProvider, OpenIdAuthorizationIndexProvider>(),
-            ServiceDescriptor.Singleton<IIndexProvider, OpenIdScopeIndexProvider>(),
-            ServiceDescriptor.Singleton<IIndexProvider, OpenIdTokenIndexProvider>()
-        });
+        builder.Services.AddIndexProvider<OpenIdApplicationIndexProvider>();
+        builder.Services.AddIndexProvider<OpenIdAuthorizationIndexProvider>();
+        builder.Services.AddIndexProvider<OpenIdScopeIndexProvider>();
+        builder.Services.AddIndexProvider<OpenIdTokenIndexProvider>();
 
         return builder;
     }
