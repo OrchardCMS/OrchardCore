@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Cors.Services;
 using OrchardCore.Modules;
@@ -28,7 +27,6 @@ public sealed class Startup : StartupBase
         services.AddPermissionProvider<Permissions>();
         services.AddSingleton<CorsService>();
 
-        services.TryAddEnumerable(ServiceDescriptor
-            .Transient<IConfigureOptions<CorsOptions>, CorsOptionsConfiguration>());
+        services.AddTransient<IConfigureOptions<CorsOptions>, CorsOptionsConfiguration>();
     }
 }

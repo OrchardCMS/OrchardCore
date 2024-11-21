@@ -67,17 +67,7 @@ public static class AzureKeyVaultConfigurationExtension
     private static void AddOrchardCoreAzureKeyVault(
         this IConfigurationBuilder builder, IConfiguration configuration, TokenCredential tokenCredential)
     {
-        var keyVaultName = configuration["OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName"];
-
-        if (string.IsNullOrEmpty(keyVaultName))
-        {
-            throw new Exception("The 'KeyVaultName' property is no configured. Please configure it by specifying the 'OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName' settings key.");
-        }
-
-        if (!Uri.TryCreate($"https://{keyVaultName}.vault.azure.net", UriKind.Absolute, out var keyVaultEndpointUri))
-        {
-            throw new Exception("Invalid value used for 'KeyVaultName' property. Please provide a valid key-vault name using the 'OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName' settings key.");
-        }
+        var keyVaultEndpointUri = GetVaultHostUri(configuration);
 
         var configOptions = new AzureKeyVaultConfigurationOptions()
         {
@@ -92,5 +82,34 @@ public static class AzureKeyVaultConfigurationExtension
         tokenCredential ??= new DefaultAzureCredential(includeInteractiveCredentials: true);
 
         builder.AddAzureKeyVault(keyVaultEndpointUri, tokenCredential, configOptions);
+    }
+
+    private static Uri GetVaultHostUri(IConfiguration configuration)
+    {
+        var vaultUri = configuration["OrchardCore:OrchardCore_KeyVault_Azure:VaultURI"];
+
+        if (!string.IsNullOrWhiteSpace(vaultUri))
+        {
+            if (!Uri.TryCreate(vaultUri, UriKind.Absolute, out var uri))
+            {
+                throw new Exception("Invalid value used for 'VaultURI' property. Please provide a valid vault host name using the 'OrchardCore:OrchardCore_KeyVault_Azure:VaultURI' settings key.");
+            }
+
+            return uri;
+        }
+
+        var keyVaultName = configuration["OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName"];
+
+        if (string.IsNullOrEmpty(keyVaultName))
+        {
+            throw new Exception("The 'KeyVaultName' property is not configured. Please configure it by specifying the 'OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName' settings key.");
+        }
+
+        if (!Uri.TryCreate($"https://{keyVaultName}.vault.azure.net", UriKind.Absolute, out var host))
+        {
+            throw new Exception("Invalid value used for 'KeyVaultName' property. Please provide a valid key-vault name using the 'OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName' settings key.");
+        }
+
+        return host;
     }
 }

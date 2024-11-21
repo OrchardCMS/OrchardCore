@@ -33,7 +33,7 @@ public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
             model.SubstitutionPattern = metadata.SubstitutionPattern;
             model.IsCaseInsensitive = metadata.IsCaseInsensitive;
             model.QueryStringPolicy = metadata.QueryStringPolicy;
-            model.RedirectType = Enum.IsDefined(typeof(RedirectType), metadata.RedirectType)
+            model.RedirectType = Enum.IsDefined<RedirectType>(metadata.RedirectType)
             ? metadata.RedirectType
             : RedirectType.Found;
 

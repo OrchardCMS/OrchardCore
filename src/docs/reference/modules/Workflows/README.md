@@ -416,7 +416,7 @@ public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : Activit
         return Initialize<TEditViewModel>(_editShapeType, viewModel => EditActivityAsync(activity, viewModel)).Location("Content");
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(TActivity activity, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(TActivity activity, UpdateEditorContext context)
     {
         var viewModel = new TEditViewModel();
         if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))

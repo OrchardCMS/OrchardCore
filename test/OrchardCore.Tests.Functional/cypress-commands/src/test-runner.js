@@ -6,6 +6,14 @@ const path = require("path");
 global.log = function (msg) {
     let now = new Date().toLocaleTimeString();
     console.log(`[${now}] ${msg}\n`);
+
+    if (msg.indexOf("Exception") >= 0) {
+        throw new Error("An exception was detected");
+    }
+
+    if (msg.indexOf("fail:") == 0) {
+        throw new Error("An error was logged");
+    }
 };
 
 // Build the dotnet application in release mode
@@ -18,6 +26,23 @@ export function build(dir, dotnetVersion) {
 export function deleteDirectory(dir) {
     fs.removeSync(dir);
     global.log(`${dir} deleted`);
+}
+
+// Copy the migrations recipe.
+function copyMigrationsRecipeFile(dir) {
+
+    const recipeFilePath = 'Recipes/migrations.recipe.json';
+
+    if (!fs.existsSync(`./${recipeFilePath}`) || fs.existsSync(`${dir}/${recipeFilePath}`)) {
+        return;
+    }
+
+    if (!fs.existsSync(`${dir}/Recipes`)) {
+        fs.mkdirSync(`${dir}/Recipes`);
+    }
+
+    fs.copyFile(`./${recipeFilePath}`, `${dir}/${recipeFilePath}`);
+    global.log(`migrations recipe copied to ${dir}/Recipes`);
 }
 
 // Host the dotnet application, does not rebuild
@@ -54,6 +79,7 @@ export function host(dir, assembly, { appDataLocation = './App_Data', dotnetVers
 
 // combines the functions above, useful when triggering tests from CI
 export function e2e(dir, assembly, { dotnetVersion = 'net8.0' } = {}) {
+    copyMigrationsRecipeFile(dir);
     deleteDirectory(path.join(dir, "App_Data_Tests"));
     var server = host(dir, assembly, { appDataLocation: "./App_Data_Tests", dotnetVersion });
 
