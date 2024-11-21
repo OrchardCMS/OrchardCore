@@ -10,7 +10,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentFields.GraphQL.Fields;
 
-public partial class ContentFieldsProvider : IContentFieldProvider
+public class ContentFieldsProvider : IContentFieldProvider
 {
     private static readonly FrozenDictionary<string, FieldTypeDescriptor> _contentFieldTypeMappings = new Dictionary<string, FieldTypeDescriptor>()
     {
