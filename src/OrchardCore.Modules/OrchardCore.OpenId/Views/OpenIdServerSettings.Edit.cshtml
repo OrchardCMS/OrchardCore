@@ -246,7 +246,7 @@
                     var friendlyName = certificate.FriendlyName;
                     if (string.IsNullOrWhiteSpace(friendlyName) && !string.IsNullOrWhiteSpace(certificate.ThumbPrint))
                     {
-                        friendlyName = T["No Friendly Name"].Value; ;
+                        friendlyName = T["No Friendly Name"].Value;
                     }
                     <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
                         @friendlyName [@certificate.NotBefore.ToString("dd/MM/yy") - @certificate.NotAfter.ToString("dd/MM/yy")] @certificate.Subject

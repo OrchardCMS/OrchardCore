@@ -202,6 +202,6 @@ public sealed class DashboardController : Controller
 
     private async Task<Dictionary<string, ContentTypeDefinition>> GetDashboardWidgetsAsync()
         => (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-        .Where(t => t.StereotypeEquals("DashboardWidget"))
+        .Where(t => t.StereotypeEquals(AdminDashboardConstants.Stereotype))
         .ToDictionary(ctd => ctd.Name, ctd => ctd);
 }

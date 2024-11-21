@@ -1,0 +1,22 @@
+@using Microsoft.Extensions.DependencyInjection
+@using OrchardCore.UrlRewriting
+
+@{
+    var service = ViewContext.HttpContext.RequestServices.GetKeyedService<IUrlRewriteRuleSource>(Model.Source as string);
+}
+
+<div class="col">
+    <div class="card h-100">
+        <div class="card-body">
+            <h4>@(service?.DisplayName ?? Model.Source)</h4>
+            <p class="hint">@(service?.Description)</p>
+        </div>
+        <div class="card-footer text-muted text-sm-end">
+            <a class="btn btn-primary btn-sm" 
+               asp-route-action="Create" 
+               asp-route-controller="Admin" 
+               asp-route-id="@Model.Name" 
+               asp-area="OrchardCore.UrlRewriting">@T["Add"]</a>
+        </div>
+    </div>
+</div>
