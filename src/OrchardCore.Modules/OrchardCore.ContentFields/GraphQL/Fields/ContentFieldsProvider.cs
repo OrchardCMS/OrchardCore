@@ -98,7 +98,7 @@ public class ContentFieldsProvider : IContentFieldProvider
             {
                 Description = "Multi text field",
                 FieldType = typeof(ListGraphType<StringGraphType>),
-                ResolvedType = new ListGraphType<StringGraphType>(),
+                ResolvedType = new ListGraphType(new StringGraphType()),
                 UnderlyingType = typeof(MultiTextField),
                 FieldAccessor = field => ((MultiTextField)field).Values,
             }
