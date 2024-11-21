@@ -7,7 +7,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-public class DynamicContentTypeQueryBuilder : DynamicContentTypeBuilder
+public sealed class DynamicContentTypeQueryBuilder : DynamicContentTypeBuilder
 {
     public DynamicContentTypeQueryBuilder(IHttpContextAccessor httpContextAccessor,
         IOptions<GraphQLContentOptions> contentOptionsAccessor,

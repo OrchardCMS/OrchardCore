@@ -11,11 +11,11 @@ using OrchardCore.Layers.Services;
 
 namespace OrchardCore.Layers.GraphQL;
 
-public class SiteLayersQuery : ISchemaBuilder
+public sealed class SiteLayersQuery : ISchemaBuilder
 {
     private readonly GraphQLContentOptions _graphQLContentOptions;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public SiteLayersQuery(
         IOptions<GraphQLContentOptions> graphQLContentOptions,

@@ -9,11 +9,11 @@ using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries;
 
-public class ContentItemQuery : ISchemaBuilder
+public sealed class ContentItemQuery : ISchemaBuilder
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public ContentItemQuery(IHttpContextAccessor httpContextAccessor,
         IStringLocalizer<ContentItemQuery> localizer)

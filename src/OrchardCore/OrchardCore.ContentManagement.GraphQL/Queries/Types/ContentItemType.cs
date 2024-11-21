@@ -12,7 +12,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-public class ContentItemType : ObjectGraphType<ContentItem>
+public sealed class ContentItemType : ObjectGraphType<ContentItem>
 {
     private readonly GraphQLContentOptions _options;
 

@@ -15,7 +15,7 @@ using OrchardCore.Search.Lucene.Model;
 
 namespace OrchardCore.Queries.Lucene.GraphQL.Queries;
 
-public class LuceneQueryFieldTypeProvider : ISchemaBuilder
+public sealed class LuceneQueryFieldTypeProvider : ISchemaBuilder
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;

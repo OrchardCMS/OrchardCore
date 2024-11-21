@@ -14,13 +14,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries;
 /// <summary>
 /// Registers all Content Types as queries.
 /// </summary>
-public class ContentTypeQuery : ISchemaBuilder
+public sealed class ContentTypeQuery : ISchemaBuilder
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IOptions<GraphQLContentOptions> _contentOptionsAccessor;
     private readonly IOptions<GraphQLSettings> _settingsAccessor;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public ContentTypeQuery(IHttpContextAccessor httpContextAccessor,
         IOptions<GraphQLContentOptions> contentOptionsAccessor,

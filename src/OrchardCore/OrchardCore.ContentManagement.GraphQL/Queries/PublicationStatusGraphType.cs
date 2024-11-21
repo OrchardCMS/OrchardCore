@@ -2,7 +2,7 @@ using GraphQL.Types;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries;
 
-public class PublicationStatusGraphType : EnumerationGraphType
+public sealed class PublicationStatusGraphType : EnumerationGraphType
 {
     public PublicationStatusGraphType()
     {

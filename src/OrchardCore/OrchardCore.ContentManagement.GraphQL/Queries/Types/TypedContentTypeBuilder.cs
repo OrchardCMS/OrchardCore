@@ -9,7 +9,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-public class TypedContentTypeBuilder : IContentTypeBuilder
+public sealed class TypedContentTypeBuilder : IContentTypeBuilder
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly GraphQLContentOptions _contentOptions;

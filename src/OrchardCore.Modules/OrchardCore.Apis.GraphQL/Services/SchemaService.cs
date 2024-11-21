@@ -7,7 +7,7 @@ using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Apis.GraphQL.Services;
 
-public class SchemaService : ISchemaFactory
+public sealed class SchemaService : ISchemaFactory
 {
     private readonly IEnumerable<ISchemaBuilder> _schemaBuilders;
     private readonly IServiceProvider _serviceProvider;
@@ -16,7 +16,9 @@ public class SchemaService : ISchemaFactory
 
     private ISchema _schema;
 
-    public SchemaService(IEnumerable<ISchemaBuilder> schemaBuilders, IServiceProvider serviceProvider)
+    public SchemaService(
+        IEnumerable<ISchemaBuilder> schemaBuilders,
+        IServiceProvider serviceProvider)
     {
         _schemaBuilders = schemaBuilders;
         _serviceProvider = serviceProvider;

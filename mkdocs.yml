@@ -56,6 +56,7 @@ validation:
 not_in_nav: |
   samples/
   releases/2.1.0.md
+  releases/3.0.0.md
 
 # Extensions
 markdown_extensions:

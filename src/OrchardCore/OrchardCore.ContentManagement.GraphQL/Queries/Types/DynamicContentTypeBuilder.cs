@@ -14,6 +14,7 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
 {
     protected readonly IHttpContextAccessor _httpContextAccessor;
     protected readonly GraphQLContentOptions _contentOptions;
+
     protected readonly IStringLocalizer S;
 
     private readonly Dictionary<string, FieldType> _dynamicPartFields;

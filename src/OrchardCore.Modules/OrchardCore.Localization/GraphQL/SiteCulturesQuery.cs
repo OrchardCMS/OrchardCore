@@ -12,10 +12,11 @@ namespace OrchardCore.Localization.GraphQL;
 /// <summary>
 /// Represents a site cultures for Graph QL.
 /// </summary>
-public class SiteCulturesQuery : ISchemaBuilder
+public sealed class SiteCulturesQuery : ISchemaBuilder
 {
-    protected readonly IStringLocalizer S;
     private readonly GraphQLContentOptions _graphQLContentOptions;
+
+    internal readonly IStringLocalizer S;
 
     /// <summary>
     /// Creates a new instance of the <see cref="SiteCulturesQuery"/>.
