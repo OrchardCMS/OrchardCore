@@ -291,6 +291,34 @@ At the same time, you may define custom analyzers using the [appsettings.json](.
 }
 ```
 
+## Elasticsearch Token-Filters
+
+As of version 2.1, you can define custom [token filters](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-tokenfilters.html) in your Elasticsearch configuration. To add new custom token filters, update your Elasticsearch settings accordingly. 
+
+For instance, to create a token filter named `english_stop`, you can include the following configuration in your `appsettings.json` file:
+
+```json
+"OrchardCore_Elasticsearch": {
+  "TokenFilters": {
+    "english_stop": {
+      "type": "stop",
+      "stopwords": "_english_"
+    }
+  },
+  "Analyzers": {
+    "my_new_analyzer": {
+      "type": "custom",
+      "tokenizer": "standard",
+      "filter": [
+        "english_stop"
+      ]
+    }
+  }
+}
+```
+
+In this example, the `english_stop` token filter removes English stop words, and the `my_new_analyzer` uses the standard tokenizer along with the `english_stop` filter to process text.
+
 ## Elasticsearch vs Lucene
 
 Both modules are complementary and can be enabled at the same time.

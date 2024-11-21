@@ -3231,6 +3231,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "kursataktas",
+      "name": "Kursat Aktas",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17837825?v=4",
+      "profile": "https://github.com/kursataktas",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "adamradocz",
+      "name": "Adam Radocz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16503773?v=4",
+      "profile": "https://github.com/adamradocz",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
