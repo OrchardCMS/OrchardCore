@@ -186,14 +186,14 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
                     Name = partFieldName,
                     Description = S["Represents a {0}.", part.PartDefinition.Name],
                     Type = typeof(DynamicPartGraphType),
-                    ResolvedType = new DynamicPartGraphType(part, schema, contentFieldProviders),
+                    ResolvedType = new DynamicPartGraphType(part),
                     Resolver = new FuncFieldResolver<ContentElement, object>(context =>
                     {
                         var nameToResolve = partName;
                         var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
 
                         return context.Source.Get(typeToResolve, nameToResolve);
-                    })
+                    }),
                 };
 
                 objectGraphType.AddField(field);
