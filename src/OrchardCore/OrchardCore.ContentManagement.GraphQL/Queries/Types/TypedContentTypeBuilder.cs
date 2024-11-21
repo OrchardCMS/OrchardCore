@@ -141,4 +141,8 @@ public class TypedContentTypeBuilder : IContentTypeBuilder
             }
         }
     }
+
+    public void Clear()
+    {
+    }
 }

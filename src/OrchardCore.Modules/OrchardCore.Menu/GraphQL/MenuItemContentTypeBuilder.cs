@@ -21,4 +21,8 @@ public class MenuItemContentTypeBuilder : IContentTypeBuilder
 
         contentItemType.Interface<MenuItemInterface>();
     }
+
+    public void Clear()
+    {
+    }
 }

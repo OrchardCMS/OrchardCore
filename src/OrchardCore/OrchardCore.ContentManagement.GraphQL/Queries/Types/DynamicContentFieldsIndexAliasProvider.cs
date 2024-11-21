@@ -16,7 +16,6 @@ public class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider, ICont
     private readonly IMemoryCache _memoryCache;
     private readonly GraphQLContentOptions _contentOptions;
 
-
     public DynamicContentFieldsIndexAliasProvider(
         IEnumerable<IContentFieldProvider> contentFieldProviders,
         IOptions<GraphQLContentOptions> contentOptionsAccessor,

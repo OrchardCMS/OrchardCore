@@ -12,6 +12,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries;
 public class ContentItemQuery : ISchemaBuilder
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
+
     protected readonly IStringLocalizer S;
 
     public ContentItemQuery(IHttpContextAccessor httpContextAccessor,
@@ -22,7 +23,8 @@ public class ContentItemQuery : ISchemaBuilder
         S = localizer;
     }
 
-    public Task<string> GetIdentifierAsync() => Task.FromResult(string.Empty);
+    public Task<string> GetIdentifierAsync()
+        => Task.FromResult(string.Empty);
 
     public Task BuildAsync(ISchema schema)
     {
@@ -31,7 +33,6 @@ public class ContentItemQuery : ISchemaBuilder
             Name = "ContentItem",
             Description = S["Content items are instances of content types, just like objects are instances of classes."],
             Type = typeof(ContentItemInterface),
-            ResolvedType = new ObjectGraphType<ContentItem>(),
             Arguments = new QueryArguments(
                 new QueryArgument<NonNullGraphType<StringGraphType>>
                 {

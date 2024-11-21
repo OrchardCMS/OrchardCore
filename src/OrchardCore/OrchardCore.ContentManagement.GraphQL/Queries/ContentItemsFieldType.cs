@@ -40,7 +40,7 @@ public class ContentItemsFieldType : FieldType
         Name = "ContentItems";
 
         Type = typeof(ListGraphType<ContentItemType>);
-        ResolvedType = new ContentItemType(optionsAccessor);
+        // ResolvedType = new ContentItemType(optionsAccessor);
         var whereInput = new ContentItemWhereInput(contentItemName, optionsAccessor);
         var orderByInput = new ContentItemOrderByInput(contentItemName);
 

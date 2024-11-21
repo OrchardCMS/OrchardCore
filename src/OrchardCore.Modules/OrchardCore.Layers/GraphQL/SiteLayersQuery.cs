@@ -13,15 +13,16 @@ namespace OrchardCore.Layers.GraphQL;
 
 public class SiteLayersQuery : ISchemaBuilder
 {
-    protected readonly IStringLocalizer S;
     private readonly GraphQLContentOptions _graphQLContentOptions;
 
+    protected readonly IStringLocalizer S;
+
     public SiteLayersQuery(
-        IStringLocalizer<SiteLayersQuery> localizer,
-        IOptions<GraphQLContentOptions> graphQLContentOptions)
+        IOptions<GraphQLContentOptions> graphQLContentOptions,
+        IStringLocalizer<SiteLayersQuery> localizer)
     {
-        S = localizer;
         _graphQLContentOptions = graphQLContentOptions.Value;
+        S = localizer;
     }
 
     public Task<string> GetIdentifierAsync()
@@ -39,7 +40,7 @@ public class SiteLayersQuery : ISchemaBuilder
             Name = "SiteLayers",
             Description = S["Site layers define the rules and zone placement for widgets."],
             Type = typeof(ListGraphType<LayerQueryObjectType>),
-            ResolvedType = new LayerQueryObjectType(),
+            // ResolvedType = new LayerQueryObjectType(),
             Resolver = new LockedAsyncFieldResolver<IEnumerable<Layer>>(ResolveAsync),
         };
 
