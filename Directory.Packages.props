@@ -25,10 +25,10 @@
     <PackageVersion Include="Castle.Core" Version="5.1.1" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.1.0" />
     <PackageVersion Include="Fluid.Core" Version="2.12.0" />
-    <PackageVersion Include="GraphQL" Version="8.0.2" />
-    <PackageVersion Include="GraphQL.DataLoader" Version="8.0.2" />
-    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.0.2" />
-    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.0.2" />
+    <PackageVersion Include="GraphQL" Version="8.2.1" />
+    <PackageVersion Include="GraphQL.DataLoader" Version="8.2.1" />
+    <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.2.1" />
+    <PackageVersion Include="GraphQL.SystemTextJson" Version="8.2.1" />
     <PackageVersion Include="Jint" Version="4.0.3" />
     <PackageVersion Include="JsonPath.Net" Version="1.1.6" />
     <PackageVersion Include="HtmlSanitizer" Version="8.2.871-beta" />
@@ -87,7 +87,7 @@
     <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.1.1" />
     <PackageVersion Include="YesSql.Filters.Query" Version="5.1.1" />
     <PackageVersion Include="ZString" Version="2.6.0" />
-    
+
     <!-- dotnet/extensions -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
   </ItemGroup>
@@ -96,7 +96,7 @@
     <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <GlobalPackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="4.11.0" />
   </ItemGroup>
-  
+
   <!-- These versions are used for tansitive dependency forced upgrades only. E.g. when a package references a vulnerable version. -->
   <!-- To list all vulnerable direct references run 'dotnet list package -vulnerable' (use double dash, just XML comments can't contain it) -->
   <!-- To list all vulnerable transitive references run 'dotnet list package -vulnerable -include-transitive' (use double dash, just XML comments can't contain it) -->
@@ -139,14 +139,14 @@
     <PackageVersion Include="System.Runtime.Caching" Version="8.0.1" />
 
     <PackageVersion Include="System.Private.Uri" Version="4.3.2" />
-    
+
     <!-- Several transitive dependencies on 8.0.4 and lower which has known vulnerabilities -->
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
-    
+
     <!-- Several transitive dependencies on 8.0.0 which has known vulnerabilities -->
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
   </ItemGroup>
-  
+
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
   <!-- Versions are preset for the default TFM (there may be no TFM in an evaluation phase) -->
   <PropertyGroup>
@@ -174,7 +174,7 @@
   </ItemGroup>
   <!-- 'Microsoft.Extensions' packages that are not included in the ASP.NET Core shared framework -->
   <ItemGroup>
-    
+
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MicrosoftExtensionsPackagesVersion)" />
     <!-- Microsoft.Extensions.Http.Resilience is not here because it diverged from the common Microsoft.Extensions versioning. -->
   </ItemGroup>
