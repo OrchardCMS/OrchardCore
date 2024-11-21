@@ -36,6 +36,7 @@ public class ContentTypeQuery : ISchemaBuilder
     public Task<string> GetIdentifierAsync()
     {
         var contentDefinitionManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IContentDefinitionManager>();
+
         return contentDefinitionManager.GetIdentifierAsync();
     }
 
@@ -63,7 +64,7 @@ public class ContentTypeQuery : ISchemaBuilder
             {
                 Name = typeDefinition.Name,
                 Description = S["Represents a {0}.", typeDefinition.DisplayName],
-                ResolvedType = typeType,
+                ResolvedType = new ListGraphType(typeType),
             };
 
             query.RequirePermission(CommonPermissions.ExecuteGraphQL);

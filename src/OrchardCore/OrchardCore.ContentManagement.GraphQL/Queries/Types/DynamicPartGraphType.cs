@@ -26,12 +26,12 @@ public sealed class DynamicPartGraphType : ObjectGraphType<ContentPart>
                 foreach (var fieldProvider in contentFieldProviders)
                 {
                     var fieldType = fieldProvider.GetField(schema, field, _part.Name);
-                    if (fieldType == null)
+                    if (fieldType != null)
                     {
+                        AddField(fieldType);
+
                         break;
                     }
-
-                    AddField(fieldType);
                 }
             }
         }

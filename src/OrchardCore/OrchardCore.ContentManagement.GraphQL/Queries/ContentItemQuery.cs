@@ -19,7 +19,6 @@ public class ContentItemQuery : ISchemaBuilder
         IStringLocalizer<ContentItemQuery> localizer)
     {
         _httpContextAccessor = httpContextAccessor;
-
         S = localizer;
     }
 

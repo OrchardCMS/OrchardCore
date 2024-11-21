@@ -47,7 +47,6 @@ public class SiteCulturesQuery : ISchemaBuilder
             Name = "SiteCultures",
             Description = S["The active cultures configured for the site."],
             Type = typeof(ListGraphType<CultureQueryObjectType>),
-            // ResolvedType = new CultureQueryObjectType(),
             Resolver = new LockedAsyncFieldResolver<IEnumerable<SiteCulture>>(ResolveAsync),
         };
 

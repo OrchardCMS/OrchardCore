@@ -40,7 +40,6 @@ public class SiteLayersQuery : ISchemaBuilder
             Name = "SiteLayers",
             Description = S["Site layers define the rules and zone placement for widgets."],
             Type = typeof(ListGraphType<LayerQueryObjectType>),
-            // ResolvedType = new LayerQueryObjectType(),
             Resolver = new LockedAsyncFieldResolver<IEnumerable<Layer>>(ResolveAsync),
         };
 
