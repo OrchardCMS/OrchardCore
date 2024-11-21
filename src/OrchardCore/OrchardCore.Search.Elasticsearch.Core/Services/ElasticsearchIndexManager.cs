@@ -408,7 +408,7 @@ public sealed class ElasticsearchIndexManager
                         .Filter(f => f
                             .Terms(t => t
                                 .Field(IndexingConstants.ContentItemIdKey)
-                                .Term(new TermsQueryField(contentItemIds.Select(id => FieldValue.String(id)).ToArray()))
+                                .Terms(new TermsQueryField(contentItemIds.Select(id => FieldValue.String(id)).ToArray()))
                             )
                         )
                     )

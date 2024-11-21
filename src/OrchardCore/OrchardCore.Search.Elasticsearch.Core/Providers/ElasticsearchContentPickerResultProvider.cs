@@ -61,7 +61,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
                             .Filter(f => f
                                 .Terms(t => t
                                     .Field("Content.ContentItem.ContentType")
-                                    .Term(valuesQuery)
+                                    .Terms(valuesQuery)
                                 )
                             )
                         )
@@ -77,7 +77,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
                             .Filter(f => f
                                 .Terms(t => t
                                     .Field("Content.ContentItem.ContentType")
-                                    .Term(valuesQuery)
+                                    .Terms(valuesQuery)
                                 )
                             )
                             .Should(s => s
