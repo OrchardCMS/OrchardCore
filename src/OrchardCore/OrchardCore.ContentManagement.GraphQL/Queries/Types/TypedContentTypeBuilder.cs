@@ -71,7 +71,6 @@ public sealed class TypedContentTypeBuilder : IContentTypeBuilder
                         {
                             Name = field.Name,
                             Type = field.Type,
-                            // ResolvedType = instance.CreateInstance(),
                             Description = field.Description,
                             DeprecationReason = field.DeprecationReason,
                             Arguments = field.Arguments,
