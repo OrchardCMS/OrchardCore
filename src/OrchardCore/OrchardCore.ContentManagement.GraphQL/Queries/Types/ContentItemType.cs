@@ -100,4 +100,18 @@ public sealed class ContentItemType : ObjectGraphType<ContentItem>
 
         return sw.ToString();
     }
+
+    public override void Initialize(ISchema schema)
+    {
+        if (schema is IServiceProvider serviceProvider)
+        {
+            var initializers = serviceProvider.GetServices<IContentItemTypeInitializer>();
+            foreach (var initializer in initializers)
+            {
+                initializer.Initialize(this, schema);
+            }
+        }
+
+        base.Initialize(schema);
+    }
 }
