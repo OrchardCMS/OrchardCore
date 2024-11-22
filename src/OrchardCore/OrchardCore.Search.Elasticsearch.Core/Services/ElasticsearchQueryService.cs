@@ -1,11 +1,9 @@
 using System.Text;
 using Elastic.Clients.Elasticsearch;
-using Elastic.Clients.Elasticsearch.QueryDsl;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
-
 public class ElasticsearchQueryService
 {
     private readonly ElasticsearchIndexManager _elasticIndexManager;
@@ -22,9 +20,9 @@ public class ElasticsearchQueryService
         _logger = logger;
     }
 
-    public async Task<IList<string>> ExecuteQueryAsync(string indexName, Query query, List<SortOptions> sort, int from, int size)
+    public async Task<IList<string>> GetContentItemIdsAsync(ElasticsearchSearchContext request)
     {
-        var results = await _elasticIndexManager.SearchAsync(indexName, query, sort, from, size);
+        var results = await _elasticIndexManager.SearchAsync(request);
 
         if (results?.TopDocs is null || results.TopDocs.Count == 0)
         {
@@ -35,68 +33,44 @@ public class ElasticsearchQueryService
 
         foreach (var item in results.TopDocs)
         {
-            contentItemIds.Add(item.GetValueOrDefault(nameof(ContentItem.ContentItemId)).ToString());
+            if (!item.TryGetDataValue<string>(nameof(ContentItem.ContentItemId), out var contentItemId))
+            {
+                continue;
+            }
+
+            contentItemIds.Add(contentItemId);
         }
 
         return contentItemIds;
     }
 
-    public async Task<ElasticsearchTopDocs> SearchAsync(string indexName, string query)
+    public Task<ElasticsearchResult> SearchAsync(string indexName, string query)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
-
-        var elasticTopDocs = new ElasticsearchTopDocs();
+        ArgumentException.ThrowIfNullOrEmpty(query);
 
         try
         {
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(query));
-            var deserializedSearchRequest = _client.RequestResponseSerializer.Deserialize<SearchRequest>(stream);
+            var request = _client.RequestResponseSerializer.Deserialize<SearchRequest>(stream);
 
-            var searchRequest = new SearchRequest(_elasticIndexManager.GetFullIndexName(indexName))
+            var searchTask = _elasticIndexManager.SearchAsync(new ElasticsearchSearchContext(indexName, request.Query)
             {
-                Query = deserializedSearchRequest.Query,
-                From = deserializedSearchRequest.From,
-                Size = deserializedSearchRequest.Size,
-                Fields = deserializedSearchRequest.Fields,
-                Sort = deserializedSearchRequest.Sort,
-                Source = deserializedSearchRequest.Source,
-            };
+                From = request.From,
+                Size = request.Size,
+                Fields = request.Fields,
+                Sorts = request.Sort,
+                Source = request.Source,
+                Highlight = request.Highlight,
+            });
 
-            var searchResponse = await _client.SearchAsync<Dictionary<string, object>>(searchRequest);
-
-            var hits = new List<Dictionary<string, object>>();
-
-            foreach (var hit in searchResponse.Hits)
-            {
-                if (hit.Fields != null)
-                {
-                    var row = new Dictionary<string, object>();
-
-                    foreach (var keyValuePair in hit.Fields)
-                    {
-                        row[keyValuePair.Key] = keyValuePair.Value;
-                    }
-
-                    hits.Add(row);
-                }
-            }
-
-            if (searchResponse.IsValidResponse)
-            {
-                elasticTopDocs.Count = searchResponse.Total;
-                elasticTopDocs.TopDocs = new List<Dictionary<string, object>>(searchResponse.Documents);
-                elasticTopDocs.Fields = hits;
-            }
-            else
-            {
-                _logger.LogError("Received failure response from Elasticsearch.");
-            }
+            return searchTask;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while querying elastic with exception: {Message}", ex.Message);
         }
 
-        return elasticTopDocs;
+        return Task.FromResult(new ElasticsearchResult());
     }
 }

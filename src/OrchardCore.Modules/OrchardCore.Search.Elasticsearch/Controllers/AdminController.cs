@@ -520,13 +520,13 @@ public sealed class AdminController : Controller
 
         try
         {
-            var elasticTopDocs = await _elasticQueryService.SearchAsync(model.IndexName, tokenizedContent);
+            var results = await _elasticQueryService.SearchAsync(model.IndexName, tokenizedContent);
 
-            if (elasticTopDocs != null)
+            if (results != null)
             {
-                model.Documents = elasticTopDocs.TopDocs.Where(x => x != null);
-                model.Fields = elasticTopDocs.Fields;
-                model.Count = elasticTopDocs.Count;
+                model.Documents = results.TopDocs?.Where(x => x != null).Select(doc => doc.Data);
+                model.Fields = results.Fields?.Where(x => x != null).Select(field => field.Data);
+                model.Count = results.Count;
             }
         }
         catch (Exception e)

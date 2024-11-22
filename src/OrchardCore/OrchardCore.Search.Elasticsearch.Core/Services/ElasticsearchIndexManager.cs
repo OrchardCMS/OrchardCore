@@ -501,35 +501,28 @@ public sealed class ElasticsearchIndexManager
         );
     }
 
-    /// <summary>
-    /// Returns results from a search made with a NEST QueryContainer query.
-    /// </summary>
-    /// <param name="indexName"></param>
-    /// <param name="query"></param>
-    /// <param name="sort"></param>
-    /// <param name="from"></param>
-    /// <param name="size"></param>
-    /// <returns><see cref="ElasticsearchTopDocs"/>.</returns>
-    public async Task<ElasticsearchTopDocs> SearchAsync(string indexName, Query query, List<SortOptions> sort, int from, int size)
+    public async Task<ElasticsearchResult> SearchAsync(ElasticsearchSearchContext context)
     {
-        ArgumentException.ThrowIfNullOrEmpty(indexName);
-        ArgumentNullException.ThrowIfNull(query);
+        ArgumentNullException.ThrowIfNull(context);
 
-        var elasticTopDocs = new ElasticsearchTopDocs()
+        var elasticTopDocs = new ElasticsearchResult()
         {
             TopDocs = [],
         };
 
-        if (await ExistsAsync(indexName))
+        if (await ExistsAsync(context.IndexName))
         {
-            var fullIndexName = GetFullIndexName(indexName);
+            var fullIndexName = GetFullIndexName(context.IndexName);
 
             var searchRequest = new SearchRequest(fullIndexName)
             {
-                Query = query,
-                From = from,
-                Size = size,
-                Sort = sort ?? [],
+                Query = context.Query,
+                From = context.From,
+                Size = context.Size,
+                Sort = context.Sorts ?? [],
+                Source = context.Source,
+                Fields = context.Fields,
+                Highlight = context.Highlight,
             };
 
             var searchResponse = await _elasticClient.SearchAsync<Dictionary<string, object>>(searchRequest);
@@ -543,23 +536,31 @@ public sealed class ElasticsearchIndexManager
 
                 while (documents.MoveNext() && hits.MoveNext())
                 {
+                    var hit = hits.Current;
+
                     var document = documents.Current;
 
                     if (document != null)
                     {
-                        elasticTopDocs.TopDocs.Add(document);
+                        elasticTopDocs.TopDocs.Add(new ElasticsearchRecord(document)
+                        {
+                            Score = hit.Score,
+                            Highlights = hit?.Highlight
+                        });
 
                         continue;
                     }
-
-                    var hit = hits.Current;
 
                     var topDoc = new Dictionary<string, object>
                     {
                         { nameof(ContentItem.ContentItemId), hit.Id },
                     };
 
-                    elasticTopDocs.TopDocs.Add(topDoc);
+                    elasticTopDocs.TopDocs.Add(new ElasticsearchRecord(topDoc)
+                    {
+                        Score = hit.Score,
+                        Highlights = hit.Highlight
+                    });
                 }
             }
 
@@ -567,6 +568,27 @@ public sealed class ElasticsearchIndexManager
         }
 
         return elasticTopDocs;
+    }
+
+    /// <summary>
+    /// Returns results from a search made with a NEST QueryContainer query.
+    /// </summary>
+    /// <param name="indexName"></param>
+    /// <param name="query"></param>
+    /// <param name="sort"></param>
+    /// <param name="from"></param>
+    /// <param name="size"></param>
+    /// <returns><see cref="ElasticsearchResult"/>.</returns>
+    public Task<ElasticsearchResult> SearchAsync(string indexName, Query query, IList<SortOptions> sort, int from, int size)
+    {
+        var context = new ElasticsearchSearchContext(indexName, query)
+        {
+            Sorts = sort,
+            From = from,
+            Size = size,
+        };
+
+        return SearchAsync(context);
     }
 
     /// <summary>

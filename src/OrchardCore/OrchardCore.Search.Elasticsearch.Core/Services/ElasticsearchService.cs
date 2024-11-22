@@ -126,7 +126,13 @@ public class ElasticsearchService : ISearchService
                 Query = term
             };
 
-            result.ContentItemIds = await _elasticsQueryService.ExecuteQueryAsync(index, query, null, start, pageSize);
+            var searchContext = new ElasticsearchSearchContext(index, query)
+            {
+                From = start,
+                Size = pageSize,
+            };
+
+            result.ContentItemIds = await _elasticsQueryService.GetContentItemIdsAsync(searchContext);
 
             result.Success = true;
         }

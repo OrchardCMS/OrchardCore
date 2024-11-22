@@ -48,7 +48,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
         await _elasticIndexManager.SearchAsync(indexName, async elasticClient =>
         {
             SearchResponse<Dictionary<string, object>> searchResponse = null;
-            var elasticTopDocs = new ElasticsearchTopDocs();
+            var elasticTopDocs = new ElasticsearchResult();
 
             var valuesQuery = new TermsQueryField(searchContext.ContentTypes.Select(contentType => FieldValue.String(contentType)).ToArray());
 
@@ -93,19 +93,29 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
 
             if (searchResponse.IsValidResponse)
             {
-                elasticTopDocs.TopDocs = searchResponse.Documents.ToList();
+                elasticTopDocs.TopDocs = searchResponse.Documents.Select(doc => new ElasticsearchRecord(doc)).ToList();
             }
 
             if (elasticTopDocs.TopDocs != null)
             {
                 foreach (var doc in elasticTopDocs.TopDocs)
                 {
-                    results.Add(new ContentPickerResult
+                    var result = new ContentPickerResult();
+
+                    if (doc.TryGetDataValue<string>(nameof(ContentItem.ContentItemId), out var contentItemId))
                     {
-                        ContentItemId = doc["ContentItemId"].ToString(),
-                        DisplayText = doc["Content.ContentItem.DisplayText.keyword"].ToString(),
-                        HasPublished = string.Equals("true", doc["Content.ContentItem.Published"].ToString(), StringComparison.OrdinalIgnoreCase)
-                    });
+                        result.ContentItemId = contentItemId;
+                    }
+
+                    if (doc.TryGetDataValue<string>("Content.ContentItem.DisplayText.keyword", out var keyword))
+                    {
+                        result.DisplayText = keyword;
+                    }
+
+                    if (doc.TryGetDataValue<bool>("Content.ContentItem.Published", out var published))
+                    {
+                        result.HasPublished = published;
+                    }
                 }
             }
         });

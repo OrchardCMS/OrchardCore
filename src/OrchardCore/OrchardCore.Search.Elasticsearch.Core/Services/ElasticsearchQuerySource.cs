@@ -65,7 +65,18 @@ public sealed class ElasticsearchQuerySource : IQuerySource
 
             if (topDocs.Count > 0)
             {
-                var indexedContentItemVersionIds = topDocs.Select(x => x.GetValueOrDefault("ContentItemVersionId").ToString()).ToArray();
+                var indexedContentItemVersionIds = new List<string>();
+
+                foreach (var topDoc in topDocs)
+                {
+                    if (!topDoc.TryGetDataValue<string>(nameof(ContentItem.ContentItemVersionId), out var versionId))
+                    {
+                        continue;
+                    }
+
+                    indexedContentItemVersionIds.Add(versionId);
+                }
+
                 var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
 
                 // Reorder the result to preserve the one from the Elasticsearch query.
@@ -85,8 +96,8 @@ public sealed class ElasticsearchQuerySource : IQuerySource
 
             foreach (var document in docs.TopDocs)
             {
-                results.Add(new JsonObject(document.Select(x =>
-                    KeyValuePair.Create(x.Key, (JsonNode)JsonValue.Create(x.Value.ToString())))));
+                results.Add(new JsonObject(document.Data.Select(x =>
+                    KeyValuePair.Create(x.Key, (JsonNode)JsonValue.Create(x.Value)))));
             }
 
             elasticQueryResults.Items = results;
