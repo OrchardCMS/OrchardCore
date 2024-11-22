@@ -18,11 +18,16 @@ public class LayerQueryObjectType : ObjectGraphType<Layer>
     {
         Name = "Layer";
 
-        Field(layer => layer.Name).Description("The name of the layer.");
+        Field(layer => layer.Name)
+            .Description("The name of the layer.");
+
         Field<ListGraphType<StringGraphType>, IEnumerable<Condition>>("layerrule")
             .Description("The rule that activates the layer.")
             .Resolve(ctx => ctx.Source.LayerRule.Conditions);
-        Field(layer => layer.Description).Description("The description of the layer.");
+
+        Field(layer => layer.Description)
+            .Description("The description of the layer.");
+
         Field<ListGraphType<LayerWidgetQueryObjectType>, IEnumerable<ContentItem>>("widgets")
             .Description("The widgets for this layer.")
             .Argument<PublicationStatusGraphType>("status", "publication status of the widgets")
@@ -50,8 +55,8 @@ public class LayerQueryObjectType : ObjectGraphType<Layer>
         }
     }
 
-    private static Expression<Func<ContentItemIndex, bool>> GetVersionFilter(PublicationStatusEnum status) =>
-        status switch
+    private static Expression<Func<ContentItemIndex, bool>> GetVersionFilter(PublicationStatusEnum status)
+        => status switch
         {
             PublicationStatusEnum.Published => x => x.Published,
             PublicationStatusEnum.Draft => x => x.Latest && !x.Published,

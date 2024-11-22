@@ -55,7 +55,8 @@ validation:
 # Add files here that are intentionally not in the navigation and thus omitted_files shouldn't warn about them.
 not_in_nav: |
   samples/
-
+  releases/3.0.0.md
+  
 # Extensions
 markdown_extensions:
   - markdown.extensions.admonition
