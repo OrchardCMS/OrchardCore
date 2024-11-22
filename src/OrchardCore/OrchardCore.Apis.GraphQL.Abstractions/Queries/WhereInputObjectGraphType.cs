@@ -102,7 +102,6 @@ public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSour
 
     private void AddMultiValueFilters(Type graphType, string fieldName, string description)
     {
-        var wrappedType = typeof(ListGraphType<>).MakeGenericType(graphType);
         AddFilterFields(CreateGraphType(graphType), MultiValueComparisonOperators, fieldName, description);
     }
 
