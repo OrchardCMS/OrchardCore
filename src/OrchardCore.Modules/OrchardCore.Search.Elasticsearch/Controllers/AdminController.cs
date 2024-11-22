@@ -524,8 +524,8 @@ public sealed class AdminController : Controller
 
             if (results != null)
             {
-                model.Documents = results.TopDocs?.Where(x => x != null).Select(doc => doc.Data);
-                model.Fields = results.Fields?.Where(x => x != null).Select(field => field.Data);
+                model.Documents = results.TopDocs?.Where(x => x != null).Select(doc => doc.Value.Deserialize<Dictionary<string, object>>());
+                model.Fields = results.Fields?.Where(x => x != null).Select(field => field.Value.Deserialize<Dictionary<string, object>>());
                 model.Count = results.Count;
             }
         }

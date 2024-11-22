@@ -69,12 +69,12 @@ public sealed class ElasticsearchQuerySource : IQuerySource
 
                 foreach (var topDoc in topDocs)
                 {
-                    if (!topDoc.TryGetDataValue<string>(nameof(ContentItem.ContentItemVersionId), out var versionId))
+                    if (!topDoc.Value.TryGetPropertyValue(nameof(ContentItem.ContentItemVersionId), out var versionId))
                     {
                         continue;
                     }
 
-                    indexedContentItemVersionIds.Add(versionId);
+                    indexedContentItemVersionIds.Add(versionId.GetValue<string>());
                 }
 
                 var dbContentItems = await _session.Query<ContentItem, ContentItemIndex>(x => x.ContentItemVersionId.IsIn(indexedContentItemVersionIds)).ListAsync();
@@ -96,7 +96,7 @@ public sealed class ElasticsearchQuerySource : IQuerySource
 
             foreach (var document in docs.TopDocs)
             {
-                results.Add(new JsonObject(document.Data.Select(x =>
+                results.Add(new JsonObject(document.Value.Select(x =>
                     KeyValuePair.Create(x.Key, (JsonNode)JsonValue.Create(x.Value)))));
             }
 

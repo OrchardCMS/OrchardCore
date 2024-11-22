@@ -525,7 +525,7 @@ public sealed class ElasticsearchIndexManager
                 Highlight = context.Highlight,
             };
 
-            var searchResponse = await _elasticClient.SearchAsync<Dictionary<string, object>>(searchRequest);
+            var searchResponse = await _elasticClient.SearchAsync<JsonObject>(searchRequest);
 
             if (searchResponse.IsValidResponse)
             {
@@ -551,7 +551,7 @@ public sealed class ElasticsearchIndexManager
                         continue;
                     }
 
-                    var topDoc = new Dictionary<string, object>
+                    var topDoc = new JsonObject
                     {
                         { nameof(ContentItem.ContentItemId), hit.Id },
                     };

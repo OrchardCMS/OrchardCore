@@ -33,12 +33,12 @@ public class ElasticsearchQueryService
 
         foreach (var item in results.TopDocs)
         {
-            if (!item.TryGetDataValue<string>(nameof(ContentItem.ContentItemId), out var contentItemId))
+            if (!item.Value.TryGetPropertyValue(nameof(ContentItem.ContentItemId), out var contentItemId))
             {
                 continue;
             }
 
-            contentItemIds.Add(contentItemId);
+            contentItemIds.Add(contentItemId.GetValue<string>());
         }
 
         return contentItemIds;

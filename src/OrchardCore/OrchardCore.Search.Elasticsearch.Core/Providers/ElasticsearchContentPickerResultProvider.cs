@@ -1,5 +1,7 @@
+using System.Text.Json.Nodes;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.QueryDsl;
+using Json.Path;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -47,14 +49,14 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
 
         await _elasticIndexManager.SearchAsync(indexName, async elasticClient =>
         {
-            SearchResponse<Dictionary<string, object>> searchResponse = null;
+            SearchResponse<JsonObject> searchResponse = null;
             var elasticTopDocs = new ElasticsearchResult();
 
             var valuesQuery = new TermsQueryField(searchContext.ContentTypes.Select(contentType => FieldValue.String(contentType)).ToArray());
 
             if (string.IsNullOrWhiteSpace(searchContext.Query))
             {
-                searchResponse = await elasticClient.SearchAsync<Dictionary<string, object>>(s => s
+                searchResponse = await elasticClient.SearchAsync<JsonObject>(s => s
                     .Index(_elasticIndexManager.GetFullIndexName(indexName))
                     .Query(q => q
                         .Bool(b => b
@@ -70,7 +72,7 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
             }
             else
             {
-                searchResponse = await elasticClient.SearchAsync<Dictionary<string, object>>(s => s
+                searchResponse = await elasticClient.SearchAsync<JsonObject>(s => s
                     .Index(_elasticIndexManager.GetFullIndexName(indexName))
                     .Query(q => q
                         .Bool(b => b
@@ -102,19 +104,19 @@ public class ElasticsearchContentPickerResultProvider : IContentPickerResultProv
                 {
                     var result = new ContentPickerResult();
 
-                    if (doc.TryGetDataValue<string>(nameof(ContentItem.ContentItemId), out var contentItemId))
+                    if (doc.Value.TryGetPropertyValue(nameof(ContentItem.ContentItemId), out var contentItemId))
                     {
-                        result.ContentItemId = contentItemId;
+                        result.ContentItemId = contentItemId.GetValue<string>();
                     }
 
-                    if (doc.TryGetDataValue<string>("Content.ContentItem.DisplayText.keyword", out var keyword))
+                    if (doc.Value.TryGetPropertyValue("Content.ContentItem.DisplayText.keyword", out var keyword))
                     {
-                        result.DisplayText = keyword;
+                        result.DisplayText = keyword.GetValue<string>();
                     }
 
-                    if (doc.TryGetDataValue<bool>("Content.ContentItem.Published", out var published))
+                    if (doc.Value.TryGetPropertyValue("Content.ContentItem.Published", out var published) && published.TryGetValue<bool>(out var hasPublished))
                     {
-                        result.HasPublished = published;
+                        result.HasPublished = hasPublished;
                     }
                 }
             }
