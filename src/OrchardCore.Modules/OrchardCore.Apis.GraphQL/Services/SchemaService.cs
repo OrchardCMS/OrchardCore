@@ -98,17 +98,17 @@ public sealed class SchemaService : ISchemaFactory
             // Clean Query, Mutation and Subscription if they have no fields
             // to prevent GraphQL configuration errors.
 
-            if (schema.Query?.Fields is null || schema.Query.Fields.Count == 0)
+            if (schema.Query.Fields.Count == 0)
             {
                 schema.Query = null;
             }
 
-            if (schema.Mutation?.Fields is null || schema.Mutation.Fields.Count == 0)
+            if (schema.Mutation.Fields.Count == 0)
             {
                 schema.Mutation = null;
             }
 
-            if (schema.Subscription?.Fields is null || schema.Subscription.Fields.Count == 0)
+            if (schema.Subscription.Fields.Count == 0)
             {
                 schema.Subscription = null;
             }

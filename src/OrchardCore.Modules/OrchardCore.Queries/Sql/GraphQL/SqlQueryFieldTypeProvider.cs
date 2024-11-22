@@ -117,7 +117,6 @@ public sealed class SqlQueryFieldTypeProvider : ISchemaBuilder
                     Name = nameLower,
                     Description = description,
                     Type = typeof(StringGraphType),
-                    ResolvedType = new StringGraphType(),
                     Resolver = new FuncFieldResolver<JsonObject, string>(context =>
                     {
                         var source = context.Source;
@@ -133,7 +132,6 @@ public sealed class SqlQueryFieldTypeProvider : ISchemaBuilder
                 {
                     Name = nameLower,
                     Type = typeof(IntGraphType),
-                    ResolvedType = new IntGraphType(),
                     Description = description,
                     Resolver = new FuncFieldResolver<JsonObject, int?>(context =>
                     {

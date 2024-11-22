@@ -87,27 +87,26 @@ public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSour
 
     private void AddEqualityFilters(Type graphType, string fieldName, string description)
     {
-        AddFilterFields(graphType, CreateGraphType(graphType), EqualityOperators, fieldName, description);
+        AddFilterFields(CreateGraphType(graphType), EqualityOperators, fieldName, description);
     }
 
     private void AddStringFilters(Type graphType, string fieldName, string description)
     {
-        AddFilterFields(graphType, CreateGraphType(graphType), StringComparisonOperators, fieldName, description);
+        AddFilterFields(CreateGraphType(graphType), StringComparisonOperators, fieldName, description);
     }
 
     private void AddNonStringFilters(Type graphType, string fieldName, string description)
     {
-        AddFilterFields(graphType, CreateGraphType(graphType), NonStringValueComparisonOperators, fieldName, description);
+        AddFilterFields(CreateGraphType(graphType), NonStringValueComparisonOperators, fieldName, description);
     }
 
     private void AddMultiValueFilters(Type graphType, string fieldName, string description)
     {
         var wrappedType = typeof(ListGraphType<>).MakeGenericType(graphType);
-        AddFilterFields(wrappedType, CreateGraphType(graphType), MultiValueComparisonOperators, fieldName, description);
+        AddFilterFields(CreateGraphType(graphType), MultiValueComparisonOperators, fieldName, description);
     }
 
     private void AddFilterFields(
-        Type graphType,
         IGraphType resolvedType,
         IDictionary<string, string> filters,
         string fieldName,
@@ -119,7 +118,6 @@ public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSour
             {
                 Name = fieldName + filter.Key,
                 Description = $"{description} {filter.Value}",
-                Type = graphType,
                 ResolvedType = resolvedType,
             });
         }
