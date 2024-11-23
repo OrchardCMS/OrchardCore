@@ -9,18 +9,18 @@ public class RegistrationSettings
 
     public bool UseSiteTheme { get; set; }
 
-    [Obsolete("This property is no longer used and will be removed in the next major release. Instead use ExternalAuthenticationSettings.NoPassword")]
+    [Obsolete("This property is no longer used and will be removed in the next major release. Instead use ExternalRegistrationSettings.NoPassword")]
     public bool NoPasswordForExternalUsers { get; set; }
 
-    [Obsolete("This property is no longer used and will be removed in the next major release. Instead use ExternalAuthenticationSettings.NoUsername")]
+    [Obsolete("This property is no longer used and will be removed in the next major release. Instead use ExternalRegistrationSettings.NoUsername")]
     public bool NoUsernameForExternalUsers { get; set; }
 
-    [Obsolete("This property is no longer used and will be removed in the next major release. Instead use ExternalAuthenticationSettings.NoEmail")]
+    [Obsolete("This property is no longer used and will be removed in the next major release. Instead use ExternalRegistrationSettings.NoEmail")]
     public bool NoEmailForExternalUsers { get; set; }
 
-    [Obsolete("This property is no longer used and will be removed in the next major release. Instead use ExternalAuthenticationSettings.UseScriptToGenerateUsername")]
+    [Obsolete("This property is no longer used and will be removed in the next major release. Instead use ExternalRegistrationSettings.UseScriptToGenerateUsername")]
     public bool UseScriptToGenerateUsername { get; set; }
 
-    [Obsolete("This property is no longer used and will be removed in the next major release. Instead use ExternalAuthenticationSettings.GenerateUsernameScript")]
+    [Obsolete("This property is no longer used and will be removed in the next major release. Instead use ExternalRegistrationSettings.GenerateUsernameScript")]
     public string GenerateUsernameScript { get; set; }
 }
