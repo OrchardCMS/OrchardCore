@@ -13,7 +13,6 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
-using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
@@ -23,9 +22,6 @@ namespace OrchardCore.Users.Controllers;
 [Authorize]
 public sealed class AccountController : AccountBaseController
 {
-    [Obsolete("This property is no longer used and will be removed in v3.")]
-    public const string DefaultExternalLoginProtector = "DefaultExternalLogin";
-
     private readonly IUserService _userService;
     private readonly SignInManager<IUser> _signInManager;
     private readonly UserManager<IUser> _userManager;
@@ -69,7 +65,6 @@ public sealed class AccountController : AccountBaseController
         S = stringLocalizer;
     }
 
-    [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> Login(string returnUrl = null)
     {
@@ -203,7 +198,6 @@ public sealed class AccountController : AccountBaseController
         return RedirectToLocal(returnUrl);
     }
 
-    [HttpGet]
     public IActionResult ChangePassword(string returnUrl = null)
     {
         ViewData["ReturnUrl"] = returnUrl;
@@ -237,20 +231,4 @@ public sealed class AccountController : AccountBaseController
     [HttpGet]
     public IActionResult ChangePasswordConfirmation()
         => View();
-
-    /// <summary>
-    /// This action is retained for backward compatibility.
-    /// Both this action and <see cref="ExternalAuthenticationsStartupFilter"/> are scheduled for removal in version 3.
-    /// </summary>
-    [HttpPost]
-    [AllowAnonymous]
-    [ValidateAntiForgeryToken]
-    public IActionResult ExternalLogin()
-    {
-        return NotFound();
-    }
-
-    [Obsolete("This method will be removed in version 3. Instead please use UserManagerHelper.UpdateUserPropertiesAsync(userManager, user, context).")]
-    public static Task<bool> UpdateUserPropertiesAsync(UserManager<IUser> userManager, User user, UpdateUserContext context)
-        => UserManagerHelper.UpdateUserPropertiesAsync(userManager, user, context);
 }
