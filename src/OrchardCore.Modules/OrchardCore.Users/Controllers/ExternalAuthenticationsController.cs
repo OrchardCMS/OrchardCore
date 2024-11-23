@@ -173,9 +173,9 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
             // The user doesn't exist and no information required, we can create the account locally
             // instead of redirecting to the ExternalLogin.
-            var noInformationRequired = externalLoginViewModel.NoPassword
-                && externalLoginViewModel.NoEmail
-                && externalLoginViewModel.NoUsername;
+            var noInformationRequired = settings.NoPassword &&
+                settings.NoEmail &&
+                settings.NoUsername;
 
             if (noInformationRequired)
             {
