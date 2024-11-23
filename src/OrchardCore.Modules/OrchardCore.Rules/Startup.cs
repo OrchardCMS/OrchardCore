@@ -17,7 +17,7 @@ public sealed class Startup : StartupBase
 
         // Rule services.
         services
-            .AddScoped<IDisplayDriver<Rule>, RuleDisplayDriver>()
+            .AddDisplayDriver<Rule, RuleDisplayDriver>()
             .AddSingleton<IConditionIdGenerator, ConditionIdGenerator>()
             .AddTransient<IConfigureOptions<ConditionOperatorOptions>, ConditionOperatorConfigureOptions>()
             .AddScoped<IConditionResolver, ConditionResolver>()
@@ -55,7 +55,7 @@ public sealed class Startup : StartupBase
         services.AddRule<IsAnonymousCondition, IsAnonymousConditionEvaluator, IsAnonymousConditionDisplayDriver>();
 
         // Content type condition.
-        services.AddScoped<IDisplayDriver<Condition>, ContentTypeConditionDisplayDriver>()
+        services.AddDisplayDriver<Condition, ContentTypeConditionDisplayDriver>()
             .AddRuleCondition<ContentTypeCondition, ContentTypeConditionEvaluatorDriver>()
             .AddScoped<IContentDisplayDriver>(sp => sp.GetRequiredService<ContentTypeConditionEvaluatorDriver>());
 

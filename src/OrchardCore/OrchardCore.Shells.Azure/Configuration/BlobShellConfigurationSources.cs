@@ -91,12 +91,12 @@ public class BlobShellConfigurationSources : IShellConfigurationSources
 
     public async Task RemoveAsync(string tenant)
     {
-        var appsettings = IFileStoreExtensions.Combine(null, _container, tenant, OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
+        var appSettings = IFileStoreExtensions.Combine(null, _container, tenant, OrchardCoreConstants.Configuration.ApplicationSettingsFileName);
 
-        var fileInfo = await _shellsFileStore.GetFileInfoAsync(appsettings);
+        var fileInfo = await _shellsFileStore.GetFileInfoAsync(appSettings);
         if (fileInfo != null)
         {
-            await _shellsFileStore.RemoveFileAsync(appsettings);
+            await _shellsFileStore.RemoveFileAsync(appSettings);
         }
     }
 

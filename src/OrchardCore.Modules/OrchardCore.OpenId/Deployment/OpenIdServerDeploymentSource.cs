@@ -2,7 +2,6 @@ using System.Text.Json.Nodes;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.Services;
-using OrchardCore.OpenId.Settings;
 
 namespace OrchardCore.OpenId.Deployment;
 

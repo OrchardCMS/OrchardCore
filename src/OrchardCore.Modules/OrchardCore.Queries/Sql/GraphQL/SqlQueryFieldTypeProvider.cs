@@ -18,7 +18,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries;
 /// This implementation of <see cref="ISchemaBuilder"/> registers
 /// all SQL Queries as GraphQL queries.
 /// </summary>
-public class SqlQueryFieldTypeProvider : ISchemaBuilder
+public sealed class SqlQueryFieldTypeProvider : ISchemaBuilder
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
@@ -100,7 +100,7 @@ public class SqlQueryFieldTypeProvider : ISchemaBuilder
 
         var typeType = new ObjectGraphType<JsonObject>
         {
-            Name = fieldTypeName
+            Name = fieldTypeName,
         };
 
         foreach (var child in properties)
@@ -131,8 +131,8 @@ public class SqlQueryFieldTypeProvider : ISchemaBuilder
                 var field = new FieldType()
                 {
                     Name = nameLower,
-                    Description = description,
                     Type = typeof(IntGraphType),
+                    Description = description,
                     Resolver = new FuncFieldResolver<JsonObject, int?>(context =>
                     {
                         var source = context.Source;

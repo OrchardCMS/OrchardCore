@@ -16,12 +16,14 @@ using OrchardCore.Search.Elasticsearch.Models;
 
 namespace OrchardCore.Search.Elasticsearch.GraphQL.Queries;
 
-public class ElasticQueryFieldTypeProvider : ISchemaBuilder
+public sealed class ElasticQueryFieldTypeProvider : ISchemaBuilder
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
 
-    public ElasticQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<ElasticQueryFieldTypeProvider> logger)
+    public ElasticQueryFieldTypeProvider(
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<ElasticQueryFieldTypeProvider> logger)
     {
         _httpContextAccessor = httpContextAccessor;
         _logger = logger;
@@ -112,6 +114,7 @@ public class ElasticQueryFieldTypeProvider : ISchemaBuilder
                     Name = nameLower,
                     Description = description,
                     Type = typeof(StringGraphType),
+                    ResolvedType = new StringGraphType(),
                     Resolver = new FuncFieldResolver<JsonObject, string>(context =>
                     {
                         var source = context.Source;
@@ -128,6 +131,7 @@ public class ElasticQueryFieldTypeProvider : ISchemaBuilder
                     Name = nameLower,
                     Description = description,
                     Type = typeof(IntGraphType),
+                    ResolvedType = new IntGraphType(),
                     Resolver = new FuncFieldResolver<JsonObject, int?>(context =>
                     {
                         var source = context.Source;

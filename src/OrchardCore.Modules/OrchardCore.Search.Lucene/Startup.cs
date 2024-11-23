@@ -47,7 +47,7 @@ public sealed class Startup : StartupBase
             o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
                 new StandardAnalyzer(LuceneSettings.DefaultVersion))));
 
-        services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
+        services.AddDisplayDriver<Query, LuceneQueryDisplayDriver>();
         services.AddScoped<IContentHandler, LuceneIndexingContentHandler>();
 
         services.AddLuceneQueries()

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -28,17 +27,12 @@ public sealed class StartupLogin : StartupBase
         services.AddRecipeExecutionStep<FacebookLoginSettingsStep>();
 
         // Register the options initializers required by the Facebook handler.
-        services.TryAddEnumerable(new[]
-        {
-            // Orchard-specific initializers:
-            ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, FacebookLoginConfiguration>(),
-            ServiceDescriptor.Transient<IConfigureOptions<FacebookOptions>, FacebookLoginConfiguration>(),
+        // Orchard-specific initializers:
+        services.AddTransient<IConfigureOptions<AuthenticationOptions>, FacebookLoginConfiguration>();
+        services.AddTransient<IConfigureOptions<FacebookOptions>, FacebookLoginConfiguration>();
 
-            // Deployment
-
-            // Built-in initializers:
-            ServiceDescriptor.Transient<IPostConfigureOptions<FacebookOptions>, OAuthPostConfigureOptions<FacebookOptions, FacebookHandler>>()
-        });
+        // Built-in initializers:
+        services.AddTransient<IPostConfigureOptions<FacebookOptions>, OAuthPostConfigureOptions<FacebookOptions, FacebookHandler>>();
     }
 }
 

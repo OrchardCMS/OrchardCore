@@ -2,7 +2,7 @@ using GraphQL.Types;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-public class ContentItemOrderByInput : InputObjectGraphType
+public sealed class ContentItemOrderByInput : InputObjectGraphType
 {
     public ContentItemOrderByInput(string contentItemName)
     {
