@@ -10,5 +10,6 @@ public class GraphQLFieldNameAttribute : Attribute
     }
 
     public string Field { get; }
+
     public string Mapped { get; }
 }

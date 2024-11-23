@@ -39,11 +39,14 @@ The documentation can be accessed under <https://docs.orchardcore.net/>. See the
 
 ## Help and Support
 
-Do you need some help with Orchard Core? Don't worry, there are ways to get help from the community:
+Need assistance with Orchard Core? We've got you covered! Here are several ways to connect with our community for support:
 
-- Did you find a bug or have a feature request? Open an issue [in the issue tracker](https://github.com/OrchardCMS/OrchardCore/issues).
-- Do you have a question about how to do something with Orchard Core, or would like a second opinion on your code? Open [a discussion](https://github.com/OrchardCMS/OrchardCore/discussions).
-- Do you want to chat with other community members? Check out [our Discord server](https://orchardcore.net/discord).
+- **Search for Answers:** Use the [Gurubase AI model](https://gurubase.io/g/orchard-core) to find answers to your questions quickly.
+- **Report Bugs or Suggest Features:** If you've encountered a bug or have an idea for a new feature, please open an issue in our [issue tracker](https://github.com/OrchardCMS/OrchardCore/issues).
+- **Ask Questions or Get Feedback:** For guidance on specific tasks or to receive feedback on your code, feel free to start a [discussion](https://github.com/OrchardCMS/OrchardCore/discussions) with the community.
+- **Join the Conversation:** Connect with other Orchard Core users in real-time on our [Discord server](https://orchardcore.net/discord) to chat and share ideas.
+
+We're here to help you succeed with Orchard Core!
 
 ## Get in Touch
 
