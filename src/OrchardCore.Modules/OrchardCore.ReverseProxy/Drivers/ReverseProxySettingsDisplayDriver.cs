@@ -34,7 +34,7 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
 
     public override async Task<IDisplayResult> EditAsync(ISite site, ReverseProxySettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings))
         {
@@ -54,7 +54,7 @@ public sealed class ReverseProxySettingsDisplayDriver : SiteDisplayDriver<Revers
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, ReverseProxySettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReverseProxySettings))
         {

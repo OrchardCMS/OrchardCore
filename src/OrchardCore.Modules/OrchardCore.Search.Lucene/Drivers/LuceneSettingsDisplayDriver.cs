@@ -32,7 +32,7 @@ public sealed class LuceneSettingsDisplayDriver : SiteDisplayDriver<LuceneSettin
 
     public override async Task<IDisplayResult> EditAsync(ISite site, LuceneSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLuceneIndexes))
         {
@@ -51,7 +51,7 @@ public sealed class LuceneSettingsDisplayDriver : SiteDisplayDriver<LuceneSettin
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, LuceneSettings section, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLuceneIndexes))
         {

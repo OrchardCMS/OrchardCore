@@ -44,7 +44,7 @@ public sealed class PublishLaterPartDisplayDriver : ContentPartDisplayDriver<Pub
     {
         var httpContext = _httpContextAccessor.HttpContext;
 
-        if (await _authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.PublishContent, part.ContentItem))
+        if (await _authorizationService.AuthorizeAsync(httpContext?.User, CommonPermissions.PublishContent, part.ContentItem))
         {
             var viewModel = new PublishLaterPartViewModel();
 

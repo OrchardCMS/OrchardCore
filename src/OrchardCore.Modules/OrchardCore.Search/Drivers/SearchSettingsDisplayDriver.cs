@@ -37,7 +37,7 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
 
     public override async Task<IDisplayResult> EditAsync(ISite site, SearchSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
         {
@@ -58,7 +58,7 @@ public sealed class SearchSettingsDisplayDriver : SiteDisplayDriver<SearchSettin
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, SearchSettings section, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageSearchSettings))
         {

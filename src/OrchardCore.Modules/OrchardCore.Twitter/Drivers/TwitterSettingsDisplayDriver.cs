@@ -93,7 +93,7 @@ public sealed class TwitterSettingsDisplayDriver : SiteDisplayDriver<TwitterSett
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, TwitterSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitter))
         {
             return null;

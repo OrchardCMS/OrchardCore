@@ -56,7 +56,7 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
     /// <inheritdocs />
     public override async Task<IDisplayResult> EditAsync(ISite site, LocalizationSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCultures))
         {

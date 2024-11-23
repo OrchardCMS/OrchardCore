@@ -32,7 +32,7 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
 
     public override async Task<IDisplayResult> EditAsync(OpenIdValidationSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageValidationSettings))
         {
@@ -53,7 +53,7 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
 
     public override async Task<IDisplayResult> UpdateAsync(OpenIdValidationSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageValidationSettings))
         {
