@@ -19,7 +19,8 @@ internal sealed class EmailConfirmationUserEvent : LoginFormEventBase
     public EmailConfirmationUserEvent(
         ISiteService siteService,
         UserManager<IUser> userManager,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor
+        )
     {
         _siteService = siteService;
         _userManager = userManager;
@@ -28,10 +29,10 @@ internal sealed class EmailConfirmationUserEvent : LoginFormEventBase
 
     public override async Task<IActionResult> LoggingInAsync(IUser user)
     {
-        var registrationSettings = await _siteService.GetSettingsAsync<LoginSettings>();
+        var settings = await _siteService.GetSettingsAsync<LoginSettings>();
 
         // Require that the users have a confirmed email before they can log on.
-        if (!registrationSettings.UsersMustValidateEmail || await _userManager.IsEmailConfirmedAsync(user))
+        if (!settings.UsersMustValidateEmail || await _userManager.IsEmailConfirmedAsync(user))
         {
             return null;
         }

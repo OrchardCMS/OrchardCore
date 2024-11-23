@@ -9,6 +9,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.Email;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -42,10 +43,9 @@ internal static class ControllerExtensions
     /// </summary>
     /// <param name="controller"></param>
     /// <param name="model"></param>
-    /// <param name="confirmationEmailSubject"></param>
     /// <param name="logger"></param>
     /// <returns></returns>
-    internal static async Task<IUser> RegisterUser(this Controller controller, RegisterUserForm model, string confirmationEmailSubject, ILogger logger)
+    internal static async Task<IUser> RegisterUser(this Controller controller, RegisterUserForm model, ILogger logger)
     {
         var registrationEvents = controller.ControllerContext.HttpContext.RequestServices.GetServices<IRegistrationFormEvents>();
 
@@ -53,7 +53,9 @@ internal static class ControllerExtensions
 
         if (controller.ModelState.IsValid)
         {
-            var loginSettings = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IOptions<LoginSettings>>().Value;
+            var siteService = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<ISiteService>();
+
+            var loginSettings = await siteService.GetSettingsAsync<LoginSettings>();
 
             var registrationOptions = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IOptions<RegistrationOptions>>().Value;
 
@@ -69,14 +71,11 @@ internal static class ControllerExtensions
 
             if (user != null && controller.ModelState.IsValid)
             {
-                if (loginSettings.UsersMustValidateEmail && !user.EmailConfirmed)
-                {
-                    // For more information on how to enable account confirmation and password
-                    // reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
-                    // Send an email with this link
-                    await controller.SendEmailConfirmationTokenAsync(user, confirmationEmailSubject);
-                }
-                else if (!(registrationOptions.UsersAreModerated && !user.IsEnabled))
+                var context = new UserRegisteringContext(user);
+
+                await registrationEvents.InvokeAsync((e, ctx) => e.RegisteringAsync(ctx), context, logger);
+
+                if (!context.Cancel)
                 {
                     var signInManager = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<SignInManager<IUser>>();
 

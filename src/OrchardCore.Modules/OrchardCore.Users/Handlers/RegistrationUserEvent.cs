@@ -28,9 +28,9 @@ internal sealed class RegistrationUserEvent : LoginFormEventBase
 
     public override async Task<IActionResult> LoggingInAsync(IUser user)
     {
-        var registrationSettings = await _siteService.GetSettingsAsync<RegistrationSettings>();
+        var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
 
-        if (!registrationSettings.UsersAreModerated || user is not User u || u.IsEnabled)
+        if (!settings.UsersAreModerated || user is not User u || u.IsEnabled)
         {
             return null;
         }

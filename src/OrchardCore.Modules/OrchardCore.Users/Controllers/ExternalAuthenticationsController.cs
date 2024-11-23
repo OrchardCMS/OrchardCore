@@ -196,7 +196,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                 UserName = externalLoginViewModel.UserName,
                 Email = externalLoginViewModel.Email,
                 Password = null,
-            }, S["Confirm your account"], _logger);
+            }, _logger);
 
             // If the registration was successful we can link the external provider and redirect the user.
             if (iUser == null)
@@ -311,7 +311,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                     UserName = model.UserName,
                     Email = model.Email,
                     Password = model.Password,
-                }, S["Confirm your account"], _logger);
+                }, _logger);
 
             if (iUser is null)
             {
@@ -320,6 +320,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             else
             {
                 var identityResult = await _signInManager.UserManager.AddLoginAsync(iUser, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
+
                 if (identityResult.Succeeded)
                 {
                     _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);
@@ -334,9 +335,10 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                         }
                     }
 
-                    // we have created/linked to the local user, so we must verify the login. If it does not succeed,
-                    // the user is not allowed to login
+                    // we have created/linked to the local user, so we must verify the login.
+                    // If it does not succeed, the user is not allowed to login
                     var signInResult = await ExternalLoginSignInAsync(iUser, info);
+
                     if (signInResult.Succeeded)
                     {
                         return await LoggedInActionResultAsync(iUser, returnUrl, info);
@@ -379,6 +381,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             await _accountEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(user.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
 
             var signInResult = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+
             if (!signInResult.Succeeded)
             {
                 user = null;
@@ -387,6 +390,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             else
             {
                 var identityResult = await _signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
+
                 if (identityResult.Succeeded)
                 {
                     _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);

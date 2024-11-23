@@ -81,7 +81,7 @@ public sealed class RegistrationController : Controller
 
         if (ModelState.IsValid)
         {
-            var iUser = await this.RegisterUser(model, S["Confirm your account"], _logger);
+            var iUser = await this.RegisterUser(model, _logger);
 
             // If we get a user, redirect to returnUrl.
             if (iUser is User user)

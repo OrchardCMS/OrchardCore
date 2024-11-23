@@ -7,7 +7,7 @@ using OrchardCore.Users.Events;
 
 namespace OrchardCore.Users.AuditTrail.Registration;
 
-public class UserRegistrationEventHandler : IRegistrationFormEvents
+public class UserRegistrationEventHandler : RegistrationFormEventsBase
 {
     private readonly IAuditTrailManager _auditTrailManager;
     private readonly IServiceProvider _serviceProvider;
@@ -21,14 +21,8 @@ public class UserRegistrationEventHandler : IRegistrationFormEvents
         _serviceProvider = serviceProvider;
     }
 
-    public Task RegisteredAsync(IUser user) =>
-        RecordAuditTrailEventAsync(UserRegistrationAuditTrailEventConfiguration.Registered, user);
-
-    #region Unused events
-
-    public Task RegistrationValidationAsync(Action<string, string> reportError) => Task.CompletedTask;
-
-    #endregion
+    public override Task RegisteredAsync(IUser user)
+        => RecordAuditTrailEventAsync(UserRegistrationAuditTrailEventConfiguration.Registered, user);
 
     private async Task RecordAuditTrailEventAsync(string name, IUser user)
     {
