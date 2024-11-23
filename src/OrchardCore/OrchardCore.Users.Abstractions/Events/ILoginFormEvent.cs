@@ -44,5 +44,9 @@ public interface ILoginFormEvent
     /// <returns></returns>
     Task<IActionResult> LoggingInAsync();
 
+    /// <summary>
+    /// Occurs when is trying to login and after the user is located.
+    /// </summary>
+    /// <returns></returns>
     Task<IActionResult> LoggingInAsync(IUser user);
 }
