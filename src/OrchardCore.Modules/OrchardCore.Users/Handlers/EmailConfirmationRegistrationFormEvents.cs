@@ -1,4 +1,4 @@
-﻿using System.Text.Encodings.Web;
+using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
@@ -14,7 +14,7 @@ using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Handlers;
 
-internal class EmailConfirmationRegistrationFormEvents : RegistrationFormEventsBase
+internal sealed class EmailConfirmationRegistrationFormEvents : RegistrationFormEventsBase
 {
     private readonly ISiteService _siteService;
     private readonly UserManager<IUser> _userManager;
