@@ -5,8 +5,6 @@ public class RegistrationSettings
     [Obsolete("This property is no longer used and will be removed in the next major release.")]
     public UserRegistrationType UsersCanRegister { get; set; }
 
-    public bool UsersMustValidateEmail { get; set; }
-
     public bool UsersAreModerated { get; set; }
 
     public bool UseSiteTheme { get; set; }

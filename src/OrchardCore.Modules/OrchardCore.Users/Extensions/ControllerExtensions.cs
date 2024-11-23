@@ -53,6 +53,8 @@ internal static class ControllerExtensions
 
         if (controller.ModelState.IsValid)
         {
+            var loginSettings = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IOptions<LoginSettings>>().Value;
+
             var registrationOptions = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IOptions<RegistrationOptions>>().Value;
 
             var userService = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IUserService>();
@@ -61,13 +63,13 @@ internal static class ControllerExtensions
             {
                 UserName = model.UserName,
                 Email = model.Email,
-                EmailConfirmed = !registrationOptions.UsersMustValidateEmail,
+                EmailConfirmed = !loginSettings.UsersMustValidateEmail,
                 IsEnabled = !registrationOptions.UsersAreModerated,
             }, model.Password, controller.ModelState.AddModelError) as User;
 
             if (user != null && controller.ModelState.IsValid)
             {
-                if (registrationOptions.UsersMustValidateEmail && !user.EmailConfirmed)
+                if (loginSettings.UsersMustValidateEmail && !user.EmailConfirmed)
                 {
                     // For more information on how to enable account confirmation and password
                     // reset please visit http://go.microsoft.com/fwlink/?LinkID=532713

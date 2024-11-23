@@ -4,6 +4,8 @@ namespace OrchardCore.Users.Models;
 
 public class LoginSettings
 {
+    public bool UsersMustValidateEmail { get; set; }
+
     public bool UseSiteTheme { get; set; }
 
     [Obsolete("This property is no longer used and will be removed in the next major release. Instead use ExternalUserLoginSettings.NoPassword")]

@@ -97,6 +97,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         }
 
         var info = await _signInManager.GetExternalLoginInfoAsync();
+
         if (info == null)
         {
             _logger.LogError("Could not get external login info.");
@@ -111,143 +112,147 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         if (iUser != null)
         {
-            if (!await AddConfirmEmailErrorAsync(iUser) && !AddUserEnabledError(iUser, S))
+            foreach (var handler in _accountEvents)
             {
-                await _accountEvents.InvokeAsync((e, user, modelState) => e.LoggingInAsync(user.UserName, (key, message) => modelState.AddModelError(key, message)), iUser, ModelState, _logger);
+                var loginResult = await handler.LoggingInAsync(iUser);
 
+                if (loginResult != null)
+                {
+                    return loginResult;
+                }
+            }
+
+            await _accountEvents.InvokeAsync((e, user, modelState) => e.LoggingInAsync(user.UserName, (key, message) => modelState.AddModelError(key, message)), iUser, ModelState, _logger);
+
+            var signInResult = await ExternalLoginSignInAsync(iUser, info);
+
+            if (signInResult.Succeeded)
+            {
+                return await LoggedInActionResultAsync(iUser, returnUrl, info);
+            }
+
+            ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
+
+            return RedirectToLogin(returnUrl);
+        }
+
+        var email = info.GetEmail();
+
+        if (_identityOptions.User.RequireUniqueEmail && !string.IsNullOrWhiteSpace(email))
+        {
+            iUser = await _userManager.FindByEmailAsync(email);
+        }
+
+        ViewData["ReturnUrl"] = returnUrl;
+        ViewData["LoginProvider"] = info.LoginProvider;
+
+        if (iUser != null)
+        {
+            foreach (var handler in _accountEvents)
+            {
+                var loginResult = await handler.LoggingInAsync(iUser);
+
+                if (loginResult != null)
+                {
+                    return loginResult;
+                }
+            }
+
+            // Link external login to an existing user.
+            ViewData["UserName"] = iUser.UserName;
+
+            return View(nameof(LinkExternalLogin));
+        }
+
+        var settings = await _siteService.GetSettingsAsync<ExternalRegistrationSettings>();
+
+        if (settings.DisableNewRegistrations)
+        {
+            await _notifier.ErrorAsync(H["New registrations are disabled for this site."]);
+
+            return RedirectToLogin(returnUrl);
+        }
+
+        var externalLoginViewModel = new RegisterExternalLoginViewModel
+        {
+            NoPassword = settings.NoPassword,
+            NoEmail = settings.NoEmail,
+            NoUsername = settings.NoUsername,
+
+            UserName = await GenerateUsernameAsync(info),
+            Email = email,
+        };
+
+        // The user doesn't exist and no information required, we can create the account locally
+        // instead of redirecting to the ExternalLogin.
+        var noInformationRequired = settings.NoPassword &&
+            settings.NoEmail &&
+            settings.NoUsername;
+
+        if (noInformationRequired)
+        {
+            iUser = await this.RegisterUser(new RegisterUserForm()
+            {
+                UserName = externalLoginViewModel.UserName,
+                Email = externalLoginViewModel.Email,
+                Password = null,
+            }, S["Confirm your account"], _logger);
+
+            // If the registration was successful we can link the external provider and redirect the user.
+            if (iUser == null)
+            {
+                await _notifier.ErrorAsync(H["Unable to create internal account and link it to the external user."]);
+
+                return RedirectToLogin(returnUrl);
+            }
+
+            var identityResult = await _signInManager.UserManager.AddLoginAsync(iUser, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
+
+            if (identityResult.Succeeded)
+            {
+                _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);
+
+                // The login info must be linked before we consider a redirect, or the login info is lost.
+                if (iUser is User user)
+                {
+                    foreach (var accountEvent in _accountEvents)
+                    {
+                        var result = await accountEvent.LoggingInAsync(user);
+
+                        if (result != null)
+                        {
+                            return result;
+                        }
+                    }
+
+                    foreach (var handler in _accountEvents)
+                    {
+                        var loginResult = await handler.LoggingInAsync(user);
+
+                        if (loginResult != null)
+                        {
+                            return loginResult;
+                        }
+                    }
+                }
+
+                // We have created/linked to the local user, so we must verify the login.
+                // If it does not succeed, the user is not allowed to login
                 var signInResult = await ExternalLoginSignInAsync(iUser, info);
                 if (signInResult.Succeeded)
                 {
                     return await LoggedInActionResultAsync(iUser, returnUrl, info);
                 }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
-                }
-            }
-        }
-        else
-        {
-            var email = info.GetEmail();
 
-            if (_identityOptions.User.RequireUniqueEmail && !string.IsNullOrWhiteSpace(email))
-            {
-                iUser = await _userManager.FindByEmailAsync(email);
+                ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
+
+                return RedirectToLogin(returnUrl);
             }
 
-            ViewData["ReturnUrl"] = returnUrl;
-            ViewData["LoginProvider"] = info.LoginProvider;
-
-            var registrationSettings = await _siteService.GetSettingsAsync<RegistrationSettings>();
-
-            if (iUser != null)
-            {
-                if (iUser is User userToLink && registrationSettings.UsersMustValidateEmail && !userToLink.EmailConfirmed)
-                {
-                    return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
-                        new
-                        {
-                            Area = UserConstants.Features.Users,
-                            Controller = typeof(EmailConfirmationController).ControllerName(),
-                            ReturnUrl = returnUrl,
-                        });
-                }
-
-                // Link external login to an existing user.
-                ViewData["UserName"] = iUser.UserName;
-
-                return View(nameof(LinkExternalLogin));
-            }
-
-            var settings = await _siteService.GetSettingsAsync<ExternalRegistrationSettings>();
-
-            var externalLoginViewModel = new RegisterExternalLoginViewModel
-            {
-                NoPassword = settings.NoPassword,
-                NoEmail = settings.NoEmail,
-                NoUsername = settings.NoUsername,
-
-                UserName = await GenerateUsernameAsync(info),
-                Email = info.GetEmail(),
-            };
-
-            // The user doesn't exist and no information required, we can create the account locally
-            // instead of redirecting to the ExternalLogin.
-            var noInformationRequired = externalLoginViewModel.NoPassword
-                && externalLoginViewModel.NoEmail
-                && externalLoginViewModel.NoUsername;
-
-            if (noInformationRequired)
-            {
-                iUser = await this.RegisterUser(new RegisterUserForm()
-                {
-                    UserName = externalLoginViewModel.UserName,
-                    Email = externalLoginViewModel.Email,
-                    Password = null,
-                }, S["Confirm your account"], _logger);
-
-                // If the registration was successful we can link the external provider and redirect the user.
-                if (iUser != null)
-                {
-                    var identityResult = await _signInManager.UserManager.AddLoginAsync(iUser, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
-                    if (identityResult.Succeeded)
-                    {
-                        _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);
-
-                        // The login info must be linked before we consider a redirect, or the login info is lost.
-                        if (iUser is User user)
-                        {
-                            if (registrationSettings.UsersMustValidateEmail && !user.EmailConfirmed)
-                            {
-                                return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
-                                    new
-                                    {
-                                        Area = UserConstants.Features.Users,
-                                        Controller = typeof(EmailConfirmationController).ControllerName(),
-                                        ReturnUrl = returnUrl,
-                                    });
-                            }
-
-                            if (registrationSettings.UsersAreModerated && !user.IsEnabled)
-                            {
-                                return RedirectToAction(nameof(RegistrationController.RegistrationPending),
-                                    new
-                                    {
-                                        Area = UserConstants.Features.Users,
-                                        Controller = typeof(RegistrationController).ControllerName(),
-                                        ReturnUrl = returnUrl,
-                                    });
-                            }
-                        }
-
-                        // We have created/linked to the local user, so we must verify the login.
-                        // If it does not succeed, the user is not allowed to login
-                        var signInResult = await ExternalLoginSignInAsync(iUser, info);
-                        if (signInResult.Succeeded)
-                        {
-                            return await LoggedInActionResultAsync(iUser, returnUrl, info);
-                        }
-
-                        ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
-
-                        return RedirectToLogin(returnUrl);
-                    }
-
-                    AddIdentityErrors(identityResult);
-                }
-            }
-
-            if (settings.DisableNewRegistrations)
-            {
-                await _notifier.ErrorAsync(H["New registrations are disabled for this site."]);
-
-                return RedirectToLogin();
-            }
-
-            return View(nameof(RegisterExternalLogin), externalLoginViewModel);
+            AddIdentityErrors(identityResult);
         }
 
-        return RedirectToLogin(returnUrl);
+        return View(nameof(RegisterExternalLogin), externalLoginViewModel);
     }
 
     [HttpPost]
@@ -319,31 +324,13 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                 {
                     _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);
 
-                    // The login info must be linked before we consider a redirect, or the login info is lost.
-                    if (iUser is User user)
+                    foreach (var handler in _accountEvents)
                     {
-                        var registrationSettings = await _siteService.GetSettingsAsync<RegistrationSettings>();
+                        var loginResult = await handler.LoggingInAsync(iUser);
 
-                        if (registrationSettings.UsersMustValidateEmail && !user.EmailConfirmed)
+                        if (loginResult != null)
                         {
-                            return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
-                                new
-                                {
-                                    Area = UserConstants.Features.Users,
-                                    Controller = typeof(EmailConfirmationController).ControllerName(),
-                                    ReturnUrl = returnUrl,
-                                });
-                        }
-
-                        if (registrationSettings.UsersAreModerated && !user.IsEnabled)
-                        {
-                            return RedirectToAction(nameof(RegistrationController.RegistrationPending),
-                                new
-                                {
-                                    Area = UserConstants.Features.Users,
-                                    Controller = typeof(RegistrationController).ControllerName(),
-                                    ReturnUrl = returnUrl,
-                                });
+                            return loginResult;
                         }
                     }
 
@@ -605,30 +592,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                 TempData[$"error_{iix++}"] = item.ErrorMessage;
             }
         }
-    }
-
-    private async Task<bool> AddConfirmEmailErrorAsync(IUser user)
-    {
-        var registrationFeatureIsAvailable = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-            .Any(feature => feature.Id == UserConstants.Features.UserRegistration);
-
-        if (!registrationFeatureIsAvailable)
-        {
-            return false;
-        }
-
-        var registrationSettings = await _siteService.GetSettingsAsync<RegistrationSettings>();
-        if (registrationSettings.UsersMustValidateEmail)
-        {
-            // Require that the users have a confirmed email before they can log on.
-            if (!await _userManager.IsEmailConfirmedAsync(user))
-            {
-                ModelState.AddModelError(string.Empty, S["You must confirm your email."]);
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private async Task<string> GenerateUsernameAsync(ExternalLoginInfo info)

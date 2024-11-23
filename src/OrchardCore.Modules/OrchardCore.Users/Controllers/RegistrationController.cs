@@ -9,8 +9,8 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
+using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Controllers;
@@ -26,6 +26,7 @@ public sealed class RegistrationController : Controller
     private readonly IDisplayManager<RegisterUserForm> _registerUserDisplayManager;
     private readonly RegistrationOptions _registrationOptions;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IEnumerable<ILoginFormEvent> _accountEvents;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -39,6 +40,7 @@ public sealed class RegistrationController : Controller
         IDisplayManager<RegisterUserForm> registerUserDisplayManager,
         IOptions<RegistrationOptions> registrationOptions,
         IUpdateModelAccessor updateModelAccessor,
+        IEnumerable<ILoginFormEvent> accountEvents,
         IHtmlLocalizer<RegistrationController> htmlLocalizer,
         IStringLocalizer<RegistrationController> stringLocalizer)
     {
@@ -50,6 +52,7 @@ public sealed class RegistrationController : Controller
         _registerUserDisplayManager = registerUserDisplayManager;
         _registrationOptions = registrationOptions.Value;
         _updateModelAccessor = updateModelAccessor;
+        _accountEvents = accountEvents;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
@@ -83,14 +86,14 @@ public sealed class RegistrationController : Controller
             // If we get a user, redirect to returnUrl.
             if (iUser is User user)
             {
-                if (_registrationOptions.UsersMustValidateEmail && !user.EmailConfirmed)
+                foreach (var handler in _accountEvents)
                 {
-                    return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent), typeof(EmailConfirmationController).ControllerName(), new { ReturnUrl = returnUrl });
-                }
+                    var loginResult = await handler.LoggingInAsync(user);
 
-                if (_registrationOptions.UsersAreModerated && !user.IsEnabled)
-                {
-                    return RedirectToAction(nameof(RegistrationPending), new { ReturnUrl = returnUrl });
+                    if (loginResult != null)
+                    {
+                        return loginResult;
+                    }
                 }
 
                 return RedirectToLocal(returnUrl.ToUriComponents());

@@ -187,7 +187,7 @@ public sealed class ResetPasswordController : Controller
             return false;
         }
 
-        return (await _siteService.GetSettingsAsync<RegistrationSettings>()).UsersMustValidateEmail
+        return (await _siteService.GetSettingsAsync<LoginSettings>()).UsersMustValidateEmail
             && !await _userManager.IsEmailConfirmedAsync(user);
     }
 }

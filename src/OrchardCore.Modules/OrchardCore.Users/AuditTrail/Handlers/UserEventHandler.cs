@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
@@ -70,10 +71,17 @@ public class UserEventHandler : ILoginFormEvent, IUserEventHandler
 
     #region Unused user events
 
-    public Task CreatingAsync(UserCreateContext context) => Task.CompletedTask;
-    public Task UpdatingAsync(UserUpdateContext context) => Task.CompletedTask;
-    public Task DeletingAsync(UserDeleteContext context) => Task.CompletedTask;
-    public Task ConfirmedAsync(UserConfirmContext context) => Task.CompletedTask;
+    public Task CreatingAsync(UserCreateContext context)
+        => Task.CompletedTask;
+
+    public Task UpdatingAsync(UserUpdateContext context)
+        => Task.CompletedTask;
+
+    public Task DeletingAsync(UserDeleteContext context)
+        => Task.CompletedTask;
+
+    public Task ConfirmedAsync(UserConfirmContext context)
+        => Task.CompletedTask;
 
     #endregion
 
@@ -115,4 +123,10 @@ public class UserEventHandler : ILoginFormEvent, IUserEventHandler
                 }
             ));
     }
+
+    public Task<IActionResult> LoggingInAsync()
+        => Task.FromResult<IActionResult>(null);
+
+    public Task<IActionResult> LoggingInAsync(IUser user)
+        => Task.FromResult<IActionResult>(null);
 }

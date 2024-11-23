@@ -42,6 +42,7 @@ public interface ILoginFormEvent
     /// Occurs when a user visits the login page.
     /// </summary>
     /// <returns></returns>
-    Task<IActionResult> LoggingInAsync()
-        => Task.FromResult<IActionResult>(null);
+    Task<IActionResult> LoggingInAsync();
+
+    Task<IActionResult> LoggingInAsync(IUser user);
 }

@@ -134,17 +134,24 @@ public sealed class AccountController : AccountBaseController
                 var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
-                    if (!await AddConfirmEmailErrorAsync(user) && !AddUserEnabledError(user, S))
+                    foreach (var handler in _accountEvents)
                     {
-                        result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+                        var loginResult = await handler.LoggingInAsync(user);
 
-                        if (result.Succeeded)
+                        if (loginResult != null)
                         {
-                            _logger.LogInformation(1, "User logged in.");
-                            await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
-
-                            return await LoggedInActionResultAsync(user, returnUrl);
+                            return loginResult;
                         }
+                    }
+
+                    result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+
+                    if (result.Succeeded)
+                    {
+                        _logger.LogInformation(1, "User logged in.");
+                        await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
+
+                        return await LoggedInActionResultAsync(user, returnUrl);
                     }
                 }
 
@@ -246,20 +253,4 @@ public sealed class AccountController : AccountBaseController
     [Obsolete("This method will be removed in version 3. Instead please use UserManagerHelper.UpdateUserPropertiesAsync(userManager, user, context).")]
     public static Task<bool> UpdateUserPropertiesAsync(UserManager<IUser> userManager, User user, UpdateUserContext context)
         => UserManagerHelper.UpdateUserPropertiesAsync(userManager, user, context);
-
-    private async Task<bool> AddConfirmEmailErrorAsync(IUser user)
-    {
-        if (_registrationOptions.UsersMustValidateEmail)
-        {
-            // Require that the users have a confirmed email before they can log on.
-            if (!await _userManager.IsEmailConfirmedAsync(user))
-            {
-                ModelState.AddModelError(string.Empty, S["You must confirm your email."]);
-
-                return true;
-            }
-        }
-
-        return false;
-    }
 }

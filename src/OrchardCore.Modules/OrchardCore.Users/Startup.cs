@@ -166,6 +166,8 @@ public sealed class Startup : StartupBase
         services.AddScoped<CustomUserSettingsService>();
         services.AddRecipeExecutionStep<CustomUserSettingsStep>();
         services.AddDisplayDriver<LoginForm, LoginFormDisplayDriver>();
+        services.AddScoped<ILoginFormEvent, EmailConfirmationUserEvent>();
+        services.AddDataMigration<LoginSettingsMigrations>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -433,6 +435,7 @@ public sealed class RegistrationStartup : StartupBase
         services.AddDisplayDriver<LoginForm, RegisterUserLoginFormDisplayDriver>();
         services.AddDisplayDriver<RegisterUserForm, RegisterUserFormDisplayDriver>();
         services.AddTransient<IConfigureOptions<RegistrationOptions>, RegistrationOptionsConfigurations>();
+        services.AddScoped<ILoginFormEvent, RegistrationUserEvent>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

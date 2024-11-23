@@ -359,10 +359,7 @@ public class AccountControllerTests
     public async Task Register_WhenRequireEmailConfirmation_RedirectToConfirmEmailSent()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings()
-        {
-            UsersMustValidateEmail = true,
-        });
+        var context = await GetSiteContextAsync(new RegistrationSettings(), true, true, false, usersMustValidateEmail: true);
 
         var responseFromGet = await context.Client.GetAsync("Register");
 
@@ -411,7 +408,7 @@ public class AccountControllerTests
         return PostRequestHelper.CreateMessageWithCookies("Register", data, response);
     }
 
-    private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true, bool enableExternalAuthentication = false)
+    private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true, bool enableExternalAuthentication = false, bool usersMustValidateEmail = false)
     {
         var context = new SiteContext();
 
@@ -443,6 +440,12 @@ public class AccountControllerTests
             var site = await siteService.LoadSiteSettingsAsync();
 
             site.Put(settings);
+
+            var loginSettings = site.As<LoginSettings>();
+
+            loginSettings.UsersMustValidateEmail = usersMustValidateEmail;
+
+            site.Put(loginSettings);
 
             await siteService.UpdateSiteSettingsAsync(site);
         });

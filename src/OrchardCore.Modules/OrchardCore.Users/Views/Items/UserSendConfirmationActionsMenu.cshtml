@@ -7,7 +7,7 @@
 @inject IAuthorizationService AuthorizationService
 
 @if (!Model.User.EmailConfirmed &&
-Site.As<RegistrationSettings>().UsersMustValidateEmail &&
+Site.As<LoginSettings>().UsersMustValidateEmail &&
 await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, Model.User))
 {
     <li>

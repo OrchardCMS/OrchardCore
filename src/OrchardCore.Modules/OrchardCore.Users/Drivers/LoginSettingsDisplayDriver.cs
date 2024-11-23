@@ -30,6 +30,7 @@ public sealed class LoginSettingsDisplayDriver : SiteDisplayDriver<LoginSettings
     {
         return Initialize<LoginSettings>("LoginSettings_Edit", model =>
         {
+            model.UsersMustValidateEmail = settings.UsersMustValidateEmail;
             model.UseSiteTheme = settings.UseSiteTheme;
             model.DisableLocalLogin = settings.DisableLocalLogin;
             model.AllowChangingEmail = settings.AllowChangingEmail;
