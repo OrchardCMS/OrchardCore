@@ -50,7 +50,7 @@ public sealed class RewriteRuleHandler : RewriteRuleHandlerBase
     {
         context.Rule.CreatedUtc = _clock.UtcNow;
 
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
 
         if (user != null)
         {

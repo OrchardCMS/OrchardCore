@@ -32,7 +32,7 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
 
     public override async Task<IDisplayResult> EditAsync(ISite site, RegistrationSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
         {
@@ -52,7 +52,7 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, RegistrationSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
         {

@@ -27,7 +27,7 @@ public sealed class AuditTrailContentsDriver : ContentDisplayDriver
         return Task.FromResult<IDisplayResult>(
             Initialize<ContentItemViewModel>("AuditTrailContentsAction_SummaryAdmin", m => m.ContentItem = contentItem)
             .Location("SummaryAdmin", "ActionsMenu:10")
-            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AuditTrailPermissions.ViewAuditTrail))
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ViewAuditTrail))
         );
     }
 }

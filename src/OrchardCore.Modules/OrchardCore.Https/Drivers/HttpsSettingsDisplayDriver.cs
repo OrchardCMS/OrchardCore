@@ -41,7 +41,7 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
 
     public override async Task<IDisplayResult> EditAsync(ISite site, HttpsSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps))
         {
             return null;
@@ -72,7 +72,7 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, HttpsSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps))
         {
             return null;

@@ -31,7 +31,7 @@ public class AzureADSettingsDisplayDriver : SiteDisplayDriver<AzureADSettings>
 
     public override async Task<IDisplayResult> EditAsync(ISite site, AzureADSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
         {
             return null;
@@ -53,7 +53,7 @@ public class AzureADSettingsDisplayDriver : SiteDisplayDriver<AzureADSettings>
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureADSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageMicrosoftAuthentication))
         {
             return null;

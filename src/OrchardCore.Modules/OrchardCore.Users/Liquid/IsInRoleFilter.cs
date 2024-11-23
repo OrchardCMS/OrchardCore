@@ -22,7 +22,7 @@ public class IsInRoleFilter : ILiquidFilter
     {
         if (input.ToObjectValue() is LiquidUserAccessor)
         {
-            var user = _httpContextAccessor.HttpContext.User;
+            var user = _httpContextAccessor.HttpContext?.User;
             if (user != null)
             {
                 var claimName = arguments["name"].Or(arguments.At(0)).ToStringValue();

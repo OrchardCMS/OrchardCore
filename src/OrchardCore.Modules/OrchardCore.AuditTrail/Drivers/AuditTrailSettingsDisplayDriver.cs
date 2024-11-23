@@ -34,7 +34,7 @@ public sealed class AuditTrailSettingsDisplayDriver : SiteDisplayDriver<AuditTra
 
     public override async Task<IDisplayResult> EditAsync(ISite site, AuditTrailSettings settings, BuildEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AuditTrailPermissions.ManageAuditTrailSettings))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ManageAuditTrailSettings))
         {
             return null;
         }

@@ -19,7 +19,7 @@ public static class UserFilters
             var context = (LiquidTemplateContext)ctx;
             var httpContextAccessor = context.Services.GetRequiredService<IHttpContextAccessor>();
 
-            var user = httpContextAccessor.HttpContext.User;
+            var user = httpContextAccessor.HttpContext?.User;
             if (user != null)
             {
                 var claimType = arguments["type"].Or(arguments.At(0)).ToStringValue();
@@ -65,7 +65,7 @@ public static class UserFilters
         {
             var httpContextAccessor = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>();
 
-            var user = httpContextAccessor.HttpContext.User;
+            var user = httpContextAccessor.HttpContext?.User;
             if (user != null)
             {
                 var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);

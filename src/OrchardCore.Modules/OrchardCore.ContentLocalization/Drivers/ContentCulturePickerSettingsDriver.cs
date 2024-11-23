@@ -28,7 +28,7 @@ public sealed class ContentCulturePickerSettingsDriver : SiteDisplayDriver<Conte
 
     public override async Task<IDisplayResult> EditAsync(ISite site, ContentCulturePickerSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageContentCulturePicker))
         {
@@ -45,7 +45,7 @@ public sealed class ContentCulturePickerSettingsDriver : SiteDisplayDriver<Conte
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, ContentCulturePickerSettings section, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
 
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageContentCulturePicker))
         {

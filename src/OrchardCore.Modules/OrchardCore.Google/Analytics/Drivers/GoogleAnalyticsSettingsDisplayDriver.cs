@@ -27,7 +27,7 @@ public sealed class GoogleAnalyticsSettingsDisplayDriver : SiteDisplayDriver<Goo
 
     public override async Task<IDisplayResult> EditAsync(ISite site, GoogleAnalyticsSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
         {
             return null;
@@ -42,7 +42,7 @@ public sealed class GoogleAnalyticsSettingsDisplayDriver : SiteDisplayDriver<Goo
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, GoogleAnalyticsSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAnalytics))
         {
             return null;

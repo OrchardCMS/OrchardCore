@@ -45,7 +45,7 @@ public sealed class AdminMenuNavigationProvidersCoordinator : INavigationProvide
         foreach (var tree in trees)
         {
             if (await _authorizationService.AuthorizeAsync(
-                _httpContextAccessor.HttpContext.User,
+                _httpContextAccessor.HttpContext?.User,
                 Permissions.CreatePermissionForAdminMenu(tree.Name)))
             {
                 await BuildTreeAsync(tree, builder);

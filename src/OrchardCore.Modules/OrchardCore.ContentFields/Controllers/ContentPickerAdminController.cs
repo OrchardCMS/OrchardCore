@@ -87,7 +87,7 @@ public sealed class ContentPickerAdminController : Controller
             .GetAsync(results.Select(r => r.ContentItemId));
 
         var selectedItems = new List<VueMultiselectItemViewModel>();
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
         foreach (var contentItem in contentItems)
         {
             selectedItems.Add(new VueMultiselectItemViewModel()

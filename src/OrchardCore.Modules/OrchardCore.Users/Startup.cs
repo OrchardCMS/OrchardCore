@@ -306,7 +306,7 @@ public sealed class LiquidStartup : StartupBase
             o.Scope.SetValue("User", new ObjectValue(new LiquidUserAccessor()));
             o.MemberAccessStrategy.Register<LiquidUserAccessor, FluidValue>((obj, name, ctx) =>
             {
-                var user = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext.User;
+                var user = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>().HttpContext?.User;
                 if (user != null)
                 {
                     return name switch

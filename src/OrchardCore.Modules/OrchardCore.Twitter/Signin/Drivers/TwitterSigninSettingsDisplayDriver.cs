@@ -31,7 +31,7 @@ public sealed class TwitterSigninSettingsDisplayDriver : SiteDisplayDriver<Twitt
 
     public override async Task<IDisplayResult> EditAsync(ISite site, TwitterSigninSettings settings, BuildEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
         {
             return null;
@@ -49,7 +49,7 @@ public sealed class TwitterSigninSettingsDisplayDriver : SiteDisplayDriver<Twitt
     }
     public override async Task<IDisplayResult> UpdateAsync(ISite site, TwitterSigninSettings settings, UpdateEditorContext context)
     {
-        var user = _httpContextAccessor.HttpContext.User;
+        var user = _httpContextAccessor.HttpContext?.User;
         if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
         {
             return null;
