@@ -54,7 +54,7 @@ public sealed class HomeController : Controller
             result.Save(w);
         }
 
-        var content = Encoding.UTF8.GetString(stream.GetBuffer(), 0, (int)stream.Length);
+        var content = Encoding.UTF8.GetString(stream.GetReadOnlySequence());
 
         return Content(content, "text/xml");
     }

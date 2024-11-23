@@ -95,7 +95,6 @@ public sealed class Startup : StartupBase
         // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
         services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
 
-        services.AddSingleton<Microsoft.AspNetCore.Hosting.IStartupFilter, ExternalAuthenticationsStartupFilter>();
         services.AddUsers();
 
         services.ConfigureApplicationCookie(options =>

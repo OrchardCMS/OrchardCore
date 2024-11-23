@@ -49,6 +49,9 @@ public sealed class Startup : StartupBase
             // When a property of a 'JsonObject' value is accessed, try to look into its properties.
             options.MemberAccessStrategy.Register<JsonObject, object>((source, name) => source[name]);
 
+            // When a property of a 'JsonDynamicObject' value is accessed, try to look into its properties.
+            options.MemberAccessStrategy.Register<JsonDynamicObject, object>((json, name) => json[name]);
+
             // Convert JToken to FluidValue
             options.ValueConverters.Add(x =>
             {
@@ -57,8 +60,10 @@ public sealed class Startup : StartupBase
                     JsonObject o => new ObjectValue(o),
                     JsonDynamicObject o => new ObjectValue((JsonObject)o),
                     JsonValue o => o.GetObjectValue(),
+                    JsonDynamicValue o => ((JsonValue)(o.Node)).GetObjectValue(),
                     DateTime d => new ObjectValue(d),
                     _ => null
+
                 };
             });
 
