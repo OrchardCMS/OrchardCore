@@ -7,7 +7,7 @@ public class LoginSettings
     public bool UseSiteTheme { get; set; }
 
     public bool DisableLocalLogin { get; set; }
-  
+
     public bool AllowChangingUsername { get; set; }
 
     public bool AllowChangingEmail { get; set; }
