@@ -10,7 +10,7 @@ using YesSql;
 
 namespace OrchardCore.AuditTrail.Services;
 
-public class DefaultAuditTrailAdminListQueryService : IAuditTrailAdminListQueryService
+public sealed class DefaultAuditTrailAdminListQueryService : IAuditTrailAdminListQueryService
 {
     private const string DateFormat = "yyyy-MM-dd";
     private readonly IAuditTrailManager _auditTrailManager;
