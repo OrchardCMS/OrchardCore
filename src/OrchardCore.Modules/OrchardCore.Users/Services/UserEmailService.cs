@@ -43,14 +43,15 @@ public sealed class UserEmailService
 
     public async Task<bool> SendEmailConfirmationAsync(IUser user)
     {
-        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
-        var callbackUrl = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext, nameof(EmailConfirmationController.ConfirmEmail), typeof(EmailConfirmationController).ControllerName(),
-        new
-        {
-            userId = await _userManager.GetUserIdAsync(user),
-            code,
-        });
+        var confirmEmailUrl = _linkGenerator.GetUriByAction(
+            httpContext: _httpContextAccessor.HttpContext,
+            action: nameof(EmailConfirmationController.ConfirmEmail),
+            controller: typeof(EmailConfirmationController).ControllerName(),
+            values: new
+            {
+                userId = await _userManager.GetUserIdAsync(user),
+                code = await _userManager.GenerateEmailConfirmationTokenAsync(user),
+            });
 
         var email = await _userManager.GetEmailAsync(user);
 
@@ -62,7 +63,7 @@ public sealed class UserEmailService
         return await SendEmailAsync(email, S["Confirm your account"], new ConfirmEmailViewModel
         {
             User = user,
-            ConfirmEmailUrl = callbackUrl,
+            ConfirmEmailUrl = confirmEmailUrl,
         });
     }
 
@@ -70,18 +71,21 @@ public sealed class UserEmailService
     {
         user.ResetToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(user.ResetToken));
 
-        var resetPasswordUrl = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext, nameof(ResetPasswordController.ResetPassword), typeof(ResetPasswordController).ControllerName(),
-        new
-        {
-            userId = await _userManager.GetUserIdAsync(user),
-            code = user.ResetToken,
-        });
+        var lostPasswordUrl = _linkGenerator.GetUriByAction(
+            httpContext: _httpContextAccessor.HttpContext,
+            action: nameof(ResetPasswordController.ResetPassword),
+            controller: typeof(ResetPasswordController).ControllerName(),
+            values: new
+            {
+                userId = await _userManager.GetUserIdAsync(user),
+                code = user.ResetToken,
+            });
 
         // send email with callback link
         return await SendEmailAsync(user.Email, S["Reset your password"], new LostPasswordViewModel()
         {
             User = user,
-            LostPasswordUrl = resetPasswordUrl
+            LostPasswordUrl = lostPasswordUrl,
         });
     }
 

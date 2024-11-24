@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
 using OrchardCore.Mvc.Core.Utilities;
-using OrchardCore.Settings;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
@@ -12,27 +12,25 @@ namespace OrchardCore.Users.Handlers;
 
 internal sealed class UserModerationLoginFormEvent : LoginFormEventBase
 {
-    private readonly ISiteService _siteService;
+    private readonly RegistrationOptions _registrationOptions;
     private readonly UserManager<IUser> _userManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public UserModerationLoginFormEvent(
-        ISiteService siteService,
+        IOptions<RegistrationOptions> registrationOptions,
         UserManager<IUser> userManager,
         IHttpContextAccessor httpContextAccessor)
     {
-        _siteService = siteService;
+        _registrationOptions = registrationOptions.Value;
         _userManager = userManager;
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public override async Task<IActionResult> ValidatingLoginAsync(IUser user)
+    public override Task<IActionResult> ValidatingLoginAsync(IUser user)
     {
-        var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
-
-        if (!settings.UsersAreModerated || user is not User u || u.IsEnabled)
+        if (!_registrationOptions.UsersAreModerated || user is not User u || u.IsEnabled)
         {
-            return null;
+            return Task.FromResult<IActionResult>(null);
         }
 
         var model = new RouteValueDictionary()
@@ -45,9 +43,9 @@ internal sealed class UserModerationLoginFormEvent : LoginFormEventBase
             model.Add("returnUrl", returnUrlValue);
         }
 
-        return new RedirectToActionResult(
+        return Task.FromResult<IActionResult>(new RedirectToActionResult(
             actionName: nameof(RegistrationController.RegistrationPending),
             controllerName: typeof(RegistrationController).ControllerName(),
-            routeValues: model);
+            routeValues: model));
     }
 }

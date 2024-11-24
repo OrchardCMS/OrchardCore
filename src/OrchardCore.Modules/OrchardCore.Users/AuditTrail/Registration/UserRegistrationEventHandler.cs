@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Users.AuditTrail.Models;
@@ -10,15 +9,14 @@ namespace OrchardCore.Users.AuditTrail.Registration;
 public class UserRegistrationEventHandler : RegistrationFormEventsBase
 {
     private readonly IAuditTrailManager _auditTrailManager;
-    private readonly IServiceProvider _serviceProvider;
-    private UserManager<IUser> _userManager;
+    private readonly UserManager<IUser> _userManager;
 
     public UserRegistrationEventHandler(
         IAuditTrailManager auditTrailManager,
-        IServiceProvider serviceProvider)
+        UserManager<IUser> userManager)
     {
         _auditTrailManager = auditTrailManager;
-        _serviceProvider = serviceProvider;
+        _userManager = userManager;
     }
 
     public override Task RegisteredAsync(IUser user)
@@ -27,7 +25,6 @@ public class UserRegistrationEventHandler : RegistrationFormEventsBase
     private async Task RecordAuditTrailEventAsync(string name, IUser user)
     {
         var userName = user.UserName;
-        _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
 
         var userId = await _userManager.GetUserIdAsync(user);
 

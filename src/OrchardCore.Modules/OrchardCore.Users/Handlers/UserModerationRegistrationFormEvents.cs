@@ -1,4 +1,4 @@
-using OrchardCore.Settings;
+using Microsoft.Extensions.Options;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 
@@ -6,25 +6,21 @@ namespace OrchardCore.Users.Handlers;
 
 internal sealed class UserModerationRegistrationFormEvents : RegistrationFormEventsBase
 {
-    private readonly ISiteService _siteService;
+    private readonly RegistrationOptions _registrationOptions;
 
-    public UserModerationRegistrationFormEvents(ISiteService siteService)
+    public UserModerationRegistrationFormEvents(IOptions<RegistrationOptions> registrationOptions)
     {
-        _siteService = siteService;
+        _registrationOptions = registrationOptions.Value;
     }
 
-    public override async Task RegisteringAsync(UserRegisteringContext context)
+    public override Task RegisteringAsync(UserRegisteringContext context)
     {
-        var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
-
-        if (context.User is not User user)
-        {
-            return;
-        }
-
-        if (!(settings.UsersAreModerated && !user.IsEnabled))
+        if (context.User is User user &&
+            !(_registrationOptions.UsersAreModerated && !user.IsEnabled))
         {
             context.Cancel = true;
         }
+
+        return Task.CompletedTask;
     }
 }

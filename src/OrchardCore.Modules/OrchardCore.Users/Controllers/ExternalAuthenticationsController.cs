@@ -115,9 +115,9 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         if (iUser != null)
         {
-            foreach (var handler in _accountEvents)
+            foreach (var accountEvent in _accountEvents)
             {
-                var loginResult = await handler.ValidatingLoginAsync(iUser);
+                var loginResult = await accountEvent.ValidatingLoginAsync(iUser);
 
                 if (loginResult != null)
                 {
@@ -156,9 +156,9 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         if (iUser != null)
         {
-            foreach (var handler in _accountEvents)
+            foreach (var accountEvent in _accountEvents)
             {
-                var loginResult = await handler.ValidatingLoginAsync(iUser);
+                var loginResult = await accountEvent.ValidatingLoginAsync(iUser);
 
                 if (loginResult != null)
                 {
@@ -199,7 +199,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         if (noInformationRequired)
         {
-            iUser = await _userService.RegisterUserAsync(new RegisterUserForm()
+            iUser = await _userService.RegisterAsync(new RegisterUserForm()
             {
                 UserName = externalLoginViewModel.UserName,
                 Email = externalLoginViewModel.Email,
@@ -306,7 +306,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         if (TryValidateModel(model) && ModelState.IsValid)
         {
-            var iUser = await _userService.RegisterUserAsync(
+            var iUser = await _userService.RegisterAsync(
                 new RegisterUserForm()
                 {
                     UserName = model.UserName,
@@ -322,9 +322,9 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                 {
                     _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);
 
-                    foreach (var handler in _accountEvents)
+                    foreach (var accountEvent in _accountEvents)
                     {
-                        var loginResult = await handler.ValidatingLoginAsync(iUser);
+                        var loginResult = await accountEvent.ValidatingLoginAsync(iUser);
 
                         if (loginResult != null)
                         {

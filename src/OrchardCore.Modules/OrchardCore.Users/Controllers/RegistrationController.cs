@@ -85,14 +85,14 @@ public sealed class RegistrationController : Controller
 
         if (ModelState.IsValid)
         {
-            var iUser = await _userService.RegisterUserAsync(model, ModelState.AddModelError);
+            var iUser = await _userService.RegisterAsync(model, ModelState.AddModelError);
 
             // If we get a user, redirect to returnUrl.
             if (iUser is User user)
             {
-                foreach (var handler in _accountEvents)
+                foreach (var accountEvent in _accountEvents)
                 {
-                    var loginResult = await handler.ValidatingLoginAsync(user);
+                    var loginResult = await accountEvent.ValidatingLoginAsync(user);
 
                     if (loginResult != null)
                     {

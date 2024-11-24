@@ -357,7 +357,10 @@ public class AccountControllerTests
     public async Task Register_WhenRequireEmailConfirmation_RedirectToConfirmEmailSent()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings(), true, true, false, usersMustValidateEmail: true);
+        var context = await GetSiteContextAsync(new RegistrationSettings
+        {
+            UsersMustValidateEmail = true,
+        }, true, true, false);
 
         var responseFromGet = await context.Client.GetAsync("Register");
 
@@ -406,7 +409,7 @@ public class AccountControllerTests
         return PostRequestHelper.CreateMessageWithCookies("Register", data, response);
     }
 
-    private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true, bool enableExternalAuthentication = false, bool usersMustValidateEmail = false)
+    private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true, bool enableExternalAuthentication = false)
     {
         var context = new SiteContext();
 
@@ -418,10 +421,6 @@ public class AccountControllerTests
             {
                 { "name", "settings" },
                 { nameof(RegistrationSettings), JsonSerializer.SerializeToNode(settings)},
-                { nameof(LoginSettings), JsonSerializer.SerializeToNode(new LoginSettings
-                {
-                    UsersMustValidateEmail = usersMustValidateEmail,
-                })},
                 { nameof(IdentitySettings), JsonSerializer.SerializeToNode(new IdentitySettings
                 {
                     UserSettings = new IdentityUserSettings

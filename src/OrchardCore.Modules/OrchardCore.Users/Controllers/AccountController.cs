@@ -130,9 +130,9 @@ public sealed class AccountController : AccountBaseController
 
                 if (result.Succeeded)
                 {
-                    foreach (var handler in _accountEvents)
+                    foreach (var accountEvent in _accountEvents)
                     {
-                        var loginResult = await handler.ValidatingLoginAsync(user);
+                        var loginResult = await accountEvent.ValidatingLoginAsync(user);
 
                         if (loginResult != null)
                         {

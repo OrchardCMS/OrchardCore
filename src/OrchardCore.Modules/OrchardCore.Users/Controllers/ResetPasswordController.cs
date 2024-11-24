@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Environment.Shell;
@@ -24,6 +25,7 @@ public sealed class ResetPasswordController : Controller
     private readonly UserManager<IUser> _userManager;
     private readonly ISiteService _siteService;
     private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
+    private readonly RegistrationOptions _registrationOptions;
     private readonly ILogger _logger;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IDisplayManager<ForgotPasswordForm> _forgotPasswordDisplayManager;
@@ -44,6 +46,7 @@ public sealed class ResetPasswordController : Controller
         IDisplayManager<ResetPasswordForm> resetPasswordDisplayManager,
         IShellFeaturesManager shellFeaturesManager,
         IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
+        IOptions<RegistrationOptions> registrationOptions,
         IStringLocalizer<ResetPasswordController> stringLocalizer)
     {
         _userService = userService;
@@ -56,6 +59,7 @@ public sealed class ResetPasswordController : Controller
         _resetPasswordDisplayManager = resetPasswordDisplayManager;
         _shellFeaturesManager = shellFeaturesManager;
         _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
+        _registrationOptions = registrationOptions.Value;
         S = stringLocalizer;
     }
 
@@ -98,9 +102,7 @@ public sealed class ResetPasswordController : Controller
                 return RedirectToAction(nameof(ForgotPasswordConfirmation));
             }
 
-            var loginSettings = site.As<LoginSettings>();
-
-            if (loginSettings.UsersMustValidateEmail && !await _userManager.IsEmailConfirmedAsync(user))
+            if (_registrationOptions.UsersMustValidateEmail && !await _userManager.IsEmailConfirmedAsync(user))
             {
                 ModelState.AddModelError(string.Empty, S["Before you can reset your password, you need to verify your email address."]);
             }

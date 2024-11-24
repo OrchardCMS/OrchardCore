@@ -4,8 +4,6 @@ namespace OrchardCore.Users.Models;
 
 public class LoginSettings
 {
-    public bool UsersMustValidateEmail { get; set; }
-
     public bool UseSiteTheme { get; set; }
 
     public bool DisableLocalLogin { get; set; }

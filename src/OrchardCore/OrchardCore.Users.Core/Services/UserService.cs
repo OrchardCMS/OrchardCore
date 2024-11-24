@@ -318,17 +318,15 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<IUser> RegisterUserAsync(RegisterUserForm model, Action<string, string> reportError)
+    public async Task<IUser> RegisterAsync(RegisterUserForm model, Action<string, string> reportError)
     {
         await _registrationFormEvents.InvokeAsync((e, report) => e.RegistrationValidationAsync((key, message) => report(key, message)), reportError, _logger);
-
-        var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
 
         var user = await CreateUserAsync(new User
         {
             UserName = model.UserName,
             Email = model.Email,
-            EmailConfirmed = !loginSettings.UsersMustValidateEmail,
+            EmailConfirmed = !_registrationOptions.UsersMustValidateEmail,
             IsEnabled = !_registrationOptions.UsersAreModerated,
         }, model.Password, reportError) as User;
 
