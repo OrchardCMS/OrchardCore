@@ -76,9 +76,9 @@ public sealed class AccountController : AccountBaseController
         // Clear the existing external cookie to ensure a clean login process.
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-        foreach (var handler in _accountEvents)
+        foreach (var accountEvent in _accountEvents)
         {
-            var result = await handler.LoggingInAsync();
+            var result = await accountEvent.LoggingInAsync();
 
             if (result != null)
             {
@@ -159,12 +159,13 @@ public sealed class AccountController : AccountBaseController
 
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToAction(nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
+                    return RedirectToAction(
+                        nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
                         typeof(TwoFactorAuthenticationController).ControllerName(),
                         new
                         {
                             returnUrl,
-                            model.RememberMe
+                            model.RememberMe,
                         });
                 }
 
@@ -200,6 +201,7 @@ public sealed class AccountController : AccountBaseController
     public async Task<IActionResult> LogOff(string returnUrl = null)
     {
         await _signInManager.SignOutAsync();
+
         _logger.LogInformation(4, "User logged out.");
 
         return RedirectToLocal(returnUrl);
@@ -216,9 +218,10 @@ public sealed class AccountController : AccountBaseController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model, string returnUrl = null)
     {
-        if (TryValidateModel(model) && ModelState.IsValid)
+        if (ModelState.IsValid)
         {
             var user = await _userService.GetAuthenticatedUserAsync(User);
+
             if (await _userService.ChangePasswordAsync(user, model.CurrentPassword, model.Password, ModelState.AddModelError))
             {
                 if (Url.IsLocalUrl(returnUrl))
