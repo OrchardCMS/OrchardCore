@@ -85,10 +85,6 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="OrchardCore.Users\Recipes\" />
-  </ItemGroup>
-
   <Import Project="..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
 
 </Project>

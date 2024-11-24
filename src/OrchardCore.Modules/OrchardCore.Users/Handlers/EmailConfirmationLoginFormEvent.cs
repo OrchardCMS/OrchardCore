@@ -10,13 +10,13 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Handlers;
 
-internal sealed class EmailConfirmationUserEvent : LoginFormEventBase
+internal sealed class EmailConfirmationLoginFormEvent : LoginFormEventBase
 {
     private readonly ISiteService _siteService;
     private readonly UserManager<IUser> _userManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public EmailConfirmationUserEvent(
+    public EmailConfirmationLoginFormEvent(
         ISiteService siteService,
         UserManager<IUser> userManager,
         IHttpContextAccessor httpContextAccessor

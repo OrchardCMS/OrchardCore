@@ -95,6 +95,7 @@ public sealed class Startup : StartupBase
         // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
         services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
 
+        services.AddSingleton<Microsoft.AspNetCore.Hosting.IStartupFilter, ExternalAuthenticationsStartupFilter>();
         services.AddUsers();
 
         services.ConfigureApplicationCookie(options =>
@@ -165,7 +166,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<CustomUserSettingsService>();
         services.AddRecipeExecutionStep<CustomUserSettingsStep>();
         services.AddDisplayDriver<LoginForm, LoginFormDisplayDriver>();
-        services.AddScoped<ILoginFormEvent, EmailConfirmationUserEvent>();
+        services.AddScoped<ILoginFormEvent, EmailConfirmationLoginFormEvent>();
         services.AddScoped<IRegistrationFormEvents, EmailConfirmationRegistrationFormEvents>();
         services.AddDataMigration<LoginSettingsMigrations>();
     }
@@ -435,8 +436,8 @@ public sealed class RegistrationStartup : StartupBase
         services.AddDisplayDriver<LoginForm, RegisterUserLoginFormDisplayDriver>();
         services.AddDisplayDriver<RegisterUserForm, RegisterUserFormDisplayDriver>();
         services.AddTransient<IConfigureOptions<RegistrationOptions>, RegistrationOptionsConfigurations>();
-        services.AddScoped<ILoginFormEvent, RegistrationUserEvent>();
-        services.AddScoped<IRegistrationFormEvents, UserRegistrationFormEvents>();
+        services.AddScoped<ILoginFormEvent, UserModerationLoginFormEvent>();
+        services.AddScoped<IRegistrationFormEvents, UserModerationRegistrationFormEvents>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

@@ -4,11 +4,11 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Handlers;
 
-internal sealed class UserRegistrationFormEvents : RegistrationFormEventsBase
+internal sealed class UserModerationRegistrationFormEvents : RegistrationFormEventsBase
 {
     private readonly ISiteService _siteService;
 
-    public UserRegistrationFormEvents(ISiteService siteService)
+    public UserModerationRegistrationFormEvents(ISiteService siteService)
     {
         _siteService = siteService;
     }
