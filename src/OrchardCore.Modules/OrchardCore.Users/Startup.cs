@@ -167,7 +167,6 @@ public sealed class Startup : StartupBase
         services.AddRecipeExecutionStep<CustomUserSettingsStep>();
         services.AddDisplayDriver<LoginForm, LoginFormDisplayDriver>();
         services.AddScoped<ILoginFormEvent, EmailConfirmationLoginFormEvent>();
-        services.AddScoped<IRegistrationFormEvents, EmailConfirmationRegistrationFormEvents>();
         services.AddDataMigration<LoginSettingsMigrations>();
     }
 
@@ -276,6 +275,15 @@ public sealed class ExternalAuthenticationStartup : StartupBase
                 action = nameof(ExternalAuthenticationsController.ExternalLogins),
             }
         );
+    }
+}
+
+[RequireFeatures("OrchardCore.Email")]
+public sealed class EmailStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IRegistrationFormEvents, EmailConfirmationRegistrationFormEvents>();
     }
 }
 

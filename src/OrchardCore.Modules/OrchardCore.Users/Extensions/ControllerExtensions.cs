@@ -21,7 +21,13 @@ internal static class ControllerExtensions
 {
     internal static async Task<bool> SendEmailAsync(this Controller controller, string email, string subject, IShape model)
     {
-        var emailService = controller.HttpContext.RequestServices.GetRequiredService<IEmailService>();
+        var emailService = controller.HttpContext.RequestServices.GetService<IEmailService>();
+
+        if (emailService == null)
+        {
+            return false;
+        }
+
         var displayHelper = controller.HttpContext.RequestServices.GetRequiredService<IDisplayHelper>();
         var htmlEncoder = controller.HttpContext.RequestServices.GetRequiredService<HtmlEncoder>();
         var body = string.Empty;
