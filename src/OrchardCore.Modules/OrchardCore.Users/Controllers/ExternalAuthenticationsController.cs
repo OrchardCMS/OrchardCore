@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -17,6 +16,7 @@ using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
+using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers;
@@ -32,6 +32,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
     private readonly ISiteService _siteService;
     private readonly IEnumerable<ILoginFormEvent> _accountEvents;
     private readonly IShellFeaturesManager _shellFeaturesManager;
+    private readonly IUserService _userService;
     private readonly INotifier _notifier;
     private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
     private readonly ExternalLoginOptions _externalLoginOption;
@@ -51,6 +52,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         IStringLocalizer<ExternalAuthenticationsController> stringLocalizer,
         IEnumerable<ILoginFormEvent> accountEvents,
         IShellFeaturesManager shellFeaturesManager,
+        IUserService userService,
         INotifier notifier,
         IEnumerable<IExternalLoginEventHandler> externalLoginHandlers,
         IOptions<ExternalLoginOptions> externalLoginOption,
@@ -64,6 +66,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         _siteService = siteService;
         _accountEvents = accountEvents;
         _shellFeaturesManager = shellFeaturesManager;
+        _userService = userService;
         _notifier = notifier;
         _externalLoginHandlers = externalLoginHandlers;
         _externalLoginOption = externalLoginOption.Value;
@@ -191,12 +194,12 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         if (noInformationRequired)
         {
-            iUser = await this.RegisterUser(new RegisterUserForm()
+            iUser = await _userService.RegisterUserAsync(new RegisterUserForm()
             {
                 UserName = externalLoginViewModel.UserName,
                 Email = externalLoginViewModel.Email,
                 Password = null,
-            }, _logger);
+            }, ModelState.AddModelError);
 
             // If the registration was successful we can link the external provider and redirect the user.
             if (iUser == null)
@@ -217,17 +220,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                 {
                     foreach (var accountEvent in _accountEvents)
                     {
-                        var result = await accountEvent.LoggingInAsync(user);
-
-                        if (result != null)
-                        {
-                            return result;
-                        }
-                    }
-
-                    foreach (var handler in _accountEvents)
-                    {
-                        var loginResult = await handler.LoggingInAsync(user);
+                        var loginResult = await accountEvent.LoggingInAsync(user);
 
                         if (loginResult != null)
                         {
@@ -239,6 +232,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                 // We have created/linked to the local user, so we must verify the login.
                 // If it does not succeed, the user is not allowed to login
                 var signInResult = await ExternalLoginSignInAsync(iUser, info);
+
                 if (signInResult.Succeeded)
                 {
                     return await LoggedInActionResultAsync(iUser, returnUrl, info);
@@ -249,7 +243,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                 return RedirectToLogin(returnUrl);
             }
 
-            AddIdentityErrors(identityResult);
+            AddErrorsToModelState(identityResult.Errors);
         }
 
         return View(nameof(RegisterExternalLogin), externalLoginViewModel);
@@ -289,7 +283,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         if (model.NoEmail && string.IsNullOrWhiteSpace(model.Email))
         {
-            model.Email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
+            model.Email = info.GetEmail();
         }
 
         if (model.NoUsername && string.IsNullOrWhiteSpace(model.UserName))
@@ -305,19 +299,15 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         if (TryValidateModel(model) && ModelState.IsValid)
         {
-            var iUser = await this.RegisterUser(
+            var iUser = await _userService.RegisterUserAsync(
                 new RegisterUserForm()
                 {
                     UserName = model.UserName,
                     Email = model.Email,
                     Password = model.Password,
-                }, _logger);
+                }, ModelState.AddModelError);
 
-            if (iUser is null)
-            {
-                ModelState.AddModelError(string.Empty, "Registration Failed.");
-            }
-            else
+            if (iUser is not null)
             {
                 var identityResult = await _signInManager.UserManager.AddLoginAsync(iUser, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
 
@@ -345,7 +335,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                     }
                 }
 
-                AddIdentityErrors(identityResult);
+                AddErrorsToModelState(identityResult.Errors);
             }
         }
 
@@ -401,7 +391,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                         return await LoggedInActionResultAsync(user, returnUrl, info);
                     }
                 }
-                AddIdentityErrors(identityResult);
+                AddErrorsToModelState(identityResult.Errors);
             }
         }
 
@@ -562,9 +552,9 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         return result;
     }
 
-    private void AddIdentityErrors(IdentityResult result)
+    private void AddErrorsToModelState(IEnumerable<IdentityError> errors)
     {
-        foreach (var error in result.Errors)
+        foreach (var error in errors)
         {
             ModelState.AddModelError(string.Empty, error.Description);
         }

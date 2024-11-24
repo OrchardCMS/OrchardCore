@@ -12,6 +12,7 @@ using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
+using OrchardCore.Users.Services;
 
 namespace OrchardCore.Users.Controllers;
 
@@ -27,6 +28,7 @@ public sealed class RegistrationController : Controller
     private readonly RegistrationOptions _registrationOptions;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IEnumerable<ILoginFormEvent> _accountEvents;
+    private readonly IUserService _userService;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
@@ -41,6 +43,7 @@ public sealed class RegistrationController : Controller
         IOptions<RegistrationOptions> registrationOptions,
         IUpdateModelAccessor updateModelAccessor,
         IEnumerable<ILoginFormEvent> accountEvents,
+        IUserService userService,
         IHtmlLocalizer<RegistrationController> htmlLocalizer,
         IStringLocalizer<RegistrationController> stringLocalizer)
     {
@@ -53,6 +56,7 @@ public sealed class RegistrationController : Controller
         _registrationOptions = registrationOptions.Value;
         _updateModelAccessor = updateModelAccessor;
         _accountEvents = accountEvents;
+        _userService = userService;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
@@ -81,7 +85,7 @@ public sealed class RegistrationController : Controller
 
         if (ModelState.IsValid)
         {
-            var iUser = await this.RegisterUser(model, _logger);
+            var iUser = await _userService.RegisterUserAsync(model, ModelState.AddModelError);
 
             // If we get a user, redirect to returnUrl.
             if (iUser is User user)
