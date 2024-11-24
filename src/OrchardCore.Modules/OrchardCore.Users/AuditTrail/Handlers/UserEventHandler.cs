@@ -114,7 +114,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
     public Task<IActionResult> LoggingInAsync()
         => Task.FromResult<IActionResult>(null);
 
-    public Task<IActionResult> LoggingInAsync(IUser user)
+    public Task<IActionResult> ValidatingLoginAsync(IUser user)
         => Task.FromResult<IActionResult>(null);
     #endregion
 

@@ -27,7 +27,7 @@ internal sealed class EmailConfirmationLoginFormEvent : LoginFormEventBase
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public override async Task<IActionResult> LoggingInAsync(IUser user)
+    public override async Task<IActionResult> ValidatingLoginAsync(IUser user)
     {
         var settings = await _siteService.GetSettingsAsync<LoginSettings>();
 

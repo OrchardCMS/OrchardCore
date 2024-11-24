@@ -117,7 +117,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         {
             foreach (var handler in _accountEvents)
             {
-                var loginResult = await handler.LoggingInAsync(iUser);
+                var loginResult = await handler.ValidatingLoginAsync(iUser);
 
                 if (loginResult != null)
                 {
@@ -127,11 +127,16 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
             await _accountEvents.InvokeAsync((e, user, modelState) => e.LoggingInAsync(user.UserName, (key, message) => modelState.AddModelError(key, message)), iUser, ModelState, _logger);
 
-            var signInResult = await ExternalLoginSignInAsync(iUser, info);
-
-            if (signInResult.Succeeded)
+            if (ModelState.IsValid)
             {
-                return await LoggedInActionResultAsync(iUser, returnUrl, info);
+                var signInResult = await ExternalLoginSignInAsync(iUser, info);
+
+                if (signInResult.Succeeded)
+                {
+                    await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), iUser, _logger);
+
+                    return await LoggedInActionResultAsync(iUser, returnUrl, info);
+                }
             }
 
             ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
@@ -153,7 +158,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         {
             foreach (var handler in _accountEvents)
             {
-                var loginResult = await handler.LoggingInAsync(iUser);
+                var loginResult = await handler.ValidatingLoginAsync(iUser);
 
                 if (loginResult != null)
                 {
@@ -220,7 +225,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                 {
                     foreach (var accountEvent in _accountEvents)
                     {
-                        var loginResult = await accountEvent.LoggingInAsync(user);
+                        var loginResult = await accountEvent.ValidatingLoginAsync(user);
 
                         if (loginResult != null)
                         {
@@ -235,6 +240,8 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
                 if (signInResult.Succeeded)
                 {
+                    await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), iUser, _logger);
+
                     return await LoggedInActionResultAsync(iUser, returnUrl, info);
                 }
 
@@ -317,7 +324,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
                     foreach (var handler in _accountEvents)
                     {
-                        var loginResult = await handler.LoggingInAsync(iUser);
+                        var loginResult = await handler.ValidatingLoginAsync(iUser);
 
                         if (loginResult != null)
                         {

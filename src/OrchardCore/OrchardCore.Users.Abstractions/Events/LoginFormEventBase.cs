@@ -22,6 +22,6 @@ public abstract class LoginFormEventBase : ILoginFormEvent
     public virtual Task<IActionResult> LoggingInAsync()
         => Task.FromResult<IActionResult>(null);
 
-    public virtual Task<IActionResult> LoggingInAsync(IUser user)
+    public virtual Task<IActionResult> ValidatingLoginAsync(IUser user)
         => Task.FromResult<IActionResult>(null);
 }

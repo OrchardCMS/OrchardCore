@@ -8,13 +8,6 @@ namespace OrchardCore.Users.Events;
 public interface ILoginFormEvent
 {
     /// <summary>
-    /// Occurs when the user is logging.
-    /// </summary>
-    /// <param name="userName">The username.</param>
-    /// <param name="reportError">The reported error if failure happened during the login process.</param>
-    Task LoggingInAsync(string userName, Action<string, string> reportError);
-
-    /// <summary>
     /// Occurs when the user login has failed and the user was not found.
     /// </summary>
     /// <param name="userName">The username.</param>
@@ -45,8 +38,15 @@ public interface ILoginFormEvent
     Task<IActionResult> LoggingInAsync();
 
     /// <summary>
+    /// Occurs when the user is logging.
+    /// </summary>
+    /// <param name="userName">The username.</param>
+    /// <param name="reportError">The reported error if failure happened during the login process.</param>
+    Task LoggingInAsync(string userName, Action<string, string> reportError);
+
+    /// <summary>
     /// Occurs when is trying to login and after the user is located.
     /// </summary>
     /// <returns></returns>
-    Task<IActionResult> LoggingInAsync(IUser user);
+    Task<IActionResult> ValidatingLoginAsync(IUser user);
 }

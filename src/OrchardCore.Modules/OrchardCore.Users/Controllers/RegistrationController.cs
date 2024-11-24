@@ -92,7 +92,7 @@ public sealed class RegistrationController : Controller
             {
                 foreach (var handler in _accountEvents)
                 {
-                    var loginResult = await handler.LoggingInAsync(user);
+                    var loginResult = await handler.ValidatingLoginAsync(user);
 
                     if (loginResult != null)
                     {

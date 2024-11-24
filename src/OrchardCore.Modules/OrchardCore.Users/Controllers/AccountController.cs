@@ -127,11 +127,12 @@ public sealed class AccountController : AccountBaseController
             if (user != null)
             {
                 var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
+
                 if (result.Succeeded)
                 {
                     foreach (var handler in _accountEvents)
                     {
-                        var loginResult = await handler.LoggingInAsync(user);
+                        var loginResult = await handler.ValidatingLoginAsync(user);
 
                         if (loginResult != null)
                         {
@@ -139,14 +140,20 @@ public sealed class AccountController : AccountBaseController
                         }
                     }
 
-                    result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+                    await _accountEvents.InvokeAsync((e, user, modelState) => e.LoggingInAsync(user.UserName, (key, message) => modelState.AddModelError(key, message)), user, ModelState, _logger);
 
-                    if (result.Succeeded)
+                    if (ModelState.IsValid)
                     {
-                        _logger.LogInformation(1, "User logged in.");
-                        await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
+                        result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
 
-                        return await LoggedInActionResultAsync(user, returnUrl);
+                        if (result.Succeeded)
+                        {
+                            _logger.LogInformation(1, "User logged in.");
+
+                            await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
+
+                            return await LoggedInActionResultAsync(user, returnUrl);
+                        }
                     }
                 }
 
