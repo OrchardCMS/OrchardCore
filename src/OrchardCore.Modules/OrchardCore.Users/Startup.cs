@@ -282,6 +282,7 @@ public sealed class EmailStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<UserEmailService>();
         services.AddScoped<IRegistrationFormEvents, EmailConfirmationRegistrationFormEvents>();
     }
 }

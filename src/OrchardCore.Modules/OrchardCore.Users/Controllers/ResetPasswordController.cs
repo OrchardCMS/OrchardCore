@@ -1,4 +1,3 @@
-using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +12,6 @@ using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
-using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers;
 
@@ -29,6 +27,7 @@ public sealed class ResetPasswordController : Controller
     private readonly ILogger _logger;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IDisplayManager<ForgotPasswordForm> _forgotPasswordDisplayManager;
+    private readonly UserEmailService _userEmailService;
     private readonly IDisplayManager<ResetPasswordForm> _resetPasswordDisplayManager;
     private readonly IShellFeaturesManager _shellFeaturesManager;
 
@@ -41,6 +40,7 @@ public sealed class ResetPasswordController : Controller
         ILogger<ResetPasswordController> logger,
         IUpdateModelAccessor updateModelAccessor,
         IDisplayManager<ForgotPasswordForm> forgotPasswordDisplayManager,
+        UserEmailService userEmailService,
         IDisplayManager<ResetPasswordForm> resetPasswordDisplayManager,
         IShellFeaturesManager shellFeaturesManager,
         IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
@@ -52,6 +52,7 @@ public sealed class ResetPasswordController : Controller
         _logger = logger;
         _updateModelAccessor = updateModelAccessor;
         _forgotPasswordDisplayManager = forgotPasswordDisplayManager;
+        _userEmailService = userEmailService;
         _resetPasswordDisplayManager = resetPasswordDisplayManager;
         _shellFeaturesManager = shellFeaturesManager;
         _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
@@ -90,25 +91,20 @@ public sealed class ResetPasswordController : Controller
         if (ModelState.IsValid)
         {
             var user = await _userService.GetForgotPasswordUserAsync(model.UsernameOrEmail) as User;
-            if (user == null || await MustValidateEmailAsync(user))
+            if (user == null)
             {
                 // returns to confirmation page anyway: we don't want to let scrapers know if a username or an email exist
                 return RedirectToAction(nameof(ForgotPasswordConfirmation));
             }
 
-            user.ResetToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(user.ResetToken));
-            var resetPasswordUrl = Url.Action(nameof(ResetPassword), _controllerName, new { code = user.ResetToken }, HttpContext.Request.Scheme);
-
-            // send email with callback link
-            await this.SendEmailAsync(user.Email, S["Reset your password"], new LostPasswordViewModel()
+            if (!await MustValidateEmailAsync(user))
             {
-                User = user,
-                LostPasswordUrl = resetPasswordUrl
-            });
+                await _userEmailService.SendPasswordResetAsync(user);
 
-            var context = new PasswordRecoveryContext(user);
+                var context = new PasswordRecoveryContext(user);
 
-            await _passwordRecoveryFormEvents.InvokeAsync((handler, context) => handler.PasswordRecoveredAsync(context), context, _logger);
+                await _passwordRecoveryFormEvents.InvokeAsync((handler, context) => handler.PasswordRecoveredAsync(context), context, _logger);
+            }
 
             return RedirectToAction(nameof(ForgotPasswordConfirmation));
         }

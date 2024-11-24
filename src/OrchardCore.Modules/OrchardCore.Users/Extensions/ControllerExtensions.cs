@@ -1,49 +1,19 @@
-using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement;
-using OrchardCore.Email;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
-using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Controllers;
 
 internal static class ControllerExtensions
 {
-    internal static async Task<bool> SendEmailAsync(this Controller controller, string email, string subject, IShape model)
-    {
-        var emailService = controller.HttpContext.RequestServices.GetService<IEmailService>();
-
-        if (emailService == null)
-        {
-            return false;
-        }
-
-        var displayHelper = controller.HttpContext.RequestServices.GetRequiredService<IDisplayHelper>();
-        var htmlEncoder = controller.HttpContext.RequestServices.GetRequiredService<HtmlEncoder>();
-        var body = string.Empty;
-
-        using (var sw = new StringWriter())
-        {
-            var htmlContent = await displayHelper.ShapeExecuteAsync(model);
-            htmlContent.WriteTo(sw, htmlEncoder);
-            body = sw.ToString();
-        }
-
-        var result = await emailService.SendAsync(email, subject, body);
-
-        return result.Succeeded;
-    }
-
     /// <summary>
     /// Returns the created user, otherwise returns null.
     /// </summary>
@@ -97,28 +67,5 @@ internal static class ControllerExtensions
         }
 
         return null;
-    }
-
-    internal static async Task<string> SendEmailConfirmationTokenAsync(this Controller controller, User user, string subject)
-    {
-        var userManager = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<UserManager<IUser>>();
-
-        var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
-
-        var callbackUrl = controller.Url.Action(nameof(EmailConfirmationController.ConfirmEmail), typeof(EmailConfirmationController).ControllerName(),
-            new
-            {
-                userId = user.UserId,
-                code,
-            },
-            protocol: controller.HttpContext.Request.Scheme);
-
-        await SendEmailAsync(controller, user.Email, subject, new ConfirmEmailViewModel
-        {
-            User = user,
-            ConfirmEmailUrl = callbackUrl,
-        });
-
-        return callbackUrl;
     }
 }
