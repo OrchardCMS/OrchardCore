@@ -56,7 +56,7 @@ validation:
 not_in_nav: |
   samples/
   releases/3.0.0.md
-
+  
 # Extensions
 markdown_extensions:
   - markdown.extensions.admonition

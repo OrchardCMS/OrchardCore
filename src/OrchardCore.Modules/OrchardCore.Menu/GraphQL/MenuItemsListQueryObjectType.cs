@@ -12,6 +12,5 @@ public class MenuItemsListQueryObjectType : ObjectGraphType<MenuItemsListPart>
         Field<ListGraphType<MenuItemInterface>>("menuItems")
             .Description("The menu items.")
             .Resolve(context => context.Source.MenuItems);
-
     }
 }
