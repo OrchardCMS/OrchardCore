@@ -455,14 +455,14 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    public async Task<IActionResult> Query(string indexName, string query)
+    public Task<IActionResult> Query(string indexName, string query)
     {
         if (!_elasticConnectionOptions.ConfigurationExists())
         {
-            return NotConfigured();
+            return Task.FromResult<IActionResult>(NotConfigured());
         }
 
-        return await Query(new AdminQueryViewModel
+        return Query(new AdminQueryViewModel
         {
             IndexName = indexName,
             DecodedQuery = string.IsNullOrWhiteSpace(query)
@@ -524,8 +524,8 @@ public sealed class AdminController : Controller
 
             if (results != null)
             {
-                model.Documents = results.TopDocs?.Where(x => x != null).Select(doc => doc.Value.Deserialize<Dictionary<string, object>>());
-                model.Fields = results.Fields?.Where(x => x != null).Select(field => field.Value.Deserialize<Dictionary<string, object>>());
+                model.Documents = results.TopDocs;
+                model.Fields = results.Fields;
                 model.Count = results.Count;
             }
         }
