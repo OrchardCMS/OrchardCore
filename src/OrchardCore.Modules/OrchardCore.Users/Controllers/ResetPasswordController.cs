@@ -77,7 +77,9 @@ public sealed class ResetPasswordController : Controller
     [ActionName(nameof(ForgotPassword))]
     public async Task<IActionResult> ForgotPasswordPOST()
     {
-        if (!(await _siteService.GetSettingsAsync<ResetPasswordSettings>()).AllowResetPassword)
+        var site = await _siteService.GetSiteSettingsAsync();
+
+        if (!site.As<ResetPasswordSettings>().AllowResetPassword)
         {
             return NotFound();
         }
@@ -90,14 +92,19 @@ public sealed class ResetPasswordController : Controller
 
         if (ModelState.IsValid)
         {
-            var user = await _userService.GetForgotPasswordUserAsync(model.UsernameOrEmail) as User;
-            if (user == null)
+            if (await _userService.GetForgotPasswordUserAsync(model.UsernameOrEmail) is not User user)
             {
-                // returns to confirmation page anyway: we don't want to let scrapers know if a username or an email exist
+                // Redirect to the confirmation page to ensure scrapers cannot determine if a username or email is already registered.
                 return RedirectToAction(nameof(ForgotPasswordConfirmation));
             }
 
-            if (!await MustValidateEmailAsync(user))
+            var loginSettings = site.As<LoginSettings>();
+
+            if (loginSettings.UsersMustValidateEmail && !await _userManager.IsEmailConfirmedAsync(user))
+            {
+                ModelState.AddModelError(string.Empty, S["Before you can reset your password, you need to verify your email address."]);
+            }
+            else
             {
                 await _userEmailService.SendPasswordResetAsync(user);
 
@@ -171,19 +178,5 @@ public sealed class ResetPasswordController : Controller
     public IActionResult ResetPasswordConfirmation()
     {
         return View();
-    }
-
-    private async Task<bool> MustValidateEmailAsync(User user)
-    {
-        var registrationFeatureIsAvailable = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                       .Any(feature => feature.Id == UserConstants.Features.UserRegistration);
-
-        if (!registrationFeatureIsAvailable)
-        {
-            return false;
-        }
-
-        return (await _siteService.GetSettingsAsync<LoginSettings>()).UsersMustValidateEmail
-            && !await _userManager.IsEmailConfirmedAsync(user);
     }
 }
