@@ -107,7 +107,6 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
     }
 
     #region Unused login events
-
     public Task LoggingInAsync(string userName, Action<string, string> reportError)
         => Task.CompletedTask;
 
