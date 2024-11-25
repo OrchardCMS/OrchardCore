@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Environment.Shell;
@@ -31,6 +32,7 @@ public sealed class ResetPasswordController : Controller
     private readonly IDisplayManager<ForgotPasswordForm> _forgotPasswordDisplayManager;
     private readonly IDisplayManager<ResetPasswordForm> _resetPasswordDisplayManager;
     private readonly IShellFeaturesManager _shellFeaturesManager;
+    private readonly RegistrationOptions _registrationOptions;
 
     internal readonly IStringLocalizer S;
 
@@ -43,6 +45,7 @@ public sealed class ResetPasswordController : Controller
         IDisplayManager<ForgotPasswordForm> forgotPasswordDisplayManager,
         IDisplayManager<ResetPasswordForm> resetPasswordDisplayManager,
         IShellFeaturesManager shellFeaturesManager,
+        IOptions<RegistrationOptions> registrationOptions,
         IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
         IStringLocalizer<ResetPasswordController> stringLocalizer)
     {
@@ -54,6 +57,7 @@ public sealed class ResetPasswordController : Controller
         _forgotPasswordDisplayManager = forgotPasswordDisplayManager;
         _resetPasswordDisplayManager = resetPasswordDisplayManager;
         _shellFeaturesManager = shellFeaturesManager;
+        _registrationOptions = registrationOptions.Value;
         _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
         S = stringLocalizer;
     }
@@ -179,15 +183,7 @@ public sealed class ResetPasswordController : Controller
 
     private async Task<bool> MustValidateEmailAsync(User user)
     {
-        var registrationFeatureIsAvailable = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-                       .Any(feature => feature.Id == UserConstants.Features.UserRegistration);
-
-        if (!registrationFeatureIsAvailable)
-        {
-            return false;
-        }
-
-        return (await _siteService.GetSettingsAsync<RegistrationSettings>()).UsersMustValidateEmail
-            && !await _userManager.IsEmailConfirmedAsync(user);
+        return _registrationOptions.UsersMustValidateEmail &&
+            !await _userManager.IsEmailConfirmedAsync(user);
     }
 }

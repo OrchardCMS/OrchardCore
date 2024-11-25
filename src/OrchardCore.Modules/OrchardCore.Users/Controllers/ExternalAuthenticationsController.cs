@@ -34,6 +34,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly INotifier _notifier;
     private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
+    private readonly RegistrationOptions _registrationOptions;
     private readonly ExternalLoginOptions _externalLoginOption;
     private readonly IdentityOptions _identityOptions;
 
@@ -54,6 +55,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         INotifier notifier,
         IEnumerable<IExternalLoginEventHandler> externalLoginHandlers,
         IOptions<ExternalLoginOptions> externalLoginOption,
+        IOptions<RegistrationOptions> registrationOptions,
         IOptions<IdentityOptions> identityOptions)
     {
         _signInManager = signInManager;
@@ -66,6 +68,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         _shellFeaturesManager = shellFeaturesManager;
         _notifier = notifier;
         _externalLoginHandlers = externalLoginHandlers;
+        _registrationOptions = registrationOptions.Value;
         _externalLoginOption = externalLoginOption.Value;
         _identityOptions = identityOptions.Value;
 
@@ -138,11 +141,9 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             ViewData["ReturnUrl"] = returnUrl;
             ViewData["LoginProvider"] = info.LoginProvider;
 
-            var registrationSettings = await _siteService.GetSettingsAsync<RegistrationSettings>();
-
             if (iUser != null)
             {
-                if (iUser is User userToLink && registrationSettings.UsersMustValidateEmail && !userToLink.EmailConfirmed)
+                if (iUser is User userToLink && _registrationOptions.UsersMustValidateEmail && !userToLink.EmailConfirmed)
                 {
                     return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
                         new
@@ -160,6 +161,13 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             }
 
             var settings = await _siteService.GetSettingsAsync<ExternalRegistrationSettings>();
+
+            if (settings.DisableNewRegistrations)
+            {
+                await _notifier.ErrorAsync(H["New registrations are disabled for this site."]);
+
+                return RedirectToLogin();
+            }
 
             var externalLoginViewModel = new RegisterExternalLoginViewModel
             {
@@ -197,7 +205,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                         // The login info must be linked before we consider a redirect, or the login info is lost.
                         if (iUser is User user)
                         {
-                            if (registrationSettings.UsersMustValidateEmail && !user.EmailConfirmed)
+                            if (_registrationOptions.UsersMustValidateEmail && !user.EmailConfirmed)
                             {
                                 return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
                                     new
@@ -208,7 +216,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                                     });
                             }
 
-                            if (registrationSettings.UsersAreModerated && !user.IsEnabled)
+                            if (_registrationOptions.UsersAreModerated && !user.IsEnabled)
                             {
                                 return RedirectToAction(nameof(RegistrationController.RegistrationPending),
                                     new
@@ -237,13 +245,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                 }
             }
 
-            if (settings.DisableNewRegistrations)
-            {
-                await _notifier.ErrorAsync(H["New registrations are disabled for this site."]);
-
-                return RedirectToLogin();
-            }
-
             return View(nameof(RegisterExternalLogin), externalLoginViewModel);
         }
 
@@ -261,7 +262,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         {
             await _notifier.ErrorAsync(H["New registrations are disabled for this site."]);
 
-            return RedirectToLogin();
+            return RedirectToLogin(returnUrl);
         }
 
         var info = await _signInManager.GetExternalLoginInfoAsync();
@@ -322,9 +323,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                     // The login info must be linked before we consider a redirect, or the login info is lost.
                     if (iUser is User user)
                     {
-                        var registrationSettings = await _siteService.GetSettingsAsync<RegistrationSettings>();
-
-                        if (registrationSettings.UsersMustValidateEmail && !user.EmailConfirmed)
+                        if (_registrationOptions.UsersMustValidateEmail && !user.EmailConfirmed)
                         {
                             return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent),
                                 new
@@ -335,7 +334,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                                 });
                         }
 
-                        if (registrationSettings.UsersAreModerated && !user.IsEnabled)
+                        if (_registrationOptions.UsersAreModerated && !user.IsEnabled)
                         {
                             return RedirectToAction(nameof(RegistrationController.RegistrationPending),
                                 new
@@ -609,16 +608,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
     private async Task<bool> AddConfirmEmailErrorAsync(IUser user)
     {
-        var registrationFeatureIsAvailable = (await _shellFeaturesManager.GetAvailableFeaturesAsync())
-            .Any(feature => feature.Id == UserConstants.Features.UserRegistration);
-
-        if (!registrationFeatureIsAvailable)
-        {
-            return false;
-        }
-
-        var registrationSettings = await _siteService.GetSettingsAsync<RegistrationSettings>();
-        if (registrationSettings.UsersMustValidateEmail)
+        if (_registrationOptions.UsersMustValidateEmail)
         {
             // Require that the users have a confirmed email before they can log on.
             if (!await _userManager.IsEmailConfirmedAsync(user))
