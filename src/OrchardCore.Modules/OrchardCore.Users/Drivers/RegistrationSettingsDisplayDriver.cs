@@ -63,9 +63,10 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var hasChange = model.UsersMustValidateEmail != settings.UsersMustValidateEmail
-            || model.UsersAreModerated != settings.UsersAreModerated
-            || model.UseSiteTheme != settings.UseSiteTheme;
+        var hasChange =
+            model.UsersMustValidateEmail != settings.UsersMustValidateEmail ||
+            model.UsersAreModerated != settings.UsersAreModerated ||
+            model.UseSiteTheme != settings.UseSiteTheme;
 
         settings.UsersMustValidateEmail = model.UsersMustValidateEmail;
         settings.UsersAreModerated = model.UsersAreModerated;
