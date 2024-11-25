@@ -140,21 +140,17 @@ public sealed class AccountController : AccountBaseController
                         }
                     }
 
-                    await _accountEvents.InvokeAsync((e, user, modelState) => e.LoggingInAsync(user.UserName, (key, message) => modelState.AddModelError(key, message)), user, ModelState, _logger);
+                    result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
 
-                    if (ModelState.IsValid)
+                    if (result.Succeeded)
                     {
-                        result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+                        _logger.LogInformation(1, "User logged in.");
 
-                        if (result.Succeeded)
-                        {
-                            _logger.LogInformation(1, "User logged in.");
+                        await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
-                            await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
-
-                            return await LoggedInActionResultAsync(user, returnUrl);
-                        }
+                        return await LoggedInActionResultAsync(user, returnUrl);
                     }
+
                 }
 
                 if (result.RequiresTwoFactor)

@@ -115,20 +115,20 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         if (iUser != null)
         {
-            foreach (var accountEvent in _accountEvents)
-            {
-                var loginResult = await accountEvent.ValidatingLoginAsync(iUser);
-
-                if (loginResult != null)
-                {
-                    return loginResult;
-                }
-            }
-
             await _accountEvents.InvokeAsync((e, user, modelState) => e.LoggingInAsync(user.UserName, (key, message) => modelState.AddModelError(key, message)), iUser, ModelState, _logger);
 
             if (ModelState.IsValid)
             {
+                foreach (var accountEvent in _accountEvents)
+                {
+                    var loginResult = await accountEvent.ValidatingLoginAsync(iUser);
+
+                    if (loginResult != null)
+                    {
+                        return loginResult;
+                    }
+                }
+
                 var signInResult = await ExternalLoginSignInAsync(iUser, info);
 
                 if (signInResult.Succeeded)
