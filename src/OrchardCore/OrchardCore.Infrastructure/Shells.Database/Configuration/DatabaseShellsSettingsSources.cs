@@ -42,7 +42,7 @@ public class DatabaseShellsSettingsSources : IShellsSettingsSources
         if (document.ShellsSettings is not null)
         {
             var shellsSettingsString = document.ShellsSettings.ToJsonString(JOptions.Default);
-            builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellSettingsString)));
+            builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(shellsSettingsString)));
         }
     }
 
