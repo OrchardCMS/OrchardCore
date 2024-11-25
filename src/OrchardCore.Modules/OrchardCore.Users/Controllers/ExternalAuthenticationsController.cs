@@ -94,6 +94,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         if (remoteError != null)
         {
             _logger.LogError("Error from external provider: {Error}", remoteError);
+
             ModelState.AddModelError(string.Empty, S["An error occurred in external provider."]);
 
             return RedirectToLogin(returnUrl);
@@ -104,6 +105,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         if (info == null)
         {
             _logger.LogError("Could not get external login info.");
+
             ModelState.AddModelError(string.Empty, S["An error occurred in external provider."]);
 
             return RedirectToLogin(returnUrl);
@@ -115,6 +117,8 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         if (iUser != null)
         {
+            _logger.LogInformation("Found user using external provider and provider key.");
+
             await _accountEvents.InvokeAsync((e, user, modelState) => e.LoggingInAsync(user.UserName, (key, message) => modelState.AddModelError(key, message)), iUser, ModelState, _logger);
 
             if (ModelState.IsValid)
@@ -129,7 +133,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                     }
                 }
 
-                var signInResult = await ExternalLoginSignInAsync(iUser, info);
+                var signInResult = await ExternalSignInAsync(iUser, info);
 
                 if (signInResult.Succeeded)
                 {
@@ -156,6 +160,8 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         if (iUser != null)
         {
+            _logger.LogInformation("Found external user using email. Attempt to link them to existing user.");
+
             foreach (var accountEvent in _accountEvents)
             {
                 var loginResult = await accountEvent.ValidatingLoginAsync(iUser);
@@ -199,6 +205,8 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         if (noInformationRequired)
         {
+            _logger.LogInformation("Auto registering an external user using password-less method.");
+
             iUser = await _userService.RegisterAsync(new RegisterUserForm()
             {
                 UserName = externalLoginViewModel.UserName,
@@ -236,7 +244,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
                 // We have created/linked to the local user, so we must verify the login.
                 // If it does not succeed, the user is not allowed to login
-                var signInResult = await ExternalLoginSignInAsync(iUser, info);
+                var signInResult = await ExternalSignInAsync(iUser, info);
 
                 if (signInResult.Succeeded)
                 {
@@ -288,17 +296,17 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         ModelState.Clear();
 
-        if (model.NoEmail && string.IsNullOrWhiteSpace(model.Email))
+        if (settings.NoEmail && string.IsNullOrWhiteSpace(model.Email))
         {
             model.Email = info.GetEmail();
         }
 
-        if (model.NoUsername && string.IsNullOrWhiteSpace(model.UserName))
+        if (settings.NoUsername && string.IsNullOrWhiteSpace(model.UserName))
         {
             model.UserName = await GenerateUsernameAsync(info);
         }
 
-        if (model.NoPassword)
+        if (settings.NoPassword)
         {
             model.Password = null;
             model.ConfirmPassword = null;
@@ -334,7 +342,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
                     // we have created/linked to the local user, so we must verify the login.
                     // If it does not succeed, the user is not allowed to login
-                    var signInResult = await ExternalLoginSignInAsync(iUser, info);
+                    var signInResult = await ExternalSignInAsync(iUser, info);
 
                     if (signInResult.Succeeded)
                     {
@@ -393,7 +401,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                     _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);
                     // we have created/linked to the local user, so we must verify the login. If it does not succeed,
                     // the user is not allowed to login.
-                    if ((await ExternalLoginSignInAsync(user, info)).Succeeded)
+                    if ((await ExternalSignInAsync(user, info)).Succeeded)
                     {
                         return await LoggedInActionResultAsync(user, returnUrl, info);
                     }
@@ -472,7 +480,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         // Clear the existing external cookie to ensure a clean login process.
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
         // Perform External Login SignIn.
-        await ExternalLoginSignInAsync(user, info);
+        await ExternalSignInAsync(user, info);
 
         return RedirectToAction(nameof(ExternalLogins));
     }
@@ -511,8 +519,10 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         return RedirectToAction(nameof(ExternalLogins));
     }
 
-    private async Task<Microsoft.AspNetCore.Identity.SignInResult> ExternalLoginSignInAsync(IUser user, ExternalLoginInfo info)
+    private async Task<Microsoft.AspNetCore.Identity.SignInResult> ExternalSignInAsync(IUser user, ExternalLoginInfo info)
     {
+        _logger.LogInformation("Attempting to do an external sign in.");
+
         var externalClaims = info.Principal.GetSerializableClaims();
         var userRoles = await _userManager.GetRolesAsync(user);
         var userInfo = user as User;
@@ -522,6 +532,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             UserClaims = userInfo.UserClaims,
             UserRoles = userRoles,
         };
+
         foreach (var item in _externalLoginHandlers)
         {
             try
@@ -546,9 +557,12 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
             var identityResult = await _signInManager.UpdateExternalAuthenticationTokensAsync(info);
+
             if (!identityResult.Succeeded)
             {
                 _logger.LogError("Error updating the external authentication tokens.");
+
+                AddErrorsToModelState(identityResult.Errors);
             }
         }
         else
