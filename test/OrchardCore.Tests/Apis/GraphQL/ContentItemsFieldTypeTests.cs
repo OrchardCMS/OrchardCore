@@ -431,15 +431,19 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
             FieldDefinition = new FieldType
             {
                 Name = "Inputs",
-                ResolvedType = new ListGraphType(new StringGraphType() { Name = "Animal" }),
-                Arguments = [
-                        new QueryArgument<WhereInputObjectGraphType>
-                        {
-                            Name = "where",
-                            Description = "filters the animals",
-                            ResolvedType = where
-                        }
-                    ]
+                ResolvedType = new ListGraphType(new StringGraphType()
+                {
+                    Name = "Animal",
+                }),
+                Arguments =
+                [
+                    new QueryArgument<WhereInputObjectGraphType>
+                    {
+                        Name = "where",
+                        Description = "filters the animals",
+                        ResolvedType = where
+                    }
+                ]
             },
             RequestServices = services
         };
@@ -461,7 +465,12 @@ public class AnimalPartWhereInput : WhereInputObjectGraphType
     {
         Name = "Test";
         Description = "Foo";
-        var fieldType = new FieldType { Name = fieldName, Type = typeof(StringGraphType) };
+        var fieldType = new FieldType
+        {
+            Name = fieldName,
+            Type = typeof(StringGraphType),
+            ResolvedType = new StringGraphType(),
+        };
         fieldType.Metadata["PartName"] = "AnimalPart";
         AddField(fieldType);
     }
@@ -474,7 +483,12 @@ public class AnimalPartCollapsedWhereInput : WhereInputObjectGraphType
     {
         Name = "Test";
         Description = "Foo";
-        var fieldType = new FieldType { Name = "Name", Type = typeof(StringGraphType) };
+        var fieldType = new FieldType
+        {
+            Name = "Name",
+            Type = typeof(StringGraphType),
+            ResolvedType = new StringGraphType(),
+        };
         fieldType.Metadata["PartName"] = "AnimalPart";
         fieldType.Metadata["PartCollapsed"] = true;
         AddField(fieldType);
@@ -484,7 +498,9 @@ public class AnimalPartCollapsedWhereInput : WhereInputObjectGraphType
 public class Animal : ContentPart
 {
     public string Name { get; set; }
+
     public bool IsHappy { get; set; }
+
     public bool IsScary { get; set; }
 }
 

@@ -4,13 +4,6 @@ using OrchardCore.Apis.GraphQL.Queries.Types;
 
 namespace OrchardCore.Apis.GraphQL.Queries;
 
-public interface IFilterInputObjectGraphType : IInputObjectGraphType
-{
-    void AddScalarFilterFields<TGraphType>(string fieldName, string description);
-
-    void AddScalarFilterFields(Type graphType, string fieldName, string description);
-}
-
 public class WhereInputObjectGraphType : WhereInputObjectGraphType<object>, IFilterInputObjectGraphType
 {
     public WhereInputObjectGraphType(IStringLocalizer<WhereInputObjectGraphType<object>> localizer) : base(localizer)
@@ -105,26 +98,29 @@ public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSour
 
     private void AddEqualityFilters(Type graphType, string fieldName, string description)
     {
-        AddFilterFields(graphType, EqualityOperators, fieldName, description);
+        AddFilterFields(CreateGraphType(graphType), EqualityOperators, fieldName, description);
     }
 
     private void AddStringFilters(Type graphType, string fieldName, string description)
     {
-        AddFilterFields(graphType, StringComparisonOperators, fieldName, description);
+        AddFilterFields(CreateGraphType(graphType), StringComparisonOperators, fieldName, description);
     }
 
     private void AddNonStringFilters(Type graphType, string fieldName, string description)
     {
-        AddFilterFields(graphType, NonStringValueComparisonOperators, fieldName, description);
+        AddFilterFields(CreateGraphType(graphType), NonStringValueComparisonOperators, fieldName, description);
     }
 
     private void AddMultiValueFilters(Type graphType, string fieldName, string description)
     {
-        var wrappedType = typeof(ListGraphType<>).MakeGenericType(graphType);
-        AddFilterFields(wrappedType, MultiValueComparisonOperators, fieldName, description);
+        AddFilterFields(CreateGraphType(graphType), MultiValueComparisonOperators, fieldName, description);
     }
 
-    private void AddFilterFields(Type graphType, IDictionary<string, Func<IStringLocalizer, string, string>> filters, string fieldName, string description)
+    private void AddFilterFields(
+        IGraphType resolvedType,
+        IDictionary<string, Func<IStringLocalizer, string, string>> filters,
+        string fieldName,
+        string description)
     {
         foreach (var filter in filters)
         {
@@ -132,8 +128,45 @@ public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSour
             {
                 Name = fieldName + filter.Key,
                 Description = filter.Value(S, description),
-                Type = graphType
+                ResolvedType = resolvedType,
             });
         }
+    }
+
+    private readonly Dictionary<Type, IGraphType> graphTypes = new();
+
+    private IGraphType CreateGraphType(Type type)
+    {
+        if (type.IsGenericType)
+        {
+            var genericDef = type.GetGenericTypeDefinition();
+            if (genericDef == typeof(ListGraphType<>))
+            {
+                var innerType = type.GetGenericArguments()[0];
+
+                return new ListGraphType(CreateGraphType(innerType));
+            }
+
+            if (genericDef == typeof(NonNullGraphType<>))
+            {
+                var innerType = type.GetGenericArguments()[0];
+
+                return new NonNullGraphType(CreateGraphType(innerType));
+            }
+        }
+
+        if (typeof(ScalarGraphType).IsAssignableFrom(type))
+        {
+            if (!graphTypes.TryGetValue(type, out var graphType))
+            {
+                graphType = (IGraphType)Activator.CreateInstance(type);
+
+                graphTypes[type] = graphType;
+            }
+
+            return graphType;
+        }
+
+        throw new InvalidOperationException($"{type.Name} is not a valid {nameof(ScalarGraphType)}.");
     }
 }

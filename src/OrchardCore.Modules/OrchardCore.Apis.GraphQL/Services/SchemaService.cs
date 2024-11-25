@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Globalization;
+using GraphQL;
 using GraphQL.MicrosoftDI;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +8,7 @@ using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Apis.GraphQL.Services;
 
-public class SchemaService : ISchemaFactory
+public sealed class SchemaService : ISchemaFactory
 {
     private readonly IEnumerable<ISchemaBuilder> _schemaBuilders;
     private readonly IServiceProvider _serviceProvider;
@@ -15,7 +16,9 @@ public class SchemaService : ISchemaFactory
     private readonly ConcurrentDictionary<ISchemaBuilder, string> _identifiers = new();
     private readonly ConcurrentDictionary<CultureInfo, ISchema> _schemas = new ();
 
-    public SchemaService(IEnumerable<ISchemaBuilder> schemaBuilders, IServiceProvider serviceProvider)
+    public SchemaService(
+        IEnumerable<ISchemaBuilder> schemaBuilders,
+        IServiceProvider serviceProvider)
     {
         _schemaBuilders = schemaBuilders;
         _serviceProvider = serviceProvider;
@@ -62,21 +65,23 @@ public class SchemaService : ISchemaFactory
 
             var schema = new Schema(new SelfActivatingServiceProvider(_serviceProvider))
             {
-                Query = new ObjectGraphType { Name = "Query" },
-                Mutation = new ObjectGraphType { Name = "Mutation" },
-                Subscription = new ObjectGraphType { Name = "Subscription" },
+                Query = new ObjectGraphType
+                {
+                    Name = "Query",
+                },
+                Mutation = new ObjectGraphType
+                {
+                    Name = "Mutation",
+                },
+                Subscription = new ObjectGraphType
+                {
+                    Name = "Subscription",
+                },
                 NameConverter = new OrchardFieldNameConverter(),
             };
 
-            foreach (var type in serviceProvider.GetServices<IInputObjectGraphType>())
-            {
-                schema.RegisterType(type);
-            }
-
-            foreach (var type in serviceProvider.GetServices<IObjectGraphType>())
-            {
-                schema.RegisterType(type);
-            }
+            schema.RegisterTypes(serviceProvider.GetServices<IInputObjectGraphType>().ToArray());
+            schema.RegisterTypes(serviceProvider.GetServices<IObjectGraphType>().ToArray());
 
             foreach (var builder in _schemaBuilders)
             {
@@ -90,7 +95,6 @@ public class SchemaService : ISchemaFactory
 
                 await builder.BuildAsync(schema);
             }
-
 
             // Clean Query, Mutation and Subscription if they have no fields
             // to prevent GraphQL configuration errors.
@@ -111,6 +115,7 @@ public class SchemaService : ISchemaFactory
             }
 
             schema.Initialize();
+
             return _schemas[culture] = schema;
         }
         finally

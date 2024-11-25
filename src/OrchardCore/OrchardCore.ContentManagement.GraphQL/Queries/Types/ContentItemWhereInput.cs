@@ -10,7 +10,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 [GraphQLFieldName("Or", "OR")]
 [GraphQLFieldName("And", "AND")]
 [GraphQLFieldName("Not", "NOT")]
-public class ContentItemWhereInput : WhereInputObjectGraphType
+public sealed class ContentItemWhereInput : WhereInputObjectGraphType
 {
     private readonly IOptions<GraphQLContentOptions> _optionsAccessor;
 

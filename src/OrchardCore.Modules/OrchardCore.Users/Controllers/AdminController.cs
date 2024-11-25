@@ -132,9 +132,9 @@ public sealed class AdminController : Controller
 
         options.UserFilters =
         [
-            new SelectListItem() { Text = S["All Users"], Value = nameof(UsersFilter.All), Selected = (options.Filter == UsersFilter.All) },
-            new SelectListItem() { Text = S["Enabled Users"], Value = nameof(UsersFilter.Enabled), Selected = (options.Filter == UsersFilter.Enabled) },
-            new SelectListItem() { Text = S["Disabled Users"], Value = nameof(UsersFilter.Disabled), Selected = (options.Filter == UsersFilter.Disabled) }
+            new SelectListItem() { Text = S["All Users"], Value = nameof(UsersFilter.All), Selected = options.Filter == UsersFilter.All },
+            new SelectListItem() { Text = S["Enabled Users"], Value = nameof(UsersFilter.Enabled), Selected = options.Filter == UsersFilter.Enabled },
+            new SelectListItem() { Text = S["Disabled Users"], Value = nameof(UsersFilter.Disabled), Selected = options.Filter == UsersFilter.Disabled }
             // new SelectListItem() { Text = S["Approved"], Value = nameof(UsersFilter.Approved) },
             // new SelectListItem() { Text = S["Email pending"], Value = nameof(UsersFilter.EmailPending) },
             // new SelectListItem() { Text = S["Pending"], Value = nameof(UsersFilter.Pending) }
@@ -142,8 +142,8 @@ public sealed class AdminController : Controller
 
         options.UserSorts =
         [
-            new SelectListItem() { Text = S["Name"], Value = nameof(UsersOrder.Name), Selected = (options.Order == UsersOrder.Name) },
-            new SelectListItem() { Text = S["Email"], Value = nameof(UsersOrder.Email), Selected = (options.Order == UsersOrder.Email) },
+            new SelectListItem() { Text = S["Name"], Value = nameof(UsersOrder.Name), Selected = options.Order == UsersOrder.Name },
+            new SelectListItem() { Text = S["Email"], Value = nameof(UsersOrder.Email), Selected = options.Order == UsersOrder.Email },
             // new SelectListItem() { Text = S["Created date"], Value = nameof(UsersOrder.CreatedUtc) },
             // new SelectListItem() { Text = S["Last Login date"], Value = nameof(UsersOrder.LastLoginUtc) }
         ];
