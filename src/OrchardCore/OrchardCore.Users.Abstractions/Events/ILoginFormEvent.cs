@@ -32,7 +32,7 @@ public interface ILoginFormEvent
     Task LoggedInAsync(IUser user);
 
     /// <summary>
-    /// Occurs when the user is logging.
+    /// Occurs when the user is logging in.
     /// </summary>
     /// <param name="userName">The username.</param>
     /// <param name="reportError">The reported error if failure happened during the login process.</param>
