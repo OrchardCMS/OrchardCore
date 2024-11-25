@@ -184,7 +184,8 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         {
             await _notifier.ErrorAsync(H["New registrations are disabled for this site."]);
 
-            return RedirectToLogin(returnUrl);
+            // Redirect to home to avoid infinite redirect.
+            return Redirect("~/");
         }
 
         var externalLoginViewModel = new RegisterExternalLoginViewModel
@@ -219,7 +220,8 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             {
                 await _notifier.ErrorAsync(H["Unable to create internal account and link it to the external user."]);
 
-                return RedirectToLogin(returnUrl);
+                // Redirect to home to avoid infinite redirect.
+                return Redirect("~/");
             }
 
             var identityResult = await _signInManager.UserManager.AddLoginAsync(iUser, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
@@ -275,7 +277,8 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         {
             await _notifier.ErrorAsync(H["New registrations are disabled for this site."]);
 
-            return RedirectToLogin();
+            // Redirect to home to avoid infinite redirect.
+            return Redirect("~/");
         }
 
         var info = await _signInManager.GetExternalLoginInfoAsync();
@@ -378,7 +381,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             _logger.LogWarning("Suspicious login detected from external provider. {LoginProvider} with key [{ProviderKey}] for {Identity}",
                 info.LoginProvider, info.ProviderKey, info.Principal?.Identity?.Name);
 
-            return RedirectToLogin();
+            return Redirect("~/");
         }
 
         if (ModelState.IsValid)
@@ -406,6 +409,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                         return await LoggedInActionResultAsync(user, returnUrl, info);
                     }
                 }
+
                 AddErrorsToModelState(identityResult.Errors);
             }
         }
@@ -494,7 +498,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         {
             _logger.LogError("Unable to load user with ID '{UserId}'.", _userManager.GetUserId(User));
 
-            return RedirectToLogin();
+            return Redirect("~/");
         }
 
         var result = await _userManager.RemoveLoginAsync(user, model.LoginProvider, model.ProviderKey);
