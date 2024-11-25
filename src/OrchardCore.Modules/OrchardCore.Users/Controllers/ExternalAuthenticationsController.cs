@@ -97,8 +97,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
             ModelState.AddModelError(string.Empty, S["An error occurred in external provider."]);
 
-            // Redirect to home to avoid infinite redirect.
-            return Redirect("~/");
+            return RedirectToLogin(returnUrl);
         }
 
         var info = await _signInManager.GetExternalLoginInfoAsync();
@@ -109,8 +108,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
             ModelState.AddModelError(string.Empty, S["An error occurred in external provider."]);
 
-            // Redirect to home to avoid infinite redirect.
-            return Redirect("~/");
+            return RedirectToLogin(returnUrl);
         }
 
         var iUser = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
@@ -186,8 +184,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         {
             await _notifier.ErrorAsync(H["New registrations are disabled for this site."]);
 
-            // Redirect to home to avoid infinite redirect.
-            return Redirect("~/");
+            return RedirectToLogin(returnUrl);
         }
 
         var externalLoginViewModel = new RegisterExternalLoginViewModel
@@ -222,8 +219,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             {
                 await _notifier.ErrorAsync(H["Unable to create internal account and link it to the external user."]);
 
-                // Redirect to home to avoid infinite redirect.
-                return Redirect("~/");
+                return RedirectToLogin(returnUrl);
             }
 
             var identityResult = await _signInManager.UserManager.AddLoginAsync(iUser, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
@@ -279,8 +275,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         {
             await _notifier.ErrorAsync(H["New registrations are disabled for this site."]);
 
-            // Redirect to home to avoid infinite redirect.
-            return Redirect("~/");
+            return RedirectToLogin(returnUrl);
         }
 
         var info = await _signInManager.GetExternalLoginInfoAsync();
