@@ -81,7 +81,7 @@ public sealed class UserEmailService
                 code = user.ResetToken,
             });
 
-        // send email with callback link
+        // Send email with callback link.
         return await SendEmailAsync(user.Email, S["Reset your password"], new LostPasswordViewModel()
         {
             User = user,
