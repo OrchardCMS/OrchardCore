@@ -156,7 +156,7 @@ public sealed class SqlQueryFieldTypeProvider : ISchemaBuilder
             ),
 
             Name = fieldTypeName,
-            Description =  S["Represents the {0} Query : {1}", query.Source, query.Name],
+            Description = S["Represents the {0} Query : {1}", query.Source, query.Name],
             ResolvedType = new ListGraphType(typeType),
             Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
             Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>)

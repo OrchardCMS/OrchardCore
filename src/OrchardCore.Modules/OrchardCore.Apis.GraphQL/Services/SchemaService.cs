@@ -14,7 +14,7 @@ public sealed class SchemaService : ISchemaFactory
     private readonly IServiceProvider _serviceProvider;
     private readonly SemaphoreSlim _schemaGenerationSemaphore = new(1, 1);
     private readonly ConcurrentDictionary<ISchemaBuilder, string> _identifiers = new();
-    private readonly ConcurrentDictionary<CultureInfo, ISchema> _schemas = new ();
+    private readonly ConcurrentDictionary<CultureInfo, ISchema> _schemas = new();
 
     public SchemaService(
         IEnumerable<ISchemaBuilder> schemaBuilders,
