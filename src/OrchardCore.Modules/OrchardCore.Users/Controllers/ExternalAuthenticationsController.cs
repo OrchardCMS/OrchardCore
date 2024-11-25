@@ -97,7 +97,8 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
             ModelState.AddModelError(string.Empty, S["An error occurred in external provider."]);
 
-            return RedirectToLogin(returnUrl);
+            // Redirect to home to avoid infinite redirect.
+            return Redirect("~/");
         }
 
         var info = await _signInManager.GetExternalLoginInfoAsync();
@@ -108,7 +109,8 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
             ModelState.AddModelError(string.Empty, S["An error occurred in external provider."]);
 
-            return RedirectToLogin(returnUrl);
+            // Redirect to home to avoid infinite redirect.
+            return Redirect("~/");
         }
 
         var iUser = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
