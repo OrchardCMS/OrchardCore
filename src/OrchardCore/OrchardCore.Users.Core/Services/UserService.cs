@@ -19,6 +19,8 @@ public class UserService : IUserService
     private readonly UserManager<IUser> _userManager;
     private readonly IdentityOptions _identityOptions;
     private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
+    private readonly IEnumerable<IRegistrationFormEvents> _registrationFormEvents;
+    private readonly RegistrationOptions _registrationOptions;
     private readonly ISiteService _siteService;
     private readonly ILogger _logger;
 
@@ -29,17 +31,21 @@ public class UserService : IUserService
         UserManager<IUser> userManager,
         IOptions<IdentityOptions> identityOptions,
         IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents,
-        IStringLocalizer<UserService> stringLocalizer,
+        IEnumerable<IRegistrationFormEvents> registrationFormEvents,
+        IOptions<RegistrationOptions> registrationOptions,
         ISiteService siteService,
-        ILogger<UserService> logger)
+        ILogger<UserService> logger,
+        IStringLocalizer<UserService> stringLocalizer)
     {
         _signInManager = signInManager;
         _userManager = userManager;
         _identityOptions = identityOptions.Value;
         _passwordRecoveryFormEvents = passwordRecoveryFormEvents;
-        S = stringLocalizer;
+        _registrationFormEvents = registrationFormEvents;
+        _registrationOptions = registrationOptions.Value;
         _siteService = siteService;
         _logger = logger;
+        S = stringLocalizer;
     }
 
     public async Task<IUser> AuthenticateAsync(string usernameOrEmail, string password, Action<string, string> reportError)
@@ -310,5 +316,37 @@ public class UserService : IUserService
                     break;
             }
         }
+    }
+
+    public async Task<IUser> RegisterAsync(RegisterUserForm model, Action<string, string> reportError)
+    {
+        await _registrationFormEvents.InvokeAsync((e, report) => e.RegistrationValidationAsync((key, message) => report(key, message)), reportError, _logger);
+
+        var user = await CreateUserAsync(new User
+        {
+            UserName = model.UserName,
+            Email = model.Email,
+            EmailConfirmed = !_registrationOptions.UsersMustValidateEmail,
+            IsEnabled = !_registrationOptions.UsersAreModerated,
+        }, model.Password, reportError) as User;
+
+        if (user == null)
+        {
+            return null;
+        }
+        var context = new UserRegisteringContext(user);
+
+        await _registrationFormEvents.InvokeAsync((e, ctx) => e.RegisteringAsync(ctx), context, _logger);
+
+        if (!context.Cancel)
+        {
+            await _signInManager.SignInAsync(user, isPersistent: false);
+        }
+
+        _logger.LogInformation(3, "User created a new account with password.");
+
+        await _registrationFormEvents.InvokeAsync((e, user) => e.RegisteredAsync(user), user, _logger);
+
+        return user;
     }
 }

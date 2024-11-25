@@ -60,8 +60,8 @@ Do the harder parts of making the release public. This should come after everyth
 - [ ] Tag the head of `release/<version name>` with the version. Include `v` in the name, e.g. `v1.8.0`.
 - [ ] Merge `release/<version name>` to `main`.
   - You'll need to create a pull request.
-  - Merge it as a merge commit, not squash merge.
-  - If there are merge conflicts, then create a `release/<version name>-integration` branch and fix them there.
+  - If this is a main branch release (release/x.y), squash merge the PR. If this is a patch release (release/x.y.z for instance) don't resolve the conflicts in GH (as it would merge main to release/x.y.z) but in git. Then push from git.
+  - Restore the branch that GH deletes automatically from the merged PR.
 - [ ] Create and publish a release [on GitHub](https://github.com/OrchardCMS/OrchardCore/releases/new).
   - Generate release notes.
   - Add a link to the release notes in the docs (something like `For details on this version see the [release notes in the documentation](link here).`). Note that the docs will only be built once the branch is merged to `main`.
