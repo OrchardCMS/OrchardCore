@@ -74,9 +74,7 @@ public class DatabaseShellConfigurationSources : IShellConfigurationSources
         if (configuration is not null)
         {
             var configurationString = configuration.ToJsonString(JOptions.Default);
-            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(configurationString));
-
-            builder.AddTenantJsonStream(stream);
+            builder.AddTenantJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configurationString)));
         }
     }
 
