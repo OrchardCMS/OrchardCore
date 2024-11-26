@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -593,29 +594,29 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
     {
         _logger.LogInformation("Attempting to do an external sign in.");
 
-        var externalClaims = info.Principal.GetSerializableClaims();
+        var externalClaims = info.Principal.GetSerializableClaims().ToArray();
         var userRoles = await _userManager.GetRolesAsync(user);
         var userInfo = user as User;
 
-        var context = new UpdateUserContext(user, info.LoginProvider, externalClaims, userInfo.Properties)
+        var context = new UpdateUserContext(user, info.LoginProvider, externalClaims, userInfo.Properties.DeepClone() as JsonObject)
         {
             UserClaims = userInfo.UserClaims,
             UserRoles = userRoles,
         };
 
-        foreach (var item in _externalLoginHandlers)
+        foreach (var externalLoginHandlers in _externalLoginHandlers)
         {
             try
             {
-                await item.UpdateUserAsync(context);
+                await externalLoginHandlers.UpdateUserAsync(context);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "{ExternalLoginHandler}.UpdateUserAsync threw an exception", item.GetType());
+                _logger.LogError(ex, "The method {ExternalLoginHandler}.UpdateUserAsync(context) threw an exception", externalLoginHandlers.GetType());
             }
         }
 
-        if (await UserManagerHelper.UpdateUserPropertiesAsync(_userManager, userInfo, context))
+        if (await _userManager.UpdateUserPropertiesAsync(userInfo, context))
         {
             await _userManager.UpdateAsync(user);
         }

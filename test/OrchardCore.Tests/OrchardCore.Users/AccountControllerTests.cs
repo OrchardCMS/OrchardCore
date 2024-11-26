@@ -45,7 +45,7 @@ public class AccountControllerTests
             var externalClaims = new List<SerializableClaim>();
             var userRoles = await userManager.GetRolesAsync(user);
 
-            var context = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties)
+            var context = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties.DeepClone() as JsonObject)
             {
                 UserClaims = user.UserClaims,
                 UserRoles = userRoles
@@ -87,7 +87,7 @@ public class AccountControllerTests
             };
             scriptExternalLoginEventHandler.UpdateUserInternal(context, loginSettings);
 
-            if (await UserManagerHelper.UpdateUserPropertiesAsync(userManager, user, context))
+            if (await UserManagerExtensions.UpdateUserPropertiesAsync(userManager, user, context))
             {
                 await userManager.UpdateAsync(user);
             }
@@ -115,7 +115,7 @@ public class AccountControllerTests
             var externalClaims = new List<SerializableClaim>();
             var userRoles = await userManager.GetRolesAsync(user);
 
-            var updateContext = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties)
+            var updateContext = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties.DeepClone() as JsonObject)
             {
                 UserClaims = user.UserClaims,
                 UserRoles = userRoles,
@@ -145,7 +145,7 @@ public class AccountControllerTests
             };
             scriptExternalLoginEventHandler.UpdateUserInternal(updateContext, loginSettings);
 
-            if (await UserManagerHelper.UpdateUserPropertiesAsync(userManager, user, updateContext))
+            if (await UserManagerExtensions.UpdateUserPropertiesAsync(userManager, user, updateContext))
             {
                 await userManager.UpdateAsync(user);
             }
