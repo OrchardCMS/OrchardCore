@@ -33,9 +33,16 @@ public sealed class ContentItemWhereInput : WhereInputObjectGraphType
         AddScalarFilterFields<StringGraphType>("author", S["the author of the content item"]);
 
         var whereInputType = new ListGraphType(this);
-        Field<ListGraphType<ContentItemWhereInput>>("Or").Description(S["OR logical operation"]).Type(whereInputType);
-        Field<ListGraphType<ContentItemWhereInput>>("And").Description(S["AND logical operation"]).Type(whereInputType);
-        Field<ListGraphType<ContentItemWhereInput>>("Not").Description(S["NOT logical operation"]).Type(whereInputType);
+        Field<ListGraphType<ContentItemWhereInput>>("Or")
+            .Description(S["OR logical operation"]).Type(whereInputType);
+            
+        Field<ListGraphType<ContentItemWhereInput>>("And")
+            .Description(S["AND logical operation"])
+            .Type(whereInputType);
+            
+        Field<ListGraphType<ContentItemWhereInput>>("Not")
+            .Description(S["NOT logical operation"])
+            .Type(whereInputType);
     }
 
     public override void AddScalarFilterFields(Type graphType, string fieldName, string description)
