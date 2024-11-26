@@ -2,13 +2,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
-using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.TimeZone.Models;
 
 namespace OrchardCore.Users.TimeZone.Services;
 
-public class UserTimeZoneService : UserEventHandlerBase, IUserTimeZoneService
+public class UserTimeZoneService : IUserTimeZoneService
 {
     private const string CacheKey = "UserTimeZone/";
     private const string EmptyTimeZone = "NoTimeZoneFound";
@@ -94,15 +93,6 @@ public class UserTimeZoneService : UserEventHandlerBase, IUserTimeZoneService
 
         return timeZoneId;
     }
-
-    public override Task DeletedAsync(UserDeleteContext context)
-        => ForgetCacheAsync(context.User.UserName);
-
-    public override Task UpdatedAsync(UserUpdateContext context)
-        => ForgetCacheAsync(context.User.UserName);
-
-    public override Task DisabledAsync(UserContext context)
-        => ForgetCacheAsync(context.User.UserName);
 
     private Task ForgetCacheAsync(string userName)
     {
