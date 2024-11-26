@@ -25,11 +25,11 @@ public sealed class LuceneQueryFieldTypeProvider : ISchemaBuilder
 
     public LuceneQueryFieldTypeProvider(
         IHttpContextAccessor httpContextAccessor,
-        IStringLocalizer<LuceneQueryFieldTypeProvider> localizer,
+        IStringLocalizer<LuceneQueryFieldTypeProvider> stringLocalizer,
         ILogger<LuceneQueryFieldTypeProvider> logger)
     {
         _httpContextAccessor = httpContextAccessor;
-        S = localizer;
+        S = stringLocalizer;
         _logger = logger;
     }
 

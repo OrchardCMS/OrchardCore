@@ -478,8 +478,8 @@ public class AnimalPartWhereInput : WhereInputObjectGraphType
 
 public class AnimalPartCollapsedWhereInput : WhereInputObjectGraphType
 {
-    public AnimalPartCollapsedWhereInput(IStringLocalizer<AnimalPartCollapsedWhereInput> S)
-        : base(S)
+    public AnimalPartCollapsedWhereInput(IStringLocalizer<AnimalPartCollapsedWhereInput> stringLocalizer)
+        : base(stringLocalizer)
     {
         Name = "Test";
         Description = "Foo";

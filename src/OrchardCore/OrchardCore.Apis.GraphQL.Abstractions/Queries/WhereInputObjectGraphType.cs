@@ -6,7 +6,7 @@ namespace OrchardCore.Apis.GraphQL.Queries;
 
 public class WhereInputObjectGraphType : WhereInputObjectGraphType<object>, IFilterInputObjectGraphType
 {
-    public WhereInputObjectGraphType(IStringLocalizer<WhereInputObjectGraphType<object>> localizer) : base(localizer)
+    public WhereInputObjectGraphType(IStringLocalizer<WhereInputObjectGraphType<object>> stringLocalizer) : base(stringLocalizer)
     {
     }
 }
