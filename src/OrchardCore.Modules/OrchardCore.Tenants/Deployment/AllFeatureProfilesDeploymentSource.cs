@@ -4,7 +4,7 @@ using OrchardCore.Tenants.Services;
 
 namespace OrchardCore.Tenants.Deployment;
 
-public class AllFeatureProfilesDeploymentSource
+public sealed class AllFeatureProfilesDeploymentSource
     : DeploymentSourceBase<AllFeatureProfilesDeploymentStep>
 {
     private readonly FeatureProfilesManager _featureProfilesManager;

@@ -6,7 +6,7 @@ using YesSql.Filters.Query;
 
 namespace OrchardCore.ContentLocalization.Services;
 
-public class LocalizationPartContentsAdminListFilterProvider : IContentsAdminListFilterProvider
+public sealed class LocalizationPartContentsAdminListFilterProvider : IContentsAdminListFilterProvider
 {
     public void Build(QueryEngineBuilder<ContentItem> builder)
     {

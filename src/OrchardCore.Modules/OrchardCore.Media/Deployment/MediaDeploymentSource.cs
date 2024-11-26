@@ -3,7 +3,7 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Media.Deployment;
 
-public class MediaDeploymentSource
+public sealed class MediaDeploymentSource
     : DeploymentSourceBase<MediaDeploymentStep>
 {
     private readonly IMediaFileStore _mediaFileStore;
