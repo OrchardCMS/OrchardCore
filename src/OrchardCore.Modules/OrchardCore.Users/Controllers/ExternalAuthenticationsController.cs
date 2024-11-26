@@ -546,12 +546,14 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             {
                 var validationResult = await passwordValidator.ValidateAsync(_userManager, user, model.Password);
 
-                if (!validationResult.Succeeded)
+                if (validationResult.Succeeded)
                 {
-                    foreach (var error in validationResult.Errors)
-                    {
-                        ModelState.AddModelError(nameof(model.Password), error.Description);
-                    }
+                    continue;
+                }
+
+                foreach (var error in validationResult.Errors)
+                {
+                    ModelState.AddModelError(nameof(model.Password), error.Description);
                 }
             }
         }
