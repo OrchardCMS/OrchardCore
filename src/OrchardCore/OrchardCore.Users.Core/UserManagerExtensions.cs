@@ -6,7 +6,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users;
 
-public static class UserManagerHelper
+public static class UserManagerExtensions
 {
     private static readonly JsonMergeSettings _jsonMergeSettings = new()
     {
@@ -14,7 +14,7 @@ public static class UserManagerHelper
         MergeNullValueHandling = MergeNullValueHandling.Merge,
     };
 
-    public static async Task<bool> UpdateUserPropertiesAsync(UserManager<IUser> userManager, User user, UpdateUserContext context)
+    public static async Task<bool> UpdateUserPropertiesAsync(this UserManager<IUser> userManager, User user, UpdateUserContext context)
     {
         await userManager.AddToRolesAsync(user, context.RolesToAdd.Distinct());
         await userManager.RemoveFromRolesAsync(user, context.RolesToRemove.Distinct());
