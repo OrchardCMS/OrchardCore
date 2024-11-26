@@ -87,7 +87,7 @@ public class AccountControllerTests
             };
             scriptExternalLoginEventHandler.UpdateUserInternal(context, loginSettings);
 
-            if (await UserManagerExtensions.UpdateUserPropertiesAsync(userManager, user, context))
+            if (await userManager.UpdateUserPropertiesAsync(user, context))
             {
                 await userManager.UpdateAsync(user);
             }
