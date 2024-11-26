@@ -4,7 +4,7 @@ using OrchardCore.Features.Services;
 
 namespace OrchardCore.Features.Deployment;
 
-public class AllFeaturesDeploymentSource
+public sealed class AllFeaturesDeploymentSource
     : DeploymentSourceBase<AllFeaturesDeploymentStep>
 {
     private readonly IModuleService _moduleService;

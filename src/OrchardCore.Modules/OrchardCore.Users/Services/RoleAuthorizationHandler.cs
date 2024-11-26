@@ -8,7 +8,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services;
 
-public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+public sealed class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
     private readonly IServiceProvider _serviceProvider;
 

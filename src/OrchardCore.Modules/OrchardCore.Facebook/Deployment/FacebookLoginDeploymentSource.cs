@@ -4,7 +4,7 @@ using OrchardCore.Facebook.Services;
 
 namespace OrchardCore.Facebook.Deployment;
 
-public class FacebookLoginDeploymentSource
+public sealed class FacebookLoginDeploymentSource
     : DeploymentSourceBase<FacebookLoginDeploymentStep>
 {
     private readonly IFacebookService _facebookService;
