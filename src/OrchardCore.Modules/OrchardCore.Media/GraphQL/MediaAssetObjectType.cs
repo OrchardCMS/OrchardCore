@@ -24,7 +24,7 @@ public class MediaAssetObjectType : ObjectGraphType<IFileStoreEntry>
 
         Field(file => file.Length)
             .Description(S["The length of the file."]);
-            
+
         Field<DateTimeGraphType>("lastModifiedUtc")
             .Description(S["The date and time in UTC when the asset was last modified."])
             .Resolve(file => file.Source.LastModifiedUtc);
