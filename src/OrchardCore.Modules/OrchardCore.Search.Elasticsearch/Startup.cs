@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Nest;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentTypes.Editors;
@@ -38,28 +37,27 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IConfigureOptions<ElasticConnectionOptions>, ElasticConnectionOptionsConfigurations>();
-
-        services.AddSingleton<IElasticClient>((sp) =>
+        services.AddTransient<IConfigureOptions<ElasticsearchConnectionOptions>, ElasticsearchConnectionOptionsConfigurations>();
+        services.AddSingleton((sp) =>
         {
-            var options = sp.GetRequiredService<IOptions<ElasticConnectionOptions>>().Value;
+            var options = sp.GetRequiredService<IOptions<ElasticsearchConnectionOptions>>().Value;
 
-            return new ElasticClient(options.GetConnectionSettings() ?? new ConnectionSettings());
+            return ElasticsearchClientFactory.Create(options);
         });
 
         services.Configure<ElasticsearchOptions>(options =>
         {
-            var configuration = _shellConfiguration.GetSection(ElasticConnectionOptionsConfigurations.ConfigSectionName);
+            var configuration = _shellConfiguration.GetSection(ElasticsearchConnectionOptionsConfigurations.ConfigSectionName);
 
             options.AddIndexPrefix(configuration);
             options.AddTokenFilters(configuration);
             options.AddAnalyzers(configuration);
         });
 
-        services.AddElasticServices();
-        services.AddPermissionProvider<Permissions>();
+        services.AddElasticsearchServices();
+        services.AddPermissionProvider<PermissionProvider>();
         services.AddNavigationProvider<AdminMenu>();
-        services.AddDisplayDriver<Query, ElasticQueryDisplayDriver>();
+        services.AddDisplayDriver<Query, ElasticsearchQueryDisplayDriver>();
         services.AddDataMigration<ElasticsearchQueryMigrations>();
         services.AddScoped<IQueryHandler, ElasticsearchQueryHandler>();
     }
@@ -81,10 +79,10 @@ public sealed class DeploymentStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddDeployment<ElasticIndexDeploymentSource, ElasticIndexDeploymentStep, ElasticIndexDeploymentStepDriver>();
+        services.AddDeployment<ElasticsearchIndexDeploymentSource, ElasticsearchIndexDeploymentStep, ElasticIndexDeploymentStepDriver>();
         services.AddDeployment<ElasticSettingsDeploymentSource, ElasticSettingsDeploymentStep, ElasticSettingsDeploymentStepDriver>();
-        services.AddDeployment<ElasticIndexRebuildDeploymentSource, ElasticIndexRebuildDeploymentStep, ElasticIndexRebuildDeploymentStepDriver>();
-        services.AddDeployment<ElasticIndexResetDeploymentSource, ElasticIndexResetDeploymentStep, ElasticIndexResetDeploymentStepDriver>();
+        services.AddDeployment<ElasticsearchIndexRebuildDeploymentSource, ElasticsearchIndexRebuildDeploymentStep, ElasticIndexRebuildDeploymentStepDriver>();
+        services.AddDeployment<ElasticsearchIndexResetDeploymentSource, ElasticsearchIndexResetDeploymentStep, ElasticIndexResetDeploymentStepDriver>();
     }
 }
 
@@ -102,7 +100,7 @@ public sealed class ElasticContentPickerStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IContentPickerResultProvider, ElasticContentPickerResultProvider>();
+        services.AddScoped<IContentPickerResultProvider, ElasticsearchContentPickerResultProvider>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPickerFieldElasticEditorSettingsDriver>();
         services.AddShapeAttributes<ElasticContentPickerShapeProvider>();
     }
