@@ -7,8 +7,8 @@ namespace OrchardCore.Lists.GraphQL;
 
 public class ContainedInputObjectType : WhereInputObjectGraphType<ContainedPart>
 {
-    public ContainedInputObjectType(IStringLocalizer<ContainedInputObjectType> S)
-        : base(S)
+    public ContainedInputObjectType(IStringLocalizer<ContainedInputObjectType> stringLocalizer)
+        : base(stringLocalizer)
     {
         Name = "ContainedPartInput";
         Description = S["the list part of the content item"];
