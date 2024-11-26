@@ -318,7 +318,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
             if (iUser is not null && ModelState.IsValid)
             {
-                var identityResult = await _signInManager.UserManager.AddLoginAsync(iUser, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
+                var identityResult = await _userManager.AddLoginAsync(iUser, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
 
                 if (identityResult.Succeeded)
                 {
@@ -388,7 +388,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             }
             else
             {
-                var identityResult = await _signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
+                var identityResult = await _userManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
 
                 if (identityResult.Succeeded)
                 {
