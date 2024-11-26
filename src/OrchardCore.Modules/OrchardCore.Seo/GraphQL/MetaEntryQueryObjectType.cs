@@ -14,14 +14,19 @@ public class MetaEntryQueryObjectType : ObjectGraphType<MetaEntry>
 
         Field(x => x.Name)
             .Description(S["Name of the meta entry"]);
+
         Field(x => x.Property)
             .Description(S["Property of the meta entry"]);
+
         Field(x => x.Content)
             .Description(S["Content of the meta entry"]);
+
         Field(x => x.HttpEquiv)
             .Description(S["HttpEquiv of the meta entry"]);
+
         Field(x => x.Charset)
             .Description(S["Charset of the meta entry"]);
+
         Field<StringGraphType>("Tag")
             .Description(S["The generated tag of the meta entry"])
             .Resolve(ctx =>

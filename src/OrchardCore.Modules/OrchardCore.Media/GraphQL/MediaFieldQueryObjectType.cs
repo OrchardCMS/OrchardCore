@@ -104,10 +104,21 @@ public sealed class MediaFileItemType : ObjectGraphType<MediaFileItem>
 {
     public MediaFileItemType(IStringLocalizer<MediaFileItemType> S)
     {
-        Field<StringGraphType>("fileName").Description(S["the file name of the media file item"]).Resolve(x => x.Source.FileName);
-        Field<StringGraphType>("path").Description(S["the path of the media file item"]).Resolve(x => x.Source.Path);
-        Field<StringGraphType>("url").Description(S["the url name of the media file item"]).Resolve(x => x.Source.Url);
-        Field<StringGraphType>("mediaText").Description(S["the media text of the file item"]).Resolve(x => x.Source.MediaText);
+        Field<StringGraphType>("fileName")
+            .Description(S["the file name of the media file item"])
+            .Resolve(x => x.Source.FileName);
+
+        Field<StringGraphType>("path")
+            .Description(S["the path of the media file item"])
+            .Resolve(x => x.Source.Path);
+
+        Field<StringGraphType>("url")
+            .Description(S["the url name of the media file item"])
+            .Resolve(x => x.Source.Url);
+
+        Field<StringGraphType>("mediaText")
+            .Description(S["the media text of the file item"])
+            .Resolve(x => x.Source.MediaText);
     }
 }
 

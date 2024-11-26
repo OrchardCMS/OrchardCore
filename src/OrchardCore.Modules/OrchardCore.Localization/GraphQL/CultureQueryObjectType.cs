@@ -15,7 +15,12 @@ public class CultureQueryObjectType : ObjectGraphType<SiteCulture>
     {
         Name = "SiteCulture";
 
-        Field<StringGraphType>("culture").Description(S["The culture code."]).Resolve(context => context.Source.Culture);
-        Field<BooleanGraphType>("default").Description(S["Whether this is the default culture."]).Resolve(context => context.Source.IsDefault);
+        Field<StringGraphType>("culture")
+            .Description(S["The culture code."])
+            .Resolve(context => context.Source.Culture);
+
+        Field<BooleanGraphType>("default")
+            .Description(S["Whether this is the default culture."])
+            .Resolve(context => context.Source.IsDefault);
     }
 }

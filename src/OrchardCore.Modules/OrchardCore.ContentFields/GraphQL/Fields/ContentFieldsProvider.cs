@@ -106,7 +106,7 @@ public class ContentFieldsProvider : IContentFieldProvider
         }
     }.ToFrozenDictionary();
 
-    protected readonly IStringLocalizer<ContentFieldsProvider> S;
+    protected readonly IStringLocalizer S;
 
     public ContentFieldsProvider(IStringLocalizer<ContentFieldsProvider> stringLocalizer)
     {
@@ -169,7 +169,7 @@ public class ContentFieldsProvider : IContentFieldProvider
 
     private sealed class FieldTypeDescriptor
     {
-        public Func<IStringLocalizer<ContentFieldsProvider>, string> Description { get; set; }
+        public Func<IStringLocalizer, string> Description { get; set; }
 
         public Type FieldType { get; set; }
 

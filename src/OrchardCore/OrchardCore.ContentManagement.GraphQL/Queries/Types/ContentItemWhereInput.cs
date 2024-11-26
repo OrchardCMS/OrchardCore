@@ -35,7 +35,8 @@ public sealed class ContentItemWhereInput : WhereInputObjectGraphType
         var whereInputType = new ListGraphType(this);
 
         Field<ListGraphType<ContentItemWhereInput>>("Or")
-            .Description(S["OR logical operation"]).Type(whereInputType);
+            .Description(S["OR logical operation"])
+            .Type(whereInputType);
 
         Field<ListGraphType<ContentItemWhereInput>>("And")
             .Description(S["AND logical operation"])

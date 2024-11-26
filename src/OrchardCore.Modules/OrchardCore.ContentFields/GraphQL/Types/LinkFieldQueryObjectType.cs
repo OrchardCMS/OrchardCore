@@ -10,8 +10,13 @@ public class LinkFieldQueryObjectType : ObjectGraphType<LinkField>
     {
         Name = nameof(LinkField);
 
-        Field(x => x.Url, nullable: true).Description(S["the url of the link"]);
-        Field(x => x.Text, nullable: true).Description(S["the text of the link"]);
-        Field(x => x.Target, nullable: true).Description(S["the target of the link"]);
+        Field(x => x.Url, nullable: true)
+            .Description(S["the url of the link"]);
+
+        Field(x => x.Text, nullable: true)
+            .Description(S["the text of the link"]);
+
+        Field(x => x.Target, nullable: true)
+            .Description(S["the target of the link"]);
     }
 }
