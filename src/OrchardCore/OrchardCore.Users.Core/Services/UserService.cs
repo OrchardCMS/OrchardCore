@@ -13,7 +13,7 @@ namespace OrchardCore.Users.Services;
 /// <summary>
 /// Implements <see cref="IUserService"/> by using the ASP.NET Core Identity packages.
 /// </summary>
-public class UserService : IUserService
+public sealed class UserService : IUserService
 {
     private readonly SignInManager<IUser> _signInManager;
     private readonly UserManager<IUser> _userManager;
@@ -24,7 +24,7 @@ public class UserService : IUserService
     private readonly ISiteService _siteService;
     private readonly ILogger _logger;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public UserService(
         SignInManager<IUser> signInManager,
@@ -128,11 +128,11 @@ public class UserService : IUserService
         {
             if (hasPassword)
             {
-                _logger.LogInformation(3, "Unable to create a new account with password.");
+                _logger.LogInformation("Unable to create a new account with password.");
             }
             else
             {
-                _logger.LogInformation(3, "Unable to create a new account with no password.");
+                _logger.LogInformation("Unable to create a new account with no password.");
             }
 
             ProcessValidationErrors(identityResult.Errors, newUser, reportError);
@@ -142,11 +142,11 @@ public class UserService : IUserService
 
         if (hasPassword)
         {
-            _logger.LogInformation(3, "User created a new account with password.");
+            _logger.LogInformation("User created a new account with password.");
         }
         else
         {
-            _logger.LogInformation(3, "User created a new account with no password.");
+            _logger.LogInformation("User created a new account with no password.");
         }
 
         return user;
