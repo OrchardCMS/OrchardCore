@@ -18,7 +18,7 @@ internal sealed class UserModerationRegistrationFormEvents : RegistrationFormEve
         if (context.User is User user &&
             !(_registrationOptions.UsersAreModerated && !user.IsEnabled))
         {
-            context.Cancel = true;
+            context.CancelSignIn = true;
         }
 
         return Task.CompletedTask;

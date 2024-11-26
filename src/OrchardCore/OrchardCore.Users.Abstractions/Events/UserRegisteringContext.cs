@@ -1,8 +1,8 @@
-﻿namespace OrchardCore.Users.Events;
+namespace OrchardCore.Users.Events;
 
 public class UserRegisteringContext
 {
-    public bool Cancel { get; set; }
+    public bool CancelSignIn { get; set; }
 
     public IUser User { get; }
 
