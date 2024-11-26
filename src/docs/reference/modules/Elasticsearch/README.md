@@ -6,7 +6,7 @@ The Elasticsearch module allows you to manage Elasticsearch indices.
 
 You can use an Elasticsearch cloud service like offered on <https://www.elastic.co> or install it on-premises. For development and testing purposes, it is also available to be deployed with Docker.
 
-### Install Elasticsearch 7.x with Docker compose
+### Install Elasticsearch with Docker compose
 
 Elasticsearch uses a mmapfs directory by default to store its indices. The default operating system limits on mmap counts is likely to be too low, which may result in out of memory exceptions.
 
@@ -209,7 +209,7 @@ Verbs: `POST` and `GET`
 
 ## Elasticsearch Queries
 
-The Elasticsearch module provides a management UI and APIs for querying Elasticsearch data using ElasticSearch Queries.
+The Elasticsearch module provides a management UI and APIs for querying Elasticsearch data using Elasticsearch Queries.
 See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html>
 
 ## Elasticsearch configuration
