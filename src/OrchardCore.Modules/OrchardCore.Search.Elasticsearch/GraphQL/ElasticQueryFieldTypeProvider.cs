@@ -26,11 +26,11 @@ public sealed class ElasticQueryFieldTypeProvider : ISchemaBuilder
 
     public ElasticQueryFieldTypeProvider(
         IHttpContextAccessor httpContextAccessor,
-        IStringLocalizer<ElasticQueryFieldTypeProvider> localizer,
+        IStringLocalizer<ElasticQueryFieldTypeProvider> stringLocalizer,
         ILogger<ElasticQueryFieldTypeProvider> logger)
     {
         _httpContextAccessor = httpContextAccessor;
-        S = localizer;
+        S = stringLocalizer;
         _logger = logger;
     }
 

@@ -15,9 +15,9 @@ public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSour
 {
     protected readonly IStringLocalizer S;
 
-    public WhereInputObjectGraphType(IStringLocalizer<WhereInputObjectGraphType<TSourceType>> localizer)
+    public WhereInputObjectGraphType(IStringLocalizer<WhereInputObjectGraphType<TSourceType>> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
     // arguments of typed input graph types return typed object, without additional input fields (_in, _contains,..)

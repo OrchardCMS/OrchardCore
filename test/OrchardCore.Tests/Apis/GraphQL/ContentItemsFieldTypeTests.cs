@@ -460,8 +460,8 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
 
 public class AnimalPartWhereInput : WhereInputObjectGraphType
 {
-    public AnimalPartWhereInput(string fieldName, IStringLocalizer<AnimalPartWhereInput> S)
-        : base(S)
+    public AnimalPartWhereInput(string fieldName, IStringLocalizer<AnimalPartWhereInput> stringLocalizer)
+        : base(stringLocalizer)
     {
         Name = "Test";
         Description = "Foo";

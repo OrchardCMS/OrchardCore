@@ -28,11 +28,11 @@ public sealed class SqlQueryFieldTypeProvider : ISchemaBuilder
 
     public SqlQueryFieldTypeProvider(
         IHttpContextAccessor httpContextAccessor,
-        IStringLocalizer<SqlQueryFieldTypeProvider> localizer,
+        IStringLocalizer<SqlQueryFieldTypeProvider> stringLocalizer,
         ILogger<SqlQueryFieldTypeProvider> logger)
     {
         _httpContextAccessor = httpContextAccessor;
-        S = localizer;
+        S = stringLocalizer;
         _logger = logger;
     }
 
