@@ -24,10 +24,10 @@ public sealed class ElasticsearchQueryFieldTypeProvider : ISchemaBuilder
 
     internal readonly IStringLocalizer S;
 
-    public ElasticQueryFieldTypeProvider(
+    public ElasticsearchQueryFieldTypeProvider(
         IHttpContextAccessor httpContextAccessor,
-        IStringLocalizer<ElasticQueryFieldTypeProvider> stringLocalizer,
-        ILogger<ElasticQueryFieldTypeProvider> logger)
+        IStringLocalizer<ElasticsearchQueryFieldTypeProvider> stringLocalizer,
+        ILogger<ElasticsearchQueryFieldTypeProvider> logger)
     {
         _httpContextAccessor = httpContextAccessor;
         S = stringLocalizer;
