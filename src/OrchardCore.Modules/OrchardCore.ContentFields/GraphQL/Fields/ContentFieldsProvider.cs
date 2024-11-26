@@ -108,9 +108,9 @@ public class ContentFieldsProvider : IContentFieldProvider
 
     private readonly IStringLocalizer<ContentFieldsProvider> S;
 
-    public ContentFieldsProvider(IStringLocalizer<ContentFieldsProvider> localizer)
+    public ContentFieldsProvider(IStringLocalizer<ContentFieldsProvider> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
     public FieldType GetField(ISchema schema, ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName)

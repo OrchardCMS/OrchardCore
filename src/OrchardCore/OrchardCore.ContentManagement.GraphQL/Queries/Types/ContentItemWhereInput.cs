@@ -14,8 +14,8 @@ public sealed class ContentItemWhereInput : WhereInputObjectGraphType
 {
     private readonly IOptions<GraphQLContentOptions> _optionsAccessor;
 
-    public ContentItemWhereInput(string contentItemName, IOptions<GraphQLContentOptions> optionsAccessor, IStringLocalizer<ContentItemWhereInput> S)
-        : base(S)
+    public ContentItemWhereInput(string contentItemName, IOptions<GraphQLContentOptions> optionsAccessor, IStringLocalizer<ContentItemWhereInput> stringLocalizer)
+        : base(stringLocalizer)
     {
         _optionsAccessor = optionsAccessor;
 

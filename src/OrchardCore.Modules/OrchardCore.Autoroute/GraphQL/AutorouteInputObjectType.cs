@@ -7,8 +7,8 @@ namespace OrchardCore.Autoroute.GraphQL;
 
 public class AutorouteInputObjectType : WhereInputObjectGraphType<AutoroutePart>
 {
-    public AutorouteInputObjectType(IStringLocalizer<AutorouteInputObjectType> S)
-        : base(S)
+    public AutorouteInputObjectType(IStringLocalizer<AutorouteInputObjectType> stringLocalizer)
+        : base(stringLocalizer)
     {
         Name = "AutoroutePartInput";
         Description = S["the custom URL part of the content item"];
