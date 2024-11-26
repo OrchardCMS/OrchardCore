@@ -76,9 +76,9 @@ public sealed class AccountController : AccountBaseController
         // Clear the existing external cookie to ensure a clean login process.
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-        foreach (var handler in _accountEvents)
+        foreach (var accountEvent in _accountEvents)
         {
-            var result = await handler.LoggingInAsync();
+            var result = await accountEvent.LoggingInAsync();
 
             if (result != null)
             {
@@ -127,30 +127,41 @@ public sealed class AccountController : AccountBaseController
             if (user != null)
             {
                 var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
+
                 if (result.Succeeded)
                 {
-                    if (!await AddConfirmEmailErrorAsync(user) && !AddUserEnabledError(user, S))
+                    foreach (var accountEvent in _accountEvents)
                     {
-                        result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+                        var loginResult = await accountEvent.ValidatingLoginAsync(user);
 
-                        if (result.Succeeded)
+                        if (loginResult != null)
                         {
-                            _logger.LogInformation(1, "User logged in.");
-                            await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
-
-                            return await LoggedInActionResultAsync(user, returnUrl);
+                            return loginResult;
                         }
                     }
+
+                    result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+
+                    if (result.Succeeded)
+                    {
+                        _logger.LogInformation(1, "User logged in.");
+
+                        await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
+
+                        return await LoggedInActionResultAsync(user, returnUrl);
+                    }
+
                 }
 
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToAction(nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
+                    return RedirectToAction(
+                        nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
                         typeof(TwoFactorAuthenticationController).ControllerName(),
                         new
                         {
                             returnUrl,
-                            model.RememberMe
+                            model.RememberMe,
                         });
                 }
 
@@ -186,6 +197,7 @@ public sealed class AccountController : AccountBaseController
     public async Task<IActionResult> LogOff(string returnUrl = null)
     {
         await _signInManager.SignOutAsync();
+
         _logger.LogInformation(4, "User logged out.");
 
         return RedirectToLocal(returnUrl);
@@ -202,9 +214,10 @@ public sealed class AccountController : AccountBaseController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model, string returnUrl = null)
     {
-        if (TryValidateModel(model) && ModelState.IsValid)
+        if (ModelState.IsValid)
         {
             var user = await _userService.GetAuthenticatedUserAsync(User);
+
             if (await _userService.ChangePasswordAsync(user, model.CurrentPassword, model.Password, ModelState.AddModelError))
             {
                 if (Url.IsLocalUrl(returnUrl))
@@ -224,20 +237,4 @@ public sealed class AccountController : AccountBaseController
     [HttpGet]
     public IActionResult ChangePasswordConfirmation()
         => View();
-
-    private async Task<bool> AddConfirmEmailErrorAsync(IUser user)
-    {
-        if (_registrationOptions.UsersMustValidateEmail)
-        {
-            // Require that the users have a confirmed email before they can log on.
-            if (!await _userManager.IsEmailConfirmedAsync(user))
-            {
-                ModelState.AddModelError(string.Empty, S["You must confirm your email."]);
-
-                return true;
-            }
-        }
-
-        return false;
-    }
 }
