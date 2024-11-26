@@ -18,7 +18,8 @@ public sealed class DefaultAuditTrailAdminListQueryService : IAuditTrailAdminLis
     private readonly AuditTrailAdminListOptions _adminListOptions;
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;
-    private readonly IStringLocalizer S;
+
+    internal readonly IStringLocalizer S;
 
     public DefaultAuditTrailAdminListQueryService(
         IAuditTrailManager auditTrailManager,
