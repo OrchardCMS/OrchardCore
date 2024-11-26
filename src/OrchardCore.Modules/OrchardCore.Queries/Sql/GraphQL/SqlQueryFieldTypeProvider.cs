@@ -23,6 +23,7 @@ public sealed class SqlQueryFieldTypeProvider : ISchemaBuilder
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
+
     internal readonly IStringLocalizer S;
 
     public SqlQueryFieldTypeProvider(
