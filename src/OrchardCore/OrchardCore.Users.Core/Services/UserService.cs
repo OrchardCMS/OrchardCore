@@ -13,7 +13,7 @@ namespace OrchardCore.Users.Services;
 /// <summary>
 /// Implements <see cref="IUserService"/> by using the ASP.NET Core Identity packages.
 /// </summary>
-public class UserService : IUserService
+public sealed class UserService : IUserService
 {
     private readonly SignInManager<IUser> _signInManager;
     private readonly UserManager<IUser> _userManager;
@@ -24,7 +24,7 @@ public class UserService : IUserService
     private readonly ISiteService _siteService;
     private readonly ILogger _logger;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public UserService(
         SignInManager<IUser> signInManager,
@@ -117,14 +117,36 @@ public class UserService : IUserService
             throw new ArgumentException("Expected a User instance.", nameof(user));
         }
 
+        var hasPassword = !string.IsNullOrWhiteSpace(password);
+
         // Accounts can be created with no password.
-        var identityResult = string.IsNullOrWhiteSpace(password)
-            ? await _userManager.CreateAsync(user)
-            : await _userManager.CreateAsync(user, password);
+        var identityResult = hasPassword
+            ? await _userManager.CreateAsync(user, password)
+            : await _userManager.CreateAsync(user);
+
         if (!identityResult.Succeeded)
         {
+            if (hasPassword)
+            {
+                _logger.LogInformation("Unable to create a new account with password.");
+            }
+            else
+            {
+                _logger.LogInformation("Unable to create a new account with no password.");
+            }
+
             ProcessValidationErrors(identityResult.Errors, newUser, reportError);
+
             return null;
+        }
+
+        if (hasPassword)
+        {
+            _logger.LogInformation("User created a new account with password.");
+        }
+        else
+        {
+            _logger.LogInformation("User created a new account with no password.");
         }
 
         return user;
@@ -169,14 +191,14 @@ public class UserService : IUserService
     {
         if (string.IsNullOrWhiteSpace(userId))
         {
-            return await Task.FromResult<IUser>(null);
+            return null;
         }
 
         var user = await GetUserAsync(userId);
 
         if (user == null)
         {
-            return await Task.FromResult<IUser>(null);
+            return null;
         }
 
         if (user is User u)
@@ -328,22 +350,21 @@ public class UserService : IUserService
             Email = model.Email,
             EmailConfirmed = !_registrationOptions.UsersMustValidateEmail,
             IsEnabled = !_registrationOptions.UsersAreModerated,
-        }, model.Password, reportError) as User;
+        }, model.Password, reportError);
 
         if (user == null)
         {
             return null;
         }
+
         var context = new UserRegisteringContext(user);
 
         await _registrationFormEvents.InvokeAsync((e, ctx) => e.RegisteringAsync(ctx), context, _logger);
 
-        if (!context.Cancel)
+        if (!context.CancelSignIn)
         {
             await _signInManager.SignInAsync(user, isPersistent: false);
         }
-
-        _logger.LogInformation(3, "User created a new account with password.");
 
         await _registrationFormEvents.InvokeAsync((e, user) => e.RegisteredAsync(user), user, _logger);
 
