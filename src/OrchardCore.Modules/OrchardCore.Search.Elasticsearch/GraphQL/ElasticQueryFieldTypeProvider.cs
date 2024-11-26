@@ -21,6 +21,7 @@ public sealed class ElasticQueryFieldTypeProvider : ISchemaBuilder
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
+
     internal readonly IStringLocalizer S;
 
     public ElasticQueryFieldTypeProvider(
