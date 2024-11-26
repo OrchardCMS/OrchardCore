@@ -106,7 +106,7 @@ public class ContentFieldsProvider : IContentFieldProvider
         }
     }.ToFrozenDictionary();
 
-    private readonly IStringLocalizer<ContentFieldsProvider> S;
+    protected readonly IStringLocalizer<ContentFieldsProvider> S;
 
     public ContentFieldsProvider(IStringLocalizer<ContentFieldsProvider> stringLocalizer)
     {
