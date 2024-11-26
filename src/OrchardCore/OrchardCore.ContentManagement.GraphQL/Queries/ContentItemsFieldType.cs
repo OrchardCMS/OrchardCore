@@ -25,7 +25,12 @@ public class ContentItemsFieldType : FieldType
 {
     private readonly int _defaultNumberOfItems;
 
-    public ContentItemsFieldType(string contentItemName, ISchema schema, IOptions<GraphQLContentOptions> optionsAccessor, IOptions<GraphQLSettings> settingsAccessor, IServiceProvider serviceProvider)
+    public ContentItemsFieldType(
+    string contentItemName, 
+    ISchema schema, 
+    IOptions<GraphQLContentOptions> optionsAccessor, 
+    IOptions<GraphQLSettings> settingsAccessor, 
+    IServiceProvider serviceProvider)
     {
         Name = contentItemName;
 
