@@ -3,13 +3,13 @@ using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Users.Models;
+using OrchardCore.Users.TimeZone.Handlers;
 using OrchardCore.Users.TimeZone.Models;
 
 namespace OrchardCore.Users.TimeZone.Services;
 
 public class UserTimeZoneService : IUserTimeZoneService
 {
-    private const string CacheKey = "UserTimeZone/";
     private const string EmptyTimeZone = "NoTimeZoneFound";
 
     private static readonly DistributedCacheEntryOptions _slidingExpiration = new()
@@ -46,7 +46,6 @@ public class UserTimeZoneService : IUserTimeZoneService
         return _clock.GetTimeZone(currentTimeZoneId);
     }
 
-
     /// <inheritdoc/>
     public ValueTask<ITimeZone> GetAsync(IUser user)
         => GetAsync(user?.UserName);
@@ -58,7 +57,7 @@ public class UserTimeZoneService : IUserTimeZoneService
     /// <inheritdoc/>
     private async ValueTask<string> GetTimeZoneIdAsync(string userName)
     {
-        var key = GetCacheKey(userName);
+        var key = UserEventHandler.GetCacheKey(userName);
 
         var timeZoneId = await _distributedCache.GetStringAsync(key);
 
@@ -96,11 +95,8 @@ public class UserTimeZoneService : IUserTimeZoneService
 
     private Task ForgetCacheAsync(string userName)
     {
-        var key = GetCacheKey(userName);
+        var key = UserEventHandler.GetCacheKey(userName);
 
         return _distributedCache.RemoveAsync(key);
     }
-
-    private static string GetCacheKey(string userName)
-        => CacheKey + userName;
 }

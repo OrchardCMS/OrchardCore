@@ -30,6 +30,6 @@ public class UserEventHandler : UserEventHandlerBase
         return _distributedCache.RemoveAsync(key);
     }
 
-    private static string GetCacheKey(string userName)
+    internal static string GetCacheKey(string userName)
         => CacheKey + userName;
 }
