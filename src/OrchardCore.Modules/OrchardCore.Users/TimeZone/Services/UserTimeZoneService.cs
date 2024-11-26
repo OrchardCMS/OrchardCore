@@ -3,8 +3,10 @@ using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Users.Handlers;
+using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.TimeZone.Models;
+using YesSql;
 
 namespace OrchardCore.Users.TimeZone.Services;
 
@@ -20,16 +22,19 @@ public class UserTimeZoneService : UserEventHandlerBase, IUserTimeZoneService
 
     private readonly IClock _clock;
     private readonly IDistributedCache _distributedCache;
-    private readonly UserManager<IUser> _userManager;
+    private readonly ILookupNormalizer _lookupNormalizer;
+    private readonly ISession _session;
 
     public UserTimeZoneService(
         IClock clock,
         IDistributedCache distributedCache,
-        UserManager<IUser> userManager)
+        ILookupNormalizer lookupNormalizer,
+        ISession session)
     {
         _clock = clock;
         _distributedCache = distributedCache;
-        _userManager = userManager;
+        _lookupNormalizer = lookupNormalizer;
+        _session = session;
     }
 
     /// <inheritdoc/>
@@ -68,11 +73,13 @@ public class UserTimeZoneService : UserEventHandlerBase, IUserTimeZoneService
         {
             // At this point, we know the timeZoneId is not cached for the given userName.
             // Retrieve the user and cache the timeZoneId.
-            var user = await _userManager.FindByNameAsync(userName);
+            // Don't use 'UserStore' or 'UserManager<>' to resolve the given user as this will create a circular dependency.
+            var normalizedUserName = _lookupNormalizer.NormalizeName(userName);
+            var user = await _session.Query<User, UserIndex>(u => u.NormalizedUserName == normalizedUserName).FirstOrDefaultAsync();
 
-            if (user is User u)
+            if (user is not null)
             {
-                timeZoneId = u.As<UserTimeZone>()?.TimeZoneId;
+                timeZoneId = user.As<UserTimeZone>()?.TimeZoneId;
             }
 
             // We store a placeholder string to indicate that there is no specific value for this user.
