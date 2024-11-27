@@ -56,6 +56,10 @@ public class UserStore :
 
     public IEnumerable<IUserEventHandler> Handlers { get; private set; }
 
+    public void Dispose()
+    {
+    }
+
     public string NormalizeKey(string key)
     {
         return _keyNormalizer == null ? key : _keyNormalizer.NormalizeName(key);
