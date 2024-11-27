@@ -1,9 +1,15 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <RootNamespace>OrchardCore.Infrastructure</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Roles Abstractions</Title>
+    <Description>
+      $(OCCMSDescription)
+
+      Abstractions for OrchardCoreCMS Roles
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Roles Abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
