@@ -495,9 +495,7 @@ public class DefaultShapeTableManagerTests : IDisposable
         Assert.Equal("DerivedTheme", table.Descriptors["OverriddenShape"].BindingSource);
     }
 
-#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
     public void Dispose()
-#pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
     {
         (_serviceProvider as IDisposable)?.Dispose();
     }

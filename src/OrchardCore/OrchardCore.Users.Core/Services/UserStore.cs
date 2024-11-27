@@ -56,11 +56,6 @@ public class UserStore :
 
     public IEnumerable<IUserEventHandler> Handlers { get; private set; }
 
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
-
     public string NormalizeKey(string key)
     {
         return _keyNormalizer == null ? key : _keyNormalizer.NormalizeName(key);
@@ -111,7 +106,7 @@ public class UserStore :
             }
 
             await _session.SaveAsync(user);
-            await _session.SaveChangesAsync();
+            await _session.FlushAsync();
             await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
         }
         catch (Exception e)
@@ -139,7 +134,7 @@ public class UserStore :
             }
 
             _session.Delete(user);
-            await _session.SaveChangesAsync();
+            await _session.FlushAsync();
             await Handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
         }
         catch (Exception e)
@@ -232,7 +227,7 @@ public class UserStore :
             }
 
             await _session.SaveAsync(user);
-            await _session.SaveChangesAsync();
+            await _session.FlushAsync();
             await Handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
         }
         catch (Exception e)

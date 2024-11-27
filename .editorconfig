@@ -83,6 +83,7 @@ dotnet_diagnostic.IDE0130.severity                         = silent         # Na
 dotnet_style_prefer_conditional_expression_over_assignment = silent   # Remove redundant equality, e.g. Disabled == false
 
 dotnet_diagnostic.CA2263.severity                         = warning         # Prefer generic overload when type is known
+dotnet_diagnostic.CA1816.severity                         = none         # Dispose methods should call SuppressFinalize
 
 # Sort using and Import directives with System.* appearing first
 dotnet_sort_system_directives_first                        = true

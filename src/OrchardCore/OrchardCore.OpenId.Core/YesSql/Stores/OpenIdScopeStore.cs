@@ -43,7 +43,7 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
         cancellationToken.ThrowIfCancellationRequested();
 
         await _session.SaveAsync(scope, collection: OpenIdCollection);
-        await _session.SaveChangesAsync();
+        await _session.FlushAsync();
     }
 
     /// <inheritdoc/>
@@ -54,7 +54,7 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
         cancellationToken.ThrowIfCancellationRequested();
 
         _session.Delete(scope, collection: OpenIdCollection);
-        await _session.SaveChangesAsync();
+        await _session.FlushAsync();
     }
 
     /// <inheritdoc/>
@@ -326,7 +326,7 @@ public class OpenIdScopeStore<TScope> : IOpenIdScopeStore<TScope>
 
         try
         {
-            await _session.SaveChangesAsync();
+            await _session.FlushAsync();
         }
         catch (ConcurrencyException exception)
         {
