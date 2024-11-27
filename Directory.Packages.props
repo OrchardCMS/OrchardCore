@@ -166,6 +166,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCorePackagesVersion)" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCorePackagesVersion)" />
     <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="$(AspNetCorePackagesVersion)" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="$(AspNetCorePackagesVersion)" />
   </ItemGroup>
   <!-- 'Microsoft.Extensions' packages that are not included in the ASP.NET Core shared framework -->
   <ItemGroup>

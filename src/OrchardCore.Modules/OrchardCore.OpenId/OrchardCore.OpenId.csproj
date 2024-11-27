@@ -4,9 +4,11 @@
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <!-- NuGet properties-->
     <Title>OrchardCore OpenId</Title>
-    <Description>$(OCCMSDescription)
+    <Description>
+      $(OCCMSDescription)
 
-    Provides OpenId Connect client, server and management features.</Description>
+      Provides OpenId Connect client, server and management features.
+    </Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS OpenId</PackageTags>
   </PropertyGroup>
 
@@ -25,6 +27,7 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.OpenId.Core\OrchardCore.OpenId.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Roles.Abstractions\OrchardCore.Roles.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Users.Abstractions\OrchardCore.Users.Abstractions.csproj" />
   </ItemGroup>
 
