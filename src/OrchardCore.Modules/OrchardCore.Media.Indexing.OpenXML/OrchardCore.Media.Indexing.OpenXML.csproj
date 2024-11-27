@@ -24,5 +24,6 @@
 
   <ItemGroup>
     <PackageReference Include="DocumentFormat.OpenXml" />
+    <PackageReference Include="GraphQL.DataLoader" />
   </ItemGroup>
 </Project>

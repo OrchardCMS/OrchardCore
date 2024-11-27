@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="GraphQL.DataLoader" />
     <PackageReference Include="PdfPig" />
   </ItemGroup>
 </Project>

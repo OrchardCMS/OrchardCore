@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Communication.Email" />
+    <PackageReference Include="GraphQL.DataLoader" />
   </ItemGroup>
 
 </Project>

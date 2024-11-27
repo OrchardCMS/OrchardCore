@@ -65,6 +65,7 @@
 
   <ItemGroup>
     <PackageReference Include="AngleSharp" />
+    <PackageReference Include="GraphQL.DataLoader" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="System.Linq.Async" />

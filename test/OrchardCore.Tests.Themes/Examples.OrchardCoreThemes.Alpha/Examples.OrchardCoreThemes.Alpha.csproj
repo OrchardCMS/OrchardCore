@@ -20,26 +20,17 @@
   <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
 
   <ItemGroup>
-    <OrchardCoreAttributes Include="$(MSBuildProjectName)"
-                           Type="theme"
-                           Base="three"
-                           Category="four"
-                           Priority="5"
-                           Description="six"
-                           Author="seven"
-                           Version="$(AssemblyVersion)"
-                           Website="oc://msbuildthemeitemlists.prop"
-                           Dependencies="ten;eleven;twelve"
-                           Tags="eleven;twelve;thirteen"
-                           DefaultTenant="true"
-                           AlwaysEnabled="true"
-                           EnabledByDependencyOnly="false" />
+    <OrchardCoreAttributes Include="$(MSBuildProjectName)" Type="theme" Base="three" Category="four" Priority="5" Description="six" Author="seven" Version="$(AssemblyVersion)" Website="oc://msbuildthemeitemlists.prop" Dependencies="ten;eleven;twelve" Tags="eleven;twelve;thirteen" DefaultTenant="true" AlwaysEnabled="true" EnabledByDependencyOnly="false" />
   </ItemGroup>
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>OrchardCore.Abstractions.Tests</_Parameter1>
     </AssemblyAttribute>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GraphQL.DataLoader" />
   </ItemGroup>
 
 </Project>

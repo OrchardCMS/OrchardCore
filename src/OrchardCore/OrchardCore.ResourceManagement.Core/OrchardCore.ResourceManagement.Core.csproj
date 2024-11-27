@@ -11,6 +11,11 @@
     <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
 
+
+  <ItemGroup>
+    <PackageReference Include="GraphQL.DataLoader" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.ResourceManagement.Abstractions\OrchardCore.ResourceManagement.Abstractions.csproj" />

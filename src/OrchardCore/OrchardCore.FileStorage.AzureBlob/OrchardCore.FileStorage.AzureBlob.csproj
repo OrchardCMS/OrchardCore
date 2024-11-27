@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" />
+    <PackageReference Include="GraphQL.DataLoader" />
   </ItemGroup>
 
   <ItemGroup>

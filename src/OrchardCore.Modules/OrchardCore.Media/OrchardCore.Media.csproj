@@ -41,6 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="GraphQL.DataLoader" />
     <PackageReference Include="Shortcodes" />
     <PackageReference Include="SixLabors.ImageSharp.Web" />
     <PackageReference Include="System.Linq.Async" />

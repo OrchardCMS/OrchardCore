@@ -14,7 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AngleSharp" />
     <PackageReference Include="BenchmarkDotNet" />
+    <PackageReference Include="GraphQL.DataLoader" />
   </ItemGroup>
 
   <ItemGroup>

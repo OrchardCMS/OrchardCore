@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="GraphQL.DataLoader" />
     <PackageReference Include="Shortcodes" />
   </ItemGroup>
 

@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <PackageReference Include="Fluid.Core" />
+    <PackageReference Include="GraphQL.DataLoader" />
   </ItemGroup>
 
   <ItemGroup>

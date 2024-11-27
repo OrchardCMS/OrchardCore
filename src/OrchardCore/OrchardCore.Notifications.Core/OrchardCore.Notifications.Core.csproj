@@ -16,6 +16,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AngleSharp" />
+    <PackageReference Include="GraphQL.DataLoader" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\OrchardCore.ContentManagement.Abstractions\OrchardCore.ContentManagement.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Email.Abstractions\OrchardCore.Email.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Infrastructure\OrchardCore.Infrastructure.csproj" />
