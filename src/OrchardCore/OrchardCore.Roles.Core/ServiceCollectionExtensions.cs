@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace OrchardCore.Roles;
 
@@ -6,6 +7,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddRolesCoreServices(this IServiceCollection services)
     {
-        return services.AddSingleton<ISystemRoleNameProvider, DefaultSystemRoleNameProvider>();
+        services.TryAddSingleton<ISystemRoleNameProvider, DefaultSystemRoleNameProvider>();
+
+        return services;
     }
 }
