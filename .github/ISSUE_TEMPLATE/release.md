@@ -16,7 +16,7 @@ assignees: ''
 
 ## Code and Documentation Updates
 
-- [ ] **Create Release Branch**: Create a new `release/<version name>` branch (e.g., `release/3.0.0`) from the `main` branch to facilitate future patch releases.
+- [ ] **Create Release Branch**: Create a new release branch named `release/<version-name>` (e.g., `release/3.0.0`) from the `main` branch. This branch will serve as the foundation for upcoming patch releases and facilitate versioned updates.
 - [ ] **Check CI Workflow**: Verify that the [release_ci](https://github.com/OrchardCMS/OrchardCore/blob/main/.github/workflows/release_ci.yml) workflow is using the correct .NET version.
 - [ ] **Update Documentation**: Open a new pull request for the following updates:
   - **Update `OrchardCore.Commons.props`**: Set `<VersionSuffix></VersionSuffix>` to prevent preview build numbers and ensure `VersionPrefix` matches the released version.
