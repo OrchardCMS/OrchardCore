@@ -33,7 +33,7 @@ public class Shapes : ShapeTableProvider
                     displaying.Shape.Metadata.Alternates.Add("Content__" + encodedContentType);
 
                     // Content__[ContentItemId] e.g. Content-42n8364bk2azcy1yd71gnrntwf,
-                    displaying.Shape.Metadata.Alternates.Add("Content__" + contentItem.ContentItemId);
+                    displaying.Shape.Metadata.Alternates.Add("Content__" + contentItem.ContentItemId.EncodeAlternateElement());
 
                     // Content__[Id] e.g. Content-42,
                     displaying.Shape.Metadata.Alternates.Add("Content__" + contentItem.Id);
@@ -42,7 +42,7 @@ public class Shapes : ShapeTableProvider
                     displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + encodedContentType);
 
                     // Content_[DisplayType]__[ContentItemId] e.g. Content-42n8364bk2azcy1yd71gnrntwf.Summary
-                    displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + contentItem.ContentItemId);
+                    displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + contentItem.ContentItemId.EncodeAlternateElement());
 
                     // Content_[DisplayType]__[Id] e.g. Content-42.Summary
                     displaying.Shape.Metadata.Alternates.Add("Content_" + displaying.Shape.Metadata.DisplayType + "__" + contentItem.Id);
