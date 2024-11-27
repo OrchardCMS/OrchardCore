@@ -20,8 +20,4 @@
     <ProjectReference Include="..\OrchardCore.ResourceManagement.Abstractions\OrchardCore.ResourceManagement.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Security\Services\" />
-  </ItemGroup>
-
 </Project>
