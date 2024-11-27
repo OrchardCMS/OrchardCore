@@ -13,7 +13,9 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.ViewModels;
+using OrchardCore.Roles;
 using OrchardCore.Routing;
+using OrchardCore.Security;
 using OrchardCore.Security.Services;
 using OrchardCore.Users.Services;
 using static OpenIddict.Abstractions.OpenIddictConstants;
@@ -449,32 +451,73 @@ public sealed class AccessController : Controller
         identity.AddClaim(new Claim(Claims.Name, await _applicationManager.GetDisplayNameAsync(application))
             .SetDestinations(Destinations.AccessToken, Destinations.IdentityToken));
 
-        // If the role service is available, add all the role claims
-        // associated with the application roles in the database.
-        var roleService = HttpContext.RequestServices.GetService<IRoleService>();
-
-        foreach (var role in await _applicationManager.GetRolesAsync(application))
-        {
-            // Since the claims added in this block have a dynamic name, directly set the destinations
-            // here instead of relying on the GetDestination() helper that only works with static claims.
-
-            identity.AddClaim(new Claim(identity.RoleClaimType, role)
-                .SetDestinations(Destinations.AccessToken, Destinations.IdentityToken));
-
-            if (roleService != null)
-            {
-                foreach (var claim in await roleService.GetRoleClaimsAsync(role))
-                {
-                    identity.AddClaim(claim.SetDestinations(Destinations.AccessToken, Destinations.IdentityToken));
-                }
-            }
-        }
+        await AddRoleClaims(identity, application);
 
         identity.SetScopes(request.GetScopes());
         identity.SetResources(await GetResourcesAsync(request.GetScopes()));
         identity.SetDestinations(GetDestinations);
 
         return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+    }
+
+    private async Task AddRoleClaims(ClaimsIdentity identity, object application)
+    {
+        var applicationRoles = await _applicationManager.GetRolesAsync(application);
+
+        if (applicationRoles.Length == 0)
+        {
+            return;
+        }
+
+        var roleNameProvider = HttpContext.RequestServices.GetService<ISystemRoleNameProvider>();
+
+        if (roleNameProvider == null)
+        {
+            return;
+        }
+
+        var isAdministrator = false;
+
+        foreach (var applicationRole in applicationRoles)
+        {
+            // Since the claims added in this block have a dynamic name, directly set the destinations
+            // here instead of relying on the GetDestination() helper that only works with static claims.
+            identity.AddClaim(new Claim(identity.RoleClaimType, applicationRole)
+                .SetDestinations(Destinations.AccessToken, Destinations.IdentityToken));
+
+            if (!await roleNameProvider.IsAdminRoleAsync(applicationRole))
+            {
+                continue;
+            }
+
+            // At this point, we know the application has the Administrator role.
+            // Now, we need to grant it the 'SiteOwner' claim to provide global access.
+            isAdministrator = true;
+
+            identity.AddClaim(StandardClaims.SiteOwner.SetDestinations(Destinations.AccessToken, Destinations.IdentityToken));
+        }
+
+        if (isAdministrator)
+        {
+            return;
+        }
+
+        // If the role service is available, add all the role claims
+        // associated with the application roles in the database.
+        var roleService = HttpContext.RequestServices.GetService<IRoleService>();
+
+        if (roleService == null)
+        {
+            return;
+        }
+
+        foreach (var applicationRole in applicationRoles)
+        {
+            foreach (var claim in await roleService.GetRoleClaimsAsync(applicationRole))
+            {
+                identity.AddClaim(claim.SetDestinations(Destinations.AccessToken, Destinations.IdentityToken));
+            }
+        }
     }
 
     private async Task<IActionResult> ExchangePasswordGrantType(OpenIddictRequest request)
