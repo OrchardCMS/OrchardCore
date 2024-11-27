@@ -36,6 +36,10 @@
       <PackagePath>buildMultiTargeting\OrchardCore.Theme.Targets.targets</PackagePath>
     </None>
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GraphQL.DataLoader" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" PrivateAssets="none" />
   </ItemGroup>

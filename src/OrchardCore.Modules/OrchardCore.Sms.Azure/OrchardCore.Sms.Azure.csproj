@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Communication.Sms" />
+    <PackageReference Include="GraphQL.DataLoader" />
   </ItemGroup>
 
   <ItemGroup>

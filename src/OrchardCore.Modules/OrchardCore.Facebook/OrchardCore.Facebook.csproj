@@ -30,6 +30,7 @@
   </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="GraphQL.DataLoader" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" />
     </ItemGroup>
 

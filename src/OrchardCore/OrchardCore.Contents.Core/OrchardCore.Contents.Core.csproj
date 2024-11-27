@@ -20,7 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="YesSql.Filters.Query"/>
+    <PackageReference Include="GraphQL.DataLoader" />
+    <PackageReference Include="YesSql.Filters.Query" />
   </ItemGroup>
 
 </Project>

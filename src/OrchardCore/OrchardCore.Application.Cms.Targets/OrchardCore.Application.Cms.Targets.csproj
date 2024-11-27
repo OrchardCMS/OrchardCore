@@ -39,6 +39,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AngleSharp" />
+    <PackageReference Include="GraphQL.DataLoader" />
     <PackageReference Include="OrchardCore.Translations.All" />
   </ItemGroup>
 
