@@ -11,6 +11,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
 using OrchardCore.ResourceManagement;
+using OrchardCore.Roles;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Settings.Drivers;
@@ -65,7 +66,9 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<ISetupEventHandler, SetupEventHandler>();
         services.AddPermissionProvider<Permissions>();
-        services.AddScoped<IAuthorizationHandler, SuperUserHandler>();
+
+        services.AddRolesCoreServices()
+            .AddScoped<IAuthorizationHandler, SuperUserHandler>();
 
         services.AddRecipeExecutionStep<SettingsStep>();
         services.AddSingleton<ISiteService, SiteService>();
