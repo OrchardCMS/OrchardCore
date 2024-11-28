@@ -18,7 +18,7 @@ public sealed class SmsSettingsDisplayDriver : SiteDisplayDriver<SmsSettings>
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    internal IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     private readonly SmsProviderOptions _smsProviderOptions;
 

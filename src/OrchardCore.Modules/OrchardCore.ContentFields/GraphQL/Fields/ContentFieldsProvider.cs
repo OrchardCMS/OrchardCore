@@ -1,6 +1,7 @@
 using System.Collections.Frozen;
 using GraphQL.Resolvers;
 using GraphQL.Types;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL.Queries.Types;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Indexing.SQL;
@@ -18,7 +19,7 @@ public class ContentFieldsProvider : IContentFieldProvider
             nameof(BooleanField),
             new FieldTypeDescriptor
             {
-                Description = "Boolean field",
+                Description = S => S["Boolean field"],
                 FieldType = typeof(BooleanGraphType),
                 ResolvedType = new BooleanGraphType(),
                 UnderlyingType = typeof(BooleanField),
@@ -31,7 +32,7 @@ public class ContentFieldsProvider : IContentFieldProvider
             nameof(DateField),
             new FieldTypeDescriptor
             {
-                Description = "Date field",
+                Description = S => S["Date field"],
                 FieldType = typeof(DateGraphType),
                 ResolvedType = new DateGraphType(),
                 UnderlyingType = typeof(DateField),
@@ -44,7 +45,7 @@ public class ContentFieldsProvider : IContentFieldProvider
             nameof(DateTimeField),
             new FieldTypeDescriptor
             {
-                Description = "Date & time field",
+                Description = S => S["Date & time field"],
                 FieldType = typeof(DateTimeGraphType),
                 ResolvedType = new DateTimeGraphType(),
                 UnderlyingType = typeof(DateTimeField),
@@ -57,7 +58,7 @@ public class ContentFieldsProvider : IContentFieldProvider
             nameof(NumericField),
             new FieldTypeDescriptor
             {
-                Description = "Numeric field",
+                Description = S => S["Numeric field"],
                 FieldType = typeof(DecimalGraphType),
                 ResolvedType = new DecimalGraphType(),
                 UnderlyingType = typeof(NumericField),
@@ -70,7 +71,7 @@ public class ContentFieldsProvider : IContentFieldProvider
             nameof(TextField),
             new FieldTypeDescriptor
             {
-                Description = "Text field",
+                Description = S => S["Text field"],
                 FieldType = typeof(StringGraphType),
                 ResolvedType = new StringGraphType(),
                 UnderlyingType = typeof(TextField),
@@ -83,7 +84,7 @@ public class ContentFieldsProvider : IContentFieldProvider
             nameof(TimeField),
             new FieldTypeDescriptor
             {
-                Description = "Time field",
+                Description = S => S["Time field"],
                 FieldType = typeof(TimeSpanGraphType),
                 ResolvedType = new TimeSpanGraphType(),
                 UnderlyingType = typeof(TimeField),
@@ -96,7 +97,7 @@ public class ContentFieldsProvider : IContentFieldProvider
             nameof(MultiTextField),
             new FieldTypeDescriptor
             {
-                Description = "Multi text field",
+                Description = S => S["Multi text field"],
                 FieldType = typeof(ListGraphType<StringGraphType>),
                 ResolvedType = new ListGraphType(new StringGraphType()),
                 UnderlyingType = typeof(MultiTextField),
@@ -104,6 +105,13 @@ public class ContentFieldsProvider : IContentFieldProvider
             }
         }
     }.ToFrozenDictionary();
+
+    protected readonly IStringLocalizer S;
+
+    public ContentFieldsProvider(IStringLocalizer<ContentFieldsProvider> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
 
     public FieldType GetField(ISchema schema, ContentPartFieldDefinition field, string namedPartTechnicalName, string customFieldName)
     {
@@ -115,7 +123,7 @@ public class ContentFieldsProvider : IContentFieldProvider
         return new FieldType
         {
             Name = customFieldName ?? schema.NameConverter.NameForField(field.Name, null),
-            Description = fieldDescriptor.Description,
+            Description = fieldDescriptor.Description(S),
             Type = fieldDescriptor.FieldType,
             ResolvedType = fieldDescriptor.ResolvedType,
             Resolver = new FuncFieldResolver<ContentElement, object>(context =>
@@ -161,7 +169,7 @@ public class ContentFieldsProvider : IContentFieldProvider
 
     private sealed class FieldTypeDescriptor
     {
-        public string Description { get; set; }
+        public Func<IStringLocalizer, string> Description { get; set; }
 
         public Type FieldType { get; set; }
 

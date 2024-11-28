@@ -13,6 +13,6 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddSingleton<ISchemaBuilder, ElasticQueryFieldTypeProvider>();
+        services.AddSingleton<ISchemaBuilder, ElasticsearchQueryFieldTypeProvider>();
     }
 }

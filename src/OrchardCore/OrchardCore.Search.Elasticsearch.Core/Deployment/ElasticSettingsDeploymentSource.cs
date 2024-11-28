@@ -4,12 +4,12 @@ using OrchardCore.Search.Elasticsearch.Core.Services;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 
-public class ElasticSettingsDeploymentSource
+public sealed class ElasticSettingsDeploymentSource
     : DeploymentSourceBase<ElasticSettingsDeploymentStep>
 {
-    private readonly ElasticIndexingService _elasticIndexingService;
+    private readonly ElasticsearchIndexingService _elasticIndexingService;
 
-    public ElasticSettingsDeploymentSource(ElasticIndexingService elasticIndexingService)
+    public ElasticSettingsDeploymentSource(ElasticsearchIndexingService elasticIndexingService)
     {
         _elasticIndexingService = elasticIndexingService;
     }

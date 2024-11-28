@@ -8,7 +8,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Handlers;
 
-public class AzureAISearchAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+public sealed class AzureAISearchAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
     private readonly IServiceProvider _serviceProvider;
 

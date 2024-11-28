@@ -14,7 +14,7 @@ public sealed class MediaAssetQuery : ISchemaBuilder
 {
     private readonly GraphQLContentOptions _graphQLContentOptions;
 
-    internal IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public MediaAssetQuery(
         IStringLocalizer<MediaAssetQuery> localizer,

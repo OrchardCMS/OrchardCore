@@ -7,7 +7,7 @@ using OrchardCore.Scripting;
 
 namespace OrchardCore.Contents.Scripting;
 
-public class ContentMethodsProvider : IGlobalMethodProvider
+public sealed class ContentMethodsProvider : IGlobalMethodProvider
 {
     private readonly GlobalMethod _newContentItemMethod;
     private readonly GlobalMethod _createContentItemMethod;

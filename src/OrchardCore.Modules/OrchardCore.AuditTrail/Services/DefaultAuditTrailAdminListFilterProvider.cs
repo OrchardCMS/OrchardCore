@@ -14,7 +14,7 @@ using YesSql.Services;
 
 namespace OrchardCore.AuditTrail.Services;
 
-public class DefaultAuditTrailAdminListFilterProvider : IAuditTrailAdminListFilterProvider
+public sealed class DefaultAuditTrailAdminListFilterProvider : IAuditTrailAdminListFilterProvider
 {
     private readonly IOptions<AuditTrailAdminListOptions> _options;
 

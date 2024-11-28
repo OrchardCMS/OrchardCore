@@ -126,7 +126,7 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
                 var userContext = new UserContext(user);
                 // TODO This handler should be invoked through the create or update methods.
                 // otherwise it will not be invoked when a workflow, or other operation, changes this value.
-                await _userEventHandlers.InvokeAsync((handler, context) => handler.DisabledAsync(userContext), userContext, _logger);
+                await _userEventHandlers.InvokeAsync((handler, context) => handler.DisabledAsync(context), userContext, _logger);
             }
         }
         else if (!isEditingDisabled && model.IsEnabled && !user.IsEnabled)
@@ -135,7 +135,7 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
             var userContext = new UserContext(user);
             // TODO This handler should be invoked through the create or update methods.
             // otherwise it will not be invoked when a workflow, or other operation, changes this value.
-            await _userEventHandlers.InvokeAsync((handler, context) => handler.EnabledAsync(userContext), userContext, _logger);
+            await _userEventHandlers.InvokeAsync((handler, context) => handler.EnabledAsync(context), userContext, _logger);
         }
 
         if (context.Updater.ModelState.IsValid)

@@ -32,7 +32,7 @@ The below table lists the different .NET libraries used in Orchard Core:
 | [MimeKit](https://github.com/jstedfast/MailKit) | A cross-platform .NET library for IMAP, POP3, and SMTP. | [MIT](https://github.com/jstedfast/MailKit/blob/master/LICENSE) |
 | [MiniProfiler](https://github.com/MiniProfiler/dotnet) | A simple but effective mini-profiler for ASP.NET (and Core) websites | [MIT](https://github.com/MiniProfiler/dotnet/blob/main/LICENSE.txt) |
 | [NCrontab](https://github.com/atifaziz/NCrontab) | Crontab for .NET | [Apache-2.0](https://github.com/atifaziz/NCrontab/blob/master/COPYING.txt) |
-| [NEST](https://github.com/elastic/elasticsearch-net) | .NET Library for Elasticsearch | [Apache-2.0](https://github.com/elastic/elasticsearch-net/blob/main/LICENSE.txt) |
+| [Elasticsearch .NET Client](https://github.com/elastic/elasticsearch-net) | .NET Library for Elasticsearch | [Apache-2.0](https://github.com/elastic/elasticsearch-net/blob/main/LICENSE.txt) |
 | [Azure.Search.Documents](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Search.Documents_11.5.1/sdk/search/Azure.Search.Documents/README.md) | Azure AI Search client library for .NET | [MIT](https://github.com/AzureAD/microsoft-identity-web/blob/master/LICENSE) |
 | [Microsoft.Extensions.Azure](https://github.com/Azure/azure-sdk-for-net/blob/Microsoft.Extensions.Azure_1.7.3/sdk/extensions/Microsoft.Extensions.Azure/README.md) | Azure client library integration for ASP.NET Core | [MIT](https://github.com/AzureAD/microsoft-identity-web/blob/master/LICENSE) |
 | [NJsonSchema](https://github.com/RicoSuter/NJsonSchema) | JSON Schema reader, generator and validator for .NET | [MIT](https://github.com/RicoSuter/NJsonSchema/blob/master/LICENSE.md) |
