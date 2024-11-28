@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Globalization;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -42,17 +41,16 @@ public sealed class AdminController : Controller
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IElasticQueryService _queryService;
-    private readonly ElasticIndexManager _elasticIndexManager;
-    private readonly ElasticIndexingService _elasticIndexingService;
-    private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+    private readonly ElasticsearchIndexManager _elasticIndexManager;
+    private readonly ElasticsearchIndexingService _elasticIndexingService;
+    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
     private readonly JavaScriptEncoder _javaScriptEncoder;
     private readonly ElasticsearchOptions _elasticSearchOptions;
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
     private readonly IOptions<TemplateOptions> _templateOptions;
-    private readonly ElasticConnectionOptions _elasticConnectionOptions;
-    private readonly IShapeFactory _shapeFactory;
+    private readonly ElasticsearchQueryService _elasticQueryService;
+    private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
     private readonly ILocalizationService _localizationService;
 
     internal readonly IStringLocalizer S;
@@ -64,17 +62,16 @@ public sealed class AdminController : Controller
         ILiquidTemplateManager liquidTemplateManager,
         IContentDefinitionManager contentDefinitionManager,
         IAuthorizationService authorizationService,
-        IElasticQueryService queryService,
-        ElasticIndexManager elasticIndexManager,
-        ElasticIndexingService elasticIndexingService,
-        ElasticIndexSettingsService elasticIndexSettingsService,
+        ElasticsearchIndexManager elasticIndexManager,
+        ElasticsearchIndexingService elasticIndexingService,
+        ElasticsearchIndexSettingsService elasticIndexSettingsService,
         JavaScriptEncoder javaScriptEncoder,
         IOptions<ElasticsearchOptions> elasticSearchOptions,
         INotifier notifier,
         ILogger<AdminController> logger,
         IOptions<TemplateOptions> templateOptions,
-        IOptions<ElasticConnectionOptions> elasticConnectionOptions,
-        IShapeFactory shapeFactory,
+        IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
+        ElasticsearchQueryService elasticQueryService,
         ILocalizationService localizationService,
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
@@ -84,7 +81,6 @@ public sealed class AdminController : Controller
         _liquidTemplateManager = liquidTemplateManager;
         _contentDefinitionManager = contentDefinitionManager;
         _authorizationService = authorizationService;
-        _queryService = queryService;
         _elasticIndexManager = elasticIndexManager;
         _elasticIndexingService = elasticIndexingService;
         _elasticIndexSettingsService = elasticIndexSettingsService;
@@ -93,21 +89,24 @@ public sealed class AdminController : Controller
         _notifier = notifier;
         _logger = logger;
         _templateOptions = templateOptions;
+        _elasticQueryService = elasticQueryService;
         _elasticConnectionOptions = elasticConnectionOptions.Value;
-        _shapeFactory = shapeFactory;
         _localizationService = localizationService;
         S = stringLocalizer;
         H = htmlLocalizer;
     }
 
-    public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
+    public async Task<IActionResult> Index(
+        ContentOptions options,
+        PagerParameters pagerParameters,
+        [FromServices] IShapeFactory shapeFactory)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
         {
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return NotConfigured();
         }
@@ -138,7 +137,7 @@ public sealed class AdminController : Controller
             routeData.Values.TryAdd(_optionsSearch, options.Search);
         }
 
-        var pagerShape = await _shapeFactory.PagerAsync(pager, totalIndexes, routeData);
+        var pagerShape = await shapeFactory.PagerAsync(pager, totalIndexes, routeData);
 
         var model = new AdminIndexViewModel
         {
@@ -154,7 +153,6 @@ public sealed class AdminController : Controller
             new SelectListItem(S["Delete"], nameof(ContentsBulkAction.Remove)),
         ];
 
-
         return View(model);
     }
 
@@ -163,7 +161,7 @@ public sealed class AdminController : Controller
     public IActionResult IndexFilterPOST(AdminIndexViewModel model)
         => RedirectToAction(nameof(Index), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     public async Task<IActionResult> Edit(string indexName = null)
@@ -176,7 +174,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return NotConfigured();
         }
@@ -215,7 +213,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -315,7 +313,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -341,7 +339,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -379,7 +377,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -413,7 +411,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -457,14 +455,14 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    public async Task<IActionResult> Query(string indexName, string query)
+    public Task<IActionResult> Query(string indexName, string query)
     {
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
-            return NotConfigured();
+            return Task.FromResult<IActionResult>(NotConfigured());
         }
 
-        return await Query(new AdminQueryViewModel
+        return Query(new AdminQueryViewModel
         {
             IndexName = indexName,
             DecodedQuery = string.IsNullOrWhiteSpace(query)
@@ -481,7 +479,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -522,13 +520,13 @@ public sealed class AdminController : Controller
 
         try
         {
-            var elasticTopDocs = await _queryService.SearchAsync(model.IndexName, tokenizedContent);
+            var results = await _elasticQueryService.SearchAsync(model.IndexName, tokenizedContent);
 
-            if (elasticTopDocs != null)
+            if (results != null)
             {
-                model.Documents = elasticTopDocs.TopDocs.Where(x => x != null);
-                model.Fields = elasticTopDocs.Fields;
-                model.Count = elasticTopDocs.Count;
+                model.Documents = results.TopDocs;
+                model.Fields = results.Fields;
+                model.Count = results.Count;
             }
         }
         catch (Exception e)
@@ -551,7 +549,7 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return BadRequest();
         }
@@ -619,7 +617,7 @@ public sealed class AdminController : Controller
         {
             ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["The index name is required."]);
         }
-        else if (ElasticIndexManager.ToSafeIndexName(model.IndexName) != model.IndexName)
+        else if (ElasticsearchIndexManager.ToSafeIndexName(model.IndexName) != model.IndexName)
         {
             ModelState.AddModelError(nameof(ElasticIndexSettingsViewModel.IndexName), S["The index name contains forbidden characters."]);
         }
@@ -645,7 +643,7 @@ public sealed class AdminController : Controller
     private static Task ProcessContentItemsAsync(string indexName)
         => HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-elasticsearch-" + indexName, async (scope) =>
         {
-            var indexingService = scope.ServiceProvider.GetRequiredService<ElasticIndexingService>();
+            var indexingService = scope.ServiceProvider.GetRequiredService<ElasticsearchIndexingService>();
             await indexingService.ProcessContentItemsAsync(indexName);
         });
 }

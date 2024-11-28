@@ -15,7 +15,7 @@ public sealed class ElasticsearchQueryHandler : QueryHandlerBase
 
     private static Task UpdateQueryAsync(DataQueryContextBase context)
     {
-        if (context.Query.Source == ElasticQuerySource.SourceName)
+        if (context.Query.Source == ElasticsearchQuerySource.SourceName)
         {
             return Task.CompletedTask;
         }

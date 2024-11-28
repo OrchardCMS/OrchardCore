@@ -4,6 +4,7 @@ using System.Text.Json.Nodes;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
@@ -22,34 +23,56 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries;
 /// </summary>
 public class ContentItemsFieldType : FieldType
 {
-    private static readonly List<string> _contentItemProperties;
     private readonly int _defaultNumberOfItems;
 
-    static ContentItemsFieldType()
+    public ContentItemsFieldType(
+        string contentItemName,
+        ISchema schema,
+        IOptions<GraphQLContentOptions> optionsAccessor,
+        IOptions<GraphQLSettings> settingsAccessor,
+        IServiceProvider serviceProvider)
     {
-        _contentItemProperties = [];
-
-        foreach (var property in typeof(ContentItemIndex).GetProperties())
-        {
-            _contentItemProperties.Add(property.Name);
-        }
-    }
-
-    public ContentItemsFieldType(string contentItemName, ISchema schema, IOptions<GraphQLContentOptions> optionsAccessor, IOptions<GraphQLSettings> settingsAccessor)
-    {
-        Name = "ContentItems";
+        Name = contentItemName;
 
         Type = typeof(ListGraphType<ContentItemType>);
 
-        var whereInput = new ContentItemWhereInput(contentItemName, optionsAccessor);
+        var S = serviceProvider.GetRequiredService<IStringLocalizer<ContentItemsFieldType>>();
+
+        var whereInput = new ContentItemWhereInput(contentItemName, optionsAccessor, serviceProvider.GetRequiredService<IStringLocalizer<ContentItemWhereInput>>());
         var orderByInput = new ContentItemOrderByInput(contentItemName);
 
         Arguments = new QueryArguments(
-            new QueryArgument<ContentItemWhereInput> { Name = "where", Description = "filters the content items", ResolvedType = whereInput },
-            new QueryArgument<ContentItemOrderByInput> { Name = "orderBy", Description = "sort order", ResolvedType = orderByInput },
-            new QueryArgument<IntGraphType> { Name = "first", Description = "the first n content items", ResolvedType = new IntGraphType() },
-            new QueryArgument<IntGraphType> { Name = "skip", Description = "the number of content items to skip", ResolvedType = new IntGraphType() },
-            new QueryArgument<PublicationStatusGraphType> { Name = "status", Description = "publication status of the content item", ResolvedType = new PublicationStatusGraphType(), DefaultValue = PublicationStatusEnum.Published }
+            new QueryArgument<ContentItemWhereInput>
+            {
+                Name = "where",
+                Description = S["filters the content items"],
+                ResolvedType = whereInput,
+            },
+            new QueryArgument<ContentItemOrderByInput>
+            {
+                Name = "orderBy",
+                Description = S["sort order"],
+                ResolvedType = orderByInput,
+            },
+            new QueryArgument<IntGraphType>
+            {
+                Name = "first",
+                Description = S["the first n content items"],
+                ResolvedType = new IntGraphType(),
+            },
+            new QueryArgument<IntGraphType>
+            {
+                Name = "skip",
+                Description = S["the number of content items to skip"],
+                ResolvedType = new IntGraphType(),
+            },
+            new QueryArgument<PublicationStatusGraphType>
+            {
+                Name = "status",
+                Description = S["publication status of the content item"],
+                ResolvedType = new PublicationStatusGraphType(serviceProvider.GetRequiredService<IStringLocalizer<PublicationStatusGraphType>>()),
+                DefaultValue = PublicationStatusEnum.Published,
+            }
         );
 
         Resolver = new LockedAsyncFieldResolver<IEnumerable<ContentItem>>(ResolveAsync);
@@ -62,7 +85,6 @@ public class ContentItemsFieldType : FieldType
     }
 
     private async ValueTask<IEnumerable<ContentItem>> ResolveAsync(IResolveFieldContext context)
-
     {
         JsonObject where = null;
         if (context.HasArgument("where"))

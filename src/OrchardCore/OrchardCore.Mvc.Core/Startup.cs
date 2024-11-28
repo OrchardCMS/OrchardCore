@@ -93,8 +93,7 @@ public sealed class Startup : StartupBase
         builder.AddViewLocalization();
         builder.AddDataAnnotationsLocalization();
 
-        services.TryAddEnumerable(
-            ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
+        services.AddTransient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>();
 
         if (_hostingEnvironment.IsDevelopment())
         {
@@ -114,8 +113,7 @@ public sealed class Startup : StartupBase
             services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
         }
 
-        services.TryAddEnumerable(
-            ServiceDescriptor.Transient<IConfigureOptions<MvcRazorRuntimeCompilationOptions>, RazorCompilationOptionsSetup>());
+        services.AddTransient<IConfigureOptions<MvcRazorRuntimeCompilationOptions>, RazorCompilationOptionsSetup>();
 
         services.AddSingleton<RazorCompilationFileProviderAccessor>();
 
@@ -141,7 +139,6 @@ public sealed class Startup : StartupBase
         services.AddScoped<IViewLocationExpanderProvider, ComponentViewLocationExpanderProvider>();
         services.AddScoped<IViewLocationExpanderProvider, SharedViewLocationExpanderProvider>();
 
-        services.TryAddEnumerable(
-            ServiceDescriptor.Singleton<IApplicationModelProvider, ModularApplicationModelProvider>());
+        services.AddSingleton<IApplicationModelProvider, ModularApplicationModelProvider>();
     }
 }

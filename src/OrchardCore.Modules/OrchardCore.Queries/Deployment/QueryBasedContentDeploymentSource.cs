@@ -5,7 +5,7 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Queries.Deployment;
 
-public class QueryBasedContentDeploymentSource
+public sealed class QueryBasedContentDeploymentSource
     : DeploymentSourceBase<QueryBasedContentDeploymentStep>
 {
     private readonly IQueryManager _queryManager;
@@ -75,13 +75,13 @@ public class QueryBasedContentDeploymentSource
         try
         {
             queryParameters = JConvert.DeserializeObject<Dictionary<string, object>>(parameters) ?? [];
-            
+
             return true;
         }
         catch (JsonException)
         {
             queryParameters = [];
-            
+
             return false;
         }
     }

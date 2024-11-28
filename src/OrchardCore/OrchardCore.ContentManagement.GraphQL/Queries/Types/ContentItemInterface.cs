@@ -4,7 +4,7 @@ using OrchardCore.ContentManagement.GraphQL.Options;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-public class ContentItemInterface : InterfaceGraphType<ContentItem>
+public sealed class ContentItemInterface : InterfaceGraphType<ContentItem>
 {
     private readonly GraphQLContentOptions _options;
 

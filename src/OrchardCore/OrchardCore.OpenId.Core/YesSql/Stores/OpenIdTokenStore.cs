@@ -44,7 +44,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
         cancellationToken.ThrowIfCancellationRequested();
 
         await _session.SaveAsync(token, collection: OpenIdCollection);
-        await _session.SaveChangesAsync();
+        await _session.FlushAsync();
     }
 
     /// <inheritdoc/>
@@ -55,7 +55,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
         cancellationToken.ThrowIfCancellationRequested();
 
         _session.Delete(token, collection: OpenIdCollection);
-        await _session.SaveChangesAsync();
+        await _session.FlushAsync();
     }
 
     /// <inheritdoc/>
@@ -354,7 +354,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
             try
             {
-                await _session.SaveChangesAsync();
+                await _session.FlushAsync();
             }
             catch (Exception exception)
             {
@@ -399,7 +399,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
             await _session.SaveAsync(token, checkConcurrency: false, collection: OpenIdCollection);
         }
 
-        await _session.SaveChangesAsync();
+        await _session.FlushAsync();
 
         return tokens.Count;
     }
@@ -546,7 +546,7 @@ public class OpenIdTokenStore<TToken> : IOpenIdTokenStore<TToken>
 
         try
         {
-            await _session.SaveChangesAsync();
+            await _session.FlushAsync();
         }
         catch (ConcurrencyException exception)
         {

@@ -3,7 +3,7 @@ using OrchardCore.Scripting;
 
 namespace OrchardCore.Recipes;
 
-public class ParametersMethodProvider : IGlobalMethodProvider
+public sealed class ParametersMethodProvider : IGlobalMethodProvider
 {
     private readonly GlobalMethod _globalMethod;
 

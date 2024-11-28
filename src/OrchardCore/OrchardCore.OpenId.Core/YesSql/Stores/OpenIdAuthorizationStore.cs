@@ -44,7 +44,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
         cancellationToken.ThrowIfCancellationRequested();
 
         await _session.SaveAsync(authorization, collection: OpenIdCollection);
-        await _session.SaveChangesAsync();
+        await _session.FlushAsync();
     }
 
     /// <inheritdoc/>
@@ -55,7 +55,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
         cancellationToken.ThrowIfCancellationRequested();
 
         _session.Delete(authorization, collection: OpenIdCollection);
-        await _session.SaveChangesAsync();
+        await _session.FlushAsync();
     }
 
     /// <inheritdoc/>
@@ -319,7 +319,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
 
             try
             {
-                await _session.SaveChangesAsync();
+                await _session.FlushAsync();
             }
             catch (Exception exception)
             {
@@ -440,7 +440,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
 
         try
         {
-            await _session.SaveChangesAsync();
+            await _session.FlushAsync();
         }
         catch (ConcurrencyException exception)
         {
