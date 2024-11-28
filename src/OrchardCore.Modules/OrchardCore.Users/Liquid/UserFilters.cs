@@ -5,19 +5,20 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Liquid;
-using OrchardCore.Security;
+using OrchardCore.Roles;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Users.Liquid;
 
 public static class UserFilters
 {
-    public static ValueTask<FluidValue> HasClaim(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+    public static async ValueTask<FluidValue> HasClaim(FluidValue input, FilterArguments arguments, TemplateContext ctx)
     {
         if (input.ToObjectValue() is LiquidUserAccessor)
         {
             var context = (LiquidTemplateContext)ctx;
             var httpContextAccessor = context.Services.GetRequiredService<IHttpContextAccessor>();
+            var systemRoleNameProvider = context.Services.GetRequiredService<ISystemRoleNameProvider>();
 
             var user = httpContextAccessor.HttpContext?.User;
             if (user != null)
@@ -45,7 +46,7 @@ public static class UserFilters
                 // {% assign isAuthorized = User | has_permission: "AccessAdminPanel" %}
                 // ```
                 if (string.Equals(claimType, Permission.ClaimType, StringComparison.OrdinalIgnoreCase) &&
-                    user.HasClaim(StandardClaims.SiteOwner.Type, StandardClaims.SiteOwner.Value))
+                    user.IsInRole(await systemRoleNameProvider.GetAdminRoleAsync()))
                 {
                     var logger = context.Services.GetRequiredService<ILogger<Startup>>();
 

@@ -33,16 +33,18 @@ public class RoleClaimsProvider : IUserClaimsProvider
             return;
         }
 
+        var roleNames = await _userManager.GetRolesAsync(user);
+
         var isAdministrator = false;
 
-        if (await _userManager.IsInRoleAsync(user, await _systemRoleNameProvider.GetAdminRoleAsync()))
+        foreach (var roleName in roleNames)
         {
-            claims.AddClaim(StandardClaims.SiteOwner);
-
-            isAdministrator = true;
+            if (await _systemRoleNameProvider.IsAdminRoleAsync(roleName))
+            {
+                isAdministrator = true;
+                break;
+            }
         }
-
-        var roleNames = await _userManager.GetRolesAsync(user);
 
         foreach (var roleName in roleNames)
         {
