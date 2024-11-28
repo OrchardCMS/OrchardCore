@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using OrchardCore.ResourceManagement;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -14,4 +15,14 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Adds a service implementing <see cref="IConfigureOptions{ResourceManagementOptions}"/> to the service collection.
+    /// </summary>
+    /// <typeparam name="T">
+    /// The type of the service implementing <see cref="IConfigureOptions{ResourceManagementOptions}"/> to.
+    /// </typeparam>
+    public static IServiceCollection AddResourceManagementOptionsConfiguration<T>(this IServiceCollection services)
+        where T : class, IConfigureOptions<ResourceManagementOptions>
+        => services.AddTransient<IConfigureOptions<ResourceManagementOptions>, T>();
 }

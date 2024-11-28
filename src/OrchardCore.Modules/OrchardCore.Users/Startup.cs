@@ -155,7 +155,7 @@ public sealed class Startup : StartupBase
         });
 
         services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
-        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
+        services.AddResourceManagementOptionsConfiguration<UserOptionsConfiguration>();
         services.AddDisplayDriver<Navbar, UserMenuNavbarDisplayDriver>();
         services.AddDisplayDriver<UserMenu, UserMenuDisplayDriver>();
         services.AddShapeTableProvider<UserMenuShapeTableProvider>();

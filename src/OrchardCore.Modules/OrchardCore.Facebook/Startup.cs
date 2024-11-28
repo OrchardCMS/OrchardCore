@@ -33,7 +33,7 @@ public sealed class Startup : StartupBase
         services.AddSiteDisplayDriver<FacebookSettingsDisplayDriver>();
         services.AddRecipeExecutionStep<FacebookSettingsStep>();
 
-        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        services.AddResourceManagementOptionsConfiguration<ResourceManagementOptionsConfiguration>();
         services.AddTransient<IConfigureOptions<FacebookSettings>, FacebookSettingsConfiguration>();
 
         services.Configure<MvcOptions>((options) =>

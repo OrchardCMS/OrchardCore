@@ -1,9 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Html;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
-using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Themes.TheAdmin;
 
@@ -18,7 +16,7 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        services.AddResourceManagementOptionsConfiguration<ResourceManagementOptionsConfiguration>();
         services.Configure<TheAdminThemeOptions>(_configuration.GetSection("TheAdminTheme:StyleSettings"));
     }
 }

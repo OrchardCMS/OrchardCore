@@ -85,7 +85,7 @@ public sealed class Startup : StartupBase
         .AddLiquidFilter<AssetUrlFilter>("asset_url")
         .AddLiquidFilter<ResizeUrlFilter>("resize_url");
 
-        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        services.AddResourceManagementOptionsConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
 
