@@ -41,7 +41,6 @@ using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes;
 using SixLabors.ImageSharp.Web.Caching;

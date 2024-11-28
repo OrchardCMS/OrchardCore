@@ -12,7 +12,6 @@ using OrchardCore.Facebook.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Facebook;
