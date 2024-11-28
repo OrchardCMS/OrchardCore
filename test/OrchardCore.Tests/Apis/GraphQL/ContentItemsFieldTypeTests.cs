@@ -648,9 +648,7 @@ public class FakeServiceCollection : IServiceProvider, IDisposable
         _inner = _services.BuildServiceProvider();
     }
 
-#pragma warning disable CA1816 // Dispose methods should call SuppressFinalize
     public void Dispose()
-#pragma warning restore CA1816 // Dispose methods should call SuppressFinalize
     {
         (_inner as IDisposable)?.Dispose();
     }
