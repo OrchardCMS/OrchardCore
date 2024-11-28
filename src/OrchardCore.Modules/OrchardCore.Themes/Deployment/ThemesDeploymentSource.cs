@@ -5,7 +5,7 @@ using OrchardCore.Themes.Services;
 
 namespace OrchardCore.Themes.Deployment;
 
-public class ThemesDeploymentSource
+public sealed class ThemesDeploymentSource
     : DeploymentSourceBase<ThemesDeploymentStep>
 {
     private readonly ISiteThemeService _siteThemeService;

@@ -4,9 +4,11 @@
 @using OrchardCore.Users.Models
 @using Microsoft.Extensions.Options
 @using Microsoft.AspNetCore.Identity
-@inject IOptions<IdentityOptions> IdentityOptions
 
-@if (Site.As<RegistrationSettings>().UsersMustValidateEmail)
+@inject IOptions<IdentityOptions> IdentityOptions
+@inject IOptions<RegistrationOptions> RegistrationOptions
+
+@if (RegistrationOptions.Value.UsersMustValidateEmail)
 {
     <div class="mb-3">
         <div class="form-check">

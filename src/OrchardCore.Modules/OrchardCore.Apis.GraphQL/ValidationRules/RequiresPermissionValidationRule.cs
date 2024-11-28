@@ -23,7 +23,7 @@ public class RequiresPermissionValidationRule : IValidationRule
         S = localizer;
     }
 
-    public async ValueTask<INodeVisitor> ValidateAsync(ValidationContext validationContext)
+    public async ValueTask<INodeVisitor> GetPreNodeVisitorAsync(ValidationContext validationContext)
     {
         // shouldn't we access UserContext from validation-context inside MatchingNodeVisitor actions?
         var userContext = (GraphQLUserContext)validationContext.UserContext;
@@ -121,4 +121,10 @@ public class RequiresPermissionValidationRule : IValidationRule
                    S["Authorization is required to access the node. {0}", nodeName],
                    node));
     }
+
+    public ValueTask<IVariableVisitor> GetVariableVisitorAsync(ValidationContext context)
+        => ValueTask.FromResult<IVariableVisitor>(null);
+
+    public ValueTask<INodeVisitor> GetPostNodeVisitorAsync(ValidationContext context)
+        => ValueTask.FromResult<INodeVisitor>(null);
 }

@@ -21,7 +21,7 @@ public static class CommonPermissions
 
     public static readonly Permission ListUsers = new("ListUsers", "List all users", [EditUsers, DeleteUsers]);
 
-    public static readonly Permission AssignRoleToUsers = new("AssignRoleToUsers", "Assign any role to users", [EditUsers], true);
+    public static readonly Permission AssignRoleToUsers = new("AssignRoleToUsers", "Assign any role to users", true);
 
     public static readonly Permission DisableTwoFactorAuthenticationForUsers = new("DisableTwoFactorAuthenticationForUsers", "Disable two-factor authentication for any user", [ManageUsers], true);
 

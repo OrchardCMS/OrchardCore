@@ -83,7 +83,7 @@ public sealed class ElasticsearchApiController : ControllerBase
 
     private async Task<IQueryResults> ElasticQueryApiAsync(ElasticApiQueryViewModel queryModel, bool returnContentItems = false)
     {
-        var elasticQuery = await _queryManager.NewAsync(ElasticQuerySource.SourceName);
+        var elasticQuery = await _queryManager.NewAsync(ElasticsearchQuerySource.SourceName);
         elasticQuery.ReturnContentItems = returnContentItems;
 
         elasticQuery.Put(new ElasticsearchQueryMetadata

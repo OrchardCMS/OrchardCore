@@ -14,22 +14,23 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Adds Elastic services.
     /// </summary>
-    public static IServiceCollection AddElasticServices(this IServiceCollection services)
+    public static IServiceCollection AddElasticsearchServices(this IServiceCollection services)
     {
-        services.AddSingleton<ElasticIndexSettingsService>();
-        services.AddSingleton<ElasticIndexManager>();
-        services.AddScoped<ElasticIndexingService>();
-        services.AddScoped<IModularTenantEvents, ElasticIndexInitializerService>();
-        services.AddScoped<IElasticSearchQueryService, ElasticSearchQueryService>();
-        services.AddScoped<IElasticQueryService, ElasticQueryService>();
-        services.AddScoped<IContentHandler, ElasticIndexingContentHandler>();
+        services.AddSingleton<ElasticsearchIndexSettingsService>();
+        services.AddSingleton<ElasticsearchIndexManager>();
+        services.AddScoped<ElasticsearchIndexingService>();
+        services.AddScoped<ElasticsearchQueryService>();
+        services.AddScoped<ElasticsearchQueryService>();
 
-        services.AddQuerySource<ElasticQuerySource>(ElasticQuerySource.SourceName);
+        services.AddScoped<IModularTenantEvents, ElasticsearchIndexInitializerService>();
+        services.AddScoped<IContentHandler, ElasticsearchIndexingContentHandler>();
 
-        services.AddRecipeExecutionStep<ElasticIndexStep>();
-        services.AddRecipeExecutionStep<ElasticSettingsStep>();
-        services.AddRecipeExecutionStep<ElasticIndexRebuildStep>();
-        services.AddRecipeExecutionStep<ElasticIndexResetStep>();
+        services.AddQuerySource<ElasticsearchQuerySource>(ElasticsearchQuerySource.SourceName);
+
+        services.AddRecipeExecutionStep<ElasticsearchIndexStep>();
+        services.AddRecipeExecutionStep<ElasticsearchSettingsStep>();
+        services.AddRecipeExecutionStep<ElasticsearchIndexRebuildStep>();
+        services.AddRecipeExecutionStep<ElasticsearchIndexResetStep>();
 
         return services;
     }

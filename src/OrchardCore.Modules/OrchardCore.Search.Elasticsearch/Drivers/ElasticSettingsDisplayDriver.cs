@@ -1,11 +1,11 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Elastic.Clients.Elasticsearch;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Nest;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -21,11 +21,11 @@ public sealed class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSett
 {
     private static readonly char[] _separator = [',', ' '];
 
-    private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly ElasticConnectionOptions _elasticConnectionOptions;
-    private readonly IElasticClient _elasticClient;
+    private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
+    private readonly ElasticsearchClient _elasticClient;
 
     internal readonly IStringLocalizer S;
 
@@ -33,11 +33,11 @@ public sealed class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSett
         => SearchConstants.SearchSettingsGroupId;
 
     public ElasticSettingsDisplayDriver(
-        ElasticIndexSettingsService elasticIndexSettingsService,
+        ElasticsearchIndexSettingsService elasticIndexSettingsService,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IOptions<ElasticConnectionOptions> elasticConnectionOptions,
-        IElasticClient elasticClient,
+        IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
+        ElasticsearchClient elasticClient,
         IStringLocalizer<ElasticSettingsDisplayDriver> stringLocalizer
         )
     {
@@ -57,7 +57,8 @@ public sealed class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSett
             model.SearchIndexes = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
             model.DefaultQuery = settings.DefaultQuery;
             model.SearchType = settings.GetSearchType();
-            model.SearchTypes = [
+            model.SearchTypes =
+            [
                 new(S["Multi-Match Query (Default)"], string.Empty),
                 new(S["Query String Query"], ElasticSettings.QueryStringSearchType),
                 new(S["Custom Query"], ElasticSettings.CustomSearchType),
@@ -68,7 +69,7 @@ public sealed class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSett
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, ElasticSettings section, UpdateEditorContext context)
     {
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return null;
         }

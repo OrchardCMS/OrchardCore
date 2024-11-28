@@ -19,5 +19,6 @@ public class GraphQLContentPartOption
     public string Name { get; }
 
     public bool Collapse { get; set; }
+
     public bool Hidden { get; set; }
 }

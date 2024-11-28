@@ -157,7 +157,7 @@ public class GraphQLContentOptions
     {
         ArgumentException.ThrowIfNullOrEmpty(contentType);
 
-        var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => ctp.ContentType == contentType);
+        var contentTypeOption = ContentTypeOptions.FirstOrDefault(ctp => ctp.ContentType.Equals(contentType, StringComparison.OrdinalIgnoreCase));
 
         return contentTypeOption?.Hidden ?? false;
     }
