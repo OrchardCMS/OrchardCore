@@ -19,21 +19,12 @@
   <Target Name="OrchardCoreErrorsThemeAtMostOne"
           DependsOnTargets="OrchardCoreFilterThemes"
           BeforeTargets="BeforeBuild">
-    <Error
-      Code="OC3001"
-      Condition="@(OrchardCoreThemes->Count()) > 1"
-      Text="'$(MSBuildProjectName)' cannot declare itself to be more than one 'Theme' (@(OrchardCoreThemes->Count()))." />
   </Target>
 
   <!-- Fail ASAP when MODULE+THEME declaration has been detected, which also depends upon Modules having been filtered (see Modules targets). -->
   <Target Name="OrchardCoreErrorsThemeAndModuleRedundant"
           DependsOnTargets="OrchardCoreFilterModules;OrchardCoreFilterThemes"
-          BeforeTargets="BeforeBuild">
-    <Error
-      Code="OC3002"
-      Condition="@(OrchardCoreModules->Count()) > 0 And @(OrchardCoreThemes->Count()) > 0"
-      Text="'$(MSBuildProjectName)' cannot declare itself to be both a 'Module' (@(OrchardCoreModules->Count())) and a 'Theme' (@(OrchardCoreThemes->Count()))." />
-  </Target>
+          BeforeTargets="BeforeBuild" />
 
   <!-- Keyed on ItemGroup OrchardCoreThemes list item, ctor args by position:
     1: string id

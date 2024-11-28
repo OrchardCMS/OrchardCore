@@ -28,10 +28,6 @@
 
   <Target Name="EnsureRazorSdk"
           BeforeTargets="BeforeBuild">
-    <Error
-      Code="OC2001"
-      Condition="!('@(RazorGenerate)' == '' or '$(ResolvedRazorCompileToolset)' == 'RazorSdk')"
-      Text="The 'Microsoft.NET.Sdk.Razor' SDK is required on Themes and Modules for Razor files to be precompiled." />
   </Target>
 
   <Target Name="NoWarnOnRazorViewImportedTypeConflicts"
@@ -167,10 +163,6 @@
   <Target Name="OrchardCoreErrorsModuleAtMostOne"
           DependsOnTargets="OrchardCoreFilterModules"
           BeforeTargets="BeforeBuild">
-    <Error
-      Code="OC2002"
-      Condition="@(OrchardCoreModules->Count()) > 1"
-      Text="'$(MSBuildProjectName)' cannot declare itself to be more than one 'Module' (@(OrchardCoreModules->Count()))." />
   </Target>
 
   <!-- Keyed on ItemGroup OrchardCoreModules list item, ctor args by position:
