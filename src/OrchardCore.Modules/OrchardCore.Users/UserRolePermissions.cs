@@ -5,9 +5,6 @@ namespace OrchardCore.Users;
 
 public sealed class UserRolePermissions : IPermissionProvider
 {
-    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Users.CommonPermissions.AssignRoleToUsers'.")]
-    public static readonly Permission AssignRoleToUsers = CommonPermissions.AssignRoleToUsers;
-
     private readonly IRoleService _roleService;
 
     public UserRolePermissions(IRoleService roleService)

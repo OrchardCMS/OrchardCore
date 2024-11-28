@@ -25,9 +25,13 @@ public class Permission
     }
 
     public string Name { get; }
+
     public string Description { get; set; }
+
     public string Category { get; set; }
+
     public IEnumerable<Permission> ImpliedBy { get; }
+
     public bool IsSecurityCritical { get; }
 
     public static implicit operator Claim(Permission p)
