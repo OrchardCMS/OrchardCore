@@ -34,6 +34,14 @@ assignees: ''
        - CLI templates and commands.
        - Relevant guides, such as the [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/) guide.
 
+## Step 6: Validation
+
+1. **Check Functionality**: Ensure that the [`OrchardCore.Samples`](https://github.com/OrchardCMS/OrchardCore.Samples) works as expected.
+2. **Test Guides**: Test the following guides with NuGet packages from the Cloudsmith feed:
+   - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/guides/create-modular-application-mvc/)
+   - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/latest/guides/create-cms-application/)
+   - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/)
+
 ## Step 3: Create New Release
 
 1. Navigate to the [GitHub Releases page](https://github.com/OrchardCMS/OrchardCore/releases/new).
@@ -54,14 +62,6 @@ assignees: ''
 
 - [ ] Assign the milestone of the release version to the issue.
 - [ ] Close any remaining issues for this version or assign them to the next release.
-
-## Step 6: Validation
-
-1. **Check Functionality**: Ensure that the [`OrchardCore.Samples`](https://github.com/OrchardCMS/OrchardCore.Samples) works as expected.
-2. **Test Guides**: Test the following guides with NuGet packages from the Cloudsmith feed:
-   - [Creating a modular ASP.NET Core application](https://docs.orchardcore.net/en/latest/guides/create-modular-application-mvc/)
-   - [Creating an Orchard Core CMS website](https://docs.orchardcore.net/en/latest/guides/create-cms-application/)
-   - [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/)
 
 ## Step 7: Publicize the Release
 
