@@ -20,17 +20,17 @@ assignees: ''
 - [ ] **Create Release Branch**: Create a new release branch named `release/<version-name-with-no-patch-number>` (e.g., `release/3.0`) from the `main` branch. This branch will serve as the foundation for upcoming patch releases and facilitate versioned updates.
 - [ ] **Check CI Workflow**: Verify that the [release_ci](https://github.com/OrchardCMS/OrchardCore/blob/main/.github/workflows/release_ci.yml) workflow is using the correct .NET version.
 - [ ] **Update Documentation**: Open a new pull request for the following updates:
-  - **Update `OrchardCore.Commons.props`**: Set `<VersionSuffix></VersionSuffix>` to prevent preview build numbers and ensure `VersionPrefix` matches the released version.
-  - **Update Module Versions**: Modify `src/OrchardCore/OrchardCore.Abstractions/Modules/Manifest/ManifestConstants.cs` as necessary.
-   - Overview of the release's highlights and goals. What do you want people to remember this release for?
-   - Prerequisites. What framework version do you need, anything else to work with Orchard?
-   - Upgrade steps, any migration necessary from previous versions, and any breaking changes.
+  - **Update `OrchardCore.Commons.props`**: Set `<VersionSuffix></VersionSuffix>` to prevent preview build numbers. Ensure `VersionPrefix` matches the released version.
+  - **Update Module Versions**: Modify `src/OrchardCore/OrchardCore.Abstractions/Modules/Manifest/ManifestConstants.cs` as needed.
+  - **Release Notes**: Finalize release notes in the documentation, including:
+    - Highlights and goals of the release.
+    - Prerequisites for running the new version.
     - Upgrade steps and any breaking changes.
-  - **Update Documentation Navigation**: Add the release notes page to `mkdocs.yml` and remove it from `not_in_nav`.
-  - **Revise Version Mentions**: Update all references to the new version throughout the documentation, including:
+  - **Update Documentation Navigation**: Add the release notes page to `mkdocs.yml` navigation and remove it from `not_in_nav`.
+  - **Version Mentions**: Update all references to the new version throughout the documentation, including:
     - [Status in the root README](https://docs.orchardcore.net/en/latest/#status)
     - CLI templates and commands.
-    - Relevant guides, such as [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/).
+    - Relevant guides, such as the [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/) guide.
 
 ## Translation Updates
 
