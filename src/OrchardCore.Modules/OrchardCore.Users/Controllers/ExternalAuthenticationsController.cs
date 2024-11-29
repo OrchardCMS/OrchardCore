@@ -1,3 +1,4 @@
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -32,6 +34,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
     private readonly ISiteService _siteService;
     private readonly IEnumerable<ILoginFormEvent> _accountEvents;
     private readonly IShellFeaturesManager _shellFeaturesManager;
+    private readonly IEmailAddressValidator _emailAddressValidator;
     private readonly IUserService _userService;
     private readonly INotifier _notifier;
     private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
@@ -52,6 +55,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         IStringLocalizer<ExternalAuthenticationsController> stringLocalizer,
         IEnumerable<ILoginFormEvent> accountEvents,
         IShellFeaturesManager shellFeaturesManager,
+        IEmailAddressValidator emailAddressValidator,
         IUserService userService,
         INotifier notifier,
         IEnumerable<IExternalLoginEventHandler> externalLoginHandlers,
@@ -66,6 +70,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         _siteService = siteService;
         _accountEvents = accountEvents;
         _shellFeaturesManager = shellFeaturesManager;
+        _emailAddressValidator = emailAddressValidator;
         _userService = userService;
         _notifier = notifier;
         _externalLoginHandlers = externalLoginHandlers;
@@ -215,14 +220,16 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             }, ModelState.AddModelError);
 
             // If the registration was successful we can link the external provider and redirect the user.
-            if (iUser == null)
+            if (iUser == null || !ModelState.IsValid)
             {
+                _logger.LogError("Unable to create internal account and link it to the external user.");
+
                 await _notifier.ErrorAsync(H["Unable to create internal account and link it to the external user."]);
 
-                return RedirectToLogin(returnUrl);
+                return View(nameof(RegisterExternalLogin), externalLoginViewModel);
             }
 
-            var identityResult = await _signInManager.UserManager.AddLoginAsync(iUser, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
+            var identityResult = await _userManager.AddLoginAsync(iUser, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
 
             if (identityResult.Succeeded)
             {
@@ -257,6 +264,8 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
                 return RedirectToLogin(returnUrl);
             }
+
+            _logger.LogError("Unable to add external provider to a user: {LoginProvider} provider.", info.LoginProvider);
 
             AddErrorsToModelState(identityResult.Errors);
         }
@@ -294,25 +303,11 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         model.NoEmail = settings.NoEmail;
         model.NoUsername = settings.NoUsername;
 
-        ModelState.Clear();
+        UpdateAndValidateEmail(model, info, settings.NoEmail);
+        await UpdateAndValidateUserNameAsync(model, info, settings.NoUsername);
+        await UpdateAndValidatePasswordAsync(model, settings.NoPassword);
 
-        if (settings.NoEmail && string.IsNullOrWhiteSpace(model.Email))
-        {
-            model.Email = info.GetEmail();
-        }
-
-        if (settings.NoUsername && string.IsNullOrWhiteSpace(model.UserName))
-        {
-            model.UserName = await GenerateUsernameAsync(info);
-        }
-
-        if (settings.NoPassword)
-        {
-            model.Password = null;
-            model.ConfirmPassword = null;
-        }
-
-        if (TryValidateModel(model) && ModelState.IsValid)
+        if (ModelState.IsValid)
         {
             var iUser = await _userService.RegisterAsync(
                 new RegisterUserForm()
@@ -322,9 +317,9 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                     Password = model.Password,
                 }, ModelState.AddModelError);
 
-            if (iUser is not null)
+            if (iUser is not null && ModelState.IsValid)
             {
-                var identityResult = await _signInManager.UserManager.AddLoginAsync(iUser, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
+                var identityResult = await _userManager.AddLoginAsync(iUser, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
 
                 if (identityResult.Succeeded)
                 {
@@ -394,7 +389,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             }
             else
             {
-                var identityResult = await _signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
+                var identityResult = await _userManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
 
                 if (identityResult.Succeeded)
                 {
@@ -455,6 +450,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
     public async Task<IActionResult> LinkLoginCallback()
     {
         var user = await _userManager.GetUserAsync(User);
+
         if (user == null)
         {
             _logger.LogError("Unable to load user with ID '{UserId}'.", _userManager.GetUserId(User));
@@ -463,6 +459,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         }
 
         var info = await _signInManager.GetExternalLoginInfoAsync();
+
         if (info == null)
         {
             _logger.LogError("Unexpected error occurred loading external login info for user '{UserName}'.", user.UserName);
@@ -471,6 +468,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         }
 
         var result = await _userManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
+
         if (!result.Succeeded)
         {
             _logger.LogError("Unexpected error occurred adding external login info for user '{UserName}'.", user.UserName);
@@ -480,6 +478,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         // Clear the existing external cookie to ensure a clean login process.
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
         // Perform External Login SignIn.
         await ExternalSignInAsync(user, info);
 
@@ -491,6 +490,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
     public async Task<IActionResult> RemoveLogin(RemoveLoginViewModel model)
     {
         var user = await _userManager.GetUserAsync(User);
+
         if (user == null || user is not User u)
         {
             _logger.LogError("Unable to load user with ID '{UserId}'.", _userManager.GetUserId(User));
@@ -499,6 +499,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         }
 
         var result = await _userManager.RemoveLoginAsync(user, model.LoginProvider, model.ProviderKey);
+
         if (!result.Succeeded)
         {
             _logger.LogError("Unexpected error occurred removing external login info for user '{UserName}'.", user.UserName);
@@ -520,33 +521,102 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         return RedirectToAction(nameof(ExternalLogins));
     }
 
+    private async Task UpdateAndValidatePasswordAsync(RegisterExternalLoginViewModel model, bool noPassword)
+    {
+        if (noPassword)
+        {
+            model.Password = null;
+            model.ConfirmPassword = null;
+
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(model.Password))
+        {
+            ModelState.AddModelError(nameof(model.Password), S["Password is required!"]);
+        }
+        else if (model.Password != model.ConfirmPassword)
+        {
+            ModelState.AddModelError(nameof(model.ConfirmPassword), S["Confirm Password do not match"]);
+        }
+        else if (_userManager.PasswordValidators != null)
+        {
+            var user = new User();
+
+            foreach (var passwordValidator in _userManager.PasswordValidators)
+            {
+                var validationResult = await passwordValidator.ValidateAsync(_userManager, user, model.Password);
+
+                if (validationResult.Succeeded)
+                {
+                    continue;
+                }
+
+                foreach (var error in validationResult.Errors)
+                {
+                    ModelState.AddModelError(nameof(model.Password), error.Description);
+                }
+            }
+        }
+    }
+
+    private async Task UpdateAndValidateUserNameAsync(RegisterExternalLoginViewModel model, ExternalLoginInfo info, bool noUsername)
+    {
+        if (noUsername && string.IsNullOrWhiteSpace(model.UserName))
+        {
+            model.UserName = await GenerateUsernameAsync(info);
+        }
+
+        if (string.IsNullOrWhiteSpace(model.UserName))
+        {
+            ModelState.AddModelError(nameof(model.UserName), S["Username is required!"]);
+        }
+    }
+
+    private void UpdateAndValidateEmail(RegisterExternalLoginViewModel model, ExternalLoginInfo info, bool noEmail)
+    {
+        if (noEmail && string.IsNullOrWhiteSpace(model.Email))
+        {
+            model.Email = info.GetEmail();
+        }
+
+        if (string.IsNullOrWhiteSpace(model.Email))
+        {
+            ModelState.AddModelError(nameof(model.Email), S["Email is required!"]);
+        }
+        else if (!_emailAddressValidator.Validate(model.Email))
+        {
+            ModelState.AddModelError(nameof(model.Email), S["Invalid Email."]);
+        }
+    }
+
     private async Task<Microsoft.AspNetCore.Identity.SignInResult> ExternalSignInAsync(IUser user, ExternalLoginInfo info)
     {
         _logger.LogInformation("Attempting to do an external sign in.");
 
-        var externalClaims = info.Principal.GetSerializableClaims();
+        var externalClaims = info.Principal.GetSerializableClaims().ToArray();
         var userRoles = await _userManager.GetRolesAsync(user);
         var userInfo = user as User;
 
-        var context = new UpdateUserContext(user, info.LoginProvider, externalClaims, userInfo.Properties)
+        var context = new UpdateUserContext(user, info.LoginProvider, externalClaims, userInfo.Properties.DeepClone() as JsonObject)
         {
             UserClaims = userInfo.UserClaims,
             UserRoles = userRoles,
         };
 
-        foreach (var item in _externalLoginHandlers)
+        foreach (var externalLoginHandlers in _externalLoginHandlers)
         {
             try
             {
-                await item.UpdateUserAsync(context);
+                await externalLoginHandlers.UpdateUserAsync(context);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "{ExternalLoginHandler}.UpdateUserAsync threw an exception", item.GetType());
+                _logger.LogError(ex, "The method {ExternalLoginHandler}.UpdateUserAsync(context) threw an exception", externalLoginHandlers.GetType());
             }
         }
 
-        if (await UserManagerHelper.UpdateUserPropertiesAsync(_userManager, userInfo, context))
+        if (await _userManager.UpdateUserPropertiesAsync(userInfo, context))
         {
             await _userManager.UpdateAsync(user);
         }

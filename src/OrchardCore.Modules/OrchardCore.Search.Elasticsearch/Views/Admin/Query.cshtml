@@ -1,5 +1,7 @@
 @model OrchardCore.Search.Elasticsearch.ViewModels.AdminQueryViewModel
 @using OrchardCore.ContentManagement
+@using System.Text.Json
+@using Json.Path
 @inject IContentManager ContentManager
 
 @{
@@ -9,6 +11,8 @@
   }
 }"));
 
+    var hasFields = Model.Fields?.Any() == true;
+    var hasDocuments = Model.Documents?.Any() == true;
 }
 
 <style asp-name="codemirror"></style>
@@ -54,15 +58,17 @@
         <p><span class="text-muted">@T["Found {0} result(s) in {1} ms", Model.Count.ToString(), Model.Elapsed.TotalMilliseconds.ToString()]</span></p>
     }
 </div>
-@if (Model.Documents.Any() || Model.Fields.Any())
+
+@if (hasDocuments || hasFields)
 {
     <div class="mb-3">
         <a href="@Url.Action("Create", "Admin", new { area = "OrchardCore.Queries", id = "Elasticsearch", query = Model.DecodedQuery })" class="btn btn-success">@T["Create"]</a>
     </div>
 }
-@if (Model.Documents.Any())
+
+@if (hasDocuments)
 {
-    var fieldNames = Model.Documents.SelectMany(d => d.Keys.Distinct()).Distinct().ToList();
+    var fieldNames = Model.Documents.SelectMany(d => JsonSerializer.Deserialize<Dictionary<string, object>>(d.Value).Keys).Distinct().ToArray();
 
     <div class="mt-3">
         <p><span class="text-muted">@T["The results displayed in this table are coming from the _source data."]</span></p>
@@ -86,9 +92,16 @@
                 {
                     <tr>
                         <th scope="row">@(row++)</th>
-                        @foreach (var name in fieldNames)
+                        @foreach (var fieldName in fieldNames)
                         {
-                            <td>@(document.GetValueOrDefault(name)?.ToString() ?? string.Empty)</td>
+                            @if (document.Value.TryGetPropertyValue(fieldName, out var value))
+                            {
+                                <td>@value</td>
+                            }
+                            else
+                            {
+                                <td></td>
+                            }
                         }
                     </tr>
                 }
@@ -96,10 +109,10 @@
         </table>
     </div>
 }
-@if (Model.Fields.Any())
+
+@if (hasFields)
 {
-    var fields = Model.Fields.SelectMany(d => d.Distinct()).ToList();
-    var fieldNames = fields.OrderBy(x => x.Key).Select(d => d.Key).Distinct().ToList();
+    var fieldNames = Model.Fields.SelectMany(d => JsonSerializer.Deserialize<Dictionary<string, object>>(d.Value).Keys).Distinct().ToArray();
 
     <div class="mt-3">
         <p><span class="text-muted">@T["The results displayed in this table are coming from the field(s) data."]</span></p>
@@ -119,27 +132,30 @@
                 @{
                     int row = 1;
                 }
-                @foreach (var hit in Model.Fields)
+                @foreach (var field in Model.Fields)
                 {
                     <tr>
                         <th scope="row">@(row++)</th>
-
-                        @for (int i = 0; i < fieldNames.Count; i++)
+                        @foreach (var fieldName in fieldNames)
                         {
-                            var hitValues = (string[])hit.FirstOrDefault(x => x.Key == fieldNames[i]).Value;
-
-                            if (hitValues != null)
+                            @if (field.Value.TryGetPropertyValue(fieldName, out var value))
                             {
-                                var value = hitValues.First();
-                                var item = !string.IsNullOrEmpty(value) ? value : "NULL";
-
-                                <td>
-                                    @item
-                                </td>
+                                @if (value.TryGetValue<string[]>(out var terms))
+                                {
+                                    <td>@string.Join(" ||| ", terms)</td>
+                                }
+                                else if (value.TryGetValue<string>(out var term))
+                                {
+                                    <td>@term</td>
+                                }
+                                else
+                                {
+                                    <td>@T["NULL"]</td>
+                                }
                             }
                             else
                             {
-                                <td>NULL</td>
+                                <td>@T["NULL"]</td>
                             }
                         }
                     </tr>
@@ -148,8 +164,9 @@
         </table>
     </div>
 }
+
 <script at="Foot">
-    $(function () {
+    document.addEventListener('DOMContentLoaded', () => {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.DecodedQuery)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.Parameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
     });

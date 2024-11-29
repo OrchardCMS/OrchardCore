@@ -6,7 +6,7 @@ using OrchardCore.Templates.Services;
 
 namespace OrchardCore.Templates.Deployment;
 
-public class AllAdminTemplatesDeploymentSource
+public sealed class AllAdminTemplatesDeploymentSource
     : DeploymentSourceBase<AllAdminTemplatesDeploymentStep>
 {
     private readonly AdminTemplatesManager _templatesManager;

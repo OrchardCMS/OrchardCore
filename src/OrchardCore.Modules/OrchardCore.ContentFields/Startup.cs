@@ -1,6 +1,5 @@
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentFields.Drivers;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Handlers;
@@ -16,7 +15,6 @@ using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
-using OrchardCore.ResourceManagement;
 using OrchardCore.Users;
 
 namespace OrchardCore.ContentFields;
@@ -25,7 +23,7 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.Configure<TemplateOptions>(o =>
         {

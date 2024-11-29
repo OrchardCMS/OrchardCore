@@ -4,7 +4,7 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.ContentTypes.Deployment;
 
-public class ContentDefinitionDeploymentSource
+public sealed class ContentDefinitionDeploymentSource
     : DeploymentSourceBase<ContentDefinitionDeploymentStep>
 {
     private readonly IContentDefinitionStore _contentDefinitionStore;

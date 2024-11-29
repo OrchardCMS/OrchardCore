@@ -5,7 +5,7 @@ using OrchardCore.OpenId.Services;
 
 namespace OrchardCore.OpenId.Deployment;
 
-public class OpenIdServerDeploymentSource
+public sealed class OpenIdServerDeploymentSource
     : DeploymentSourceBase<OpenIdServerDeploymentStep>
 {
     private readonly IOpenIdServerService _openIdServerService;

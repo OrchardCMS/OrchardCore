@@ -8,7 +8,7 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Deployment;
 
-public class AllWorkflowTypeDeploymentSource
+public sealed class AllWorkflowTypeDeploymentSource
     : DeploymentSourceBase<AllWorkflowTypeDeploymentStep>
 {
     private readonly IWorkflowTypeStore _workflowTypeStore;
