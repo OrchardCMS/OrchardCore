@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
     /// Adds a service implementing <see cref="IConfigureOptions{ResourceManagementOptions}"/> to the service collection.
     /// </summary>
     /// <typeparam name="T">
-    /// The type of the service implementing <see cref="IConfigureOptions{ResourceManagementOptions}"/> to.
+    /// The type of the implementing of <see cref="IConfigureOptions{ResourceManagementOptions}"/> to register.
     /// </typeparam>
     public static IServiceCollection AddResourceConfiguration<T>(this IServiceCollection services)
         where T : class, IConfigureOptions<ResourceManagementOptions>
