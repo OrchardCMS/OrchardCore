@@ -30,7 +30,7 @@ public sealed class Startup : StartupBase
             o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserBlock("styleblock", parser.ArgumentsListParser, StyleBlock.WriteToAsync));
         });
 
-        serviceCollection.AddResourceManagementOptionsConfiguration<ResourceManagementOptionsConfiguration>();
+        serviceCollection.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         var resourceConfiguration = _shellConfiguration.GetSection("OrchardCore_Resources");
         serviceCollection.Configure<ResourceOptions>(resourceConfiguration);

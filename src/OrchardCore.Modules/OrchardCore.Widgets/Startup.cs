@@ -27,6 +27,6 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, WidgetsListPartSettingsDisplayDriver>();
         services.AddContentPart<WidgetMetadata>();
         services.AddDataMigration<Migrations>();
-        services.AddResourceManagementOptionsConfiguration<ResourceManagementOptionsConfiguration>();
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
     }
 }

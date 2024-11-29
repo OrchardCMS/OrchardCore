@@ -142,7 +142,7 @@ In this example, we define a style that depends on Bootstrap version 4. In this 
 
 !!! note "Registration"
     Make sure to register this `IConfigureOptions<ResourceManagementOptions>` in the `Startup` or your theme or module.
-    `serviceCollection.AddResourceManagementOptionsConfiguration<ResourceManagementOptionsConfiguration>();`
+    `serviceCollection.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();`
   
 ## Usage
 

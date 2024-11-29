@@ -16,7 +16,7 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddResourceManagementOptionsConfiguration<ResourceManagementOptionsConfiguration>();
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
         services.Configure<TheAdminThemeOptions>(_configuration.GetSection("TheAdminTheme:StyleSettings"));
     }
 }

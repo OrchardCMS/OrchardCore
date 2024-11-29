@@ -78,7 +78,7 @@ public sealed class Startup : StartupBase
         .AddLiquidFilter<ShapeRenderFilter>("shape_render")
         .AddLiquidFilter<ShapeStringifyFilter>("shape_stringify");
 
-        services.AddResourceManagementOptionsConfiguration<ResourceManagementOptionsConfiguration>();
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
     }
 }
 

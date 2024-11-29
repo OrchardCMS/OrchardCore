@@ -7,6 +7,6 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection serviceCollection)
     {
-        serviceCollection.AddResourceManagementOptionsConfiguration<ResourceManagementOptionsConfiguration>();
+        serviceCollection.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
     }
 }

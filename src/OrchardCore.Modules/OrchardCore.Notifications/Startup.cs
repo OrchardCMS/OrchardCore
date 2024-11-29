@@ -64,7 +64,7 @@ public sealed class Startup : StartupBase
 
         services.Configure<NotificationOptions>(_shellConfiguration.GetSection("OrchardCore_Notifications"));
 
-        services.AddResourceManagementOptionsConfiguration<NotificationOptionsConfiguration>();
+        services.AddResourceConfiguration<NotificationOptionsConfiguration>();
         services.AddDisplayDriver<User, UserNotificationPreferencesPartDisplayDriver>();
         services.AddDisplayDriver<Navbar, NotificationNavbarDisplayDriver>();
         services.AddScoped<INotificationEvents, CacheNotificationEventsHandler>();

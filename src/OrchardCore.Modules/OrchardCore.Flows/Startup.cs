@@ -46,6 +46,6 @@ public sealed class Startup : StartupBase
 
         services.AddDataMigration<Migrations>();
 
-        services.AddResourceManagementOptionsConfiguration<ResourceManagementOptionsConfiguration>();
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
     }
 }

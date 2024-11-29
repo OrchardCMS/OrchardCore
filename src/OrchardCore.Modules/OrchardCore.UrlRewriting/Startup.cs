@@ -26,7 +26,7 @@ public sealed class Startup : StartupBase
         services.AddUrlRewritingServices()
             .AddNavigationProvider<AdminMenu>()
             .AddPermissionProvider<UrlRewritingPermissionProvider>()
-            .AddResourceManagementOptionsConfiguration<ResourceManagementOptionsConfiguration>()
+            .AddResourceConfiguration<ResourceManagementOptionsConfiguration>()
             .AddDisplayDriver<RewriteRule, RewriteRulesDisplayDriver>();
 
         // Add Apache Mod Redirect Rule.

@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
     /// <typeparam name="T">
     /// The type of the service implementing <see cref="IConfigureOptions{ResourceManagementOptions}"/> to.
     /// </typeparam>
-    public static IServiceCollection AddResourceManagementOptionsConfiguration<T>(this IServiceCollection services)
+    public static IServiceCollection AddResourceConfiguration<T>(this IServiceCollection services)
         where T : class, IConfigureOptions<ResourceManagementOptions>
         => services.AddTransient<IConfigureOptions<ResourceManagementOptions>, T>();
 }

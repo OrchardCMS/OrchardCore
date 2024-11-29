@@ -83,7 +83,7 @@ public sealed class Startup : StartupBase
         services.AddActivity<LogTask, LogTaskDisplayDriver>();
 
         services.AddRecipeExecutionStep<WorkflowTypeStep>();
-        services.AddResourceManagementOptionsConfiguration<ResourceManagementOptionsConfiguration>();
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddTrimmingServices(_shellConfiguration);
     }

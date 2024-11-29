@@ -17,7 +17,7 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddResourceManagementOptionsConfiguration<ResourceManagementOptionsConfiguration>();
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddScoped<IShapeBindingResolver, TemplatesShapeBindingResolver>();
         services.AddScoped<PreviewTemplatesProvider>();

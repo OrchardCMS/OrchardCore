@@ -15,7 +15,7 @@ public sealed class Startup : Modules.StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddResourceManagementOptionsConfiguration<ResourceManagementOptionsConfiguration>();
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddScoped<IContentDisplayDriver, ContentPreviewDriver>();
 
