@@ -65,7 +65,6 @@ assignees: ''
 
 ## Step 7: Publicize the Release
 
-1. Announce the new release:
-   - [ ] Tweet using the Orchard-Core-X-Twitter project.
-   - [ ] Post in the [Orchard Core LinkedIn group](https://www.linkedin.com/groups/13605669/).
-   - [ ] Share on the [Orchard Core Facebook page](https://www.facebook.com/OrchardCore/).
+- [ ] Post about the release to X via [the Orchard Core X (Twitter) repo](https://github.com/OrchardCMS/Orchard-Core-X-Twitter).
+- [ ] Post in the [Orchard Core LinkedIn group](https://www.linkedin.com/groups/13605669/).
+- [ ] Share on the [Orchard Core Facebook page](https://www.facebook.com/OrchardCore/).
