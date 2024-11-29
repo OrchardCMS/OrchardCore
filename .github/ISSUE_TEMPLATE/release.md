@@ -71,6 +71,6 @@ assignees: ''
 
 Share the news of the new release with the community:
 
-- [ ] Tweet about the release.
-- [ ] Post on the [Orchard Core LinkedIn group](https://www.linkedin.com/groups/13605669/).
+- [ ] Post about the release to X via the Orchard Core X (Twitter) repo.
+- [ ] Post in the [Orchard Core LinkedIn group](https://www.linkedin.com/groups/13605669/).
 - [ ] Share on the [Orchard Core Facebook page](https://www.facebook.com/OrchardCore/).
