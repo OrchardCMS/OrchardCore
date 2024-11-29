@@ -23,9 +23,9 @@ assignees: ''
   - **Update `OrchardCore.Commons.props`**: Set `<VersionSuffix></VersionSuffix>` to prevent preview build numbers. Ensure `VersionPrefix` matches the released version.
   - **Update Module Versions**: Modify `src/OrchardCore/OrchardCore.Abstractions/Modules/Manifest/ManifestConstants.cs` as needed.
   - **Release Notes**: Finalize release notes in the documentation, including:
-    - Highlights and goals of the release.
-    - Prerequisites for running the new version.
-    - Upgrade steps and any breaking changes.
+   - Overview of the release's highlights and goals. What do you want people to remember this release for?
+   - Prerequisites. What framework version do you need, anything else to work with Orchard?
+   - Upgrade steps, any migration necessary from previous versions, and any breaking changes.
   - **Update Documentation Navigation**: Add the release notes page to `mkdocs.yml` navigation and remove it from `not_in_nav`.
   - **Version Mentions**: Update all references to the new version throughout the documentation, including:
     - [Status in the root README](https://docs.orchardcore.net/en/latest/#status)
