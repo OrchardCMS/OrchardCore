@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <PackageReference Include="Castle.Core" />
-    <PackageReference Include="GraphQL.DataLoader" />
   </ItemGroup>
 
 </Project>

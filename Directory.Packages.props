@@ -1,14 +1,17 @@
 <Project>
+
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
+
   <PropertyGroup>
     <!-- Special case - this property is used by a DotNetCliToolReference -->
     <DotNetXunitVersion>2.3.0</DotNetXunitVersion>
   </PropertyGroup>
+
   <ItemGroup>
-    <PackageVersion Include="AngleSharp" Version="1.2.0-beta.439" />
+    <PackageVersion Include="AngleSharp" Version="1.1.2" />
     <PackageVersion Include="AWSSDK.S3" Version="3.7.405.14" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.301" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.0.1" />
@@ -84,16 +87,20 @@
     <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.1.1" />
     <PackageVersion Include="YesSql.Filters.Query" Version="5.1.1" />
     <PackageVersion Include="ZString" Version="2.6.0" />
+
     <!-- dotnet/extensions -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
   </ItemGroup>
+
   <ItemGroup>
     <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <GlobalPackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="4.11.0" />
   </ItemGroup>
+
   <!-- These versions are used for tansitive dependency forced upgrades only. E.g. when a package references a vulnerable version. -->
   <!-- To list all vulnerable direct references run 'dotnet list package -vulnerable' (use double dash, just XML comments can't contain it) -->
   <!-- To list all vulnerable transitive references run 'dotnet list package -vulnerable -include-transitive' (use double dash, just XML comments can't contain it) -->
+
   <!-- The dependency graphs are generated using 'dotnet nuget why <.sln> <package id>' -->
   <ItemGroup>
     <!--
@@ -114,6 +121,7 @@
     -->
     <!-- When removing this, remove the corresponding ignore in dependabot.yml too. -->
     <PackageVersion Include="System.Drawing.Common" Version="4.7.2" />
+
     <!--
        OrchardCore.Media.Indexing.OpenXML (v2.1.0-preview)
         └─ DocumentFormat.OpenXml (v3.1.0)
@@ -140,6 +148,7 @@
     <AspNetCorePackagesVersion>8.0.11</AspNetCorePackagesVersion>
     <MicrosoftExtensionsPackagesVersion>8.0.11</MicrosoftExtensionsPackagesVersion>
   </PropertyGroup>
+
   <!-- When dual-targeting frameworks, add both of them to CommonTargetFrameworks above, when add PropertyGroups like
   below. -->
   <!--<PropertyGroup Condition="$(TargetFramework) == 'net7.0'">
@@ -160,7 +169,9 @@
   </ItemGroup>
   <!-- 'Microsoft.Extensions' packages that are not included in the ASP.NET Core shared framework -->
   <ItemGroup>
+
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MicrosoftExtensionsPackagesVersion)" />
     <!-- Microsoft.Extensions.Http.Resilience is not here because it diverged from the common Microsoft.Extensions versioning. -->
   </ItemGroup>
+
 </Project>

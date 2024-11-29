@@ -34,19 +34,42 @@
     <!-- TODO: TBD: possible to switch after a sort using MSBuild? -->
     <!-- TODO: TBD: with of course 'Include' being the 'Id' -->
     <!-- TODO: TBD: add a Type, i.e. 'Feature' for features, 'Theme' for themes, 'Module' for modules, and literally anything else is a Module -->
-    <OrchardCoreAttributes Include="OrchardCore.FeatureSet.Alpha" Type="feature" Name="Alpha" Category="three" Priority="4" Description="five" Dependencies="six;seven;eight" DefaultTenant="true" AlwaysEnabled="true" EnabledByDependencyOnly="false" />
-    <OrchardCoreAttributes Include="OrchardCore.FeatureSet.Bravo" Type="feature" Name="Bravo" Category="four" Priority="5" Description="six" Dependencies="seven;eight;nine" DefaultTenant="true" AlwaysEnabled="true" EnabledByDependencyOnly="false" />
-    <OrchardCoreAttributes Include="OrchardCore.FeatureSet.Charlie" Type="feature" Name="Charlie" Category="five" Priority="6" Description="seven" Dependencies="eight;nine;ten" DefaultTenant="true" AlwaysEnabled="true" EnabledByDependencyOnly="false" />
+    <OrchardCoreAttributes Include="OrchardCore.FeatureSet.Alpha"
+                           Type="feature"
+                           Name="Alpha"
+                           Category="three"
+                           Priority="4"
+                           Description="five"
+                           Dependencies="six;seven;eight"
+                           DefaultTenant="true"
+                           AlwaysEnabled="true"
+                           EnabledByDependencyOnly="false" />
+    <OrchardCoreAttributes Include="OrchardCore.FeatureSet.Bravo"
+                           Type="feature"
+                           Name="Bravo"
+                           Category="four"
+                           Priority="5"
+                           Description="six"
+                           Dependencies="seven;eight;nine"
+                           DefaultTenant="true"
+                           AlwaysEnabled="true"
+                           EnabledByDependencyOnly="false" />
+    <OrchardCoreAttributes Include="OrchardCore.FeatureSet.Charlie"
+                           Type="feature"
+                           Name="Charlie"
+                           Category="five"
+                           Priority="6"
+                           Description="seven"
+                           Dependencies="eight;nine;ten"
+                           DefaultTenant="true"
+                           AlwaysEnabled="true"
+                           EnabledByDependencyOnly="false" />
   </ItemGroup>
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>OrchardCore.Abstractions.Tests</_Parameter1>
     </AssemblyAttribute>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="GraphQL.DataLoader" />
   </ItemGroup>
 
 </Project>

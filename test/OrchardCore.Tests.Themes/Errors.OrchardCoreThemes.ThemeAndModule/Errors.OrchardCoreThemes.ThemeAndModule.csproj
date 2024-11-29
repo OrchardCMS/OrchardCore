@@ -20,18 +20,32 @@
 
   <ItemGroup>
     <!-- ModuleType="module" is assumed when unspecified -->
-    <OrchardCoreAttributes Include="$(MSBuildProjectName).One" Category="two" Priority="3" Description="four" Author="five" Version="6.7.8" Website="oc://moduleandtheme.prop" Dependencies="eight;nine;ten" Tags="nine;ten;eleven" />
-    <OrchardCoreAttributes Include="$(MSBuildProjectName).Two" Type="theme" Base="three" Category="four" Priority="5" Description="six" Author="seven" Version="8.9.10" Website="oc://moduleandtheme.prop" Dependencies="ten;eleven;twelve" Tags="eleven;twelve;thirteen" />
+    <OrchardCoreAttributes Include="$(MSBuildProjectName).One"
+                           Category="two"
+                           Priority="3"
+                           Description="four"
+                           Author="five"
+                           Version="6.7.8"
+                           Website="oc://moduleandtheme.prop"
+                           Dependencies="eight;nine;ten"
+                           Tags="nine;ten;eleven" />
+    <OrchardCoreAttributes Include="$(MSBuildProjectName).Two"
+                           Type="theme"
+                           Base="three"
+                           Category="four"
+                           Priority="5"
+                           Description="six"
+                           Author="seven"
+                           Version="8.9.10"
+                           Website="oc://moduleandtheme.prop"
+                           Dependencies="ten;eleven;twelve"
+                           Tags="eleven;twelve;thirteen" />
   </ItemGroup>
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>OrchardCore.Abstractions.Tests</_Parameter1>
     </AssemblyAttribute>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="GraphQL.DataLoader" />
   </ItemGroup>
 
 </Project>

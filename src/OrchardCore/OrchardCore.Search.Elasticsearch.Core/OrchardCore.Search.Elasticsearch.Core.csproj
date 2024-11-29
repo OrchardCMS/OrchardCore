@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <PackageReference Include="Elastic.Clients.Elasticsearch" />
-    <PackageReference Include="GraphQL.DataLoader" />
   </ItemGroup>
 
   <ItemGroup>

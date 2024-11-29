@@ -18,7 +18,6 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Search.Documents" />
-    <PackageReference Include="GraphQL.DataLoader" />
     <PackageReference Include="Microsoft.Extensions.Azure" />
   </ItemGroup>
 

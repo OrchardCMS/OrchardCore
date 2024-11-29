@@ -22,7 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GraphQL.DataLoader" />
     <PackageReference Include="YesSql.Abstractions" />
   </ItemGroup>
 

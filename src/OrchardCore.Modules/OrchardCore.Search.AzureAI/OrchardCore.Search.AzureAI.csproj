@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Search.Documents" />
-    <PackageReference Include="GraphQL.DataLoader" />
   </ItemGroup>
 
 </Project>

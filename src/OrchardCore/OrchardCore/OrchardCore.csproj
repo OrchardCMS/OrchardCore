@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GraphQL.DataLoader" />
     <PackageReference Include="ncrontab" />
     <PackageReference Include="NodaTime" />
   </ItemGroup>

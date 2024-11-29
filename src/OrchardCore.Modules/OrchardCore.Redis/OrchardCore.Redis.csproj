@@ -23,8 +23,4 @@
     <InternalsVisibleTo Include="OrchardCore.Tests" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="GraphQL.DataLoader" />
-  </ItemGroup>
-
 </Project>

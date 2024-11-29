@@ -9,8 +9,4 @@
     <Folder Include="reference\modules\AzureAISearch\images\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="GraphQL.DataLoader" />
-  </ItemGroup>
-
 </Project>
