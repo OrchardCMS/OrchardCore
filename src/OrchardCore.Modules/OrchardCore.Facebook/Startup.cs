@@ -12,7 +12,6 @@ using OrchardCore.Facebook.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Facebook;
@@ -33,7 +32,7 @@ public sealed class Startup : StartupBase
         services.AddSiteDisplayDriver<FacebookSettingsDisplayDriver>();
         services.AddRecipeExecutionStep<FacebookSettingsStep>();
 
-        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
         services.AddTransient<IConfigureOptions<FacebookSettings>, FacebookSettingsConfiguration>();
 
         services.Configure<MvcOptions>((options) =>
