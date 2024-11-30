@@ -40,7 +40,7 @@ public class UpdateContentsHandler : ContentHandlerBase
         var utcNow = _clock.UtcNow;
         context.ContentItem.ModifiedUtc = utcNow;
         var httpContext = _httpContextAccessor.HttpContext;
-        if (httpContext?.User.Identity.IsAuthenticated ?? false)
+        if (httpContext?.User.Identity?.IsAuthenticated ?? false)
         {
             // The value is only modified during update so that another event like
             // publishing in a Workflow doesn't change it.
