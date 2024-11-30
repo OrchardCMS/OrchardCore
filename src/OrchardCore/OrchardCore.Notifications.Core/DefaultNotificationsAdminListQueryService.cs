@@ -5,7 +5,7 @@ using YesSql;
 
 namespace OrchardCore.Navigation.Core;
 
-public class DefaultNotificationsAdminListQueryService : INotificationsAdminListQueryService
+public sealed class DefaultNotificationsAdminListQueryService : INotificationsAdminListQueryService
 {
     private readonly ISession _session;
     private readonly IServiceProvider _serviceProvider;

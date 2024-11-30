@@ -4,7 +4,7 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 
-public class ContentItemDeploymentSource
+public sealed class ContentItemDeploymentSource
     : DeploymentSourceBase<ContentItemDeploymentStep>
 {
     private readonly IContentManager _contentManager;

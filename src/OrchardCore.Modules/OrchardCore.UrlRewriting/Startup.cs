@@ -1,12 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.UrlRewriting.Drivers;
 using OrchardCore.UrlRewriting.Endpoints.Rules;
@@ -28,7 +26,7 @@ public sealed class Startup : StartupBase
         services.AddUrlRewritingServices()
             .AddNavigationProvider<AdminMenu>()
             .AddPermissionProvider<UrlRewritingPermissionProvider>()
-            .AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>()
+            .AddResourceConfiguration<ResourceManagementOptionsConfiguration>()
             .AddDisplayDriver<RewriteRule, RewriteRulesDisplayDriver>();
 
         // Add Apache Mod Redirect Rule.

@@ -8,7 +8,7 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles.Deployment;
 
-public class AllRolesDeploymentSource
+public sealed class AllRolesDeploymentSource
     : DeploymentSourceBase<AllRolesDeploymentStep>
 {
     private readonly RoleManager<IRole> _roleManager;

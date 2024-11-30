@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Scripting.Providers;
 
-public class LogProvider : IGlobalMethodProvider
+public sealed class LogProvider : IGlobalMethodProvider
 {
     private readonly GlobalMethod _log;
 

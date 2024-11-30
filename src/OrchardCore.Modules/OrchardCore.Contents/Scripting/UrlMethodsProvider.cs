@@ -4,7 +4,7 @@ using OrchardCore.Scripting;
 
 namespace OrchardCore.Contents.Scripting;
 
-public class UrlMethodsProvider : IGlobalMethodProvider
+public sealed class UrlMethodsProvider : IGlobalMethodProvider
 {
     private readonly GlobalMethod _getUrlPrefix;
 

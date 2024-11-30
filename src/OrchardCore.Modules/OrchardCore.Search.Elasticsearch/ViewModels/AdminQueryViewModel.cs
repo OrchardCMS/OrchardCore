@@ -18,8 +18,8 @@ public class AdminQueryViewModel
     public TimeSpan Elapsed { get; set; } = TimeSpan.Zero;
 
     [BindNever]
-    public IEnumerable<Dictionary<string, object>> Documents { get; set; } = [];
+    public IEnumerable<ElasticsearchRecord> Documents { get; set; } = [];
 
     [BindNever]
-    public IEnumerable<Dictionary<string, object>> Fields { get; set; } = [];
+    public IEnumerable<ElasticsearchRecord> Fields { get; set; } = [];
 }
