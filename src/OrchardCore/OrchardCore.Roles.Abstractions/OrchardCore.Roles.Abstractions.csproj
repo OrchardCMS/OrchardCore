@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>OrchardCore.Infrastructure</RootNamespace>
+    <RootNamespace>OrchardCore.Roles</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore Roles Abstractions</Title>
     <Description>
