@@ -10,10 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GraphQL.DataLoader" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\..\src\OrchardCore\OrchardCore.Theme.Targets\OrchardCore.Theme.Targets.csproj" />
     <ProjectReference Include="..\..\..\..\src\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
   </ItemGroup>

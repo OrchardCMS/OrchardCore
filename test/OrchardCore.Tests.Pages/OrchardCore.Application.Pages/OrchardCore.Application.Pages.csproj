@@ -16,8 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AngleSharp" />
-    <PackageReference Include="GraphQL.DataLoader" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Condition="'$(RazorRuntimeCompilation)' == 'true'" />
   </ItemGroup>
 

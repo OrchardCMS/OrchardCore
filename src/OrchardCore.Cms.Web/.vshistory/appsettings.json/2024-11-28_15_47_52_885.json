@@ -1,0 +1,334 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+  //"AllowedHosts": "example.com;localhost", // A semicolon-delimited list of host names without port numbers. Set it for public-facing edge servers or when the Host header is directly forwarded.
+  "OrchardCore": {
+    // See https://docs.orchardcore.net/en/latest/reference/modules/Admin/#custom-admin-prefix
+    //"OrchardCore_Admin": {
+    //   "AdminUrlPrefix": "Admin"
+    // },
+    // See https://docs.orchardcore.net/en/latest/reference/modules/ContentLocalization/#configuration to configure content localization.
+    //"OrchardCore_ContentLocalization_CulturePickerOptions": {
+    //  "CookieLifeTime": 14 // Set the culture picker cookie life time (in days).
+    //},
+    // See https://docs.orchardcore.net/en/latest/reference/core/Data/#sqlite.
+    //"OrchardCore_Data_Sqlite": {
+    //  "UseConnectionPooling": false
+    //},
+    // See https://docs.orchardcore.net/en/latest/reference/core/Data/#database-table to configure database table presets used before a given tenant is setup.
+    //"OrchardCore_Data_TableOptions": {
+    //  "DefaultDocumentTable": "Document", // Document table name, defaults to 'Document'.
+    //  "DefaultTableNameSeparator": "_", // Table name separator, one or multiple '_', "NULL" means no separator, defaults to '_'.
+    //  "DefaultIdentityColumnSize": "Int64" // Identity column size, 'Int32' or 'Int64', defaults to 'Int64'.
+    //},
+    // See https://docs.orchardcore.net/en/latest/reference/core/Data/#configuring-yessql to configure YesSql.
+    //"OrchardCore_YesSql": {
+    //  "CommandsPageSize": 500,
+    //  "QueryGatingEnabled": true,
+    //  "EnableThreadSafetyChecks": false
+    //},
+    // See https://docs.orchardcore.net/en/latest/reference/modules/DataProtection.Azure/#configuration to configure data protection key storage in Azure Blob Storage.
+    //"OrchardCore_DataProtection_Azure": {
+    //  "ConnectionString": "", // Set to your Azure Storage account connection string.
+    //  "ContainerName": "dataprotection", // Default to dataprotection. Templatable, refer to docs.
+    //  "BlobName": "", // Optional, defaults to Sites/tenant_name/DataProtectionKeys.xml. Templatable, refer to docs.
+    //  "CreateContainer": true // Creates the container during app startup if it does not already exist.
+    //},
+    // See https://docs.orchardcore.net/en/latest/reference/modules/Markdown/#markdown-configuration
+    //"OrchardCore_Markdown": {
+    //  "Extensions": "nohtml+advanced"
+    //},
+    // See https://docs.orchardcore.net/en/latest/reference/modules/Media/#configuration to configure media.
+    //"OrchardCore_Media": {
+    //  "SupportedSizes": [ 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 ],
+    //  "MaxBrowserCacheDays": 30,
+    //  "MaxSecureFilesBrowserCacheDays": 0,
+    //  "MaxCacheDays": 365,
+    //  "ResizedCacheMaxStale": "01:00:00", // The time before a stale item is removed from the resized media cache, if not provided there is no cleanup.
+    //  "RemoteCacheMaxStale": "01:00:00", // The time before a stale item is removed from the remote media cache, if not provided there is no cleanup.
+    //  "MaxFileSize": 30000000,
+    //  "CdnBaseUrl": "https://your-cdn.com",
+    //  "AssetsRequestPath": "/media",
+    //  "AssetsPath": "Media",
+    //  "UseTokenizedQueryString": true,
+    //  "AllowedFileExtensions": [".jpg",".jpeg",".png",".gif",".ico",".svg",".webp",".pdf",".doc",".docx",".ppt",".pptx",".pps",".ppsx",".odt",".xls",".xlsx",".psd",".mp3",".m4a",".ogg",".wav",".mp4",".m4v",".mov",".wmv",".avi",".mpg",".ogv",".3gp",".webm"],
+    //  "ContentSecurityPolicy": "default-src 'self'; style-src 'unsafe-inline'",
+    //  "MaxUploadChunkSize": 104857600,
+    //  "TemporaryFileLifetime": "01:00:00"
+    //},
+    // See https://docs.orchardcore.net/en/latest/reference/modules/Media.AmazonS3/#configuration to configure media storage in Amazon S3 Storage.
+    //"OrchardCore_Media_AmazonS3": {
+    //  "Region": "eu-central-1",
+    //  "Profile": "default",
+    //  "ProfilesLocation": "",
+    //  "Credentials": {
+    //    "SecretKey": "",
+    //    "AccessKey": ""
+    //  },
+    //  "BasePath": "/media", // Optionally, set to a path to store media in a subdirectory inside your bucket. Templatable, refer to docs.
+    //  "CreateBucket": true,
+    //  "RemoveBucket": true, // Whether the 'Bucket' is deleted if the tenant is removed, false by default.
+    //  "BucketName": "media" // Set the bucket's name (mandatory). Templatable, refer to docs.
+    //},
+    // See https://docs.orchardcore.net/en/latest/reference/modules/Media.AmazonS3/#configuration_1 to configure media storage in Amazon S3 Storage.
+    //"OrchardCore_Media_AmazonS3_ImageSharp_Cache": {
+    //  "Region": "eu-central-1",
+    //  "Profile": "default",
+    //  "ProfilesLocation": "",
+    //  "Credentials": {
+    //    "SecretKey": "",
+    //    "AccessKey": ""
+    //  },
+    //  "BasePath": "/media", // Optionally, set to a path to store media in a subdirectory inside your bucket. Templatable, refer to docs.
+    //  "CreateBucket": true,
+    //  "RemoveBucket": true, // Whether the 'Bucket' is deleted if the tenant is removed, false by default.
+    //  "BucketName": "imagesharp" // Set the bucket's name (mandatory). Templatable, refer to docs.
+    //},
+    // See https://docs.orchardcore.net/en/latest/reference/modules/Media.Azure/#configuration to configure media storage in Azure Blob Storage.
+    //"OrchardCore_Media_Azure": {
+    //  "ConnectionString": "", // Set to your Azure Storage account connection string.
+    //  "ContainerName": "somecontainer", // Set to the Azure Blob container name. Templatable, refer to docs.
+    //  "BasePath": "some/base/path", // Optionally, set to a path to store media in a subdirectory inside your container. Templatable, refer to docs.
+    //  "CreateContainer": true, // Activates an event to create the container if it does not already exist.
+    //  "RemoveContainer": true // Whether the 'Container' is deleted if the tenant is removed, false by default.
+    //},
+    // See http://127.0.0.1:8000/docs/reference/modules/Media.Azure/#configuration_1
+    //"OrchardCore_Media_Azure_ImageSharp_Cache": {
+    //  "ConnectionString": "", // Set to your Azure Storage account connection string.
+    //  "ContainerName": "somecontainer", // Set to the Azure Blob container name. Templatable, refer to docs.
+    //  "BasePath": "some/base/path", // Optionally, set to a path to store media in a subdirectory inside your container. Templatable, refer to docs.
+    //  "CreateContainer": true, // Activates an event to create the container if it does not already exist.
+    //  "RemoveContainer": true // Whether the 'Container' is deleted if the tenant is removed, false by default.
+    //},
+    // See https://stackexchange.github.io/StackExchange.Redis/Configuration.html
+    //"OrchardCore_Redis": {
+    //  "Configuration": "192.168.99.100:6379,allowAdmin=true", // Redis Configuration string.
+    //  "InstancePrefix": "", // Optional prefix allowing a Redis instance to be shared by different applications.
+    //  "DisableCertificateVerification": false // Disable SSL/TLS certificate verification.
+    //},
+    // See https://docs.orchardcore.net/en/latest/reference/modules/Security/#security-settings-configuration to configure security settings.
+    //"OrchardCore_Security": {
+    //  "ContentSecurityPolicy": {},
+    //  "PermissionsPolicy": { "fullscreen": "self" },
+    //  "ReferrerPolicy": "no-referrer"
+    //},
+    // See https://docs.orchardcore.net/en/latest/reference/core/Shells/#enable-azure-shells-configuration to configure shell and tenant configuration in Azure Blob Storage.
+    // Add a reference to the OrchardCore.Shells.Azure NuGet package.
+    // Add '.AddAzureShellsConfiguration()' to your Host Startup AddOrchardCms() section.
+    //"OrchardCore_Shells_Azure": {
+    //  "ConnectionString": "", // Set to your Azure Storage account connection string.
+    //  "ContainerName": "hostcontainer", // Set to the Azure Blob container name.
+    //  "BasePath": "some/base/path", // Optionally, set to a subdirectory inside your container.
+    //  "MigrateFromFiles": true // Optionally, enable to migrate existing App_Data files to Blob automatically.
+    //},
+    // See https://docs.orchardcore.net/en/latest/reference/core/Shells/#enable-database-shells-configuration to configure shell and tenant configuration in the database store.
+    // Add '.AddDatabaseShellsConfiguration()' to your Host Startup AddOrchardCms() section.
+    //"OrchardCore_Shells_Database": {
+    //  "DatabaseProvider": "SqlConnection", // Set to a supported database provider.
+    //  "ConnectionString": "", // Set to the database connection string.
+    //  "TablePrefix": "", // Optionally, configure a table prefix.
+    //  "MigrateFromFiles": true // Optionally, enable to migrate existing App_Data files to Database automatically.
+    //},
+    // By default background tasks are waiting for their shell to be lazily built on a first matching request.
+    //"OrchardCore_BackgroundService": {
+    //  "ShellWarmup": true,
+    //  // The polling time for the background tasks, i.e. how much to wait between executing all the background tasks of a given tenant.
+    //  "PollingTime": "00:01:00",
+    //  // The minimum idle time before the background tasks of a tenant are triggered, as well as between tasks similar to PollingTime.
+    //  "MinimumIdleTime": "00:00:10"
+    //},
+    // Add 'AddOrchardCoreAzureKeyVault()' to the Generic Host in 'CreateHostBuilder() section'.
+    //"OrchardCore_KeyVault_Azure": {
+    //  "KeyVaultName": "", // Set the name of your Azure Key Vault.
+    //  "ReloadInterval": null // Optional, timespan to wait between attempts at polling the Azure KeyVault for changes. Leave blank to disable reloading.
+    //},
+    // See https://docs.orchardcore.net/en/latest/reference/modules/Users/Configuration/#custom-paths
+    //"OrchardCore_Users": {
+    //  "LoginPath": "Login",
+    //  "LogoffPath": "Users/LogOff",
+    //  "ChangePasswordUrl": "ChangePassword",
+    //  "ExternalLoginsUrl": "ExternalLogins"
+    //},
+    //"OrchardCore_Resources": {
+    //  "ResourceDebugMode": "FromConfiguration",
+    //  "UseCdn": false,
+    //  "CdnBaseUrl": "",
+    //  "AppendVersion": true
+    //},
+    //"OrchardCore_Navigation": {
+    //  "PagerOptions": {
+    //    "PageSize": 10,
+    //    "MaxPageSize": 100,
+    //    "MaxPagedCount": 500
+    //  }
+    //},
+    // Provides Azure AI Search Connection
+    //"OrchardCore_AzureAISearch": {
+    //  "Endpoint":"",
+    //  "IndexesPrefix":"",
+    //  "AuthenticationType":"Default",
+    //  "IdentityClientId":null,
+    //  "DisableUIConfiguration":false,
+    //  "Credential":{
+    //     "Key": ""
+    //   }
+    //},
+    // Roles
+    //"OrchardCore_Roles": {
+    //  "AdminRoleName":"Administrator"
+    //},
+    //"Url": "http://localhost",
+    //  "Ports": [ 9200 ],
+    //  "Username": "admin",
+    //  "Password": "admin",
+    //  "CloudId": "Orchard_Core_deployment:ZWFzdHVzMi5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo0NDMkNmMxZGQ4YzAzN2=",
+    //  "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
+    //  "EnableApiVersioningHeader": false
+    //},
+    // Provides Elasticsearch Connection
+    //"OrchardCore_Elasticsearch": {
+    //  "ConnectionType": "SingleNodeConnectionPool",
+    //  "Url": "http://localhost",
+    //  "Ports": [ 9200 ],
+    //  "Username": "admin",
+    //  "Password": "admin",
+    //  "CloudId": "Orchard_Core_deployment:ZWFzdHVzMi5henVyZS5lbGFzdGljLWNsb3VkLmNvbTo0NDMkNmMxZGQ4YzAzN2=",
+    //  "CertificateFingerprint": "75:21:E7:92:8F:D5:7A:27:06:38:8E:A4:35:FE:F5:17:D7:37:F4:DF:F0:9A:D2:C0:C4:B6:FF:EE:D1:EA:2B:A7",
+    //  "EnableApiVersioningHeader": false
+    //},
+    // WARNING: AutoSetup section given as an example for Development only, for Production use "Environment Variables" instead
+    //"OrchardCore_AutoSetup": {
+    //  "AutoSetupPath": "",
+    //  "Tenants": [
+    //    {
+    //      "ShellName": "Default",
+    //      "SiteName": "AutoSetup Example",
+    //      "SiteTimeZone": "Europe/Amsterdam",
+    //      "AdminUsername": "admin",
+    //      "AdminEmail": "info@orchardproject.net",
+    //      "AdminPassword": "OrchardCoreRules1!",
+    //      "DatabaseProvider": "Sqlite",
+    //      "DatabaseConnectionString": "",
+    //      "DatabaseTablePrefix": "",
+    //      "DatabaseSchema": "",
+    //      "RecipeName": "SaaS"
+    //    },
+    //    {
+    //      "ShellName": "AutoSetupTenant",
+    //      "SiteName": "AutoSetup Tenant",
+    //      "SiteTimeZone": "Europe/Amsterdam",
+    //      "AdminUsername": "tenantadmin",
+    //      "AdminEmail": "tenant@orchardproject.net",
+    //      "AdminPassword": "OrchardCoreRules1!",
+    //      "DatabaseProvider": "Sqlite",
+    //      "DatabaseConnectionString": "",
+    //      "DatabaseTablePrefix": "tenant",
+    //      "DatabaseSchema": "",
+    //      "RecipeName": "Agency",
+    //      "RequestUrlHost": "",
+    //      "RequestUrlPrefix": "tenant"
+    //    }
+    //  ]
+    //},
+    //"OrchardCore_Notifications": {
+    //  "TotalUnreadNotifications": 10,
+    //  "DisableNotificationHtmlBodySanitizer": false
+    //},
+    //"OrchardCore_HealthChecks": {
+    //  "Url": "/health/live",
+    //  "ShowDetails": true
+    //},
+    //"OrchardCore_Email_Smtp": {
+    //  "DefaultSender": "",
+    //  "DeliveryMethod": "Network",
+    //  "PickupDirectoryLocation": "",
+    //  "Host": "localhost",
+    //  "Port": 25,
+    //  // Uncomment if SMTP server runs through a proxy server
+    //  //"ProxyHost": "proxy.domain.com",
+    //  //"ProxyPort": 5050,
+    //  "EncryptionMethod": "SSLTLS",
+    //  "AutoSelectEncryption": false,
+    //  "UseDefaultCredentials": false,
+    //  "RequireCredentials": true,
+    //  "Username": "",
+    //  "Password": ""
+    //},
+    //"OrchardCore_Email_AzureCommunicationServices": {
+    //  "DefaultSender": "",
+    //  "ConnectionString": ""
+    //}
+    //"OrchardCore_Sms_AzureCommunicationServices": {
+    //  "PhoneNumber": "",
+    //  "ConnectionString": ""
+    //}
+    //"OrchardCore_ReverseProxy": {
+    //  "ForwardedHeaders": "None"
+    //},
+    //"OrchardCore_Facebook": {
+    //  "AppId": "",
+    //  "AppSecret": "",
+    //  "FBInit": false,
+    //  "FBInitParams": "status:true,xfbml:true,autoLogAppEvents:true",
+    //  "SdkJs": "sdk.js",
+    //  "Version": "v3.2"
+    //},
+    //"OrchardCore_GitHub": {
+    //  "ClientID": "",
+    //  "ClientSecret": "",
+    //  "CallbackPath": "/signin-github",
+    //  "SaveTokens": false
+    //},
+    //"OrchardCore_Google": {
+    //  "ClientID": "",
+    //  "ClientSecret": "",
+    //  "CallbackPath": "/signin-google",
+    //  "SaveTokens": false
+    //},
+    //"OrchardCore_X": {
+    //  "ConsumerKey": "",
+    //  "ConsumerSecret": "",
+    //  "AccessToken": "",
+    //  "AccessTokenSecret": ""
+    //},
+    //"OrchardCore_Microsoft_Authentication_MicrosoftAccount": {
+    //  "AppId": "",
+    //  "AppSecret": "",
+    //  "CallbackPath": "/signin-microsoft",
+    //  "SaveTokens": false
+    //},
+    //"OrchardCore_Microsoft_Authentication_AzureAD": {
+    //  "DisplayName": "",
+    //  "AppId": "",
+    //  "TenantId": "",
+    //  "CallbackPath": "/signin-oidc",
+    //  "SaveTokens": false
+    //},
+    //"OrchardCore_Localization_CultureOptions": {
+    //  "IgnoreSystemSettings": true
+    //},
+    //"TheAdminTheme": {
+    //  "StyleSettings": {
+    //    "WrapperClasses": "mb-3",
+    //    "LimitedWidthWrapperClasses": "row",
+    //    "LimitedWidthClasses": "col-md-6 col-lg-4 col-xxl-3",
+    //    "StartClasses": "",
+    //    "EndClasses": "",
+    //    "LabelClasses": "",
+    //    "OffsetClasses": ""
+    //   }
+    //},
+    //"OrchardCore_Tenants": {
+    //  "TenantRemovalAllowed": true // Whether tenant removal is allowed, false by default.
+    //},
+    //"OrchardCore_Workflows": {
+    //  "Trimming": {
+    //    "BatchSize": 1000
+    //  }
+    //}
+  }
+}

@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <PackageReference Include="AngleSharp" />
-    <PackageReference Include="GraphQL.DataLoader" />
     <PackageReference Include="Lorem.Universal.NET" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />

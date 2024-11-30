@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GraphQL.DataLoader" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
   </ItemGroup>
 </Project>

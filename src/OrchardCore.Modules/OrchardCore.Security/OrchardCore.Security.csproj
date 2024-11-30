@@ -15,10 +15,6 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="GraphQL.DataLoader" />
-  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />

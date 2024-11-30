@@ -20,7 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GraphQL.DataLoader" />
     <PackageReference Include="MiniProfiler.AspNetCore.Mvc" />
     <PackageReference Include="YesSql.Abstractions" />
   </ItemGroup>

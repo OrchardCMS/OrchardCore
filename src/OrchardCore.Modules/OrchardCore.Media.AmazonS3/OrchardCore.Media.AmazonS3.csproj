@@ -27,7 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GraphQL.DataLoader" />
     <PackageReference Include="SixLabors.ImageSharp.Web.Providers.AWS" />
   </ItemGroup>
 

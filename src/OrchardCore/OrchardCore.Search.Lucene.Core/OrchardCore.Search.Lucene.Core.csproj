@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GraphQL.DataLoader" />
     <PackageReference Include="Lucene.Net.QueryParser" />
     <PackageReference Include="Lucene.Net.Spatial" />
     <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
