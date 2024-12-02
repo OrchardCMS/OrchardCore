@@ -57,6 +57,8 @@ public static class UsersServiceCollectionExtensions
         services.AddScoped<ITwoFactorAuthenticationHandler, DefaultTwoFactorAuthenticationHandler>();
         services.AddScoped<ITwoFactorAuthenticationHandlerCoordinator, DefaultTwoFactorAuthenticationHandlerCoordinator>();
 
+        services.AddScoped<IUserEventHandler, DefaultUserEventHandler>();
+
         services.Configure<DocumentJsonSerializerOptions>(options =>
         {
             options.SerializerOptions.Converters.Add(LoginInfoJsonConverter.Instance);
