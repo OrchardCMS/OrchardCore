@@ -31,7 +31,7 @@
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.2.1" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.2.1" />
     <PackageVersion Include="Jint" Version="4.1.0" />
-    <PackageVersion Include="JsonPath.Net" Version="1.1.6" />
+    <PackageVersion Include="JsonPath.Net" Version="2.0.0" />
     <PackageVersion Include="HtmlSanitizer" Version="8.2.871-beta" />
     <PackageVersion Include="Irony" Version="1.5.3" />
     <PackageVersion Include="libphonenumber-csharp" Version="8.13.49" />
