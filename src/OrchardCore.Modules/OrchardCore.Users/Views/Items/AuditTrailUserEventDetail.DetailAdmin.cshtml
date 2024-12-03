@@ -1,13 +1,23 @@
 @model AuditTrailUserEventViewModel
 
-<table class="table table-sm table-hover mb-0">
+<h3>@T["User Info"]</h3>
+
+<table class="table table-sm table-hover">
     <tbody>
         <tr>
-            <th class="border-top-0 w-25">@T["Created at UTC"]</th>
-            <td class="border-top-0">@Model.UserEvent.CreatedUtc</td>
+            <th class="w-25">@T["User ID"]</th>
+            <td>@Model.UserEvent.UserId</td>
         </tr>
         <tr>
-            <th>@T["Created by User ID"]</th>
+            <th>@T["Username"]</th>
+            <td>@Model.UserEvent.UserName</td>
+        </tr>
+        <tr>
+            <th>@T["Created at UTC"]</th>
+            <td>@Model.UserEvent.CreatedUtc</td>
+        </tr>
+        <tr>
+            <th>@T["Created by user ID"]</th>
             <td>@Model.UserEvent.CreatedById</td>
         </tr>
         <tr>
@@ -15,7 +25,7 @@
             <td>@Model.UserEvent.ModifiedUtc</td>
         </tr>
         <tr>
-            <th>@T["Modified by User ID"]</th>
+            <th>@T["Modified by user ID"]</th>
             <td>@Model.UserEvent.ModifiedById</td>
         </tr>
     </tbody>

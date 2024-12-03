@@ -9,7 +9,6 @@ using OrchardCore.Users.AuditTrail.Models;
 using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
-using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.AuditTrail.Handlers;
 
