@@ -15,4 +15,3 @@ public static class ServiceCollectionExtensions
         where T : class, IConfigureOptions<ResourceManagementOptions>
         => services.AddTransient<IConfigureOptions<ResourceManagementOptions>, T>();
 }
-
