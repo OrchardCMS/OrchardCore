@@ -9,6 +9,7 @@ using OrchardCore.Users.AuditTrail.Models;
 using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
+using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.AuditTrail.Handlers;
 
@@ -89,6 +90,11 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
             userNameActual = userName;
         }
 
+        var userEvent = new AuditTrailUserEvent(user)
+        {
+            UserId = userId,
+        };
+
         var context = new AuditTrailContext<AuditTrailUserEvent>
             (
                 name: name,
@@ -96,11 +102,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
                 correlationId: userId,
                 userId: userIdActual,
                 userName: userNameActual,
-                new AuditTrailUserEvent
-                {
-                    UserId = userId,
-                    UserName = userName
-                }
+                userEvent
             );
 
         await _auditTrailManager.RecordEventAsync(context);

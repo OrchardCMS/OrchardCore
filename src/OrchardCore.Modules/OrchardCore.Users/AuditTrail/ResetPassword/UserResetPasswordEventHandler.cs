@@ -37,23 +37,24 @@ public class UserResetPasswordEventHandler : IPasswordRecoveryFormEvents
     private async Task RecordAuditTrailEventAsync(string name, IUser user)
     {
         var userName = user.UserName;
-        _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
 
-        var userId = await _userManager.GetUserIdAsync(user);
+        var userEvent = new AuditTrailUserEvent(user);
+
+        if (string.IsNullOrEmpty(userEvent.UserId))
+        {
+            _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
+            userEvent.UserId = await _userManager.GetUserIdAsync(user);
+        }
 
         await _auditTrailManager.RecordEventAsync(
             new AuditTrailContext<AuditTrailUserEvent>
             (
                 name,
                 UserResetPasswordAuditTrailEventConfiguration.User,
-                userId,
-                userId,
+                userEvent.UserId,
+                userEvent.UserId,
                 userName,
-                new AuditTrailUserEvent
-                {
-                    UserId = userId,
-                    UserName = userName
-                }
+                userEvent
             ));
     }
 }
