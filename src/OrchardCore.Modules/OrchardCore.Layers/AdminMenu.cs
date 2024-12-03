@@ -24,16 +24,16 @@ public sealed class AdminMenu : AdminNavigationProvider
     {
         builder
             .Add(S["Design"], design => design
-                .Add(S["Settings"], settings => settings
-                    .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
-                        .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageLayers)
-                        .LocalNav()
-                    )
-                )
                 .Add(S["Widgets"], S["Widgets"].PrefixPosition(), widgets => widgets
                     .Permission(Permissions.ManageLayers)
                     .Action("Index", "Admin", "OrchardCore.Layers")
+                    .LocalNav()
+                )
+            )
+            .Add(S["Settings"], settings => settings
+                .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
+                    .Action("Index", "Admin", _routeValues)
+                    .Permission(Permissions.ManageLayers)
                     .LocalNav()
                 )
             );

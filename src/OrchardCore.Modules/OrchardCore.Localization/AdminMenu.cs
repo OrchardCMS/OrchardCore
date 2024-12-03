@@ -31,18 +31,16 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], settings => settings
-                    .Add(S["Localization"], localization => localization
-                        .AddClass("localization")
-                        .Id("localization")
-                        .Add(S["Cultures"], S["Cultures"].PrefixPosition(), cultures => cultures
-                            .AddClass("cultures")
-                            .Id("cultures")
-                            .Action("Index", "Admin", _routeValues)
-                            .Permission(Permissions.ManageCultures)
-                            .LocalNav()
-                        )
+            .Add(S["Settings"], settings => settings
+                .Add(S["Localization"], localization => localization
+                    .AddClass("localization")
+                    .Id("localization")
+                    .Add(S["Cultures"], S["Cultures"].PrefixPosition(), cultures => cultures
+                        .AddClass("cultures")
+                        .Id("cultures")
+                        .Action("Index", "Admin", _routeValues)
+                        .Permission(Permissions.ManageCultures)
+                        .LocalNav()
                     )
                 )
             );

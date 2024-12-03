@@ -75,7 +75,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 contentItems.Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), _routeValues);
                 contentItems.LocalNav();
             });
-        });
+        }, priority: 1);
 
         var adminSettings = await _siteService.GetSettingsAsync<AdminSettings>();
 

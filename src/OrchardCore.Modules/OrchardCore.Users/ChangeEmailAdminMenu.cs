@@ -23,8 +23,8 @@ public sealed class ChangeEmailAdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Security"], security => security
-                .Add(S["Settings"], settings => settings
+            .Add(S["Settings"], settings => settings
+                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
                     .Add(S["User Change email"], S["User Change email"].PrefixPosition(), email => email
                         .Permission(CommonPermissions.ManageUsers)
                         .Action("Index", "Admin", _routeValues)

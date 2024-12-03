@@ -15,7 +15,7 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Configuration"], configuration => configuration
+            .Add(S["Tools"], tools => tools
                 .Add(S["Tasks"], S["Tasks"].PrefixPosition(), tasks => tasks
                     .Add(S["Background Tasks"], S["Background Tasks"].PrefixPosition(), backgroundTasks => backgroundTasks
                         .Action("Index", "BackgroundTask", "OrchardCore.BackgroundTasks")

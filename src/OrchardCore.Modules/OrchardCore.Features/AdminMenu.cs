@@ -23,7 +23,7 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Configuration"], configuration => configuration
+            .Add(S["Tools"], tools => tools
                 .Add(S["Features"], S["Features"].PrefixPosition(), deployment => deployment
                     .Action("Features", "Admin", _routeValues)
                     .Permission(Permissions.ManageFeatures)

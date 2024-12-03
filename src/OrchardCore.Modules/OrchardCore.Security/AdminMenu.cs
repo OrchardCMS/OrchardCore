@@ -11,7 +11,6 @@ public sealed class AdminMenu : AdminNavigationProvider
     {
         { "area", "OrchardCore.Settings" },
         { "groupId", SecuritySettingsDisplayDriver.GroupId },
-
     };
 
     internal readonly IStringLocalizer S;
@@ -24,10 +23,8 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
-                .AddClass("security")
-                .Id("security")
-                .Add(S["Settings"], settings => settings
+            .Add(S["Settings"], settings => settings
+                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
                     .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
                         .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
                         .Action("Index", "Admin", _routeValues)

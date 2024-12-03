@@ -22,7 +22,7 @@ public sealed class AdminMenuAAD : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Security"], security => security
+            .Add(S["Settings"], settings => settings
                 .Add(S["Authentication"], authentication => authentication
                     .Add(S["Microsoft Entra ID"], S["Microsoft Entra ID"].PrefixPosition(), entraId => entraId
                         .AddClass("microsoft-entra-id")

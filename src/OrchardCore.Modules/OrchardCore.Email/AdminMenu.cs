@@ -25,22 +25,22 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], settings => settings
-                   .Add(S["Email"], S["Email"].PrefixPosition(), entry => entry
-                      .AddClass("email")
-                      .Id("email")
-                      .Action("Index", "Admin", _routeValues)
-                      .Permission(Permissions.ManageEmailSettings)
-                      .LocalNav()
-                    )
-                   .Add(S["Email Test"], S["Email Test"].PrefixPosition(), entry => entry
-                      .AddClass("emailtest")
-                      .Id("emailtest")
-                      .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Email")
-                      .Permission(Permissions.ManageEmailSettings)
-                      .LocalNav()
-                    )
+            .Add(S["Tools"], tools => tools
+                .Add(S["Email Test"], S["Email Test"].PrefixPosition(), entry => entry
+                    .AddClass("emailtest")
+                    .Id("emailtest")
+                    .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Email")
+                    .Permission(Permissions.ManageEmailSettings)
+                    .LocalNav()
+                )
+            )
+            .Add(S["Settings"], settings => settings
+                .Add(S["Email"], S["Email"].PrefixPosition(), entry => entry
+                    .AddClass("email")
+                    .Id("email")
+                    .Action("Index", "Admin", _routeValues)
+                    .Permission(Permissions.ManageEmailSettings)
+                    .LocalNav()
                 )
             );
 

@@ -24,22 +24,24 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], settings => settings
-                    .Add(S["SMS"], S["SMS"].PrefixPosition(), sms => sms
-                        .AddClass("sms")
-                        .Id("sms")
-                        .Action("Index", "Admin", _routeValues)
-                        .Permission(SmsPermissions.ManageSmsSettings)
-                        .LocalNav()
-                    )
-                    .Add(S["SMS Test"], S["SMS Test"].PrefixPosition(), sms => sms
-                        .AddClass("smstest")
-                        .Id("smstest")
-                        .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Sms")
-                        .Permission(SmsPermissions.ManageSmsSettings)
-                        .LocalNav()
-                    )
+            .Add(S["Settings"], settings => settings
+                .Add(S["SMS"], S["SMS"].PrefixPosition(), sms => sms
+                    .AddClass("sms")
+                    .Id("sms")
+                    .Action("Index", "Admin", _routeValues)
+                    .Permission(SmsPermissions.ManageSmsSettings)
+                    .LocalNav()
+                )
+            );
+
+        builder
+            .Add(S["Tools"], tools => tools
+                .Add(S["SMS Test"], S["SMS Test"].PrefixPosition(), sms => sms
+                    .AddClass("smstest")
+                    .Id("smstest")
+                    .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Sms")
+                    .Permission(SmsPermissions.ManageSmsSettings)
+                    .LocalNav()
                 )
             );
 

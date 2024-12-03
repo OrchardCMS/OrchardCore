@@ -22,7 +22,7 @@ public sealed class AdminMenu : AdminNavigationProvider
     {
         // Configuration and settings menus for the AdminMenu module.
         builder
-            .Add(S["Configuration"], configuration => configuration
+            .Add(S["Tools"], tools => tools
                 .Add(S["Admin Menus"], S["Admin Menus"].PrefixPosition(), adminMenu => adminMenu
                     .Permission(Permissions.ManageAdminMenu)
                     .Action("List", "Menu", "OrchardCore.AdminMenu")

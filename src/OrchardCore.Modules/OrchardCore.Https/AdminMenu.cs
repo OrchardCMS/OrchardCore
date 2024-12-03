@@ -23,8 +23,8 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Security"], security => security
-                .Add(S["Settings"], settings => settings
+            .Add(S["Settings"], settings => settings
+                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
                     .Add(S["HTTPS"], S["HTTPS"].PrefixPosition(), https => https
                         .Action("Index", "Admin", _routeValues)
                         .Permission(Permissions.ManageHttps)

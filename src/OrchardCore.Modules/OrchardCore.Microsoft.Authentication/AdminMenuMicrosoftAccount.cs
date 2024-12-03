@@ -22,7 +22,7 @@ public sealed class AdminMenuMicrosoftAccount : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Security"], security => security
+            .Add(S["Settings"], settings => settings
                 .Add(S["Authentication"], authentication => authentication
                     .Add(S["Microsoft"], S["Microsoft"].PrefixPosition(), microsoft => microsoft
                         .AddClass("microsoft")

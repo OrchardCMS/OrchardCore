@@ -23,15 +23,13 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], settings => settings
-                    .Add(S["Reverse Proxy"], S["Reverse Proxy"].PrefixPosition(), entry => entry
+            .Add(S["Settings"], settings => settings
+                .Add(S["Reverse Proxy"], S["Reverse Proxy"].PrefixPosition(), proxy => proxy
                     .AddClass("reverseproxy")
                     .Id("reverseproxy")
-                        .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageReverseProxySettings)
-                        .LocalNav()
-                    )
+                    .Action("Index", "Admin", _routeValues)
+                    .Permission(Permissions.ManageReverseProxySettings)
+                    .LocalNav()
                 )
             );
 

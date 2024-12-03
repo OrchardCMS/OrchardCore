@@ -22,7 +22,7 @@ public sealed class AdminMenuLogin : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Security"], security => security
+            .Add(S["Settings"], settings => settings
                 .Add(S["Authentication"], authentication => authentication
                     .Add(S["Meta"], S["Meta"].PrefixPosition(), meta => meta
                         .AddClass("facebook")

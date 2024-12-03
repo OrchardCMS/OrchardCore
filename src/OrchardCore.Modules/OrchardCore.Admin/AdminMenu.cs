@@ -23,14 +23,12 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], settings => settings
-                    .Add(S["Admin"], S["Admin"].PrefixPosition(), admin => admin
-                        .AddClass("admin").Id("admin")
-                        .Action("Index", "Admin", _routeValues)
-                        .Permission(PermissionsAdminSettings.ManageAdminSettings)
-                        .LocalNav()
-                    )
+            .Add(S["Settings"], settings => settings
+                .Add(S["Admin"], S["Admin"].PrefixPosition(), admin => admin
+                    .AddClass("admin").Id("admin")
+                    .Action("Index", "Admin", _routeValues)
+                    .Permission(PermissionsAdminSettings.ManageAdminSettings)
+                    .LocalNav()
                 )
             );
 

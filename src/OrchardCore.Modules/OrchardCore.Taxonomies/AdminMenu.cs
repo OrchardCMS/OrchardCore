@@ -23,15 +23,13 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], "1", settings => settings
-                    .Add(S["Taxonomy Filters"], S["Taxonomy Filters"].PrefixPosition(), filters => filters
-                        .AddClass("taxonomyfilters")
-                        .Id("taxonomyfilters")
-                        .Permission(Permissions.ManageTaxonomies)
-                        .Action("Index", "Admin", _routeValues)
-                        .LocalNav()
-                    )
+            .Add(S["Settings"], settings => settings
+                .Add(S["Taxonomy Filters"], S["Taxonomy Filters"].PrefixPosition(), filters => filters
+                    .AddClass("taxonomyfilters")
+                    .Id("taxonomyfilters")
+                    .Permission(Permissions.ManageTaxonomies)
+                    .Action("Index", "Admin", _routeValues)
+                    .LocalNav()
                 )
             );
 

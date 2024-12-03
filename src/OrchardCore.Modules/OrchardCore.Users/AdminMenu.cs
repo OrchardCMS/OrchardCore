@@ -35,7 +35,11 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .Resource(new User())
                     .LocalNav()
                 )
-                .Add(S["Settings"], settings => settings
+            , priority: 1);
+
+        builder
+            .Add(S["Settings"], settings => settings
+                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
                     .Add(S["User Login"], S["User Login"].PrefixPosition(), login => login
                         .Permission(CommonPermissions.ManageUsers)
                         .Action("Index", "Admin", _routeValues)

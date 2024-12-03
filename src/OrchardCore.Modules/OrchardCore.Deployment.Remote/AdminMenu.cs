@@ -15,7 +15,7 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Configuration"], configuration => configuration
+            .Add(S["Tools"], tools => tools
                 .Add(S["Import/Export"], import => import
                     .Add(S["Remote Instances"], S["Remote Instances"].PrefixPosition(), remote => remote
                         .Action("Index", "RemoteInstance", "OrchardCore.Deployment.Remote")
