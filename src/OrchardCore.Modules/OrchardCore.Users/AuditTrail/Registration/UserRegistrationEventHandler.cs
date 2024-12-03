@@ -28,8 +28,9 @@ public class UserRegistrationEventHandler : RegistrationFormEventsBase
 
         var userId = await _userManager.GetUserIdAsync(user);
 
-        var userEvent = new AuditTrailUserEvent(user)
+        var userEvent = new AuditTrailUserEvent
         {
+            UserName = userName,
             UserId = userId,
         };
 

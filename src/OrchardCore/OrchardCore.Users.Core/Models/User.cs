@@ -39,26 +39,6 @@ public class User : Entity, IUser
 
     public string ResetToken { get; set; }
 
-    /// <summary>
-    /// The date and time when the user account was created.
-    /// </summary>
-    public DateTime? CreatedUtc { get; set; }
-
-    /// <summary>
-    /// The ID of the user who created this account.
-    /// </summary>
-    public string CreatedById { get; set; }
-
-    /// <summary>
-    ///The date and time when the user was last modified.
-    /// </summary>
-    public DateTime? ModifiedUtc { get; set; }
-
-    /// <summary>
-    /// The ID of the user who last modified this record.
-    /// </summary>
-    public string ModifiedById { get; set; }
-
     public IList<string> RoleNames { get; set; } = [];
 
     public IList<UserClaim> UserClaims { get; set; } = [];

@@ -4,6 +4,7 @@ using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Users.AuditTrail.Models;
 using OrchardCore.Users.Events;
+using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.AuditTrail.ResetPassword;
 
@@ -38,7 +39,15 @@ public class UserResetPasswordEventHandler : IPasswordRecoveryFormEvents
     {
         var userName = user.UserName;
 
-        var userEvent = new AuditTrailUserEvent(user);
+        var userEvent = new AuditTrailUserEvent
+        {
+            UserName = userName,
+        };
+
+        if (user is User u)
+        {
+            userEvent.UserId = u.UserId;
+        }
 
         if (string.IsNullOrEmpty(userEvent.UserId))
         {
