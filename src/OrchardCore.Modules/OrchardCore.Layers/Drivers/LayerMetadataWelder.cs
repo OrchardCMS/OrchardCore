@@ -30,11 +30,14 @@ public sealed class LayerMetadataWelder : ContentDisplayDriver
         if (!model.TryGet<LayerMetadata>(out var layerMetadata))
         {
             layerMetadata = new LayerMetadata();
+
+            // In the initial request, the 'Zone' and 'Position' are passed as route values.
+            // We attempt to populate the new 'LayerMetadata' and ensure the 'Zone' is correctly set.
             await context.Updater.TryUpdateModelAsync(layerMetadata, string.Empty, m => m.Zone, m => m.Position);
 
-            // Are we loading an editor that requires layer metadata?
             if (string.IsNullOrEmpty(layerMetadata.Zone))
             {
+                // At this point, the 'Zone' value was not provided in the route values, so the widget is not visible.
                 return null;
             }
 
@@ -50,8 +53,16 @@ public sealed class LayerMetadataWelder : ContentDisplayDriver
             m.Layer = layerMetadata.Layer;
             m.Layers = (await _layerService.GetLayersAsync()).Layers
             .Select(x => new SelectListItem(x.Name, x.Name));
-        })
-        .Location("Content:before");
+        }).Location("Content:before");
+    }
+
+    protected override void BuildPrefix(ContentItem model, string htmlFieldPrefix)
+    {
+        base.BuildPrefix(model, htmlFieldPrefix);
+        if (string.IsNullOrWhiteSpace(htmlFieldPrefix))
+        {
+            Prefix = nameof(LayerMetadata);
+        }
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentItem model, UpdateEditorContext context)
