@@ -23,7 +23,7 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Tools"], NavigationConstants.AdminMenuToolsPosition, tools => tools
+            .Add(S["Tools"], "after.101", tools => tools
                 .Id("tools")
                 .AddClass("tools")
             , priority: 1);
