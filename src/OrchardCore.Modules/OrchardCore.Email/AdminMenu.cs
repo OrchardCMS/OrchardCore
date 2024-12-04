@@ -26,12 +26,14 @@ public sealed class AdminMenu : AdminNavigationProvider
     {
         builder
             .Add(S["Tools"], tools => tools
-                .Add(S["Email Test"], S["Email Test"].PrefixPosition(), entry => entry
-                    .AddClass("emailtest")
-                    .Id("emailtest")
-                    .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Email")
-                    .Permission(Permissions.ManageEmailSettings)
-                    .LocalNav()
+                .Add(S["Testing"], S["Testing"].PrefixPosition(), testing => testing
+                    .Add(S["Email Test"], S["Email Test"].PrefixPosition(), entry => entry
+                        .AddClass("emailtest")
+                        .Id("emailtest")
+                        .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Email")
+                        .Permission(Permissions.ManageEmailSettings)
+                        .LocalNav()
+                    )
                 )
             )
             .Add(S["Settings"], settings => settings

@@ -24,11 +24,13 @@ public sealed class ClientAdminMenu : AdminNavigationProvider
     {
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), openId => openId
-                    .Add(S["Authentication client"], client => client
-                        .Action("Index", "Admin", _clientRouteValues)
-                        .Permission(Permissions.ManageClientSettings)
-                        .LocalNav()
+                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
+                    .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), openId => openId
+                        .Add(S["Authentication client"], S["Authentication client"].PrefixPosition(), client => client
+                            .Action("Index", "Admin", _clientRouteValues)
+                            .Permission(Permissions.ManageClientSettings)
+                            .LocalNav()
+                        )
                     )
                 )
             );

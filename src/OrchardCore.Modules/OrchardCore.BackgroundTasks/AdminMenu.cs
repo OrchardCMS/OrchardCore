@@ -16,12 +16,10 @@ public sealed class AdminMenu : AdminNavigationProvider
     {
         builder
             .Add(S["Tools"], tools => tools
-                .Add(S["Tasks"], S["Tasks"].PrefixPosition(), tasks => tasks
-                    .Add(S["Background Tasks"], S["Background Tasks"].PrefixPosition(), backgroundTasks => backgroundTasks
-                        .Action("Index", "BackgroundTask", "OrchardCore.BackgroundTasks")
-                        .Permission(Permissions.ManageBackgroundTasks)
-                        .LocalNav()
-                    )
+                .Add(S["Background Tasks"], S["Background Tasks"].PrefixPosition(), backgroundTasks => backgroundTasks
+                    .Action("Index", "BackgroundTask", "OrchardCore.BackgroundTasks")
+                    .Permission(Permissions.ManageBackgroundTasks)
+                    .LocalNav()
                 )
             );
 

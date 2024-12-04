@@ -23,13 +23,15 @@ public sealed class AdminMenuGitHubLogin : AdminNavigationProvider
     {
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["Authentication"], authentication => authentication
-                    .Add(S["GitHub"], S["GitHub"].PrefixPosition(), settings => settings
-                        .AddClass("github")
-                        .Id("github")
-                        .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageGitHubAuthentication)
-                        .LocalNav()
+                .Add(S["Security"], security => security
+                    .Add(S["Authentication"], authentication => authentication
+                        .Add(S["GitHub"], S["GitHub"].PrefixPosition(), settings => settings
+                            .AddClass("github")
+                            .Id("github")
+                            .Action("Index", "Admin", _routeValues)
+                            .Permission(Permissions.ManageGitHubAuthentication)
+                            .LocalNav()
+                        )
                     )
                 )
             );

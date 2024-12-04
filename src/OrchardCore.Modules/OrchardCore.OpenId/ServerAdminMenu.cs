@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.OpenId;
@@ -16,13 +16,15 @@ public sealed class ServerAdminMenu : AdminNavigationProvider
     {
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), openId => openId
-                    .AddClass("openid")
-                    .Id("openid")
-                    .Add(S["Authorization server"], server => server
-                        .Action("Index", "ServerConfiguration", "OrchardCore.OpenId")
-                        .Permission(Permissions.ManageServerSettings)
-                        .LocalNav()
+                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
+                    .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), openId => openId
+                        .AddClass("openid")
+                        .Id("openid")
+                        .Add(S["Authorization server"], S["Authorization server"].PrefixPosition(), server => server
+                            .Action("Index", "ServerConfiguration", "OrchardCore.OpenId")
+                            .Permission(Permissions.ManageServerSettings)
+                            .LocalNav()
+                        )
                     )
                 )
             );

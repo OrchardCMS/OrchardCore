@@ -23,13 +23,15 @@ public sealed class AdminMenuMicrosoftAccount : AdminNavigationProvider
     {
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["Authentication"], authentication => authentication
-                    .Add(S["Microsoft"], S["Microsoft"].PrefixPosition(), microsoft => microsoft
-                        .AddClass("microsoft")
-                        .Id("microsoft")
-                        .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageMicrosoftAuthentication)
-                        .LocalNav()
+                .Add(S["Security"], security => security
+                    .Add(S["Authentication"], authentication => authentication
+                        .Add(S["Microsoft"], S["Microsoft"].PrefixPosition(), microsoft => microsoft
+                            .AddClass("microsoft")
+                            .Id("microsoft")
+                            .Action("Index", "Admin", _routeValues)
+                            .Permission(Permissions.ManageMicrosoftAuthentication)
+                            .LocalNav()
+                        )
                     )
                 )
            );

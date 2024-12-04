@@ -36,12 +36,14 @@ public sealed class AdminMenu : AdminNavigationProvider
 
         builder
             .Add(S["Tools"], tools => tools
-                .Add(S["SMS Test"], S["SMS Test"].PrefixPosition(), sms => sms
-                    .AddClass("smstest")
-                    .Id("smstest")
-                    .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Sms")
-                    .Permission(SmsPermissions.ManageSmsSettings)
-                    .LocalNav()
+                .Add(S["Testing"], S["Testing"].PrefixPosition(), testing => testing
+                    .Add(S["SMS Test"], S["SMS Test"].PrefixPosition(), sms => sms
+                        .AddClass("smstest")
+                        .Id("smstest")
+                        .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Sms")
+                        .Permission(SmsPermissions.ManageSmsSettings)
+                        .LocalNav()
+                    )
                 )
             );
 

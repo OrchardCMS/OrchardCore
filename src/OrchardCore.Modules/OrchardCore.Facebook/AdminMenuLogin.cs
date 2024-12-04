@@ -23,13 +23,15 @@ public sealed class AdminMenuLogin : AdminNavigationProvider
     {
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["Authentication"], authentication => authentication
-                    .Add(S["Meta"], S["Meta"].PrefixPosition(), meta => meta
-                        .AddClass("facebook")
-                        .Id("facebook")
-                        .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageFacebookApp)
-                        .LocalNav()
+                .Add(S["Security"], security => security
+                    .Add(S["Authentication"], authentication => authentication
+                        .Add(S["Meta"], S["Meta"].PrefixPosition(), meta => meta
+                            .AddClass("facebook")
+                            .Id("facebook")
+                            .Action("Index", "Admin", _routeValues)
+                            .Permission(Permissions.ManageFacebookApp)
+                            .LocalNav()
+                        )
                     )
                 )
             );

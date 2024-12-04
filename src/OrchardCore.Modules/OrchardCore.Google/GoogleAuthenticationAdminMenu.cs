@@ -23,16 +23,18 @@ public sealed class GoogleAuthenticationAdminMenu : AdminNavigationProvider
     {
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["Authentication"], authentication => authentication
-                .Add(S["Google"], S["Google"].PrefixPosition(), google => google
-                    .AddClass("google")
-                    .Id("google")
-                    .Action("Index", "Admin", _routeValues)
-                    .Permission(Permissions.ManageGoogleAuthentication)
-                    .LocalNav()
+                .Add(S["Security"], security => security
+                    .Add(S["Authentication"], authentication => authentication
+                        .Add(S["Google"], S["Google"].PrefixPosition(), google => google
+                            .AddClass("google")
+                            .Id("google")
+                            .Action("Index", "Admin", _routeValues)
+                            .Permission(Permissions.ManageGoogleAuthentication)
+                            .LocalNav()
+                        )
+                    )
                 )
-            )
-        );
+            );
 
         return ValueTask.CompletedTask;
     }

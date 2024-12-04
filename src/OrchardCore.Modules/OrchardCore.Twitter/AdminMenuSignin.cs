@@ -23,13 +23,15 @@ public sealed class AdminMenuSignin : AdminNavigationProvider
     {
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["Authentication"], authentication => authentication
-                    .Add(S["Sign in with X (Twitter)"], S["Sign in with X (Twitter)"].PrefixPosition(), twitter => twitter
-                        .AddClass("twitter")
-                        .Id("twitter")
-                        .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageTwitterSignin)
-                        .LocalNav()
+                .Add(S["Security"], security => security
+                    .Add(S["Authentication"], authentication => authentication
+                        .Add(S["Sign in with X (Twitter)"], S["Sign in with X (Twitter)"].PrefixPosition(), twitter => twitter
+                            .AddClass("twitter")
+                            .Id("twitter")
+                            .Action("Index", "Admin", _routeValues)
+                            .Permission(Permissions.ManageTwitterSignin)
+                            .LocalNav()
+                        )
                     )
                 )
             );
