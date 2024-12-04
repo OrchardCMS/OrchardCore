@@ -87,9 +87,6 @@
     <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.1.1" />
     <PackageVersion Include="YesSql.Filters.Query" Version="5.1.1" />
     <PackageVersion Include="ZString" Version="2.6.0" />
-
-    <!-- dotnet/extensions -->
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -137,42 +134,55 @@
     -->
     <PackageVersion Include="System.Runtime.Caching" Version="8.0.1" />
     <PackageVersion Include="System.Private.Uri" Version="4.3.2" />
-    <!-- Several transitive dependencies on 8.0.4 and lower which has known vulnerabilities -->
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'" >
+    <!-- Several transitive dependencies on 8.0.4 and lower which is vulnerable -->
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
     <!-- Several transitive dependencies on 8.0.0 which has known vulnerabilities -->
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
   </ItemGroup>
-  <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
-  <!-- Versions are preset for the default TFM (there may be no TFM in an evaluation phase) -->
-  <PropertyGroup>
-    <AspNetCorePackagesVersion>8.0.11</AspNetCorePackagesVersion>
-    <MicrosoftExtensionsPackagesVersion>8.0.11</MicrosoftExtensionsPackagesVersion>
-  </PropertyGroup>
 
-  <!-- When dual-targeting frameworks, add both of them to CommonTargetFrameworks above, when add PropertyGroups like
-  below. -->
-  <!--<PropertyGroup Condition="$(TargetFramework) == 'net7.0'">
-    <AspNetCorePackagesVersion>7.0.14</AspNetCorePackagesVersion>
-    <MicrosoftExtensionsPackagesVersion>7.0.14</MicrosoftExtensionsPackagesVersion>
-  </PropertyGroup>-->
-  <!-- 'Microsoft.AspNetCore' packages that are not included in the ASP.NET Core shared framework -->
-  <ItemGroup>
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(AspNetCorePackagesVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="$(AspNetCorePackagesVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="$(AspNetCorePackagesVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetCorePackagesVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="$(AspNetCorePackagesVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="$(AspNetCorePackagesVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCorePackagesVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCorePackagesVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="$(AspNetCorePackagesVersion)" />
-    <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="$(AspNetCorePackagesVersion)" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'" >
+    <!-- Several transitive dependencies on 8.0.4 and lower which is vulnerable -->
+    <PackageVersion Include="System.Text.Json" Version="9.0.0" />
+
+    <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
   </ItemGroup>
-  <!-- 'Microsoft.Extensions' packages that are not included in the ASP.NET Core shared framework -->
-  <ItemGroup>
 
-    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MicrosoftExtensionsPackagesVersion)" />
-    <!-- Microsoft.Extensions.Http.Resilience is not here because it diverged from the common Microsoft.Extensions versioning. -->
+  <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
+  <!-- There may be no TFM in an evaluation phase so we can't use a conditional 'Property' -->
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="9.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0" />
+    
+    <!-- dotnet/extensions repository -->
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="8.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="8.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.Twitter" Version="8.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="8.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.11" />
+    <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="8.0.11" />
+    <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.11" />
+    
+    <!-- dotnet/extensions repository -->
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
   </ItemGroup>
 
 </Project>
