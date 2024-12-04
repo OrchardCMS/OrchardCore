@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage.AzureBlob;
+using OrchardCore.Media;
 using OrchardCore.Modules;
 using OrchardCore.Shells.Azure.Configuration;
 using OrchardCore.Shells.Azure.Services;
@@ -33,10 +34,11 @@ public static class BlobShellsOrchardCoreBuilderExtensions
 
             var clock = sp.GetRequiredService<IClock>();
             var contentTypeProvider = sp.GetRequiredService<IContentTypeProvider>();
+            var mediaOptions = sp.GetService<IOptions<MediaOptions>>().Value;
 
             var fileStore = new BlobFileStore(blobOptions, clock, contentTypeProvider);
 
-            return new BlobShellsFileStore(fileStore);
+            return new BlobShellsFileStore(fileStore, mediaOptions);
         });
 
         services.Replace(ServiceDescriptor.Singleton<IShellsSettingsSources>(sp =>

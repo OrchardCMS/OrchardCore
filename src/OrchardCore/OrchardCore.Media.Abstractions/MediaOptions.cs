@@ -5,6 +5,8 @@ namespace OrchardCore.Media;
 
 public class MediaOptions
 {
+    public const string EncryptedCommandCacheKeyPrefix = "MediaCommands:";
+
     /// <summary>
     /// The accepted sizes for custom width and height.
     /// When <see cref="UseTokenizedQueryString"/> is enabled all sizes are valid
@@ -94,5 +96,8 @@ public class MediaOptions
     /// </summary>
     public TimeSpan TemporaryFileLifetime { get; set; }
 
-    public const string EncryptedCommandCacheKeyPrefix = "MediaCommands:";
+    /// <summary>
+    /// Gets or sets whether media files should be overwritten when uploading a file with the same name. Defaults to <see langword="false"/>.
+    /// </summary>
+    public bool OverwriteMedia { get; set; }
 }

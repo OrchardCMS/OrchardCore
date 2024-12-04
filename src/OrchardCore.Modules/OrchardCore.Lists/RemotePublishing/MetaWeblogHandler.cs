@@ -3,6 +3,7 @@ using System.Xml.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -32,6 +33,8 @@ public class MetaWeblogHandler : IXmlRpcHandler
     private readonly IMembershipService _membershipService;
     private readonly IEnumerable<IMetaWeblogDriver> _metaWeblogDrivers;
     private readonly ISession _session;
+    private readonly MediaOptions _mediaOptions;
+
     protected readonly IStringLocalizer S;
 
     public MetaWeblogHandler(
@@ -42,6 +45,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
         IContentDefinitionManager contentDefinitionManager,
         IMediaFileStore mediaFileStore,
         IEnumerable<IMetaWeblogDriver> metaWeblogDrivers,
+        IOptions<MediaOptions> mediaOptions,
         IStringLocalizer<MetaWeblogHandler> localizer)
     {
         _contentManager = contentManager;
@@ -51,6 +55,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
         _session = session;
         _mediaFileStore = mediaFileStore;
         _membershipService = membershipService;
+        _mediaOptions = mediaOptions.Value;
         S = localizer;
     }
 
@@ -157,7 +162,7 @@ public class MetaWeblogHandler : IXmlRpcHandler
         try
         {
             stream = new MemoryStream(bits);
-            filePath = await _mediaFileStore.CreateFileFromStreamAsync(filePath, stream);
+            filePath = await _mediaFileStore.CreateFileFromStreamAsync(filePath, stream, _mediaOptions.OverwriteMedia);
         }
         finally
         {
