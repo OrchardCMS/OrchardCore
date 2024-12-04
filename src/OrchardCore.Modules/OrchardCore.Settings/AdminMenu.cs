@@ -23,13 +23,13 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Tools"], "after.101", tools => tools
+            .Add(S["Tools"], "after.50", tools => tools
                 .Id("tools")
                 .AddClass("tools")
             , priority: 1);
 
         builder
-            .Add(S["Settings"], "after", settings => settings
+            .Add(S["Settings"], "after.100", settings => settings
                 .Id("settings")
                 .AddClass("settings")
                 .Add(S["General"], "before", general => general
