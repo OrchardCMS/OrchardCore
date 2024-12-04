@@ -30,7 +30,7 @@ public sealed class AdminMenu : AdminNavigationProvider
     {
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["Localization"], localization => localization
+                .Add(S["Localization"], S["Localization"].PrefixPosition(), localization => localization
                     .Add(S["Content Request Culture Provider"], S["Content Request Culture Provider"].PrefixPosition(), provider => provider
                         .AddClass("contentrequestcultureprovider")
                         .Id("contentrequestcultureprovider")

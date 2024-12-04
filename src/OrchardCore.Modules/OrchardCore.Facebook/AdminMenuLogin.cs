@@ -23,8 +23,8 @@ public sealed class AdminMenuLogin : AdminNavigationProvider
     {
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["Security"], security => security
-                    .Add(S["Authentication"], authentication => authentication
+                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
+                    .Add(S["Authentication"], S["Authentication"].PrefixPosition(), authentication => authentication
                         .Add(S["Meta"], S["Meta"].PrefixPosition(), meta => meta
                             .AddClass("facebook")
                             .Id("facebook")

@@ -32,7 +32,7 @@ public sealed class AdminMenu : AdminNavigationProvider
     {
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["Localization"], localization => localization
+                .Add(S["Localization"], S["Localization"].PrefixPosition(), localization => localization
                     .AddClass("localization")
                     .Id("localization")
                     .Add(S["Cultures"], S["Cultures"].PrefixPosition(), cultures => cultures
