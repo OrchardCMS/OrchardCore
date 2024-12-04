@@ -29,7 +29,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             , priority: 1);
 
         builder
-            .Add(S["Settings"], NavigationConstants.AdminMenuSettingsPosition, settings => settings
+            .Add(S["Settings"], "after", settings => settings
                 .Id("settings")
                 .AddClass("settings")
                 .Add(S["General"], "before", general => general
