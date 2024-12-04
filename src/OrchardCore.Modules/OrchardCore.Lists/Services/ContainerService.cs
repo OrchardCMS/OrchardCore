@@ -362,7 +362,7 @@ public class ContainerService : IContainerService
                 query.With<ContentItemIndex>(i => !i.Published && i.Latest);
                 break;
             case ContentsStatus.Owner:
-                var currentUserName = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+                var currentUserName = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 if (currentUserName != null)
                 {

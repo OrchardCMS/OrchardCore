@@ -1,5 +1,6 @@
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -9,7 +10,8 @@ public sealed class DynamicPartWhereInputGraphType : WhereInputObjectGraphType<C
 {
     private ContentTypePartDefinition _part;
 
-    public DynamicPartWhereInputGraphType(ContentTypePartDefinition part)
+    public DynamicPartWhereInputGraphType(ContentTypePartDefinition part, IStringLocalizer<DynamicPartWhereInputGraphType> stringLocalizer)
+        : base(stringLocalizer)
     {
         Name = $"{part.Name}WhereInput";
         _part = part;

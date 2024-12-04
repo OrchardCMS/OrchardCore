@@ -50,7 +50,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
         cancellationToken.ThrowIfCancellationRequested();
 
         await _session.SaveAsync(application, collection: OpenIdCollection);
-        await _session.SaveChangesAsync();
+        await _session.FlushAsync();
     }
 
     /// <inheritdoc/>
@@ -61,7 +61,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
         cancellationToken.ThrowIfCancellationRequested();
 
         _session.Delete(application, collection: OpenIdCollection);
-        await _session.SaveChangesAsync();
+        await _session.FlushAsync();
     }
 
     /// <inheritdoc/>

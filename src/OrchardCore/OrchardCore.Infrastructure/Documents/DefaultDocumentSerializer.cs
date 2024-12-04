@@ -8,7 +8,7 @@ namespace OrchardCore.Documents;
 /// <summary>
 /// Serializes and deserializes an <see cref="IDocument"/> into and from a sequence of bytes.
 /// </summary>
-public class DefaultDocumentSerializer : IDocumentSerializer
+public sealed class DefaultDocumentSerializer : IDocumentSerializer
 {
     private const string StreamTag = nameof(DefaultDocumentSerializer);
 

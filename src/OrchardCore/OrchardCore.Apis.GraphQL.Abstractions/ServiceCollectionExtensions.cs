@@ -1,5 +1,6 @@
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace OrchardCore.Apis;
 
@@ -15,7 +16,7 @@ public static class ServiceCollectionExtensions
         where TObject : class
         where TObjectType : InputObjectGraphType<TObject>
     {
-        services.AddTransient<TObjectType>();
+        services.TryAddTransient<TObjectType>();
         services.AddTransient<InputObjectGraphType<TObject>, TObjectType>(s => s.GetRequiredService<TObjectType>());
         services.AddTransient<IInputObjectGraphType, TObjectType>(s => s.GetRequiredService<TObjectType>());
     }
@@ -30,7 +31,7 @@ public static class ServiceCollectionExtensions
         where TInput : class
         where TInputType : ObjectGraphType<TInput>
     {
-        services.AddTransient<TInputType>();
+        services.TryAddTransient<TInputType>();
         services.AddTransient<ObjectGraphType<TInput>, TInputType>(s => s.GetRequiredService<TInputType>());
         services.AddTransient<IObjectGraphType, TInputType>(s => s.GetRequiredService<TInputType>());
     }

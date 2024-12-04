@@ -16,7 +16,8 @@ namespace OrchardCore.Users.GraphQL;
 internal sealed class CurrentUserQuery : ISchemaBuilder
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IStringLocalizer S;
+
+    internal readonly IStringLocalizer S;
 
     public CurrentUserQuery(
         IHttpContextAccessor httpContextAccessor,
@@ -50,6 +51,7 @@ internal sealed class CurrentUserQuery : ISchemaBuilder
     public Task<string> GetIdentifierAsync()
     {
         var contentDefinitionManager = _httpContextAccessor.HttpContext.RequestServices.GetRequiredService<IContentDefinitionManager>();
+
         return contentDefinitionManager.GetIdentifierAsync();
     }
 }

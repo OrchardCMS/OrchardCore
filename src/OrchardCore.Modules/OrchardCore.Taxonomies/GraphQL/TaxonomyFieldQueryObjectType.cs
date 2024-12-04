@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
@@ -10,12 +11,12 @@ namespace OrchardCore.Taxonomies.GraphQL;
 
 public class TaxonomyFieldQueryObjectType : ObjectGraphType<TaxonomyField>
 {
-    public TaxonomyFieldQueryObjectType()
+    public TaxonomyFieldQueryObjectType(IStringLocalizer<TaxonomyFieldQueryObjectType> S)
     {
         Name = nameof(TaxonomyField);
 
         Field<ListGraphType<StringGraphType>, IEnumerable<string>>("termContentItemIds")
-            .Description("term content item ids")
+            .Description(S["term content item ids"])
             .PagingArguments()
             .Resolve(x =>
             {
@@ -23,14 +24,14 @@ public class TaxonomyFieldQueryObjectType : ObjectGraphType<TaxonomyField>
             });
 
         Field<StringGraphType, string>("taxonomyContentItemId")
-            .Description("taxonomy content item id")
+            .Description(S["taxonomy content item id"])
             .Resolve(x =>
             {
                 return x.Source.TaxonomyContentItemId;
             });
 
         Field<ListGraphType<ContentItemInterface>, List<ContentItem>>("termContentItems")
-            .Description("the term content items")
+            .Description(S["the term content items"])
             .PagingArguments()
             .ResolveLockedAsync(async x =>
             {
@@ -59,7 +60,7 @@ public class TaxonomyFieldQueryObjectType : ObjectGraphType<TaxonomyField>
             });
 
         Field<ContentItemInterface, ContentItem>("taxonomyContentItem")
-            .Description("the taxonomy content item")
+            .Description(S["the taxonomy content item"])
             .ResolveLockedAsync(async context =>
             {
                 var contentManager = context.RequestServices.GetService<IContentManager>();

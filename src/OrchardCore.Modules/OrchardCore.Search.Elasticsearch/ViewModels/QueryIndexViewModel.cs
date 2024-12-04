@@ -5,6 +5,7 @@ namespace OrchardCore.Search.Elasticsearch.ViewModels;
 public class QueryIndexViewModel
 {
     public string Query { get; set; }
+
     public string IndexName { get; set; }
 
     [BindNever]

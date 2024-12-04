@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -10,15 +11,49 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Layers.Drivers;
 
-public class LayerMetadataWelder : ContentDisplayDriver
+public sealed class LayerMetadataWelder : ContentDisplayDriver
 {
     private readonly ILayerService _layerService;
-    protected readonly IStringLocalizer S;
 
-    public LayerMetadataWelder(ILayerService layerService, IStringLocalizer<LayerMetadataWelder> stringLocalizer)
+    internal readonly IStringLocalizer S;
+
+    public LayerMetadataWelder(
+        ILayerService layerService,
+        IStringLocalizer<LayerMetadataWelder> stringLocalizer)
     {
         _layerService = layerService;
         S = stringLocalizer;
+    }
+
+    public override async Task<IDisplayResult> EditAsync(ContentItem model, BuildEditorContext context)
+    {
+        if (!model.TryGet<LayerMetadata>(out var layerMetadata))
+        {
+            layerMetadata = new LayerMetadata();
+
+            // In the initial request, the 'Zone' and 'Position' are passed as route values.
+            // We attempt to populate the new 'LayerMetadata' and ensure the 'Zone' is correctly set.
+            await context.Updater.TryUpdateModelAsync(layerMetadata, string.Empty, m => m.Zone, m => m.Position);
+
+            if (string.IsNullOrEmpty(layerMetadata.Zone))
+            {
+                // At this point, the 'Zone' value was not provided in the route values, so the widget is not visible.
+                return null;
+            }
+
+            model.Weld(layerMetadata);
+        }
+
+        return Initialize<LayerMetadataEditViewModel>("LayerMetadata_Edit", async m =>
+        {
+            m.Title = model.DisplayText;
+            m.RenderTitle = layerMetadata.RenderTitle;
+            m.Position = layerMetadata.Position;
+            m.Zone = layerMetadata.Zone;
+            m.Layer = layerMetadata.Layer;
+            m.Layers = (await _layerService.GetLayersAsync()).Layers
+            .Select(x => new SelectListItem(x.Name, x.Name));
+        }).Location("Content:before");
     }
 
     protected override void BuildPrefix(ContentItem model, string htmlFieldPrefix)
@@ -26,37 +61,8 @@ public class LayerMetadataWelder : ContentDisplayDriver
         base.BuildPrefix(model, htmlFieldPrefix);
         if (string.IsNullOrWhiteSpace(htmlFieldPrefix))
         {
-            Prefix = "LayerMetadata";
+            Prefix = nameof(LayerMetadata);
         }
-    }
-
-    public override async Task<IDisplayResult> EditAsync(ContentItem model, BuildEditorContext context)
-    {
-        var layerMetadata = model.As<LayerMetadata>();
-
-        if (layerMetadata == null)
-        {
-            layerMetadata = new LayerMetadata();
-            await context.Updater.TryUpdateModelAsync(layerMetadata, Prefix, m => m.Zone, m => m.Position);
-
-            // Are we loading an editor that requires layer metadata?
-            if (!string.IsNullOrEmpty(layerMetadata.Zone))
-            {
-                model.Weld(layerMetadata);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        return Initialize<LayerMetadataEditViewModel>("LayerMetadata_Edit", async shape =>
-        {
-            shape.Title = model.DisplayText;
-            shape.LayerMetadata = layerMetadata;
-            shape.Layers = (await _layerService.GetLayersAsync()).Layers;
-        })
-        .Location("Content:before");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentItem model, UpdateEditorContext context)
@@ -65,25 +71,37 @@ public class LayerMetadataWelder : ContentDisplayDriver
 
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
-        if (viewModel.LayerMetadata == null)
+        if (string.IsNullOrEmpty(viewModel.Title))
         {
-            return null;
+            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Title), S["The Title field is required"]);
         }
 
-        if (string.IsNullOrEmpty(viewModel.LayerMetadata.Zone))
+        if (string.IsNullOrEmpty(viewModel.Zone))
         {
-            context.Updater.ModelState.AddModelError(Prefix, "LayerMetadata.Zone", S["Zone is missing"]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Zone), S["The Zone field is required"]);
         }
 
-        if (string.IsNullOrEmpty(viewModel.LayerMetadata.Layer))
+        if (string.IsNullOrEmpty(viewModel.Layer))
         {
-            context.Updater.ModelState.AddModelError(Prefix, "LayerMetadata.Layer", S["Layer is missing"]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Layer), S["The Layer field is required"]);
+        }
+        else
+        {
+            var document = await _layerService.GetLayersAsync();
+
+            if (!document.Layers.Any(x => x.Name == viewModel.Layer))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Layer), S["Invalid Layer value provided"]);
+            }
         }
 
-        if (context.Updater.ModelState.IsValid)
+        model.Apply(new LayerMetadata
         {
-            model.Apply(viewModel.LayerMetadata);
-        }
+            RenderTitle = viewModel.RenderTitle,
+            Zone = viewModel.Zone,
+            Position = viewModel.Position,
+            Layer = viewModel.Layer,
+        });
 
         model.DisplayText = viewModel.Title;
 

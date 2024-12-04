@@ -5,7 +5,7 @@ using OrchardCore.OpenId.Settings;
 
 namespace OrchardCore.OpenId.Deployment;
 
-public class OpenIdValidationDeploymentSource
+public sealed class OpenIdValidationDeploymentSource
     : DeploymentSourceBase<OpenIdValidationDeploymentStep>
 {
     private readonly IOpenIdValidationService _openIdValidationService;
