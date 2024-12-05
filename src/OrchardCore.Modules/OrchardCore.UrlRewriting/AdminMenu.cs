@@ -17,7 +17,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         if (UseLegacyFormat)
         {
             builder
-                .Add(S["Tools"], tools => tools
+                .Add(S["Configuration"], configuration => configuration
                     .Add(S["URL Rewriting"], S["URL Rewriting"].PrefixPosition(), rewriting => rewriting
                         .AddClass("url-rewriting")
                         .Id("urlRewriting")

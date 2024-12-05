@@ -22,6 +22,22 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+        if (UseLegacyFormat)
+        {
+            builder
+               .Add(S["Configuration"], configuration => configuration
+                   .Add(S["Settings"], settings => settings
+                       .Add(S["Workflow Trimming"], S["Workflow Trimming"], trimming => trimming
+                           .Action("Index", "Admin", _routeValues)
+                           .Permission(Permissions.ManageWorkflowSettings)
+                           .LocalNav()
+                       )
+                   )
+               );
+
+            return ValueTask.CompletedTask;
+        }
+
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Workflow Trimming"], S["Workflow Trimming"].PrefixPosition(), trimming => trimming
