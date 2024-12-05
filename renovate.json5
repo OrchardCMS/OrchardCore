@@ -1,4 +1,7 @@
 {
+    // As a GitHub organization admin, you can access the Renovate dashboard at
+    // https: //developer.mend.io/github/OrchardCMS/OrchardCore and manage the GitHub app at
+    // https://github.com/organizations/OrchardCMS/settings/installations/57088442.
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": [
         "config:recommended"
