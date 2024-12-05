@@ -16,7 +16,9 @@ public sealed class LayerMetadataWelder : ContentDisplayDriver
 
     internal readonly IStringLocalizer S;
 
-    public LayerMetadataWelder(ILayerService layerService, IStringLocalizer<LayerMetadataWelder> stringLocalizer)
+    public LayerMetadataWelder(
+        ILayerService layerService,
+        IStringLocalizer<LayerMetadataWelder> stringLocalizer)
     {
         _layerService = layerService;
         S = stringLocalizer;
