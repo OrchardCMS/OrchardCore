@@ -233,7 +233,7 @@ public sealed class DeploymentPlanController : Controller
 
             await _session.SaveAsync(deploymentPlan);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Display), new { id = deploymentPlan.Id });
         }
 
         // If we got this far, something failed, redisplay form
