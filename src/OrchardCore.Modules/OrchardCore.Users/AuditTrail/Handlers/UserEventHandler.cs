@@ -17,6 +17,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
     private readonly IAuditTrailManager _auditTrailManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IServiceProvider _serviceProvider;
+
     private UserManager<IUser> _userManager;
 
     public UserEventHandler(
@@ -89,6 +90,12 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
             userNameActual = userName;
         }
 
+        var userEvent = new AuditTrailUserEvent
+        {
+            UserName = userName,
+            UserId = userId,
+        };
+
         var context = new AuditTrailContext<AuditTrailUserEvent>
             (
                 name: name,
@@ -96,11 +103,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
                 correlationId: userId,
                 userId: userIdActual,
                 userName: userNameActual,
-                new AuditTrailUserEvent
-                {
-                    UserId = userId,
-                    UserName = userName
-                }
+                userEvent
             );
 
         await _auditTrailManager.RecordEventAsync(context);

@@ -3,6 +3,7 @@
 @using OrchardCore.Layers.Drivers
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata
+
 @model OrchardCore.Layers.ViewModels.LayersIndexViewModel
 
 @inject IContentManager ContentManager
@@ -83,8 +84,8 @@
                                                 var contentItem = await ContentManager.NewAsync(type.Name);
                                                 var createRoute = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).CreateRouteValues;
                                                 createRoute["returnUrl"] = Context.Request.PathBase + Context.Request.Path;
-                                                createRoute["Zone"] = zone;
-                                                createRoute["Position"] = maxPosition + 1;
+                                                createRoute["LayerMetadata.Zone"] = zone;
+                                                createRoute["LayerMetadata.Position"] = maxPosition + 1;
                                                 <li>
                                                     <a class="dropdown-item add-list-widget"
                                                        data-widget-type="@type.Name"

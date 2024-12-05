@@ -9,19 +9,12 @@ namespace OrchardCore.Users.AuditTrail.Drivers;
 
 public sealed class AuditTrailUserEventDisplayDriver : AuditTrailEventSectionDisplayDriver<AuditTrailUserEvent>
 {
-    public override Task<IDisplayResult> DisplayAsync(AuditTrailEvent auditTrailEvent, AuditTrailUserEvent userEvent, BuildDisplayContext context)
+    public override IDisplayResult Display(AuditTrailEvent auditTrailEvent, AuditTrailUserEvent userEvent, BuildDisplayContext context)
     {
-        return Task.FromResult<IDisplayResult>(
-            Initialize<AuditTrailUserEventDetailViewModel>("AuditTrailUserEventDetail_DetailAdmin", m => BuildViewModel(m, auditTrailEvent, userEvent))
-                .Location("DetailAdmin", "Content:10")
-        );
-    }
-
-    private static void BuildViewModel(AuditTrailUserEventViewModel m, AuditTrailEvent auditTrailEvent, AuditTrailUserEvent userEvent)
-    {
-        m.AuditTrailEvent = auditTrailEvent;
-        m.Name = userEvent.Name;
-        m.UserId = userEvent.UserId;
-        m.UserName = userEvent.UserName;
+        return Initialize<AuditTrailUserEventViewModel>("AuditTrailUserEventDetail_DetailAdmin", m =>
+        {
+            m.AuditTrailEvent = auditTrailEvent;
+            m.UserEvent = userEvent;
+        }).Location("DetailAdmin", "Content:10");
     }
 }

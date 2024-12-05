@@ -106,7 +106,7 @@ public class ContentItemsFieldType : FieldType
 
         var query = preQuery.With<ContentItemIndex>();
 
-        query = FilterVersion(query, GetVersionOptions(context));
+        query = FilterVersion(query, context.GetArgument<PublicationStatusEnum>("status"));
         query = FilterContentType(query, context);
         query = OrderBy(query, context);
 
@@ -231,29 +231,19 @@ public class ContentItemsFieldType : FieldType
         return query.Where(q => q.ContentType == contentType);
     }
 
-    private static VersionOptions GetVersionOptions(IResolveFieldContext context)
+    private static IQuery<ContentItem, ContentItemIndex> FilterVersion(IQuery<ContentItem, ContentItemIndex> query, PublicationStatusEnum status)
     {
-        if (context.HasPopulatedArgument("status"))
+        if (status == PublicationStatusEnum.Published)
         {
-            return GetVersionOption(context.GetArgument<PublicationStatusEnum>("status"));
+            query = query.Where(q => q.Published);
         }
-
-        return VersionOptions.Published;
-    }
-
-    private static IQuery<ContentItem, ContentItemIndex> FilterVersion(IQuery<ContentItem, ContentItemIndex> query, VersionOptions versionOption)
-    {
-        if (versionOption.IsPublished)
+        else if (status == PublicationStatusEnum.Draft)
         {
-            query = query.Where(q => q.Published == true);
+            query = query.Where(q => q.Latest && !q.Published);
         }
-        else if (versionOption.IsDraft)
+        else if (status == PublicationStatusEnum.Latest)
         {
-            query = query.Where(q => q.Latest == true && q.Published == false);
-        }
-        else if (versionOption.IsLatest)
-        {
-            query = query.Where(q => q.Latest == true);
+            query = query.Where(q => q.Latest);
         }
 
         return query;
