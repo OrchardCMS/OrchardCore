@@ -58,8 +58,7 @@ public sealed class LayerMetadataWelder : ContentDisplayDriver
             shape.Title = model.DisplayText;
             shape.LayerMetadata = layerMetadata;
             shape.Layers = (await _layerService.GetLayersAsync()).Layers;
-        })
-        .Location("Content:before");
+        }).Location("Content:before");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentItem model, UpdateEditorContext context)
