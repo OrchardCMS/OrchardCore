@@ -12,7 +12,9 @@
     var oldText = Model.PreviousContentItem?.DisplayText;
 }
 
-<table class="table table-sm table-hover mb-0">
+<h2 class="h3">@T["Content Item Info"]</h2>
+
+<table class="table table-sm table-hover">
     <tbody>
         <tr>
             <th class="border-top-0 w-25">@T["Content Item Id"]</th>
@@ -43,9 +45,9 @@
             {
                 <td>
                     <a asp-route-area="OrchardCore.Contents"
-                        asp-action="Display"
-                        asp-controller="AuditTrailContent"
-                        asp-route-auditTrailEventId="@Model.AuditTrailEvent.EventId">
+                       asp-action="Display"
+                       asp-controller="AuditTrailContent"
+                       asp-route-auditTrailEventId="@Model.AuditTrailEvent.EventId">
                         @T["Version {0}", versionNumber]
                     </a>
                 </td>
