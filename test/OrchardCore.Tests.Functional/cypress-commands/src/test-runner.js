@@ -46,7 +46,7 @@ function copyMigrationsRecipeFile(dir) {
 }
 
 // Host the dotnet application, does not rebuild
-export function host(dir, assembly, { appDataLocation = './App_Data', dotnetVersion = 'net8.0' } = {}) {
+export function host(dir, assembly, { appDataLocation = './App_Data', dotnetVersion = 'net9.0' } = {}) {
     if (fs.existsSync(path.join(dir, `bin/Release/${dotnetVersion}/`, assembly))) {
         global.log("Application already built, skipping build");
     } else {
@@ -78,7 +78,7 @@ export function host(dir, assembly, { appDataLocation = './App_Data', dotnetVers
 }
 
 // combines the functions above, useful when triggering tests from CI
-export function e2e(dir, assembly, { dotnetVersion = 'net8.0' } = {}) {
+export function e2e(dir, assembly, { dotnetVersion = 'net9.0' } = {}) {
     copyMigrationsRecipeFile(dir);
     deleteDirectory(path.join(dir, "App_Data_Tests"));
     var server = host(dir, assembly, { appDataLocation: "./App_Data_Tests", dotnetVersion });
