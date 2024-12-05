@@ -1,7 +1,6 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Azure;
 using Elastic.Clients.Elasticsearch;
 using Elastic.Clients.Elasticsearch.Analysis;
 using Elastic.Clients.Elasticsearch.Fluent;
@@ -498,18 +497,21 @@ public sealed class ElasticsearchIndexManager
 
         var indexFullName = GetFullIndexNameInternal(indexName);
 
-        var response = await _elasticClient.BulkAsync(indexFullName,
-            descriptor => descriptor.CreateElasticDocument(indexDocuments).Refresh(Refresh.True));
-
-        if (!response.IsValidResponse)
+        foreach (var batch in indexDocuments.PagesOf(2500))
         {
-            if (response.TryGetOriginalException(out var ex))
+            var response = await _elasticClient.BulkAsync(indexFullName,
+                descriptor => descriptor.CreateElasticDocument(batch).Refresh(Refresh.True));
+
+            if (!response.IsValidResponse)
             {
-                _logger.LogWarning("There were issues indexing a document using Elasticsearch. Exception: {OriginalException}", ex);
-            }
-            else
-            {
-                _logger.LogWarning("There were issues indexing a document using Elasticsearch.");
+                if (response.TryGetOriginalException(out var ex))
+                {
+                    _logger.LogWarning("There were issues indexing a document using Elasticsearch. Exception: {OriginalException}", ex);
+                }
+                else
+                {
+                    _logger.LogWarning("There were issues indexing a document using Elasticsearch.");
+                }
             }
         }
     }
