@@ -52,7 +52,7 @@ public sealed class QueryBasedContentDeploymentStepDriver : DisplayDriver<Deploy
 
         var query = await _queryManager.GetQueryAsync(queryBasedContentViewModel.QueryName);
 
-        if (!query.CanReturnContentItems || !query.ReturnContentItems)
+        if (!query.ReturnContentItems)
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your Query is not returning content items."]);
         }
