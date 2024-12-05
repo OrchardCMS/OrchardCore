@@ -135,7 +135,7 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
                 .Where(t => t.StereotypeEquals("Widget"));
         }
 
-        return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-            .Where(t => settings.ContainedContentTypes.Contains(t.Name) && t.StereotypeEquals("Widget"));
+        return (await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync())
+            .Where(t => settings.ContainedContentTypes.Contains(t.Name));
     }
 }
