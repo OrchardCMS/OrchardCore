@@ -21,6 +21,24 @@ public sealed class GoogleAuthenticationAdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+        if (UseLegacyFormat)
+        {
+            builder
+                .Add(S["Security"], security => security
+                    .Add(S["Authentication"], authentication => authentication
+                    .Add(S["Google"], S["Google"].PrefixPosition(), google => google
+                        .AddClass("google")
+                        .Id("google")
+                        .Action("Index", "Admin", _routeValues)
+                        .Permission(Permissions.ManageGoogleAuthentication)
+                        .LocalNav()
+                    )
+                )
+            );
+
+            return ValueTask.CompletedTask;
+        }
+
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security

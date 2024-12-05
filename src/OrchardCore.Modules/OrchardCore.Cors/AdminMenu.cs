@@ -14,6 +14,23 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+        if (UseLegacyFormat)
+        {
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
+                        .Add(S["CORS"], S["CORS"].PrefixPosition(), entry => entry
+                            .AddClass("cors")
+                            .Id("cors")
+                            .Action("Index", "Admin", "OrchardCore.Cors")
+                            .Permission(Permissions.ManageCorsSettings)
+                            .LocalNav()
+                        )
+                    )
+                );
+            return ValueTask.CompletedTask;
+        }
+
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security

@@ -29,6 +29,30 @@ public sealed class AuditTrailAdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+        if (UseLegacyFormat)
+        {
+            builder
+                .Add(S["Audit Trail"], NavigationConstants.AdminMenuAuditTrailPosition, configuration => configuration
+                    .AddClass("audittrail")
+                    .Id("audittrail")
+                    .Action(nameof(AdminController.Index), "Admin", _routeValues)
+                    .Permission(AuditTrailPermissions.ViewAuditTrail)
+                    .LocalNav()
+                )
+                .Add(S["Configuration"], configuration => configuration
+                     .Add(S["Settings"], settings => settings
+                        .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), auditTrail => auditTrail
+                            .AddClass("audittrail")
+                            .Id("audittrailSettings")
+                            .Action("Index", "Admin", _routeValues)
+                            .Permission(AuditTrailPermissions.ManageAuditTrailSettings)
+                            .LocalNav()
+                        )
+                    )
+                );
+            return ValueTask.CompletedTask;
+        }
+
         builder
             .Add(S["Tools"], tools => tools
                 .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), configuration => configuration

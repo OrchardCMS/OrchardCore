@@ -22,6 +22,26 @@ public sealed class ClientAdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+        if (UseLegacyFormat)
+        {
+            builder
+               .Add(S["Security"], security => security
+                   .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), openId => openId
+                       .AddClass("openid")
+                       .Id("openid")
+                       .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
+                           .Add(S["Authentication client"], S["Authentication client"].PrefixPosition(), client => client
+                               .Action("Index", "Admin", _clientRouteValues)
+                               .Permission(Permissions.ManageClientSettings)
+                               .LocalNav()
+                           )
+                       )
+                   )
+               );
+
+            return ValueTask.CompletedTask;
+        }
+
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security

@@ -14,6 +14,20 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+        if (UseLegacyFormat)
+        {
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["GraphiQL"], S["GraphiQL"].PrefixPosition(), graphiQL => graphiQL
+                        .Action("Index", "Admin", "OrchardCore.Apis.GraphQL")
+                        .Permission(CommonPermissions.ExecuteGraphQL)
+                        .LocalNav()
+                    )
+                );
+
+            return ValueTask.CompletedTask;
+        }
+
         builder
             .Add(S["Tools"], tools => tools
                 .Add(S["GraphiQL"], S["GraphiQL"].PrefixPosition(), graphiQL => graphiQL

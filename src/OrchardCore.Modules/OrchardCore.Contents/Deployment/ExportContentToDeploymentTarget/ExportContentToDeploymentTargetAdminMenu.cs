@@ -21,6 +21,24 @@ public sealed class ExportContentToDeploymentTargetAdminMenu : AdminNavigationPr
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+        if (UseLegacyFormat)
+        {
+            builder
+            .Add(S["Configuration"], configuration => configuration
+                .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Export Target Settings"], S["Export Target Settings"].PrefixPosition(), targetSettings => targetSettings
+                            .Action("Index", "Admin", _routeValues)
+                            .Permission(OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan)
+                            .LocalNav()
+                        )
+                    )
+                )
+            );
+
+            return ValueTask.CompletedTask;
+        }
+
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Export Target Settings"], S["Export Target Settings"].PrefixPosition(), targetSettings => targetSettings

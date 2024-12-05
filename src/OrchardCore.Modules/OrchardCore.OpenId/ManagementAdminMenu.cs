@@ -14,6 +14,31 @@ public sealed class ManagementAdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+        if (UseLegacyFormat)
+        {
+            builder
+            .Add(S["Security"], security => security
+                .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), openId => openId
+                    .AddClass("openid")
+                    .Id("openid")
+                    .Add(S["Management"], S["Management"].PrefixPosition(), management => management
+                        .Add(S["Applications"], S["Applications"].PrefixPosition(), applications => applications
+                            .Action("Index", "Application", "OrchardCore.OpenId")
+                            .Permission(Permissions.ManageApplications)
+                            .LocalNav()
+                        )
+                        .Add(S["Scopes"], S["Scopes"].PrefixPosition(), applications => applications
+                            .Action("Index", "Scope", "OrchardCore.OpenId")
+                            .Permission(Permissions.ManageScopes)
+                            .LocalNav()
+                        )
+                    )
+                )
+            );
+
+            return ValueTask.CompletedTask;
+        }
+
         builder
             .Add(S["Access Control"], accessControl => accessControl
                 .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), openId => openId

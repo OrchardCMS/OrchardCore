@@ -20,15 +20,30 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        // Configuration and settings menus for the AdminMenu module.
-        builder
-            .Add(S["Tools"], tools => tools
-                .Add(S["Admin Menus"], S["Admin Menus"].PrefixPosition(), adminMenu => adminMenu
-                    .Permission(Permissions.ManageAdminMenu)
-                    .Action("List", "Menu", "OrchardCore.AdminMenu")
-                    .LocalNav()
-                )
-            );
+        if (UseLegacyFormat)
+        {
+            // Configuration and settings menus for the AdminMenu module.
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Admin Menus"], S["Admin Menus"].PrefixPosition(), adminMenu => adminMenu
+                        .Permission(Permissions.ManageAdminMenu)
+                        .Action("List", "Menu", "OrchardCore.AdminMenu")
+                        .LocalNav()
+                    )
+                );
+        }
+        else
+        {
+            // Configuration and settings menus for the AdminMenu module.
+            builder
+                .Add(S["Tools"], tools => tools
+                    .Add(S["Admin Menus"], S["Admin Menus"].PrefixPosition(), adminMenu => adminMenu
+                        .Permission(Permissions.ManageAdminMenu)
+                        .Action("List", "Menu", "OrchardCore.AdminMenu")
+                        .LocalNav()
+                    )
+                );
+        }
 
         // This is the entry point for the adminMenu: dynamically generated custom admin menus.
         return _adminMenuNavigationProviderCoordinator.BuildNavigationAsync(NavigationConstants.AdminMenuId, builder);

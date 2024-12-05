@@ -21,6 +21,24 @@ public sealed class AdminMenuMicrosoftAccount : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+        if (UseLegacyFormat)
+        {
+            builder
+                .Add(S["Security"], security => security
+                    .Add(S["Authentication"], authentication => authentication
+                        .Add(S["Microsoft"], S["Microsoft"].PrefixPosition(), microsoft => microsoft
+                            .AddClass("microsoft")
+                            .Id("microsoft")
+                            .Action("Index", "Admin", _routeValues)
+                            .Permission(Permissions.ManageMicrosoftAuthentication)
+                            .LocalNav()
+                        )
+                    )
+               );
+
+            return ValueTask.CompletedTask;
+        }
+
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security

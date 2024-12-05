@@ -4,7 +4,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.Twitter;
 
-public sealed class AdminMenuSignin : AdminNavigationProvider
+public sealed class AdminMenuSignIn : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -14,13 +14,30 @@ public sealed class AdminMenuSignin : AdminNavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenuSignin(IStringLocalizer<AdminMenuSignin> stringLocalizer)
+    public AdminMenuSignIn(IStringLocalizer<AdminMenuSignIn> stringLocalizer)
     {
         S = stringLocalizer;
     }
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+        if (UseLegacyFormat)
+        {
+            builder
+           .Add(S["Security"], security => security
+               .Add(S["Authentication"], authentication => authentication
+               .Add(S["Sign in with X (Twitter)"], S["Sign in with X (Twitter)"].PrefixPosition(), twitter => twitter
+                   .AddClass("twitter")
+                   .Id("twitter")
+                   .Action("Index", "Admin", _routeValues)
+                   .Permission(Permissions.ManageTwitterSignin)
+                   .LocalNav())
+               )
+           );
+
+            return ValueTask.CompletedTask;
+        }
+
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security

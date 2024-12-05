@@ -25,6 +25,27 @@ public sealed class AdminMenu : AdminNavigationProvider
                 )
             );
 
+        if (UseLegacyFormat)
+        {
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Media"], S["Media"].PrefixPosition(), media => media
+                        .Add(S["Media Options"], S["Media Options"].PrefixPosition(), options => options
+                            .Action("Options", "Admin", "OrchardCore.Media")
+                            .Permission(Permissions.ViewMediaOptions)
+                            .LocalNav()
+                        )
+                        .Add(S["Media Profiles"], S["Media Profiles"].PrefixPosition(), mediaProfiles => mediaProfiles
+                            .Action("Index", "MediaProfiles", "OrchardCore.Media")
+                            .Permission(Permissions.ManageMediaProfiles)
+                            .LocalNav()
+                        )
+                    )
+                );
+
+            return ValueTask.CompletedTask;
+        }
+
         builder
             .Add(S["Tools"], tools => tools
                 .Add(S["Media"], S["Media"].PrefixPosition(), media => media
