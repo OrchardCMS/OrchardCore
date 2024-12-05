@@ -26,7 +26,7 @@ public sealed class QueryBasedContentDeploymentSource
             return;
         }
 
-        if (!query.CanReturnContentItems || !query.ReturnContentItems)
+        if (!query.ReturnContentItems)
         {
             return;
         }
