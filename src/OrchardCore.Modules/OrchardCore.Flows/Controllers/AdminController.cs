@@ -109,7 +109,7 @@ public sealed class AdminController : Controller
 
         if (settings?.ContainedContentTypes == null || settings.ContainedContentTypes.Length == 0)
         {
-            return await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync();
+            return (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.StereotypeEquals("Widget"));
         }
 
         var definitions = new List<ContentTypeDefinition>();

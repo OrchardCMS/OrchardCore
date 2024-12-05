@@ -161,7 +161,7 @@ public sealed class AdminController : Controller
 
             await _layerService.UpdateAsync(layers);
 
-            return RedirectToAction(nameof(Edit), new { name = layer.Name, });
+            return RedirectToAction(nameof(Index));
         }
 
         return View(model);

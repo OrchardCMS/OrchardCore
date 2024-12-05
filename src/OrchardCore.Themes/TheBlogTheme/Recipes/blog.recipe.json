@@ -1100,7 +1100,7 @@
         {
           "ContentItemId": "[js: uuid()]",
           "ContentType": "RawHtml",
-          "DisplayText": "Footer",
+          "Displaytext": "Footer",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUserId')]",

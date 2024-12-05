@@ -2,11 +2,10 @@
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Layers.Drivers
 @using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.ContentManagement.Metadata
 @model OrchardCore.Layers.ViewModels.LayersIndexViewModel
 
 @inject IContentManager ContentManager
-@inject IContentDefinitionManager ContentDefinitionManager
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
 <script asp-name="jquery-ui" at="Foot"></script>
@@ -67,9 +66,11 @@
 
                             @if (Model.Layers.Count > 0)
                             {
-                                var widgetContentTypes = await ContentDefinitionManager.ListWidgetTypeDefinitionsAsync();
+                                var widgetContentTypes = (await ContentDefinitionManager.ListTypeDefinitionsAsync())
+                                .Where(t => t.StereotypeEquals("Widget"))
+                                .ToList();
 
-                                if (widgetContentTypes.Any())
+                                if (widgetContentTypes.Count > 0)
                                 {
                                     var htmlId = Guid.NewGuid().ToString("n");
 
@@ -83,8 +84,8 @@
                                                 var contentItem = await ContentManager.NewAsync(type.Name);
                                                 var createRoute = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).CreateRouteValues;
                                                 createRoute["returnUrl"] = Context.Request.PathBase + Context.Request.Path;
-                                                createRoute["Zone"] = zone;
-                                                createRoute["Position"] = maxPosition + 1;
+                                                createRoute["LayerMetadata.Zone"] = zone;
+                                                createRoute["LayerMetadata.Position"] = maxPosition + 1;
                                                 <li>
                                                     <a class="dropdown-item add-list-widget"
                                                        data-widget-type="@type.Name"

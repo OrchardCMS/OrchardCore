@@ -124,11 +124,4 @@ public static class ContentDefinitionManagerExtensions
             });
         }
     }
-
-    public static async Task<IEnumerable<ContentTypeDefinition>> ListWidgetTypeDefinitionsAsync(this IContentDefinitionManager manager)
-    {
-        var types = await manager.ListTypeDefinitionsAsync();
-
-        return types.Where(x => x.StereotypeEquals("Widget"));
-    }
 }
