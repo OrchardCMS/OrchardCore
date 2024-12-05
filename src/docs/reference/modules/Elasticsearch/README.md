@@ -6,7 +6,7 @@ The Elasticsearch module allows you to manage Elasticsearch indices.
 
 You can use an Elasticsearch cloud service like offered on <https://www.elastic.co> or install it on-premises. For development and testing purposes, it is also available to be deployed with Docker.
 
-### Install Elasticsearch 7.x with Docker compose
+### Install Elasticsearch with Docker compose
 
 Elasticsearch uses a mmapfs directory by default to store its indices. The default operating system limits on mmap counts is likely to be too low, which may result in out of memory exceptions.
 
@@ -209,7 +209,7 @@ Verbs: `POST` and `GET`
 
 ## Elasticsearch Queries
 
-The Elasticsearch module provides a management UI and APIs for querying Elasticsearch data using ElasticSearch Queries.
+The Elasticsearch module provides a management UI and APIs for querying Elasticsearch data using Elasticsearch Queries.
 See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html>
 
 ## Elasticsearch configuration
@@ -290,6 +290,34 @@ At the same time, you may define custom analyzers using the [appsettings.json](.
   }
 }
 ```
+
+## Elasticsearch Token-Filters
+
+As of version 2.1, you can define custom [token filters](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-tokenfilters.html) in your Elasticsearch configuration. To add new custom token filters, update your Elasticsearch settings accordingly. 
+
+For instance, to create a token filter named `english_stop`, you can include the following configuration in your `appsettings.json` file:
+
+```json
+"OrchardCore_Elasticsearch": {
+  "TokenFilters": {
+    "english_stop": {
+      "type": "stop",
+      "stopwords": "_english_"
+    }
+  },
+  "Analyzers": {
+    "my_new_analyzer": {
+      "type": "custom",
+      "tokenizer": "standard",
+      "filter": [
+        "english_stop"
+      ]
+    }
+  }
+}
+```
+
+In this example, the `english_stop` token filter removes English stop words, and the `my_new_analyzer` uses the standard tokenizer along with the `english_stop` filter to process text.
 
 ## Elasticsearch vs Lucene
 

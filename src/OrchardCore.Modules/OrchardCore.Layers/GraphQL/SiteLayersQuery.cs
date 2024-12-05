@@ -11,20 +11,22 @@ using OrchardCore.Layers.Services;
 
 namespace OrchardCore.Layers.GraphQL;
 
-public class SiteLayersQuery : ISchemaBuilder
+public sealed class SiteLayersQuery : ISchemaBuilder
 {
-    protected readonly IStringLocalizer S;
     private readonly GraphQLContentOptions _graphQLContentOptions;
 
+    internal readonly IStringLocalizer S;
+
     public SiteLayersQuery(
-        IStringLocalizer<SiteLayersQuery> localizer,
-        IOptions<GraphQLContentOptions> graphQLContentOptions)
+        IOptions<GraphQLContentOptions> graphQLContentOptions,
+        IStringLocalizer<SiteLayersQuery> localizer)
     {
-        S = localizer;
         _graphQLContentOptions = graphQLContentOptions.Value;
+        S = localizer;
     }
 
-    public Task<string> GetIdentifierAsync() => Task.FromResult(string.Empty);
+    public Task<string> GetIdentifierAsync()
+        => Task.FromResult(string.Empty);
 
     public Task BuildAsync(ISchema schema)
     {
@@ -38,7 +40,7 @@ public class SiteLayersQuery : ISchemaBuilder
             Name = "SiteLayers",
             Description = S["Site layers define the rules and zone placement for widgets."],
             Type = typeof(ListGraphType<LayerQueryObjectType>),
-            Resolver = new LockedAsyncFieldResolver<IEnumerable<Layer>>(ResolveAsync)
+            Resolver = new LockedAsyncFieldResolver<IEnumerable<Layer>>(ResolveAsync),
         };
 
         schema.Query.AddField(field);
@@ -49,7 +51,9 @@ public class SiteLayersQuery : ISchemaBuilder
     private async ValueTask<IEnumerable<Layer>> ResolveAsync(IResolveFieldContext resolveContext)
     {
         var layerService = resolveContext.RequestServices.GetService<ILayerService>();
+
         var allLayers = await layerService.GetLayersAsync();
+
         return allLayers.Layers;
     }
 }

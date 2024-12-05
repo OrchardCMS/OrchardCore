@@ -68,7 +68,7 @@ public sealed class Migrations : DataMigration
                 lastDocumentId = contentItemVersion.Id;
             }
 
-            await _session.SaveChangesAsync();
+            await _session.FlushAsync();
         }
 
         static bool UpdateTitle(JsonNode content)

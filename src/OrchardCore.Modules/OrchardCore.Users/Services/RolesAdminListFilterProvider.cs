@@ -9,7 +9,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Users.Services;
 
-public class RolesAdminListFilterProvider : IUsersAdminListFilterProvider
+public sealed class RolesAdminListFilterProvider : IUsersAdminListFilterProvider
 {
     public void Build(QueryEngineBuilder<User> builder)
     {

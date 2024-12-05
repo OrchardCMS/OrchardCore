@@ -1,13 +1,15 @@
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Options
 @using OrchardCore.Users.Models
 
 @model SummaryAdminUserViewModel
 
 @inject UserManager<IUser> UserManager
 @inject IAuthorizationService AuthorizationService
+@inject IOptions<RegistrationOptions> RegistrationOptions
 
 @if (!Model.User.EmailConfirmed &&
-Site.As<RegistrationSettings>().UsersMustValidateEmail &&
+RegistrationOptions.Value.UsersMustValidateEmail &&
 await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, Model.User))
 {
     <li>

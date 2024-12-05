@@ -9,6 +9,8 @@
 <script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 
+<div class="alert alert-warning collapse" id="warnEmailValidation">@T["The users whose email address has not been confirmed will not be able to login or reset their password."]</div>
+
 <div class="mb-3" asp-validation-class-for="UsersMustValidateEmail">
     <div class="form-check">
         <input type="checkbox" class="form-check-input" asp-for="UsersMustValidateEmail" data-bs-toggle="collapse" data-bs-target="#warnEmailValidation" />
@@ -16,8 +18,6 @@
         <label class="form-check-label" asp-for="UsersMustValidateEmail">@T["Users must verify their email address"]</label>
     </div>
 </div>
-
-<div class="alert alert-warning collapse" id="warnEmailValidation">@T["The users whose email address has not been confirmed will not be able to login or reset their password."]</div>
 
 <div class="mb-3" asp-validation-class-for="UsersAreModerated">
     <div class="form-check">
