@@ -23,7 +23,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (UseLegacyFormat)
+        if (NavigationHelper.UseLegacyFormat())
         {
             builder
                 .Add(S["Configuration"], configuration => configuration
@@ -35,7 +35,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                             .Permission(SmsPermissions.ManageSmsSettings)
                             .LocalNav()
                         )
-                        .Add(S["SMS Test"], S["SMS Test"].PrefixPosition(), sms => sms
+                        .Add(S["SMS test"], S["SMS test"].PrefixPosition(), sms => sms
                             .AddClass("smstest")
                             .Id("smstest")
                             .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Sms")
@@ -50,17 +50,19 @@ public sealed class AdminMenu : AdminNavigationProvider
 
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["SMS"], S["SMS"].PrefixPosition(), sms => sms
-                    .AddClass("sms")
-                    .Id("sms")
-                    .Action("Index", "Admin", _routeValues)
-                    .Permission(SmsPermissions.ManageSmsSettings)
-                    .LocalNav()
+                .Add(S["Communication"], S["Communication"].PrefixPosition(), communication => communication
+                    .Add(S["SMS"], S["SMS"].PrefixPosition(), sms => sms
+                        .AddClass("sms")
+                        .Id("sms")
+                        .Action("Index", "Admin", _routeValues)
+                        .Permission(SmsPermissions.ManageSmsSettings)
+                        .LocalNav()
+                    )
                 )
             )
             .Add(S["Tools"], tools => tools
                 .Add(S["Testing"], S["Testing"].PrefixPosition(), testing => testing
-                    .Add(S["SMS Test"], S["SMS Test"].PrefixPosition(), sms => sms
+                    .Add(S["SMS test"], S["SMS test"].PrefixPosition(), sms => sms
                         .AddClass("smstest")
                         .Id("smstest")
                         .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Sms")

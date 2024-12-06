@@ -14,22 +14,22 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (UseLegacyFormat)
+        if (NavigationHelper.UseLegacyFormat())
         {
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import
-                        .Add(S["Deployment Plans"], S["Deployment Plans"].PrefixPosition(), deployment => deployment
+                        .Add(S["Deployment plans"], S["Deployment plans"].PrefixPosition(), deployment => deployment
                             .Action("Index", "DeploymentPlan", "OrchardCore.Deployment")
                             .Permission(CommonPermissions.Export)
                             .LocalNav()
                         )
-                        .Add(S["Package Import"], S["Package Import"].PrefixPosition(), deployment => deployment
+                        .Add(S["Package import"], S["Package import"].PrefixPosition(), deployment => deployment
                             .Action("Index", "Import", "OrchardCore.Deployment")
                             .Permission(CommonPermissions.Import)
                             .LocalNav()
                         )
-                        .Add(S["JSON Import"], S["JSON Import"].PrefixPosition(), deployment => deployment
+                        .Add(S["JSON import"], S["JSON import"].PrefixPosition(), deployment => deployment
                             .Action("Json", "Import", "OrchardCore.Deployment")
                             .Permission(CommonPermissions.Import)
                             .LocalNav()
@@ -48,12 +48,12 @@ public sealed class AdminMenu : AdminNavigationProvider
                         .Permission(CommonPermissions.Export)
                         .LocalNav()
                     )
-                    .Add(S["Package Import"], S["Package Import"].PrefixPosition(), deployment => deployment
+                    .Add(S["Package import"], S["Package import"].PrefixPosition(), deployment => deployment
                         .Action("Index", "Import", "OrchardCore.Deployment")
                         .Permission(CommonPermissions.Import)
                         .LocalNav()
                     )
-                    .Add(S["JSON Import"], S["JSON Import"].PrefixPosition(), deployment => deployment
+                    .Add(S["JSON import"], S["JSON import"].PrefixPosition(), deployment => deployment
                         .Action("Json", "Import", "OrchardCore.Deployment")
                         .Permission(CommonPermissions.Import)
                         .LocalNav()

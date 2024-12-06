@@ -22,14 +22,14 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (UseLegacyFormat)
+        if (NavigationHelper.UseLegacyFormat())
         {
             builder
                 .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
                     .AddClass("security")
                     .Id("security")
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
+                        .Add(S["Security headers"], S["Security headers"].PrefixPosition(), headers => headers
                             .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
                             .Action("Index", "Admin", _routeValues)
                             .LocalNav()
@@ -43,7 +43,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
-                    .Add(S["Security Headers"], S["Security Headers"].PrefixPosition(), headers => headers
+                    .Add(S["Security headers"], S["Security headers"].PrefixPosition(), headers => headers
                         .Permission(SecurityPermissions.ManageSecurityHeadersSettings)
                         .Action("Index", "Admin", _routeValues)
                         .LocalNav()

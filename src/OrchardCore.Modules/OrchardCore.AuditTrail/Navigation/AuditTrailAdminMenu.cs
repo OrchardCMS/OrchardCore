@@ -29,10 +29,10 @@ public sealed class AuditTrailAdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (UseLegacyFormat)
+        if (NavigationHelper.UseLegacyFormat())
         {
             builder
-                .Add(S["Audit Trail"], NavigationConstants.AdminMenuAuditTrailPosition, configuration => configuration
+                .Add(S["Audit trail"], NavigationConstants.AdminMenuAuditTrailPosition, configuration => configuration
                     .AddClass("audittrail")
                     .Id("audittrail")
                     .Action(nameof(AdminController.Index), "Admin", _routeValues)
@@ -41,7 +41,7 @@ public sealed class AuditTrailAdminMenu : AdminNavigationProvider
                 )
                 .Add(S["Configuration"], configuration => configuration
                      .Add(S["Settings"], settings => settings
-                        .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), auditTrail => auditTrail
+                        .Add(S["Audit trail"], S["Audit trail"].PrefixPosition(), auditTrail => auditTrail
                             .AddClass("audittrail")
                             .Id("audittrailSettings")
                             .Action("Index", "Admin", _routeValues)
@@ -55,7 +55,7 @@ public sealed class AuditTrailAdminMenu : AdminNavigationProvider
 
         builder
             .Add(S["Tools"], tools => tools
-                .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), configuration => configuration
+                .Add(S["Audit trail"], S["Audit trail"].PrefixPosition(), configuration => configuration
                     .AddClass("audittrail")
                     .Id("audittrail")
                     .Action(nameof(AdminController.Index), "Admin", _routeValues)
@@ -64,7 +64,7 @@ public sealed class AuditTrailAdminMenu : AdminNavigationProvider
                 )
             )
             .Add(S["Settings"], settings => settings
-                .Add(S["Audit Trail"], S["Audit Trail"].PrefixPosition(), auditTrail => auditTrail
+                .Add(S["Audit trail"], S["Audit trail"].PrefixPosition(), auditTrail => auditTrail
                     .AddClass("audittrail")
                     .Id("audittrailSettings")
                     .Action("Index", "Admin", _settingsRouteValues)

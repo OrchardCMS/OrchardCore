@@ -14,7 +14,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (UseLegacyFormat)
+        if (NavigationHelper.UseLegacyFormat())
         {
             builder
                 .Add(S["Security"], security => security
@@ -30,7 +30,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         }
 
         builder
-            .Add(S["Access Control"], accessControl => accessControl
+            .Add(S["Access control"], accessControl => accessControl
                 .Add(S["Roles"], S["Roles"].PrefixPosition(), roles => roles
                     .AddClass("roles").Id("roles")
                     .Action("Index", "Admin", "OrchardCore.Roles")

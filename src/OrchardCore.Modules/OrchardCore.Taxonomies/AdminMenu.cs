@@ -22,12 +22,12 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (UseLegacyFormat)
+        if (NavigationHelper.UseLegacyFormat())
         {
             builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Settings"], "1", settings => settings
-                    .Add(S["Taxonomy Filters"], S["Taxonomy Filters"].PrefixPosition(), filters => filters
+                    .Add(S["Taxonomy filters"], S["Taxonomy filters"].PrefixPosition(), filters => filters
                         .AddClass("taxonomyfilters")
                         .Id("taxonomyfilters")
                         .Permission(Permissions.ManageTaxonomies)
@@ -42,7 +42,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["Taxonomy Filters"], S["Taxonomy Filters"].PrefixPosition(), filters => filters
+                .Add(S["Taxonomy filters"], S["Taxonomy filters"].PrefixPosition(), filters => filters
                     .AddClass("taxonomyfilters")
                     .Id("taxonomyfilters")
                     .Permission(Permissions.ManageTaxonomies)

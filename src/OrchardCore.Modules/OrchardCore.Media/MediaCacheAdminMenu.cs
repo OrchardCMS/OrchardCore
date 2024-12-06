@@ -14,12 +14,12 @@ public sealed class MediaCacheAdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (UseLegacyFormat)
+        if (NavigationHelper.UseLegacyFormat())
         {
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Media"], S["Media"].PrefixPosition(), media => media
-                        .Add(S["Media Cache"], S["Media Cache"].PrefixPosition(), cache => cache
+                        .Add(S["Media cache"], S["Media cache"].PrefixPosition(), cache => cache
                             .Action("Index", "MediaCache", "OrchardCore.Media")
                             .Permission(MediaCachePermissions.ManageAssetCache)
                             .LocalNav()
@@ -33,7 +33,7 @@ public sealed class MediaCacheAdminMenu : AdminNavigationProvider
         builder
             .Add(S["Tools"], tools => tools
                 .Add(S["Media"], S["Media"].PrefixPosition(), media => media
-                    .Add(S["Media Cache"], S["Media Cache"].PrefixPosition(), cache => cache
+                    .Add(S["Media cache"], S["Media cache"].PrefixPosition(), cache => cache
                         .Action("Index", "MediaCache", "OrchardCore.Media")
                         .Permission(MediaCachePermissions.ManageAssetCache)
                         .LocalNav()

@@ -21,7 +21,7 @@ public sealed class GoogleAnalyticsAdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (UseLegacyFormat)
+        if (NavigationHelper.UseLegacyFormat())
         {
             builder
             .Add(S["Configuration"], configuration => configuration
@@ -40,11 +40,13 @@ public sealed class GoogleAnalyticsAdminMenu : AdminNavigationProvider
 
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["Google Analytics"], S["Google Analytics"].PrefixPosition(), google => google
-                    .AddClass("googleAnalytics").Id("googleAnalytics")
-                    .Action("Index", "Admin", _routeValues)
-                    .Permission(Permissions.ManageGoogleAnalytics)
-                    .LocalNav()
+                .Add(S["Integrations"], S["Integrations"].PrefixPosition(), integrations => integrations
+                    .Add(S["Google Analytics"], S["Google Analytics"].PrefixPosition(), google => google
+                        .AddClass("googleAnalytics").Id("googleAnalytics")
+                        .Action("Index", "Admin", _routeValues)
+                        .Permission(Permissions.ManageGoogleAnalytics)
+                        .LocalNav()
+                    )
                 )
             );
 

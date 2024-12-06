@@ -21,7 +21,7 @@ public sealed class AdminMenuMicrosoftAccount : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (UseLegacyFormat)
+        if (NavigationHelper.UseLegacyFormat())
         {
             builder
                 .Add(S["Security"], security => security

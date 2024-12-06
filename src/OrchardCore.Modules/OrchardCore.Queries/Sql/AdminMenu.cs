@@ -17,7 +17,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
                 .Add(S["Queries"], S["Queries"].PrefixPosition(), queries => queries
-                    .Add(S["Run SQL Query"], S["Run SQL Query"].PrefixPosition(), sql => sql
+                    .Add(S["Run SQL query"], S["Run SQL query"].PrefixPosition(), sql => sql
                          .Action("Query", "Admin", "OrchardCore.Queries")
                          .Permission(Permissions.ManageSqlQueries)
                          .LocalNav()

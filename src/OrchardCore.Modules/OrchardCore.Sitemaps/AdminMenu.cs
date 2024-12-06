@@ -14,43 +14,42 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (UseLegacyFormat)
+        if (NavigationHelper.UseLegacyFormat())
         {
             builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["SEO"], S["SEO"].PrefixPosition(), seo => seo
-                        .Permission(Permissions.ManageSitemaps)
-                        .Add(S["Sitemaps"], S["Sitemaps"].PrefixPosition("1"), sitemaps => sitemaps
-                            .Action("List", "Admin", "OrchardCore.Sitemaps")
-                            .LocalNav()
-                        )
-                        .Add(S["Sitemap Indexes"], S["Sitemap Indexes"].PrefixPosition("2"), indexes => indexes
-                            .Action("List", "SitemapIndex", "OrchardCore.Sitemaps")
-                            .LocalNav()
-                        )
-                        .Add(S["Sitemaps Cache"], S["Sitemaps Cache"].PrefixPosition("3"), cache => cache
-                            .Action("List", "SitemapCache", "OrchardCore.Sitemaps")
-                            .LocalNav()
-                        )
-                    )
-                );
+               .Add(S["Configuration"], configuration => configuration
+                   .Add(S["SEO"], S["SEO"].PrefixPosition(), seo => seo
+                       .Permission(Permissions.ManageSitemaps)
+                       .Add(S["Sitemaps"], S["Sitemaps"].PrefixPosition("1"), sitemaps => sitemaps
+                           .Action("List", "Admin", "OrchardCore.Sitemaps")
+                           .LocalNav()
+                       )
+                       .Add(S["Sitemap indexes"], S["Sitemap indexes"].PrefixPosition("2"), indexes => indexes
+                           .Action("List", "SitemapIndex", "OrchardCore.Sitemaps")
+                           .LocalNav()
+                       )
+                       .Add(S["Sitemaps cache"], S["Sitemaps cache"].PrefixPosition("3"), cache => cache
+                           .Action("List", "SitemapCache", "OrchardCore.Sitemaps")
+                           .LocalNav()
+                       )
+                   )
+               );
 
             return ValueTask.CompletedTask;
         }
-
         builder
             .Add(S["Tools"], tools => tools
-                .Add(S["SEO"], S["SEO"].PrefixPosition(), seo => seo
+                .Add(S["Search engine optimization"], S["Search engine optimization"].PrefixPosition(), seo => seo
                     .Permission(Permissions.ManageSitemaps)
                     .Add(S["Sitemaps"], S["Sitemaps"].PrefixPosition("1"), sitemaps => sitemaps
                         .Action("List", "Admin", "OrchardCore.Sitemaps")
                         .LocalNav()
                     )
-                    .Add(S["Sitemap Indexes"], S["Sitemap Indexes"].PrefixPosition("2"), indexes => indexes
+                    .Add(S["Sitemap indexes"], S["Sitemap indexes"].PrefixPosition("2"), indexes => indexes
                         .Action("List", "SitemapIndex", "OrchardCore.Sitemaps")
                         .LocalNav()
                     )
-                    .Add(S["Sitemaps Cache"], S["Sitemaps Cache"].PrefixPosition("3"), cache => cache
+                    .Add(S["Sitemaps cache"], S["Sitemaps cache"].PrefixPosition("3"), cache => cache
                         .Action("List", "SitemapCache", "OrchardCore.Sitemaps")
                         .LocalNav()
                     )

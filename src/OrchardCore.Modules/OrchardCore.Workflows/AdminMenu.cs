@@ -14,7 +14,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (UseLegacyFormat)
+        if (NavigationHelper.UseLegacyFormat())
         {
             builder
                 .Add(S["Workflows"], NavigationConstants.AdminMenuWorkflowsPosition, workflow => workflow

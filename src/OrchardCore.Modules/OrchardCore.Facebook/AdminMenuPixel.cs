@@ -22,7 +22,7 @@ public sealed class AdminMenuPixel : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (UseLegacyFormat)
+        if (NavigationHelper.UseLegacyFormat())
         {
             builder
                .Add(S["Configuration"], configuration => configuration
@@ -42,12 +42,14 @@ public sealed class AdminMenuPixel : AdminNavigationProvider
 
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["Meta Pixel"], S["Meta Pixel"].PrefixPosition(), pixel => pixel
-                    .AddClass("facebookPixel")
-                    .Id("facebookPixel")
-                    .Action("Index", "Admin", _routeValues)
-                    .Permission(FacebookConstants.ManageFacebookPixelPermission)
-                    .LocalNav()
+                .Add(S["Integrations"], S["Integrations"].PrefixPosition(), integrations => integrations
+                    .Add(S["Meta Pixel"], S["Meta Pixel"].PrefixPosition(), pixel => pixel
+                        .AddClass("facebookPixel")
+                        .Id("facebookPixel")
+                        .Action("Index", "Admin", _routeValues)
+                        .Permission(FacebookConstants.ManageFacebookPixelPermission)
+                        .LocalNav()
+                    )
                 )
             );
 

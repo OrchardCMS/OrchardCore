@@ -21,7 +21,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (UseLegacyFormat)
+        if (NavigationHelper.UseLegacyFormat())
         {
             builder
                 .Add(S["Configuration"], configuration => configuration
@@ -41,12 +41,16 @@ public sealed class AdminMenu : AdminNavigationProvider
 
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["SEO"], S["SEO"].PrefixPosition(), seo => seo
-                    .AddClass("seo")
-                    .Id("seo")
-                    .Action("Index", "Admin", _routeValues)
-                    .Permission(SeoConstants.ManageSeoSettings)
-                    .LocalNav()
+                .Add(S["Search"], S["Search"].PrefixPosition(), search => search
+                    .Add(S["Search engine optimization"], S["Search engine optimization"].PrefixPosition(), seo => seo
+                        .AddClass("seo")
+                        .Id("seo")
+                        .Add(S["Robots"], S["Robots"].PrefixPosition(), robots => robots
+                            .Action("Index", "Admin", _routeValues)
+                            .Permission(SeoConstants.ManageSeoSettings)
+                            .LocalNav()
+                        )
+                    )
                 )
             );
 

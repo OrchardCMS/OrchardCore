@@ -14,7 +14,7 @@ public sealed class ManagementAdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (UseLegacyFormat)
+        if (NavigationHelper.UseLegacyFormat())
         {
             builder
             .Add(S["Security"], security => security
@@ -40,7 +40,7 @@ public sealed class ManagementAdminMenu : AdminNavigationProvider
         }
 
         builder
-            .Add(S["Access Control"], accessControl => accessControl
+            .Add(S["Access control"], accessControl => accessControl
                 .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), openId => openId
                     .AddClass("openid")
                     .Id("openid")

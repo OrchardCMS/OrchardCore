@@ -19,7 +19,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 .AddClass("search")
                 .Id("search")
                 .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
-                    .Add(S["Elasticsearch Indices"], S["Elasticsearch Indices"].PrefixPosition(), indexes => indexes
+                    .Add(S["Elasticsearch indices"], S["Elasticsearch indices"].PrefixPosition(), indexes => indexes
                         .Action("Index", "Admin", "OrchardCore.Search.Elasticsearch")
                         .AddClass("elasticsearchindices")
                         .Id("elasticsearchindices")
@@ -28,7 +28,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     )
                 )
                 .Add(S["Queries"], S["Queries"].PrefixPosition(), import => import
-                    .Add(S["Run Elasticsearch Query"], S["Run Elasticsearch Query"].PrefixPosition(), queries => queries
+                    .Add(S["Run Elasticsearch query"], S["Run Elasticsearch query"].PrefixPosition(), queries => queries
                         .Action("Query", "Admin", "OrchardCore.Search.Elasticsearch")
                         .AddClass("elasticsearchquery")
                         .Id("elasticsearchquery")

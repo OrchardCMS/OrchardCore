@@ -40,7 +40,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 
             var htmlName = type.Name.HtmlClassify();
 
-            if (UseLegacyFormat)
+            if (NavigationHelper.UseLegacyFormat())
             {
                 builder
                 .Add(S["Configuration"], configuration => configuration

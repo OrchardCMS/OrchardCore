@@ -14,11 +14,11 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (UseLegacyFormat)
+        if (NavigationHelper.UseLegacyFormat())
         {
             builder.Add(S["Configuration"], configuration => configuration
                 .Add(S["Media"], S["Media"].PrefixPosition(), media => media
-                    .Add(S["Amazon S3 Options"], S["Amazon S3 Options"].PrefixPosition(), options => options
+                    .Add(S["Amazon S3 options"], S["Amazon S3 options"].PrefixPosition(), options => options
                         .Action("Options", "Admin", "OrchardCore.Media.AmazonS3")
                         .Permission(Permissions.ViewAmazonS3MediaOptions)
                         .LocalNav()
@@ -31,7 +31,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 
         builder.Add(S["Tools"], tools => tools
             .Add(S["Media"], S["Media"].PrefixPosition(), media => media
-                .Add(S["Amazon S3 Options"], S["Amazon S3 Options"].PrefixPosition(), options => options
+                .Add(S["Amazon S3 options"], S["Amazon S3 options"].PrefixPosition(), options => options
                     .Action("Options", "Admin", "OrchardCore.Media.AmazonS3")
                     .Permission(Permissions.ViewAmazonS3MediaOptions)
                     .LocalNav()

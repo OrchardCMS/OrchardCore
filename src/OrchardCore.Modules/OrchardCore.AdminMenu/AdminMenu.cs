@@ -20,12 +20,12 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (UseLegacyFormat)
+        if (NavigationHelper.UseLegacyFormat())
         {
             // Configuration and settings menus for the AdminMenu module.
             builder
                 .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Admin Menus"], S["Admin Menus"].PrefixPosition(), adminMenu => adminMenu
+                    .Add(S["Admin menus"], S["Admin menus"].PrefixPosition(), adminMenu => adminMenu
                         .Permission(Permissions.ManageAdminMenu)
                         .Action("List", "Menu", "OrchardCore.AdminMenu")
                         .LocalNav()
@@ -37,7 +37,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             // Configuration and settings menus for the AdminMenu module.
             builder
                 .Add(S["Tools"], tools => tools
-                    .Add(S["Admin Menus"], S["Admin Menus"].PrefixPosition(), adminMenu => adminMenu
+                    .Add(S["Admin menus"], S["Admin menus"].PrefixPosition(), adminMenu => adminMenu
                         .Permission(Permissions.ManageAdminMenu)
                         .Action("List", "Menu", "OrchardCore.AdminMenu")
                         .LocalNav()

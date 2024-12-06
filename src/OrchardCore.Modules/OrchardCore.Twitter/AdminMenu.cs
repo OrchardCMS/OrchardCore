@@ -21,7 +21,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (UseLegacyFormat)
+        if (NavigationHelper.UseLegacyFormat())
         {
             builder
             .Add(S["Configuration"], configuration => configuration
@@ -40,11 +40,13 @@ public sealed class AdminMenu : AdminNavigationProvider
 
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["X (Twitter)"], S["X (Twitter)"].PrefixPosition(), twitter => twitter
-                    .AddClass("twitter").Id("twitter")
-                    .Action("Index", "Admin", _routeValues)
-                    .Permission(Permissions.ManageTwitter)
-                    .LocalNav()
+                .Add(S["Integrations"], S["Integrations"].PrefixPosition(), integrations => integrations
+                    .Add(S["X (Twitter)"], S["X (Twitter)"].PrefixPosition(), twitter => twitter
+                        .AddClass("twitter").Id("twitter")
+                        .Action("Index", "Admin", _routeValues)
+                        .Permission(Permissions.ManageTwitter)
+                        .LocalNav()
+                    )
                 )
             );
 
