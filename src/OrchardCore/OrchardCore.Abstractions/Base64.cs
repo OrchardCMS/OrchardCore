@@ -36,7 +36,7 @@ public static class Base64
     /// Converts a base64 encoded string to a stream.
     /// </summary>
     /// <param name="base64">The base64 encoded string.</param>
-    /// <remarks>The resulting <see cref="Stream"/> should be disposed once used.</remarks>
+    /// <remarks>The resulting <see cref="Stream"/> is positioned at index 0 and should be disposed once used.</remarks>
     /// <returns>The decoded stream.</returns>
     /// <exception cref="FormatException"></exception>
     public static Stream DecodeToStream(string base64)
