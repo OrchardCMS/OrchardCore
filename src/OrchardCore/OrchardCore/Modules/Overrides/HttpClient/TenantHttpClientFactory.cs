@@ -274,7 +274,7 @@ internal sealed class TenantHttpClientFactory : IHttpClientFactory, IHttpMessage
         // whether we need to start the timer.
         StopCleanupTimer();
 
-        if (!Monitor.TryEnter(_cleanupActiveLock))
+        if (!_cleanupActiveLock.TryEnter())
         {
             // We don't want to run a concurrent cleanup cycle. This can happen if the cleanup cycle takes
             // a long time for some reason. Since we're running user code inside Dispose, it's definitely
@@ -332,7 +332,7 @@ internal sealed class TenantHttpClientFactory : IHttpClientFactory, IHttpMessage
         }
         finally
         {
-            Monitor.Exit(_cleanupActiveLock);
+            _cleanupActiveLock.Exit();
         }
 
         // We didn't totally empty the cleanup queue, try again later.
