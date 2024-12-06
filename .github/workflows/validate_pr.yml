@@ -12,7 +12,6 @@ jobs:
     timeout-minutes: 3
     steps:
       - name: Check for Merge Conflict in PR
-        # v3.0.0
         uses: eps1lon/actions-label-merge-conflict@657e437ea2533fd743739be26f0a2eeb420b306a
         with:
             repoToken: ${{ secrets.GITHUB_TOKEN }}
