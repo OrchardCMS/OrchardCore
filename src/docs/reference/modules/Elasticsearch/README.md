@@ -192,7 +192,7 @@ Verbs: `POST` and `GET`
 | Parameter | Example | Description |
 | --------- | ---- |------------ |
 | `indexName` | `search` | The name of the index to query. |
-| `query` | `{ "query": { "match_all": {} } }` | A JSON object representing the query. |
+| `query` | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query. |
 | `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
 
 ### `api/elasticsearch/documents`
@@ -204,7 +204,7 @@ Verbs: `POST` and `GET`
 | Parameter | Example | Description |
 | --------- | ---- |------------ |
 | `indexName` | `search` | The name of the index to query. |
-| `query` | `{ "query": { "match_all": {} } }` | A JSON object representing the query. |
+| `query` | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query. |
 | `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
 
 ## Elasticsearch Queries
