@@ -27,7 +27,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         }
 
         builder
-            .Add(S["Multi-Tenancy"], "after", tenancy => tenancy
+            .Add(S["Multi-tenancy"], "after.25", tenancy => tenancy
                 .AddClass("menu-multitenancy")
                 .Id("multitenancy")
                 .Add(S["Tenants"], S["Tenants"].PrefixPosition(), tenant => tenant
