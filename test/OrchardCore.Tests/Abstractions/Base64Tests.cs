@@ -19,7 +19,7 @@ public class Base64Tests
     [InlineData("", "")]
     public void DecodeToStreamTest(string source, string expected)
     {
-        using var stream = Base64.DecodedToStream(source);
+        using var stream = Base64.DecodeToStream(source);
         using var sr = new StreamReader(stream);
         {
             Assert.Equal(expected, sr.ReadToEnd());
