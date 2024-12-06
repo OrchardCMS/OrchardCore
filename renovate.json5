@@ -1,27 +1,31 @@
 {
     // As a GitHub organization admin, you can access the Renovate dashboard at
-    // https: //developer.mend.io/github/OrchardCMS/OrchardCore and manage the GitHub app at
+    // https://developer.mend.io/github/OrchardCMS/OrchardCore and manage the GitHub app at
     // https://github.com/organizations/OrchardCMS/settings/installations/57088442.
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": [
-        "config:recommended"
+    $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+    extends: [
+        'config:recommended',
     ],
     // See https://docs.renovatebot.com/configuration-options/#configmigration.
-    "configMigration": true,
-    "packageRules": [
+    configMigration: true,
+    packageRules: [
         {
-            "matchPackageNames": [
+            matchPackageNames: [
                 // See the corresponding comment in Directory.Packages.props.
-                "System.Drawing.Common"
+                'System.Drawing.Common',
             ],
-            "enabled": false
+            enabled: false,
         },
         {
             // See https://github.com/OrchardCMS/OrchardCore/issues/16318 on why we have NPM updates disabled.
-            "managers": [ "npm" ],
-            "enabled": false
-        }
+            matchManagers: [
+                'npm',
+            ],
+            enabled: false,
+        },
     ],
     // We only need updates once a week.
-    "schedule": [ "before 5am on Sunday" ]
+    schedule: [
+        'before 5am on Sunday',
+    ],
 }
