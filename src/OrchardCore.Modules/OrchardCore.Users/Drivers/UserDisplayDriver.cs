@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
@@ -23,7 +22,6 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
     private readonly INotifier _notifier;
     private readonly IAuthorizationService _authorizationService;
     private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
-    private readonly ILogger _logger;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -32,7 +30,6 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
         UserManager<IUser> userManager,
         IHttpContextAccessor httpContextAccessor,
         INotifier notifier,
-        ILogger<UserDisplayDriver> logger,
         IEnumerable<IUserEventHandler> userEventHandlers,
         IAuthorizationService authorizationService,
         IHtmlLocalizer<UserDisplayDriver> htmlLocalizer,
@@ -42,7 +39,6 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
         _httpContextAccessor = httpContextAccessor;
         _notifier = notifier;
         _authorizationService = authorizationService;
-        _logger = logger;
         _userEventHandlers = userEventHandlers;
         H = htmlLocalizer;
         S = stringLocalizer;
