@@ -86,7 +86,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Create Issue
-      # v5.0.0
       uses: peter-evans/create-issue-from-file@64feed10c881151d72db1df9265baf264b570b29
       with:
         title: Monthly community metrics report for ${{ env.LAST_MONTH }}
