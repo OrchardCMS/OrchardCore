@@ -29,7 +29,7 @@ public static class Base64
     }
 
     [Obsolete("This will be deprecated in v4. Please use DecodeToStream instead.")]
-    public static Stream DecodedToStream1(string base64)
+    public static Stream DecodedToStream(string base64)
         => DecodeToStream(base64);
 
     /// <summary>
