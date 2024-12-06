@@ -28,14 +28,18 @@ public static class Base64
         return Encoding.UTF8.GetString(span.Slice(0, bytesWritten));
     }
 
+    [Obsolete("This will be deprecated in v4. Please use DecodeToStream instead.")]
+    public static Stream DecodedToStream(string base64)
+        => DecodeToStream(base64);
+
     /// <summary>
     /// Converts a base64 encoded string to a stream.
     /// </summary>
     /// <param name="base64">The base64 encoded string.</param>
-    /// <remarks>The resulting <see cref="Stream"/> should be disposed once used.</remarks>
+    /// <remarks>The resulting <see cref="Stream"/> is positioned at index 0 and should be disposed once used.</remarks>
     /// <returns>The decoded stream.</returns>
     /// <exception cref="FormatException"></exception>
-    public static Stream DecodedToStream(string base64)
+    public static Stream DecodeToStream(string base64)
     {
         ArgumentNullException.ThrowIfNull(base64);
 
@@ -51,6 +55,7 @@ public static class Base64
         }
 
         memoryStream.Advance(bytesWritten);
+        memoryStream.Seek(0, SeekOrigin.Begin);
 
         return memoryStream;
     }

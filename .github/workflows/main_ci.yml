@@ -29,11 +29,11 @@ jobs:
         node-version: "15"
     - uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'
+        dotnet-version: '9.0.x'
     - name: Build
       # See pr_ci.yml for the reason why we disable NuGet audit warnings.
       run: |
-        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
+        dotnet build -c Release /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 

@@ -50,7 +50,7 @@ public sealed class MediaStep : NamedRecipeStepHandler
             {
                 if (!string.IsNullOrWhiteSpace(file.Base64))
                 {
-                    stream = Base64.DecodedToStream(file.Base64);
+                    stream = Base64.DecodeToStream(file.Base64);
                 }
                 else if (!string.IsNullOrWhiteSpace(file.SourcePath))
                 {
