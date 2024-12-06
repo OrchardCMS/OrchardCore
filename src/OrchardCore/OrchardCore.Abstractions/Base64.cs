@@ -51,7 +51,8 @@ public static class Base64
         }
 
         memoryStream.Advance(bytesWritten);
-
+        memoryStream.Seek(0, SeekOrigin.Begin);
+        
         return memoryStream;
     }
 
