@@ -10,8 +10,8 @@
     configMigration: true,
     packageRules: [
         {
-            // See the corresponding comment in Directory.Packages.props.
             matchPackageNames: [
+                // See the corresponding comment in Directory.Packages.props.
                 'System.Drawing.Common',
             ],
             enabled: false,
