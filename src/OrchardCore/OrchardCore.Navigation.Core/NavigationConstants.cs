@@ -24,5 +24,5 @@ public static class NavigationConstants
 
     public const string AdminMenuId = "adminMenu";
 
-    public const string LegacyAdminMenuNavigationSwitchKey = "LegacyAdminMenuNavigationSwitch";
+    public const string LegacyAdminMenuNavigationSwitchKey = "LegacyAdminMenuNavigation";
 }
