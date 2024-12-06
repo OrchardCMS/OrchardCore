@@ -14,7 +14,7 @@ public class ComponentViewLocationExpanderProvider : IViewLocationExpanderProvid
     private const string CacheKey = "ModuleComponentViewLocations";
     private static List<IExtensionInfo> _modulesWithComponentViews;
     private static List<IExtensionInfo> _modulesWithPagesComponentViews;
-    private static readonly object _synLock = new();
+    private static readonly Lock _synLock = new();
     private static bool _initialized;
 
     private readonly IExtensionManager _extensionManager;

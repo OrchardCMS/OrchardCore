@@ -11,7 +11,7 @@ namespace OrchardCore.Modules;
 public class ModuleProjectStaticFileProvider : IModuleStaticFileProvider
 {
     private static Dictionary<string, string> _roots;
-    private static readonly object _synLock = new();
+    private static readonly Lock _synLock = new();
 
     public ModuleProjectStaticFileProvider(IApplicationContext applicationContext)
     {

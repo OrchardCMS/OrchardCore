@@ -40,8 +40,8 @@ internal sealed class TenantHttpClientFactory : IHttpClientFactory, IHttpMessage
     // There's no need for the factory itself to be disposable. If you stop using it, eventually everything will
     // get reclaimed.
     private Timer? _cleanupTimer;
-    private readonly object _cleanupTimerLock;
-    private readonly object _cleanupActiveLock;
+    private readonly Lock _cleanupTimerLock;
+    private readonly Lock _cleanupActiveLock;
 
     // Collection of 'active' handlers.
     //
@@ -94,8 +94,8 @@ internal sealed class TenantHttpClientFactory : IHttpClientFactory, IHttpMessage
         _expiredHandlers = new ConcurrentQueue<ExpiredHandlerTrackingEntry>();
         _expiryCallback = ExpiryTimer_Tick;
 
-        _cleanupTimerLock = new object();
-        _cleanupActiveLock = new object();
+        _cleanupTimerLock = new Lock();
+        _cleanupActiveLock = new Lock();
 
         // We want to prevent a circular dependency between ILoggerFactory and IHttpClientFactory, in case
         // any of ILoggerProvider instances use IHttpClientFactory to send logs to an external server.

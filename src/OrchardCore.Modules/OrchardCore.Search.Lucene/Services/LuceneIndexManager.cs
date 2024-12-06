@@ -14,6 +14,7 @@ using OrchardCore.Modules;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Services;
 using Spatial4n.Context;
+using Lock = System.Threading.Lock;
 using Directory = System.IO.Directory;
 using LDirectory = Lucene.Net.Store.Directory;
 using LuceneLock = Lucene.Net.Store.Lock;
@@ -37,7 +38,7 @@ public class LuceneIndexManager : IDisposable
     private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
     private readonly SpatialContext _ctx;
     private readonly GeohashPrefixTree _grid;
-    private static readonly object _synLock = new();
+    private static readonly Lock _synLock = new();
 
     public LuceneIndexManager(
         IClock clock,
