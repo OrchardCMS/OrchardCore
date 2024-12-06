@@ -14,7 +14,7 @@ public class ElasticsearchClientFactory
             ElasticsearchConnectionType.StaticConnectionPool => new ElasticsearchClientSettings(new StaticNodePool(GetNodeUris(elasticConfiguration))),
             ElasticsearchConnectionType.SniffingConnectionPool => new ElasticsearchClientSettings(new SniffingNodePool(GetNodeUris(elasticConfiguration))),
             ElasticsearchConnectionType.StickyConnectionPool => new ElasticsearchClientSettings(new StickyNodePool(GetNodeUris(elasticConfiguration))),
-            _ => new ElasticsearchClientSettings(GetNodeUris(elasticConfiguration).First()),
+            _ => new ElasticsearchClientSettings(GetNodeUris(elasticConfiguration).FirstOrDefault()),
         };
 
         if (!string.IsNullOrWhiteSpace(elasticConfiguration.CertificateFingerprint))
@@ -29,6 +29,11 @@ public class ElasticsearchClientFactory
 
     private static IEnumerable<Uri> GetNodeUris(ElasticsearchConnectionOptions elasticConfiguration)
     {
+        if (string.IsNullOrEmpty(elasticConfiguration.Url))
+        {
+            return [];
+        }
+
         return elasticConfiguration.Ports.Select(port => new Uri($"{elasticConfiguration.Url}:{port}")).Distinct();
     }
 }
