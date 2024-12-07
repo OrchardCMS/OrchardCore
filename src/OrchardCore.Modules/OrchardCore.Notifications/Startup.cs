@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Models;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -17,7 +16,6 @@ using OrchardCore.Notifications.Indexes;
 using OrchardCore.Notifications.Migrations;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.Services;
-using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
@@ -47,8 +45,8 @@ public sealed class Startup : StartupBase
         services.AddScoped<INotificationEvents, CoreNotificationEventsHandler>();
 
         services.AddPermissionProvider<NotificationPermissionsProvider>();
-        services.AddScoped<IDisplayDriver<ListNotificationOptions>, ListNotificationOptionsDisplayDriver>();
-        services.AddScoped<IDisplayDriver<Notification>, NotificationDisplayDriver>();
+        services.AddDisplayDriver<ListNotificationOptions, ListNotificationOptionsDisplayDriver>();
+        services.AddDisplayDriver<Notification, NotificationDisplayDriver>();
         services.AddTransient<INotificationAdminListFilterProvider, DefaultNotificationsAdminListFilterProvider>();
         services.AddSingleton<INotificationAdminListFilterParser>(sp =>
         {
@@ -66,9 +64,9 @@ public sealed class Startup : StartupBase
 
         services.Configure<NotificationOptions>(_shellConfiguration.GetSection("OrchardCore_Notifications"));
 
-        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, NotificationOptionsConfiguration>();
-        services.AddScoped<IDisplayDriver<User>, UserNotificationPreferencesPartDisplayDriver>();
-        services.AddScoped<IDisplayDriver<Navbar>, NotificationNavbarDisplayDriver>();
+        services.AddResourceConfiguration<NotificationOptionsConfiguration>();
+        services.AddDisplayDriver<User, UserNotificationPreferencesPartDisplayDriver>();
+        services.AddDisplayDriver<Navbar, NotificationNavbarDisplayDriver>();
         services.AddScoped<INotificationEvents, CacheNotificationEventsHandler>();
     }
 

@@ -16,9 +16,6 @@ namespace OrchardCore.Modules;
 
 internal sealed class ModularBackgroundService : BackgroundService
 {
-    private static readonly TimeSpan _pollingTime = TimeSpan.FromMinutes(1);
-    private static readonly TimeSpan _minIdleTime = TimeSpan.FromSeconds(10);
-
     private readonly ConcurrentDictionary<string, BackgroundTaskScheduler> _schedulers = new();
     private readonly ConcurrentDictionary<string, IChangeToken> _changeTokens = new();
 
@@ -66,7 +63,7 @@ internal sealed class ModularBackgroundService : BackgroundService
         {
             try
             {
-                await Task.Delay(_minIdleTime, stoppingToken);
+                await Task.Delay(_options.MinimumIdleTime, stoppingToken);
             }
             catch (TaskCanceledException)
             {
@@ -78,7 +75,7 @@ internal sealed class ModularBackgroundService : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             // Init the delay first to be also waited on exception.
-            var pollingDelay = Task.Delay(_pollingTime, stoppingToken);
+            var pollingDelay = Task.Delay(_options.PollingTime, stoppingToken);
             try
             {
                 var runningShells = GetRunningShells();
@@ -336,11 +333,11 @@ internal sealed class ModularBackgroundService : BackgroundService
         });
     }
 
-    private static async Task WaitAsync(Task pollingDelay, CancellationToken stoppingToken)
+    private async Task WaitAsync(Task pollingDelay, CancellationToken stoppingToken)
     {
         try
         {
-            await Task.Delay(_minIdleTime, stoppingToken);
+            await Task.Delay(_options.MinimumIdleTime, stoppingToken);
             await pollingDelay;
         }
         catch (OperationCanceledException)

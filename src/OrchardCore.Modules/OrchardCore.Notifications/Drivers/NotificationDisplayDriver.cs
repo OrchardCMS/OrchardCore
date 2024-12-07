@@ -8,16 +8,13 @@ public sealed class NotificationDisplayDriver : DisplayDriver<Notification>
 {
     public override Task<IDisplayResult> DisplayAsync(Notification notification, BuildDisplayContext context)
     {
-        var results = new List<IDisplayResult>()
-        {
+        return CombineAsync(
             Shape("NotificationsMeta_SummaryAdmin", new NotificationViewModel(notification))
                 .Location("SummaryAdmin", "Meta:20"),
             Shape("NotificationsActions_SummaryAdmin", new NotificationViewModel(notification))
                 .Location("SummaryAdmin", "Actions:5"),
             Shape("NotificationsButtonActions_SummaryAdmin", new NotificationViewModel(notification))
-                .Location("SummaryAdmin", "ActionsMenu:10"),
-        };
-
-        return CombineAsync(results);
+                .Location("SummaryAdmin", "ActionsMenu:10")
+        );
     }
 }

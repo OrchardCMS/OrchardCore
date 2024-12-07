@@ -44,7 +44,7 @@ public sealed class UsersStartup : StartupBase
         services.AddScoped<IRegistrationFormEvents, RegistrationFormEventHandler>();
         services.AddScoped<ILoginFormEvent, LoginFormEventEventHandler>();
         services.AddScoped<IPasswordRecoveryFormEvents, PasswordRecoveryFormEventEventHandler>();
-        services.AddScoped<IDisplayDriver<LoginForm>, ReCaptchaLoginFormDisplayDriver>();
+        services.AddDisplayDriver<LoginForm, ReCaptchaLoginFormDisplayDriver>();
     }
 }
 
@@ -54,8 +54,8 @@ public sealed class UsersResetPasswordStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<ForgotPasswordForm>, ReCaptchaForgotPasswordFormDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ResetPasswordForm>, ReCaptchaResetPasswordFormDisplayDriver>();
+        services.AddDisplayDriver<ForgotPasswordForm, ReCaptchaForgotPasswordFormDisplayDriver>();
+        services.AddDisplayDriver<ResetPasswordForm, ReCaptchaResetPasswordFormDisplayDriver>();
     }
 }
 
@@ -65,6 +65,6 @@ public sealed class UsersRegistrationStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<RegisterUserForm>, RegisterUserFormDisplayDriver>();
+        services.AddDisplayDriver<RegisterUserForm, RegisterUserFormDisplayDriver>();
     }
 }

@@ -9,7 +9,7 @@ public sealed class ElasticsearchQueryMigrations : DataMigration
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static")]
     public int Create()
     {
-        QueriesDocumentMigrationHelper.Migrate(ElasticQuerySource.SourceName);
+        QueriesDocumentMigrationHelper.Migrate(ElasticsearchQuerySource.SourceName);
 
         return 1;
     }

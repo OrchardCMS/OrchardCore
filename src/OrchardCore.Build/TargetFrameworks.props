@@ -4,11 +4,11 @@
 
     <!-- TFM used when coding in Visual Studio and when creating templates -->
     <!-- All 'template.json' should provide a 'choice' for the default TFM -->
-    <DefaultTargetFramework>net8.0</DefaultTargetFramework>
+    <DefaultTargetFramework Condition="'$(DefaultTargetFramework)' == ''">net9.0</DefaultTargetFramework>
 
     <!-- TFMs used to build the abstractions and modules, by convention the default TFM is at the first position -->
     <!-- In a cross-targeting build, some assets are only copied on the first TFM, by convention the default TFM -->
-    <CommonTargetFrameworks Condition="'$(CommonTargetFrameworks)' == ''">net8.0</CommonTargetFrameworks>
+    <CommonTargetFrameworks Condition="'$(CommonTargetFrameworks)' == ''">net8.0;net9.0</CommonTargetFrameworks>
   </PropertyGroup>
 
   <!-- Detect if the solution is opened in VS to limit the TFMs that are analyzed by Roslyn for performance reasons -->

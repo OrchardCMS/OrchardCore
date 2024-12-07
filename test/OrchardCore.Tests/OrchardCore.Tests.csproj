@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
     <!-- Remove the underscores from member name -->
-    <NoWarn>$(NoWarn);CA1707</NoWarn>
+    <NoWarn>$(NoWarn);CA1707;EnableGenerateDocumentationFile</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +20,6 @@
   <ItemGroup>
     <None Remove="Apis\Lucene\Recipes\luceneQueryTest.json" />
     <None Remove="Apis\GraphQL\ContentManagement\Recipes\DynamicContentTypeQueryTest.json" />
-    <None Remove="OrchardCore.Users\Recipes\UserSettingsTest.json" />
     <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe1.json" />
     <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe2.json" />
     <None Remove="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe3.json" />
@@ -41,7 +40,6 @@
     <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe2.json" />
     <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\app-recipe1.json" />
     <EmbeddedResource Include="Modules\OrchardCore.OpenId\RecipeFiles\scope-recipe.json" />
-    <EmbeddedResource Include="OrchardCore.Users\Recipes\UserSettingsTest.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe1.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe2.json" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe3.json" />

@@ -9,7 +9,7 @@ using YesSql.Filters.Abstractions.Nodes;
 
 namespace OrchardCore.Users.Services;
 
-public class DefaultUsersAdminListQueryService : IUsersAdminListQueryService
+public sealed class DefaultUsersAdminListQueryService : IUsersAdminListQueryService
 {
     private static readonly string[] _operators = ["OR", "AND", "||", "&&"];
 

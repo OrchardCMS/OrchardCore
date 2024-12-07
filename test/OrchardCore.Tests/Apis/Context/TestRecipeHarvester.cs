@@ -16,8 +16,7 @@ public class TestRecipeHarvester : IRecipeHarvester
         => HarvestRecipesAsync(
         [
             "Apis/Lucene/Recipes/luceneQueryTest.json",
-            "Apis/GraphQL/ContentManagement/Recipes/DynamicContentTypeQueryTest.json",
-            "OrchardCore.Users/Recipes/UserSettingsTest.json"
+            "Apis/GraphQL/ContentManagement/Recipes/DynamicContentTypeQueryTest.json"
         ]);
 
     private async Task<IEnumerable<RecipeDescriptor>> HarvestRecipesAsync(string[] paths)

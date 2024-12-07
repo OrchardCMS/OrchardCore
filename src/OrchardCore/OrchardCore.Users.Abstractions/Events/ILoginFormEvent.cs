@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+
 namespace OrchardCore.Users.Events;
 
 /// <summary>
@@ -5,13 +7,6 @@ namespace OrchardCore.Users.Events;
 /// </summary>
 public interface ILoginFormEvent
 {
-    /// <summary>
-    /// Occurs when the user is logging.
-    /// </summary>
-    /// <param name="userName">The username.</param>
-    /// <param name="reportError">The reported error if failure happened during the login process.</param>
-    Task LoggingInAsync(string userName, Action<string, string> reportError);
-
     /// <summary>
     /// Occurs when the user login has failed and the user was not found.
     /// </summary>
@@ -35,4 +30,23 @@ public interface ILoginFormEvent
     /// </summary>
     /// <param name="user">The <see cref="IUser"/>.</param>
     Task LoggedInAsync(IUser user);
+
+    /// <summary>
+    /// Occurs when the user is logging in.
+    /// </summary>
+    /// <param name="userName">The username.</param>
+    /// <param name="reportError">The reported error if failure happened during the login process.</param>
+    Task LoggingInAsync(string userName, Action<string, string> reportError);
+
+    /// <summary>
+    /// Occurs when a user visits the login page.
+    /// </summary>
+    /// <returns></returns>
+    Task<IActionResult> LoggingInAsync();
+
+    /// <summary>
+    /// Occurs when a user is trying to login and after the user is located.
+    /// </summary>
+    /// <returns></returns>
+    Task<IActionResult> ValidatingLoginAsync(IUser user);
 }

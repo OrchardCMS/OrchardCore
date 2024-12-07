@@ -2,7 +2,7 @@ using System.Text;
 
 namespace OrchardCore.Deployment.Steps;
 
-public class CustomFileDeploymentSource
+public sealed class CustomFileDeploymentSource
     : DeploymentSourceBase<CustomFileDeploymentStep>
 {
     protected override Task ProcessAsync(CustomFileDeploymentStep step, DeploymentPlanResult result)

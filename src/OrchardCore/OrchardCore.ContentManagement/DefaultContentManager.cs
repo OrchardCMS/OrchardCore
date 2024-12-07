@@ -563,16 +563,17 @@ public class DefaultContentManager : IContentManager
 
         options ??= VersionOptions.Published;
 
-        // Draft flag on create is required for explicitly-published content items
+        // Draft flag on create is required for explicitly-published content items.
         if (options.IsDraft)
         {
             contentItem.Published = false;
+            contentItem.Latest = true;
         }
 
-        // Build a context with the initialized instance to create
+        // Build a context with the initialized instance to create.
         var context = new CreateContentContext(contentItem);
 
-        // invoke handlers to add information to persistent stores
+        // invoke handlers to add information to persistent stores.
         await Handlers.InvokeAsync((handler, context) => handler.CreatingAsync(context), context, _logger);
 
         await _session.SaveAsync(contentItem);
@@ -584,10 +585,10 @@ public class DefaultContentManager : IContentManager
         {
             var publishContext = new PublishContentContext(contentItem, null);
 
-            // invoke handlers to acquire state, or at least establish lazy loading callbacks
+            // invoke handlers to acquire state, or at least establish lazy loading callbacks.
             await Handlers.InvokeAsync((handler, context) => handler.PublishingAsync(context), publishContext, _logger);
 
-            // invoke handlers to acquire state, or at least establish lazy loading callbacks
+            // invoke handlers to acquire state, or at least establish lazy loading callbacks.
             await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), publishContext, _logger);
         }
     }

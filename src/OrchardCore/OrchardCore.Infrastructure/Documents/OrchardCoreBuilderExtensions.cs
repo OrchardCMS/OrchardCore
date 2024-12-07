@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents;
@@ -18,9 +17,7 @@ public static partial class OrchardCoreBuilderExtensions
             services.AddSingleton(typeof(IDocumentManager<>), typeof(DocumentManager<>));
             services.AddSingleton(typeof(IVolatileDocumentManager<>), typeof(VolatileDocumentManager<>));
             services.AddSingleton(typeof(IDocumentManager<,>), typeof(DocumentManager<,>));
-
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<DocumentOptions>, DocumentOptionsSetup>());
-
+            services.AddSingleton<IConfigureOptions<DocumentOptions>, DocumentOptionsSetup>();
             services.AddSingleton(typeof(IDocumentEntityManager<>), typeof(DocumentEntityManager<>));
             services.AddSingleton(typeof(IVolatileDocumentEntityManager<>), typeof(VolatileDocumentEntityManager<>));
             services.AddSingleton(typeof(IDocumentEntityManager<,>), typeof(DocumentEntityManager<,>));
