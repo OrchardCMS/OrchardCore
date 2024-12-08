@@ -23,7 +23,7 @@
     <PackageVersion Include="Azure.Storage.Blobs" Version="12.23.0" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
     <PackageVersion Include="Castle.Core" Version="5.1.1" />
-    <PackageVersion Include="DocumentFormat.OpenXml" Version="3.1.1" />
+    <PackageVersion Include="DocumentFormat.OpenXml" Version="3.2.0" />
     <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.16.3" />
     <PackageVersion Include="Fluid.Core" Version="2.12.0" />
     <PackageVersion Include="GraphQL" Version="8.2.1" />
@@ -116,16 +116,8 @@
                └─ System.Windows.Extensions (v4.7.0)
                   └─ System.Drawing.Common (v4.7.0)
     -->
-    <!-- When removing this, remove the corresponding ignore in dependabot.yml too. -->
+    <!-- When removing this, remove the corresponding ignore in renovate.json5 and dependabot.yml too. -->
     <PackageVersion Include="System.Drawing.Common" Version="4.7.2" />
-
-    <!--
-       OrchardCore.Media.Indexing.OpenXML (v2.1.0-preview)
-        └─ DocumentFormat.OpenXml (v3.1.0)
-          └─ DocumentFormat.OpenXml.Framework (v3.1.0)
-              └─ System.IO.Packaging (v8.0.0)
-    -->
-    <PackageVersion Include="System.IO.Packaging" Version="8.0.1" />
     <!--
       YesSql (v5.1.1)
       └─ YesSql.Provider.SqlServer (v5.1.1)
