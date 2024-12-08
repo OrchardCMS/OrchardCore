@@ -28,7 +28,7 @@ public sealed class JsonDynamicObject : JsonDynamicBase
 
     public override JsonNode Node => _jsonObject;
 
-    public object? this[string key]
+    public object this[string key]
     {
         get => GetValue(key);
         set => SetValue(key, value);
@@ -76,7 +76,7 @@ public sealed class JsonDynamicObject : JsonDynamicBase
         return _jsonObject.Remove(key);
     }
 
-    public JsonNode? SelectNode(string path) => _jsonObject.SelectNode(path);
+    public JsonNode SelectNode(string path) => _jsonObject.SelectNode(path);
 
     public object GetValue(string key)
     {
@@ -113,7 +113,7 @@ public sealed class JsonDynamicObject : JsonDynamicBase
         return null;
     }
 
-    public void SetValue(string key, object? value)
+    public void SetValue(string key, object value)
     {
         if (value is null)
         {
