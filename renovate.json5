@@ -33,7 +33,7 @@
         {
             groupName: 'Elastic Docker images',
             matchPackageNames: [
-                '/^docker\\.elastic\\.co\\.*$/',
+                '/^docker\\.elastic\\.co.*$/',
             ],
         },
         {
