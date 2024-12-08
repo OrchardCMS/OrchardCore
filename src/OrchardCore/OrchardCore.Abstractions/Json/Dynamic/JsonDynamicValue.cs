@@ -11,12 +11,12 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
 {
     private readonly JsonValue _jsonValue;
 
-    public JsonDynamicValue(JsonValue? jsonValue)
+    public JsonDynamicValue(JsonValue jsonValue)
     {
         _jsonValue = jsonValue;
     }
 
-    public override JsonNode? Node => _jsonValue;
+    public override JsonNode Node => _jsonValue;
 
     int IComparable.CompareTo(object obj)
     {
@@ -41,7 +41,7 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
         return Compare(_jsonValue.GetObjectValue(), otherValue, valueKind);
     }
 
-    public int CompareTo(JsonDynamicValue? other)
+    public int CompareTo(JsonDynamicValue other)
     {
         if (other is null)
         {
@@ -53,10 +53,10 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
         return Compare(_jsonValue.GetObjectValue(), other._jsonValue.GetObjectValue(), valueKind);
     }
 
-    public override bool Equals(object? obj)
+    public override bool Equals(object obj)
         => Equals(obj as JsonDynamicValue);
 
-    public bool Equals(JsonDynamicValue? other)
+    public bool Equals(JsonDynamicValue other)
     {
         if (ReferenceEquals(this, other))
         {
@@ -105,7 +105,7 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
         return ToString(null, formatProvider);
     }
 
-    public string ToString(string? format, IFormatProvider? formatProvider)
+    public string ToString(string format, IFormatProvider formatProvider)
     {
         if (_jsonValue == null)
         {
@@ -165,83 +165,83 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
         return TypeCode.Object;
     }
 
-    bool IConvertible.ToBoolean(IFormatProvider? provider)
+    bool IConvertible.ToBoolean(IFormatProvider provider)
     {
         return (bool)this;
     }
 
-    byte IConvertible.ToByte(IFormatProvider? provider)
+    byte IConvertible.ToByte(IFormatProvider provider)
     {
         return (byte)this;
     }
 
-    char IConvertible.ToChar(IFormatProvider? provider)
+    char IConvertible.ToChar(IFormatProvider provider)
     {
         return (char)this;
     }
 
-    DateTime IConvertible.ToDateTime(IFormatProvider? provider)
+    DateTime IConvertible.ToDateTime(IFormatProvider provider)
     {
         return (DateTime)this;
     }
 
-    decimal IConvertible.ToDecimal(IFormatProvider? provider)
+    decimal IConvertible.ToDecimal(IFormatProvider provider)
     {
         return (decimal)this;
     }
 
-    double IConvertible.ToDouble(IFormatProvider? provider)
+    double IConvertible.ToDouble(IFormatProvider provider)
     {
         return (double)this;
     }
 
-    short IConvertible.ToInt16(IFormatProvider? provider)
+    short IConvertible.ToInt16(IFormatProvider provider)
     {
         return (short)this;
     }
 
-    int IConvertible.ToInt32(IFormatProvider? provider)
+    int IConvertible.ToInt32(IFormatProvider provider)
     {
         return (int)this;
     }
 
-    long IConvertible.ToInt64(IFormatProvider? provider)
+    long IConvertible.ToInt64(IFormatProvider provider)
     {
         return (long)this;
     }
 
-    sbyte IConvertible.ToSByte(IFormatProvider? provider)
+    sbyte IConvertible.ToSByte(IFormatProvider provider)
     {
         return (sbyte)this;
     }
 
-    float IConvertible.ToSingle(IFormatProvider? provider)
+    float IConvertible.ToSingle(IFormatProvider provider)
     {
         return (float)this;
     }
 
-    string IConvertible.ToString(IFormatProvider? provider)
+    string IConvertible.ToString(IFormatProvider provider)
     {
         return ToString(provider);
     }
 
-    object IConvertible.ToType(Type conversionType, IFormatProvider? provider)
+    object IConvertible.ToType(Type conversionType, IFormatProvider provider)
     {
         return _jsonValue?.ToObject(conversionType)
             ?? throw new InvalidOperationException($"Cannot convert {this} to {conversionType}");
     }
 
-    ushort IConvertible.ToUInt16(IFormatProvider? provider)
+    ushort IConvertible.ToUInt16(IFormatProvider provider)
     {
         return (ushort)this;
     }
 
-    uint IConvertible.ToUInt32(IFormatProvider? provider)
+    uint IConvertible.ToUInt32(IFormatProvider provider)
     {
         return (uint)this;
     }
 
-    ulong IConvertible.ToUInt64(IFormatProvider? provider)
+    ulong IConvertible.ToUInt64(IFormatProvider provider)
     {
         return (ulong)this;
     }
@@ -409,7 +409,7 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
         return value?._jsonValue?.GetValue<float?>();
     }
 
-    public static explicit operator string?(JsonDynamicValue value)
+    public static explicit operator string(JsonDynamicValue value)
     {
         return value?.ToString();
     }
@@ -447,7 +447,7 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
         return value?._jsonValue?.GetValue<ulong?>();
     }
 
-    public static explicit operator byte[]?(JsonDynamicValue value)
+    public static explicit operator byte[](JsonDynamicValue value)
     {
         if (value?._jsonValue.GetObjectValue() is string str)
         {
@@ -476,7 +476,7 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
             : null;
     }
 
-    public static explicit operator Uri?(JsonDynamicValue value)
+    public static explicit operator Uri(JsonDynamicValue value)
     {
         return new(value?._jsonValue?.GetValue<string>() ?? string.Empty);
     }
@@ -661,16 +661,16 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
         return new JsonDynamicValue(value.HasValue ? JsonValue.Create(value.ToString(), JOptions.Node) : null);
     }
 
-    public static implicit operator JsonDynamicValue(Uri? value)
+    public static implicit operator JsonDynamicValue(Uri value)
     {
         return new JsonDynamicValue(value != null ? JsonValue.Create(value.ToString(), JOptions.Node) : null);
     }
 
-    public static implicit operator JsonValue?(JsonDynamicValue value) => value._jsonValue;
+    public static implicit operator JsonValue(JsonDynamicValue value) => value._jsonValue;
 
     public static implicit operator JsonDynamicValue(JsonValue value) => new(value);
 
-    private static int Compare(object? objA, object? objB, JsonValueKind valueType)
+    private static int Compare(object objA, object objB, JsonValueKind valueType)
     {
         if (objA == objB)
         {

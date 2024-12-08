@@ -38,7 +38,7 @@ public static class JObject
     /// <summary>
     /// Parses text representing a single JSON object.
     /// </summary>
-    public static JsonObjec? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
+    public static JsonObject Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
         => JNode.Parse(json, nodeOptions, documentOptions)?.AsObject();
 
     /// <summary>
@@ -78,12 +78,12 @@ public static class JObject
     /// <summary>
     /// Creates a new instance from an existing <see cref="JsonObject"/>.
     /// </summary>
-    public static JsonObject? Clone(this JsonObject? jsonObject) => jsonObject?.DeepClone().AsObject();
+    public static JsonObject Clone(this JsonObject jsonObject) => jsonObject?.DeepClone().AsObject();
 
     /// <summary>
     /// Merge the specified content into this <see cref="JsonObject"/> using <see cref="JsonMergeSettings"/>.
     /// </summary>
-    public static JsonObject? Merge(this JsonObject jsonObject, JsonNode content, JsonMergeSettings settings = null)
+    public static JsonObject Merge(this JsonObject jsonObject, JsonNode content, JsonMergeSettings settings = null)
     {
         if (jsonObject is null || content is not JsonObject jsonContent)
         {
