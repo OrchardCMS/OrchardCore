@@ -23,6 +23,12 @@
             ],
             enabled: false,
         },
+        {
+            matchPackagePatterns: [
+                '^Lucene\\.NET.*$',
+            ],
+            groupName: 'Lucene.NET packages',
+        },
     ],
     // We only need updates once a week.
     schedule: [
