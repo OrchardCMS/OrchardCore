@@ -95,7 +95,7 @@ jobs:
       image: cypress/included:9.7.0
     services:
       postgres:
-        image: postgres:11
+        image: postgres:17
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: admin
