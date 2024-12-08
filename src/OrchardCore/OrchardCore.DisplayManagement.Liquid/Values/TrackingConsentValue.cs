@@ -12,7 +12,7 @@ using OrchardCore.Liquid;
 namespace OrchardCore.DisplayManagement.Liquid.Values;
 
 /// <summary>
-/// Exposes <c>ITrackingConsentFeature</c> properties to Liquid.
+/// Exposes <see href="ITrackingConsentFeature" />properties to Liquid.
 /// </summary>
 /// <remarks>
 /// Exposes the following properties:
