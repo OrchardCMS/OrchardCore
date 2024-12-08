@@ -23,7 +23,7 @@ public static class ServiceProviderExtensions
     /// <summary>
     /// Gets the service object of the specified type with the specified key.
     /// </summary>
-    public static object? GetKeyedService(this IServiceProvider provider, Type serviceType, object? serviceKey)
+    public static object GetKeyedService(this IServiceProvider provider, Type serviceType, object serviceKey)
     {
         ArgumentNullException.ThrowIfNull(provider);
         if (provider is IKeyedServiceProvider keyedServiceProvider)

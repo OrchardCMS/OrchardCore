@@ -11,7 +11,7 @@ public class CacheTicketStore : ITicketStore
 {
     private const string KeyPrefix = "ocauth-ticket";
 
-    private IDataProtector? _dataProtector;
+    private IDataProtector _dataProtector;
     private readonly ILogger _logger;
     private readonly IDistributedCache _distributedCache;
     private readonly IDataProtectionProvider _dataProtectionProvider;
@@ -53,7 +53,7 @@ public class CacheTicketStore : ITicketStore
         }
     }
 
-    public async Task<AuthenticationTicket?> RetrieveAsync(string key)
+    public async Task<AuthenticationTicket> RetrieveAsync(string key)
     {
         var cacheKey = $"{KeyPrefix}-{key}";
 
@@ -99,6 +99,6 @@ public class CacheTicketStore : ITicketStore
     private static byte[] SerializeTicket(AuthenticationTicket source)
         => TicketSerializer.Default.Serialize(source);
 
-    private static AuthenticationTicket? DeserializeTicket(byte[]? source)
+    private static AuthenticationTicket DeserializeTicket(byte[] source)
         => source == null ? null : TicketSerializer.Default.Deserialize(source);
 }

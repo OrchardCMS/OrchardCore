@@ -9,7 +9,7 @@ namespace System.Text.Json.Dynamic;
 [JsonConverter(typeof(JsonDynamicJsonConverter<JsonDynamicValue>))]
 public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable<JsonDynamicValue>, IConvertible, IEquatable<JsonDynamicValue>
 {
-    private readonly JsonValue? _jsonValue;
+    private readonly JsonValue _jsonValue;
 
     public JsonDynamicValue(JsonValue? jsonValue)
     {
@@ -18,14 +18,14 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
 
     public override JsonNode? Node => _jsonValue;
 
-    int IComparable.CompareTo(object? obj)
+    int IComparable.CompareTo(object obj)
     {
         if (obj is null)
         {
             return 1;
         }
 
-        object? otherValue;
+        object otherValue;
         JsonValueKind valueKind;
         if (obj is JsonDynamicValue value)
         {
@@ -100,7 +100,7 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
         return ToString(format, CultureInfo.CurrentCulture);
     }
 
-    public string ToString(IFormatProvider? formatProvider)
+    public string ToString(IFormatProvider formatProvider)
     {
         return ToString(null, formatProvider);
     }
@@ -123,7 +123,7 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
         }
     }
 
-    public override bool TryConvert(ConvertBinder binder, out object? result)
+    public override bool TryConvert(ConvertBinder binder, out object result)
     {
         if (!binder.Explicit)
         {

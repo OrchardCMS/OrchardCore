@@ -7,12 +7,12 @@ public static class JArray
     /// <summary>
     /// Loads a JSON array from the provided stream.
     /// </summary>
-    public static async Task<JsonArray?> LoadAsync(Stream utf8Json) => (await JNode.LoadAsync(utf8Json))?.AsArray();
+    public static async Task<JsonArray> LoadAsync(Stream utf8Json) => (await JNode.LoadAsync(utf8Json))?.AsArray();
 
     /// <summary>
     /// Loads a JSON array from the provided stream.
     /// </summary>
-    public static async Task<JsonArray?> LoadAsync(
+    public static async Task<JsonArray> LoadAsync(
         Stream utf8Json,
         JsonNodeOptions? nodeOptions = null,
         JsonDocumentOptions documentOptions = default,
@@ -22,29 +22,29 @@ public static class JArray
     /// <summary>
     /// Loads a JSON array from the provided reader.
     /// </summary>
-    public static JsonArray? Load(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
+    public static JsonArray Load(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
         => JNode.Load(ref reader, nodeOptions)?.AsArray();
 
     /// <summary>
     /// Parses text representing a single JSON array.
     /// </summary>
-    public static JsonArray? Parse(string json) => JNode.Parse(json)?.AsArray();
+    public static JsonArray Parse(string json) => JNode.Parse(json)?.AsArray();
 
     /// <summary>
     /// Tries to parse text representing a single JSON array.
     /// </summary>
-    public static bool TryParse(string json, out JsonArray? jsonArray) => TryParse(json, out jsonArray, JOptions.Node, JOptions.Document);
+    public static bool TryParse(string json, out JsonArray jsonArray) => TryParse(json, out jsonArray, JOptions.Node, JOptions.Document);
 
     /// <summary>
     /// Parses text representing a single JSON array.
     /// </summary>
-    public static JsonArray? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
+    public static JsonArray Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
         => JNode.Parse(json, nodeOptions, documentOptions)?.AsArray();
 
     /// <summary>
     /// Tries to parse text representing a single JSON array.
     /// </summary>
-    public static bool TryParse(string json, out JsonArray? jsonArray, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
+    public static bool TryParse(string json, out JsonArray jsonArray, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
     {
         if (!JNode.TryParse(json, out var jsonNode, nodeOptions, documentOptions) ||
             jsonNode is not JsonArray jArray)
@@ -60,7 +60,7 @@ public static class JArray
     /// <summary>
     /// Creates a <see cref="JsonArray"/> from an object.
     /// </summary>
-    public static JsonArray? FromObject(object? obj, JsonSerializerOptions? options = null)
+    public static JsonArray FromObject(object obj, JsonSerializerOptions options = null)
     {
         if (obj is JsonElement jsonElement)
         {
@@ -73,12 +73,12 @@ public static class JArray
     /// <summary>
     /// Creates a new instance from an existing <see cref="JsonArray"/>.
     /// </summary>
-    public static JsonArray? Clone(this JsonArray? jsonArray) => jsonArray?.DeepClone().AsArray();
+    public static JsonArray Clone(this JsonArray jsonArray) => jsonArray?.DeepClone().AsArray();
 
     /// <summary>
     /// Whether this <see cref="JsonArray"/> contains the provided <see cref="JsonValue"/> or not.
     /// </summary>
-    public static bool ContainsValue(this JsonArray? jsonArray, JsonValue? value)
+    public static bool ContainsValue(this JsonArray jsonArray, JsonValue value)
     {
         if (jsonArray is null || value is null)
         {
@@ -104,7 +104,7 @@ public static class JArray
     /// <summary>
     /// Merge the specified content into this <see cref="JsonArray"/> using <see cref="JsonMergeSettings"/>.
     /// </summary>
-    internal static JsonArray? Merge(this JsonArray? jsonArray, JsonNode? content, JsonMergeSettings? settings = null)
+    internal static JsonArray Merge(this JsonArray jsonArray, JsonNode content, JsonMergeSettings settings = null)
     {
         if (jsonArray is null || content is not JsonArray jsonContent)
         {

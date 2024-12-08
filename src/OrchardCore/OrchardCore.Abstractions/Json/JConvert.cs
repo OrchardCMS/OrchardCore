@@ -15,7 +15,7 @@ public static class JConvert
     /// <summary>
     /// Parses the text representing a single JSON value into a <typeparamref name="TValue"/>.
     /// </summary>
-    public static TValue? DeserializeObject<TValue>(string json, JsonSerializerOptions? options = null)
+    public static TValue? DeserializeObject<TValue>(string json, JsonSerializerOptions options = null)
         => JsonSerializer.Deserialize<TValue>(json, options ?? JOptions.Default);
 
     /// <summary>

@@ -5,7 +5,7 @@ namespace System.Text.Json.Dynamic;
 
 public abstract class JsonDynamicBase : DynamicObject
 {
-    public abstract JsonNode? Node { get; }
+    public abstract JsonNode Node { get; }
 
-    public T? ToObject<T>() => Node.ToObject<T>();
+    public T ToObject<T>() => Node.ToObject<T>();
 }

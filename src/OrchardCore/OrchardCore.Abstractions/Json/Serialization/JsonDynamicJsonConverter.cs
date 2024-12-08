@@ -4,7 +4,7 @@ namespace System.Text.Json.Serialization;
 
 public sealed class JsonDynamicJsonConverter<T> : JsonConverter<T> where T : JsonDynamicBase
 {
-    public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         throw new NotSupportedException($"Deserializing a {typeof(T).Name} is not supported.");
     }

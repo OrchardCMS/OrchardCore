@@ -9,10 +9,10 @@ namespace System.Text.Json.Dynamic;
 
 [DebuggerDisplay("JsonDynamicArray[{Count}]")]
 [JsonConverter(typeof(JsonDynamicJsonConverter<JsonDynamicArray>))]
-public sealed class JsonDynamicArray : JsonDynamicBase, IEnumerable<object?>, IEnumerable<JsonNode?>
+public sealed class JsonDynamicArray : JsonDynamicBase, IEnumerable<object>, IEnumerable<JsonNode>
 {
     private readonly JsonArray _jsonArray;
-    private readonly Dictionary<int, object?> _dictionary = [];
+    private readonly Dictionary<int, object> _dictionary = [];
 
     public JsonDynamicArray() => _jsonArray = [];
 
@@ -22,13 +22,13 @@ public sealed class JsonDynamicArray : JsonDynamicBase, IEnumerable<object?>, IE
 
     public override JsonNode Node => _jsonArray;
 
-    public object? this[int index]
+    public object this[int index]
     {
         get => GetValue(index);
         set => SetValue(index, value);
     }
 
-    public bool Remove(JsonNode? item)
+    public bool Remove(JsonNode item)
     {
         var index = _jsonArray.IndexOf(item);
         _dictionary.Remove(index);
@@ -42,25 +42,25 @@ public sealed class JsonDynamicArray : JsonDynamicBase, IEnumerable<object?>, IE
         _jsonArray.RemoveAt(index);
     }
 
-    public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object? result)
+    public override bool TryGetIndex(GetIndexBinder binder, object[] indexes, out object result)
     {
         result = GetValue((int)indexes[0]);
         return true;
     }
 
-    public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object? value)
+    public override bool TrySetIndex(SetIndexBinder binder, object[] indexes, object value)
     {
         SetValue((int)indexes[0], value);
         return true;
     }
 
-    public override bool TryInvokeMember(InvokeMemberBinder binder, object?[]? args, out object? result)
+    public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
     {
         result = typeof(JsonArray).InvokeMember(binder.Name, BindingFlags.InvokeMethod, null, _jsonArray, args);
         return true;
     }
 
-    public object? GetValue(int index)
+    public object GetValue(int index)
     {
         if (_dictionary.TryGetValue(index, out var value))
         {
@@ -96,7 +96,7 @@ public sealed class JsonDynamicArray : JsonDynamicBase, IEnumerable<object?>, IE
         return null;
     }
 
-    public void SetValue(int index, object? value)
+    public void SetValue(int index, object value)
     {
         if (value is null)
         {
@@ -132,7 +132,7 @@ public sealed class JsonDynamicArray : JsonDynamicBase, IEnumerable<object?>, IE
         }
     }
 
-    public IEnumerator<object?> GetEnumerator()
+    public IEnumerator<object> GetEnumerator()
     {
         for (var i = 0; i < _jsonArray.Count; i++)
         {
@@ -140,7 +140,7 @@ public sealed class JsonDynamicArray : JsonDynamicBase, IEnumerable<object?>, IE
         }
     }
 
-    IEnumerator<JsonNode?> IEnumerable<JsonNode?>.GetEnumerator()
+    IEnumerator<JsonNode> IEnumerable<JsonNode>.GetEnumerator()
         => _jsonArray.AsEnumerable().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
@@ -151,7 +151,7 @@ public sealed class JsonDynamicArray : JsonDynamicBase, IEnumerable<object?>, IE
 
     #region For debugging purposes only.
 
-    public override bool TryGetMember(GetMemberBinder binder, out object? result)
+    public override bool TryGetMember(GetMemberBinder binder, out object result)
     {
         if (binder.Name == "{No Member}")
         {

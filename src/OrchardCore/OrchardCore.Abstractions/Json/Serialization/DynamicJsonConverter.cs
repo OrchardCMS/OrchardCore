@@ -4,7 +4,7 @@ public class DynamicJsonConverter : JsonConverter<object>
 {
     public static readonly DynamicJsonConverter Instance = new();
 
-    public override object? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override object Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         switch (reader.TokenType)
         {
@@ -46,7 +46,7 @@ public class DynamicJsonConverter : JsonConverter<object>
                 throw new JsonException("Cannot parse number");
 
             case JsonTokenType.StartArray:
-                var list = new List<object?>();
+                var list = new List<object>();
                 while (reader.Read())
                 {
                     switch (reader.TokenType)
@@ -62,7 +62,7 @@ public class DynamicJsonConverter : JsonConverter<object>
                 throw new JsonException("Cannot parse array.");
 
             case JsonTokenType.StartObject:
-                var dictionary = new Dictionary<string, object?>();
+                var dictionary = new Dictionary<string, object>();
                 while (reader.Read())
                 {
                     switch (reader.TokenType)

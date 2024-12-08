@@ -4,7 +4,7 @@ namespace OrchardCore.Environment.Shell.Builders;
 
 public static class ServiceDescriptorExtensions
 {
-    public static Type? GetImplementationType(this ServiceDescriptor descriptor)
+    public static Type GetImplementationType(this ServiceDescriptor descriptor)
     {
         if (descriptor is ClonedSingletonDescriptor cloned)
         {
@@ -30,40 +30,40 @@ public static class ServiceDescriptorExtensions
         return null;
     }
 
-    public static object? GetImplementationInstance(this ServiceDescriptor serviceDescriptor) => serviceDescriptor.IsKeyedService
+    public static object GetImplementationInstance(this ServiceDescriptor serviceDescriptor) => serviceDescriptor.IsKeyedService
         ? serviceDescriptor.KeyedImplementationInstance
         : serviceDescriptor.ImplementationInstance;
 
-    public static object? GetImplementationFactory(this ServiceDescriptor serviceDescriptor) => serviceDescriptor.IsKeyedService
+    public static object GetImplementationFactory(this ServiceDescriptor serviceDescriptor) => serviceDescriptor.IsKeyedService
         ? serviceDescriptor.KeyedImplementationFactory
         : serviceDescriptor.ImplementationFactory;
 
-    public static bool TryGetImplementationType(this ServiceDescriptor serviceDescriptor, out Type? type)
+    public static bool TryGetImplementationType(this ServiceDescriptor serviceDescriptor, out Type type)
     {
         type = serviceDescriptor.GetImplementationType();
 
         return type is not null;
     }
 
-    public static bool TryGetImplementationInstance(this ServiceDescriptor serviceDescriptor, out object? instance)
+    public static bool TryGetImplementationInstance(this ServiceDescriptor serviceDescriptor, out object instance)
     {
         instance = serviceDescriptor.GetImplementationInstance();
 
         return instance is not null;
     }
 
-    public static bool TryGetImplementationFactory(this ServiceDescriptor serviceDescriptor, out object? factory)
+    public static bool TryGetImplementationFactory(this ServiceDescriptor serviceDescriptor, out object factory)
     {
         factory = serviceDescriptor.GetImplementationFactory();
 
         return factory is not null;
     }
 
-    internal static Type? GetImplementationTypeInternal(this ServiceDescriptor serviceDescriptor) => serviceDescriptor.IsKeyedService
+    internal static Type GetImplementationTypeInternal(this ServiceDescriptor serviceDescriptor) => serviceDescriptor.IsKeyedService
         ? serviceDescriptor.KeyedImplementationType
         : serviceDescriptor.ImplementationType;
 
-    internal static bool TryGetImplementationTypeInternal(this ServiceDescriptor serviceDescriptor, out Type? type)
+    internal static bool TryGetImplementationTypeInternal(this ServiceDescriptor serviceDescriptor, out Type type)
     {
         type = serviceDescriptor.GetImplementationTypeInternal();
 

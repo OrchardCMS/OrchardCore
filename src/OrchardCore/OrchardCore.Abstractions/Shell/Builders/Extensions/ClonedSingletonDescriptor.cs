@@ -10,7 +10,7 @@ public class ClonedSingletonDescriptor : ServiceDescriptor
         Parent = parent;
     }
 
-    public ClonedSingletonDescriptor(ServiceDescriptor parent, object? serviceKey, object implementationInstance)
+    public ClonedSingletonDescriptor(ServiceDescriptor parent, object serviceKey, object implementationInstance)
         : base(parent.ServiceType, serviceKey, implementationInstance)
     {
         Parent = parent;
@@ -22,7 +22,7 @@ public class ClonedSingletonDescriptor : ServiceDescriptor
         Parent = parent;
     }
 
-    public ClonedSingletonDescriptor(ServiceDescriptor parent, object? serviceKey, Func<IServiceProvider, object?, object> implementationFactory)
+    public ClonedSingletonDescriptor(ServiceDescriptor parent, object serviceKey, Func<IServiceProvider, object, object> implementationFactory)
         : base(parent.ServiceType, serviceKey, implementationFactory, ServiceLifetime.Singleton)
     {
         Parent = parent;

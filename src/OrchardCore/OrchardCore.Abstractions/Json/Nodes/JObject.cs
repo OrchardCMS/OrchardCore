@@ -7,12 +7,12 @@ public static class JObject
     /// <summary>
     /// Loads a JSON object from the provided stream.
     /// </summary>
-    public static async Task<JsonObject?> LoadAsync(Stream utf8Json) => (await JNode.LoadAsync(utf8Json))?.AsObject();
+    public static async Task<JsonObject> LoadAsync(Stream utf8Json) => (await JNode.LoadAsync(utf8Json))?.AsObject();
 
     /// <summary>
     /// Loads a JSON object from the provided stream.
     /// </summary>
-    public static async Task<JsonObject?> LoadAsync(
+    public static async Task<JsonObject> LoadAsync(
         Stream utf8Json,
         JsonNodeOptions? nodeOptions = null,
         JsonDocumentOptions documentOptions = default,
@@ -22,29 +22,29 @@ public static class JObject
     /// <summary>
     /// Loads a JSON object from the provided reader.
     /// </summary>
-    public static JsonObject? Load(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
+    public static JsonObject Load(ref Utf8JsonReader reader, JsonNodeOptions? nodeOptions = null)
         => JNode.Load(ref reader, nodeOptions)?.AsObject();
 
     /// <summary>
     /// Parses text representing a single JSON object.
     /// </summary>
-    public static JsonObject? Parse(string json) => JNode.Parse(json)?.AsObject();
+    public static JsonObject Parse(string json) => JNode.Parse(json)?.AsObject();
 
     /// <summary>
     /// Tries to parse text representing a single JSON object.
     /// </summary>
-    public static bool TryParse(string json, out JsonObject? jsonObject) => TryParse(json, out jsonObject, JOptions.Node, JOptions.Document);
+    public static bool TryParse(string json, out JsonObject jsonObject) => TryParse(json, out jsonObject, JOptions.Node, JOptions.Document);
 
     /// <summary>
     /// Parses text representing a single JSON object.
     /// </summary>
-    public static JsonObject? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
+    public static JsonObjec? Parse(string json, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
         => JNode.Parse(json, nodeOptions, documentOptions)?.AsObject();
 
     /// <summary>
     /// Tries to parse text representing a single JSON object.
     /// </summary>
-    public static bool TryParse(string json, out JsonObject? jsonObject, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
+    public static bool TryParse(string json, out JsonObject jsonObject, JsonNodeOptions? nodeOptions = null, JsonDocumentOptions documentOptions = default)
     {
         if (!JNode.TryParse(json, out var jsonNode, nodeOptions, documentOptions) ||
             jsonNode is not JsonObject jObject)
@@ -60,7 +60,7 @@ public static class JObject
     /// <summary>
     /// Creates a <see cref="JsonObject"/> from an object.
     /// </summary>
-    public static JsonObject? FromObject(object? obj, JsonSerializerOptions? options = null)
+    public static JsonObject FromObject(object obj, JsonSerializerOptions options = null)
     {
         if (obj is JsonObject jsonObject)
         {
@@ -83,7 +83,7 @@ public static class JObject
     /// <summary>
     /// Merge the specified content into this <see cref="JsonObject"/> using <see cref="JsonMergeSettings"/>.
     /// </summary>
-    public static JsonObject? Merge(this JsonObject? jsonObject, JsonNode? content, JsonMergeSettings? settings = null)
+    public static JsonObject? Merge(this JsonObject jsonObject, JsonNode content, JsonMergeSettings settings = null)
     {
         if (jsonObject is null || content is not JsonObject jsonContent)
         {

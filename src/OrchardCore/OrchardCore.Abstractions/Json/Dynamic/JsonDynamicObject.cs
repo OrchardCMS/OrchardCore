@@ -12,7 +12,7 @@ namespace System.Text.Json.Dynamic;
 public sealed class JsonDynamicObject : JsonDynamicBase
 {
     private readonly JsonObject _jsonObject;
-    private readonly Dictionary<string, object?> _dictionary = [];
+    private readonly Dictionary<string, object> _dictionary = [];
 
     public JsonDynamicObject()
     {
@@ -34,12 +34,12 @@ public sealed class JsonDynamicObject : JsonDynamicBase
         set => SetValue(key, value);
     }
 
-    public void Merge(JsonNode? content, JsonMergeSettings? settings = null)
+    public void Merge(JsonNode content, JsonMergeSettings settings = null)
     {
         _jsonObject.Merge(content, settings);
     }
 
-    public override bool TryGetMember(GetMemberBinder binder, out object? result)
+    public override bool TryGetMember(GetMemberBinder binder, out object result)
     {
         if (binder.Name == "{No Member}")
         {
@@ -57,13 +57,13 @@ public sealed class JsonDynamicObject : JsonDynamicBase
         return true;
     }
 
-    public override bool TrySetMember(SetMemberBinder binder, object? value)
+    public override bool TrySetMember(SetMemberBinder binder, object value)
     {
         SetValue(binder.Name, value);
         return true;
     }
 
-    public override bool TryInvokeMember(InvokeMemberBinder binder, object?[]? args, out object? result)
+    public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
     {
         result = typeof(JsonObject).InvokeMember(binder.Name, BindingFlags.InvokeMethod, null, _jsonObject, args);
         return true;
@@ -78,7 +78,7 @@ public sealed class JsonDynamicObject : JsonDynamicBase
 
     public JsonNode? SelectNode(string path) => _jsonObject.SelectNode(path);
 
-    public object? GetValue(string key)
+    public object GetValue(string key)
     {
         if (_dictionary.TryGetValue(key, out var value))
         {
