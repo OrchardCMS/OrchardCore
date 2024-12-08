@@ -52,7 +52,6 @@ internal sealed class TrackingConsentValue : FluidValue
             nameof(ITrackingConsentFeature.IsConsentNeeded) => BooleanValue.Create(feature.IsConsentNeeded),
             "CookieName" => new StringValue(GetCookiePolicyOptions(context)?.ConsentCookie?.Name ?? string.Empty),
             "CookieValue" => new StringValue(GetCookiePolicyOptions(context)?.ConsentCookieValue ?? string.Empty),
-
             _ => NilValue.Instance
         };
     }
