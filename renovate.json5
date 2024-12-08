@@ -24,8 +24,8 @@
             enabled: false,
         },
         {
-            matchPackagePatterns: [
-                '^Lucene\\.NET.*$',
+            matchPackageNames: [
+                '/^Lucene\\.Net.*$/',
             ],
             groupName: 'Lucene.NET packages',
         },
