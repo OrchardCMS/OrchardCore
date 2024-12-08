@@ -1,8 +1,6 @@
 using System.Text.Json.Settings;
 using Json.Path;
 
-#nullable enable
-
 namespace System.Text.Json.Nodes;
 
 public static class JNode

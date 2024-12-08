@@ -6,8 +6,6 @@ using System.Text.Json.Serialization;
 
 namespace System.Text.Json.Dynamic;
 
-#nullable enable
-
 [JsonConverter(typeof(JsonDynamicJsonConverter<JsonDynamicValue>))]
 public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable<JsonDynamicValue>, IConvertible, IEquatable<JsonDynamicValue>
 {

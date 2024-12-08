@@ -1,5 +1,3 @@
-#nullable enable
-
 namespace OrchardCore.Modules;
 
 public static class StringExtensions

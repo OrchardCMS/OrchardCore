@@ -1,7 +1,5 @@
 using System.Text.Json.Dynamic;
 
-#nullable enable
-
 namespace System.Text.Json.Serialization;
 
 public sealed class JsonDynamicJsonConverter<T> : JsonConverter<T> where T : JsonDynamicBase

@@ -1,7 +1,5 @@
 namespace System.Text.Json.Nodes;
 
-#nullable enable
-
 public static class JValue
 {
     /// <summary>

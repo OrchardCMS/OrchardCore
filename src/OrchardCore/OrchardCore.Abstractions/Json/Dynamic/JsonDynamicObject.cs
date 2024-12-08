@@ -5,8 +5,6 @@ using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.Json.Settings;
 
-#nullable enable
-
 namespace System.Text.Json.Dynamic;
 
 [DebuggerDisplay("JsonDynamicObject[{Count}]")]

@@ -1,7 +1,5 @@
 namespace System.Text.Json.Settings;
 
-#nullable enable
-
 /// <summary>
 /// Specifies how null value properties are merged.
 /// </summary>

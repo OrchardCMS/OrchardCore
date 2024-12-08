@@ -2,8 +2,6 @@ using System.Diagnostics;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 
-#nullable enable
-
 namespace OrchardCore.Environment.Shell.Configuration.Internal;
 
 public sealed class JsonConfigurationParser

@@ -4,8 +4,6 @@ using System.Numerics;
 
 namespace System.Text.Json;
 
-#nullable enable
-
 public static class JConvert
 {
     /// <summary>

@@ -2,8 +2,6 @@ using System.Text.Json.Settings;
 
 namespace System.Text.Json.Nodes;
 
-#nullable enable
-
 public static class JArray
 {
     /// <summary>

@@ -4,8 +4,6 @@
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.FileProviders;
 
-#nullable enable
-
 namespace Microsoft.Extensions.Configuration;
 
 /// <summary>

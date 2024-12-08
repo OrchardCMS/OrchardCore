@@ -1,7 +1,5 @@
 namespace System.Text.Json.Settings;
 
-#nullable enable
-
 /// <summary>
 /// Specifies the settings used when merging JSON.
 /// </summary>

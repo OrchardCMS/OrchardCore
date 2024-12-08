@@ -1,5 +1,3 @@
-#nullable enable
-
 namespace System.Text.Json.Serialization;
 
 public class DynamicJsonConverter : JsonConverter<object>
