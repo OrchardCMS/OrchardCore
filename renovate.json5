@@ -23,11 +23,48 @@
             ],
             enabled: false,
         },
+        // Groups of packages that we want to update together.
         {
+            groupName: 'Azure.Communication packages',
+            matchPackageNames: [
+                '/^Azure\\.Communication.*$/',
+            ],
+        },
+        {
+            groupName: 'Elastic Docker images',
+            matchPackageNames: [
+                '/^docker\\.elastic\\.co\\.*$/',
+            ],
+        },
+        {
+            groupName: 'GraphQL packages',
+            matchPackageNames: [
+                '/^GraphQL.*$/',
+            ],
+        },
+        {
+            groupName: 'Lucene.NET packages',
             matchPackageNames: [
                 '/^Lucene\\.Net.*$/',
             ],
-            groupName: 'Lucene.NET packages',
+        },
+        {
+            groupName: 'OpenIddict packages',
+            matchPackageNames: [
+                '/^OpenIddict.*$/',
+            ],
+        },
+        {
+            groupName: 'SixLabors.ImageSharp.Web packages',
+            matchPackageNames: [
+                '/^SixLabors\\.ImageSharp\\.Web.*$/',
+            ],
+        },
+        {
+            groupName: 'YesSql packages',
+            matchPackageNames: [
+                '/^YesSql.*$/',
+            ],
         },
     ],
     // We only need updates once a week.
