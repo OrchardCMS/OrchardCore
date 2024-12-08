@@ -31,7 +31,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-latest
     container:
-      image: cypress/included:9.7.0
+      image: cypress/included:13.16.1
     steps:
     - uses: actions/checkout@v4
       # We need to install dotnet in the docker container.
@@ -61,7 +61,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-latest
     container:
-      image: cypress/included:9.7.0
+      image: cypress/included:13.16.1
     env:
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
@@ -92,7 +92,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-latest
     container:
-      image: cypress/included:9.7.0
+      image: cypress/included:13.16.1
     services:
       postgres:
         image: postgres:11
@@ -138,7 +138,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-latest
     container:
-      image: cypress/included:9.7.0
+      image: cypress/included:13.16.1
     services:
       mysql:
         image: mysql:8
@@ -180,7 +180,7 @@ jobs:
         github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-latest
     container:
-      image: cypress/included:9.7.0
+      image: cypress/included:13.16.1
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
