@@ -183,7 +183,7 @@ jobs:
       image: cypress/included:9.7.0
     services:
       mssql:
-        image: mcr.microsoft.com/mssql/server:2019-latest
+        image: mcr.microsoft.com/mssql/server:2022-latest
         ports:
           - 1433
         env:
