@@ -28,7 +28,7 @@ Then exit any WSL instance, `wsl --shutdown`, and restart.
 vm.max_map_count = 262144
 ```
 
-Elasticsearch Docker v7.x Compose file :
+Elasticsearch Docker v7.x Compose file:
 [docker-compose.yml](Elasticsearch-7.x/docker-compose.yml)
 
 - Open up a Terminal or Command Shell in the Elasticsearch-7.x folder.
