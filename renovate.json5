@@ -43,24 +43,21 @@
             ],
         },
         {
+            // Microsoft.AspNetCore.Authentication.OpenIdConnect depends on Microsoft.IdentityModel.* packages, just as
+            // Microsoft.Identity.Web and the OpenIddict packages do. Additionally, we also reference
+            // Microsoft.IdentityModel.Protocols.OpenIdConnect directly. So, we need to update them together.
+            groupName: 'Identity packages',
+            matchPackageNames: [
+                'Microsoft.AspNetCore.Authentication.OpenIdConnect',
+                'Microsoft.IdentityModel.Protocols.OpenIdConnect',
+                'Microsoft.Identity.Web',
+                '/^OpenIddict.*$/',
+            ],
+        },
+        {
             groupName: 'Lucene.NET packages',
             matchPackageNames: [
                 '/^Lucene\\.Net.*$/',
-            ],
-        },
-        {
-            // Since Microsoft.Identity.Web depends on Microsoft.IdentityModel.Protocols.OpenIdConnect, we need to
-            // update them together.
-            groupName: 'Microsoft.Identity* packages',
-            matchPackageNames: [
-                'Microsoft.IdentityModel.Protocols.OpenIdConnect',
-                'Microsoft.Identity.Web',
-            ],
-        },
-        {
-            groupName: 'OpenIddict packages',
-            matchPackageNames: [
-                '/^OpenIddict.*$/',
             ],
         },
         {
