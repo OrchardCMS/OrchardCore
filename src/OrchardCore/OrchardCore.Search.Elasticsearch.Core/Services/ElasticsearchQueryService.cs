@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
+
 public class ElasticsearchQueryService
 {
     private readonly ElasticsearchIndexManager _elasticIndexManager;

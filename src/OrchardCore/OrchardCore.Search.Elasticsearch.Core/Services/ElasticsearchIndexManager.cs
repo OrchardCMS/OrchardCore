@@ -18,7 +18,6 @@ using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Search.Elasticsearch.Core.Mappings;
 using OrchardCore.Search.Elasticsearch.Core.Models;
-using HttpMethod = Elastic.Transport.HttpMethod;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
@@ -532,7 +531,9 @@ public sealed class ElasticsearchIndexManager
         {
             var fullIndexName = GetFullIndexName(indexName);
 
-            var searchResponse = await _elasticClient.Transport.RequestAsync<SearchResponse<JsonObject>>(new EndpointPath(HttpMethod.GET, fullIndexName + "/_search"), postData: PostData.String(query));
+            var endpoint = new EndpointPath(Elastic.Transport.HttpMethod.GET, fullIndexName + "/_search");
+            var searchResponse = await _elasticClient.Transport
+                .RequestAsync<SearchResponse<JsonObject>>(endpoint, postData: PostData.String(query));
 
             if (searchResponse.IsSuccess())
             {
