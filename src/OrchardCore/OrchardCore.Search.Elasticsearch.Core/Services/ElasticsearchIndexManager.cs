@@ -517,35 +517,6 @@ public sealed class ElasticsearchIndexManager
         }
     }
 
-    internal async Task<ElasticsearchResult> SearchAsync(string indexName, string query)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(indexName);
-        ArgumentException.ThrowIfNullOrEmpty(query);
-
-        var elasticTopDocs = new ElasticsearchResult()
-        {
-            TopDocs = [],
-        };
-
-        if (await ExistsAsync(indexName))
-        {
-            var fullIndexName = GetFullIndexName(indexName);
-
-            var endpoint = new EndpointPath(Elastic.Transport.HttpMethod.GET, fullIndexName + "/_search");
-            var searchResponse = await _elasticClient.Transport
-                .RequestAsync<SearchResponse<JsonObject>>(endpoint, postData: PostData.String(query));
-
-            if (searchResponse.IsSuccess())
-            {
-                ProcessSuccessfulSearchResponse(elasticTopDocs, searchResponse);
-            }
-
-            _timestamps[fullIndexName] = _clock.UtcNow;
-        }
-
-        return elasticTopDocs;
-    }
-
     public async Task<ElasticsearchResult> SearchAsync(ElasticsearchSearchContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
@@ -626,6 +597,35 @@ public sealed class ElasticsearchIndexManager
         ArgumentException.ThrowIfNullOrEmpty(indexName);
 
         return GetFullIndexNameInternal(indexName);
+    }
+
+    internal async Task<ElasticsearchResult> SearchAsync(string indexName, string query)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentException.ThrowIfNullOrEmpty(query);
+
+        var elasticTopDocs = new ElasticsearchResult()
+        {
+            TopDocs = [],
+        };
+
+        if (await ExistsAsync(indexName))
+        {
+            var fullIndexName = GetFullIndexName(indexName);
+
+            var endpoint = new EndpointPath(Elastic.Transport.HttpMethod.GET, fullIndexName + "/_search");
+            var searchResponse = await _elasticClient.Transport
+                .RequestAsync<SearchResponse<JsonObject>>(endpoint, postData: PostData.String(query));
+
+            if (searchResponse.IsSuccess())
+            {
+                ProcessSuccessfulSearchResponse(elasticTopDocs, searchResponse);
+            }
+
+            _timestamps[fullIndexName] = _clock.UtcNow;
+        }
+
+        return elasticTopDocs;
     }
 
     private static IAnalyzer GetAnalyzer(JsonObject analyzerProperties)
