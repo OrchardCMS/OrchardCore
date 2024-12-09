@@ -28,11 +28,10 @@ Then exit any WSL instance, `wsl --shutdown`, and restart.
 vm.max_map_count = 262144
 ```
 
-Elasticsearch v7.17.5 Docker Compose file :
-[docker-compose.yml](docker-compose.yml)
+Elasticsearch Docker v7.x Compose file :
+[docker-compose.yml](Elasticsearch-7.x/docker-compose.yml)
 
-- Copy this file in a folder named Elasticsearch somewhere safe.
-- Open up a Terminal or Command Shell in this folder.
+- Open up a Terminal or Command Shell in the Elasticsearch-7.x folder.
 - Execute `docker-compose up` to deploy Elasticsearch containers.
 
 Advice: don't remove this file from its folder if you want to remove all their containers at once later on in Docker desktop.
@@ -40,6 +39,21 @@ Advice: don't remove this file from its folder if you want to remove all their c
 You should get this result in Docker Desktop app:
 
 ![Elasticsearch docker containers](images/elasticsearch-docker.png)
+
+Elasticsearch Docker v8.x Compose file :
+[docker-compose.yml](Elasticsearch-8.x/docker-compose.yml)
+
+- Open up a Terminal or Command Shell in the Elasticsearch-8.x folder.
+- Execute `docker-compose up` to deploy Elasticsearch containers.
+
+Advice: don't remove this file from its folder if you want to remove all their containers at once later on in Docker desktop.
+
+Open up Kibana:
+
+http://localhost:5601
+
+username: elastic
+password: changeme
 
 ### Set up Elasticsearch in Orchard Core
 
