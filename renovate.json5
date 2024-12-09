@@ -49,6 +49,15 @@
             ],
         },
         {
+            // Since Microsoft.Identity.Web depends on Microsoft.IdentityModel.Protocols.OpenIdConnect, we need to
+            // update them together.
+            groupName: 'Microsoft.Identity* packages',
+            matchPackageNames: [
+                'Microsoft.IdentityModel.Protocols.OpenIdConnect',
+                'Microsoft.Identity.Web',
+            ],
+        },
+        {
             groupName: 'OpenIddict packages',
             matchPackageNames: [
                 '/^OpenIddict.*$/',
