@@ -31,7 +31,7 @@ vm.max_map_count = 262144
 Elasticsearch Docker v7.x Compose file:
 [docker-compose.yml](Elasticsearch-7.x/docker-compose.yml)
 
-- Open up a Terminal or Command Shell in the Elasticsearch-7.x folder.
+- Open up a Terminal or Command Shell in the `Elasticsearch-7.x` folder.
 - Execute `docker-compose up` to deploy Elasticsearch containers.
 
 Advice: don't remove this file from its folder if you want to remove all their containers at once later on in Docker desktop.
