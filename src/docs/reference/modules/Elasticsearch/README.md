@@ -40,7 +40,7 @@ You should get this result in Docker Desktop app:
 
 ![Elasticsearch docker containers](images/elasticsearch-docker.png)
 
-Elasticsearch Docker v8.x Compose file :
+Elasticsearch Docker v8.x Compose file:
 [docker-compose.yml](Elasticsearch-8.x/docker-compose.yml)
 
 - Open up a Terminal or Command Shell in the `Elasticsearch-8.x` folder.
