@@ -7,6 +7,7 @@ using Elastic.Clients.Elasticsearch.Fluent;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Elastic.Clients.Elasticsearch.QueryDsl;
+using Elastic.Transport;
 using Elastic.Transport.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -17,6 +18,7 @@ using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Search.Elasticsearch.Core.Mappings;
 using OrchardCore.Search.Elasticsearch.Core.Models;
+using HttpMethod = Elastic.Transport.HttpMethod;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
@@ -516,6 +518,33 @@ public sealed class ElasticsearchIndexManager
         }
     }
 
+    public async Task<ElasticsearchResult> SearchAsync(string indexName, string query)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentException.ThrowIfNullOrEmpty(query);
+
+        var elasticTopDocs = new ElasticsearchResult()
+        {
+            TopDocs = [],
+        };
+
+        if (await ExistsAsync(indexName))
+        {
+            var fullIndexName = GetFullIndexName(indexName);
+
+            var searchResponse = await _elasticClient.Transport.RequestAsync<SearchResponse<JsonObject>>(new EndpointPath(HttpMethod.GET, fullIndexName + "/_search"), postData: PostData.String(query));
+
+            if (searchResponse.IsSuccess())
+            {
+                ProcessSuccessfulSearchResponse(elasticTopDocs, searchResponse);
+            }
+
+            _timestamps[fullIndexName] = _clock.UtcNow;
+        }
+
+        return elasticTopDocs;
+    }
+
     public async Task<ElasticsearchResult> SearchAsync(ElasticsearchSearchContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
@@ -536,47 +565,15 @@ public sealed class ElasticsearchIndexManager
                 Size = context.Size,
                 Sort = context.Sorts ?? [],
                 Source = context.Source,
-                Fields = context.Fields,
+                Fields = context.Fields ?? [],
                 Highlight = context.Highlight,
             };
 
             var searchResponse = await _elasticClient.SearchAsync<JsonObject>(searchRequest);
 
-            if (searchResponse.IsValidResponse)
+            if (searchResponse.IsSuccess())
             {
-                elasticTopDocs.Count = searchResponse.Hits.Count;
-
-                var documents = searchResponse.Documents.GetEnumerator();
-                var hits = searchResponse.Hits.GetEnumerator();
-
-                while (documents.MoveNext() && hits.MoveNext())
-                {
-                    var hit = hits.Current;
-
-                    var document = documents.Current;
-
-                    if (document != null)
-                    {
-                        elasticTopDocs.TopDocs.Add(new ElasticsearchRecord(document)
-                        {
-                            Score = hit.Score,
-                            Highlights = hit?.Highlight
-                        });
-
-                        continue;
-                    }
-
-                    var topDoc = new JsonObject
-                    {
-                        { nameof(ContentItem.ContentItemId), hit.Id },
-                    };
-
-                    elasticTopDocs.TopDocs.Add(new ElasticsearchRecord(topDoc)
-                    {
-                        Score = hit.Score,
-                        Highlights = hit.Highlight
-                    });
-                }
+                ProcessSuccessfulSearchResponse(elasticTopDocs, searchResponse);
             }
 
             _timestamps[fullIndexName] = _clock.UtcNow;
@@ -680,6 +677,44 @@ public sealed class ElasticsearchIndexManager
         }
 
         return _indexPrefix;
+    }
+
+    private static void ProcessSuccessfulSearchResponse(ElasticsearchResult elasticTopDocs, SearchResponse<JsonObject> searchResponse)
+    {
+        elasticTopDocs.Count = searchResponse.Hits.Count;
+
+        var documents = searchResponse.Documents.GetEnumerator();
+        var hits = searchResponse.Hits.GetEnumerator();
+
+        while (documents.MoveNext() && hits.MoveNext())
+        {
+            var hit = hits.Current;
+
+            var document = documents.Current;
+
+            if (document != null)
+            {
+                elasticTopDocs.TopDocs.Add(new ElasticsearchRecord(document)
+                {
+                    Score = hit.Score,
+                    Highlights = hit?.Highlight
+                });
+
+                continue;
+            }
+
+            var topDoc = new JsonObject
+            {
+                { nameof(ContentItem.ContentItemId), hit.Id },
+            };
+
+            elasticTopDocs.TopDocs.Add(new ElasticsearchRecord(topDoc)
+            {
+                Score = hit.Score,
+                Highlights = hit.Highlight
+            });
+        }
+
     }
 
     private static void RemoveTypeNode(JsonObject analyzerProperties)
