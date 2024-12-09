@@ -517,7 +517,7 @@ public sealed class ElasticsearchIndexManager
         }
     }
 
-    public async Task<ElasticsearchResult> SearchAsync(string indexName, string query)
+    internal async Task<ElasticsearchResult> SearchAsync(string indexName, string query)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
         ArgumentException.ThrowIfNullOrEmpty(query);
@@ -592,6 +592,7 @@ public sealed class ElasticsearchIndexManager
     /// <param name="from"></param>
     /// <param name="size"></param>
     /// <returns><see cref="ElasticsearchResult"/>.</returns>
+    [Obsolete("This method will be removed in future release. Instead use SearchAsync(ElasticsearchSearchContext) method instead.")]
     public Task<ElasticsearchResult> SearchAsync(string indexName, Query query, IList<SortOptions> sort, int from, int size)
     {
         var context = new ElasticsearchSearchContext(indexName, query)
