@@ -43,7 +43,7 @@ You should get this result in Docker Desktop app:
 Elasticsearch Docker v8.x Compose file :
 [docker-compose.yml](Elasticsearch-8.x/docker-compose.yml)
 
-- Open up a Terminal or Command Shell in the Elasticsearch-8.x folder.
+- Open up a Terminal or Command Shell in the `Elasticsearch-8.x` folder.
 - Execute `docker-compose up` to deploy Elasticsearch containers.
 
 Advice: don't remove this file from its folder if you want to remove all their containers at once later on in Docker desktop.
