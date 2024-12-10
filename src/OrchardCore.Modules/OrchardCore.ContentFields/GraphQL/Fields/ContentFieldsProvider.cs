@@ -33,8 +33,8 @@ public class ContentFieldsProvider : IContentFieldProvider
             new FieldTypeDescriptor
             {
                 Description = S => S["Date field"],
-                FieldType = typeof(DateGraphType),
-                ResolvedType = new DateGraphType(),
+                FieldType = typeof(DateOnlyGraphType),
+                ResolvedType = new DateOnlyGraphType(),
                 UnderlyingType = typeof(DateField),
                 FieldAccessor = field => ((DateField)field).Value,
                 IndexType = typeof(DateFieldIndex),
@@ -85,8 +85,8 @@ public class ContentFieldsProvider : IContentFieldProvider
             new FieldTypeDescriptor
             {
                 Description = S => S["Time field"],
-                FieldType = typeof(TimeSpanGraphType),
-                ResolvedType = new TimeSpanGraphType(),
+                FieldType = typeof(TimeOnlyGraphType),
+                ResolvedType = new TimeOnlyGraphType(),
                 UnderlyingType = typeof(TimeField),
                 FieldAccessor = field => ((TimeField)field).Value,
                 IndexType = typeof(TimeFieldIndex),

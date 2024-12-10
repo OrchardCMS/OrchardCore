@@ -85,6 +85,7 @@ public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSour
             graphType == typeof(DateGraphType) ||
             graphType == typeof(DateOnlyGraphType) ||
             graphType == typeof(TimeSpanGraphType) ||
+            graphType == typeof(TimeOnlyGraphType) ||
             graphType == typeof(DecimalGraphType) ||
             graphType == typeof(IntGraphType) ||
             graphType == typeof(LongGraphType) ||
