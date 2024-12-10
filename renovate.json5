@@ -49,12 +49,6 @@
             ],
         },
         {
-            groupName: 'GraphQL packages',
-            matchPackageNames: [
-                '/^GraphQL.*$/',
-            ],
-        },
-        {
             // MailKit depends on MimeKit (what we also use directly), so we need to keep the two in sync.
             groupName: 'MailKit and MimeKit packages',
             matchPackageNames: [
