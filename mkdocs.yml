@@ -9,7 +9,6 @@ theme:
     - header.autohide
     - navigation.footer
     - navigation.instant
-    - navigation.tabs
     - navigation.top
   palette:
     - media: "(prefers-color-scheme: light)"
