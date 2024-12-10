@@ -10,7 +10,9 @@ public sealed class DynamicPartWhereInputGraphType : WhereInputObjectGraphType<C
 {
     private ContentTypePartDefinition _part;
 
-    public DynamicPartWhereInputGraphType(ContentTypePartDefinition part, IStringLocalizer<DynamicPartWhereInputGraphType> stringLocalizer)
+    public DynamicPartWhereInputGraphType(
+        ContentTypePartDefinition part,
+        IStringLocalizer<DynamicPartWhereInputGraphType> stringLocalizer)
         : base(stringLocalizer)
     {
         Name = $"{part.Name}WhereInput";
