@@ -6,7 +6,7 @@ namespace OrchardCore.Apis.GraphQL.Queries;
 
 public abstract class WhereInputObjectGraphType : WhereInputObjectGraphType<object>
 {
-    public WhereInputObjectGraphType(IStringLocalizer stringLocalizer)
+    protected WhereInputObjectGraphType(IStringLocalizer stringLocalizer)
         : base(stringLocalizer)
     {
     }
@@ -16,7 +16,7 @@ public abstract class WhereInputObjectGraphType<TSourceType> : InputObjectGraphT
 {
     protected readonly IStringLocalizer S;
 
-    public WhereInputObjectGraphType(IStringLocalizer stringLocalizer)
+    protected WhereInputObjectGraphType(IStringLocalizer stringLocalizer)
     {
         S = stringLocalizer;
     }
