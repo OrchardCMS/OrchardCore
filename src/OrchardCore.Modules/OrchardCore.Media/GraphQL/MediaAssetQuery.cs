@@ -10,10 +10,11 @@ using OrchardCore.FileStorage;
 
 namespace OrchardCore.Media.GraphQL;
 
-public class MediaAssetQuery : ISchemaBuilder
+public sealed class MediaAssetQuery : ISchemaBuilder
 {
-    protected readonly IStringLocalizer S;
     private readonly GraphQLContentOptions _graphQLContentOptions;
+
+    internal readonly IStringLocalizer S;
 
     public MediaAssetQuery(
         IStringLocalizer<MediaAssetQuery> localizer,

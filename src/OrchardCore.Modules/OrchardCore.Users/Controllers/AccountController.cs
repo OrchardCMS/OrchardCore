@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -15,34 +13,25 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
-using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
-using YesSql.Services;
 
 namespace OrchardCore.Users.Controllers;
 
 [Authorize]
 public sealed class AccountController : AccountBaseController
 {
-    [Obsolete("This property will be removed in v3. Instead use ExternalAuthenticationController.DefaultExternalLoginProtector")]
-    public const string DefaultExternalLoginProtector = ExternalAuthenticationsController.DefaultExternalLoginProtector;
-
     private readonly IUserService _userService;
     private readonly SignInManager<IUser> _signInManager;
     private readonly UserManager<IUser> _userManager;
     private readonly ILogger _logger;
     private readonly ISiteService _siteService;
     private readonly IEnumerable<ILoginFormEvent> _accountEvents;
-    private readonly ExternalLoginOptions _externalLoginOptions;
     private readonly RegistrationOptions _registrationOptions;
-    private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IDisplayManager<LoginForm> _loginFormDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly INotifier _notifier;
-    private readonly IClock _clock;
-    private readonly IDistributedCache _distributedCache;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -57,11 +46,7 @@ public sealed class AccountController : AccountBaseController
         IStringLocalizer<AccountController> stringLocalizer,
         IEnumerable<ILoginFormEvent> accountEvents,
         IOptions<RegistrationOptions> registrationOptions,
-        IOptions<ExternalLoginOptions> externalLoginOptions,
         INotifier notifier,
-        IClock clock,
-        IDistributedCache distributedCache,
-        IDataProtectionProvider dataProtectionProvider,
         IDisplayManager<LoginForm> loginFormDisplayManager,
         IUpdateModelAccessor updateModelAccessor)
     {
@@ -71,12 +56,8 @@ public sealed class AccountController : AccountBaseController
         _logger = logger;
         _siteService = siteService;
         _accountEvents = accountEvents;
-        _externalLoginOptions = externalLoginOptions.Value;
         _registrationOptions = registrationOptions.Value;
         _notifier = notifier;
-        _clock = clock;
-        _distributedCache = distributedCache;
-        _dataProtectionProvider = dataProtectionProvider;
         _loginFormDisplayManager = loginFormDisplayManager;
         _updateModelAccessor = updateModelAccessor;
 
@@ -84,7 +65,6 @@ public sealed class AccountController : AccountBaseController
         S = stringLocalizer;
     }
 
-    [HttpGet]
     [AllowAnonymous]
     public async Task<IActionResult> Login(string returnUrl = null)
     {
@@ -96,23 +76,13 @@ public sealed class AccountController : AccountBaseController
         // Clear the existing external cookie to ensure a clean login process.
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-        if (_externalLoginOptions.UseExternalProviderIfOnlyOneDefined)
+        foreach (var accountEvent in _accountEvents)
         {
-            var schemes = await _signInManager.GetExternalAuthenticationSchemesAsync();
-            if (schemes.Count() == 1)
+            var result = await accountEvent.LoggingInAsync();
+
+            if (result != null)
             {
-                var dataProtector = _dataProtectionProvider.CreateProtector(ExternalAuthenticationsController.DefaultExternalLoginProtector)
-                    .ToTimeLimitedDataProtector();
-
-                var token = Guid.NewGuid();
-                var expiration = new TimeSpan(0, 0, 5);
-                var protectedToken = dataProtector.Protect(token.ToString(), _clock.UtcNow.Add(expiration));
-                await _distributedCache.SetAsync(token.ToString(), token.ToByteArray(), new DistributedCacheEntryOptions()
-                {
-                    AbsoluteExpirationRelativeToNow = expiration,
-                });
-
-                return RedirectToAction(nameof(ExternalAuthenticationsController.DefaultExternalLogin), typeof(ExternalAuthenticationsController).ControllerName(), new { protectedToken, returnUrl });
+                return result;
             }
         }
 
@@ -157,30 +127,41 @@ public sealed class AccountController : AccountBaseController
             if (user != null)
             {
                 var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: true);
+
                 if (result.Succeeded)
                 {
-                    if (!await AddConfirmEmailErrorAsync(user) && !AddUserEnabledError(user, S))
+                    foreach (var accountEvent in _accountEvents)
                     {
-                        result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+                        var loginResult = await accountEvent.ValidatingLoginAsync(user);
 
-                        if (result.Succeeded)
+                        if (loginResult != null)
                         {
-                            _logger.LogInformation(1, "User logged in.");
-                            await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
-
-                            return await LoggedInActionResultAsync(user, returnUrl);
+                            return loginResult;
                         }
                     }
+
+                    result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, lockoutOnFailure: true);
+
+                    if (result.Succeeded)
+                    {
+                        _logger.LogInformation(1, "User logged in.");
+
+                        await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
+
+                        return await LoggedInActionResultAsync(user, returnUrl);
+                    }
+
                 }
 
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToAction(nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
+                    return RedirectToAction(
+                        nameof(TwoFactorAuthenticationController.LoginWithTwoFactorAuthentication),
                         typeof(TwoFactorAuthenticationController).ControllerName(),
                         new
                         {
                             returnUrl,
-                            model.RememberMe
+                            model.RememberMe,
                         });
                 }
 
@@ -216,12 +197,12 @@ public sealed class AccountController : AccountBaseController
     public async Task<IActionResult> LogOff(string returnUrl = null)
     {
         await _signInManager.SignOutAsync();
+
         _logger.LogInformation(4, "User logged out.");
 
         return RedirectToLocal(returnUrl);
     }
 
-    [HttpGet]
     public IActionResult ChangePassword(string returnUrl = null)
     {
         ViewData["ReturnUrl"] = returnUrl;
@@ -233,9 +214,10 @@ public sealed class AccountController : AccountBaseController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model, string returnUrl = null)
     {
-        if (TryValidateModel(model) && ModelState.IsValid)
+        if (ModelState.IsValid)
         {
             var user = await _userService.GetAuthenticatedUserAsync(User);
+
             if (await _userService.ChangePasswordAsync(user, model.CurrentPassword, model.Password, ModelState.AddModelError))
             {
                 if (Url.IsLocalUrl(returnUrl))
@@ -255,36 +237,4 @@ public sealed class AccountController : AccountBaseController
     [HttpGet]
     public IActionResult ChangePasswordConfirmation()
         => View();
-
-    /// <summary>
-    /// This action is retained for backward compatibility.
-    /// Both this action and <see cref="ExternalAuthenticationsStartupFilter"/> are scheduled for removal in version 3.
-    /// </summary>
-    [HttpPost]
-    [AllowAnonymous]
-    [ValidateAntiForgeryToken]
-    public IActionResult ExternalLogin()
-    {
-        return NotFound();
-    }
-
-    [Obsolete("This method will be removed in version 3. Instead please use UserManagerHelper.UpdateUserPropertiesAsync(userManager, user, context).")]
-    public static Task<bool> UpdateUserPropertiesAsync(UserManager<IUser> userManager, User user, UpdateUserContext context)
-        => UserManagerHelper.UpdateUserPropertiesAsync(userManager, user, context);
-
-    private async Task<bool> AddConfirmEmailErrorAsync(IUser user)
-    {
-        if (_registrationOptions.UsersMustValidateEmail)
-        {
-            // Require that the users have a confirmed email before they can log on.
-            if (!await _userManager.IsEmailConfirmedAsync(user))
-            {
-                ModelState.AddModelError(string.Empty, S["You must confirm your email."]);
-
-                return true;
-            }
-        }
-
-        return false;
-    }
 }

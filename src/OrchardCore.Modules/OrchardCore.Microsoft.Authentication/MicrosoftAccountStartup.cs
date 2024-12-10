@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -23,7 +22,7 @@ public sealed class MicrosoftAccountStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.TryAddEnumerable(new ServiceDescriptor(typeof(IPermissionProvider), typeof(Permissions), ServiceLifetime.Scoped));
+        services.AddPermissionProvider<Permissions>();
 
         services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
         services.AddSiteDisplayDriver<MicrosoftAccountSettingsDisplayDriver>();

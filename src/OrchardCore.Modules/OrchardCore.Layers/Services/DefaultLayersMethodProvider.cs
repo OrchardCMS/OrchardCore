@@ -7,7 +7,7 @@ using OrchardCore.Scripting;
 
 namespace OrchardCore.Layers.Services;
 
-public class DefaultLayersMethodProvider : IGlobalMethodProvider
+public sealed class DefaultLayersMethodProvider : IGlobalMethodProvider
 {
     private readonly GlobalMethod _isHomepage;
     private readonly GlobalMethod _isAnonymous;

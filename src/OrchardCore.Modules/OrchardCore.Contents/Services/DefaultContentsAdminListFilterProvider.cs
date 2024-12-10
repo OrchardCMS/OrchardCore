@@ -13,7 +13,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Contents.Services;
 
-public class DefaultContentsAdminListFilterProvider : IContentsAdminListFilterProvider
+public sealed class DefaultContentsAdminListFilterProvider : IContentsAdminListFilterProvider
 {
     public void Build(QueryEngineBuilder<ContentItem> builder)
     {

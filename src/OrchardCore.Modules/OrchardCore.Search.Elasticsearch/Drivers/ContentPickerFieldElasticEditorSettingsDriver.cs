@@ -9,9 +9,9 @@ namespace OrchardCore.Search.Elasticsearch.Drivers;
 
 public sealed class ContentPickerFieldElasticEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver
 {
-    private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
 
-    public ContentPickerFieldElasticEditorSettingsDriver(ElasticIndexSettingsService elasticIndexSettingsService)
+    public ContentPickerFieldElasticEditorSettingsDriver(ElasticsearchIndexSettingsService elasticIndexSettingsService)
     {
         _elasticIndexSettingsService = elasticIndexSettingsService;
     }

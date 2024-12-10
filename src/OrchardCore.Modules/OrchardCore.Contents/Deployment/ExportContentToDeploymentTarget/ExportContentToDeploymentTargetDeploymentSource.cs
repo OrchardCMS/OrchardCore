@@ -8,7 +8,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
 
-public class ExportContentToDeploymentTargetDeploymentSource
+public sealed class ExportContentToDeploymentTargetDeploymentSource
     : DeploymentSourceBase<ExportContentToDeploymentTargetDeploymentStep>
 {
     private readonly IContentManager _contentManager;

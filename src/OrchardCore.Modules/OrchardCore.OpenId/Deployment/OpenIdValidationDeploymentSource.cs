@@ -5,7 +5,7 @@ using OrchardCore.OpenId.Settings;
 
 namespace OrchardCore.OpenId.Deployment;
 
-public class OpenIdValidationDeploymentSource
+public sealed class OpenIdValidationDeploymentSource
     : DeploymentSourceBase<OpenIdValidationDeploymentStep>
 {
     private readonly IOpenIdValidationService _openIdValidationService;
@@ -21,7 +21,7 @@ public class OpenIdValidationDeploymentSource
 
         result.Steps.Add(new JsonObject
         {
-            ["name"] = "OpenIdValidationSettings",
+            ["name"] = nameof(OpenIdValidationSettings),
             ["OpenIdValidationSettings"] = JObject.FromObject(validationSettings),
         });
     }

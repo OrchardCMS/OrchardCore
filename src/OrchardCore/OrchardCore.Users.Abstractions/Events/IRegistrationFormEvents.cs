@@ -12,6 +12,12 @@ public interface IRegistrationFormEvents
     Task RegistrationValidationAsync(Action<string, string> reportError);
 
     /// <summary>
+    /// Occurs after the registration has been created but before the user is logged in.
+    /// </summary>
+    /// <param name="context">The <see cref="UserRegisteringContext"/>.</param>
+    Task RegisteringAsync(UserRegisteringContext context);
+
+    /// <summary>
     /// Occurs when user has been registered.
     /// </summary>
     /// <param name="user">The <see cref="IUser"/>.</param>

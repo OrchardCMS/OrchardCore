@@ -25,18 +25,18 @@ public class SmsNotificationProvider : INotificationMethodProvider
     {
         var user = notify as User;
 
-        if (string.IsNullOrEmpty(user?.Email))
+        if (string.IsNullOrEmpty(user?.PhoneNumber))
         {
             return false;
         }
 
-        var mailMessage = new SmsMessage()
+        var smsMessage = new SmsMessage()
         {
-            To = user.Email,
+            To = user.PhoneNumber,
             Body = message.TextBody,
         };
 
-        var result = await _smsService.SendAsync(mailMessage);
+        var result = await _smsService.SendAsync(smsMessage);
 
         return result.Succeeded;
     }

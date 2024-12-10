@@ -1,12 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Templates.Deployment;
 using OrchardCore.Templates.Recipes;
@@ -19,7 +17,7 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddScoped<IShapeBindingResolver, TemplatesShapeBindingResolver>();
         services.AddScoped<PreviewTemplatesProvider>();
