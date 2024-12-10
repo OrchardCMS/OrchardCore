@@ -4,5 +4,5 @@ namespace OrchardCore.ContentFields.Fields;
 
 public class DateField : ContentField
 {
-    public DateTime? Value { get; set; }
+    public DateOnly? Value { get; set; }
 }

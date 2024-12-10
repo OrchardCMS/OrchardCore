@@ -11,7 +11,7 @@ public class DateFieldIndexHandler : ContentFieldIndexHandler<DateField>
 
         foreach (var key in context.Keys)
         {
-            context.DocumentIndex.Set(key, field.Value, options);
+            context.DocumentIndex.Set(key, field.Value.ToString(), options);
         }
 
         return Task.CompletedTask;

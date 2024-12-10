@@ -4,5 +4,5 @@ namespace OrchardCore.ContentFields.Fields;
 
 public class TimeField : ContentField
 {
-    public TimeSpan? Value { get; set; }
+    public TimeOnly? Value { get; set; }
 }

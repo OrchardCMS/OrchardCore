@@ -9,7 +9,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL;
 
 public class TimeFieldIndex : ContentFieldIndex
 {
-    public TimeSpan? Time { get; set; }
+    public TimeOnly? Time { get; set; }
 }
 
 public class TimeFieldIndexProvider : ContentFieldIndexProvider
