@@ -55,17 +55,17 @@
             ],
         },
         {
+            groupName: 'Lucene.NET packages',
+            matchPackageNames: [
+                '/^Lucene\\.Net.*$/',
+            ],
+        },
+        {
             // MailKit depends on MimeKit (what we also use directly), so we need to keep the two in sync.
             groupName: 'MailKit and MimeKit packages',
             matchPackageNames: [
                 'MailKit',
                 'MimeKit',
-            ],
-        },
-        {
-            groupName: 'Lucene.NET packages',
-            matchPackageNames: [
-                '/^Lucene\\.Net.*$/',
             ],
         },
         {
