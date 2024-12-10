@@ -16,6 +16,8 @@ public static class JOptions
         PathStringJsonConverter.Instance,
         TimeSpanJsonConverter.Instance,
         DateTimeJsonConverter.Instance,
+        TimeOnlyJsonConverter.Instance,
+        DateOnlyJsonConverter.Instance,
         new JsonStringEnumConverter()
     ];
 

@@ -39,7 +39,7 @@ public class ContentItemTests
         var jsonStr = """
          {
             "TimeFieldTest": {
-                "Value": "13:05"
+                "Value": "1:05 PM"
             },
             "DateTimeFieldTest": {
                 "Value": "2024-5-31 13:05"
@@ -61,11 +61,11 @@ public class ContentItemTests
         var timeZoneDateTimeFieldTest = jObject.SelectNode("TimezoneDateTimeFieldTest").ToObject<DateTimeField>();
 
         // Assert
-        Assert.Equal("13:05:00", timeField.Value.Value.ToString());
+        Assert.Equal("1:05 PM", timeField.Value.Value.ToString());
         Assert.Equal("2024-05-31", dateField.Value.Value.ToString("yyyy-MM-dd"));
         Assert.Equal("2024-05-31 13:05", dateTimeField.Value.Value.ToString("yyyy-MM-dd HH:mm"));
-        Assert.Equal("13:05:00", JObject.FromObject(timeField).SelectNode("Value").ToString());
-        Assert.Equal("2024-05-31T00:00:00Z", JObject.FromObject(dateField).SelectNode("Value").ToString());
+        Assert.Equal("1:05 PM", JObject.FromObject(timeField).SelectNode("Value").ToString());
+        Assert.Equal("2024-05-31T", JObject.FromObject(dateField).SelectNode("Value").ToString());
         Assert.Equal("2024-05-31T13:05:00Z", JObject.FromObject(dateTimeField).SelectNode("Value").ToString());
 
 
