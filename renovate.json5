@@ -63,6 +63,12 @@
             ],
         },
         {
+            groupName: 'OpenIddict packages',
+            matchPackageNames: [
+                '/^OpenIddict.*$/',
+            ],
+        },
+        {
             groupName: 'SixLabors.ImageSharp.Web packages',
             matchPackageNames: [
                 '/^SixLabors\\.ImageSharp\\.Web.*$/',
