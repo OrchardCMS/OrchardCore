@@ -85,4 +85,5 @@
     schedule: [
         'before 5am on Sunday',
     ],
+    labels: ['dependencies'],
 }
