@@ -105,8 +105,7 @@ nav:
       - Recipes and Starter Themes: getting-started/starter-recipes.md
       - Code Generation Templates: getting-started/templates/README.md
       - Create a Theme: getting-started/theme.md
-  - Glossary:
-      - Terms and Concepts: glossary/README.md
+  - Glossary: glossary/README.md
   - How-to guides:
       - Follow the Guides: guides/README.md
       - Create a modular application: guides/create-modular-application-mvc/README.md
