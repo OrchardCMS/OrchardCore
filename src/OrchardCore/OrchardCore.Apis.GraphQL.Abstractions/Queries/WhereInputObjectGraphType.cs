@@ -4,18 +4,19 @@ using OrchardCore.Apis.GraphQL.Queries.Types;
 
 namespace OrchardCore.Apis.GraphQL.Queries;
 
-public class WhereInputObjectGraphType : WhereInputObjectGraphType<object>, IFilterInputObjectGraphType
+public abstract class WhereInputObjectGraphType : WhereInputObjectGraphType<object>
 {
-    public WhereInputObjectGraphType(IStringLocalizer<WhereInputObjectGraphType<object>> stringLocalizer) : base(stringLocalizer)
+    protected WhereInputObjectGraphType(IStringLocalizer stringLocalizer)
+        : base(stringLocalizer)
     {
     }
 }
 
-public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSourceType>, IFilterInputObjectGraphType
+public abstract class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSourceType>, IFilterInputObjectGraphType
 {
     protected readonly IStringLocalizer S;
 
-    public WhereInputObjectGraphType(IStringLocalizer<WhereInputObjectGraphType<TSourceType>> stringLocalizer)
+    protected WhereInputObjectGraphType(IStringLocalizer stringLocalizer)
     {
         S = stringLocalizer;
     }
