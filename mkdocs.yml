@@ -106,7 +106,7 @@ nav:
       - Code Generation Templates: getting-started/templates/README.md
       - Create a Theme: getting-started/theme.md
   - Glossary: glossary/README.md
-  - How-to guides:
+  - Guides:
       - Follow the Guides: guides/README.md
       - Create a modular application: guides/create-modular-application-mvc/README.md
       - Create a website: guides/create-cms-application/README.md
