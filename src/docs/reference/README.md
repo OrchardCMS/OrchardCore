@@ -1,4 +1,4 @@
-# Reference of Built-in Modules
+# Modules Reference
 
 This is a comprehensive reference for the modules and their features available in Orchard Core. Under each of these pages, you'll find an overview of the given module with documentation on how to use and extend them.
 
