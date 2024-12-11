@@ -233,6 +233,22 @@ Result:
 3 days ago
 ```
 
+### Duration shapes
+
+#### `Duration`
+
+Renders a duration value using the given TimeSpan.
+
+| Parameter | Type | Description |
+| --------- | ---- |------------ |
+| `timeSpan` | `TimeSpan?` | The time span to render. |
+
+Tag helper example:
+
+```html
+<duration timeSpan="@TimeSpan.FromSeconds(5)" />
+```
+
 ## Editor shape placement
 
 Editor shapes support grouping placement, which allows you to group editor shapes, to create a variety of content editor layouts.

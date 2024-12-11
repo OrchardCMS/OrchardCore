@@ -1,11 +1,9 @@
 using System.Globalization;
-using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.ReCaptcha.ActionFilters;
 using OrchardCore.ReCaptcha.Configuration;
-using OrchardCore.ReCaptcha.TagHelpers;
 using OrchardCore.Settings;
 
 namespace OrchardCore.ReCaptcha.Services;
@@ -33,26 +31,6 @@ internal sealed class ReCaptchaShapeTableProvider : ShapeTableProvider
                     return;
                 }
 
-                var reCaptchaTagHelper = builder.ServiceProvider.GetService<ReCaptchaTagHelper>();
-
-                var context = new TagHelperContext(
-                    tagName: "captcha",
-                    allAttributes: new TagHelperAttributeList(),
-                    items: new Dictionary<object, object>(),
-                    uniqueId: IdGenerator.GenerateId()
-                );
-
-                var output = new TagHelperOutput(
-                    tagName: "captcha",
-                    attributes: new TagHelperAttributeList(),
-                    getChildContentAsync: (useCachedResult, encoder) => Task.FromResult<TagHelperContent>(new DefaultTagHelperContent())
-                );
-
-                reCaptchaTagHelper.Mode = ReCaptchaMode.AlwaysShow;
-                reCaptchaTagHelper.Language = CultureInfo.CurrentUICulture.Name;
-
-                await reCaptchaTagHelper.ProcessAsync(context, output);
-
                 if (!builder.Shape.Properties.TryGetValue("Content", out var content))
                 {
                     return;
@@ -65,7 +43,15 @@ internal sealed class ReCaptchaShapeTableProvider : ShapeTableProvider
                     return;
                 }
 
-                await contentShape.AddAsync(output, "after");
+                var shapeFactory = builder.DisplayContext.ServiceProvider.GetService<IShapeFactory>();
+
+                var reCaptchaShape = await shapeFactory.CreateAsync("ReCaptcha", Arguments.From(new
+                {
+                    mode = ReCaptchaMode.AlwaysShow,
+                    language = CultureInfo.CurrentUICulture.Name,
+                }));
+
+                await contentShape.AddAsync(reCaptchaShape, "after");
             });
 
         return ValueTask.CompletedTask;
