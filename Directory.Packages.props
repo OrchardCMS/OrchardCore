@@ -62,7 +62,6 @@
     <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="5.8.0" />
     <PackageVersion Include="OrchardCore.Translations.All" Version="2.1.0" />
     <PackageVersion Include="PdfPig" Version="0.1.9" />
-    <PackageVersion Include="Serilog.AspNetCore" Version="8.0.3" />
     <PackageVersion Include="Shortcodes" Version="1.3.4" />
     <PackageVersion Include="SixLabors.ImageSharp.Web" Version="3.1.3" />
     <PackageVersion Include="SixLabors.ImageSharp.Web.Providers.Azure" Version="3.1.3" />
@@ -74,11 +73,11 @@
     <PackageVersion Include="xunit" Version="2.9.2" />
     <PackageVersion Include="xunit.analyzers" Version="1.17.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
-    <PackageVersion Include="YesSql" Version="5.1.1" />
-    <PackageVersion Include="YesSql.Abstractions" Version="5.1.1" />
-    <PackageVersion Include="YesSql.Core" Version="5.1.1" />
-    <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.1.1" />
-    <PackageVersion Include="YesSql.Filters.Query" Version="5.1.1" />
+    <PackageVersion Include="YesSql" Version="5.2.0" />
+    <PackageVersion Include="YesSql.Abstractions" Version="5.2.0" />
+    <PackageVersion Include="YesSql.Core" Version="5.2.0" />
+    <PackageVersion Include="YesSql.Filters.Abstractions" Version="5.2.0" />
+    <PackageVersion Include="YesSql.Filters.Query" Version="5.2.0" />
     <PackageVersion Include="ZString" Version="2.6.0" />
   </ItemGroup>
 
@@ -129,9 +128,6 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'" >
-    <!-- Several transitive dependencies on 8.0.4 and lower which is vulnerable -->
-    <PackageVersion Include="System.Text.Json" Version="9.0.0" />
-
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.0" />
   </ItemGroup>
 
@@ -152,6 +148,9 @@
 
     <!-- dotnet/extensions repository -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.0.0" />
+    
+    <!-- Serilog.AspNetCore -->
+    <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
@@ -168,6 +167,9 @@
     
     <!-- dotnet/extensions repository -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
+
+    <!-- Serilog.AspNetCore -->
+    <PackageVersion Include="Serilog.AspNetCore" Version="8.0.3" />
   </ItemGroup>
 
 </Project>
