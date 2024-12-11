@@ -42,7 +42,6 @@ internal sealed class ReCaptchaShapeTableProvider : ShapeTableProvider
                     uniqueId: IdGenerator.GenerateId()
                 );
 
-                // Create an empty TagHelperOutput to hold the final output HTML
                 var output = new TagHelperOutput(
                     tagName: "captcha",
                     attributes: new TagHelperAttributeList(),
