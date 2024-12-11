@@ -50,7 +50,7 @@ Display for a reCaptcha challenge if the service is configured.
 === "Liquid"
 
     ``` liquid
-    {% shape "ReCaptcha", model: "AlwaysShow", language: "en-US" %}
+    {% shape "ReCaptcha", mode: "AlwaysShow", language: "en-US" %}
     ```
 
 === "Razor"
