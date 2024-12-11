@@ -128,13 +128,14 @@ nav:
       - 1.0.0-beta2: releases/1.0.0-beta2.md
       - 1.0.0-beta1: releases/1.0.0-beta1.md
   - Getting started:
+      - Development Tools: resources/development-tools/README.md
       - Create a CMS Web application: getting-started/README.md
       - Test drive Orchard Core: getting-started/test-drive-orchard-core.md
       - Configure Preview package source: getting-started/preview-package-source.md
       - Recipes and Starter Themes: getting-started/starter-recipes.md
       - Code Generation Templates: getting-started/templates/README.md
       - Create a Theme: getting-started/theme.md
-  - Glossary: glossary/README.md
+      - External Resources: resources/tutorials/README.md
   - Guides:
       - Follow the Guides: guides/README.md
       - Create a modular application: guides/create-modular-application-mvc/README.md
@@ -174,7 +175,7 @@ nav:
       - Using local NuGet packages: topics/local-nuget-packages/README.md
       - Managing the Orchard Core Red Hat Ecosystem Catalog certification: topics/red-hat-ecosystem-catalog-certification/README.md
   - Reference:
-      - reference/README.md
+      - Modules Overview: reference/README.md
       - CMS Modules:
           - Content Types: reference/modules/ContentTypes/README.md
           - Content Parts:
@@ -284,15 +285,9 @@ nav:
           - Background Tasks: reference/modules/BackgroundTasks/README.md
           - URL Rewriting: reference/modules/UrlRewriting/README.md
           - Reverse Proxy: reference/modules/ReverseProxy/README.md
-  - Resources:
-      - Learning: resources/README.md
-      - Tutorials: resources/tutorials/README.md
-      - Development Tools: resources/development-tools/README.md
-      - Meeting: resources/meeting/README.md
       - Branding: resources/branding/README.md
       - Libraries: resources/libraries/README.md
-      - Owners: resources/owners/README.md
-      - Workshops: resources/workshops/README.md
+      - Glossary: glossary/README.md
   - Contributing:
       - Overview: guides/contributing/README.md
       - Opening and managing issues: guides/contributing/managing-issues.md
