@@ -300,11 +300,11 @@ nav:
       - Contributing documentation: guides/contributing/contributing-documentation.md
       - Reviewing pull requests: guides/contributing/reviewing-pull-requests.md
       - Benchmarking: guides/contributing/benchmarking.md
-  - Community:
-      - Overview: community/README.md
-      - Contributors:
-          - Our wonderful contributors: community/contributors/README.md
-          - Contributors Map: community/contributors/Map.md
-      - Honorable Members:
+      - Developer Meetings: resources/meeting/README.md
+  - Contributors:
+      - All Contributors: community/contributors/README.md
+      - Contributors Map: community/contributors/Map.md
+      - Feature Owners: resources/owners/README.md
+      - Honorable Contributers:
           - Jean-Thierry Kéchichian: community/jean-thierry/README.md
       - Jean-Thierry Kéchichian Community Award: community/jean-thierry-community-award/README.md
