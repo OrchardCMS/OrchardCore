@@ -46,7 +46,6 @@ public sealed class UsersStartup : StartupBase
         services.AddScoped<IRegistrationFormEvents, RegistrationFormEventHandler>();
         services.AddScoped<ILoginFormEvent, LoginFormEventEventHandler>();
         services.AddScoped<IPasswordRecoveryFormEvents, PasswordRecoveryFormEventEventHandler>();
-        //services.AddDisplayDriver<LoginForm, ReCaptchaLoginFormDisplayDriver>();
         services.AddShapeTableProvider<ReCaptchaShapeTableProvider>();
     }
 }
