@@ -127,13 +127,6 @@ nav:
       - Microsoft Entra ID (Azure AD) integration: guides/microsoft-entra-id-integration/README.md
       - Create a Liquid Widget: guides/create-liquid-widget/README.md
       - Query Content Items Based on Taxonomy: guides/query-content-items-based-on-taxonomy/README.md
-      - Contributing:
-          - Contributing to Orchard Core: guides/contributing/README.md
-          - Opening and managing issues: guides/contributing/managing-issues.md
-          - Contributing code: guides/contributing/contributing-code.md
-          - Contributing documentation: guides/contributing/contributing-documentation.md
-          - Reviewing pull requests: guides/contributing/reviewing-pull-requests.md
-          - Benchmarking: guides/contributing/benchmarking.md
       - Gulp pipeline: guides/gulp-pipeline/README.md
   - Key Topics:
       - Manage your Content: topics/content-management/README.md
@@ -300,6 +293,13 @@ nav:
       - 1.0.0-beta3: releases/1.0.0-beta3.md
       - 1.0.0-beta2: releases/1.0.0-beta2.md
       - 1.0.0-beta1: releases/1.0.0-beta1.md
+  - Contributing:
+      - Overview: guides/contributing/README.md
+      - Opening and managing issues: guides/contributing/managing-issues.md
+      - Contributing code: guides/contributing/contributing-code.md
+      - Contributing documentation: guides/contributing/contributing-documentation.md
+      - Reviewing pull requests: guides/contributing/reviewing-pull-requests.md
+      - Benchmarking: guides/contributing/benchmarking.md
   - Community:
       - Overview: community/README.md
       - Contributors:
