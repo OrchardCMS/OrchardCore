@@ -42,7 +42,7 @@ public class IPAddressRobotDetector : IDetectRobots
 
         return new RobotDetectionResult()
         {
-            IsRobot = faultyRequestCount > _settings.DetectionThreshold
+            IsRobot = faultyRequestCount >= _settings.DetectionThreshold
         };
     }
 
@@ -52,7 +52,7 @@ public class IPAddressRobotDetector : IDetectRobots
 
         // This has race conditions, but it's ok.
         var faultyRequestCount = _memoryCache.GetOrCreate(ipAddressKey, fact => 0);
-        faultyRequestCount++;
-        _memoryCache.Set(ipAddressKey, faultyRequestCount);
+
+        _memoryCache.Set(ipAddressKey, ++faultyRequestCount);
     }
 }

@@ -1,10 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.Core;
 using OrchardCore.ReCaptcha.Drivers;
+using OrchardCore.ReCaptcha.Services;
 using OrchardCore.ReCaptcha.Users.Handlers;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
@@ -44,7 +46,8 @@ public sealed class UsersStartup : StartupBase
         services.AddScoped<IRegistrationFormEvents, RegistrationFormEventHandler>();
         services.AddScoped<ILoginFormEvent, LoginFormEventEventHandler>();
         services.AddScoped<IPasswordRecoveryFormEvents, PasswordRecoveryFormEventEventHandler>();
-        services.AddDisplayDriver<LoginForm, ReCaptchaLoginFormDisplayDriver>();
+        //services.AddDisplayDriver<LoginForm, ReCaptchaLoginFormDisplayDriver>();
+        services.AddShapeTableProvider<ReCaptchaShapeTableProvider>();
     }
 }
 
