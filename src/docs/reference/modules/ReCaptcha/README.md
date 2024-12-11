@@ -56,5 +56,5 @@ Display for a reCaptcha challenge if the service is configured.
 === "Razor"
 
     ``` html
-    <shape type="ReCaptcha" model="AlwaysShow", language="en-US" />
+    <shape type="ReCaptcha" mode="AlwaysShow" language="en-US" />
     ```
