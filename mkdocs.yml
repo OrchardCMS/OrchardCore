@@ -141,7 +141,6 @@ nav:
       - Manage your Content: topics/content-management/README.md
       - Content Relationships: topics/content-relationships/README.md
       - Customize the Display: topics/display/README.md
-      - Display Management: reference/core/DisplayManagement/README.md
       - Localize your site: topics/localize/README.md
       - Handle the Media: topics/media/README.md
       - Navigate between pages: topics/navigation/README.md
@@ -222,6 +221,7 @@ nav:
           - Feeds: reference/modules/Feeds/README.md
           - Commerce: https://commerce.orchardcore.net/en/latest
       - Core Modules:
+          - Display Management: reference/core/DisplayManagement/README.md
           - Audit Trail: reference/modules/AuditTrail/README.md
           - Auto Setup: reference/modules/AutoSetup/README.md
           - Features: reference/modules/Features/README.md
