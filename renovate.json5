@@ -23,9 +23,67 @@
             ],
             enabled: false,
         },
+        // Groups of packages that we want to update together.
+        {
+            groupName: 'Azure.Communication packages',
+            matchPackageNames: [
+                '/^Azure\\.Communication.*$/',
+            ],
+        },
+        {
+            groupName: 'Elastic Docker images',
+            matchPackageNames: [
+                '/^docker\\.elastic\\.co.*$/',
+            ],
+        },
+        {
+            groupName: 'GraphQL packages',
+            matchPackageNames: [
+                '/^GraphQL.*$/',
+            ],
+        },
+        {
+            // Microsoft.AspNetCore.Authentication.OpenIdConnect depends on Microsoft.IdentityModel.* packages, just as
+            // Microsoft.Identity.Web and the OpenIddict packages do. Additionally, we also reference
+            // Microsoft.IdentityModel.Protocols.OpenIdConnect directly. So, we need to update them together.
+            groupName: 'Identity packages',
+            matchPackageNames: [
+                'Microsoft.AspNetCore.Authentication.OpenIdConnect',
+                'Microsoft.IdentityModel.Protocols.OpenIdConnect',
+                'Microsoft.Identity.Web',
+                '/^OpenIddict.*$/',
+            ],
+        },
+        {
+            groupName: 'Lucene.NET packages',
+            matchPackageNames: [
+                '/^Lucene\\.Net.*$/',
+            ],
+        },
+        {
+            // MailKit depends on MimeKit (what we also use directly), so we need to keep the two in sync.
+            groupName: 'MailKit and MimeKit packages',
+            matchPackageNames: [
+                'MailKit',
+                'MimeKit',
+            ],
+        },
+        {
+            groupName: 'SixLabors.ImageSharp.Web packages',
+            matchPackageNames: [
+                '/^SixLabors\\.ImageSharp\\.Web.*$/',
+            ],
+        },
+        {
+            groupName: 'YesSql packages',
+            matchPackageNames: [
+                '/^YesSql.*$/',
+            ],
+        },
     ],
     // We only need updates once a week.
     schedule: [
         'before 5am on Sunday',
     ],
+    labels: ['dependencies'],
 }
