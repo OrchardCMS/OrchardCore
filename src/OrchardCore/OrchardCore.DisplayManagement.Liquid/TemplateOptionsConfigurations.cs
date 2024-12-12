@@ -46,6 +46,8 @@ public class TemplateOptionsConfigurations : IConfigureOptions<TemplateOptions>
 
         options.Scope.SetValue("HttpContext", new HttpContextValue());
 
+        options.Scope.SetValue("TrackingConsent", new TrackingConsentValue());
+
         options.MemberAccessStrategy.Register<FormCollection, FluidValue>((forms, name) =>
         {
             if (name == "Keys")
