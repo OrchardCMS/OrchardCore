@@ -5,6 +5,9 @@ namespace OrchardCore.ReCaptcha.Users.Handlers;
 
 public class PasswordRecoveryFormEventEventHandler : IPasswordRecoveryFormEvents
 {
+    public const string UserRecoverPasswordRobotTag = "user-recover-password";
+    public const string UserResetPasswordRobotTag = "user-reset-password";
+
     private readonly ReCaptchaService _reCaptchaService;
 
     public PasswordRecoveryFormEventEventHandler(ReCaptchaService reCaptchaService)
@@ -14,7 +17,7 @@ public class PasswordRecoveryFormEventEventHandler : IPasswordRecoveryFormEvents
 
     public async Task RecoveringPasswordAsync(Action<string, string> reportError)
     {
-        if (!await _reCaptchaService.IsThisARobotAsync("user-recover-password"))
+        if (!await _reCaptchaService.IsThisARobotAsync(UserRecoverPasswordRobotTag))
         {
             return;
         }
@@ -23,11 +26,11 @@ public class PasswordRecoveryFormEventEventHandler : IPasswordRecoveryFormEvents
     }
 
     public async Task PasswordRecoveredAsync(PasswordRecoveryContext context)
-        => await _reCaptchaService.ThisIsAHumanAsync("user-recover-password");
+        => await _reCaptchaService.ThisIsAHumanAsync(UserRecoverPasswordRobotTag);
 
     public async Task ResettingPasswordAsync(Action<string, string> reportError)
     {
-        if (!await _reCaptchaService.IsThisARobotAsync("user-reset-password"))
+        if (!await _reCaptchaService.IsThisARobotAsync(UserResetPasswordRobotTag))
         {
             return;
         }
@@ -36,5 +39,5 @@ public class PasswordRecoveryFormEventEventHandler : IPasswordRecoveryFormEvents
     }
 
     public async Task PasswordResetAsync(PasswordRecoveryContext context)
-        => await _reCaptchaService.ThisIsAHumanAsync("user-reset-password");
+        => await _reCaptchaService.ThisIsAHumanAsync(UserResetPasswordRobotTag);
 }

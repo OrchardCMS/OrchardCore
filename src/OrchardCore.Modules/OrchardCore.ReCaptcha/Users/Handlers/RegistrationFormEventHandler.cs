@@ -6,6 +6,8 @@ namespace OrchardCore.ReCaptcha.Users.Handlers;
 
 public class RegistrationFormEventHandler : RegistrationFormEventsBase
 {
+    public const string UserRegistrationRobotTag = "user-registration";
+
     private readonly ReCaptchaService _reCaptchaService;
 
     public RegistrationFormEventHandler(ReCaptchaService reCaptchaService)
@@ -15,7 +17,7 @@ public class RegistrationFormEventHandler : RegistrationFormEventsBase
 
     public override async Task RegistrationValidationAsync(Action<string, string> reportError)
     {
-        if (!await _reCaptchaService.IsThisARobotAsync("user-registration"))
+        if (!await _reCaptchaService.IsThisARobotAsync(UserRegistrationRobotTag))
         {
             return;
         }
@@ -24,8 +26,8 @@ public class RegistrationFormEventHandler : RegistrationFormEventsBase
     }
 
     public override async Task RegisteringAsync(UserRegisteringContext context)
-        => await _reCaptchaService.MaybeThisIsARobot("user-registration");
+        => await _reCaptchaService.MaybeThisIsARobot(UserRegistrationRobotTag);
 
     public override async Task RegisteredAsync(IUser user)
-        => await _reCaptchaService.ThisIsAHumanAsync("user-registration");
+        => await _reCaptchaService.ThisIsAHumanAsync(UserRegistrationRobotTag);
 }

@@ -9,34 +9,31 @@ namespace OrchardCore.ReCaptcha.ActionFilters;
 public class ValidateReCaptchaAttribute : ActionFilterAttribute
 {
     private readonly ReCaptchaMode _mode;
+    private readonly string _tag;
 
-    public ValidateReCaptchaAttribute(ReCaptchaMode mode = ReCaptchaMode.AlwaysShow)
+    public ValidateReCaptchaAttribute(ReCaptchaMode mode = ReCaptchaMode.AlwaysShow, string tag = "")
     {
         _mode = mode;
+        _tag = tag ?? string.Empty;
     }
 
     public override async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
     {
-        var recaptchaService = context.HttpContext.RequestServices.GetService<ReCaptchaService>();
+        var reCaptchaService = context.HttpContext.RequestServices.GetService<ReCaptchaService>();
         var S = context.HttpContext.RequestServices.GetService<IStringLocalizer<ReCaptchaService>>();
         var isValidCaptcha = false;
         var reCaptchaResponse = context.HttpContext.Request?.Form?[Constants.ReCaptchaServerResponseHeaderName].ToString();
 
         if (!string.IsNullOrWhiteSpace(reCaptchaResponse))
         {
-            isValidCaptcha = await recaptchaService.VerifyCaptchaResponseAsync(reCaptchaResponse);
+            isValidCaptcha = await reCaptchaService.VerifyCaptchaResponseAsync(reCaptchaResponse);
         }
 
-        var isRobot = false;
+        var isRobot = true;
 
-        switch (_mode)
+        if (_mode == ReCaptchaMode.PreventRobots)
         {
-            case ReCaptchaMode.PreventRobots:
-                isRobot = recaptchaService.IsThisARobot();
-                break;
-            case ReCaptchaMode.AlwaysShow:
-                isRobot = true;
-                break;
+            isRobot = await reCaptchaService.IsThisARobotAsync(_tag);
         }
 
         if (isRobot && !isValidCaptcha)
@@ -48,11 +45,11 @@ public class ValidateReCaptchaAttribute : ActionFilterAttribute
 
         if (context.ModelState.IsValid)
         {
-            recaptchaService.ThisIsAHuman();
+            await reCaptchaService.ThisIsAHumanAsync(_tag);
         }
         else
         {
-            recaptchaService.MaybeThisIsARobot();
+            await reCaptchaService.MaybeThisIsARobot(_tag);
         }
 
         return;

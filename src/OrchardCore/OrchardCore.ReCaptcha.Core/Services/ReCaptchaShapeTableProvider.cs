@@ -10,59 +10,60 @@ namespace OrchardCore.ReCaptcha.Services;
 
 public abstract class ReCaptchaShapeTableProvider : ShapeTableProvider
 {
-    private readonly string[] _shapeTypes;
+    private readonly string _shapeType;
+    private readonly string _tag;
 
-    protected ReCaptchaShapeTableProvider(params string[] shapeTypes)
+    protected ReCaptchaShapeTableProvider(string shapeType, string tag)
     {
-        _shapeTypes = shapeTypes ?? [];
+        _shapeType = shapeType;
+        _tag = tag ?? string.Empty;
     }
 
     public override ValueTask DiscoverAsync(ShapeTableBuilder builder)
     {
-        foreach (var shapeType in _shapeTypes)
-        {
-            builder.Describe(shapeType)
-                .OnDisplaying(async builder =>
+
+        builder.Describe(_shapeType)
+            .OnDisplaying(async builder =>
+            {
+                var siteService = builder.DisplayContext.ServiceProvider.GetService<ISiteService>();
+
+                var reCaptchaSettings = await siteService.GetSettingsAsync<ReCaptchaSettings>();
+
+                if (!reCaptchaSettings.IsValid())
                 {
-                    var siteService = builder.DisplayContext.ServiceProvider.GetService<ISiteService>();
+                    return;
+                }
 
-                    var reCaptchaSettings = await siteService.GetSettingsAsync<ReCaptchaSettings>();
+                var reCaptchaService = builder.ServiceProvider.GetService<ReCaptchaService>();
 
-                    if (!reCaptchaSettings.IsValid())
-                    {
-                        return;
-                    }
+                if (!await reCaptchaService.IsThisARobotAsync(_tag))
+                {
+                    return;
+                }
 
-                    var reCaptchaService = builder.ServiceProvider.GetService<ReCaptchaService>();
+                if (!builder.Shape.Properties.TryGetValue("Content", out var content))
+                {
+                    return;
+                }
 
-                    if (!reCaptchaService.IsThisARobot())
-                    {
-                        return;
-                    }
+                var contentShape = content as IShape;
 
-                    if (!builder.Shape.Properties.TryGetValue("Content", out var content))
-                    {
-                        return;
-                    }
+                if (contentShape == null)
+                {
+                    return;
+                }
 
-                    var contentShape = content as IShape;
+                var shapeFactory = builder.DisplayContext.ServiceProvider.GetService<IShapeFactory>();
 
-                    if (contentShape == null)
-                    {
-                        return;
-                    }
+                var reCaptchaShape = await shapeFactory.CreateAsync("ReCaptcha", Arguments.From(new
+                {
+                    mode = ReCaptchaMode.AlwaysShow,
+                    language = CultureInfo.CurrentUICulture.Name,
+                    tag = _tag,
+                }));
 
-                    var shapeFactory = builder.DisplayContext.ServiceProvider.GetService<IShapeFactory>();
-
-                    var reCaptchaShape = await shapeFactory.CreateAsync("ReCaptcha", Arguments.From(new
-                    {
-                        mode = ReCaptchaMode.AlwaysShow,
-                        language = CultureInfo.CurrentUICulture.Name,
-                    }));
-
-                    await contentShape.AddAsync(reCaptchaShape, "after");
-                });
-        }
+                await contentShape.AddAsync(reCaptchaShape, "after");
+            });
 
         return ValueTask.CompletedTask;
     }

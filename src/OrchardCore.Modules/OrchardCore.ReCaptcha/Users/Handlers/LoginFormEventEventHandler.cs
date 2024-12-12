@@ -6,6 +6,8 @@ namespace OrchardCore.ReCaptcha.Users.Handlers;
 
 public class LoginFormEventEventHandler : LoginFormEventBase
 {
+    public const string UserLoginRobotTag = "user-login";
+
     private readonly ReCaptchaService _reCaptchaService;
 
     public LoginFormEventEventHandler(ReCaptchaService reCaptchaService)
@@ -14,11 +16,11 @@ public class LoginFormEventEventHandler : LoginFormEventBase
     }
 
     public override async Task LoggedInAsync(IUser user)
-        => await _reCaptchaService.ThisIsAHumanAsync("user-login");
+        => await _reCaptchaService.ThisIsAHumanAsync(UserLoginRobotTag);
 
     public override async Task LoggingInAsync(string userName, Action<string, string> reportError)
     {
-        if (!await _reCaptchaService.IsThisARobotAsync("user-login"))
+        if (!await _reCaptchaService.IsThisARobotAsync(UserLoginRobotTag))
         {
             return;
         }
@@ -27,8 +29,8 @@ public class LoginFormEventEventHandler : LoginFormEventBase
     }
 
     public override async Task LoggingInFailedAsync(string userName)
-        => await _reCaptchaService.MaybeThisIsARobot("user-login");
+        => await _reCaptchaService.MaybeThisIsARobot(UserLoginRobotTag);
 
     public override async Task LoggingInFailedAsync(IUser user)
-        => await _reCaptchaService.MaybeThisIsARobot("user-login");
+        => await _reCaptchaService.MaybeThisIsARobot(UserLoginRobotTag);
 }

@@ -39,7 +39,7 @@ public class ReCaptchaShape : IShapeAttributeProvider
     }
 
     [Shape]
-    public async Task<IHtmlContent> ReCaptcha(ReCaptchaMode mode, string language, string onload)
+    public async Task<IHtmlContent> ReCaptcha(ReCaptchaMode mode, string tag, string language, string onload)
     {
         var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
 
@@ -53,7 +53,17 @@ public class ReCaptchaShape : IShapeAttributeProvider
 
         if (mode == ReCaptchaMode.PreventRobots)
         {
-            robotDetected = _detectRobots.Invoke(d => d.DetectRobot(), _logger).Any(d => d.IsRobot);
+            tag ??= string.Empty;
+
+            foreach (var robot in _detectRobots)
+            {
+                var result = await robot.DetectRobotAsync(tag);
+                if (result.IsRobot)
+                {
+                    robotDetected = true;
+                    break;
+                }
+            }
         }
 
         if (alwaysShow || robotDetected)

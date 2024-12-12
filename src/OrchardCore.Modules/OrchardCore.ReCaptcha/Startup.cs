@@ -56,6 +56,7 @@ public sealed class UsersResetPasswordStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddShapeTableProvider<ReCaptchaUserResetPasswordShapeTableProvider>();
+        services.AddShapeTableProvider<ReCaptchaUserForgotPasswordShapeTableProvider>();
     }
 }
 
