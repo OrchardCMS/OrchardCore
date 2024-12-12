@@ -9,17 +9,17 @@ public interface IDetectRobots
     /// Performs a check to see if the current request could be submitted by a robot.
     /// </summary>
     /// <returns>Detection result.</returns>
-    RobotDetectionResult DetectRobot();
+    ValueTask<RobotDetectionResult> DetectRobotAsync(string tag);
 
     /// <summary>
     /// Clear the detectors internal state, we are not dealing with a robot.
     /// </summary>
-    void IsNotARobot();
+    ValueTask IsNotARobotAsync(string tag);
 
     /// <summary>
     /// We are dealing with a robot, shields up.
     /// </summary>
-    void FlagAsRobot();
+    ValueTask FlagAsRobotAsync(string tag);
 }
 
 public class RobotDetectionResult

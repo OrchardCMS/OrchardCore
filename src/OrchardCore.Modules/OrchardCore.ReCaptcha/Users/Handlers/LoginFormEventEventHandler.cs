@@ -13,34 +13,22 @@ public class LoginFormEventEventHandler : LoginFormEventBase
         _reCaptchaService = reCaptchaService;
     }
 
-    public override Task LoggedInAsync(IUser user)
-    {
-        _reCaptchaService.ThisIsAHuman();
+    public override async Task LoggedInAsync(IUser user)
+        => await _reCaptchaService.ThisIsAHumanAsync("user-login");
 
-        return Task.CompletedTask;
-    }
-
-    public override Task LoggingInAsync(string userName, Action<string, string> reportError)
+    public override async Task LoggingInAsync(string userName, Action<string, string> reportError)
     {
-        if (_reCaptchaService.IsThisARobot())
+        if (!await _reCaptchaService.IsThisARobotAsync("user-login"))
         {
-            return _reCaptchaService.ValidateCaptchaAsync(reportError);
+            return;
         }
 
-        return Task.CompletedTask;
+        await _reCaptchaService.ValidateCaptchaAsync(reportError);
     }
 
-    public override Task LoggingInFailedAsync(string userName)
-    {
-        _reCaptchaService.MaybeThisIsARobot();
+    public override async Task LoggingInFailedAsync(string userName)
+        => await _reCaptchaService.MaybeThisIsARobot("user-login");
 
-        return Task.CompletedTask;
-    }
-
-    public override Task LoggingInFailedAsync(IUser user)
-    {
-        _reCaptchaService.MaybeThisIsARobot();
-
-        return Task.CompletedTask;
-    }
+    public override async Task LoggingInFailedAsync(IUser user)
+        => await _reCaptchaService.MaybeThisIsARobot("user-login");
 }

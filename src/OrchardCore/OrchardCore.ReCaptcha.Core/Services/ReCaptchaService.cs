@@ -4,13 +4,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Modules;
 using OrchardCore.ReCaptcha.ActionFilters.Detection;
 using OrchardCore.ReCaptcha.Configuration;
 
 namespace OrchardCore.ReCaptcha.Services;
 
-public class ReCaptchaService
+public sealed class ReCaptchaService
 {
     private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
@@ -23,7 +22,8 @@ public class ReCaptchaService
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
     private readonly string _verifyHost;
-    protected readonly IStringLocalizer S;
+
+    internal readonly IStringLocalizer S;
 
     public ReCaptchaService(
         IHttpClientFactory httpClientFactory,
@@ -45,23 +45,50 @@ public class ReCaptchaService
     /// <summary>
     /// Flags the behavior as that of a robot.
     /// </summary>
-    public void MaybeThisIsARobot()
-        => _robotDetectors.Invoke(i => i.FlagAsRobot(), _logger);
+    public async ValueTask MaybeThisIsARobot(string tag)
+    {
+        tag ??= string.Empty;
+
+        foreach (var robotDetector in _robotDetectors)
+        {
+            await robotDetector.FlagAsRobotAsync(tag);
+        }
+    }
 
     /// <summary>
     /// Determines if the request has been made by a robot.
     /// </summary>
     /// <returns>Yes (true) or no (false).</returns>
-    public bool IsThisARobot()
-        => _robotDetectors.Invoke(i => i.DetectRobot(), _logger)
-        .Any(a => a.IsRobot);
+    public async ValueTask<bool> IsThisARobotAsync(string tag)
+    {
+        tag ??= string.Empty;
+
+        foreach (var robotDetector in _robotDetectors)
+        {
+            var result = await robotDetector.DetectRobotAsync(tag);
+
+            if (result.IsRobot)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /// <summary>
     /// Clears all robot markers, we are dealing with a human.
     /// </summary>
     /// <returns></returns>
-    public void ThisIsAHuman()
-        => _robotDetectors.Invoke(i => i.IsNotARobot(), _logger);
+    public async ValueTask ThisIsAHumanAsync(string tag)
+    {
+        tag ??= string.Empty;
+
+        foreach (var robotDetector in _robotDetectors)
+        {
+            await robotDetector.IsNotARobotAsync(tag);
+        }
+    }
 
     /// <summary>
     /// Verifies the ReCaptcha response with the ReCaptcha webservice.
@@ -73,7 +100,6 @@ public class ReCaptchaService
             && _reCaptchaSettings.IsValid()
             && await VerifyAsync(reCaptchaResponse);
 
-
     /// <summary>
     /// Validates the captcha that is in the Form of the current request.
     /// </summary>
@@ -83,6 +109,7 @@ public class ReCaptchaService
         if (!_reCaptchaSettings.IsValid())
         {
             _logger.LogWarning("The ReCaptcha settings are invalid");
+
             return false;
         }
 
