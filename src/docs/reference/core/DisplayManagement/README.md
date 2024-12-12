@@ -4,7 +4,12 @@
 
 ### What is a shape?
 
-Everything you need to know about Shapes is in [this video](https://youtu.be/gKLjtCIs4GU).
+Please review the following videos to enhance your understanding of shapes:
+
+- [Understanding Shapes](https://youtu.be/gKLjtCIs4GU)
+- [Demystifying Shapes](https://www.youtube.com/watch?v=yaZhKuD2qoI)
+
+These videos will provide valuable insights and a clear explanation of various shapes and their properties.
 
 ### Rendering a shape
 

@@ -34,6 +34,8 @@ public class ReCaptchaTagHelper : BaseShapeTagHelper
 
     public override Task ProcessAsync(TagHelperContext tagHelperContext, TagHelperOutput output)
     {
+        output.Attributes.Add("mode", Mode);
+
         if (!string.IsNullOrWhiteSpace(Language))
         {
             output.Attributes.Add("language", Language);
@@ -43,8 +45,6 @@ public class ReCaptchaTagHelper : BaseShapeTagHelper
         {
             output.Attributes.Add("onload", OnLoad);
         }
-
-        output.Attributes.Add("mode", Mode);
 
         return base.ProcessAsync(tagHelperContext, output);
     }
