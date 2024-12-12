@@ -39,7 +39,12 @@ public sealed class ExternalLoginFormEvents : ILoginFormEvent
         => Task.CompletedTask;
 
     public Task LoggedInAsync(IUser user)
-        => Task.CompletedTask;
+    {
+        var tempData = _tempDataDictionaryFactory.GetTempData(_httpContextAccessor.HttpContext);
+        tempData.Remove(ExternalLoginAutoRedirectKeyName);
+
+        return Task.CompletedTask;
+    }
 
     public async Task<IActionResult> LoggingInAsync()
     {
