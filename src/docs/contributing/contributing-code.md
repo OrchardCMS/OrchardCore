@@ -7,7 +7,7 @@ First of all, thank you for thinking about contributing to the code! Be sure to 
 
 ## Working with Orchard Core's source code
 
-First, clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `main` branch. Then, you have multiple options, see below. You can also use [any other .NET IDE](../../resources/development-tools/README.md) too.
+First, clone the repository using the command `git clone https://github.com/OrchardCMS/OrchardCore.git` and checkout the `main` branch. Then, you have multiple options, see below. You can also use [any other .NET IDE](../getting-started/development-tools.md) too.
 
 ### Command Line
 
@@ -44,7 +44,7 @@ You might also read these two blog posts on contributing code: [Open Source Cont
 
 - Familiarize yourself with the project and our coding conventions, as you can see in the repository. We follow the [ASP.NET Core Engineering guidelines](https://github.com/dotnet/aspnetcore/wiki/Engineering-guidelines).
 - Make sure the repository can be built and all tests pass. This is also checked by the CI workflows.
-- If you change CSS or JavaScript files, be sure to run [the Gulp pipeline](../../guides/gulp-pipeline/README.md).
+- If you change CSS or JavaScript files, be sure to run [the Gulp pipeline](../guides/gulp-pipeline/README.md).
 - If you want to start a conversation with other community members or run the CI workflows but you're not done yet, open your PR as a [draft](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests#draft-pull-requests). Then, [change it to ready for review](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/changing-the-stage-of-a-pull-request).
 - If your PR addresses an issue, be sure to [link them](https://docs.github.com/en/issues/tracking-your-work-with-issues/linking-a-pull-request-to-an-issue) (e.g. with `Fixes #IssueId`). This helps everyone find their way around contributions, and merging your PR will automatically close the issue too.
 - If there's no issue for your PR, then please describe the context and rationale in the pull request description, and provide screenshots/screen recordings of the changes if they affect the UX.
@@ -71,4 +71,4 @@ All code submissions will be reviewed and tested by the core team, and only thos
 - [CodeRabbit](https://coderabbit.ai/) is available for AI on-demand code reviews, which they graciously provide for us as an open-source project for free. You can ask the bot for a code review with a `@coderabbitai review` comment under any pull request. You can have a conversation with it under its comments too. Note that AI code reviews can help, but are frequently incorrect; use your best judgment.
 
 !!! tip
-    Do you want to demo what you've done to others, to showcase your work and to gather feedback? Join one of [our meetings](../../resources/meeting/README.md).
+    Do you want to demo what you've done to others, to showcase your work and to gather feedback? Join one of [our meetings](meetings.md).

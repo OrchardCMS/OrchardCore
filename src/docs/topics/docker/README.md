@@ -166,7 +166,7 @@ TODO
 
 See :
 
-[Database shell configurations](../../reference/core/Shells/README.md#database-shells-configuration-provider)
+[Database shell configurations](../../reference/modules/Shells/README.md#database-shells-configuration-provider)
 
 [Autosetup feature PR](https://github.com/OrchardCMS/OrchardCore/pull/4567)
 
