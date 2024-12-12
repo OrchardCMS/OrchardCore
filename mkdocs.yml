@@ -141,6 +141,7 @@ nav:
       - Manage your Content: topics/content-management/README.md
       - Content Relationships: topics/content-relationships/README.md
       - Customize the Display: topics/display/README.md
+      - Display Management: reference/core/DisplayManagement/README.md
       - Localize your site: topics/localize/README.md
       - Handle the Media: topics/media/README.md
       - Navigate between pages: topics/navigation/README.md
