@@ -93,7 +93,7 @@ plugins:
         - "*node_modules*"
   - redirects:
       redirect_maps:
-        'topics/docs-contributions/README.md': 'guides/contributing/contributing-documentation.md'
+        'topics/docs-contributions/README.md': 'contributing/contributing-documentation.md'
 
 # Page tree
 nav:
@@ -129,14 +129,14 @@ nav:
       - 1.0.0-beta2: releases/1.0.0-beta2.md
       - 1.0.0-beta1: releases/1.0.0-beta1.md
   - Getting started:
-      - Development Tools: resources/development-tools/README.md
+      - Development Tools: getting-started/development-tools.md
       - Create a CMS Web application: getting-started/README.md
       - Test drive Orchard Core: getting-started/test-drive-orchard-core.md
       - Configure Preview package source: getting-started/preview-package-source.md
       - Recipes and Starter Themes: getting-started/starter-recipes.md
       - Code Generation Templates: getting-started/templates/README.md
       - Create a Theme: getting-started/theme.md
-      - External Resources: resources/tutorials/README.md
+      - External Resources: getting-started/external-resources.md
   - Guides:
       - Follow the Guides: guides/README.md
       - Create a modular application: guides/create-modular-application-mvc/README.md
@@ -248,12 +248,12 @@ nav:
               - Auto Setup: reference/modules/AutoSetup/README.md
               - Features: reference/modules/Features/README.md
               - Contents: reference/modules/Contents/README.md
-              - Configuration: reference/core/Configuration/README.md
+              - Configuration: reference/modules/Configuration/README.md
               - Cors: reference/modules/Cors/README.md
               - Custom Settings: reference/modules/CustomSettings/README.md
               - Deployment: reference/modules/Deployment/README.md
-              - Placement: reference/core/Placement/README.md
-              - Data: reference/core/Data/README.md
+              - Placement: reference/modules/Placement/README.md
+              - Data: reference/modules/Data/README.md
               - Data Migrations: reference/modules/Migrations/README.md
               - Diagnostics: reference/modules/Diagnostics/README.md
               - Dynamic Cache: reference/modules/DynamicCache/README.md
@@ -261,47 +261,47 @@ nav:
               - SMTP Provider: reference/modules/Email.Smtp/README.md
               - Azure Email Provider: reference/modules/Email.Azure/README.md
               - GraphQL: reference/modules/Apis.GraphQL/README.md
-              - GraphQL queries: reference/core/Apis.GraphQL.Abstractions/README.md
+              - GraphQL queries: reference/modules/Apis.GraphQL.Abstractions/README.md
               - Health Check: reference/modules/HealthChecks/README.md
               - HTTPS: reference/modules/Https/README.md
-              - Key Vault (Azure): reference/core/KeyVault.Azure/README.md
+              - Key Vault (Azure): reference/modules/KeyVault.Azure/README.md
               - Localization: reference/modules/Localize/README.md
-              - Logging Serilog: reference/core/Logging.Serilog/README.md
+              - Logging Serilog: reference/modules/Logging.Serilog/README.md
               - Mini Profiler: reference/modules/MiniProfiler/README.md
-              - Modules: reference/core/Modules/README.md
+              - Modules: reference/modules/Modules/README.md
               - OpenId: reference/modules/OpenId/README.md
-              - Razor Helpers: reference/core/Razor/README.md
+              - Razor Helpers: reference/modules/Razor/README.md
               - Recipes: reference/modules/Recipes/README.md
               - Redis: reference/modules/Redis/README.md
               - Remote Deployment: reference/modules/Deployment.Remote/README.md
               - Response Compression: reference/modules/ResponseCompression/README.md
               - Roles: reference/modules/Roles/README.md
-              - Sanitizer: reference/core/Sanitizer/README.md
+              - Sanitizer: reference/modules/Sanitizer/README.md
               - Scripting: reference/modules/Scripting/README.md
               - Security: reference/modules/Security/README.md
               - Setup: reference/modules/Setup/README.md
-              - Shells: reference/core/Shells/README.md
+              - Shells: reference/modules/Shells/README.md
               - Tenants: reference/modules/Tenants/README.md
               - Workflows: reference/modules/Workflows/README.md
               - DataProtection (Azure Storage): reference/modules/DataProtection.Azure/README.md
               - Background Tasks: reference/modules/BackgroundTasks/README.md
               - URL Rewriting: reference/modules/UrlRewriting/README.md
               - Reverse Proxy: reference/modules/ReverseProxy/README.md
-      - Branding: resources/branding/README.md
-      - Libraries: resources/libraries/README.md
-      - Glossary: glossary/README.md
+      - Branding: reference/branding/README.md
+      - Libraries: reference/libraries/README.md
+      - Glossary: reference/glossary/README.md
   - Contributing:
-      - Overview: guides/contributing/README.md
-      - Opening and managing issues: guides/contributing/managing-issues.md
-      - Contributing code: guides/contributing/contributing-code.md
-      - Contributing documentation: guides/contributing/contributing-documentation.md
-      - Reviewing pull requests: guides/contributing/reviewing-pull-requests.md
-      - Benchmarking: guides/contributing/benchmarking.md
-      - Developer Meetings: resources/meeting/README.md
+      - Overview: contributing/README.md
+      - Opening and managing issues: contributing/managing-issues.md
+      - Contributing code: contributing/contributing-code.md
+      - Contributing documentation: contributing/contributing-documentation.md
+      - Reviewing pull requests: contributing/reviewing-pull-requests.md
+      - Benchmarking: contributing/benchmarking.md
+      - Developer Meetings: contributing/meetings.md
   - Community:
       - Contributors: community/contributors/README.md
       - Contributors Map: community/contributors/Map.md
-      - Feature Owners: resources/owners/README.md
+      - Feature Owners: community/owners/README.md
       - Honorable Contributors:
           - Jean-Thierry Kéchichian: community/jean-thierry/README.md
       - Jean-Thierry Kéchichian Community Award: community/jean-thierry-community-award/README.md
