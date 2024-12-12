@@ -1,7 +1,8 @@
+using System.Globalization;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.ReCaptcha.Configuration;
-using OrchardCore.ReCaptcha.Services;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
@@ -10,25 +11,30 @@ namespace OrchardCore.ReCaptcha.Drivers;
 public sealed class ReCaptchaLoginFormDisplayDriver : DisplayDriver<LoginForm>
 {
     private readonly ISiteService _siteService;
-    private readonly ReCaptchaService _reCaptchaService;
+    private readonly IShapeFactory _shapeFactory;
 
     public ReCaptchaLoginFormDisplayDriver(
         ISiteService siteService,
-        ReCaptchaService reCaptchaService)
+        IShapeFactory shapeFactory)
     {
         _siteService = siteService;
-        _reCaptchaService = reCaptchaService;
+        _shapeFactory = shapeFactory;
     }
 
     public override async Task<IDisplayResult> EditAsync(LoginForm model, BuildEditorContext context)
     {
-        var _reCaptchaSettings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
+        var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
 
-        if (!_reCaptchaSettings.IsValid() || !_reCaptchaService.IsThisARobot())
+        if (!settings.ConfigurationExists())
         {
             return null;
         }
 
-        return View("FormReCaptcha", model).Location("Content:after");
+        var reCaptchaShape = await _shapeFactory.CreateAsync("ReCaptcha", Arguments.From(new
+        {
+            language = CultureInfo.CurrentUICulture.Name,
+        }));
+
+        return Shape("ReCaptcha", reCaptchaShape).Location("Content:after");
     }
 }

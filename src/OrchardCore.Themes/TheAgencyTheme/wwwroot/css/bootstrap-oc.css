@@ -201,6 +201,10 @@ By Orchard Core Team
   }
 }
 
+.g-recaptcha {
+  margin-bottom: 1rem;
+}
+
 ul.pager {
   display: flex;
   padding-left: 0;

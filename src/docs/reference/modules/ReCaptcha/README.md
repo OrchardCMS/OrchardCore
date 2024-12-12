@@ -40,3 +40,21 @@ you can create your own implementation of the IDetectRobots interface and it wil
 ## Using with a form post with Content-Type = "application/json" from a javascript framework
 
 The ReCaptcha api uses the data-callback attribute to return the token generated when validating the ReCaptcha widget. This allows to post that token from an Angular, Vue.js form post. If you want to validate the ReCaptcha from the Workflow task you will need to pass the token in the header of your request as "g-recaptcha-response".
+
+## Shapes
+
+### ReCaptcha
+
+Display for a reCaptcha challenge if the service is configured.
+
+=== "Liquid"
+
+    ``` liquid
+    {% shape "ReCaptcha", mode: "AlwaysShow", language: "en-US" %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <shape type="ReCaptcha" mode="AlwaysShow" language="en-US" />
+    ```

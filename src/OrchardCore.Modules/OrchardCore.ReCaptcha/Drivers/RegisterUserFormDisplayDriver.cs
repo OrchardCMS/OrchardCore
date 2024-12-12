@@ -1,3 +1,5 @@
+using System.Globalization;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.ReCaptcha.Configuration;
@@ -9,21 +11,30 @@ namespace OrchardCore.ReCaptcha.Drivers;
 public sealed class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserForm>
 {
     private readonly ISiteService _siteService;
+    private readonly IShapeFactory _shapeFactory;
 
-    public RegisterUserFormDisplayDriver(ISiteService siteService)
+    public RegisterUserFormDisplayDriver(
+        ISiteService siteService,
+        IShapeFactory shapeFactory)
     {
         _siteService = siteService;
+        _shapeFactory = shapeFactory;
     }
 
     public override async Task<IDisplayResult> EditAsync(RegisterUserForm model, BuildEditorContext context)
     {
         var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
 
-        if (!settings.IsValid())
+        if (!settings.ConfigurationExists())
         {
             return null;
         }
 
-        return View("FormReCaptcha", model).Location("Content:after");
+        var reCaptchaShape = await _shapeFactory.CreateAsync("ReCaptcha", Arguments.From(new
+        {
+            language = CultureInfo.CurrentUICulture.Name,
+        }));
+
+        return Shape("ReCaptcha", reCaptchaShape).Location("Content:after");
     }
 }

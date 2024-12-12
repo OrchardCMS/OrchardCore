@@ -10,15 +10,11 @@ public class ReCaptchaSettings
 
     public string ReCaptchaApiUri { get; set; } = Constants.ReCaptchaApiUri;
 
-    /// <summary>
-    /// Value for supplying the amount of lenience we are willing to show robots.
-    /// </summary>
-    public int DetectionThreshold { get; set; } = 5;
 
-    private bool? _isValid;
+    private bool? _configurationExists;
 
-    public bool IsValid()
-        => _isValid ??= !string.IsNullOrWhiteSpace(SiteKey)
+    public bool ConfigurationExists()
+        => _configurationExists ??= !string.IsNullOrWhiteSpace(SiteKey)
         && !string.IsNullOrWhiteSpace(SecretKey)
         && !string.IsNullOrWhiteSpace(ReCaptchaApiUri);
 }
