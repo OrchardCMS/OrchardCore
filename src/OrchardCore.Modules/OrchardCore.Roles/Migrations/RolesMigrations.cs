@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Data.Migration;
@@ -15,10 +16,14 @@ public sealed class RolesMigrations : DataMigration
     private static readonly string _alternativeAdminRoleName = "SiteOwner";
 
     private readonly SystemRoleOptions _systemRoleOptions;
+    private readonly ILogger _logger;
 
-    public RolesMigrations(IOptions<SystemRoleOptions> systemRoleOptions)
+    public RolesMigrations(
+        IOptions<SystemRoleOptions> systemRoleOptions,
+        ILogger<RolesMigrations> logger)
     {
         _systemRoleOptions = systemRoleOptions.Value;
+        _logger = logger;
     }
 
 #pragma warning disable CA1822 // Mark members as static
@@ -41,10 +46,8 @@ public sealed class RolesMigrations : DataMigration
                     continue;
                 }
 
-                // When a new tenant is created, the RoleClaims will be empty for Admin roles.
-                var hasSiteOwner = r.RoleClaims is null ||
-                r.RoleClaims.Count == 0 ||
-                r.RoleClaims.Any(x => x.ClaimValue == "SiteOwner");
+                // Check to see if the role contains the obsolete 'SiteOwner' permission claim.
+                var hasSiteOwner = r.RoleClaims is not null && r.RoleClaims.Any(x => x.ClaimValue == "SiteOwner");
 
                 if (r.RoleName.Equals(OrchardCoreConstants.Roles.Administrator, StringComparison.OrdinalIgnoreCase))
                 {
@@ -54,16 +57,24 @@ public sealed class RolesMigrations : DataMigration
                         // We'll need to create a new role name that does not exists and assign it as the system 'Administrator' role.
                         adminSystemRoleName = GenerateNewAdminRoleName(roles);
 
+                        _logger.LogInformation("The {DefaultAdministratorRoleName} does not contain SiteOwner permission. Creating a new AdminRoleName as the system admin name. The new role name is {NewAdminRoleName}.", OrchardCoreConstants.Roles.Administrator, adminSystemRoleName);
+
                         await roleManager.CreateAsync(new Role
                         {
                             RoleName = adminSystemRoleName,
                         });
+
                     }
                     else
                     {
+                        _logger.LogInformation("Removing all existing permission claims from the default {DefaultAdministratorRoleName} Administrator name.", OrchardCoreConstants.Roles.Administrator);
+
                         r.RoleClaims.Clear();
 
                         await roleManager.UpdateAsync(r);
+
+                        // Don't processed to avoid adding the default 'Administrator' role to the adminRoles collection;
+                        continue;
                     }
                 }
 
@@ -84,9 +95,14 @@ public sealed class RolesMigrations : DataMigration
                     {
                         var users = await userManager.GetUsersInRoleAsync(adminRole.RoleName);
 
-                        foreach (var user in users)
+                        if (users.Count > 0)
                         {
-                            await userManager.AddToRoleAsync(user, adminSystemRoleName);
+                            _logger.LogInformation("Migrating all users {Count} users from {PreviousRoleName} to {NewRoleName}", users.Count, adminRole, adminSystemRoleName);
+
+                            foreach (var user in users)
+                            {
+                                await userManager.AddToRoleAsync(user, adminSystemRoleName);
+                            }
                         }
                     }
                 });
@@ -97,6 +113,8 @@ public sealed class RolesMigrations : DataMigration
                 // At this point, we'll update the shell settings and release the shell.
                 var shellSettings = scope.ServiceProvider.GetRequiredService<ShellSettings>();
                 var shellHost = scope.ServiceProvider.GetRequiredService<IShellHost>();
+
+                _logger.LogInformation("The {DefaultAdministratorRoleName} does not contain SiteOwner permission. Creating a new AdminRoleName as the system admin name and storing it in the tenant app settings provider. The new name is {NewAdminRoleName}", OrchardCoreConstants.Roles.Administrator, adminSystemRoleName);
 
                 shellSettings["AdminRoleName"] = adminSystemRoleName;
 
