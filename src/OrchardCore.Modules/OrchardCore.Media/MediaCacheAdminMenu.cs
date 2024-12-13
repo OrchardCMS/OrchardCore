@@ -33,7 +33,7 @@ public sealed class MediaCacheAdminMenu : AdminNavigationProvider
         builder
             .Add(S["Tools"], tools => tools
                 .Add(S["Media"], S["Media"].PrefixPosition(), media => media
-                    .Add(S["Media cache"], S["Media cache"].PrefixPosition(), cache => cache
+                    .Add(S["Cache"], S["Cache"].PrefixPosition(), cache => cache
                         .Action("Index", "MediaCache", "OrchardCore.Media")
                         .Permission(MediaCachePermissions.ManageAssetCache)
                         .LocalNav()
