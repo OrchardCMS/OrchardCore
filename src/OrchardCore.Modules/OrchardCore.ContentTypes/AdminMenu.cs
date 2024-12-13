@@ -39,7 +39,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 
         builder
             .Add(S["Design"], content => content
-                .Add(S["Content definition"], S["Content definition"].PrefixPosition("9"), contentDefinition => contentDefinition
+                .Add(S["Content definition"], S["Content definition"].PrefixPosition(), contentDefinition => contentDefinition
                     .Add(S["Content types"], S["Content types"].PrefixPosition("1"), contentTypes => contentTypes
                         .Action(nameof(AdminController.List), _adminControllerName, "OrchardCore.ContentTypes")
                         .Permission(Permissions.ViewContentTypes)
