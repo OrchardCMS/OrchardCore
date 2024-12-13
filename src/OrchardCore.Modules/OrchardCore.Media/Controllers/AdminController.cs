@@ -201,7 +201,7 @@ public sealed class AdminController : Controller
                 {
                     var extension = Path.GetExtension(file.FileName);
 
-                    if (!allowedExtensions.Contains(extension))
+                    if (!allowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
                     {
                         result.Add(new
                         {
