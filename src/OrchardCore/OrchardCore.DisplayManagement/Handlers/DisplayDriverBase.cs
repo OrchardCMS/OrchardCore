@@ -107,12 +107,6 @@ public class DisplayDriverBase
         => Factory(shapeType, ctx => ValueTask.FromResult(shape));
 
     /// <summary>
-    /// If the shape needs to be rendered, it is created automatically from its type name and initialized.
-    /// </summary>
-    public ShapeResult Shape(IShape shape)
-        => Shape(shape.Metadata.Type, shape);
-
-    /// <summary>
     /// Creates a shape lazily.
     /// </summary>
     public ShapeResult Factory(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder)
