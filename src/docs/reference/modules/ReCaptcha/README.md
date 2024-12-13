@@ -17,7 +17,7 @@ When the threshold for login attempts are broken, a captcha is shown on the logi
 
 ### Forms
 
-You can add protection from robots to forms by including the recaptcha field when you design a form.
+You can add protection from robots to forms by including the reCaptcha field when you design a form.
 
 ### Workflow
 
@@ -50,11 +50,11 @@ Display for a reCaptcha challenge if the service is configured.
 === "Liquid"
 
     ``` liquid
-    {% shape "ReCaptcha", mode: "AlwaysShow", language: "en-US" %}
+    {% shape "ReCaptcha", language: "en-US" %}
     ```
 
 === "Razor"
 
     ``` html
-    <shape type="ReCaptcha" mode="AlwaysShow" language="en-US" />
+    <shape type="ReCaptcha" language="en-US" />
     ```

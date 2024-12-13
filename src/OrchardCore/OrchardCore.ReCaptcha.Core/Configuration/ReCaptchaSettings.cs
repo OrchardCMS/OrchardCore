@@ -10,11 +10,14 @@ public class ReCaptchaSettings
 
     public string ReCaptchaApiUri { get; set; } = Constants.ReCaptchaApiUri;
 
-
     private bool? _configurationExists;
 
     public bool ConfigurationExists()
         => _configurationExists ??= !string.IsNullOrWhiteSpace(SiteKey)
         && !string.IsNullOrWhiteSpace(SecretKey)
         && !string.IsNullOrWhiteSpace(ReCaptchaApiUri);
+
+    [Obsolete($"This method is obsolete and will be removed in future releases. Instead use {nameof(ConfigurationExists)}.")]
+    public bool IsValid()
+        => ConfigurationExists();
 }
