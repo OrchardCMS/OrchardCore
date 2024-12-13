@@ -1,11 +1,11 @@
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Tenants.Services;
 
 namespace OrchardCore.Tenants.Deployment;
 
-public class AllFeatureProfilesDeploymentSource : IDeploymentSource
+public sealed class AllFeatureProfilesDeploymentSource
+    : DeploymentSourceBase<AllFeatureProfilesDeploymentStep>
 {
     private readonly FeatureProfilesManager _featureProfilesManager;
 
@@ -14,13 +14,8 @@ public class AllFeatureProfilesDeploymentSource : IDeploymentSource
         _featureProfilesManager = featureProfilesManager;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(AllFeatureProfilesDeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not AllFeatureProfilesDeploymentStep)
-        {
-            return;
-        }
-
         var featureProfileObjects = new JsonObject();
         var featureProfiles = await _featureProfilesManager.GetFeatureProfilesDocumentAsync();
 

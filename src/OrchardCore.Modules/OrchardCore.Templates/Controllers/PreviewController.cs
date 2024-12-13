@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +11,7 @@ using OrchardCore.Templates.ViewModels;
 
 namespace OrchardCore.Templates.Controllers;
 
-public class PreviewController : Controller
+public sealed class PreviewController : Controller
 {
     private readonly IContentManager _contentManager;
     private readonly IContentHandleManager _contentHandleManager;

@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Text.Encodings.Web;
 
 namespace OrchardCore.DisplayManagement.Notify;

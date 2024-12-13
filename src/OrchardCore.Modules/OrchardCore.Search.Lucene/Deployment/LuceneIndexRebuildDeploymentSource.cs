@@ -1,26 +1,21 @@
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.Lucene.Deployment;
 
-public class LuceneIndexRebuildDeploymentSource : IDeploymentSource
+public sealed class LuceneIndexRebuildDeploymentSource
+    : DeploymentSourceBase<LuceneIndexRebuildDeploymentStep>
 {
-    public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override Task ProcessAsync(LuceneIndexRebuildDeploymentStep step, DeploymentPlanResult result)
     {
-        var luceneIndexRebuildStep = step as LuceneIndexRebuildDeploymentStep;
-
-        if (luceneIndexRebuildStep == null)
-        {
-            return Task.CompletedTask;
-        }
-
-        var indicesToRebuild = luceneIndexRebuildStep.IncludeAll ? [] : luceneIndexRebuildStep.IndexNames;
+        var indicesToRebuild = step.IncludeAll
+            ? []
+            : step.IndexNames;
 
         result.Steps.Add(new JsonObject
         {
             ["name"] = "lucene-index-rebuild",
-            ["includeAll"] = luceneIndexRebuildStep.IncludeAll,
+            ["includeAll"] = step.IncludeAll,
             ["Indices"] = JArray.FromObject(indicesToRebuild),
         });
 

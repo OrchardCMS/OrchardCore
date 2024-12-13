@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Indexing;
 

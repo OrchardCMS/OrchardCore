@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.OpenId.Settings;
 
 public class OpenIdValidationSettings

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Zones;
@@ -63,6 +59,6 @@ public abstract class BaseDisplayManager
     protected ValueTask<IShape> CreateContentShapeAsync(string actualShapeType)
     {
         return _shapeFactory.CreateAsync(actualShapeType, () =>
-            new ValueTask<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("ContentZone"))));
+            ValueTask.FromResult<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("ContentZone"))));
     }
 }

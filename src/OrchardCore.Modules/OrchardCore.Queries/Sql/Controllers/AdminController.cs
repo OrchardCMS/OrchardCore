@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Dapper;
 using Fluid;
 using Fluid.Values;
@@ -20,13 +16,14 @@ using YesSql;
 namespace OrchardCore.Queries.Sql.Controllers;
 
 [Feature("OrchardCore.Queries.Sql")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IStore _store;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
-    protected readonly IStringLocalizer S;
     private readonly TemplateOptions _templateOptions;
+
+    internal readonly IStringLocalizer S;
 
     public AdminController(
         IAuthorizationService authorizationService,
@@ -46,7 +43,10 @@ public class AdminController : Controller
     [Admin("Queries/Sql/Query", "QueriesRunSql")]
     public Task<IActionResult> Query(string query)
     {
-        query = string.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
+        query = string.IsNullOrWhiteSpace(query)
+            ? ""
+            : Base64.FromUTF8Base64String(query);
+
         return Query(new AdminQueryViewModel
         {
             DecodedQuery = query,

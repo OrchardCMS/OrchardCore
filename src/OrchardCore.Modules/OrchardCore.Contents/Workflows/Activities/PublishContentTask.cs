@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -36,7 +33,7 @@ public class PublishContentTask : ContentTask
         var content = (await GetContentAsync(workflowContext))
             ?? throw new InvalidOperationException($"The '{nameof(PublishContentTask)}' failed to retrieve the content item.");
 
-        if (string.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))
+        if (!content.HasDraft())
         {
             return Outcomes("Noop");
         }

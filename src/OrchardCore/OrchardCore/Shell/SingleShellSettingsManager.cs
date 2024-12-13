@@ -1,7 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace OrchardCore.Environment.Shell;
 
 public class SingleShellSettingsManager : IShellSettingsManager

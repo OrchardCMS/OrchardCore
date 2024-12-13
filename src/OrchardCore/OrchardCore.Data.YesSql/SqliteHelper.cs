@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 using Microsoft.Data.Sqlite;
 using OrchardCore.Environment.Shell;
 
@@ -28,6 +26,7 @@ public static class SqliteHelper
             databaseName = "yessql.db";
         }
 
+        // Only allow creating a file DB when a tenant is in the Initializing state.
         var sqliteOpenMode = shellSettings.IsInitializing() ? SqliteOpenMode.ReadWriteCreate : SqliteOpenMode.ReadWrite;
 
         return GetSqliteConnectionStringBuilder(sqliteOptions, databaseFolder, databaseName, sqliteOpenMode).ToString();

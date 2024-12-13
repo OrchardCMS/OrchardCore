@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -11,7 +9,7 @@ namespace OrchardCore.Media.Services;
 /// <summary>
 /// Checks if the user has related permission to manage the path resource which is passed from AuthorizationHandler.
 /// </summary>
-public class ManageMediaFolderAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;

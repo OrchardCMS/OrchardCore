@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -34,7 +31,7 @@ public sealed class AdminMenuNavigationProvidersCoordinator : INavigationProvide
         _logger = logger;
     }
 
-    public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    public async ValueTask BuildNavigationAsync(string name, NavigationBuilder builder)
     {
         // We only add them if the caller uses the string "adminMenu".
         if (name != NavigationConstants.AdminMenuId)

@@ -1,5 +1,3 @@
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -15,7 +13,7 @@ public sealed class GeoPointFieldSettingsDriver : ContentPartFieldDefinitionDisp
     {
         return Initialize<GeoPointFieldSettings>("GeoPointFieldSettings_Edit", model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<GeoPointFieldSettings>();
+            var settings = partFieldDefinition.GetSettings<GeoPointFieldSettings>();
 
             model.Hint = settings.Hint;
             model.Required = settings.Required;

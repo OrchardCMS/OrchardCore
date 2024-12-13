@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Models;
 

@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Recipes.Models;

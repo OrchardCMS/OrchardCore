@@ -1,11 +1,11 @@
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Deployment;
 
-public class AllMediaProfilesDeploymentSource : IDeploymentSource
+public sealed class AllMediaProfilesDeploymentSource
+    : DeploymentSourceBase<AllMediaProfilesDeploymentStep>
 {
     private readonly MediaProfilesManager _mediaProfilesManager;
 
@@ -14,13 +14,8 @@ public class AllMediaProfilesDeploymentSource : IDeploymentSource
         _mediaProfilesManager = mediaProfilesManager;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(AllMediaProfilesDeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not AllMediaProfilesDeploymentStep)
-        {
-            return;
-        }
-
         var mediaProfiles = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
 
         result.Steps.Add(new JsonObject

@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -18,7 +15,7 @@ using YesSql;
 namespace OrchardCore.Taxonomies.Controllers;
 
 [Admin]
-public class TagController : Controller, IUpdateModel
+public sealed class TagController : Controller, IUpdateModel
 {
     private readonly IContentManager _contentManager;
     private readonly IAuthorizationService _authorizationService;

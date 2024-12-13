@@ -1,6 +1,4 @@
-using System;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Facebook.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -10,16 +8,17 @@ namespace OrchardCore.Facebook.Recipes;
 /// <summary>
 /// This recipe step sets general Facebook Login settings.
 /// </summary>
-public sealed class FacebookSettingsStep : IRecipeStepHandler
+public sealed class FacebookSettingsStep : NamedRecipeStepHandler
 {
     private readonly IFacebookService _facebookService;
 
     public FacebookSettingsStep(IFacebookService facebookService)
+        : base("FacebookCoreSettings")
     {
         _facebookService = facebookService;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
         if (!string.Equals(context.Name, "FacebookCoreSettings", StringComparison.OrdinalIgnoreCase))
         {

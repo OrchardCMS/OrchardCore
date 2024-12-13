@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.FileStorage.AzureBlob;
 
 public class BlobDirectory : IFileStoreEntry

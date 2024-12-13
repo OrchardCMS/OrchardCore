@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.Media.ViewModels;
 
 public class MediaStoreEntryViewModel

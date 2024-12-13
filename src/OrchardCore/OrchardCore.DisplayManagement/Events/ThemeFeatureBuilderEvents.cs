@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using OrchardCore.DisplayManagement.Extensions;
 using OrchardCore.DisplayManagement.Manifest;
 using OrchardCore.Environment.Extensions.Features;

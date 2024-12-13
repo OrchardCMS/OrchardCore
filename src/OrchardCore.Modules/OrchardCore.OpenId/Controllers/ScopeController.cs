@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -9,7 +6,6 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.OpenId.Abstractions.Descriptors;
@@ -20,18 +16,16 @@ namespace OrchardCore.OpenId.Controllers;
 
 [Feature(OpenIdConstants.Features.Management)]
 [Admin("OpenId/Scope/{action}/{id?}", "OpenIdScope{action}")]
-public class ScopeController : Controller
+public sealed class ScopeController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
+    private readonly ShellSettings _shellSettings;
     private readonly IOpenIdScopeManager _scopeManager;
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
-    private readonly ShellDescriptor _shellDescriptor;
-    private readonly ShellSettings _shellSettings;
-    private readonly IShellHost _shellHost;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public ScopeController(
         IOpenIdScopeManager scopeManager,
@@ -39,20 +33,16 @@ public class ScopeController : Controller
         IOptions<PagerOptions> pagerOptions,
         IStringLocalizer<ScopeController> stringLocalizer,
         IAuthorizationService authorizationService,
-        INotifier notifier,
-        ShellDescriptor shellDescriptor,
         ShellSettings shellSettings,
-        IShellHost shellHost)
+        INotifier notifier)
     {
         _scopeManager = scopeManager;
         _shapeFactory = shapeFactory;
         _pagerOptions = pagerOptions.Value;
         S = stringLocalizer;
         _authorizationService = authorizationService;
-        _notifier = notifier;
-        _shellDescriptor = shellDescriptor;
         _shellSettings = shellSettings;
-        _shellHost = shellHost;
+        _notifier = notifier;
     }
 
     [Admin("OpenId/Scope", "OpenIdScope")]
@@ -95,16 +85,8 @@ public class ScopeController : Controller
 
         var model = new CreateOpenIdScopeViewModel();
 
-        foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.IsRunning()))
-        {
-            model.Tenants.Add(new CreateOpenIdScopeViewModel.TenantEntry
-            {
-                Current = string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal),
-                Name = tenant.Name
-            });
-        }
-
         ViewData["ReturnUrl"] = returnUrl;
+
         return View(model);
     }
 
@@ -124,6 +106,7 @@ public class ScopeController : Controller
         if (!ModelState.IsValid)
         {
             ViewData["ReturnUrl"] = returnUrl;
+
             return View(model);
         }
 
@@ -136,13 +119,17 @@ public class ScopeController : Controller
 
         if (!string.IsNullOrEmpty(model.Resources))
         {
+            if (model.Resources.Contains(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError(nameof(model.Resources), S["The resources field cannot contain the value: {0}.", OpenIdConstants.Prefixes.Tenant + _shellSettings.Name]);
+
+                ViewData["ReturnUrl"] = returnUrl;
+
+                return View(model);
+            }
+
             descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
         }
-
-        descriptor.Resources.UnionWith(model.Tenants
-            .Where(tenant => tenant.Selected)
-            .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal))
-            .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
 
         await _scopeManager.CreateAsync(descriptor);
 
@@ -162,6 +149,7 @@ public class ScopeController : Controller
         }
 
         var scope = await _scopeManager.FindByPhysicalIdAsync(id);
+
         if (scope == null)
         {
             return NotFound();
@@ -175,24 +163,13 @@ public class ScopeController : Controller
             Name = await _scopeManager.GetNameAsync(scope)
         };
 
-        var resources = await _scopeManager.GetResourcesAsync(scope);
+        var resources = (await _scopeManager.GetResourcesAsync(scope))
+            .Where(resource => !string.IsNullOrEmpty(resource));
 
-        model.Resources = string.Join(" ",
-            from resource in resources
-            where !string.IsNullOrEmpty(resource) && !resource.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.Ordinal)
-            select resource);
-
-        foreach (var tenant in _shellHost.GetAllSettings().Where(s => s.IsRunning()))
-        {
-            model.Tenants.Add(new EditOpenIdScopeViewModel.TenantEntry
-            {
-                Current = string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal),
-                Name = tenant.Name,
-                Selected = resources.Contains(OpenIdConstants.Prefixes.Tenant + tenant.Name)
-            });
-        }
+        model.Resources = string.Join(' ', resources);
 
         ViewData["ReturnUrl"] = returnUrl;
+
         return View(model);
     }
 
@@ -205,6 +182,7 @@ public class ScopeController : Controller
         }
 
         var scope = await _scopeManager.FindByPhysicalIdAsync(model.Id);
+
         if (scope == null)
         {
             return NotFound();
@@ -213,6 +191,7 @@ public class ScopeController : Controller
         if (ModelState.IsValid)
         {
             var other = await _scopeManager.FindByNameAsync(model.Name);
+
             if (other != null && !string.Equals(await _scopeManager.GetIdAsync(other), await _scopeManager.GetIdAsync(scope), StringComparison.Ordinal))
             {
                 ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
@@ -222,6 +201,7 @@ public class ScopeController : Controller
         if (!ModelState.IsValid)
         {
             ViewData["ReturnUrl"] = returnUrl;
+
             return View(model);
         }
 
@@ -236,19 +216,23 @@ public class ScopeController : Controller
 
         if (!string.IsNullOrEmpty(model.Resources))
         {
-            descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries));
-        }
+            if (model.Resources.Contains(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError(nameof(model.Resources), S["The resources field cannot contain the value: {0}.", OpenIdConstants.Prefixes.Tenant + _shellSettings.Name]);
 
-        descriptor.Resources.UnionWith(model.Tenants
-            .Where(tenant => tenant.Selected)
-            .Where(tenant => !string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal))
-            .Select(tenant => OpenIdConstants.Prefixes.Tenant + tenant.Name));
+                ViewData["ReturnUrl"] = returnUrl;
+
+                return View(model);
+            }
+
+            descriptor.Resources.UnionWith(model.Resources.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+        }
 
         await _scopeManager.UpdateAsync(scope, descriptor);
 
         if (string.IsNullOrEmpty(returnUrl))
         {
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         return this.LocalRedirect(returnUrl, true);
@@ -263,6 +247,7 @@ public class ScopeController : Controller
         }
 
         var scope = await _scopeManager.FindByPhysicalIdAsync(id);
+
         if (scope == null)
         {
             return NotFound();

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -80,11 +79,10 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
         var hasChanges = settings.IsEnabled != model.IsEnabled;
+        var smsSettings = site.As<SmsSettings>();
 
         if (!model.IsEnabled)
         {
-            var smsSettings = site.As<SmsSettings>();
-
             if (hasChanges && smsSettings.DefaultProviderName == TwilioSmsProvider.TechnicalName)
             {
                 await _notifier.WarningAsync(H["You have successfully disabled the default SMS provider. The SMS service is now disable and will remain disabled until you designate a new default provider."]);
@@ -135,6 +133,16 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
 
                 settings.AuthToken = protectedToken;
             }
+        }
+
+        if (context.Updater.ModelState.IsValid && settings.IsEnabled && string.IsNullOrEmpty(smsSettings.DefaultProviderName))
+        {
+            // If we are enabling the only provider, set it as the default one.
+            smsSettings.DefaultProviderName = TwilioSmsProvider.TechnicalName;
+
+            site.Put(smsSettings);
+
+            hasChanges = true;
         }
 
         if (hasChanges)

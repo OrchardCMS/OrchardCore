@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -50,6 +47,7 @@ public sealed class MediaOptionsConfiguration : IConfigureOptions<MediaOptions>
         ".mpg",
         ".ogv", // (Ogg)
         ".3gp", // (3GPP)
+        ".webm",
     ];
 
     private const int DefaultMaxBrowserCacheDays = 30;

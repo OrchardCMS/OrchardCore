@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.ViewModels;
 

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Cysharp.Text;
 using Fluid;
 using Fluid.Values;
@@ -36,9 +35,9 @@ public class ShapeStringifyFilter : ILiquidFilter
 
             using var writer = new ZStringWriter();
             task.Result.WriteTo(writer, NullHtmlEncoder.Default);
-            return new ValueTask<FluidValue>(new StringValue(writer.ToString(), false));
+            return ValueTask.FromResult<FluidValue>(new StringValue(writer.ToString(), false));
         }
 
-        return new ValueTask<FluidValue>(StringValue.Empty);
+        return ValueTask.FromResult<FluidValue>(StringValue.Empty);
     }
 }

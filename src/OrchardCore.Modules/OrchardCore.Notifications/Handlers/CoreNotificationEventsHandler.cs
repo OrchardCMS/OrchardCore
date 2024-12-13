@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Entities;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.Services;

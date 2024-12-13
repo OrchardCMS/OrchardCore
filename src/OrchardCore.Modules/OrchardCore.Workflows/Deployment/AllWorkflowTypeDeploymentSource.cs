@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.Json;
@@ -10,7 +8,8 @@ using OrchardCore.Workflows.Services;
 
 namespace OrchardCore.Workflows.Deployment;
 
-public class AllWorkflowTypeDeploymentSource : IDeploymentSource
+public sealed class AllWorkflowTypeDeploymentSource
+    : DeploymentSourceBase<AllWorkflowTypeDeploymentStep>
 {
     private readonly IWorkflowTypeStore _workflowTypeStore;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
@@ -23,15 +22,8 @@ public class AllWorkflowTypeDeploymentSource : IDeploymentSource
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-    {
-        if (step is not AllWorkflowTypeDeploymentStep)
-        {
-            return;
-        }
-
-        ProcessWorkflowType(result, await _workflowTypeStore.ListAsync(), _jsonSerializerOptions);
-    }
+    protected override async Task ProcessAsync(AllWorkflowTypeDeploymentStep step, DeploymentPlanResult result)
+        => ProcessWorkflowType(result, await _workflowTypeStore.ListAsync(), _jsonSerializerOptions);
 
     public static void ProcessWorkflowType(DeploymentPlanResult result, IEnumerable<WorkflowType> workflowTypes, JsonSerializerOptions jsonSerializerOptions)
     {

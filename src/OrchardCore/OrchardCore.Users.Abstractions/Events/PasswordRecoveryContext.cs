@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Users.Events;
 
 /// <summary>

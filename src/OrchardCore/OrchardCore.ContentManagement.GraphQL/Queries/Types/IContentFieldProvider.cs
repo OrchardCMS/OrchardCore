@@ -1,4 +1,3 @@
-using System;
 using GraphQL.Types;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -13,10 +12,4 @@ public interface IContentFieldProvider
     FieldTypeIndexDescriptor GetFieldIndex(ContentPartFieldDefinition field);
 
     bool HasFieldIndex(ContentPartFieldDefinition field);
-}
-
-public sealed class FieldTypeIndexDescriptor
-{
-    public required string Index { get; set; }
-    public required Type IndexType { get; set; }
 }

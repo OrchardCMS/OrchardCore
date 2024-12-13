@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
@@ -28,8 +24,10 @@ using OrchardCore.Tenants.ViewModels;
 namespace OrchardCore.Tenants.Controllers;
 
 [Admin("Tenants/{action}/{id?}", "Tenants{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
+    public const string CreateAndSetupValue = "createAndSetup";
+
     private readonly IShellHost _shellHost;
     private readonly IShellSettingsManager _shellSettingsManager;
     private readonly IShellRemovalManager _shellRemovalManager;
@@ -47,8 +45,8 @@ public class AdminController : Controller
     private readonly ILogger _logger;
     private readonly IShapeFactory _shapeFactory;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         IShellHost shellHost,
@@ -343,7 +341,7 @@ public class AdminController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(EditTenantViewModel model)
+    public async Task<IActionResult> Create(EditTenantViewModel model, string action)
     {
         if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
         {
@@ -383,6 +381,20 @@ public class AdminController : Controller
             shellSettings["FeatureProfile"] = string.Join(',', model.FeatureProfiles ?? []);
 
             await _shellHost.UpdateShellSettingsAsync(shellSettings);
+
+            if (action == CreateAndSetupValue)
+            {
+                var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
+
+                var entry = new ShellSettingsEntry
+                {
+                    Name = shellSettings.Name,
+                    ShellSettings = shellSettings,
+                    Token = dataProtector.Protect(shellSettings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)))
+                };
+
+                return Redirect(HttpContext.GetEncodedUrl(entry));
+            }
 
             return RedirectToAction(nameof(Index));
         }

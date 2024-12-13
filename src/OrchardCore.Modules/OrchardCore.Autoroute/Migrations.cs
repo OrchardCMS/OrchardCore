@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Autoroute.Core.Indexes;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement.Metadata;

@@ -1,13 +1,13 @@
 using System.Text;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Templates.Models;
 using OrchardCore.Templates.Services;
 
 namespace OrchardCore.Templates.Deployment;
 
-public class AllTemplatesDeploymentSource : IDeploymentSource
+public sealed class AllTemplatesDeploymentSource
+    : DeploymentSourceBase<AllTemplatesDeploymentStep>
 {
     private readonly TemplatesManager _templatesManager;
 
@@ -16,19 +16,12 @@ public class AllTemplatesDeploymentSource : IDeploymentSource
         _templatesManager = templatesManager;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(AllTemplatesDeploymentStep step, DeploymentPlanResult result)
     {
-        var allTemplatesStep = step as AllTemplatesDeploymentStep;
-
-        if (allTemplatesStep == null)
-        {
-            return;
-        }
-
         var templateObjects = new JsonObject();
         var templates = await _templatesManager.GetTemplatesDocumentAsync();
 
-        if (allTemplatesStep.ExportAsFiles)
+        if (step.ExportAsFiles)
         {
             foreach (var template in templates.Templates)
             {

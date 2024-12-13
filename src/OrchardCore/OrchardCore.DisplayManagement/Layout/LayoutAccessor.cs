@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Layout;
@@ -19,7 +17,7 @@ public class LayoutAccessor : ILayoutAccessor
         // Create a shape whose properties are dynamically created as Zone shapes.
         _layout ??= await _shapeFactory.CreateAsync(
             "Layout",
-            () => new ValueTask<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("Zone")))) as IZoneHolding;
+            () => ValueTask.FromResult<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("Zone")))) as IZoneHolding;
 
         if (_layout == null)
         {

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -19,7 +18,7 @@ namespace OrchardCore.Contents.AuditTrail.Controllers;
 
 [RequireFeatures("OrchardCore.AuditTrail")]
 [Admin("AuditTrail/Content/{action}/{auditTrailEventId}", "{action}AuditTrailContent")]
-public class AuditTrailContentController : Controller
+public sealed class AuditTrailContentController : Controller
 {
     private readonly ISession _session;
     private readonly IContentManager _contentManager;
@@ -27,8 +26,9 @@ public class AuditTrailContentController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly INotifier _notifier;
-    protected readonly IHtmlLocalizer H;
     private readonly ILogger _logger;
+
+    internal readonly IHtmlLocalizer H;
 
     public AuditTrailContentController(
         ISession session,

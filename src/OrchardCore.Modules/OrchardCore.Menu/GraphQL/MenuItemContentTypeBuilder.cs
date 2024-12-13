@@ -1,7 +1,5 @@
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Menu.Models;
@@ -17,13 +15,14 @@ public class MenuItemContentTypeBuilder : IContentTypeBuilder
             return;
         }
 
-        contentItemType.AddField(new FieldType
-        {
-            Type = typeof(MenuItemsListQueryObjectType),
-            Name = nameof(MenuItemsListPart).ToFieldName(),
-            Resolver = new FuncFieldResolver<ContentItem, MenuItemsListPart>(context => context.Source.As<MenuItemsListPart>())
-        });
+        contentItemType
+            .Field<MenuItemsListQueryObjectType>(nameof(MenuItemsListPart).ToFieldName())
+            .Resolve(context => context.Source.As<MenuItemsListPart>());
 
         contentItemType.Interface<MenuItemInterface>();
+    }
+
+    public void Clear()
+    {
     }
 }

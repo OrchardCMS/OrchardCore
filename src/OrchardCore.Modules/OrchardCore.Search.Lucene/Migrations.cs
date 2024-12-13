@@ -1,6 +1,4 @@
-using System;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -83,7 +81,7 @@ public sealed class Migrations : DataMigration
                         jExistingPartSettings.Remove("Tokenized");
                         jExistingPartSettings.Remove("Template");
 
-                        partDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingPartSettings.Clone());
+                        partDefinition.Settings[nameof(LuceneContentIndexSettings)] = jExistingPartSettings.Clone();
                     }
 
                     partDefinition.Settings.Remove("ContentIndexSettings");
@@ -127,8 +125,7 @@ public sealed class Migrations : DataMigration
                     jExistingPartSettings.Remove("Analyzed");
                     jExistingPartSettings.Remove("Tokenized");
                     jExistingPartSettings.Remove("Template");
-
-                    partDefinition.Settings.Add(nameof(LuceneContentIndexSettings), jExistingPartSettings.Clone());
+                    partDefinition.Settings[nameof(LuceneContentIndexSettings)] = jExistingPartSettings.Clone();
                 }
 
                 partDefinition.Settings.Remove("ContentIndexSettings");

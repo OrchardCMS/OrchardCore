@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -19,7 +16,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 namespace OrchardCore.AdminDashboard.Controllers;
 
 [Admin]
-public class DashboardController : Controller
+public sealed class DashboardController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IAdminDashboardService _adminDashboardService;
@@ -205,6 +202,6 @@ public class DashboardController : Controller
 
     private async Task<Dictionary<string, ContentTypeDefinition>> GetDashboardWidgetsAsync()
         => (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-        .Where(t => t.StereotypeEquals("DashboardWidget"))
+        .Where(t => t.StereotypeEquals(AdminDashboardConstants.Stereotype))
         .ToDictionary(ctd => ctd.Name, ctd => ctd);
 }

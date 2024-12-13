@@ -1,4 +1,3 @@
-using System;
 using Ganss.Xss;
 using HtmlSanitizerOptions = OrchardCore.Infrastructure.Html.HtmlSanitizerOptions;
 

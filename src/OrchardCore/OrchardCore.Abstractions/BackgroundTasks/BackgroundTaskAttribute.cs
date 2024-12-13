@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.BackgroundTasks;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]

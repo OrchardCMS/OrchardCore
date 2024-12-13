@@ -1,6 +1,4 @@
-using System;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Cysharp.Text;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Commands;
@@ -13,7 +11,7 @@ namespace OrchardCore.Recipes.RecipeSteps;
 /// <summary>
 /// This recipe step executes a set of commands.
 /// </summary>
-public sealed class CommandStep : IRecipeStepHandler
+public sealed class CommandStep : NamedRecipeStepHandler
 {
     private readonly ICommandManager _commandManager;
     private readonly ICommandParser _commandParser;
@@ -24,6 +22,7 @@ public sealed class CommandStep : IRecipeStepHandler
         ICommandParser commandParser,
         ICommandParametersParser commandParameterParser,
         ILogger<CommandStep> logger)
+        : base("Command")
     {
         _commandManager = commandManager;
         _commandParser = commandParser;
@@ -31,13 +30,8 @@ public sealed class CommandStep : IRecipeStepHandler
         _logger = logger;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "Command", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var step = context.Step.ToObject<CommandStepModel>();
 
         foreach (var command in step.Commands)

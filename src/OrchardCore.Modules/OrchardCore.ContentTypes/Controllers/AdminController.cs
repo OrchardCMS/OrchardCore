@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -21,17 +17,18 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.ContentTypes.Controllers;
 
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IContentDefinitionService _contentDefinitionService;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IDocumentStore _documentStore;
     private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public AdminController(
         IContentDefinitionDisplayManager contentDefinitionDisplayManager,
@@ -417,7 +414,14 @@ public class AdminController : Controller
 
         var typeViewModel = await _contentDefinitionService.LoadTypeAsync(id);
 
-        if (typeViewModel == null || !typeViewModel.TypeDefinition.Parts.Any(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase)))
+        if (typeViewModel == null)
+        {
+            return NotFound();
+        }
+
+        var partDefinition = typeViewModel.TypeDefinition.Parts.FirstOrDefault(p => string.Equals(p.Name, name, StringComparison.OrdinalIgnoreCase));
+
+        if (partDefinition == null)
         {
             return NotFound();
         }
@@ -443,8 +447,8 @@ public class AdminController : Controller
 
         return View(new ListContentPartsViewModel
         {
-            // only user-defined parts (not code as they are not configurable)
-            Parts = await _contentDefinitionService.GetPartsAsync(true/*metadataPartsOnly*/)
+            // Only user-defined parts (not code as they are not configurable).
+            Parts = await _contentDefinitionService.GetPartsAsync(metadataPartsOnly: true)
         });
     }
 

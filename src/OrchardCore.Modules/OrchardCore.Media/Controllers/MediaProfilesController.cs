@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -13,16 +9,17 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Media.Models;
-using OrchardCore.Media.Processing;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
+using Format = OrchardCore.Media.Processing.Format;
+using ResizeMode = OrchardCore.Media.Processing.ResizeMode;
 
 namespace OrchardCore.Media.Controllers;
 
 [Admin("MediaProfiles/{action}", "MediaProfiles.{action}")]
-public class MediaProfilesController : Controller
+public sealed class MediaProfilesController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
@@ -33,8 +30,8 @@ public class MediaProfilesController : Controller
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public MediaProfilesController(
         IAuthorizationService authorizationService,

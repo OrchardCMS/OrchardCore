@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Utilities;
@@ -58,7 +57,7 @@ public static class ContentPartSettingsExtensions
 
         if (string.IsNullOrEmpty(displayName))
         {
-            displayName = part.Name.TrimEnd("Part");
+            displayName = part.Name.TrimEndString("Part");
         }
 
         return displayName;

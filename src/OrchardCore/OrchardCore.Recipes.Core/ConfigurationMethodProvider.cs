@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Scripting;
 
 namespace OrchardCore.Recipes;
 
-public class ConfigurationMethodProvider : IGlobalMethodProvider
+public sealed class ConfigurationMethodProvider : IGlobalMethodProvider
 {
     private readonly GlobalMethod _globalMethod;
 

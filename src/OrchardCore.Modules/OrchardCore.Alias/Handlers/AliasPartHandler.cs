@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.Localization;
@@ -53,7 +49,7 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
         }
     }
 
-    public async override Task UpdatedAsync(UpdateContentContext context, AliasPart part)
+    public override async Task UpdatedAsync(UpdateContentContext context, AliasPart part)
     {
         // Compute the Alias only if it's empty.
         if (!string.IsNullOrEmpty(part.Alias))

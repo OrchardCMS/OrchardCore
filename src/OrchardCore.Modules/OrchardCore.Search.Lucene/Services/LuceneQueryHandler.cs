@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Entities;
 using OrchardCore.Queries;
 using OrchardCore.Queries.Core;
@@ -43,8 +42,6 @@ public sealed class LuceneQueryHandler : QueryHandlerBase
 
             context.Query.Put(metadata);
         }
-
-        context.Query.CanReturnContentItems = true;
 
         return Task.CompletedTask;
     }

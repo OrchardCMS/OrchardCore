@@ -1,8 +1,4 @@
-using System;
 using System.Collections.Concurrent;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,7 +10,7 @@ using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Sitemaps.Controllers;
 
-public class SitemapController : Controller
+public sealed class SitemapController : Controller
 {
     private const int WarningLength = 47_185_920;
     private const int ErrorLength = 52_428_800;
@@ -90,7 +86,7 @@ public class SitemapController : Controller
 
                     document.Declaration = new XDeclaration("1.0", "utf-8", null);
 
-                    var stream = new MemoryStream();
+                    var stream = MemoryStreamFactory.GetStream();
                     await document.SaveAsync(stream, SaveOptions.None, cancellationToken);
 
                     if (stream.Length >= ErrorLength)

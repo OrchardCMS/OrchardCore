@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 

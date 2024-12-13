@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
@@ -16,6 +14,7 @@ using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.AuditTrail.Settings;
 using OrchardCore.Contents.Controllers;
+using OrchardCore.Contents.Core;
 using OrchardCore.Contents.Deployment;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Endpoints.Api;
@@ -34,7 +33,7 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement.Liquid.Tags;
@@ -61,6 +60,7 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddContentServices();
         services.AddSingleton<IAnchorTag, ContentAnchorTag>();
 
         services.Configure<LiquidViewOptions>(o =>
@@ -141,11 +141,11 @@ public sealed class Startup : StartupBase
 
         services.AddContentManagement();
         services.AddContentManagementDisplay();
-        services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<IPermissionProvider, ContentTypePermissions>();
+        services.AddPermissionProvider<Permissions>();
+        services.AddPermissionProvider<ContentTypePermissions>();
         services.AddScoped<IAuthorizationHandler, ContentTypeAuthorizationHandler>();
-        services.AddScoped<IShapeTableProvider, Shapes>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddShapeTableProvider<Shapes>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentDisplayDriver, ContentsDriver>();
         services.AddScoped<IContentHandler, ContentsHandler>();
         services.AddRecipeExecutionStep<ContentStep>();
@@ -190,7 +190,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IContentsAdminListQueryService, DefaultContentsAdminListQueryService>();
 
-        services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ContentOptionsDisplayDriver>();
+        services.AddDisplayDriver<ContentOptionsViewModel, ContentOptionsDisplayDriver>();
 
         services.AddScoped(typeof(IContentItemRecursionHelper<>), typeof(ContentItemRecursionHelper<>));
 
@@ -279,7 +279,7 @@ public sealed class SitemapsStartup : StartupBase
         services.AddScoped<ISitemapSourceBuilder, ContentTypesSitemapSourceBuilder>();
         services.AddScoped<ISitemapSourceUpdateHandler, ContentTypesSitemapSourceUpdateHandler>();
         services.AddScoped<ISitemapSourceModifiedDateProvider, ContentTypesSitemapSourceModifiedDateProvider>();
-        services.AddScoped<IDisplayDriver<SitemapSource>, ContentTypesSitemapSourceDriver>();
+        services.AddDisplayDriver<SitemapSource, ContentTypesSitemapSourceDriver>();
         services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<ContentTypesSitemapSource>>();
         services.AddScoped<IContentItemsQueryProvider, DefaultContentItemsQueryProvider>();
         services.AddScoped<IContentHandler, ContentTypesSitemapUpdateHandler>();

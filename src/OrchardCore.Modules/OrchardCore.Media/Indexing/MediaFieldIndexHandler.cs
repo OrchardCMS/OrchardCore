@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Environment.Shell.Builders;
@@ -30,7 +26,7 @@ public class MediaFieldIndexHandler : ContentFieldIndexHandler<MediaField>
         _serviceProvider = serviceProvider;
     }
 
-    public async override Task BuildIndexAsync(MediaField field, BuildFieldIndexContext context)
+    public override async Task BuildIndexAsync(MediaField field, BuildFieldIndexContext context)
     {
         var options = context.Settings.ToOptions();
         var settings = context.ContentPartFieldDefinition.GetSettings<MediaFieldSettings>();

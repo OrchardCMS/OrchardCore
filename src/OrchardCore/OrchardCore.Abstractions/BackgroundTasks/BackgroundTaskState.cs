@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.BackgroundTasks;
 
 public class BackgroundTaskState

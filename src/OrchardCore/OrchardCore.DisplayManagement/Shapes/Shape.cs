@@ -1,11 +1,7 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement.Shapes;
@@ -55,7 +51,7 @@ public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
     {
         if (item == null)
         {
-            return new ValueTask<IShape>(this);
+            return ValueTask.FromResult<IShape>(this);
         }
 
         position ??= "";
@@ -70,7 +66,7 @@ public class Shape : Composite, IShape, IPositioned, IEnumerable<object>
             _items.Add(wrapped);
         }
 
-        return new ValueTask<IShape>(this);
+        return ValueTask.FromResult<IShape>(this);
     }
 
     public void Remove(string shapeName)

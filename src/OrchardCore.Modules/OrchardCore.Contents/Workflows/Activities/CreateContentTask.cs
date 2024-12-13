@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Workflows;
@@ -65,7 +62,7 @@ public class CreateContentTask : ContentTask
         return Outcomes(S["Done"], S["Failed"]);
     }
 
-    public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         if (InlineEvent.IsStart && InlineEvent.ContentType == ContentType)
         {

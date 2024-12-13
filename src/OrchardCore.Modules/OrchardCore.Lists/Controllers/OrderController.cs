@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
@@ -12,12 +10,14 @@ using OrchardCore.Navigation;
 namespace OrchardCore.Lists.Controllers;
 
 [Admin]
-public class OrderController : Controller
+public sealed class OrderController : Controller
 {
     private readonly IContainerService _containerService;
     private readonly IAuthorizationService _authorizationService;
 
-    public OrderController(IContainerService containerService, IAuthorizationService authorizationService)
+    public OrderController(
+        IContainerService containerService,
+        IAuthorizationService authorizationService)
     {
         _containerService = containerService;
         _authorizationService = authorizationService;

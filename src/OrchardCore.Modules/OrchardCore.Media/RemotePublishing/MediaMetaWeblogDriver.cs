@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.MetaWeblog;
 
 namespace OrchardCore.Media.RemotePublishing;

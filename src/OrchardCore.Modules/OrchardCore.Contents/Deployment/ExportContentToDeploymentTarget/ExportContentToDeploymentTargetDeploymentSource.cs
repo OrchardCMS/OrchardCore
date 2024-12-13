@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Deployment;
@@ -12,7 +8,8 @@ using YesSql.Services;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
 
-public class ExportContentToDeploymentTargetDeploymentSource : IDeploymentSource
+public sealed class ExportContentToDeploymentTargetDeploymentSource
+    : DeploymentSourceBase<ExportContentToDeploymentTargetDeploymentStep>
 {
     private readonly IContentManager _contentManager;
     private readonly ISession _session;
@@ -28,15 +25,8 @@ public class ExportContentToDeploymentTargetDeploymentSource : IDeploymentSource
         _updateModelAccessor = updateModelAccessor;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(ExportContentToDeploymentTargetDeploymentStep step, DeploymentPlanResult result)
     {
-        var exportContentToDeploymentTargetContentDeploymentStep = step as ExportContentToDeploymentTargetDeploymentStep;
-
-        if (exportContentToDeploymentTargetContentDeploymentStep == null)
-        {
-            return;
-        }
-
         var data = new JsonArray();
         result.Steps.Add(new JsonObject
         {

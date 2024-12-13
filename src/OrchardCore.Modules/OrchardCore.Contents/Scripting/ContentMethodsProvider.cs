@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
@@ -9,7 +7,7 @@ using OrchardCore.Scripting;
 
 namespace OrchardCore.Contents.Scripting;
 
-public class ContentMethodsProvider : IGlobalMethodProvider
+public sealed class ContentMethodsProvider : IGlobalMethodProvider
 {
     private readonly GlobalMethod _newContentItemMethod;
     private readonly GlobalMethod _createContentItemMethod;

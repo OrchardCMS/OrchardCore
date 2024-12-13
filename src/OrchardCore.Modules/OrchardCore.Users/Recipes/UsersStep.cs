@@ -1,6 +1,4 @@
-using System;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -9,7 +7,7 @@ using YesSql;
 
 namespace OrchardCore.Users.Recipes;
 
-public sealed class UsersStep : IRecipeStepHandler
+public sealed class UsersStep : NamedRecipeStepHandler
 {
     private readonly UserManager<IUser> _userManager;
     private readonly ISession _session;
@@ -17,18 +15,14 @@ public sealed class UsersStep : IRecipeStepHandler
     public UsersStep(
         UserManager<IUser> userManager,
         ISession session)
+        : base("Users")
     {
         _userManager = userManager;
         _session = session;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "Users", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var model = context.Step.ToObject<UsersStepModel>();
 
         foreach (var importedUser in model.Users)

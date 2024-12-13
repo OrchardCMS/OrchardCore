@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
@@ -36,7 +35,7 @@ public sealed class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTas
         model.Body = activity.Body.Expression;
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(SmsTask activity, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(SmsTask activity, UpdateEditorContext context)
     {
         var viewModel = new SmsTaskViewModel();
 

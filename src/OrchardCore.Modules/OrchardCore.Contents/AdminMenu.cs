@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -16,7 +14,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Contents;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -47,7 +45,7 @@ public sealed class AdminMenu : INavigationProvider
         LinkGenerator linkGenerator,
         IAuthorizationService authorizationService,
         ISiteService siteService,
-        IStringLocalizer<AdminMenu> localizer)
+        IStringLocalizer<AdminMenu> stringLocalizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
         _contentManager = contentManager;
@@ -55,16 +53,11 @@ public sealed class AdminMenu : INavigationProvider
         _linkGenerator = linkGenerator;
         _authorizationService = authorizationService;
         _siteService = siteService;
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override async ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return;
-        }
-
         var context = _httpContextAccessor.HttpContext;
 
         var contentTypeDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();

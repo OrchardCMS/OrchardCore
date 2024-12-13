@@ -1,17 +1,14 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
-using YesSql;
 using YesSql.Filters.Query;
 using YesSql.Services;
 
 namespace OrchardCore.Users.Services;
 
-public class DefaultUsersAdminListFilterProvider : IUsersAdminListFilterProvider
+public sealed class DefaultUsersAdminListFilterProvider : IUsersAdminListFilterProvider
 {
     public void Build(QueryEngineBuilder<User> builder)
     {
@@ -99,7 +96,7 @@ public class DefaultUsersAdminListFilterProvider : IUsersAdminListFilterProvider
                     var normalizedRoleName = userManager.NormalizeName(val);
                     query.With<UserByRoleNameIndex>(x => x.RoleName == normalizedRoleName);
 
-                    return new ValueTask<IQuery<User>>(query);
+                    return ValueTask.FromResult(query);
                 })
                 .MapTo<UserIndexOptions>((val, model) => model.SelectedRole = val)
                 .MapFrom<UserIndexOptions>((model) => (!string.IsNullOrEmpty(model.SelectedRole), model.SelectedRole))
@@ -113,7 +110,7 @@ public class DefaultUsersAdminListFilterProvider : IUsersAdminListFilterProvider
                         var normalizedUserName = userManager.NormalizeName(val);
                         query.With<UserIndex>(x => x.NormalizedUserName.Contains(normalizedUserName));
 
-                        return new ValueTask<IQuery<User>>(query);
+                        return ValueTask.FromResult(query);
                     },
                     (val, query, ctx) =>
                     {
@@ -122,7 +119,7 @@ public class DefaultUsersAdminListFilterProvider : IUsersAdminListFilterProvider
                         var normalizedUserName = userManager.NormalizeName(val);
                         query.With<UserIndex>(x => x.NormalizedUserName.NotContains(normalizedUserName));
 
-                        return new ValueTask<IQuery<User>>(query);
+                        return ValueTask.FromResult(query);
                     }
                 )
             )
@@ -135,7 +132,7 @@ public class DefaultUsersAdminListFilterProvider : IUsersAdminListFilterProvider
                         var normalizedEmail = userManager.NormalizeEmail(val);
                         query.With<UserIndex>(x => x.NormalizedEmail.Contains(normalizedEmail));
 
-                        return new ValueTask<IQuery<User>>(query);
+                        return ValueTask.FromResult(query);
                     },
                     (val, query, ctx) =>
                     {
@@ -144,7 +141,7 @@ public class DefaultUsersAdminListFilterProvider : IUsersAdminListFilterProvider
                         var normalizedEmail = userManager.NormalizeEmail(val);
                         query.With<UserIndex>(x => x.NormalizedEmail.NotContains(normalizedEmail));
 
-                        return new ValueTask<IQuery<User>>(query);
+                        return ValueTask.FromResult(query);
                     }
                 )
             );

@@ -1,9 +1,9 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
@@ -15,13 +15,16 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
 
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
+    private readonly IShellReleaseManager _shellReleaseManager;
 
     public RegistrationSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IShellReleaseManager shellReleaseManager)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
+        _shellReleaseManager = shellReleaseManager;
     }
 
     protected override string SettingsGroupId
@@ -36,17 +39,13 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
             return null;
         }
 
+        context.AddTenantReloadWarningWrapper();
+
         return Initialize<RegistrationSettings>("RegistrationSettings_Edit", model =>
         {
-            model.UsersCanRegister = settings.UsersCanRegister;
             model.UsersMustValidateEmail = settings.UsersMustValidateEmail;
             model.UsersAreModerated = settings.UsersAreModerated;
             model.UseSiteTheme = settings.UseSiteTheme;
-            model.NoPasswordForExternalUsers = settings.NoPasswordForExternalUsers;
-            model.NoUsernameForExternalUsers = settings.NoUsernameForExternalUsers;
-            model.NoEmailForExternalUsers = settings.NoEmailForExternalUsers;
-            model.UseScriptToGenerateUsername = settings.UseScriptToGenerateUsername;
-            model.GenerateUsernameScript = settings.GenerateUsernameScript;
         }).Location("Content:5")
         .OnGroup(SettingsGroupId);
     }
@@ -60,7 +59,23 @@ public sealed class RegistrationSettingsDisplayDriver : SiteDisplayDriver<Regist
             return null;
         }
 
-        await context.Updater.TryUpdateModelAsync(settings, Prefix);
+        var model = new RegistrationSettings();
+
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        var hasChange =
+            model.UsersMustValidateEmail != settings.UsersMustValidateEmail ||
+            model.UsersAreModerated != settings.UsersAreModerated ||
+            model.UseSiteTheme != settings.UseSiteTheme;
+
+        settings.UsersMustValidateEmail = model.UsersMustValidateEmail;
+        settings.UsersAreModerated = model.UsersAreModerated;
+        settings.UseSiteTheme = model.UseSiteTheme;
+
+        if (hasChange)
+        {
+            _shellReleaseManager.RequestRelease();
+        }
 
         return await EditAsync(site, settings, context);
     }

@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Entities;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -151,6 +146,6 @@ public abstract class Activity : Entity, IActivity
     protected virtual void SetProperty(object value, [CallerMemberName] string name = null)
     {
         // Properties[name] = JToken.FromObject(value);
-        Properties[name] = JNode.FromObject(value);
+        Properties[name] = value is JsonNode node ? node.DeepClone() : JNode.FromObject(value);
     }
 }

@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 namespace OrchardCore.Users.Handlers;
 
 /// <summary>
@@ -21,5 +18,4 @@ public interface IExternalLoginEventHandler
     /// </summary>
     /// <param name="context">The <see cref="UpdateUserContext"/>.</param>
     Task UpdateUserAsync(UpdateUserContext context);
-
 }

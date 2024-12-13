@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Placements.ViewModels;

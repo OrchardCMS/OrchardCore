@@ -1,13 +1,12 @@
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.Services;
-using OrchardCore.OpenId.Settings;
 
 namespace OrchardCore.OpenId.Deployment;
 
-public class OpenIdServerDeploymentSource : IDeploymentSource
+public sealed class OpenIdServerDeploymentSource
+    : DeploymentSourceBase<OpenIdServerDeploymentStep>
 {
     private readonly IOpenIdServerService _openIdServerService;
 
@@ -16,17 +15,9 @@ public class OpenIdServerDeploymentSource : IDeploymentSource
         _openIdServerService = openIdServerService;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(OpenIdServerDeploymentStep step, DeploymentPlanResult result)
     {
-        var openIdServerStep = step as OpenIdServerDeploymentStep;
-
-        if (openIdServerStep == null)
-        {
-            return;
-        }
-
-        var settings = await _openIdServerService
-            .GetSettingsAsync();
+        var settings = await _openIdServerService.GetSettingsAsync();
 
         var settingsModel = new OpenIdServerSettingsStepModel
         {
@@ -63,15 +54,10 @@ public class OpenIdServerDeploymentSource : IDeploymentSource
             RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange,
         };
 
-        // Use nameof(OpenIdServerSettings) as name,
-        // to match the recipe step.
-        var obj = new JsonObject
+        result.Steps.Add(new JsonObject
         {
-            ["name"] = nameof(OpenIdServerSettings),
-        };
-
-        obj.Merge(JObject.FromObject(settingsModel));
-
-        result.Steps.Add(obj);
+            ["name"] = "OpenIdServerSettings",
+            ["OpenIdServerSettings"] = JObject.FromObject(settingsModel),
+        });
     }
 }

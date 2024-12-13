@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -18,7 +15,7 @@ using OrchardCore.Routing;
 
 namespace OrchardCore.Features.Controllers;
 
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IShellHost _shellHost;
@@ -28,8 +25,8 @@ public class AdminController : Controller
     private readonly AdminOptions _adminOptions;
     private readonly INotifier _notifier;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         IAuthorizationService authorizationService,

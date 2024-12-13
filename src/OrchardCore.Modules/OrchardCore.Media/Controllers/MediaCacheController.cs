@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -13,12 +11,13 @@ namespace OrchardCore.Media.Controllers;
 
 [Feature("OrchardCore.Media.Cache")]
 [Admin("MediaCache/{action}", "MediaCache.{action}")]
-public class MediaCacheController : Controller
+public sealed class MediaCacheController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IMediaFileStoreCache _mediaFileStoreCache;
     private readonly INotifier _notifier;
-    protected readonly IHtmlLocalizer H;
+
+    internal readonly IHtmlLocalizer H;
 
     public MediaCacheController(
         IAuthorizationService authorizationService,

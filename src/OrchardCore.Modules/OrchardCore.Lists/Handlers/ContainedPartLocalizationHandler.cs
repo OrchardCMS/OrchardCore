@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;

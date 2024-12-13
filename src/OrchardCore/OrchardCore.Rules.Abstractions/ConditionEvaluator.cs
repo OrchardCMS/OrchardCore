@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.Rules;
 
 public abstract class ConditionEvaluator<T> : IConditionEvaluator where T : Condition

@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,23 +15,24 @@ using OrchardCore.Media.ViewModels;
 namespace OrchardCore.Media.Controllers;
 
 [Admin("Media/{action}", "Media.{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private static readonly char[] _invalidFolderNameCharacters = ['\\', '/'];
-    private static readonly char[] _extensionSeperator = [' ', ','];
+    private static readonly char[] _extensionSeparator = [' ', ','];
 
     private readonly IMediaFileStore _mediaFileStore;
     private readonly IMediaNameNormalizerService _mediaNameNormalizerService;
     private readonly IAuthorizationService _authorizationService;
     private readonly IContentTypeProvider _contentTypeProvider;
     private readonly ILogger _logger;
-    protected readonly IStringLocalizer S;
     private readonly MediaOptions _mediaOptions;
     private readonly IUserAssetFolderNameProvider _userAssetFolderNameProvider;
     private readonly IChunkFileUploadService _chunkFileUploadService;
     private readonly IFileVersionProvider _fileVersionProvider;
     private readonly IServiceProvider _serviceProvider;
     private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
+
+    internal readonly IStringLocalizer S;
 
     public AdminController(
         IMediaFileStore mediaFileStore,
@@ -524,7 +520,7 @@ public class AdminController : Controller
     {
         if (!string.IsNullOrWhiteSpace(exts))
         {
-            var extensions = exts.Split(_extensionSeperator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var extensions = exts.Split(_extensionSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
             var requestedExtensions = _mediaOptions.AllowedFileExtensions
                 .Intersect(extensions)

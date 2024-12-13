@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents;
 using OrchardCore.Placements.Models;

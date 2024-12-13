@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Builders;

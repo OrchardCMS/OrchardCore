@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.OpenId.ViewModels;
 
 public class OpenIdScopeIndexViewModel

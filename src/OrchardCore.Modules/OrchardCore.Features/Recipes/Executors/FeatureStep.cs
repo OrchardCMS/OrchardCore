@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -11,22 +8,18 @@ namespace OrchardCore.Features.Recipes.Executors;
 /// <summary>
 /// This recipe step enables or disables a set of features.
 /// </summary>
-public sealed class FeatureStep : IRecipeStepHandler
+public sealed class FeatureStep : NamedRecipeStepHandler
 {
     private readonly IShellFeaturesManager _shellFeaturesManager;
 
     public FeatureStep(IShellFeaturesManager shellFeaturesManager)
+        : base("Feature")
     {
         _shellFeaturesManager = shellFeaturesManager;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "Feature", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var step = context.Step.ToObject<FeatureStepModel>();
 
         var features = await _shellFeaturesManager.GetAvailableFeaturesAsync();

@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Google.Analytics;
@@ -20,7 +19,6 @@ using OrchardCore.Google.TagManager.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Google;
@@ -30,19 +28,18 @@ public sealed class GoogleAuthenticationStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IPermissionProvider, GoogleAuthenticationPermissionProvider>();
+        services.AddPermissionProvider<GoogleAuthenticationPermissionProvider>();
         services.AddSingleton<GoogleAuthenticationService, GoogleAuthenticationService>();
-        services.AddScoped<IDisplayDriver<ISite>, GoogleAuthenticationSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, GoogleAuthenticationAdminMenu>();
+        services.AddSiteDisplayDriver<GoogleAuthenticationSettingsDisplayDriver>();
+        services.AddNavigationProvider<GoogleAuthenticationAdminMenu>();
+
         // Register the options initializers required by the Google Handler.
-        services.TryAddEnumerable(new[]
-        {
-            // Orchard-specific initializers:
-            ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, GoogleOptionsConfiguration>(),
-            ServiceDescriptor.Transient<IConfigureOptions<GoogleOptions>, GoogleOptionsConfiguration>(),
-            // Built-in initializers:
-            ServiceDescriptor.Transient<IPostConfigureOptions<GoogleOptions>, OAuthPostConfigureOptions<GoogleOptions, GoogleHandler>>()
-        });
+        // Orchard-specific initializers:
+        services.AddTransient<IConfigureOptions<AuthenticationOptions>, GoogleOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<GoogleOptions>, GoogleOptionsConfiguration>();
+
+        // Built-in initializers:
+        services.AddTransient<IPostConfigureOptions<GoogleOptions>, OAuthPostConfigureOptions<GoogleOptions, GoogleHandler>>();
 
         services.AddTransient<IConfigureOptions<GoogleAuthenticationSettings>, GoogleAuthenticationSettingsConfiguration>();
     }
@@ -53,11 +50,12 @@ public sealed class GoogleAnalyticsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IPermissionProvider, GoogleAnalyticsPermissionsProvider>();
+        services.AddPermissionProvider<GoogleAnalyticsPermissionsProvider>();
         services.AddSingleton<IGoogleAnalyticsService, GoogleAnalyticsService>();
 
-        services.AddScoped<IDisplayDriver<ISite>, GoogleAnalyticsSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, GoogleAnalyticsAdminMenu>();
+        services.AddSiteDisplayDriver<GoogleAnalyticsSettingsDisplayDriver>();
+        services.AddNavigationProvider<GoogleAnalyticsAdminMenu>();
+
         services.Configure<MvcOptions>((options) =>
         {
             options.Filters.Add<GoogleAnalyticsFilter>();
@@ -70,11 +68,11 @@ public sealed class GoogleTagManagerStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IPermissionProvider, GoogleTagManagerPermissionProvider>();
+        services.AddPermissionProvider<GoogleTagManagerPermissionProvider>();
         services.AddSingleton<IGoogleTagManagerService, GoogleTagManagerService>();
+        services.AddSiteDisplayDriver<GoogleTagManagerSettingsDisplayDriver>();
+        services.AddNavigationProvider<GoogleTagManagerAdminMenu>();
 
-        services.AddScoped<IDisplayDriver<ISite>, GoogleTagManagerSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, GoogleTagManagerAdminMenu>();
         services.Configure<MvcOptions>((options) =>
         {
             options.Filters.Add<GoogleTagManagerFilter>();

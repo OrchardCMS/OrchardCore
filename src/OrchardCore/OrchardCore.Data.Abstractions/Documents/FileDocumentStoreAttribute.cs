@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Data.Documents;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]

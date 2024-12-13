@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -26,7 +25,7 @@ public sealed class Migrations : DataMigration
         await SchemaBuilder.CreateMapIndexTableAsync<ContainedPartIndex>(table => table
             .Column<string>("ContentItemId", column => column.WithLength(26))
             .Column<string>("ListContentItemId", column => column.WithLength(26))
-            .Column<string>("DisplayText")
+            .Column<string>("DisplayText", column => column.WithLength(ContainedPartIndex.MaxDisplayTextSize))
             .Column<int>("Order")
             .Column<string>("ListContentType")
             .Column<bool>("Published")
@@ -85,7 +84,7 @@ public sealed class Migrations : DataMigration
         );
 
         await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table
-            .AddColumn<string>("DisplayText")
+            .AddColumn<string>("DisplayText", column => column.WithLength(ContainedPartIndex.MaxDisplayTextSize))
         );
 
         await SchemaBuilder.AlterIndexTableAsync<ContainedPartIndex>(table => table

@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +7,7 @@ using OrchardCore.Scripting;
 
 namespace OrchardCore.Recipes;
 
-public class VariablesMethodProvider : IGlobalMethodProvider
+public sealed class VariablesMethodProvider : IGlobalMethodProvider
 {
     private readonly GlobalMethod _globalMethod;
     private const string GlobalMethodName = "variables";

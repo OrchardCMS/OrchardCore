@@ -1,5 +1,3 @@
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -14,7 +12,7 @@ public sealed class NumericFieldSettingsDriver : ContentPartFieldDefinitionDispl
     {
         return Initialize<NumericFieldSettings>("NumericFieldSettings_Edit", model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<NumericFieldSettings>();
+            var settings = partFieldDefinition.GetSettings<NumericFieldSettings>();
 
             model.Hint = settings.Hint;
             model.Required = settings.Required;

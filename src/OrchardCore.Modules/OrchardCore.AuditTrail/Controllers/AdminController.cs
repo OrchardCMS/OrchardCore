@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
@@ -18,7 +15,7 @@ using YesSql.Filters.Query;
 
 namespace OrchardCore.AuditTrail.Controllers;
 
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly PagerOptions _pagerOptions;
     private readonly IShapeFactory _shapeFactory;
@@ -28,7 +25,8 @@ public class AdminController : Controller
     private readonly IAuditTrailAdminListQueryService _auditTrailAdminListQueryService;
     private readonly IDisplayManager<AuditTrailEvent> _displayManager;
     private readonly IDisplayManager<AuditTrailIndexOptions> _auditTrailOptionsDisplayManager;
-    protected readonly IStringLocalizer S;
+
+    internal readonly IStringLocalizer S;
 
     public AdminController(
         IOptions<PagerOptions> pagerOptions,

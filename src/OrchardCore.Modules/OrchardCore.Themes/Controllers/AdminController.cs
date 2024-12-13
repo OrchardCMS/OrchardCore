@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -10,21 +7,21 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules.Manifest;
-using OrchardCore.Security;
 using OrchardCore.Themes.Models;
 using OrchardCore.Themes.Services;
 
 namespace OrchardCore.Themes.Controllers;
 
 [Admin("Themes/{action}/{id?}", "Themes.{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly ISiteThemeService _siteThemeService;
     private readonly IAdminThemeService _adminThemeService;
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
-    protected readonly IHtmlLocalizer H;
+
+    internal readonly IHtmlLocalizer H;
 
     public AdminController(
         ISiteThemeService siteThemeService,
@@ -46,7 +43,7 @@ public class AdminController : Controller
     [Admin("Themes", "Themes.Index")]
     public async Task<ActionResult> Index()
     {
-        var installThemes = await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner); // only site owners
+        var installThemes = await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme);
 
         if (!installThemes)
         {

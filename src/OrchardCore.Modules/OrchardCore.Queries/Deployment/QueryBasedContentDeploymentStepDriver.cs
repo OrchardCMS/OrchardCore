@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
@@ -54,7 +52,7 @@ public sealed class QueryBasedContentDeploymentStepDriver : DisplayDriver<Deploy
 
         var query = await _queryManager.GetQueryAsync(queryBasedContentViewModel.QueryName);
 
-        if (!query.CanReturnContentItems || !query.ReturnContentItems)
+        if (!query.ReturnContentItems)
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(step.QueryName), S["Your Query is not returning content items."]);
         }

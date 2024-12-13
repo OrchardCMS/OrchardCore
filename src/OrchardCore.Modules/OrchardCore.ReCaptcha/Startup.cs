@@ -7,7 +7,6 @@ using OrchardCore.ReCaptcha.Core;
 using OrchardCore.ReCaptcha.Drivers;
 using OrchardCore.ReCaptcha.Users.Handlers;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Users;
 using OrchardCore.Users.Events;
@@ -21,10 +20,9 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddReCaptcha();
-
-        services.AddScoped<IDisplayDriver<ISite>, ReCaptchaSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddSiteDisplayDriver<ReCaptchaSettingsDisplayDriver>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddPermissionProvider<Permissions>();
     }
 }
 
@@ -46,7 +44,7 @@ public sealed class UsersStartup : StartupBase
         services.AddScoped<IRegistrationFormEvents, RegistrationFormEventHandler>();
         services.AddScoped<ILoginFormEvent, LoginFormEventEventHandler>();
         services.AddScoped<IPasswordRecoveryFormEvents, PasswordRecoveryFormEventEventHandler>();
-        services.AddScoped<IDisplayDriver<LoginForm>, ReCaptchaLoginFormDisplayDriver>();
+        services.AddDisplayDriver<LoginForm, ReCaptchaLoginFormDisplayDriver>();
     }
 }
 
@@ -56,8 +54,8 @@ public sealed class UsersResetPasswordStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<ForgotPasswordForm>, ReCaptchaForgotPasswordFormDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ResetPasswordForm>, ReCaptchaResetPasswordFormDisplayDriver>();
+        services.AddDisplayDriver<ForgotPasswordForm, ReCaptchaForgotPasswordFormDisplayDriver>();
+        services.AddDisplayDriver<ResetPasswordForm, ReCaptchaResetPasswordFormDisplayDriver>();
     }
 }
 
@@ -67,6 +65,6 @@ public sealed class UsersRegistrationStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<RegisterUserForm>, RegisterUserFormDisplayDriver>();
+        services.AddDisplayDriver<RegisterUserForm, RegisterUserFormDisplayDriver>();
     }
 }

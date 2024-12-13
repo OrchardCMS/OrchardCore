@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.ReCaptcha.Services;
 using OrchardCore.Users.Events;
 

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -22,7 +18,7 @@ using OrchardCore.Sitemaps.ViewModels;
 namespace OrchardCore.Sitemaps.Controllers;
 
 [Admin("SitemapIndexes/{action}/{sitemapId?}", "SitemapIndexes{action}")]
-public class SitemapIndexController : Controller
+public sealed class SitemapIndexController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
@@ -35,8 +31,8 @@ public class SitemapIndexController : Controller
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public SitemapIndexController(
         ISitemapHelperService sitemapService,

@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Builders;
 using OrchardCore.Apis.GraphQL.Resolvers;

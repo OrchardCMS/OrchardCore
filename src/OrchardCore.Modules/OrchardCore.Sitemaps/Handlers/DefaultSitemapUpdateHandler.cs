@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Locking.Distributed;
 
 namespace OrchardCore.Sitemaps.Handlers;

@@ -1,12 +1,10 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.ReCaptcha.Services;
 using OrchardCore.Users;
 using OrchardCore.Users.Events;
 
 namespace OrchardCore.ReCaptcha.Users.Handlers;
 
-public class LoginFormEventEventHandler : ILoginFormEvent
+public class LoginFormEventEventHandler : LoginFormEventBase
 {
     private readonly ReCaptchaService _reCaptchaService;
 
@@ -15,31 +13,34 @@ public class LoginFormEventEventHandler : ILoginFormEvent
         _reCaptchaService = reCaptchaService;
     }
 
-    public Task IsLockedOutAsync(IUser user) => Task.CompletedTask;
-
-    public Task LoggedInAsync(IUser user)
+    public override Task LoggedInAsync(IUser user)
     {
         _reCaptchaService.ThisIsAHuman();
+
         return Task.CompletedTask;
     }
 
-    public async Task LoggingInAsync(string userName, Action<string, string> reportError)
+    public override Task LoggingInAsync(string userName, Action<string, string> reportError)
     {
         if (_reCaptchaService.IsThisARobot())
         {
-            await _reCaptchaService.ValidateCaptchaAsync(reportError);
+            return _reCaptchaService.ValidateCaptchaAsync(reportError);
         }
-    }
 
-    public Task LoggingInFailedAsync(string userName)
-    {
-        _reCaptchaService.MaybeThisIsARobot();
         return Task.CompletedTask;
     }
 
-    public Task LoggingInFailedAsync(IUser user)
+    public override Task LoggingInFailedAsync(string userName)
     {
         _reCaptchaService.MaybeThisIsARobot();
+
+        return Task.CompletedTask;
+    }
+
+    public override Task LoggingInFailedAsync(IUser user)
+    {
+        _reCaptchaService.MaybeThisIsARobot();
+
         return Task.CompletedTask;
     }
 }

@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Lucene.Model;
@@ -10,9 +6,9 @@ using OrchardCore.Search.Lucene.Model;
 namespace OrchardCore.Search.Lucene.Recipes;
 
 /// <summary>
-/// This recipe step creates a lucene index.
+/// This recipe step creates a Lucene index.
 /// </summary>
-public sealed class LuceneIndexStep : IRecipeStepHandler
+public sealed class LuceneIndexStep : NamedRecipeStepHandler
 {
     private readonly LuceneIndexingService _luceneIndexingService;
     private readonly LuceneIndexManager _luceneIndexManager;
@@ -21,18 +17,14 @@ public sealed class LuceneIndexStep : IRecipeStepHandler
         LuceneIndexingService luceneIndexingService,
         LuceneIndexManager luceneIndexManager
         )
+        : base("lucene-index")
     {
         _luceneIndexManager = luceneIndexManager;
         _luceneIndexingService = luceneIndexingService;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "lucene-index", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         if (context.Step["Indices"] is not JsonArray jsonArray)
         {
             return;

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.Cors.Settings;
 
 public class CorsSettings

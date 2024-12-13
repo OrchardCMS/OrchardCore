@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Rules.Models;
 
 namespace OrchardCore.Rules.Services;
@@ -12,7 +11,7 @@ public class AnyConditionEvaluator : ConditionEvaluator<AnyConditionGroup>
         _conditionResolver = conditionResolver;
     }
 
-    public async override ValueTask<bool> EvaluateAsync(AnyConditionGroup condition)
+    public override async ValueTask<bool> EvaluateAsync(AnyConditionGroup condition)
     {
         foreach (var childCondition in condition.Conditions)
         {

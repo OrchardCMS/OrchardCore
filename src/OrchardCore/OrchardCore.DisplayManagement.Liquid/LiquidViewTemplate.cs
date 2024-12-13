@@ -1,8 +1,5 @@
-using System;
 using System.Globalization;
-using System.IO;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Accessors;
 using Fluid.Values;
@@ -247,7 +244,7 @@ public static class LiquidTemplateContextExtensions
             }
 
             // Configure Fluid with the local date and time
-            var now = await localClock.LocalNowAsync;
+            var now = await localClock.GetLocalNowAsync();
 
             context.Now = () => now;
 

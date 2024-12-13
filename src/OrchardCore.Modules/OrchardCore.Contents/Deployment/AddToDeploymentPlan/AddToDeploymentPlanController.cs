@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -17,14 +14,15 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 
 [Feature("OrchardCore.Contents.Deployment.AddToDeploymentPlan")]
 [Admin("AddToDeploymentPlan/{action}/{deploymentPlanId}", AdminAttribute.NameFromControllerAndAction)]
-public class AddToDeploymentPlanController : Controller
+public sealed class AddToDeploymentPlanController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IContentManager _contentManager;
     private readonly ISession _session;
     private readonly IEnumerable<IDeploymentStepFactory> _factories;
     private readonly INotifier _notifier;
-    protected readonly IHtmlLocalizer H;
+
+    internal readonly IHtmlLocalizer H;
 
     public AddToDeploymentPlanController(
         IAuthorizationService authorizationService,
@@ -97,7 +95,7 @@ public class AddToDeploymentPlanController : Controller
     [HttpPost]
     public async Task<IActionResult> AddContentItems(long deploymentPlanId, string returnUrl, IEnumerable<long> itemIds)
     {
-        if (itemIds?.Count() == 0)
+        if (itemIds is null || !itemIds.Any())
         {
             return this.LocalRedirect(returnUrl, true);
         }
@@ -128,7 +126,16 @@ public class AddToDeploymentPlanController : Controller
 
                 return Forbid();
             }
-            var step = (ContentItemDeploymentStep)_factories.FirstOrDefault(x => x.Name == nameof(ContentItemDeploymentStep)).Create();
+
+            var step = (ContentItemDeploymentStep)_factories.FirstOrDefault(x => x.Name == nameof(ContentItemDeploymentStep))?.Create();
+
+            if (step is null)
+            {
+                await _notifier.WarningAsync(H["Couldn't add selected content to deployment plan."]);
+
+                return BadRequest();
+            }
+
             step.ContentItemId = item.ContentItemId;
 
             deploymentPlan.DeploymentSteps.Add(step);

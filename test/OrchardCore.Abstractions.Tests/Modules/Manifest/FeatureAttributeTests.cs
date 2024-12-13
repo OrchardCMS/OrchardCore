@@ -1,14 +1,10 @@
 using System;
 using System.Linq;
-
-namespace OrchardCore.Modules.Manifest;
-
 using Xunit;
 using Xunit.Abstractions;
 
-/// <summary>
-/// 
-/// </summary>
+namespace OrchardCore.Modules.Manifest;
+
 public class FeatureAttributeTests : FeatureAttributeTests<FeatureAttribute>
 {
     /// <summary>

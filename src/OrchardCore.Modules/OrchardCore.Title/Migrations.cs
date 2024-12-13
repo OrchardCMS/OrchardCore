@@ -1,7 +1,5 @@
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -70,7 +68,7 @@ public sealed class Migrations : DataMigration
                 lastDocumentId = contentItemVersion.Id;
             }
 
-            await _session.SaveChangesAsync();
+            await _session.FlushAsync();
         }
 
         static bool UpdateTitle(JsonNode content)

@@ -1,13 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.CustomSettings.Deployment;
 
-public class CustomSettingsDeploymentSource : IDeploymentSource
+public sealed class CustomSettingsDeploymentSource
+    : DeploymentSourceBase<CustomSettingsDeploymentStep>
 {
     private readonly CustomSettingsService _customSettingsService;
 
@@ -16,22 +14,16 @@ public class CustomSettingsDeploymentSource : IDeploymentSource
         _customSettingsService = customSettingsService;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(CustomSettingsDeploymentStep step, DeploymentPlanResult result)
     {
-        var customSettingsStep = step as CustomSettingsDeploymentStep;
-        if (customSettingsStep == null)
-        {
-            return;
-        }
-
         var settingsList = new List<KeyValuePair<string, JsonNode>>
         {
             new("name", "custom-settings"),
         };
 
-        var settingsTypes = customSettingsStep.IncludeAll
+        var settingsTypes = step.IncludeAll
             ? (await _customSettingsService.GetAllSettingsTypesAsync()).ToArray()
-            : (await _customSettingsService.GetSettingsTypesAsync(customSettingsStep.SettingsTypeNames)).ToArray();
+            : (await _customSettingsService.GetSettingsTypesAsync(step.SettingsTypeNames)).ToArray();
 
         foreach (var settingsType in settingsTypes)
         {

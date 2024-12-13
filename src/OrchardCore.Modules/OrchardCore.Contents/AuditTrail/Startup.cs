@@ -14,7 +14,6 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Contents.AuditTrail;
 
@@ -32,9 +31,9 @@ public sealed class Startup : StartupBase
 
         services.AddTransient<IConfigureOptions<AuditTrailOptions>, ContentAuditTrailEventConfiguration>();
         services.AddScoped<IAuditTrailEventHandler, ContentAuditTrailEventHandler>();
-        services.AddScoped<IDisplayDriver<ISite>, ContentAuditTrailSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<ContentAuditTrailSettingsDisplayDriver>();
 
-        services.AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailContentEventDisplayDriver>();
+        services.AddDisplayDriver<AuditTrailEvent, AuditTrailContentEventDisplayDriver>();
 
         services.AddScoped<IContentHandler, AuditTrailContentHandler>();
     }

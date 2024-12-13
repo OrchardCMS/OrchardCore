@@ -1,4 +1,3 @@
-using System;
 using Lucene.Net.Analysis;
 
 namespace OrchardCore.Search.Lucene.Services;

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 
@@ -73,7 +69,7 @@ public class ShapeViewModel : IShape, IPositioned
     {
         if (item == null)
         {
-            return new ValueTask<IShape>(this);
+            return ValueTask.FromResult<IShape>(this);
         }
 
         position ??= string.Empty;
@@ -86,6 +82,6 @@ public class ShapeViewModel : IShape, IPositioned
             _items.Add(wrapped);
         }
 
-        return new ValueTask<IShape>(this);
+        return ValueTask.FromResult<IShape>(this);
     }
 }

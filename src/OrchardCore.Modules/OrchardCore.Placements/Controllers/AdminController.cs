@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -24,7 +20,7 @@ using OrchardCore.Routing;
 namespace OrchardCore.Placements.Controllers;
 
 [Admin("Placements/{action}/{shapeType?}", "Placements.{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
@@ -35,8 +31,8 @@ public class AdminController : Controller
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public AdminController(
         ILogger<AdminController> logger,

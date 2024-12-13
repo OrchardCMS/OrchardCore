@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Feeds.Models;
 
 namespace OrchardCore.Feeds.Controllers;
 
-public class FeedController : Controller
+public sealed class FeedController : Controller
 {
     private readonly IEnumerable<IFeedBuilderProvider> _feedFormatProviders;
     private readonly IEnumerable<IFeedQueryProvider> _feedQueryProviders;

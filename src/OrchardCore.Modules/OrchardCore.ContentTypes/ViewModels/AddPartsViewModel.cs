@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.ContentTypes.ViewModels;
 
 public class AddPartsViewModel

@@ -1,6 +1,5 @@
-using System;
 using System.Security.Claims;
-using System.Threading.Tasks;
+using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services;
 
@@ -90,4 +89,12 @@ public interface IUserService
     /// <param name="user">The <see cref="IUser"/>.</param>
     /// <returns>The <see cref="ClaimsPrincipal"/>.</returns>
     Task<ClaimsPrincipal> CreatePrincipalAsync(IUser user);
+
+    /// <summary>
+    /// Creates a user.
+    /// </summary>
+    /// <param name="model"></param>
+    /// <param name="reportError">The error reported in case failure happened during the create process.</param>
+    /// <returns></returns>
+    Task<IUser> RegisterAsync(RegisterUserForm model, Action<string, string> reportError);
 }

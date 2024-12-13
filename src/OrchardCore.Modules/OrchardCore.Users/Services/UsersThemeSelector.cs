@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Theming;
@@ -43,6 +41,7 @@ public class UsersThemeSelector : IThemeSelector
             switch (routeValues["controller"]?.ToString())
             {
                 case "Account":
+                case "ExternalAuthentications":
                     useSiteTheme = (await _siteService.GetSettingsAsync<LoginSettings>()).UseSiteTheme;
                     break;
                 case "TwoFactorAuthentication":

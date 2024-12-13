@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Utilities;
@@ -126,5 +123,12 @@ public static class ContentDefinitionManagerExtensions
                 }
             });
         }
+    }
+
+    public static async Task<IEnumerable<ContentTypeDefinition>> ListWidgetTypeDefinitionsAsync(this IContentDefinitionManager manager)
+    {
+        var types = await manager.ListTypeDefinitionsAsync();
+
+        return types.Where(x => x.StereotypeEquals("Widget"));
     }
 }

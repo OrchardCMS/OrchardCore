@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.Users.Handlers;
 
 /// <summary>
@@ -54,4 +52,10 @@ public interface IUserEventHandler
     /// </summary>
     /// <param name="context">The <see cref="UserContext"/>.</param>
     Task EnabledAsync(UserContext context);
+
+    /// <summary>
+    /// Occurs when a user is confirmed.
+    /// </summary>
+    /// <param name="context">The <see cref="UserContext"/>.</param>
+    Task ConfirmedAsync(UserConfirmContext context);
 }

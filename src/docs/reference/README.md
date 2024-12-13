@@ -101,6 +101,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Shells](core/Shells/README.md)
 - [Workflows](modules/Workflows/README.md)
 - [Background Tasks](modules/BackgroundTasks/README.md)
+- [URL Rewriting](modules/UrlRewriting/README.md)
 
 ### Hosting and Operations
 
@@ -122,6 +123,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Diagnostics](modules/Diagnostics/README.md)
 - [Remote Deployment](modules/Deployment.Remote/README.md)
 - [Sms](modules/Sms/README.md)
+- [Azure Communication SMS](modules/Sms.Azure/README.md)
 
 ### Localization
 

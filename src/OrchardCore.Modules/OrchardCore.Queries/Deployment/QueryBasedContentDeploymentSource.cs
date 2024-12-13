@@ -1,13 +1,12 @@
-using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Queries.Deployment;
 
-public class QueryBasedContentDeploymentSource : IDeploymentSource
+public sealed class QueryBasedContentDeploymentSource
+    : DeploymentSourceBase<QueryBasedContentDeploymentStep>
 {
     private readonly IQueryManager _queryManager;
 
@@ -16,30 +15,23 @@ public class QueryBasedContentDeploymentSource : IDeploymentSource
         _queryManager = queryManager;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(QueryBasedContentDeploymentStep step, DeploymentPlanResult result)
     {
-        var queryDeploymentStep = step as QueryBasedContentDeploymentStep;
-
-        if (queryDeploymentStep == null)
-        {
-            return;
-        }
-
         var data = new JsonArray();
 
-        var query = await _queryManager.GetQueryAsync(queryDeploymentStep.QueryName);
+        var query = await _queryManager.GetQueryAsync(step.QueryName);
 
         if (query == null)
         {
             return;
         }
 
-        if (!query.CanReturnContentItems || !query.ReturnContentItems)
+        if (!query.ReturnContentItems)
         {
             return;
         }
 
-        if (!TryDeserializeParameters(queryDeploymentStep.QueryParameters ?? "{ }", out var parameters))
+        if (!TryDeserializeParameters(step.QueryParameters ?? "{ }", out var parameters))
         {
             return;
         }
@@ -53,7 +45,7 @@ public class QueryBasedContentDeploymentSource : IDeploymentSource
             // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql.
             objectData.Remove(nameof(ContentItem.Id));
 
-            if (queryDeploymentStep.ExportAsSetupRecipe)
+            if (step.ExportAsSetupRecipe)
             {
                 objectData[nameof(ContentItem.Owner)] = "[js: parameters('AdminUserId')]";
                 objectData[nameof(ContentItem.Author)] = "[js: parameters('AdminUsername')]";
@@ -83,11 +75,13 @@ public class QueryBasedContentDeploymentSource : IDeploymentSource
         try
         {
             queryParameters = JConvert.DeserializeObject<Dictionary<string, object>>(parameters) ?? [];
+
             return true;
         }
         catch (JsonException)
         {
             queryParameters = [];
+
             return false;
         }
     }

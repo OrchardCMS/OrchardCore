@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment.Indexes;
 using YesSql.Sql;

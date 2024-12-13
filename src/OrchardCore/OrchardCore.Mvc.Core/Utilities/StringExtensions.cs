@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Net;
@@ -402,6 +400,8 @@ public static class StringExtensions
         return Regex.Replace(original, pattern, match => replacements[match.Value]);
     }
 
+#if NET8_0
+    [Obsolete("Don't use 'TrimEnd' as this has a different behavior in .NET 9.0. Use 'OrchardCore.ContentManagement.Utilities.TrimEndString' instead.")]
     public static string TrimEnd(this string rough, string trim = "")
     {
         if (rough == null)
@@ -413,6 +413,7 @@ public static class StringExtensions
                    ? rough[..^trim.Length]
                    : rough;
     }
+#endif
 
     public static string ReplaceLastOccurrence(this string source, string find, string replace)
     {

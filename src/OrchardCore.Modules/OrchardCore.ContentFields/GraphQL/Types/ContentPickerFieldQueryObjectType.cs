@@ -1,7 +1,6 @@
-using System.Collections.Generic;
-using System.Linq;
-using GraphQL.DataLoader;
+using GraphQL;
 using GraphQL.Types;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
@@ -12,12 +11,12 @@ namespace OrchardCore.ContentFields.GraphQL;
 
 public class ContentPickerFieldQueryObjectType : ObjectGraphType<ContentPickerField>
 {
-    public ContentPickerFieldQueryObjectType()
+    public ContentPickerFieldQueryObjectType(IStringLocalizer<ContentPickerFieldQueryObjectType> S)
     {
         Name = nameof(ContentPickerField);
 
         Field<ListGraphType<StringGraphType>, IEnumerable<string>>("contentItemIds")
-            .Description("content item ids")
+            .Description(S["content item ids"])
             .PagingArguments()
             .Resolve(x =>
             {
@@ -25,13 +24,13 @@ public class ContentPickerFieldQueryObjectType : ObjectGraphType<ContentPickerFi
             });
 
         Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>("contentItems")
-            .Description("the content items")
+            .Description(S["the content items"])
             .PagingArguments()
             .ResolveAsync(x =>
             {
                 var contentItemLoader = x.GetOrAddPublishedContentItemByIdDataLoader();
 
-                return (contentItemLoader.LoadAsync(x.Page(x.Source.ContentItemIds))).Then(itemResultSet =>
+                return contentItemLoader.LoadAsync(x.Page(x.Source.ContentItemIds)).Then(itemResultSet =>
                 {
                     return itemResultSet.SelectMany(x => x);
                 });

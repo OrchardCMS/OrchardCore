@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.Contents.ViewModels;

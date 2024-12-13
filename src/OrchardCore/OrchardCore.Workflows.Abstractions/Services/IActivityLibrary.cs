@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Activities;

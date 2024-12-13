@@ -1,4 +1,3 @@
-using System;
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Apis;
@@ -10,14 +9,13 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Taxonomies.Drivers;
 using OrchardCore.Taxonomies.Fields;
@@ -48,8 +46,8 @@ public sealed class Startup : StartupBase
         .AddLiquidFilter<TaxonomyTermsFilter>("taxonomy_terms");
 
         services.AddDataMigration<Migrations>();
-        services.AddScoped<IShapeTableProvider, TermShapes>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddShapeTableProvider<TermShapes>();
+        services.AddPermissionProvider<Permissions>();
 
         // Taxonomy Part
         services.AddContentPart<TaxonomyPart>()
@@ -85,10 +83,9 @@ public sealed class ContentsAdminListStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IContentsAdminListFilter, TaxonomyContentsAdminListFilter>();
-        services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, TaxonomyContentsAdminListDisplayDriver>();
-
-        services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IDisplayDriver<ISite>, TaxonomyContentsAdminListSettingsDisplayDriver>();
+        services.AddDisplayDriver<ContentOptionsViewModel, TaxonomyContentsAdminListDisplayDriver>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddSiteDisplayDriver<TaxonomyContentsAdminListSettingsDisplayDriver>();
     }
 }
 

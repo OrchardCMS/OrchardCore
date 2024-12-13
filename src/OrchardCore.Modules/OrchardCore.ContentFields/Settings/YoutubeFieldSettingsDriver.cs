@@ -1,5 +1,3 @@
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -14,14 +12,17 @@ public sealed class YoutubeFieldSettingsDriver : ContentPartFieldDefinitionDispl
     {
         return Initialize<YoutubeFieldSettings>("YoutubeFieldSetting_Edit", model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<YoutubeFieldSettings>();
+            var settings = partFieldDefinition.GetSettings<YoutubeFieldSettings>();
 
-            model.Height = model.Height != default ? model.Height : 315;
-            model.Width = model.Width != default ? model.Width : 560;
+            model.Hint = settings.Hint;
+            model.Label = settings.Label;
+            model.Height = settings.Height != default ? settings.Height : 315;
+            model.Width = settings.Width != default ? settings.Width : 560;
+            model.Required = settings.Required;
         }).Location("Content");
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
     {
         var model = new YoutubeFieldSettings();
         await context.Updater.TryUpdateModelAsync(model, Prefix);

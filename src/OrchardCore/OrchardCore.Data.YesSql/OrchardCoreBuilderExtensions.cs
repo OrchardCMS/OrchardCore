@@ -1,8 +1,5 @@
-using System;
 using System.Buffers;
 using System.Data;
-using System.IO;
-using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
@@ -86,7 +83,6 @@ public static class OrchardCoreBuilderExtensions
                         var databaseFolder = SqliteHelper.GetDatabaseFolder(shellOptions, shellSettings.Name);
                         Directory.CreateDirectory(databaseFolder);
 
-                        // Only allow creating a file DB when a tenant is in the Initializing state
                         var connectionString = SqliteHelper.GetConnectionString(sqliteOptions, databaseFolder, shellSettings);
 
                         storeConfiguration

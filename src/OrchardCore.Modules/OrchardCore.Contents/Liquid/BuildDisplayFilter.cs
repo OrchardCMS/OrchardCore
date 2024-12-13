@@ -1,6 +1,4 @@
-using System;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.ContentManagement;
@@ -52,7 +50,7 @@ public class BuildDisplayFilter : ILiquidFilter
         // a 'ContentItem' is still created but with some null properties.
         if (contentItem?.ContentItemId == null)
         {
-            return new ValueTask<FluidValue>(NilValue.Instance);
+            return ValueTask.FromResult<FluidValue>(NilValue.Instance);
         }
 
         // When {{ Model.ContentItem | shape_build_display | shape_render }} is called prevent unlimited recursions.
@@ -61,7 +59,7 @@ public class BuildDisplayFilter : ILiquidFilter
         var recursionLimit = maxRecursions.Type == FluidValues.Number ? Convert.ToInt32(maxRecursions.ToNumberValue()) : DefaultMaxContentItemRecursions;
         if (_buildDisplayRecursionHelper.IsRecursive(contentItem, recursionLimit))
         {
-            return new ValueTask<FluidValue>(NilValue.Instance);
+            return ValueTask.FromResult<FluidValue>(NilValue.Instance);
         }
 
         var displayType = arguments["type"].Or(arguments.At(0)).ToStringValue();
@@ -69,7 +67,7 @@ public class BuildDisplayFilter : ILiquidFilter
         var task = _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, displayType);
         if (task.IsCompletedSuccessfully)
         {
-            return new ValueTask<FluidValue>(FluidValue.Create(task.Result, ctx.Options));
+            return ValueTask.FromResult(FluidValue.Create(task.Result, ctx.Options));
         }
 
         return Awaited(task, ctx.Options);

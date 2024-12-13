@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.Environment.Shell.Descriptor.Models;
 
 /// <summary>

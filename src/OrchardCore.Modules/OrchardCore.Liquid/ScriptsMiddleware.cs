@@ -1,9 +1,4 @@
-using System;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Fluid;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -37,6 +32,7 @@ public class ScriptsMiddleware
                     if (v.Contains(_etag))
                     {
                         httpContext.Response.StatusCode = StatusCodes.Status304NotModified;
+
                         return;
                     }
                 }
@@ -62,10 +58,13 @@ public class ScriptsMiddleware
                 httpContext.Response.Headers[HeaderNames.CacheControl] = cacheControl;
                 httpContext.Response.Headers[HeaderNames.ContentType] = "application/javascript";
                 httpContext.Response.Headers[HeaderNames.ETag] = _etag;
-                await httpContext.Response.Body.WriteAsync(_bytes, httpContext?.RequestAborted ?? CancellationToken.None);
+
+                await httpContext.Response.Body.WriteAsync(_bytes, httpContext.RequestAborted);
+
                 return;
             }
         }
+
         await _next.Invoke(httpContext);
     }
 }

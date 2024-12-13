@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +10,7 @@ using OrchardCore.AdminDashboard.Models;
 using OrchardCore.AdminDashboard.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentTypes.Events;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
@@ -32,7 +32,7 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
 
         services.AddScoped<IAdminDashboardService, AdminDashboardService>();
         services.AddIndexProvider<DashboardPartIndexProvider>();
@@ -43,6 +43,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentDisplayDriver, DashboardContentDisplayDriver>();
 
         services.AddDataMigration<Migrations>();
+        services.AddScoped<IContentDefinitionHandler, DashboardPartContentTypeDefinitionHandler>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

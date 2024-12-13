@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.Liquid;
@@ -37,6 +35,6 @@ public class NewShapeFilter : ILiquidFilter
             return Awaited(task, ctx.Options);
         }
 
-        return new ValueTask<FluidValue>(FluidValue.Create(task.Result, ctx.Options));
+        return ValueTask.FromResult<FluidValue>(FluidValue.Create(task.Result, ctx.Options));
     }
 }

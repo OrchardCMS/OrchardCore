@@ -1,12 +1,11 @@
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.ContentTypes.Deployment;
 
-public class ContentDefinitionDeploymentSource : IDeploymentSource
+public sealed class ContentDefinitionDeploymentSource
+    : DeploymentSourceBase<ContentDefinitionDeploymentStep>
 {
     private readonly IContentDefinitionStore _contentDefinitionStore;
 
@@ -15,24 +14,19 @@ public class ContentDefinitionDeploymentSource : IDeploymentSource
         _contentDefinitionStore = contentDefinitionStore;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(ContentDefinitionDeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not ContentDefinitionDeploymentStep contentDefinitionStep)
-        {
-            return;
-        }
-
         var contentTypeDefinitionRecord = await _contentDefinitionStore.LoadContentDefinitionAsync();
 
-        var contentTypes = contentDefinitionStep.IncludeAll
+        var contentTypes = step.IncludeAll
             ? contentTypeDefinitionRecord.ContentTypeDefinitionRecords
             : contentTypeDefinitionRecord.ContentTypeDefinitionRecords
-                .Where(x => contentDefinitionStep.ContentTypes.Contains(x.Name));
+                .Where(x => step.ContentTypes.Contains(x.Name));
 
-        var contentParts = contentDefinitionStep.IncludeAll
+        var contentParts = step.IncludeAll
             ? contentTypeDefinitionRecord.ContentPartDefinitionRecords
             : contentTypeDefinitionRecord.ContentPartDefinitionRecords
-                    .Where(x => contentDefinitionStep.ContentParts.Contains(x.Name));
+                    .Where(x => step.ContentParts.Contains(x.Name));
 
         result.Steps.Add(new JsonObject
         {

@@ -1,4 +1,3 @@
-using System;
 using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -19,7 +18,7 @@ public abstract class ContentTypePartDefinitionBuilder
         Name = part.Name;
         PartName = part.PartDefinition.Name;
         TypeName = part.ContentTypeDefinition != null ? part.ContentTypeDefinition.Name : default;
-        _settings = part.Settings.Clone();
+        _settings = part.Settings?.Clone() ?? [];
     }
 
     public ContentTypePartDefinitionBuilder WithSettings<T>(T settings)

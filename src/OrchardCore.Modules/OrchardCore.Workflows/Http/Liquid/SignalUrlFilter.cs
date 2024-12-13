@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc;
@@ -40,8 +38,8 @@ public class SignalUrlFilter : ILiquidFilter
             : SignalPayload.ForCorrelation(signalName, workflowContext.CorrelationId);
 
         var token = _securityTokenService.CreateToken(payload, TimeSpan.FromDays(7));
-        var urlValue = new StringValue(urlHelper.Action("Trigger", "HttpWorkflow", new { area = "OrchardCore.Workflows", token }));
+        var urlValue = StringValue.Create(urlHelper.Action("Trigger", "HttpWorkflow", new { area = "OrchardCore.Workflows", token }));
 
-        return new ValueTask<FluidValue>(urlValue);
+        return ValueTask.FromResult<FluidValue>(urlValue);
     }
 }

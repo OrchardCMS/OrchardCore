@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using OrchardCore.Security.Permissions;
 
@@ -22,9 +19,6 @@ public class DefaultPermissionGrantingService : IPermissionGrantingService
         var grantingNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         GetGrantingNamesInternal(requirement.Permission, grantingNames);
-
-        // SiteOwner permission grants them all
-        grantingNames.Add(StandardPermissions.SiteOwner.Name);
 
         return claims.Any(claim => string.Equals(claim.Type, Permission.ClaimType, StringComparison.OrdinalIgnoreCase)
             && grantingNames.Contains(claim.Value));

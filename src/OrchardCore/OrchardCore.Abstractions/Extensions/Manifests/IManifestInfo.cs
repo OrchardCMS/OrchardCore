@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using OrchardCore.Modules.Manifest;
 
 namespace OrchardCore.Environment.Extensions;

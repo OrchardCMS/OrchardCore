@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
@@ -16,7 +12,7 @@ using OrchardCore.Flows.ViewModels;
 namespace OrchardCore.Flows.Controllers;
 
 [Admin("Flows/{action}", "Flows.{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IContentManager _contentManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
@@ -113,7 +109,7 @@ public class AdminController : Controller
 
         if (settings?.ContainedContentTypes == null || settings.ContainedContentTypes.Length == 0)
         {
-            return (await _contentDefinitionManager.ListTypeDefinitionsAsync()).Where(t => t.StereotypeEquals("Widget"));
+            return await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync();
         }
 
         var definitions = new List<ContentTypeDefinition>();

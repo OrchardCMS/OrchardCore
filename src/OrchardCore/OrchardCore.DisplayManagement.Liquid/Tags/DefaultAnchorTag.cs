@@ -1,8 +1,4 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +21,6 @@ public class DefaultAnchorTag
             }
         }
 
-        return new ValueTask<Completion>(Completion.Normal);
+        return ValueTask.FromResult(Completion.Normal);
     }
 }

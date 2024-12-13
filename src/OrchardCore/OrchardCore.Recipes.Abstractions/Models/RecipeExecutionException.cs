@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Recipes.Models;
 
 public class RecipeExecutionException : Exception

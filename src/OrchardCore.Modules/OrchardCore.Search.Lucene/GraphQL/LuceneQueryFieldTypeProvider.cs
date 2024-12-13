@@ -1,14 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
@@ -19,16 +16,20 @@ using OrchardCore.Search.Lucene.Model;
 
 namespace OrchardCore.Queries.Lucene.GraphQL.Queries;
 
-public class LuceneQueryFieldTypeProvider : ISchemaBuilder
+public sealed class LuceneQueryFieldTypeProvider : ISchemaBuilder
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger _logger;
 
+    internal readonly IStringLocalizer S;
+
     public LuceneQueryFieldTypeProvider(
         IHttpContextAccessor httpContextAccessor,
+        IStringLocalizer<LuceneQueryFieldTypeProvider> stringLocalizer,
         ILogger<LuceneQueryFieldTypeProvider> logger)
     {
         _httpContextAccessor = httpContextAccessor;
+        S = stringLocalizer;
         _logger = logger;
     }
 
@@ -91,7 +92,7 @@ public class LuceneQueryFieldTypeProvider : ISchemaBuilder
         }
     }
 
-    private static FieldType BuildSchemaBasedFieldType(Query query, JsonNode querySchema, string fieldTypeName)
+    private FieldType BuildSchemaBasedFieldType(Query query, JsonNode querySchema, string fieldTypeName)
     {
         var properties = querySchema["properties"]?.AsObject();
         if (properties == null)
@@ -118,6 +119,7 @@ public class LuceneQueryFieldTypeProvider : ISchemaBuilder
                     Name = nameLower,
                     Description = description,
                     Type = typeof(StringGraphType),
+                    ResolvedType = new StringGraphType(),
                     Resolver = new FuncFieldResolver<JsonObject, string>(context =>
                     {
                         var source = context.Source;
@@ -134,6 +136,7 @@ public class LuceneQueryFieldTypeProvider : ISchemaBuilder
                     Name = nameLower,
                     Description = description,
                     Type = typeof(IntGraphType),
+                    ResolvedType = new IntGraphType(),
                     Resolver = new FuncFieldResolver<JsonObject, int?>(context =>
                     {
                         var source = context.Source;
@@ -152,7 +155,7 @@ public class LuceneQueryFieldTypeProvider : ISchemaBuilder
                 new QueryArgument<StringGraphType> { Name = "parameters" }
             ),
             Name = fieldTypeName,
-            Description = "Represents the " + query.Source + " Query : " + query.Name,
+            Description = S["Represents the {0} Query : {1}", query.Source, query.Name],
             ResolvedType = new ListGraphType(typeType),
             Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
             Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>)
@@ -178,7 +181,7 @@ public class LuceneQueryFieldTypeProvider : ISchemaBuilder
         return fieldType;
     }
 
-    private static FieldType BuildContentTypeFieldType(ISchema schema, string contentType, Query query, string fieldTypeName)
+    private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, Query query, string fieldTypeName)
     {
         var typeType = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
 
@@ -193,7 +196,7 @@ public class LuceneQueryFieldTypeProvider : ISchemaBuilder
                 new QueryArgument<StringGraphType> { Name = "parameters" }
             ),
             Name = fieldTypeName,
-            Description = "Represents the " + query.Source + " Query : " + query.Name,
+            Description = S["Represents the {0} Query : {1}", query.Source, query.Name],
             ResolvedType = typeType.ResolvedType,
             Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
             Type = typeType.Type

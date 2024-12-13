@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -21,7 +17,7 @@ using OrchardCore.Templates.ViewModels;
 namespace OrchardCore.Templates.Controllers;
 
 [Admin("Templates/{action}/{name?}", "Templates.{action}")]
-public class TemplateController : Controller
+public sealed class TemplateController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
@@ -32,8 +28,8 @@ public class TemplateController : Controller
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public TemplateController(
         IAuthorizationService authorizationService,
@@ -168,26 +164,7 @@ public class TemplateController : Controller
 
         if (ModelState.IsValid)
         {
-            if (string.IsNullOrWhiteSpace(model.Name))
-            {
-                ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
-            }
-            else if (string.IsNullOrWhiteSpace(model.Content))
-            {
-                ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
-            }
-            else
-            {
-                var templatesDocument = model.AdminTemplates
-                    ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
-                    : await _templatesManager.GetTemplatesDocumentAsync()
-                    ;
-
-                if (templatesDocument.Templates.ContainsKey(model.Name))
-                {
-                    ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
-                }
-            }
+            await ValidateModelAsync(model);
         }
 
         if (ModelState.IsValid)
@@ -269,18 +246,7 @@ public class TemplateController : Controller
 
         if (ModelState.IsValid)
         {
-            if (string.IsNullOrWhiteSpace(model.Name))
-            {
-                ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
-            }
-            else if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) && templatesDocument.Templates.ContainsKey(model.Name))
-            {
-                ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
-            }
-            else if (string.IsNullOrWhiteSpace(model.Content))
-            {
-                ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
-            }
+            await ValidateModelAsync(model, templatesDocument, sourceName);
         }
 
         if (!templatesDocument.Templates.ContainsKey(sourceName))
@@ -357,39 +323,35 @@ public class TemplateController : Controller
             return Forbid();
         }
 
-        if (itemIds?.Count() > 0)
+        switch (options.BulkAction)
         {
-            var templatesDocument = options.AdminTemplates
-                    ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
-                    : await _templatesManager.LoadTemplatesDocumentAsync();
-            var checkedContentItems = templatesDocument.Templates.Where(x => itemIds.Contains(x.Key));
+            case ContentsBulkAction.None:
+                break;
+            case ContentsBulkAction.Remove:
+                if (itemIds != null)
+                {
+                    var templatesDocument = options.AdminTemplates
+                        ? await _adminTemplatesManager.LoadTemplatesDocumentAsync()
+                        : await _templatesManager.LoadTemplatesDocumentAsync();
+                    var checkedContentItemIds = templatesDocument.Templates.Keys
+                        .Intersect(itemIds, StringComparer.OrdinalIgnoreCase);
 
-            switch (options.BulkAction)
-            {
-                case ContentsBulkAction.None:
-                    break;
-                case ContentsBulkAction.Remove:
-                    foreach (var item in checkedContentItems)
+                    foreach (var id in checkedContentItemIds)
                     {
                         await (options.AdminTemplates
-                                ? _adminTemplatesManager.RemoveTemplateAsync(item.Key)
-                                : _templatesManager.RemoveTemplateAsync(item.Key));
+                            ? _adminTemplatesManager.RemoveTemplateAsync(id)
+                            : _templatesManager.RemoveTemplateAsync(id));
                     }
+
                     await _notifier.SuccessAsync(H["Templates successfully removed."]);
-                    break;
-                default:
-                    return BadRequest();
-            }
+                }
+
+                break;
+            default:
+                return BadRequest();
         }
 
-        if (options.AdminTemplates)
-        {
-            return RedirectToAction(nameof(Admin));
-        }
-        else
-        {
-            return RedirectToAction(nameof(Index));
-        }
+        return RedirectToAction(options.AdminTemplates ? nameof(Admin) : nameof(Index));
     }
 
     private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)
@@ -401,6 +363,36 @@ public class TemplateController : Controller
         else
         {
             return RedirectToAction(nameof(Index));
+        }
+    }
+
+    private async Task ValidateModelAsync(TemplateViewModel model, TemplatesDocument templatesDocument = null, string sourceName = null)
+    {
+        if (string.IsNullOrWhiteSpace(model.Name))
+        {
+            ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
+        }
+        else
+        {
+            templatesDocument ??= model.AdminTemplates
+                ? await _adminTemplatesManager.GetTemplatesDocumentAsync()
+                : await _templatesManager.GetTemplatesDocumentAsync();
+
+            if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) &&
+                templatesDocument.Templates.ContainsKey(model.Name))
+            {
+                ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(model.Content))
+        {
+            var placementsLink = Url.ActionLink("Index", "Admin", new { area = "OrchardCore.Placements" });
+            var docsLink = "https://docs.orchardcore.net/en/main/reference/modules/Placements/";
+
+            await _notifier.WarningAsync(H["If you left the content empty because you want to hide the shape, use <a href=\"{0}\">Placements</a> instead. See <a href=\"{1}\">the docs</a> for more info about this feature.", placementsLink, docsLink]);
+
+            ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
         }
     }
 }

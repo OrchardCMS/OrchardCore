@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -15,7 +11,7 @@ using YesSql;
 namespace OrchardCore.Deployment.Controllers;
 
 [Admin]
-public class StepController : Controller
+public sealed class StepController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IDisplayManager<DeploymentStep> _displayManager;
@@ -24,7 +20,7 @@ public class StepController : Controller
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
 
-    protected readonly IHtmlLocalizer H;
+    internal readonly IHtmlLocalizer H;
 
     public StepController(
         IAuthorizationService authorizationService,

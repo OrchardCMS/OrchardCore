@@ -1,6 +1,4 @@
-using System;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Recipes.Models;
@@ -11,22 +9,18 @@ namespace OrchardCore.Microsoft.Authentication.Recipes;
 /// <summary>
 /// This recipe step sets general Microsoft Entra ID settings.
 /// </summary>
-public sealed class AzureADSettingsStep : IRecipeStepHandler
+public sealed class AzureADSettingsStep : NamedRecipeStepHandler
 {
     private readonly IAzureADService _azureADService;
 
     public AzureADSettingsStep(IAzureADService azureADService)
+        : base(nameof(AzureADSettings))
     {
         _azureADService = azureADService;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, nameof(AzureADSettings), StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var model = context.Step.ToObject<AzureADSettingsStepModel>();
         var settings = await _azureADService.LoadSettingsAsync();
 

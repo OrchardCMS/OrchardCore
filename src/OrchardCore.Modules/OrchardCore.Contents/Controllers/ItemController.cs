@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
@@ -7,7 +6,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 
 namespace OrchardCore.Contents.Controllers;
 
-public class ItemController : Controller, IUpdateModel
+public sealed class ItemController : Controller, IUpdateModel
 {
     private readonly IContentManager _contentManager;
     private readonly IContentItemDisplayManager _contentItemDisplayManager;

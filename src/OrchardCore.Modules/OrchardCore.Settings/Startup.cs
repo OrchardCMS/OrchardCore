@@ -11,6 +11,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
 using OrchardCore.ResourceManagement;
+using OrchardCore.Roles;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Settings.Drivers;
@@ -64,16 +65,18 @@ public sealed class Startup : StartupBase
         });
 
         services.AddScoped<ISetupEventHandler, SetupEventHandler>();
-        services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<IAuthorizationHandler, SuperUserHandler>();
+        services.AddPermissionProvider<Permissions>();
+
+        services.AddRolesCoreServices()
+            .AddScoped<IAuthorizationHandler, SuperUserHandler>();
 
         services.AddRecipeExecutionStep<SettingsStep>();
         services.AddSingleton<ISiteService, SiteService>();
 
         // Site Settings editor
-        services.AddScoped<IDisplayDriver<ISite>, DefaultSiteSettingsDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ISite>, ButtonsSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddSiteDisplayDriver<DefaultSiteSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<ButtonsSettingsDisplayDriver>();
+        services.AddNavigationProvider<AdminMenu>();
 
         services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
 

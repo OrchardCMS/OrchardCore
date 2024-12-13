@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.Themes.Models;
 
 public class SelectThemesViewModel

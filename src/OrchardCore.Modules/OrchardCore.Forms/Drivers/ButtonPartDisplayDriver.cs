@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
@@ -24,7 +23,7 @@ public sealed class ButtonPartDisplayDriver : ContentPartDisplayDriver<ButtonPar
         });
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(ButtonPart part, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ButtonPart part, UpdatePartEditorContext context)
     {
         var viewModel = new ButtonPartEditViewModel();
 

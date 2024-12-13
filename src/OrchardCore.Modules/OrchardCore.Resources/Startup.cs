@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
@@ -31,7 +30,7 @@ public sealed class Startup : StartupBase
             o.LiquidViewParserConfiguration.Add(parser => parser.RegisterParserBlock("styleblock", parser.ArgumentsListParser, StyleBlock.WriteToAsync));
         });
 
-        serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        serviceCollection.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         var resourceConfiguration = _shellConfiguration.GetSection("OrchardCore_Resources");
         serviceCollection.Configure<ResourceOptions>(resourceConfiguration);

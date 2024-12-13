@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using System.Security.Claims;
 using System.Web;
 using Fluid;
@@ -19,7 +17,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
@@ -32,17 +30,17 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
-using OrchardCore.ResourceManagement;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Setup.Events;
 using OrchardCore.Sms;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
+using OrchardCore.Users.DataMigrations;
 using OrchardCore.Users.Deployment;
 using OrchardCore.Users.Drivers;
+using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
@@ -59,13 +57,114 @@ public sealed class Startup : StartupBase
     private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
     private static readonly string _emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
 
-
     private readonly string _tenantName;
+
     private UserOptions _userOptions;
 
     public Startup(ShellSettings shellSettings)
     {
         _tenantName = shellSettings.Name;
+    }
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDataMigration<ExternalAuthenticationMigrations>();
+
+        services.Configure<UserOptions>(userOptions =>
+        {
+            var configuration = ShellScope.Services.GetRequiredService<IShellConfiguration>();
+            configuration.GetSection("OrchardCore_Users").Bind(userOptions);
+        });
+
+        // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
+        services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
+
+        // Add the default token providers used to generate tokens for an admin to change user's password.
+        services.AddIdentity<IUser, IRole>()
+            .AddTokenProvider<DataProtectorTokenProvider<IUser>>(TokenOptions.DefaultProvider);
+
+        // Configure token provider for email confirmation.
+        services.AddTransient<IConfigureOptions<IdentityOptions>, EmailConfirmationIdentityOptionsConfigurations>()
+            .AddTransient<EmailConfirmationTokenProvider>()
+            .AddOptions<EmailConfirmationTokenProviderOptions>();
+
+        services.AddTransient<IConfigureOptions<IdentityOptions>, IdentityOptionsConfigurations>();
+        services.AddPhoneFormatValidator();
+        // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
+        // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
+        services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
+
+        services.AddUsers();
+
+        services.ConfigureApplicationCookie(options =>
+        {
+            var userOptions = ShellScope.Services.GetRequiredService<IOptions<UserOptions>>();
+
+            options.Cookie.Name = "orchauth_" + HttpUtility.UrlEncode(_tenantName);
+
+            // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
+            // set by the pipeline and coming from the request 'PathBase' which already ends with the
+            // tenant prefix but may also start by a path related e.g to a virtual folder.
+
+            options.LoginPath = "/" + userOptions.Value.LoginPath;
+            options.LogoutPath = "/" + userOptions.Value.LogoffPath;
+            options.AccessDeniedPath = "/Error/403";
+        });
+
+        services.AddTransient<IPostConfigureOptions<SecurityStampValidatorOptions>, ConfigureSecurityStampOptions>();
+        services.AddDataMigration<Migrations>();
+
+        services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
+        services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
+
+        services.AddScoped<IMembershipService, MembershipService>();
+        services.AddScoped<ISetupEventHandler, SetupEventHandler>();
+        services.AddScoped<ICommandHandler, UserCommands>();
+        services.AddScoped<IExternalLoginEventHandler, ScriptExternalLoginEventHandler>();
+
+        services.AddPermissionProvider<Permissions>();
+        services.AddNavigationProvider<AdminMenu>();
+
+        services.AddSiteDisplayDriver<LoginSettingsDisplayDriver>();
+
+        services.AddDisplayDriver<User, UserDisplayDriver>();
+        services.AddDisplayDriver<User, UserInformationDisplayDriver>();
+        services.AddDisplayDriver<User, UserButtonsDisplayDriver>();
+
+        services.AddScoped<IThemeSelector, UsersThemeSelector>();
+
+        services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSuperUserProvider>();
+
+        services.AddScoped<IUsersAdminListQueryService, DefaultUsersAdminListQueryService>();
+
+        services.AddDisplayDriver<UserIndexOptions, UserOptionsDisplayDriver>();
+
+        services.AddSingleton<IUsersAdminListFilterParser>(sp =>
+        {
+            var filterProviders = sp.GetServices<IUsersAdminListFilterProvider>();
+            var builder = new QueryEngineBuilder<User>();
+            foreach (var provider in filterProviders)
+            {
+                provider.Build(builder);
+            }
+
+            var parser = builder.Build();
+
+            return new DefaultUsersAdminListFilterParser(parser);
+        });
+
+        services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
+        services.AddResourceConfiguration<UserOptionsConfiguration>();
+        services.AddDisplayDriver<Navbar, UserMenuNavbarDisplayDriver>();
+        services.AddDisplayDriver<UserMenu, UserMenuDisplayDriver>();
+        services.AddShapeTableProvider<UserMenuShapeTableProvider>();
+
+        services.AddRecipeExecutionStep<UsersStep>();
+
+        services.AddScoped<CustomUserSettingsService>();
+        services.AddRecipeExecutionStep<CustomUserSettingsStep>();
+        services.AddDisplayDriver<LoginForm, LoginFormDisplayDriver>();
+        services.AddScoped<ILoginFormEvent, EmailConfirmationLoginFormEvent>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -117,17 +216,6 @@ public sealed class Startup : StartupBase
         );
 
         routes.MapAreaControllerRoute(
-            name: "ExternalLogins",
-            areaName: UserConstants.Features.Users,
-            pattern: _userOptions.ExternalLoginsUrl,
-            defaults: new
-            {
-                controller = _accountControllerName,
-                action = nameof(AccountController.ExternalLogins),
-            }
-        );
-
-        routes.MapAreaControllerRoute(
             name: "ConfirmEmail",
             areaName: UserConstants.Features.Users,
             pattern: "ConfirmEmail",
@@ -151,102 +239,49 @@ public sealed class Startup : StartupBase
 
         builder.UseAuthorization();
     }
+}
+
+[Feature(UserConstants.Features.ExternalAuthentication)]
+public sealed class ExternalAuthenticationStartup : StartupBase
+{
+    private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
+
+    private UserOptions _userOptions;
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<UserOptions>(userOptions =>
-        {
-            var configuration = ShellScope.Services.GetRequiredService<IShellConfiguration>();
-            configuration.GetSection("OrchardCore_Users").Bind(userOptions);
-        });
+        services.AddScoped<ILoginFormEvent, ExternalLoginFormEvents>();
+        services.AddNavigationProvider<RegistrationAdminMenu>();
+        services.AddDisplayDriver<UserMenu, ExternalAuthenticationUserMenuDisplayDriver>();
+        services.AddSiteDisplayDriver<ExternalRegistrationSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<ExternalLoginSettingsDisplayDriver>();
+        services.AddTransient<IConfigureOptions<ExternalLoginOptions>, ExternalLoginOptionsConfigurations>();
+    }
 
-        // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
-        services.TryAddSingleton<ILookupNormalizer, UpperInvariantLookupNormalizer>();
+    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        _userOptions ??= serviceProvider.GetRequiredService<IOptions<UserOptions>>().Value;
 
-        // Add the default token providers used to generate tokens for an admin to change user's password.
-        services.AddIdentity<IUser, IRole>()
-            .AddTokenProvider<DataProtectorTokenProvider<IUser>>(TokenOptions.DefaultProvider);
-
-        // Configure token provider for email confirmation.
-        services.AddTransient<IConfigureOptions<IdentityOptions>, EmailConfirmationIdentityOptionsConfigurations>()
-            .AddTransient<EmailConfirmationTokenProvider>()
-            .AddOptions<EmailConfirmationTokenProviderOptions>();
-
-        services.AddTransient<IConfigureOptions<IdentityOptions>, IdentityOptionsConfigurations>();
-        services.AddPhoneFormatValidator();
-        // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
-        // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
-        services.AddAuthentication(options => options.DefaultSignOutScheme = IdentityConstants.ApplicationScheme);
-
-        services.AddUsers();
-
-        services.ConfigureApplicationCookie(options =>
-        {
-            var userOptions = ShellScope.Services.GetRequiredService<IOptions<UserOptions>>();
-
-            options.Cookie.Name = "orchauth_" + HttpUtility.UrlEncode(_tenantName);
-
-            // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
-            // set by the pipeline and coming from the request 'PathBase' which already ends with the
-            // tenant prefix but may also start by a path related e.g to a virtual folder.
-
-            options.LoginPath = "/" + userOptions.Value.LoginPath;
-            options.LogoutPath = "/" + userOptions.Value.LogoffPath;
-            options.AccessDeniedPath = "/Error/403";
-        });
-        services.AddTransient<IPostConfigureOptions<SecurityStampValidatorOptions>, ConfigureSecurityStampOptions>();
-        services.AddDataMigration<Migrations>();
-
-        services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
-        services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
-
-        services.AddScoped<IMembershipService, MembershipService>();
-        services.AddScoped<ISetupEventHandler, SetupEventHandler>();
-        services.AddScoped<ICommandHandler, UserCommands>();
-        services.AddScoped<IExternalLoginEventHandler, ScriptExternalLoginEventHandler>();
-
-        services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
-
-        services.AddScoped<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
-
-        services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
-        services.AddScoped<IDisplayDriver<User>, UserInformationDisplayDriver>();
-        services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
-
-        services.AddScoped<IThemeSelector, UsersThemeSelector>();
-
-        services.AddScoped<IRecipeEnvironmentProvider, RecipeEnvironmentSuperUserProvider>();
-
-        services.AddScoped<IUsersAdminListQueryService, DefaultUsersAdminListQueryService>();
-
-        services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();
-
-        services.AddSingleton<IUsersAdminListFilterParser>(sp =>
-        {
-            var filterProviders = sp.GetServices<IUsersAdminListFilterProvider>();
-            var builder = new QueryEngineBuilder<User>();
-            foreach (var provider in filterProviders)
+        routes.MapAreaControllerRoute(
+            name: "ExternalLogins",
+            areaName: UserConstants.Features.Users,
+            pattern: _userOptions.ExternalLoginsUrl,
+            defaults: new
             {
-                provider.Build(builder);
+                controller = _accountControllerName,
+                action = nameof(ExternalAuthenticationsController.ExternalLogins),
             }
+        );
+    }
+}
 
-            var parser = builder.Build();
-
-            return new DefaultUsersAdminListFilterParser(parser);
-        });
-
-        services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
-        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
-        services.AddScoped<IDisplayDriver<Navbar>, UserMenuNavbarDisplayDriver>();
-        services.AddScoped<IDisplayDriver<UserMenu>, UserMenuDisplayDriver>();
-        services.AddScoped<IShapeTableProvider, UserMenuShapeTableProvider>();
-
-        services.AddRecipeExecutionStep<UsersStep>();
-
-        services.AddScoped<CustomUserSettingsService>();
-        services.AddRecipeExecutionStep<CustomUserSettingsStep>();
-        services.AddScoped<IDisplayDriver<LoginForm>, LoginFormDisplayDriver>();
+[RequireFeatures("OrchardCore.Email")]
+public sealed class EmailStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<UserEmailService>();
+        services.AddScoped<IRegistrationFormEvents, EmailConfirmationRegistrationFormEvents>();
     }
 }
 
@@ -257,9 +292,9 @@ public sealed class RolesStartup : StartupBase
     {
         services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
         services.AddIndexProvider<UserByRoleNameIndexProvider>();
-        services.AddScoped<IDisplayDriver<User>, UserRoleDisplayDriver>();
+        services.AddDisplayDriver<User, UserRoleDisplayDriver>();
         services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
-        services.AddScoped<IPermissionProvider, UserRolePermissions>();
+        services.AddPermissionProvider<UserRolePermissions>();
         services.AddSingleton<IUsersAdminListFilterProvider, RolesAdminListFilterProvider>();
     }
 }
@@ -369,9 +404,9 @@ public sealed class ChangeEmailStartup : StartupBase
             o.MemberAccessStrategy.Register<ChangeEmailViewModel>();
         });
 
-        services.AddScoped<INavigationProvider, ChangeEmailAdminMenu>();
-        services.AddScoped<IDisplayDriver<ISite>, ChangeEmailSettingsDisplayDriver>();
-        services.AddScoped<IDisplayDriver<UserMenu>, ChangeEmailUserMenuDisplayDriver>();
+        services.AddSiteDisplayDriver<ChangeEmailSettingsDisplayDriver>();
+        services.AddNavigationProvider<ChangeEmailAdminMenu>();
+        services.AddDisplayDriver<UserMenu, ChangeEmailUserMenuDisplayDriver>();
     }
 }
 
@@ -392,6 +427,24 @@ public sealed class RegistrationStartup : StartupBase
     private const string ConfirmEmailSent = nameof(EmailConfirmationController.ConfirmEmailSent);
     private const string RegistrationPending = nameof(RegistrationController.RegistrationPending);
     private const string RegistrationControllerName = "Registration";
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<TemplateOptions>(o =>
+        {
+            o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
+        });
+
+        services.AddDisplayDriver<User, UserRegistrationAdminDisplayDriver>();
+        services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
+        services.AddNavigationProvider<RegistrationAdminMenu>();
+
+        services.AddDisplayDriver<LoginForm, RegisterUserLoginFormDisplayDriver>();
+        services.AddDisplayDriver<RegisterUserForm, RegisterUserFormDisplayDriver>();
+        services.AddTransient<IConfigureOptions<RegistrationOptions>, RegistrationOptionsConfigurations>();
+        services.AddScoped<ILoginFormEvent, UserModerationLoginFormEvent>();
+        services.AddScoped<IRegistrationFormEvents, UserModerationRegistrationFormEvents>();
+    }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
@@ -428,19 +481,6 @@ public sealed class RegistrationStartup : StartupBase
             }
         );
     }
-
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
-        });
-
-        services.AddScoped<INavigationProvider, RegistrationAdminMenu>();
-        services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
-        services.AddScoped<IDisplayDriver<LoginForm>, RegisterUserLoginFormDisplayDriver>();
-        services.AddScoped<IDisplayDriver<RegisterUserForm>, RegisterUserFormDisplayDriver>();
-    }
 }
 
 [Feature(UserConstants.Features.UserRegistration)]
@@ -461,6 +501,25 @@ public sealed class ResetPasswordStartup : StartupBase
     private const string ResetPasswordPath = "ResetPassword";
     private const string ResetPasswordConfirmationPath = "ResetPasswordConfirmation";
     private const string ResetPasswordControllerName = "ResetPassword";
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddTransient<IConfigureOptions<IdentityOptions>, PasswordResetIdentityOptionsConfigurations>()
+            .AddTransient<PasswordResetTokenProvider>()
+            .AddOptions<PasswordResetTokenProviderOptions>();
+
+        services.Configure<TemplateOptions>(o =>
+        {
+            o.MemberAccessStrategy.Register<LostPasswordViewModel>();
+        });
+
+        services.AddSiteDisplayDriver<ResetPasswordSettingsDisplayDriver>();
+        services.AddNavigationProvider<ResetPasswordAdminMenu>();
+
+        services.AddDisplayDriver<ResetPasswordForm, ResetPasswordFormDisplayDriver>();
+        services.AddDisplayDriver<LoginForm, ForgotPasswordLoginFormDisplayDriver>();
+        services.AddDisplayDriver<ForgotPasswordForm, ForgotPasswordFormDisplayDriver>();
+    }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
@@ -505,25 +564,6 @@ public sealed class ResetPasswordStartup : StartupBase
             }
         );
     }
-
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddTransient<IConfigureOptions<IdentityOptions>, PasswordResetIdentityOptionsConfigurations>()
-            .AddTransient<PasswordResetTokenProvider>()
-            .AddOptions<PasswordResetTokenProviderOptions>();
-
-        services.Configure<TemplateOptions>(o =>
-        {
-            o.MemberAccessStrategy.Register<LostPasswordViewModel>();
-        });
-
-        services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
-        services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ResetPasswordForm>, ResetPasswordFormDisplayDriver>();
-
-        services.AddScoped<IDisplayDriver<LoginForm>, ForgotPasswordLoginFormDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ForgotPasswordForm>, ForgotPasswordFormDisplayDriver>();
-    }
 }
 
 [Feature(UserConstants.Features.ResetPassword)]
@@ -541,8 +581,8 @@ public sealed class CustomUserSettingsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
-        services.AddScoped<IPermissionProvider, CustomUserSettingsPermissions>();
+        services.AddDisplayDriver<User, CustomUserSettingsDisplayDriver>();
+        services.AddPermissionProvider<CustomUserSettingsPermissions>();
         services.AddDeployment<CustomUserSettingsDeploymentSource, CustomUserSettingsDeploymentStep, CustomUserSettingsDeploymentStepDriver>();
         services.AddScoped<IStereotypesProvider, CustomUserSettingsStereotypesProvider>();
 

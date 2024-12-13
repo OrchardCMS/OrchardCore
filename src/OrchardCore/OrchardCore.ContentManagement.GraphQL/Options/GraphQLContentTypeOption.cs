@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace OrchardCore.ContentManagement.GraphQL.Options;
 
 public class GraphQLContentTypeOption

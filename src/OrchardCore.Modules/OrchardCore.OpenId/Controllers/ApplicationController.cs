@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -26,7 +22,7 @@ namespace OrchardCore.OpenId.Controllers;
 
 [Feature(OpenIdConstants.Features.Management)]
 [Admin("OpenId/Application/{action}/{id?}", "OpenIdApplication{action}")]
-public class ApplicationController : Controller
+public sealed class ApplicationController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IShapeFactory _shapeFactory;
@@ -36,8 +32,8 @@ public class ApplicationController : Controller
     private readonly INotifier _notifier;
     private readonly ShellDescriptor _shellDescriptor;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public ApplicationController(
         IShapeFactory shapeFactory,

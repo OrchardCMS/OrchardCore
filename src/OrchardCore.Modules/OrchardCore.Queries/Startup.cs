@@ -24,9 +24,9 @@ public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IDisplayDriver<Query>, QueryDisplayDriver>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddDisplayDriver<Query, QueryDisplayDriver>();
+        services.AddPermissionProvider<Permissions>();
     }
 }
 

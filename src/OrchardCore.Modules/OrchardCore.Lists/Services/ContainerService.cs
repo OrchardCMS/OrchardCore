@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
@@ -366,7 +362,7 @@ public class ContainerService : IContainerService
                 query.With<ContentItemIndex>(i => !i.Published && i.Latest);
                 break;
             case ContentsStatus.Owner:
-                var currentUserName = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+                var currentUserName = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 if (currentUserName != null)
                 {

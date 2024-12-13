@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +13,7 @@ namespace OrchardCore.OpenId.Controllers;
 // Note: the error descriptions used in this controller are deliberately not localized as
 // the OAuth 2.0 specification only allows select US-ASCII characters in error_description.
 [Feature(OpenIdConstants.Features.Server), SkipStatusCodePages]
-public class UserInfoController : Controller
+public sealed class UserInfoController : Controller
 {
     // GET/POST: /connect/userinfo
     [AcceptVerbs("GET", "POST")]
@@ -126,10 +122,10 @@ public class UserInfoController : Controller
 
         if (principal.HasScope(Scopes.Phone))
         {
-            var phone = principal.FindFirst(Claims.PhoneNumber)?.Value ??
-                        principal.FindFirst(ClaimTypes.MobilePhone)?.Value ??
-                        principal.FindFirst(ClaimTypes.HomePhone)?.Value ??
-                        principal.FindFirst(ClaimTypes.OtherPhone)?.Value;
+            var phone = principal.FindFirst(Claims.PhoneNumber)?.Value
+                ?? principal.FindFirst(ClaimTypes.MobilePhone)?.Value
+                ?? principal.FindFirst(ClaimTypes.HomePhone)?.Value
+                ?? principal.FindFirst(ClaimTypes.OtherPhone)?.Value;
 
             if (!string.IsNullOrEmpty(phone))
             {
@@ -145,10 +141,7 @@ public class UserInfoController : Controller
 
         if (principal.HasScope(Scopes.Roles))
         {
-            var roles = principal.FindAll(Claims.Role)
-                                 .Concat(principal.FindAll(ClaimTypes.Role))
-                                 .Select(claim => claim.Value)
-                                 .ToArray();
+            var roles = principal.GetRoles();
 
             if (roles.Length != 0)
             {

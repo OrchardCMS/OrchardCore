@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
@@ -87,6 +85,11 @@ public sealed class ContentTypeSettingsDisplayDriver : ContentTypeDefinitionDisp
         if (options.ShowListable)
         {
             context.Builder.Listable(model.Listable);
+        }
+
+        if (options.ShowDraftable)
+        {
+            context.Builder.Draftable(model.Draftable);
         }
     }
 

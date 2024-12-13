@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -25,7 +21,7 @@ namespace OrchardCore.Tenants.Controllers;
 
 [Feature("OrchardCore.Tenants.FeatureProfiles")]
 [Admin("TenantFeatureProfiles/{action}/{id?}", "TenantFeatureProfiles{action}")]
-public class FeatureProfilesController : Controller
+public sealed class FeatureProfilesController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
@@ -35,8 +31,8 @@ public class FeatureProfilesController : Controller
     private readonly PagerOptions _pagerOptions;
     private readonly IShapeFactory _shapeFactory;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public FeatureProfilesController(
         IAuthorizationService authorizationService,

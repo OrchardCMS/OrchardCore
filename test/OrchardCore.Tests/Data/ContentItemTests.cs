@@ -10,7 +10,7 @@ namespace OrchardCore.Tests.Data;
 public class ContentItemTests
 {
     [Fact]
-    public void NullValueDateTimeFieldSerialisationTest()
+    public void NullValueDateTimeFieldSerializationTest()
     {
         // Arrange
         var jsonStr = """
@@ -21,13 +21,13 @@ public class ContentItemTests
         }
         """;
 
-        var jobject = JsonNode.Parse(jsonStr);
+        var jObject = JsonNode.Parse(jsonStr);
 
-        var nullValueDateTimeField = jobject.SelectNode("NullValueDateTimeFieldTest").ToObject<DateTimeField>();
+        var nullValueDateTimeField = jObject.SelectNode("NullValueDateTimeFieldTest").ToObject<DateTimeField>();
         Assert.Null(nullValueDateTimeField.Value);
         Assert.Null(JObject.FromObject(nullValueDateTimeField).SelectNode("Value"));
     }
-    
+
     /// <summary>
     /// To validate <see cref="DateTimeJsonConverter"/>
     /// and <seealso cref="TimeSpanJsonConverter"/>
@@ -54,11 +54,11 @@ public class ContentItemTests
         """;
 
         // Act
-        var jobject = JsonNode.Parse(jsonStr);
-        var timeField = jobject.SelectNode("TimeFieldTest").ToObject<TimeField>();
-        var dateField = jobject.SelectNode("DateFieldTest").ToObject<DateField>();
-        var dateTimeField = jobject.SelectNode("DateTimeFieldTest").ToObject<DateTimeField>();
-        var timezoneDateTimeFieldTest = jobject.SelectNode("TimezoneDateTimeFieldTest").ToObject<DateTimeField>();
+        var jObject = JsonNode.Parse(jsonStr);
+        var timeField = jObject.SelectNode("TimeFieldTest").ToObject<TimeField>();
+        var dateField = jObject.SelectNode("DateFieldTest").ToObject<DateField>();
+        var dateTimeField = jObject.SelectNode("DateTimeFieldTest").ToObject<DateTimeField>();
+        var timeZoneDateTimeFieldTest = jObject.SelectNode("TimezoneDateTimeFieldTest").ToObject<DateTimeField>();
 
         // Assert
         Assert.Equal("13:05:00", timeField.Value.Value.ToString());
@@ -69,7 +69,7 @@ public class ContentItemTests
         Assert.Equal("2024-05-31T13:05:00Z", JObject.FromObject(dateTimeField).SelectNode("Value").ToString());
 
 
-        var utcTime = TimeZoneInfo.ConvertTimeToUtc(timezoneDateTimeFieldTest.Value.Value);
+        var utcTime = TimeZoneInfo.ConvertTimeToUtc(timeZoneDateTimeFieldTest.Value.Value);
         Assert.Equal("2022-12-14 02:02:18", utcTime.ToString("yyyy-MM-dd HH:mm:ss"));
     }
 

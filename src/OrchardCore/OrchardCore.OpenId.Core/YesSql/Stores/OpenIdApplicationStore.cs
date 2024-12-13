@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Abstractions;
 using OrchardCore.OpenId.Abstractions.Stores;
@@ -55,7 +50,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
         cancellationToken.ThrowIfCancellationRequested();
 
         await _session.SaveAsync(application, collection: OpenIdCollection);
-        await _session.SaveChangesAsync();
+        await _session.FlushAsync();
     }
 
     /// <inheritdoc/>
@@ -66,7 +61,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
         cancellationToken.ThrowIfCancellationRequested();
 
         _session.Delete(application, collection: OpenIdCollection);
-        await _session.SaveChangesAsync();
+        await _session.FlushAsync();
     }
 
     /// <inheritdoc/>
@@ -127,7 +122,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        return new ValueTask<string>(application.ApplicationType);
+        return ValueTask.FromResult(application.ApplicationType);
     }
 
     /// <inheritdoc/>
@@ -141,7 +136,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        return new ValueTask<string>(application.ClientId);
+        return ValueTask.FromResult(application.ClientId);
     }
 
     /// <inheritdoc/>
@@ -149,7 +144,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        return new ValueTask<string>(application.ClientSecret);
+        return ValueTask.FromResult(application.ClientSecret);
     }
 
     /// <inheritdoc/>
@@ -157,7 +152,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        return new ValueTask<string>(application.Type);
+        return ValueTask.FromResult(application.Type);
     }
 
     /// <inheritdoc/>
@@ -165,7 +160,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        return new ValueTask<string>(application.ConsentType);
+        return ValueTask.FromResult(application.ConsentType);
     }
 
     /// <inheritdoc/>
@@ -173,7 +168,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        return new ValueTask<string>(application.DisplayName);
+        return ValueTask.FromResult(application.DisplayName);
     }
 
     /// <inheritdoc/>
@@ -184,10 +179,10 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
 
         if (application.DisplayNames == null)
         {
-            return new ValueTask<ImmutableDictionary<CultureInfo, string>>(ImmutableDictionary.Create<CultureInfo, string>());
+            return ValueTask.FromResult(ImmutableDictionary.Create<CultureInfo, string>());
         }
 
-        return new ValueTask<ImmutableDictionary<CultureInfo, string>>(application.DisplayNames);
+        return ValueTask.FromResult(application.DisplayNames);
     }
 
     /// <inheritdoc/>
@@ -195,7 +190,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        return new ValueTask<string>(application.ApplicationId);
+        return ValueTask.FromResult(application.ApplicationId);
     }
 
     public virtual ValueTask<JsonWebKeySet> GetJsonWebKeySetAsync(TApplication application, CancellationToken cancellationToken)
@@ -204,10 +199,10 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
 
         if (application.JsonWebKeySet is null)
         {
-            return new ValueTask<JsonWebKeySet>(result: null);
+            return ValueTask.FromResult<JsonWebKeySet>(null);
         }
 
-        return new ValueTask<JsonWebKeySet>(JsonSerializer.Deserialize<JsonWebKeySet>(application.JsonWebKeySet.ToString(), JOptions.Default));
+        return ValueTask.FromResult(JsonSerializer.Deserialize<JsonWebKeySet>(application.JsonWebKeySet.ToString(), JOptions.Default));
     }
 
     /// <inheritdoc/>
@@ -215,7 +210,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        return new ValueTask<ImmutableArray<string>>(application.Permissions);
+        return ValueTask.FromResult(application.Permissions);
     }
 
     /// <inheritdoc/>
@@ -223,7 +218,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        return new ValueTask<string>(application.Id.ToString(CultureInfo.InvariantCulture));
+        return ValueTask.FromResult(application.Id.ToString(CultureInfo.InvariantCulture));
     }
 
     /// <inheritdoc/>
@@ -231,7 +226,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        return new ValueTask<ImmutableArray<string>>(application.PostLogoutRedirectUris);
+        return ValueTask.FromResult(application.PostLogoutRedirectUris);
     }
 
     /// <inheritdoc/>
@@ -241,11 +236,10 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
 
         if (application.Properties == null)
         {
-            return new ValueTask<ImmutableDictionary<string, JsonElement>>(ImmutableDictionary.Create<string, JsonElement>());
+            return ValueTask.FromResult(ImmutableDictionary.Create<string, JsonElement>());
         }
 
-        return new ValueTask<ImmutableDictionary<string, JsonElement>>(
-            JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(application.Properties.ToString()));
+        return ValueTask.FromResult(JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(application.Properties.ToString()));
     }
 
     /// <inheritdoc/>
@@ -253,7 +247,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        return new ValueTask<ImmutableArray<string>>(application.RedirectUris);
+        return ValueTask.FromResult(application.RedirectUris);
     }
 
     /// <inheritdoc/>
@@ -261,7 +255,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        return new ValueTask<ImmutableArray<string>>(application.Requirements);
+        return ValueTask.FromResult(application.Requirements);
     }
 
     /// <inheritdoc/>
@@ -269,7 +263,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        return new ValueTask<ImmutableDictionary<string, string>>(application.Settings);
+        return ValueTask.FromResult(application.Settings);
     }
 
     /// <inheritdoc/>
@@ -486,7 +480,7 @@ public class OpenIdApplicationStore<TApplication> : IOpenIdApplicationStore<TApp
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        return new ValueTask<ImmutableArray<string>>(application.Roles);
+        return ValueTask.FromResult(application.Roles);
     }
 
     /// <inheritdoc/>

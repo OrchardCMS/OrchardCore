@@ -1,10 +1,4 @@
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Lucene.Net.Documents;
 using Lucene.Net.Index;
 using Lucene.Net.Search;
@@ -43,7 +37,7 @@ public class LuceneIndexManager : IDisposable
     private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
     private readonly SpatialContext _ctx;
     private readonly GeohashPrefixTree _grid;
-    private readonly static object _synLock = new();
+    private static readonly object _synLock = new();
 
     public LuceneIndexManager(
         IClock clock,
@@ -212,7 +206,7 @@ public class LuceneIndexManager : IDisposable
 
             switch (entry.Type)
             {
-                case DocumentIndex.Types.Boolean:
+                case DocumentIndexBase.Types.Boolean:
                     // Store "true"/"false" for boolean.
                     doc.Add(new StringField(entry.Name, Convert.ToString(entry.Value).ToLowerInvariant(), store));
 
@@ -222,7 +216,7 @@ public class LuceneIndexManager : IDisposable
                     }
                     break;
 
-                case DocumentIndex.Types.DateTime:
+                case DocumentIndexBase.Types.DateTime:
                     if (entry.Value != null)
                     {
                         if (entry.Value is DateTimeOffset)
@@ -252,7 +246,7 @@ public class LuceneIndexManager : IDisposable
                     }
                     break;
 
-                case DocumentIndex.Types.Integer:
+                case DocumentIndexBase.Types.Integer:
                     if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
                     {
                         doc.Add(new Int64Field(entry.Name, value, store));
@@ -269,7 +263,7 @@ public class LuceneIndexManager : IDisposable
 
                     break;
 
-                case DocumentIndex.Types.Number:
+                case DocumentIndexBase.Types.Number:
                     if (entry.Value != null)
                     {
                         doc.Add(new DoubleField(entry.Name, Convert.ToDouble(entry.Value), store));
@@ -285,7 +279,7 @@ public class LuceneIndexManager : IDisposable
                     }
                     break;
 
-                case DocumentIndex.Types.Text:
+                case DocumentIndexBase.Types.Text:
                     if (entry.Value != null && !string.IsNullOrEmpty(Convert.ToString(entry.Value)))
                     {
                         var stringValue = Convert.ToString(entry.Value);
@@ -299,8 +293,8 @@ public class LuceneIndexManager : IDisposable
                             doc.Add(new TextField(entry.Name, stringValue, store));
                         }
 
-                        // This is for ElasticSearch Queries compatibility since a keyword field is always indexed
-                        // by default when indexing without explicit mapping in ElasticSearch.
+                        // This is for Elasticsearch Queries compatibility since a keyword field is always indexed
+                        // by default when indexing without explicit mapping in Elasticsearch.
                         // Keyword ignore above 256 chars by default.
                         if (store == Field.Store.NO && !entry.Options.HasFlag(DocumentIndexOptions.Keyword) && stringValue.Length <= 256)
                         {
@@ -325,10 +319,10 @@ public class LuceneIndexManager : IDisposable
                     }
                     break;
 
-                case DocumentIndex.Types.GeoPoint:
+                case DocumentIndexBase.Types.GeoPoint:
                     var strategy = new RecursivePrefixTreeStrategy(_grid, entry.Name);
 
-                    if (entry.Value != null && entry.Value is DocumentIndex.GeoPoint point)
+                    if (entry.Value != null && entry.Value is DocumentIndexBase.GeoPoint point)
                     {
                         var geoPoint = _ctx.MakePoint((double)point.Longitude, (double)point.Latitude);
                         foreach (var field in strategy.CreateIndexableFields(geoPoint))
@@ -428,7 +422,7 @@ public class LuceneIndexManager : IDisposable
     }
 
     /// <summary>
-    /// Releases all readers and writers. This can be used after some time of innactivity to free resources.
+    /// Releases all readers and writers. This can be used after some time of inactivity to free resources.
     /// </summary>
     public void FreeReaderWriter()
     {
@@ -462,7 +456,7 @@ public class LuceneIndexManager : IDisposable
     }
 
     /// <summary>
-    /// Releases all readers and writers. This can be used after some time of innactivity to free resources.
+    /// Releases all readers and writers. This can be used after some time of inactivity to free resources.
     /// </summary>
     public void FreeReaderWriter(string indexName)
     {

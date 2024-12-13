@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Deployment;

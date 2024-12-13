@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.Users.Workflows.ViewModels;
 
 public class ValidateUserTaskViewModel

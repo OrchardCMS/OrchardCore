@@ -1,6 +1,4 @@
-using System;
 using System.Globalization;
-using System.Threading.Tasks;
 using Shortcodes;
 
 namespace OrchardCore.Shortcodes.Providers;
@@ -33,7 +31,7 @@ public class LocaleShortcodeProvider : IShortcodeProvider
             {
                 if (currentCulture.Name.Equals(language, StringComparison.OrdinalIgnoreCase))
                 {
-                    return new ValueTask<string>(content);
+                    return ValueTask.FromResult(content);
                 }
 
                 currentCulture = currentCulture.Parent;
@@ -44,7 +42,7 @@ public class LocaleShortcodeProvider : IShortcodeProvider
         {
             if (currentCulture.Name.Equals(language, StringComparison.OrdinalIgnoreCase))
             {
-                return new ValueTask<string>(content);
+                return ValueTask.FromResult(content);
             }
         }
 

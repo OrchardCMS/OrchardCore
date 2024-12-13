@@ -1,4 +1,3 @@
-using System.IO;
 using OrchardCore.Modules.Services;
 
 namespace OrchardCore.Media.Services;

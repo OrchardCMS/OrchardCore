@@ -416,7 +416,7 @@ public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : Activit
         return Initialize<TEditViewModel>(_editShapeType, viewModel => EditActivityAsync(activity, viewModel)).Location("Content");
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(TActivity activity, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(TActivity activity, UpdateEditorContext context)
     {
         var viewModel = new TEditViewModel();
         if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
@@ -435,6 +435,25 @@ Continuing with the `NotifyTask` example, we now need to create the following Ra
 - `NotifyTask.Fields.Design.cshtml`
 - `NotifyTask.Fields.Thumbnail.cshtml`
 - `NotifyTask.Fields.Edit.cshtml`
+
+## Trimming
+
+Old workflow instances can be automatically deleted with the Trimming feature. This is enabled by default and you can configure it (including disabling it) in Configuration → Settings → Workflows Trimming. Without trimming, workflow instances remain in the database indefinitely.
+
+By default, the trimming background task runs once a day and removes at most 5000 workflow instances. You can change the frequency of the background task via [the `OrchardCore.BackgroundTasks` configuration](../BackgroundTasks/README.md), and the batch size via the `OrchardCore_Workflows` configuration from e.g. an `appsettings` file:
+
+```json
+"OrchardCore_Workflows": {
+  "Trimming": {
+    "BatchSize": 1000
+  }
+}
+```
+
+See [Configuration](../../core/Configuration/README.md) for more information on such configuration.
+
+!!! tip
+    If you enable the trimming feature on a site that has tens or even hundreds of thousands of workflow instances already, the initial trimming operation may take weeks to complete. You can expedite this by lowering the background task's frequency, even to once a minute temporarily with the `* * * * *` cron expression.
 
 ## Videos
 

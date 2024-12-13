@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.Mvc.Utilities;
+using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.ContentTypes.ViewModels;
 
@@ -26,7 +26,7 @@ public class EditPartViewModel
     [Required]
     public string DisplayName
     {
-        get { return !string.IsNullOrWhiteSpace(_displayName) ? _displayName : Name.TrimEnd("Part").CamelFriendly(); }
+        get { return !string.IsNullOrWhiteSpace(_displayName) ? _displayName : Name.TrimEndString("Part").CamelFriendly(); }
         set { _displayName = value; }
     }
 

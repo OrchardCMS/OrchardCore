@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Apis.GraphQL;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
@@ -12,5 +10,6 @@ public class GraphQLFieldNameAttribute : Attribute
     }
 
     public string Field { get; }
+
     public string Mapped { get; }
 }

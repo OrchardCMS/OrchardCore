@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using GraphQL.Builders;
 using GraphQL.Types;
 using OrchardCore.Security.Permissions;

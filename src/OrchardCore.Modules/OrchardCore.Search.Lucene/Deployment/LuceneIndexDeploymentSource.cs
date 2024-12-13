@@ -1,13 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Search.Lucene.Model;
 
 namespace OrchardCore.Search.Lucene.Deployment;
 
-public class LuceneIndexDeploymentSource : IDeploymentSource
+public sealed class LuceneIndexDeploymentSource
+    : DeploymentSourceBase<LuceneIndexDeploymentStep>
 {
     private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 
@@ -16,17 +14,14 @@ public class LuceneIndexDeploymentSource : IDeploymentSource
         _luceneIndexSettingsService = luceneIndexSettingsService;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(LuceneIndexDeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not LuceneIndexDeploymentStep luceneIndexStep)
-        {
-            return;
-        }
-
         var indexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
 
         var data = new JsonArray();
-        var indicesToAdd = luceneIndexStep.IncludeAll ? indexSettings.Select(x => x.IndexName).ToArray() : luceneIndexStep.IndexNames;
+        var indicesToAdd = step.IncludeAll
+            ? indexSettings.Select(x => x.IndexName).ToArray()
+            : step.IndexNames;
 
         foreach (var index in indexSettings)
         {

@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Security;
@@ -7,7 +5,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.CustomSettings.Services;
 
-public class CustomSettingsAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+public sealed class CustomSettingsAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
     private readonly IServiceProvider _serviceProvider;
 

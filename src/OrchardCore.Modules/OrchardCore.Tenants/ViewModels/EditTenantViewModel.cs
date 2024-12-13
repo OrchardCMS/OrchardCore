@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.Recipes.Models;
 

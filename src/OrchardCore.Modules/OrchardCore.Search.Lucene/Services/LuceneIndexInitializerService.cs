@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
@@ -6,7 +5,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Search.Lucene;
 
-public class LuceneIndexInitializerService : ModularTenantEvents
+public sealed class LuceneIndexInitializerService : ModularTenantEvents
 {
     private readonly ShellSettings _shellSettings;
 

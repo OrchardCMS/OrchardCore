@@ -206,49 +206,51 @@
 	.palette-color-4 { fill: #6AB356 !important; }
 	.palette-color-5 { fill: #47A042 !important; }
 	.palette-color-6 { fill: #328533 !important; }
-	.palette-color-7 { fill: #1D6A23 !important; }
-	.cz { fill: #D9E887; }
-	.tr { fill: #D9E887; }
-	.bg { fill: #D9E887; }
-	.vn { fill: #D9E887; }
-	.dk { fill: #D9E887; }
-	.ee { fill: #D9E887; }
-	.ba { fill: #D9E887; }
-	.no { fill: #D9E887; }
+	.ye { fill: #328533; }
+	.gb { fill: #328533; }
+	.fr { fill: #328533; }
+	.us { fill: #328533; }
 	.im { fill: #D9E887; }
-	.sg { fill: #D9E887; }
 	.ru { fill: #D9E887; }
 	.cy { fill: #D9E887; }
+	.ba { fill: #D9E887; }
+	.no { fill: #D9E887; }
 	.ro { fill: #D9E887; }
+	.sg { fill: #D9E887; }
+	.vn { fill: #D9E887; }
+	.il { fill: #D9E887; }
+	.dk { fill: #D9E887; }
+	.cz { fill: #D9E887; }
+	.ee { fill: #D9E887; }
+	.bg { fill: #D9E887; }
+	.am { fill: #D9E887; }
 	.in { fill: #B3D778; }
-	.es { fill: #B3D778; }
-	.ua { fill: #B3D778; }
+	.it { fill: #B3D778; }
 	.ch { fill: #B3D778; }
-	.at { fill: #B3D778; }
+	.pk { fill: #B3D778; }
+	.es { fill: #B3D778; }
 	.pl { fill: #B3D778; }
 	.jp { fill: #B3D778; }
-	.it { fill: #B3D778; }
-	.rs { fill: #B3D778; }
-	.pk { fill: #B3D778; }
+	.tr { fill: #B3D778; }
 	.za { fill: #B3D778; }
-	.tn { fill: #8CC569; }
+	.at { fill: #B3D778; }
+	.ua { fill: #B3D778; }
+	.rs { fill: #B3D778; }
+	.se { fill: #8CC569; }
+	.hr { fill: #8CC569; }
+	.fi { fill: #8CC569; }
 	.pt { fill: #8CC569; }
-	.de { fill: #8CC569; }
 	.th { fill: #8CC569; }
-	.fi { fill: #6AB356; }
-	.be { fill: #6AB356; }
-	.se { fill: #6AB356; }
+	.tn { fill: #8CC569; }
+	.au { fill: #6AB356; }
 	.nl { fill: #6AB356; }
+	.de { fill: #6AB356; }
+	.be { fill: #6AB356; }
 	.nz { fill: #47A042; }
 	.hu { fill: #47A042; }
+	.ca { fill: #47A042; }
 	.cn { fill: #47A042; }
-	.au { fill: #47A042; }
-	.us { fill: #328533; }
-	.gb { fill: #328533; }
-	.ye { fill: #328533; }
-	.ca { fill: #328533; }
-	.fr { fill: #1D6A23; }
-#legend7 { display: inline !important; }</style>
+#legend6 { display: inline !important; }</style>
 
   <path
      id="ocean"
@@ -881,7 +883,7 @@
      class="landxx coastxx ye"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title6380">Yemen (537 contributions)
+       id="title6380">Yemen (649 contributions)
 </title>
     <path
        id="path2190"
@@ -1423,7 +1425,7 @@
      class="landxx coastxx eu se"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title6566">Sweden (20 contributions)
+       id="title6566">Sweden (23 contributions)
 </title>
     <path
        id="Sweden_mainland"
@@ -1468,7 +1470,7 @@
      class="landxx tr"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title6581">Turkey (2 contributions)
+       id="title6581">Turkey (4 contributions)
 </title>
     <path
        id="Turkey_Eastern_Thrace"
@@ -1633,7 +1635,7 @@
      class="landxx coastxx nz"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title6637">New Zealand (407 contributions)
+       id="title6637">New Zealand (409 contributions)
 </title>
     <path
        id="path3560"
@@ -1748,7 +1750,7 @@
      class="landxx coastxx eu pt"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title6676">Portugal (13 contributions)
+       id="title6676">Portugal (15 contributions)
 </title>
     <path
        id="Portugal_mainland"
@@ -1818,7 +1820,7 @@
      class="landxx coastxx eu de"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title6700">Germany (18 contributions)
+       id="title6700">Germany (56 contributions)
 </title>
     <path
        id="Germany_mainland"
@@ -1995,7 +1997,7 @@
      class="landxx coastxx eu hr"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title6759">Croatia<!-- hr_contributions -->
+       id="title6759">Croatia (10 contributions)
 </title>
     <path
        id="path4066"
@@ -2708,7 +2710,7 @@
      class="landxx coastxx eu fi"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title7000">Finland (21 contributions)
+       id="title7000">Finland (23 contributions)
 </title>
     <path
        id="Finland_mainland"
@@ -2938,7 +2940,7 @@
      class="landxx coastxx gb"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title7077">United Kingdom (558 contributions)
+       id="title7077">United Kingdom (559 contributions)
 </title>
     <path
        id="United_Kingdom_Northern_Ireland"
@@ -3113,7 +3115,7 @@
      class="landxx eu pl"
      d="m 1402.3269,-244.6548 c 0,-1.717 2.51,-2.166 1.57,-4.167 -0.33,-0.693 -1.09,-1.726 -0.8,-2.564 0.13,-0.388 1.47,0.108 1.75,0.107 -0.14,-0.566 0,-1.07 0.36,-1.512 -0.1,0.119 -0.15,0.239 -0.22,0.36 -0.44,-0.375 -0.94,-0.591 -1.51,-0.648 0.3,0.764 -0.88,0.331 -0.94,-0.36 1.66,0.623 4.31,-0.813 5.82,-1.418 1.8,-0.727 6.2,-0.529 7.33,-2.034 1.39,-1.838 4.65,-2.685 6.84,-3.262 2.73,-0.722 6.49,-1.302 8.81,0.666 -0.63,-0.431 -1.37,-0.872 -2.16,-0.576 0.95,0.893 1.19,2.609 2.57,3.009 1.67,0.481 3.9,-0.241 5.5,-0.705 -0.7,0.424 -1.56,0.535 -2.25,1 -0.99,0.67 1.11,0.286 1.49,0.09 2.57,-1.315 4.83,-0.258 7.89,-0.301 4.04,-0.06 9.73,0.941 13.74,0.35 3,-0.44 3.71,0.963 4.46,3.706 0.77,2.82 4.24,6.134 3.24,9.234 -0.5,1.569 -2.48,1.006 -3.31,2.209 -0.84,1.204 -1.56,2.116 0.47,2.492 3.25,0.602 0.54,3.785 1.51,5.54 1.01,1.847 1.37,4.061 4.15,5.412 -0.4,0.204 -0.81,0.396 -1.22,0.576 1.23,1.088 1.55,2.323 -0.2,2.973 -1.77,0.653 -3.35,2.363 -4.56,3.747 -1.04,1.195 -3.27,2.751 -2.58,4.598 0.29,0.773 0.2,1.594 0.49,2.361 0.23,0.609 0.92,0.4 0.8,1.225 -1.2,-0.845 -3,-0.83 -4.36,-1.313 -1.34,-0.476 -1.99,-1.5 -3.37,-1.868 -1.35,-0.363 -2.86,-0.575 -4.19,-0.02 -1.71,0.715 -1.91,0.06 -3.57,-0.14 -1.28,-0.157 -1.75,0.09 -2.68,0.885 -0.41,0.342 -0.93,0.779 -1.49,0.826 -0.95,0.08 -0.64,-0.931 -1.01,-1.392 -0.4,-0.496 -1.32,-0.907 -1.83,-1.519 -0.82,-0.986 -2.82,1.178 -3.71,1.303 0.23,-0.774 -3.08,-4.249 -4.19,-4.553 -1.24,-0.34 -1.85,-0.853 -3.06,-0.468 -1.27,0.401 -1.39,-1.718 -1.25,-2.468 -2.02,0.607 -3.75,-0.809 -5.61,-1.296 0,0.613 0.32,1.117 0.79,1.512 -0.78,0.522 -2.2,1.949 -3.08,0.729 -0.71,-0.997 -1.14,-1.663 -2.39,-2.097 0.33,-0.286 1.57,-0.948 1.3,-1.537 -0.35,-0.771 -2.09,-0.443 -2.53,0.02 -0.1,-1.972 -3.69,-0.558 -4.45,-1.698 -0.72,-1.085 0,-0.904 -1.63,-1.564 -1.25,-0.509 -0.23,1.414 -1.84,1.102 1.12,-2.794 1.86,-3.69 -0.28,-5.146 -0.93,-0.627 -0.2,-1.332 -0.92,-1.976 -0.95,-0.839 0.1,-1.231 0.26,-2.126 0.1,-0.55 -0.12,-1.542 -0.19,-2.101 -0.1,-0.563 -1.23,-0.422 -1.01,-1.362 0.15,-0.616 0.92,-1.227 0.1,-1.729 -1.01,-0.604 -1.97,-1.309 -2.83,-2.118">
     <title
-       id="title7135">Poland (3 contributions)
+       id="title7135">Poland (4 contributions)
 </title>
   </path>
   <path
@@ -3229,7 +3231,7 @@
      class="landxx coastxx eaeu ru"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title7175">Russian Federation (1 contributions)
+       id="title7175">Russian Federation (2 contributions)
 </title>
     <path
        id="Russia_Kaliningrad"
@@ -3821,7 +3823,7 @@
      class="landxx coastxx in"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title7374">India (5 contributions)
+       id="title7374">India (7 contributions)
 </title>
     <path
        id="India_mainland"
@@ -3866,7 +3868,7 @@
      class="landxx coastxx ca"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title7389">Canada (432 contributions)
+       id="title7389">Canada (436 contributions)
 </title>
     <path
        id="Canada_mainland"
@@ -5136,7 +5138,7 @@
      class="landxx eaeu am"
      d="m 1609.2569,-145.9558 c 0.77,-0.05 2.96,0.53 4.24,0.01 1.84,-0.734 4.04,-0.384 5.98,-0.363 -0.1,-0.384 0.5,-0.677 0.89,-0.736 0.23,0.228 2.65,1.937 0.69,1.528 1.33,1.011 3.38,1.026 4.04,2.809 -2.59,0.81 0.29,3.115 1.42,3.786 0.59,0.354 1.93,0.589 2.09,1.394 0.31,1.565 -1.67,1.316 -2.51,1.66 0.87,0.333 4.19,3.74 5.08,3.381 0.46,-0.183 2.6,0.493 1.79,0.979 -1.2,0.723 0.86,1.698 1.27,2.192 -1.26,0.155 -0.55,2.271 -0.1,2.848 -0.15,0.125 -2.56,0.636 -2.7,0.254 -0.79,-1.285 -1.24,-3.185 -2.56,-3.928 -0.57,-0.319 -0.12,-1.678 -1.01,-1.864 -0.56,-0.116 -0.98,-0.1 -1.8,0.138 -1.04,0.294 -1.54,-0.912 -2.42,-0.4 0.13,-2.079 -2.16,-1.121 -2.96,-1.082 -1.11,-0.83 -2.57,-2.897 -4.11,-2.85 -1.59,0.05 -2.95,-0.02 -4.38,-0.747 0.56,-0.379 0.21,-1.14 0,-1.673 -0.45,-0.992 -0.48,-1.205 -0.11,-2.096 0.68,-1.663 -2.25,-2.243 -2.81,-5.263">
     <title
-       id="title7816">Armenia<!-- am_contributions -->
+       id="title7816">Armenia (1 contributions)
 </title>
   </path>
   <path
@@ -5220,7 +5222,7 @@
      class="landxx eu hu"
      d="m 1416.7269,-194.5428 c 0.68,-0.722 1.55,-1.31 2.59,-1.08 -0.33,-0.873 -0.56,-2.045 -0.28,-2.96 0.24,-0.775 1.22,-1.029 1.47,-1.812 0.2,-0.646 -2.13,-0.883 -0.85,-1.366 0.98,-0.366 2.01,1.269 2.73,0.06 0.51,-0.852 0.96,-2.007 1.39,-2.403 0.42,-0.397 0.81,-0.04 1.98,0.87 2.89,2.237 5.82,1.104 9.18,0.694 -1.86,-1.482 0.8,-1.54 1.94,-1.65 0.55,-0.05 1.99,-0.547 2.14,-1.243 0.24,-1.189 1.23,-0.247 2.09,0.09 1.17,0.459 3.01,-0.02 3.85,-0.827 0.62,-0.587 0.39,-2.249 1.15,-2.553 1.5,-0.59 3.31,0.274 4.82,0.42 0.65,-1.038 1.56,-0.345 2.15,0.259 0.88,0.906 1.75,1.26 2.93,0.771 2.05,-0.851 3.06,1.603 4.99,2.288 2.15,0.759 0.67,1.918 0.12,2.421 -0.9,0.825 -2.4,0.08 -3.02,1.04 -0.48,0.734 -1.79,1.738 -1.81,2.454 0,0.764 -1.55,3.246 -2.63,5.149 -0.48,0.849 -1.47,1.587 -1.72,2.562 -0.19,0.754 0,1.458 -1.64,1.883 -0.82,0.216 -1.52,-0.18 -2.05,0.597 -0.59,0.878 -1.32,0.198 -2.06,0.442 -1.1,0.356 -2.37,0.05 -3.47,-0.06 -0.78,-0.08 -2.02,-0.528 -2.67,0.09 -0.75,0.708 -0.97,1.307 -2.09,1.359 -1.03,0.05 -2.13,0.152 -3.09,0.552 -0.89,0.374 -1.14,1.261 -2.21,1.396 -1.78,0.225 -4.08,-0.216 -5.55,-1.149 -0.84,-0.535 -1.63,-0.416 -2.3,-1.328 -0.83,-1.13 -2,-1.787 -3.16,-2.548 -1.05,-0.698 -1.88,-1.31 -2.52,-2.404 -0.52,-0.865 -1.17,-2.238 -2.4,-2.019">
     <title
-       id="title7845">Hungary (112 contributions)
+       id="title7845">Hungary (187 contributions)
 </title>
   </path>
   <path
@@ -5898,7 +5900,7 @@
      id="il"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title8075">Israel<!-- il_contributions -->
+       id="title8075">Israel (1 contributions)
 </title>
     <path
        id="il-"
@@ -6527,7 +6529,7 @@
      class="landxx coastxx us"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="foo">United States of America (1613 contributions)
+       id="foo">United States of America (1848 contributions)
 </title>
     <path
        id="United_States_Alaska_mainland"
@@ -7539,7 +7541,7 @@
      class="landxx coastxx cn"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title8623">China (48 contributions)
+       id="title8623">China (63 contributions)
 </title>
     <g
        id="cnx"
@@ -7675,7 +7677,7 @@
      id="fr"
      transform="translate(-1.5631002,-488.5008)">
     <title
-       id="title8670">France (2809 contributions)
+       id="title8670">France (2883 contributions)
 </title>
     <g
        id="frx"
@@ -9552,7 +9554,7 @@
            id="tspan23840"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1409.2361"
-           y="1542.405">2.8k</tspan></text>
+           y="1542.405">%8</tspan></text>
       <rect
          class="palette-color-7"
          style="fill:#0066ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -9596,7 +9598,7 @@
            id="tspan29690"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1209.9623"
-           y="1542.4438">432</tspan></text>
+           y="1542.4438">559</tspan></text>
       <rect
          class="palette-color-5"
          style="fill:#5599ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -9618,7 +9620,7 @@
            id="tspan29698"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1110.3035"
-           y="1542.4438">48</tspan></text>
+           y="1542.4438">63</tspan></text>
       <rect
          class="palette-color-4"
          style="fill:#80b3ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -9640,7 +9642,7 @@
            id="tspan29702"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1011.2278"
-           y="1542.8457">20</tspan></text>
+           y="1542.8457">27</tspan></text>
       <rect
          class="palette-color-3"
          style="fill:#aaccff;fill-rule:evenodd;stroke-width:3.31807"
@@ -9764,7 +9766,7 @@
            id="tspan101998"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1409.2361"
-           y="1542.405">2.8k</tspan></text>
+           y="1542.405">%8</tspan></text>
       <rect
          class="palette-color-7"
          style="fill:#0066ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -9810,7 +9812,7 @@
            id="tspan102014"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1209.9623"
-           y="1542.4438">432</tspan></text>
+           y="1542.4438">559</tspan></text>
       <rect
          class="palette-color-5"
          style="fill:#5599ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -9833,7 +9835,7 @@
            id="tspan102022"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1110.3035"
-           y="1542.4438">48</tspan></text>
+           y="1542.4438">63</tspan></text>
       <rect
          class="palette-color-4"
          style="fill:#80b3ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -9856,7 +9858,7 @@
            id="tspan102030"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1011.2278"
-           y="1542.8457">20</tspan></text>
+           y="1542.8457">27</tspan></text>
       <rect
          class="palette-color-3"
          style="fill:#aaccff;fill-rule:evenodd;stroke-width:3.31807"
@@ -9960,7 +9962,7 @@
            id="tspan104696"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1409.2361"
-           y="1542.405">2.8k</tspan></text>
+           y="1542.405">%8</tspan></text>
       <rect
          class="palette-color-7"
          style="fill:#0066ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10006,7 +10008,7 @@
            id="tspan104712"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1209.9623"
-           y="1542.4438">432</tspan></text>
+           y="1542.4438">559</tspan></text>
       <rect
          class="palette-color-5"
          style="fill:#5599ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10029,7 +10031,7 @@
            id="tspan104720"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1110.3035"
-           y="1542.4438">48</tspan></text>
+           y="1542.4438">63</tspan></text>
       <rect
          class="palette-color-4"
          style="fill:#80b3ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10052,7 +10054,7 @@
            id="tspan104728"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1011.2278"
-           y="1542.8457">20</tspan></text>
+           y="1542.8457">27</tspan></text>
       <rect
          class="palette-color-3"
          style="fill:#aaccff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10179,7 +10181,7 @@
            id="tspan106782"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1209.9623"
-           y="1542.4438">432</tspan></text>
+           y="1542.4438">559</tspan></text>
       <rect
          class="palette-color-5"
          style="fill:#5599ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10202,7 +10204,7 @@
            id="tspan106790"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1110.3035"
-           y="1542.4438">48</tspan></text>
+           y="1542.4438">63</tspan></text>
       <rect
          class="palette-color-4"
          style="fill:#80b3ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10225,7 +10227,7 @@
            id="tspan106798"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1011.2278"
-           y="1542.8457">20</tspan></text>
+           y="1542.8457">27</tspan></text>
       <rect
          class="palette-color-3"
          style="fill:#aaccff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10307,7 +10309,7 @@
            id="tspan106828"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1706.8193"
-           y="1542.444">2.8k</tspan></text>
+           y="1542.444">%8</tspan></text>
     </g>
   </g>
   <g
@@ -10329,7 +10331,7 @@
            id="tspan108946"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1209.9623"
-           y="1542.4438">432</tspan></text>
+           y="1542.4438">559</tspan></text>
       <rect
          class="palette-color-5"
          style="fill:#5599ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10352,7 +10354,7 @@
            id="tspan108954"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1110.3035"
-           y="1542.4438">48</tspan></text>
+           y="1542.4438">63</tspan></text>
       <rect
          class="palette-color-4"
          style="fill:#80b3ff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10375,7 +10377,7 @@
            id="tspan108962"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1011.2278"
-           y="1542.8457">20</tspan></text>
+           y="1542.8457">27</tspan></text>
       <rect
          class="palette-color-3"
          style="fill:#aaccff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10504,7 +10506,7 @@
            id="tspan111664"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1011.2278"
-           y="1542.8457">20</tspan></text>
+           y="1542.8457">27</tspan></text>
       <rect
          class="palette-color-3"
          style="fill:#aaccff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10588,7 +10590,7 @@
            id="tspan111694"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1706.8193"
-           y="1542.444">432</tspan></text>
+           y="1542.444">559</tspan></text>
     </g>
   </g>
   <g
@@ -10610,7 +10612,7 @@
            id="tspan113644"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1011.2278"
-           y="1542.8457">20</tspan></text>
+           y="1542.8457">27</tspan></text>
       <rect
          class="palette-color-3"
          style="fill:#aaccff;fill-rule:evenodd;stroke-width:3.31807"
@@ -10694,7 +10696,7 @@
            id="tspan113674"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1706.8193"
-           y="1542.444">48</tspan></text>
+           y="1542.444">63</tspan></text>
     </g>
   </g>
   <g
@@ -10777,7 +10779,7 @@
            id="tspan114444"
            style="font-size:29.8626px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:3.31807"
            x="1706.8193"
-           y="1542.444">20</tspan></text>
+           y="1542.444">27</tspan></text>
     </g>
   </g>
   <g

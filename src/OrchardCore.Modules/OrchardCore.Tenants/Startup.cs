@@ -1,12 +1,10 @@
-using System;
-using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Distributed;
@@ -33,10 +31,10 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<ITenantValidator, TenantValidator>();
-        services.AddScoped<IShapeTableProvider, TenantShapeTableProvider>();
+        services.AddShapeTableProvider<TenantShapeTableProvider>();
         services.AddSetup();
 
         services.Configure<TenantsOptions>(_shellConfiguration.GetSection("OrchardCore_Tenants"));
@@ -112,11 +110,11 @@ public sealed class FeatureProfilesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<INavigationProvider, FeatureProfilesAdminMenu>();
+        services.AddNavigationProvider<FeatureProfilesAdminMenu>();
         services.AddScoped<FeatureProfilesManager>();
         services.AddScoped<IFeatureProfilesService, FeatureProfilesService>();
         services.AddScoped<IFeatureProfilesSchemaService, FeatureProfilesSchemaService>();
-        services.AddScoped<IShapeTableProvider, TenantFeatureProfileShapeTableProvider>();
+        services.AddShapeTableProvider<TenantFeatureProfileShapeTableProvider>();
 
         services.AddRecipeExecutionStep<FeatureProfilesStep>();
     }
@@ -136,6 +134,6 @@ public sealed class TenantFeatureProfilesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IShapeTableProvider, TenantFeatureShapeTableProvider>();
+        services.AddShapeTableProvider<TenantFeatureShapeTableProvider>();
     }
 }

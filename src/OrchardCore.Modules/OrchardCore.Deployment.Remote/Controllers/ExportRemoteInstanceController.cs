@@ -1,7 +1,4 @@
-using System.IO;
 using System.IO.Compression;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -18,7 +15,7 @@ using YesSql;
 namespace OrchardCore.Deployment.Remote.Controllers;
 
 [Admin("Deployment/ExportRemoteInstance/{action}/{id?}", "DeploymentExportRemoteInstance{action}")]
-public class ExportRemoteInstanceController : Controller
+public sealed class ExportRemoteInstanceController : Controller
 {
     private readonly IDeploymentManager _deploymentManager;
     private readonly IAuthorizationService _authorizationService;
@@ -26,7 +23,8 @@ public class ExportRemoteInstanceController : Controller
     private readonly RemoteInstanceService _service;
     private readonly INotifier _notifier;
     private readonly IHttpClientFactory _httpClientFactory;
-    protected readonly IHtmlLocalizer H;
+
+    internal readonly IHtmlLocalizer H;
 
     public ExportRemoteInstanceController(
         IAuthorizationService authorizationService,

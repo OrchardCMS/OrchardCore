@@ -1,11 +1,10 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.GitHub;
 
-public sealed class AdminMenuGitHubLogin : INavigationProvider
+public sealed class AdminMenuGitHubLogin : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -15,18 +14,13 @@ public sealed class AdminMenuGitHubLogin : INavigationProvider
 
     internal readonly IStringLocalizer S;
 
-    public AdminMenuGitHubLogin(IStringLocalizer<AdminMenuGitHubLogin> localizer)
+    public AdminMenuGitHubLogin(IStringLocalizer<AdminMenuGitHubLogin> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return Task.CompletedTask;
-        }
-
         builder
             .Add(S["Security"], security => security
                 .Add(S["Authentication"], authentication => authentication
@@ -40,6 +34,6 @@ public sealed class AdminMenuGitHubLogin : INavigationProvider
                 )
             );
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

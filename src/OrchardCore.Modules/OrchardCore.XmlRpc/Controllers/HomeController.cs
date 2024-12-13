@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -11,7 +7,7 @@ using OrchardCore.XmlRpc.Services;
 
 namespace OrchardCore.XmlRpc.Controllers;
 
-public class HomeController : Controller
+public sealed class HomeController : Controller
 {
     private readonly IXmlRpcWriter _writer;
     private readonly IEnumerable<IXmlRpcHandler> _xmlRpcHandlers;
@@ -51,14 +47,15 @@ public class HomeController : Controller
         };
 
         // Save to an intermediate MemoryStream to preserve the encoding declaration.
-        using var stream = new MemoryStream();
+        using var stream = MemoryStreamFactory.GetStream();
         using (var w = XmlWriter.Create(stream, settings))
         {
             var result = _writer.MapMethodResponse(methodResponse);
             result.Save(w);
         }
 
-        var content = Encoding.UTF8.GetString(stream.ToArray());
+        var content = Encoding.UTF8.GetString(stream.GetReadOnlySequence());
+
         return Content(content, "text/xml");
     }
 

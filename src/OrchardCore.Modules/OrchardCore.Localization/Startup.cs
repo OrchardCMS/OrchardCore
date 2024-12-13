@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +13,6 @@ using OrchardCore.Localization.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Localization;
@@ -30,9 +27,9 @@ public sealed class Startup : StartupBase
     /// <inheritdocs />
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<ISite>, LocalizationSettingsDisplayDriver>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddSiteDisplayDriver<LocalizationSettingsDisplayDriver>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<ILocalizationService, LocalizationService>();
 
         services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization").
@@ -94,7 +91,7 @@ public sealed class CulturePickerStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<Navbar>, AdminCulturePickerNavbarDisplayDriver>();
+        services.AddDisplayDriver<Navbar, AdminCulturePickerNavbarDisplayDriver>();
 
         services.Configure<RequestLocalizationOptions>(options =>
             options.AddInitialRequestCultureProvider(new AdminCookieCultureProvider(_shellSettings, _adminOptions)));

@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.BackgroundTasks.Services;

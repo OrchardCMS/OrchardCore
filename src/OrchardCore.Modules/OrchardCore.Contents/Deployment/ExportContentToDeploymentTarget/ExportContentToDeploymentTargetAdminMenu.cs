@@ -1,11 +1,10 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
 
-public sealed class ExportContentToDeploymentTargetAdminMenu : INavigationProvider
+public sealed class ExportContentToDeploymentTargetAdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -15,18 +14,13 @@ public sealed class ExportContentToDeploymentTargetAdminMenu : INavigationProvid
 
     internal readonly IStringLocalizer S;
 
-    public ExportContentToDeploymentTargetAdminMenu(IStringLocalizer<AdminMenu> localizer)
+    public ExportContentToDeploymentTargetAdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        S = localizer;
+        S = stringLocalizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return Task.CompletedTask;
-        }
-
         builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import
@@ -40,6 +34,6 @@ public sealed class ExportContentToDeploymentTargetAdminMenu : INavigationProvid
                 )
             );
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

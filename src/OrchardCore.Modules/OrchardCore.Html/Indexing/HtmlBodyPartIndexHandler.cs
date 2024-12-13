@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Html.Models;
 using OrchardCore.Indexing;
 

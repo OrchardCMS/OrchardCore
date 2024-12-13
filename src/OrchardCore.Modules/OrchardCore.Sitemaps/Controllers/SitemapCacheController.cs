@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -11,12 +9,13 @@ using OrchardCore.Sitemaps.ViewModels;
 namespace OrchardCore.Sitemaps.Controllers;
 
 [Admin("SitemapsCache/{action}/{cacheFileName?}", "SitemapsCache{action}")]
-public class SitemapCacheController : Controller
+public sealed class SitemapCacheController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ISitemapCacheProvider _sitemapCacheProvider;
     private readonly INotifier _notifier;
-    protected readonly IHtmlLocalizer H;
+
+    internal readonly IHtmlLocalizer H;
 
     public SitemapCacheController(
         IAuthorizationService authorizationService,

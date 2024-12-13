@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.CustomSettings.Services;
@@ -8,7 +7,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.CustomSettings;
 
-public sealed class AdminMenu : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
     private static readonly ConcurrentDictionary<string, RouteValueDictionary> _routeValues = [];
 
@@ -24,13 +23,8 @@ public sealed class AdminMenu : INavigationProvider
         _customSettingsService = customSettingsService;
     }
 
-    public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override async ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return;
-        }
-
         foreach (var type in await _customSettingsService.GetAllSettingsTypesAsync())
         {
             if (!_routeValues.TryGetValue(type.Name, out var routeValues))

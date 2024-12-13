@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +18,7 @@ using OrchardCore.Routing;
 namespace OrchardCore.Deployment.Remote.Controllers;
 
 [Admin("Deployment/RemoteClient/{action}/{id?}", "DeploymentRemoteClient{action}")]
-public class RemoteClientController : Controller
+public sealed class RemoteClientController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
@@ -33,8 +29,8 @@ public class RemoteClientController : Controller
     private readonly RemoteClientService _remoteClientService;
     private readonly INotifier _notifier;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public RemoteClientController(
         IDataProtectionProvider dataProtectionProvider,

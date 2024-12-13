@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -18,6 +13,7 @@ namespace OrchardCore.Roles.Services;
 public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly ISystemRoleNameProvider _systemRoleProvider;
     private readonly IDocumentManager<RolesDocument> _documentManager;
     protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
@@ -26,27 +22,32 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
 
     public RoleStore(
         IServiceProvider serviceProvider,
+        ISystemRoleNameProvider systemRoleProvider,
         IDocumentManager<RolesDocument> documentManager,
         IStringLocalizer<RoleStore> stringLocalizer,
         ILogger<RoleStore> logger)
     {
         _serviceProvider = serviceProvider;
+        _systemRoleProvider = systemRoleProvider;
         _documentManager = documentManager;
         S = stringLocalizer;
         _logger = logger;
     }
 
-    public IQueryable<IRole> Roles => GetRolesAsync().GetAwaiter().GetResult().Roles.AsQueryable();
+    public IQueryable<IRole> Roles
+        => GetRolesAsync().GetAwaiter().GetResult().Roles.AsQueryable();
 
     /// <summary>
     /// Loads the roles document from the store for updating and that should not be cached.
     /// </summary>
-    private Task<RolesDocument> LoadRolesAsync() => _documentManager.GetOrCreateMutableAsync();
+    private Task<RolesDocument> LoadRolesAsync()
+        => _documentManager.GetOrCreateMutableAsync();
 
     /// <summary>
     /// Gets the roles document from the cache for sharing and that should not be updated.
     /// </summary>
-    private Task<RolesDocument> GetRolesAsync() => _documentManager.GetOrCreateImmutableAsync();
+    private Task<RolesDocument> GetRolesAsync()
+        => _documentManager.GetOrCreateImmutableAsync();
 
     /// <summary>
     /// Updates the store with the provided roles document and then updates the cache.
@@ -82,12 +83,20 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     {
         ArgumentNullException.ThrowIfNull(role);
 
-        var roleToRemove = (Role)role;
-
-        if (string.Equals(roleToRemove.NormalizedRoleName, "ANONYMOUS", StringComparison.Ordinal) ||
-            string.Equals(roleToRemove.NormalizedRoleName, "AUTHENTICATED", StringComparison.Ordinal))
+        if (role is not Role roleToRemove)
         {
-            return IdentityResult.Failed(new IdentityError { Description = S["Can't delete system roles."] });
+            return IdentityResult.Failed(new IdentityError
+            {
+                Description = S["Role is not of a '{0}' type.", nameof(Role)],
+            });
+        }
+
+        if (await _systemRoleProvider.IsSystemRoleAsync(roleToRemove.RoleName))
+        {
+            return IdentityResult.Failed(new IdentityError
+            {
+                Description = S["Can't delete system roles."],
+            });
         }
 
         var roleRemovedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<IRoleRemovedEventHandler>>();
@@ -138,7 +147,12 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     {
         ArgumentNullException.ThrowIfNull(role);
 
-        return Task.FromResult(((Role)role).NormalizedRoleName);
+        if (role is Role r)
+        {
+            return Task.FromResult(r.NormalizedRoleName);
+        }
+
+        return Task.FromResult(role.RoleName);
     }
 
     public Task<string> GetRoleIdAsync(IRole role, CancellationToken cancellationToken)
@@ -159,7 +173,10 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     {
         ArgumentNullException.ThrowIfNull(role);
 
-        ((Role)role).NormalizedRoleName = normalizedName;
+        if (role is Role r)
+        {
+            r.NormalizedRoleName = normalizedName;
+        }
 
         return Task.CompletedTask;
     }
@@ -168,7 +185,10 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     {
         ArgumentNullException.ThrowIfNull(role);
 
-        ((Role)role).RoleName = roleName;
+        if (role is Role r)
+        {
+            r.RoleName = roleName;
+        }
 
         return Task.CompletedTask;
     }
@@ -180,7 +200,11 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
         var roles = await LoadRolesAsync();
         var existingRole = roles.Roles.FirstOrDefault(x => string.Equals(x.RoleName, role.RoleName, StringComparison.OrdinalIgnoreCase));
         roles.Roles.Remove(existingRole);
-        roles.Roles.Add((Role)role);
+
+        if (role is Role r)
+        {
+            roles.Roles.Add(r);
+        }
 
         await UpdateRolesAsync(roles);
 
@@ -194,10 +218,12 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     public Task AddClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(role);
-
         ArgumentNullException.ThrowIfNull(claim);
 
-        ((Role)role).RoleClaims.Add(new RoleClaim { ClaimType = claim.Type, ClaimValue = claim.Value });
+        if (role is Role r)
+        {
+            r.RoleClaims.Add(new RoleClaim(type: claim.Type, value: claim.Value));
+        }
 
         return Task.CompletedTask;
     }
@@ -206,17 +232,23 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     {
         ArgumentNullException.ThrowIfNull(role);
 
-        return Task.FromResult<IList<Claim>>(((Role)role).RoleClaims.Select(x => x.ToClaim()).ToList());
+        if (role is Role r)
+        {
+            return Task.FromResult<IList<Claim>>(r.RoleClaims.Select(x => x.ToClaim()).ToArray());
+        }
+
+        return Task.FromResult<IList<Claim>>([]);
     }
 
     public Task RemoveClaimAsync(IRole role, Claim claim, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(role);
-
         ArgumentNullException.ThrowIfNull(claim);
 
-        ((Role)role).RoleClaims.RemoveAll(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
-
+        if (role is Role r)
+        {
+            r.RoleClaims.RemoveAll(x => x.ClaimType == claim.Type && x.ClaimValue == claim.Value);
+        }
         return Task.CompletedTask;
     }
 

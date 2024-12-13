@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading;
-using System.Threading.Tasks;
 using OpenIddict.Abstractions;
 using OrchardCore.OpenId.Abstractions.Stores;
 using OrchardCore.OpenId.YesSql.Indexes;
@@ -49,7 +44,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
         cancellationToken.ThrowIfCancellationRequested();
 
         await _session.SaveAsync(authorization, collection: OpenIdCollection);
-        await _session.SaveChangesAsync();
+        await _session.FlushAsync();
     }
 
     /// <inheritdoc/>
@@ -60,7 +55,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
         cancellationToken.ThrowIfCancellationRequested();
 
         _session.Delete(authorization, collection: OpenIdCollection);
-        await _session.SaveChangesAsync();
+        await _session.FlushAsync();
     }
 
     /// <inheritdoc/>
@@ -177,7 +172,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
     {
         ArgumentNullException.ThrowIfNull(authorization);
 
-        return new ValueTask<string>(authorization.ApplicationId);
+        return ValueTask.FromResult(authorization.ApplicationId);
     }
 
     /// <inheritdoc/>
@@ -193,10 +188,10 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
 
         if (authorization.CreationDate is null)
         {
-            return new ValueTask<DateTimeOffset?>(result: null);
+            return ValueTask.FromResult<DateTimeOffset?>(result: null);
         }
 
-        return new ValueTask<DateTimeOffset?>(DateTime.SpecifyKind(authorization.CreationDate.Value, DateTimeKind.Utc));
+        return ValueTask.FromResult<DateTimeOffset?>(DateTime.SpecifyKind(authorization.CreationDate.Value, DateTimeKind.Utc));
     }
 
     /// <inheritdoc/>
@@ -204,7 +199,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
     {
         ArgumentNullException.ThrowIfNull(authorization);
 
-        return new ValueTask<string>(authorization.AuthorizationId);
+        return ValueTask.FromResult(authorization.AuthorizationId);
     }
 
     /// <inheritdoc/>
@@ -212,7 +207,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
     {
         ArgumentNullException.ThrowIfNull(authorization);
 
-        return new ValueTask<string>(authorization.Id.ToString(CultureInfo.InvariantCulture));
+        return ValueTask.FromResult(authorization.Id.ToString(CultureInfo.InvariantCulture));
     }
 
     /// <inheritdoc/>
@@ -222,11 +217,10 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
 
         if (authorization.Properties == null)
         {
-            return new ValueTask<ImmutableDictionary<string, JsonElement>>(ImmutableDictionary.Create<string, JsonElement>());
+            return ValueTask.FromResult(ImmutableDictionary.Create<string, JsonElement>());
         }
 
-        return new ValueTask<ImmutableDictionary<string, JsonElement>>(
-            JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(authorization.Properties.ToString()));
+        return ValueTask.FromResult(JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(authorization.Properties.ToString()));
     }
 
     /// <inheritdoc/>
@@ -234,7 +228,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
     {
         ArgumentNullException.ThrowIfNull(authorization);
 
-        return new ValueTask<ImmutableArray<string>>(authorization.Scopes);
+        return ValueTask.FromResult(authorization.Scopes);
     }
 
     /// <inheritdoc/>
@@ -242,7 +236,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
     {
         ArgumentNullException.ThrowIfNull(authorization);
 
-        return new ValueTask<string>(authorization.Status);
+        return ValueTask.FromResult(authorization.Status);
     }
 
     /// <inheritdoc/>
@@ -250,7 +244,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
     {
         ArgumentNullException.ThrowIfNull(authorization);
 
-        return new ValueTask<string>(authorization.Subject);
+        return ValueTask.FromResult(authorization.Subject);
     }
 
     /// <inheritdoc/>
@@ -258,7 +252,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
     {
         ArgumentNullException.ThrowIfNull(authorization);
 
-        return new ValueTask<string>(authorization.Type);
+        return ValueTask.FromResult(authorization.Type);
     }
 
     /// <inheritdoc/>
@@ -325,7 +319,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
 
             try
             {
-                await _session.SaveChangesAsync();
+                await _session.FlushAsync();
             }
             catch (Exception exception)
             {
@@ -446,7 +440,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
 
         try
         {
-            await _session.SaveChangesAsync();
+            await _session.FlushAsync();
         }
         catch (ConcurrencyException exception)
         {

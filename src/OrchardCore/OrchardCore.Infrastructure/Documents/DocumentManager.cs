@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -64,7 +62,7 @@ public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDoc
 
     public async Task<TDocument> GetOrCreateMutableAsync(Func<Task<TDocument>> factoryAsync = null)
     {
-        TDocument document = null;
+        TDocument document;
 
         if (!_isVolatile)
         {

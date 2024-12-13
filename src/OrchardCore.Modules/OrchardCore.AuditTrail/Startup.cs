@@ -17,7 +17,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
 using YesSql.Filters.Query;
 
@@ -32,8 +31,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IAuditTrailManager, AuditTrailManager>();
 
-        services
-            .AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailEventDisplayDriver>();
+        services.AddDisplayDriver<AuditTrailEvent, AuditTrailEventDisplayDriver>();
 
         services.AddSingleton<IAuditTrailIdGenerator, AuditTrailIdGenerator>();
 
@@ -43,14 +41,14 @@ public sealed class Startup : StartupBase
         services.AddIndexProvider<AuditTrailEventIndexProvider>();
         services.AddSingleton<IBackgroundTask, AuditTrailBackgroundTask>();
 
-        services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<INavigationProvider, AuditTrailAdminMenu>();
-        services.AddScoped<INavigationProvider, AuditTrailSettingsAdminMenu>();
+        services.AddPermissionProvider<Permissions>();
+        services.AddNavigationProvider<AuditTrailAdminMenu>();
+        services.AddNavigationProvider<AuditTrailSettingsAdminMenu>();
 
-        services.AddScoped<IDisplayDriver<ISite>, AuditTrailSettingsDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ISite>, AuditTrailTrimmingSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<AuditTrailSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<AuditTrailTrimmingSettingsDisplayDriver>();
 
-        services.AddScoped<IDisplayDriver<AuditTrailIndexOptions>, AuditTrailOptionsDisplayDriver>();
+        services.AddDisplayDriver<AuditTrailIndexOptions, AuditTrailOptionsDisplayDriver>();
 
         services.AddScoped<IAuditTrailAdminListQueryService, DefaultAuditTrailAdminListQueryService>();
 

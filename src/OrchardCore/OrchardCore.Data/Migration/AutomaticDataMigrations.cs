@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
@@ -10,7 +8,7 @@ namespace OrchardCore.Data.Migration;
 /// <summary>
 /// Represents a tenant event that will be registered to OrchardShell.Activated in order to run migrations automatically.
 /// </summary>
-public class AutomaticDataMigrations : ModularTenantEvents
+public sealed class AutomaticDataMigrations : ModularTenantEvents
 {
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;

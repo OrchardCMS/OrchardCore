@@ -1,6 +1,4 @@
-using System;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -10,22 +8,18 @@ namespace OrchardCore.Settings.Recipes;
 /// <summary>
 /// This recipe step updates the site settings.
 /// </summary>
-public sealed class SettingsStep : IRecipeStepHandler
+public sealed class SettingsStep : NamedRecipeStepHandler
 {
     private readonly ISiteService _siteService;
 
     public SettingsStep(ISiteService siteService)
+        : base("Settings")
     {
         _siteService = siteService;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "Settings", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var model = context.Step;
         var site = await _siteService.LoadSiteSettingsAsync();
 

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DynamicCache;

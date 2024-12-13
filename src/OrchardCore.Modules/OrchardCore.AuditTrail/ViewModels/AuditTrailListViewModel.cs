@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.AuditTrail.ViewModels;

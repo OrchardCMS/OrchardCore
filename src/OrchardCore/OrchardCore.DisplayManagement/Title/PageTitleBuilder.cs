@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Zones;
 
@@ -6,7 +5,7 @@ namespace OrchardCore.DisplayManagement.Title;
 
 public class PageTitleBuilder : IPageTitleBuilder
 {
-    private readonly static HtmlString _defaultTitleSeparator = new(" - ");
+    private static readonly HtmlString _defaultTitleSeparator = new(" - ");
 
     private readonly List<PositionalTitlePart> _titleParts;
     private HtmlContentBuilder _title;

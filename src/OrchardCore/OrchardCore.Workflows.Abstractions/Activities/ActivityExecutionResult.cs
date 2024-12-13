@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.Workflows.Activities;
 
 public class ActivityExecutionResult

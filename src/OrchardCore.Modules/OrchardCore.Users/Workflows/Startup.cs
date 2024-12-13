@@ -22,6 +22,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IUserEventHandler, UserEventHandler>();
         services.AddActivity<AssignUserRoleTask, AssignUserRoleTaskDisplayDriver>();
         services.AddActivity<ValidateUserTask, ValidateUserTaskDisplayDriver>();
+        services.AddActivity<UserConfirmedEvent, UserConfirmedEventDisplayDriver>();
     }
 }
 

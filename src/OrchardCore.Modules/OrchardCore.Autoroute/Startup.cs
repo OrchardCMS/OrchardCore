@@ -1,4 +1,3 @@
-using System;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +10,7 @@ using OrchardCore.Autoroute.Handlers;
 using OrchardCore.Autoroute.Indexing;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.Routing;
+using OrchardCore.Autoroute.Services;
 using OrchardCore.Autoroute.Settings;
 using OrchardCore.Autoroute.Sitemaps;
 using OrchardCore.Autoroute.ViewModels;
@@ -22,6 +22,7 @@ using OrchardCore.ContentManagement.Routing;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -53,7 +54,7 @@ public sealed class Startup : StartupBase
 
                     if (!slug.StartsWith('/'))
                     {
-                        slug = "/" + slug;
+                        slug = '/' + slug;
                     }
 
                     (var found, var entry) = await autorouteEntries.TryGetEntryByPathAsync(slug);
@@ -75,7 +76,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IContentHandler, DefaultRouteContentHandler>();
         services.AddScoped<IContentHandler, AutorouteContentHandler>();
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, AutoroutePartSettingsDisplayDriver>();
         services.AddScoped<IContentPartIndexHandler, AutoroutePartIndexHandler>();
 
@@ -112,5 +113,23 @@ public class SitemapStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IRouteableContentTypeProvider, AutorouteContentTypeProvider>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Contents")]
+public sealed class ContentAutourouteStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddShapeTableProvider<ContentAutorouteShapeTableProvider>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Widgets")]
+public sealed class WidgetAutourouteStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddShapeTableProvider<WidgetAutorouteShapeTableProvider>();
     }
 }

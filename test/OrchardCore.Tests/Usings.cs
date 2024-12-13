@@ -50,7 +50,6 @@ global using Moq;
 global using OpenIddict.Abstractions;
 global using Parlot;
 global using Shortcodes;
-global using SixLabors.ImageSharp.Web.Processors;
 global using Xunit;
 global using YesSql;
 global using YesSql.Provider.SqlServer;

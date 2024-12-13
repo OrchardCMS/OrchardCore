@@ -1,8 +1,5 @@
-using System;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Json;
@@ -14,7 +11,7 @@ namespace OrchardCore.AdminMenu.Recipes;
 /// <summary>
 /// This recipe step creates a set of admin menus.
 /// </summary>
-public sealed class AdminMenuStep : IRecipeStepHandler
+public sealed class AdminMenuStep : NamedRecipeStepHandler
 {
     private readonly IAdminMenuService _adminMenuService;
     private readonly JsonSerializerOptions _serializationOptions;
@@ -22,20 +19,16 @@ public sealed class AdminMenuStep : IRecipeStepHandler
     public AdminMenuStep(
         IAdminMenuService adminMenuService,
         IOptions<DocumentJsonSerializerOptions> serializationOptions)
+        : base("AdminMenu")
     {
         _adminMenuService = adminMenuService;
 
-        // The recipe step contains polymorphic types (menu items) which need to be resolved
+        // The recipe step contains polymorphic types (menu items) which need to be resolved.
         _serializationOptions = serializationOptions.Value.SerializerOptions;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "AdminMenu", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var model = context.Step.ToObject<AdminMenuStepModel>(_serializationOptions);
 
         foreach (var token in model.Data.Cast<JsonObject>())
@@ -50,8 +43,6 @@ public sealed class AdminMenuStep : IRecipeStepHandler
 
             await _adminMenuService.SaveAsync(adminMenu);
         }
-
-        return;
     }
 }
 

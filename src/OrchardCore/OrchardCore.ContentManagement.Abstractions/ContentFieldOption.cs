@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace OrchardCore.ContentManagement;
 
 public class ContentFieldOption : ContentFieldOptionBase

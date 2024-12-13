@@ -1,9 +1,6 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Scripting;
 using OrchardCore.Settings;
@@ -35,7 +32,7 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
 
     public async Task<string> GenerateUserName(string provider, IEnumerable<SerializableClaim> claims)
     {
-        var registrationSettings = await _siteService.GetSettingsAsync<RegistrationSettings>();
+        var registrationSettings = await _siteService.GetSettingsAsync<ExternalRegistrationSettings>();
 
         if (registrationSettings.UseScriptToGenerateUsername)
         {
@@ -61,19 +58,19 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
 
     public async Task UpdateUserAsync(UpdateUserContext context)
     {
-        var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
+        var loginSettings = await _siteService.GetSettingsAsync<ExternalLoginSettings>();
 
         UpdateUserInternal(context, loginSettings);
     }
 
-    public void UpdateUserInternal(UpdateUserContext context, LoginSettings loginSettings)
+    public void UpdateUserInternal(UpdateUserContext context, ExternalLoginSettings loginSettings)
     {
-        if (!loginSettings.UseScriptToSyncRoles)
+        if (!loginSettings.UseScriptToSyncProperties)
         {
             return;
         }
 
-        var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncRolesScript}\n}}\nvar context={JConvert.SerializeObject(context, JOptions.CamelCase)};\nsyncRoles(context);\nreturn context;";
+        var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncPropertiesScript}\n}}\nvar context={JConvert.SerializeObject(context, JOptions.CamelCase)};\nsyncRoles(context);\nreturn context;";
         dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
         context.RolesToAdd.AddRange((evaluationResult.rolesToAdd as object[]).Select(i => i.ToString()));
         context.RolesToRemove.AddRange((evaluationResult.rolesToRemove as object[]).Select(i => i.ToString()));

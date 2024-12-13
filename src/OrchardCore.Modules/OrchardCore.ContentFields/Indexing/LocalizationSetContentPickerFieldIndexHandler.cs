@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;

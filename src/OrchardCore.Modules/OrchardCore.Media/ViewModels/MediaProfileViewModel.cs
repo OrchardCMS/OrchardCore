@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using OrchardCore.Media.Processing;
 
 namespace OrchardCore.Media.ViewModels;
 
@@ -14,8 +12,8 @@ public class MediaProfileViewModel
     public int CustomWidth { get; set; }
     public int SelectedHeight { get; set; }
     public int CustomHeight { get; set; }
-    public ResizeMode SelectedMode { get; set; }
-    public Format SelectedFormat { get; set; }
+    public Processing.ResizeMode SelectedMode { get; set; }
+    public Processing.Format SelectedFormat { get; set; }
     public int Quality { get; set; } = 100;
     public string BackgroundColor { get; set; }
 

@@ -1,4 +1,3 @@
-using System.IO;
 using OrchardCore.Environment.Shell.Configuration.Internal;
 
 namespace Microsoft.Extensions.Configuration.Json;

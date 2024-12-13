@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.ContentManagement.Routing;
 
 public interface IAutorouteEntries

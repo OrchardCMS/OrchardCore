@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -96,23 +93,27 @@ public sealed class Startup : StartupBase
         builder.AddViewLocalization();
         builder.AddDataAnnotationsLocalization();
 
-        services.TryAddEnumerable(
-            ServiceDescriptor.Transient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>());
+        services.AddTransient<IConfigureOptions<RazorViewEngineOptions>, ModularRazorViewEngineOptionsSetup>();
 
-        // Support razor runtime compilation only if in dev mode and if the 'refs' folder exists.
-        var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
-
-        if (_hostingEnvironment.IsDevelopment() && refsFolderExists)
+        if (_hostingEnvironment.IsDevelopment())
         {
-            builder.AddRazorRuntimeCompilation();
+            // Support razor runtime compilation only if in dev mode and if the 'refs' folder exists.
+            var refsFolderExists = Directory.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "refs"));
+
+            if (refsFolderExists)
+            {
+                builder.AddRazorRuntimeCompilation();
+            }
+        }
+        else
+        {
+            // Share across tenants a static compiler even if there is no runtime compilation
+            // because the compiler still uses its internal cache to retrieve compiled items.
+            // Register this provider only in production mode, as it may cause hot reload to fail in development mode.
+            services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
         }
 
-        // Share across tenants a static compiler even if there is no runtime compilation
-        // because the compiler still uses its internal cache to retrieve compiled items.
-        services.AddSingleton<IViewCompilerProvider, SharedViewCompilerProvider>();
-
-        services.TryAddEnumerable(
-            ServiceDescriptor.Transient<IConfigureOptions<MvcRazorRuntimeCompilationOptions>, RazorCompilationOptionsSetup>());
+        services.AddTransient<IConfigureOptions<MvcRazorRuntimeCompilationOptions>, RazorCompilationOptionsSetup>();
 
         services.AddSingleton<RazorCompilationFileProviderAccessor>();
 
@@ -138,7 +139,6 @@ public sealed class Startup : StartupBase
         services.AddScoped<IViewLocationExpanderProvider, ComponentViewLocationExpanderProvider>();
         services.AddScoped<IViewLocationExpanderProvider, SharedViewLocationExpanderProvider>();
 
-        services.TryAddEnumerable(
-            ServiceDescriptor.Singleton<IApplicationModelProvider, ModularApplicationModelProvider>());
+        services.AddSingleton<IApplicationModelProvider, ModularApplicationModelProvider>();
     }
 }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Workflows.Abstractions.Models;

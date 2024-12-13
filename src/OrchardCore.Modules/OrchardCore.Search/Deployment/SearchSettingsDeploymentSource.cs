@@ -1,12 +1,12 @@
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 using OrchardCore.Search.Models;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Deployment;
 
-public class SearchSettingsDeploymentSource : IDeploymentSource
+public sealed class SearchSettingsDeploymentSource
+    : DeploymentSourceBase<SearchSettingsDeploymentStep>
 {
     private readonly ISiteService _siteService;
 
@@ -15,13 +15,8 @@ public class SearchSettingsDeploymentSource : IDeploymentSource
         _siteService = site;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(SearchSettingsDeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not SearchSettingsDeploymentStep)
-        {
-            return;
-        }
-
         var searchSettings = await _siteService.GetSettingsAsync<SearchSettings>();
 
         result.Steps.Add(new JsonObject

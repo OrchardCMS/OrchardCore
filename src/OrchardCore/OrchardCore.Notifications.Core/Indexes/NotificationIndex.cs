@@ -1,4 +1,3 @@
-using System;
 using System.Text.RegularExpressions;
 using OrchardCore.Entities;
 using OrchardCore.Notifications.Models;

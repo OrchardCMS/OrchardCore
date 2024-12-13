@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Scripting;
 
 public class GlobalMethod

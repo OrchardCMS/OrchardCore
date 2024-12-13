@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.WebUtilities;
@@ -137,6 +134,6 @@ public class ImageShortcodeProvider : IShortcodeProvider
         content = "<img " + altText + className + "src=\"" + content + "\">";
         content = _htmlSanitizerService.Sanitize(content);
 
-        return new ValueTask<string>(content);
+        return ValueTask.FromResult(content);
     }
 }

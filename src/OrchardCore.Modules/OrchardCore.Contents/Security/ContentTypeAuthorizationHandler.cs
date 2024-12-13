@@ -1,6 +1,4 @@
-using System;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
@@ -9,7 +7,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Contents.Security;
 
-public class ContentTypeAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+public sealed class ContentTypeAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
     private readonly IServiceProvider _serviceProvider;
     private IAuthorizationService _authorizationService;

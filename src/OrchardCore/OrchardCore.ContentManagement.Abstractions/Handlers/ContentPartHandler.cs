@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.ContentManagement.Handlers;
 
 public abstract class ContentPartHandler<TPart> : IContentPartHandler where TPart : ContentPart, new()

@@ -1,11 +1,10 @@
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Settings.Deployment;
 
-public class SiteSettingsPropertyDeploymentSource<TModel> : IDeploymentSource where TModel : class, new()
+public sealed class SiteSettingsPropertyDeploymentSource<TModel>
+    : DeploymentSourceBase<SiteSettingsPropertyDeploymentStep<TModel>> where TModel : class, new()
 {
     private readonly ISiteService _siteService;
 
@@ -14,13 +13,8 @@ public class SiteSettingsPropertyDeploymentSource<TModel> : IDeploymentSource wh
         _siteService = siteService;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(SiteSettingsPropertyDeploymentStep<TModel> step, DeploymentPlanResult result)
     {
-        if (step is not SiteSettingsPropertyDeploymentStep<TModel> settingsStep)
-        {
-            return;
-        }
-
         var settingJPropertyName = typeof(TModel).Name;
         var settingJPropertyValue = JObject.FromObject(await _siteService.GetSettingsAsync<TModel>());
 

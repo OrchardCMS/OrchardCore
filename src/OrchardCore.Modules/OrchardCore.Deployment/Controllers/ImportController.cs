@@ -1,8 +1,5 @@
-using System;
-using System.IO;
 using System.IO.Compression;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,15 +17,15 @@ using OrchardCore.Recipes.Models;
 namespace OrchardCore.Deployment.Controllers;
 
 [Admin("DeploymentPlan/Import/{action}", "DeploymentPlanImport{action}")]
-public class ImportController : Controller
+public sealed class ImportController : Controller
 {
     private readonly IDeploymentManager _deploymentManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public ImportController(
         IDeploymentManager deploymentManager,
@@ -67,8 +64,8 @@ public class ImportController : Controller
 
         if (importedPackage != null)
         {
-            var tempArchiveName = Path.GetTempFileName() + Path.GetExtension(importedPackage.FileName);
-            var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var tempArchiveName = PathExtensions.GetTempFileName() + Path.GetExtension(importedPackage.FileName);
+            var tempArchiveFolder = PathExtensions.GetTempFileName();
 
             try
             {

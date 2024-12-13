@@ -1,12 +1,9 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.ReCaptcha.Services;
-using OrchardCore.Users;
 using OrchardCore.Users.Events;
 
 namespace OrchardCore.ReCaptcha.Users.Handlers;
 
-public class RegistrationFormEventHandler : IRegistrationFormEvents
+public class RegistrationFormEventHandler : RegistrationFormEventsBase
 {
     private readonly ReCaptchaService _reCaptchaService;
 
@@ -15,13 +12,6 @@ public class RegistrationFormEventHandler : IRegistrationFormEvents
         _reCaptchaService = recaptchaService;
     }
 
-    public Task RegisteredAsync(IUser user)
-    {
-        return Task.CompletedTask;
-    }
-
-    public Task RegistrationValidationAsync(Action<string, string> reportError)
-    {
-        return _reCaptchaService.ValidateCaptchaAsync(reportError);
-    }
+    public override Task RegistrationValidationAsync(Action<string, string> reportError)
+        => _reCaptchaService.ValidateCaptchaAsync(reportError);
 }

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -135,11 +131,10 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
 
         if (settings?.ContainedContentTypes == null || settings.ContainedContentTypes.Length == 0)
         {
-            return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-                .Where(t => t.StereotypeEquals("Widget"));
+            return await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync();
         }
 
-        return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
-            .Where(t => settings.ContainedContentTypes.Contains(t.Name) && t.StereotypeEquals("Widget"));
+        return (await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync())
+            .Where(t => settings.ContainedContentTypes.Contains(t.Name));
     }
 }

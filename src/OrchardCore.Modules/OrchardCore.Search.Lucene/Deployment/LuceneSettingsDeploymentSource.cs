@@ -1,10 +1,10 @@
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Search.Lucene.Deployment;
 
-public class LuceneSettingsDeploymentSource : IDeploymentSource
+public sealed class LuceneSettingsDeploymentSource
+    : DeploymentSourceBase<LuceneSettingsDeploymentStep>
 {
     private readonly LuceneIndexingService _luceneIndexingService;
 
@@ -13,13 +13,8 @@ public class LuceneSettingsDeploymentSource : IDeploymentSource
         _luceneIndexingService = luceneIndexingService;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(LuceneSettingsDeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not LuceneSettingsDeploymentStep)
-        {
-            return;
-        }
-
         var luceneSettings = await _luceneIndexingService.GetLuceneSettingsAsync();
 
         // Adding Lucene settings

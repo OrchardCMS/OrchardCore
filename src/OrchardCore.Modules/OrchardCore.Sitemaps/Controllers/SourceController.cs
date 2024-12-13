@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -17,7 +13,7 @@ using OrchardCore.Sitemaps.ViewModels;
 namespace OrchardCore.Sitemaps.Controllers;
 
 [Admin]
-public class SourceController : Controller
+public sealed class SourceController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly IDisplayManager<SitemapSource> _displayManager;
@@ -26,8 +22,8 @@ public class SourceController : Controller
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly INotifier _notifier;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public SourceController(
         IAuthorizationService authorizationService,

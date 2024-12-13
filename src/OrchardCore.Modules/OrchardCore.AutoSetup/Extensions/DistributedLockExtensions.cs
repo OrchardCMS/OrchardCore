@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using OrchardCore.AutoSetup.Options;
 using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;

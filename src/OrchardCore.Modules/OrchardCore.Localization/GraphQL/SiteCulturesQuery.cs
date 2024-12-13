@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,10 +12,11 @@ namespace OrchardCore.Localization.GraphQL;
 /// <summary>
 /// Represents a site cultures for Graph QL.
 /// </summary>
-public class SiteCulturesQuery : ISchemaBuilder
+public sealed class SiteCulturesQuery : ISchemaBuilder
 {
-    protected readonly IStringLocalizer S;
     private readonly GraphQLContentOptions _graphQLContentOptions;
+
+    internal readonly IStringLocalizer S;
 
     /// <summary>
     /// Creates a new instance of the <see cref="SiteCulturesQuery"/>.
@@ -35,7 +32,8 @@ public class SiteCulturesQuery : ISchemaBuilder
         _graphQLContentOptions = graphQLContentOptions.Value;
     }
 
-    public Task<string> GetIdentifierAsync() => Task.FromResult(string.Empty);
+    public Task<string> GetIdentifierAsync()
+        => Task.FromResult(string.Empty);
 
     /// <inheritdocs/>
     public Task BuildAsync(ISchema schema)
@@ -50,7 +48,7 @@ public class SiteCulturesQuery : ISchemaBuilder
             Name = "SiteCultures",
             Description = S["The active cultures configured for the site."],
             Type = typeof(ListGraphType<CultureQueryObjectType>),
-            Resolver = new LockedAsyncFieldResolver<IEnumerable<SiteCulture>>(ResolveAsync)
+            Resolver = new LockedAsyncFieldResolver<IEnumerable<SiteCulture>>(ResolveAsync),
         };
 
         schema.Query.AddField(field);

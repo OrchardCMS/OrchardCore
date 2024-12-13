@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.Layers.ViewModels;
 
 public class LayerEditViewModel

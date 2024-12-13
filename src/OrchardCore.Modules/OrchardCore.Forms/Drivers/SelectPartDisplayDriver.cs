@@ -1,5 +1,4 @@
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -33,7 +32,7 @@ public sealed class SelectPartDisplayDriver : ContentPartDisplayDriver<SelectPar
         });
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(SelectPart part, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(SelectPart part, UpdatePartEditorContext context)
     {
         var viewModel = new SelectPartEditViewModel();
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix);

@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.BackgroundJobs;
@@ -14,7 +11,7 @@ using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Recipes;
 
-public sealed class AzureAISearchIndexSettingsStep : IRecipeStepHandler
+public sealed class AzureAISearchIndexSettingsStep : NamedRecipeStepHandler
 {
     public const string Name = "azureai-index-create";
 
@@ -22,13 +19,14 @@ public sealed class AzureAISearchIndexSettingsStep : IRecipeStepHandler
     private readonly AzureAIIndexDocumentManager _azureAIIndexDocumentManager;
     private readonly AzureAISearchIndexSettingsService _azureAISearchIndexSettingsService;
 
-    internal IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public AzureAISearchIndexSettingsStep(
         AzureAISearchIndexManager indexManager,
         AzureAIIndexDocumentManager azureAIIndexDocumentManager,
         AzureAISearchIndexSettingsService azureAISearchIndexSettingsService,
         IStringLocalizer<AzureAISearchIndexSettingsStep> stringLocalizer)
+        : base(Name)
     {
         _indexManager = indexManager;
         _azureAIIndexDocumentManager = azureAIIndexDocumentManager;
@@ -36,13 +34,8 @@ public sealed class AzureAISearchIndexSettingsStep : IRecipeStepHandler
         S = stringLocalizer;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, Name, StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         if (context.Step["Indices"] is not JsonArray indexes)
         {
             return;

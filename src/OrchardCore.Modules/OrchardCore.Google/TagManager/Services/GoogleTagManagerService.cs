@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Google.TagManager.Settings;
 using OrchardCore.Settings;
 

@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -27,17 +24,15 @@ public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDi
             model.Hint = settings.Hint;
             model.Required = settings.Required;
             model.Multiple = settings.Multiple;
-            var roles = (await _roleService.GetRoleNamesAsync())
-                .Except(RoleHelper.SystemRoleNames, StringComparer.OrdinalIgnoreCase)
-                .Select(roleName => new RoleEntry
-                {
-                    Role = roleName,
-                    IsSelected = settings.DisplayedRoles.Contains(roleName, StringComparer.OrdinalIgnoreCase)
-                })
-                .ToArray();
+            var roles = await _roleService.GetAssignableRolesAsync();
+            var roleEntries = roles.Select(role => new RoleEntry
+            {
+                Role = role.RoleName,
+                IsSelected = settings.DisplayedRoles.Contains(role.RoleName, StringComparer.OrdinalIgnoreCase),
+            }).ToArray();
 
-            model.Roles = roles;
-            model.DisplayAllUsers = settings.DisplayAllUsers || !roles.Where(x => x.IsSelected).Any();
+            model.Roles = roleEntries;
+            model.DisplayAllUsers = settings.DisplayAllUsers || !roleEntries.Where(x => x.IsSelected).Any();
         }).Location("Content");
     }
 
@@ -54,7 +49,12 @@ public sealed class UserPickerFieldSettingsDriver : ContentPartFieldDefinitionDi
             Multiple = model.Multiple
         };
 
-        var selectedRoles = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToArray();
+        var roles = await _roleService.GetAssignableRolesAsync();
+
+        var selectedRoles = model.Roles
+            .Where(x => x.IsSelected && roles.Any(y => y.RoleName == x.Role))
+            .Select(x => x.Role)
+            .ToArray();
 
         if (model.DisplayAllUsers || selectedRoles.Length == 0)
         {

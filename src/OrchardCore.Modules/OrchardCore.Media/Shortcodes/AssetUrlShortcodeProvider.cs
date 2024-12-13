@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
@@ -29,7 +26,7 @@ public class AssetUrlShortcodeProvider : IShortcodeProvider
     {
         if (!string.Equals(identifier, "asset_url", StringComparison.OrdinalIgnoreCase))
         {
-            return new ValueTask<string>((string)null);
+            return ValueTask.FromResult<string>(null);
         }
 
         // Handle self closing shortcodes.
@@ -38,7 +35,7 @@ public class AssetUrlShortcodeProvider : IShortcodeProvider
             content = arguments.NamedOrDefault("src");
             if (string.IsNullOrEmpty(content))
             {
-                return new ValueTask<string>("[asset_url]");
+                return ValueTask.FromResult("[asset_url]");
             }
         }
 
@@ -100,6 +97,6 @@ public class AssetUrlShortcodeProvider : IShortcodeProvider
 
         // This does not produce a tag, so sanitization is performed by the consumer (html body or markdown).
 
-        return new ValueTask<string>(content);
+        return ValueTask.FromResult(content);
     }
 }

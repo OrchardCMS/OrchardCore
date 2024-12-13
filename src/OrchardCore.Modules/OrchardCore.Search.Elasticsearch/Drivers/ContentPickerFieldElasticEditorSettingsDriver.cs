@@ -1,7 +1,3 @@
-using System;
-using System.Linq;
-using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -13,9 +9,9 @@ namespace OrchardCore.Search.Elasticsearch.Drivers;
 
 public sealed class ContentPickerFieldElasticEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver
 {
-    private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
 
-    public ContentPickerFieldElasticEditorSettingsDriver(ElasticIndexSettingsService elasticIndexSettingsService)
+    public ContentPickerFieldElasticEditorSettingsDriver(ElasticsearchIndexSettingsService elasticIndexSettingsService)
     {
         _elasticIndexSettingsService = elasticIndexSettingsService;
     }
@@ -24,7 +20,7 @@ public sealed class ContentPickerFieldElasticEditorSettingsDriver : ContentPartF
     {
         return Initialize<ContentPickerFieldElasticEditorSettings>("ContentPickerFieldElasticEditorSettings_Edit", async model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<ContentPickerFieldElasticEditorSettings>();
+            var settings = partFieldDefinition.GetSettings<ContentPickerFieldElasticEditorSettings>();
 
             model.Index = settings.Index;
 

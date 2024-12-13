@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Settings;
@@ -6,7 +5,7 @@ using OrchardCore.Navigation;
 
 namespace OrchardCore.AuditTrail.Navigation;
 
-public sealed class AuditTrailSettingsAdminMenu : INavigationProvider
+public sealed class AuditTrailSettingsAdminMenu : AdminNavigationProvider
 {
     private static readonly RouteValueDictionary _routeValues = new()
     {
@@ -21,13 +20,8 @@ public sealed class AuditTrailSettingsAdminMenu : INavigationProvider
         S = stringLocalizer;
     }
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        if (!NavigationHelper.IsAdminMenu(name))
-        {
-            return Task.CompletedTask;
-        }
-
         builder
              .Add(S["Configuration"], configuration => configuration
                  .Add(S["Settings"], settings => settings
@@ -41,6 +35,6 @@ public sealed class AuditTrailSettingsAdminMenu : INavigationProvider
                 )
             );
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

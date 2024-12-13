@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -16,12 +11,11 @@ using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Recipes.ViewModels;
-using OrchardCore.Security;
 
 namespace OrchardCore.Recipes.Controllers;
 
 [Admin("Recipes/{action}", "Recipes{action}")]
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
@@ -33,8 +27,8 @@ public class AdminController : Controller
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public AdminController(
         IShellHost shellHost,
@@ -65,7 +59,7 @@ public class AdminController : Controller
     [Admin("Recipes", "Recipes")]
     public async Task<ActionResult> Index()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner))
+        if (!await _authorizationService.AuthorizeAsync(User, RecipePermissions.ManageRecipes))
         {
             return Forbid();
         }
@@ -91,7 +85,7 @@ public class AdminController : Controller
     [HttpPost]
     public async Task<ActionResult> Execute(string basePath, string fileName)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner))
+        if (!await _authorizationService.AuthorizeAsync(User, RecipePermissions.ManageRecipes))
         {
             return Forbid();
         }
@@ -124,7 +118,7 @@ public class AdminController : Controller
         {
             _logger.LogError(e, "Unable to import a recipe file.");
 
-            await _notifier.ErrorAsync(H["The recipe '{0}' failed to run do to the following errors: {1}", recipe.DisplayName, string.Join(' ', e.StepResult.Errors)]);
+            await _notifier.ErrorAsync(H["The recipe '{0}' failed to run due to the following errors: {1}", recipe.DisplayName, string.Join(' ', e.StepResult.Errors)]);
         }
         catch (Exception e)
         {

@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
@@ -16,7 +12,7 @@ namespace OrchardCore.Deployment.Recipes;
 /// <summary>
 /// This recipe step creates a deployment plan.
 /// </summary>
-public sealed class DeploymentPlansRecipeStep : IRecipeStepHandler
+public sealed class DeploymentPlansRecipeStep : NamedRecipeStepHandler
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
@@ -29,6 +25,7 @@ public sealed class DeploymentPlansRecipeStep : IRecipeStepHandler
         IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
         IDeploymentPlanService deploymentPlanService,
         IStringLocalizer<DeploymentPlansRecipeStep> stringLocalizer)
+        : base("deployment")
     {
         _serviceProvider = serviceProvider;
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
@@ -36,13 +33,8 @@ public sealed class DeploymentPlansRecipeStep : IRecipeStepHandler
         S = stringLocalizer;
     }
 
-    public Task ExecuteAsync(RecipeExecutionContext context)
+    protected override Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "deployment", StringComparison.OrdinalIgnoreCase))
-        {
-            return Task.CompletedTask;
-        }
-
         var deploymentStepFactories = _serviceProvider.GetServices<IDeploymentStepFactory>().ToDictionary(f => f.Name);
 
         var model = context.Step.ToObject<DeploymentPlansModel>();

@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Implementation;
@@ -12,33 +10,47 @@ namespace OrchardCore.DisplayManagement.Views;
 
 public class ShapeResult : IDisplayResult
 {
+    private readonly string _shapeType;
+    private readonly Func<IBuildShapeContext, ValueTask<IShape>> _shapeBuilder;
+    private readonly Func<IShape, Task> _initializingAsync;
+
     private string _defaultLocation;
-    private Dictionary<string, string> _otherLocations;
     private string _name;
     private string _differentiator;
     private string _prefix;
     private string _cacheId;
-    private readonly string _shapeType;
-    private readonly Func<IBuildShapeContext, ValueTask<IShape>> _shapeBuilder;
-    private readonly Func<IShape, Task> _processing;
+    private Dictionary<string, string> _otherLocations;
+    private StringValues _groupIds;
+
     private Action<CacheContext> _cache;
-    private string _groupId;
     private Action<ShapeDisplayContext> _displaying;
+    private Func<IShape, Task> _processingAsync;
     private Func<Task<bool>> _renderPredicateAsync;
 
+    /// <summary>
+    /// Creates a new instance of <see cref="ShapeResult"/>.
+    /// </summary>
+    /// <param name="shapeType">The Shape type used for the created Shape.</param>
+    /// <param name="shapeBuilder">A delegate that creates the shape instance.</param>
     public ShapeResult(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder)
         : this(shapeType, shapeBuilder, null)
     {
     }
 
-    public ShapeResult(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, Task> processing)
+    /// <summary>
+    /// Creates a new instance of <see cref="ShapeResult"/>.
+    /// </summary>
+    /// <param name="shapeType">The Shape type used for the created Shape.</param>
+    /// <param name="shapeBuilder">A delegate that creates the shape instance.</param>
+    /// <param name="initializing">A delegate that is executed after the shape is created.</param>
+    public ShapeResult(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, Task> initializing)
     {
         // The shape type is necessary before the shape is created as it will drive the placement
         // resolution which itself can prevent the shape from being created.
 
         _shapeType = shapeType;
         _shapeBuilder = shapeBuilder;
-        _processing = processing;
+        _initializingAsync = initializing;
     }
 
     public Task ApplyAsync(BuildDisplayContext context)
@@ -73,7 +85,10 @@ public class ShapeResult : IDisplayResult
         }
 
         // If no placement is found, use the default location.
-        placement ??= new PlacementInfo() { Location = _defaultLocation };
+        placement ??= new PlacementInfo
+        {
+            Location = _defaultLocation,
+        };
 
         // If a placement was found without actual location, use the default.
         // It can happen when just setting alternates or wrappers for instance.
@@ -81,23 +96,41 @@ public class ShapeResult : IDisplayResult
 
         placement.DefaultPosition ??= context.DefaultPosition;
 
-        // If there are no placement or it's explicitly noop then stop rendering execution.
-        if (string.IsNullOrEmpty(placement.Location) || placement.Location == "-")
+        // If the placement should be hidden, then stop rendering execution.
+        if (placement.IsHidden())
         {
             return;
         }
 
         // Parse group placement.
-        _groupId = placement.GetGroup() ?? _groupId;
+        var groupId = placement.GetGroup();
+
+        // Apply group constraints from placement
+        if (!string.IsNullOrEmpty(groupId))
+        {
+            OnGroup(groupId);
+        }
+
+        bool hasGroupConstraints = !StringValues.IsNullOrEmpty(_groupIds);
+
+        // If no specific group is requested, use "" as it represents "any group" when applied on a shape.
+        // This allows to render shapes when no shape constraints are set and also on specific groups.
+        var requestedGroup = context.GroupId ?? string.Empty;
 
         // If the shape's group doesn't match the currently rendered one, return.
-        if (!string.Equals(context.GroupId ?? "", _groupId ?? "", StringComparison.OrdinalIgnoreCase))
+        if (hasGroupConstraints && !_groupIds.Contains(requestedGroup, StringComparer.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        // If we try to render the shape without a group, but we require one, don't render it
+        if (!hasGroupConstraints && !string.IsNullOrEmpty(context.GroupId))
         {
             return;
         }
 
         // If a condition has been applied to this result evaluate it only if the shape has been placed.
-        if (_renderPredicateAsync != null && !(await _renderPredicateAsync()))
+        if (_renderPredicateAsync != null && !await _renderPredicateAsync())
         {
             return;
         }
@@ -121,16 +154,23 @@ public class ShapeResult : IDisplayResult
         newShapeMetadata.Column = placement.GetColumn();
         newShapeMetadata.Type = _shapeType;
 
+        // Invoke the initialization code first when all Displaying events are invoked.
+        // These Displaying methods are used to create alternates for instance, so the
+        // Shape needs to have required properties available first.
+
+        if (_initializingAsync != null)
+        {
+            await _initializingAsync.Invoke(Shape);
+        }
+
         if (_displaying != null)
         {
             newShapeMetadata.OnDisplaying(_displaying);
         }
 
-        // The _processing callback is used to delay execution of costly initialization
-        // that can be prevented by caching.
-        if (_processing != null)
+        if (_processingAsync != null)
         {
-            newShapeMetadata.OnProcessing(_processing);
+            newShapeMetadata.OnProcessing(_processingAsync);
         }
 
         // Apply cache settings
@@ -147,17 +187,14 @@ public class ShapeResult : IDisplayResult
             newShapeMetadata.Wrappers.Clear();
         }
 
-        if (placement != null)
+        if (placement.Alternates != null)
         {
-            if (placement.Alternates != null)
-            {
-                newShapeMetadata.Alternates.AddRange(placement.Alternates);
-            }
+            newShapeMetadata.Alternates.AddRange(placement.Alternates);
+        }
 
-            if (placement.Wrappers != null)
-            {
-                newShapeMetadata.Wrappers.AddRange(placement.Wrappers);
-            }
+        if (placement.Wrappers != null)
+        {
+            newShapeMetadata.Wrappers.AddRange(placement.Wrappers);
         }
 
         var parentShape = context.Shape;
@@ -229,11 +266,31 @@ public class ShapeResult : IDisplayResult
     }
 
     /// <summary>
-    /// Sets the location to use for a matching display type.
+    /// Sets the delegate to be executed when the shape is being displayed.
     /// </summary>
     public ShapeResult Displaying(Action<ShapeDisplayContext> displaying)
     {
         _displaying = displaying;
+
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the delegate to be executed when the shape is rendered (not cached).
+    /// </summary>
+    public ShapeResult Processing(Func<IShape, Task> processing)
+    {
+        _processingAsync = processing;
+
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the delegate to be executed when the shape is rendered (not cached).
+    /// </summary>
+    public ShapeResult Processing<T>(Func<T, Task> processing)
+    {
+        _processingAsync = shape => processing?.Invoke((T)shape);
 
         return this;
     }
@@ -257,13 +314,16 @@ public class ShapeResult : IDisplayResult
     }
 
     /// <summary>
-    /// Sets the group identifier the shape will be rendered in.
+    /// Sets the group identifiers the shape will be rendered in.
     /// </summary>
-    /// <param name="groupId"></param>
+    /// <param name="groupIds"></param>
     /// <returns></returns>
-    public ShapeResult OnGroup(string groupId)
+    public ShapeResult OnGroup(params string[] groupIds)
     {
-        _groupId = groupId;
+        ArgumentNullException.ThrowIfNull(groupIds);
+
+        _groupIds = StringValues.Concat(_groupIds, groupIds);
+
         return this;
     }
 

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.Liquid;
@@ -17,6 +16,6 @@ public class Markdownify : ILiquidFilter
 
     public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
     {
-        return new ValueTask<FluidValue>(new StringValue(_markdownService.ToHtml(input.ToStringValue())));
+        return ValueTask.FromResult<FluidValue>(new StringValue(_markdownService.ToHtml(input.ToStringValue())));
     }
 }

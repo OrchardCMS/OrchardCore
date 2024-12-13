@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -12,7 +8,7 @@ namespace OrchardCore.Recipes.RecipeSteps;
 /// <summary>
 /// This recipe step executes a set of external recipes.
 /// </summary>
-public sealed class RecipesStep : IRecipeStepHandler
+public sealed class RecipesStep : NamedRecipeStepHandler
 {
     private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
 
@@ -21,18 +17,14 @@ public sealed class RecipesStep : IRecipeStepHandler
     public RecipesStep(
         IEnumerable<IRecipeHarvester> recipeHarvesters,
         IStringLocalizer<RecipesStep> stringLocalizer)
+        : base("Recipes")
     {
         _recipeHarvesters = recipeHarvesters;
         S = stringLocalizer;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "Recipes", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var step = context.Step.ToObject<InternalStep>();
 
         var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(harvester => harvester.HarvestRecipesAsync()));

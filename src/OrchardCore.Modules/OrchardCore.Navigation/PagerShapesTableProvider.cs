@@ -1,8 +1,5 @@
 #pragma warning disable CA1707 // Remove the underscores from member name
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

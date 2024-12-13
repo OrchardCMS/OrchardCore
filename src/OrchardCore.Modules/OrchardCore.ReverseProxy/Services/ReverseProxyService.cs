@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.ReverseProxy.Settings;
 using OrchardCore.Settings;
 

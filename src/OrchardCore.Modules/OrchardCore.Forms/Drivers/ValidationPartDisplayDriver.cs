@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
@@ -22,7 +21,7 @@ public sealed class ValidationPartDisplayDriver : ContentPartDisplayDriver<Valid
         });
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(ValidationPart part, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ValidationPart part, UpdatePartEditorContext context)
     {
         var viewModel = new ValidationPartEditViewModel();
 

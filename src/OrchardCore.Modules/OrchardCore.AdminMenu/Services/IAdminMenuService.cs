@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.AdminMenu.Services;
 
 /// <summary>

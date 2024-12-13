@@ -1,5 +1,4 @@
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Deployment;
@@ -7,7 +6,8 @@ using YesSql;
 
 namespace OrchardCore.Contents.Deployment;
 
-public class AllContentDeploymentSource : IDeploymentSource
+public sealed class AllContentDeploymentSource
+    : DeploymentSourceBase<AllContentDeploymentStep>
 {
     private readonly ISession _session;
 
@@ -16,15 +16,8 @@ public class AllContentDeploymentSource : IDeploymentSource
         _session = session;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(AllContentDeploymentStep step, DeploymentPlanResult result)
     {
-        var allContentStep = step as AllContentDeploymentStep;
-
-        if (allContentStep == null)
-        {
-            return;
-        }
-
         var data = new JsonArray();
         result.Steps.Add(new JsonObject
         {
@@ -36,10 +29,10 @@ public class AllContentDeploymentSource : IDeploymentSource
         {
             var objectData = JObject.FromObject(contentItem);
 
-            // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
+            // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql.
             objectData.Remove(nameof(ContentItem.Id));
 
-            if (allContentStep.ExportAsSetupRecipe)
+            if (step.ExportAsSetupRecipe)
             {
                 objectData[nameof(ContentItem.Owner)] = "[js: parameters('AdminUserId')]";
                 objectData[nameof(ContentItem.Author)] = "[js: parameters('AdminUsername')]";
@@ -52,7 +45,5 @@ public class AllContentDeploymentSource : IDeploymentSource
 
             data.Add(objectData);
         }
-
-        return;
     }
 }

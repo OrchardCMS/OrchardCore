@@ -1,7 +1,5 @@
-using System;
 using System.Globalization;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -11,13 +9,12 @@ using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.Modules;
 using Parlot;
-using YesSql;
 using YesSql.Filters.Query;
 using YesSql.Services;
 
 namespace OrchardCore.AuditTrail.Services;
 
-public class DefaultAuditTrailAdminListFilterProvider : IAuditTrailAdminListFilterProvider
+public sealed class DefaultAuditTrailAdminListFilterProvider : IAuditTrailAdminListFilterProvider
 {
     private readonly IOptions<AuditTrailAdminListOptions> _options;
 
@@ -180,7 +177,7 @@ public class DefaultAuditTrailAdminListFilterProvider : IAuditTrailAdminListFilt
                         var normalizedUserName = lookupNormalizer.NormalizeName(val);
                         query.With<AuditTrailEventIndex>(x => x.NormalizedUserName.Contains(normalizedUserName));
 
-                        return new ValueTask<IQuery<AuditTrailEvent>>(query);
+                        return ValueTask.FromResult(query);
                     },
                     (val, query, ctx) =>
                     {
@@ -189,7 +186,7 @@ public class DefaultAuditTrailAdminListFilterProvider : IAuditTrailAdminListFilt
                         var normalizedUserName = lookupNormalizer.NormalizeName(val);
                         query.With<AuditTrailEventIndex>(x => x.NormalizedUserName.NotContains(normalizedUserName));
 
-                        return new ValueTask<IQuery<AuditTrailEvent>>(query);
+                        return ValueTask.FromResult(query);
                     }
                 )
             )

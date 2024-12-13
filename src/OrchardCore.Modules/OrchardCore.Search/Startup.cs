@@ -1,4 +1,3 @@
-using System;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -19,7 +18,6 @@ using OrchardCore.Search.Migrations;
 using OrchardCore.Search.Models;
 using OrchardCore.Search.ViewModels;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Search;
 
@@ -31,9 +29,9 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddTransient<IConfigureOptions<SearchSettings>, SearchSettingsConfiguration>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IPermissionProvider, Permissions>();
-        services.AddScoped<IDisplayDriver<ISite>, SearchSettingsDisplayDriver>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddPermissionProvider<Permissions>();
+        services.AddSiteDisplayDriver<SearchSettingsDisplayDriver>();
 
         services.AddContentPart<SearchFormPart>()
                 .UseDisplayDriver<SearchFormPartDisplayDriver>();

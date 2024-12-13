@@ -1,5 +1,3 @@
-using System.Net.Http;
-
 namespace OrchardCore.Apis.GraphQL.Client;
 
 public class OrchardGraphQLClient

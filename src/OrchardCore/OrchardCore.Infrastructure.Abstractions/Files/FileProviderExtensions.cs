@@ -1,5 +1,3 @@
-using System.IO;
-
 namespace Microsoft.Extensions.FileProviders;
 
 public static class FileProviderExtensions

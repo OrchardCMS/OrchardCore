@@ -1,11 +1,10 @@
 using System;
 using System.Linq;
-
-namespace OrchardCore.Modules.Manifest;
-
-using DisplayManagement.Manifest;
+using OrchardCore.DisplayManagement.Manifest;
 using Xunit;
 using Xunit.Abstractions;
+
+namespace OrchardCore.Modules.Manifest;
 
 // TODO: TBD: add tests that help us expose non-named ctor args...
 // TODO: TBD: i.e. avoid ambiguous args...
@@ -41,7 +40,7 @@ public class ModuleAttributeTests : ModuleAttributeTests<ModuleAttribute>
 #pragma warning restore CA1018
 
     // TODO: MWP: could probably separate this between classes, Theory at one level, InlineData at another...
-    // TODO: MWP: plus separate out DisplayManagement tests to its own assembly, potentialy...
+    // TODO: MWP: plus separate out DisplayManagement tests to its own assembly, potentially...
     /// <summary>
     /// Verify a couple of scenarios parsing an Attribute Prefix.
     /// </summary>

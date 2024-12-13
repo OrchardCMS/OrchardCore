@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HelloWorld.Controllers;
 
-public class HomeController : Controller
+public sealed class HomeController : Controller
 {
     public IActionResult Index()
     {

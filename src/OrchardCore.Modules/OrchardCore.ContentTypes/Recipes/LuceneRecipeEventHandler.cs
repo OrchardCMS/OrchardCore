@@ -1,5 +1,4 @@
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Records;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
@@ -48,10 +47,9 @@ public class LuceneRecipeEventHandler : IRecipeEventHandler
             {
                 if (partDefinition.Settings != null)
                 {
-                    if (partDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingPartSettings) &&
-                        !partDefinition.Settings.ContainsKey("LuceneContentIndexSettings"))
+                    if (partDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingPartSettings))
                     {
-                        partDefinition.Settings.Add("LuceneContentIndexSettings", existingPartSettings);
+                        partDefinition.Settings["LuceneContentIndexSettings"] = existingPartSettings;
                     }
 
                     partDefinition.Settings.Remove("ContentIndexSettings");
@@ -60,10 +58,9 @@ public class LuceneRecipeEventHandler : IRecipeEventHandler
                     {
                         if (fieldDefinition.Settings != null)
                         {
-                            if (fieldDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingFieldSettings) &&
-                                !fieldDefinition.Settings.ContainsKey("LuceneContentIndexSettings"))
+                            if (fieldDefinition.Settings.TryGetPropertyValue("ContentIndexSettings", out var existingFieldSettings))
                             {
-                                fieldDefinition.Settings.Add("LuceneContentIndexSettings", existingFieldSettings);
+                                fieldDefinition.Settings["LuceneContentIndexSettings"] = existingFieldSettings;
                             }
 
                             fieldDefinition.Settings.Remove("ContentIndexSettings");

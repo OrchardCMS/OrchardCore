@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.ContentManagement;
 
 internal sealed class GenericTypeActivator<T, TInstance> : ITypeActivator<TInstance> where T : TInstance, new()

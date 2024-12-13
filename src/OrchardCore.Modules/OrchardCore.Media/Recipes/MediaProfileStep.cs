@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Media.Models;
 using OrchardCore.Media.Services;
 using OrchardCore.Recipes.Models;
@@ -12,22 +9,18 @@ namespace OrchardCore.Media.Recipes;
 /// <summary>
 /// This recipe step creates or updates a media profile.
 /// </summary>
-public sealed class MediaProfileStep : IRecipeStepHandler
+public sealed class MediaProfileStep : NamedRecipeStepHandler
 {
     private readonly MediaProfilesManager _mediaProfilesManager;
 
     public MediaProfileStep(MediaProfilesManager mediaProfilesManager)
+        : base("MediaProfiles")
     {
         _mediaProfilesManager = mediaProfilesManager;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "MediaProfiles", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var model = context.Step.ToObject<MediaProfileStepModel>();
 
         foreach (var mediaProfile in model.MediaProfiles)

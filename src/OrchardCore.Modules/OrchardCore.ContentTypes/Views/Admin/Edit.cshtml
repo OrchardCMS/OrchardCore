@@ -1,13 +1,16 @@
-@model EditTypeViewModel
 @using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Mvc.Utilities
 @using System.Linq
 
+@model EditTypeViewModel
+
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject OrchardCore.ContentTypes.Services.IContentDefinitionService ContentDefinitionService
 
 @{
+    var contentSettings = Model.TypeDefinition.GetSettings<ContentSettings>();
+
     var typePart = Model.TypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, Model.TypeDefinition.Name, StringComparison.OrdinalIgnoreCase));
 
     var sorted = new List<dynamic>();
@@ -38,8 +41,11 @@
     if (typePart?.PartDefinition?.Fields != null)
     {
         fieldDefinitions = typePart.PartDefinition.Fields
-        .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
-        .OrderBy(x => x.Order)
+        .Select(field => new
+        {
+            Field = field,
+            Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0"),
+        }).OrderBy(x => x.Order)
         .Select(x => x.Field)
         .ToList();
     }
@@ -71,6 +77,8 @@
             <ul class="list-group sortable" id="fields">
                 @foreach (var fieldDefinition in fieldDefinitions)
                 {
+                    var settings = fieldDefinition.GetSettings<ContentSettings>();
+
                     <li class="list-group-item" style="cursor: move;">
                         <div class="w-100">
                             <div class="float-end">
@@ -78,7 +86,18 @@
                                 {
                                     <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
                                 }
-                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                @if (settings.IsSystemDefined)
+                                {
+                                    <div class="d-inline" data-bs-toggle="tooltip" data-bs-title="@T["System-defined fields are integral components of the system and cannot be removed."]">
+                                        <button type="button" class="btn btn-danger btn-sm" disabled>
+                                            @T["Remove"]
+                                        </button>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@fieldDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                }
                             </div>
                             @fieldDefinition.DisplayName() <span class="hint dashed">@fieldDefinition.FieldDefinition.Name.CamelFriendly()</span>
 
@@ -110,6 +129,8 @@
         <ul class="list-group sortable" id="parts">
             @foreach (var partDefinition in partDefinitions)
             {
+                var settings = partDefinition.GetSettings<ContentSettings>();
+
                 <li class="list-group-item@(partDefinition == typePart ? " bg-faded" : string.Empty)" style="cursor: move;">
                     <div class="w-100">
                         @partDefinition.DisplayName()
@@ -123,7 +144,18 @@
 
                             <div class="float-end">
                                 <a asp-route-action="EditTypePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                                <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                @if (settings.IsSystemDefined)
+                                {
+                                    <div class="d-inline" data-bs-toggle="tooltip" data-bs-title="@T["System-defined parts are integral components of the system and cannot be removed."]">
+                                        <button type="button" class="btn btn-danger btn-sm" disabled>
+                                            @T["Remove"]
+                                        </button>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <a asp-route-action="RemovePart" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@partDefinition.Name" class="btn btn-danger btn-sm" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                }
                             </div>
                         }
                         else
@@ -153,11 +185,23 @@
 
     <div class="mb-3">
         <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
-        <button class="btn btn-danger delete" type="submit" name="submit.Delete" value="Delete" data-url-af="RemoveUrl">@T["Delete"]</button>
+
+        @if (contentSettings.IsSystemDefined)
+        {
+            <div class="d-inline" data-bs-toggle="tooltip" data-bs-title="@T["System-defined types are integral components of the system and cannot be removed."]">
+                <button type="button" class="btn btn-danger" disabled>
+                    @T["Remove"]
+                </button>
+            </div>
+        }
+        else
+        {
+            <button class="btn btn-danger delete" type="submit" name="submit.Delete" value="Delete" data-url-af="RemoveUrl">@T["Delete"]</button>
+        }
     </div>
 </form>
 <script asp-name="Sortable" at="Foot"></script>
-<script at="Foot" depends-on="jquery-resizable">
+<script at="Foot" depends-on="jquery-resizable,Sortable">
     document.addEventListener('DOMContentLoaded', function () {
         const fields = document.getElementById("fields");
 

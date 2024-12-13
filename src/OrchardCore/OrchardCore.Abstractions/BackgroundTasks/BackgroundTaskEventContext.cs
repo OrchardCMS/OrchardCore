@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.BackgroundTasks;

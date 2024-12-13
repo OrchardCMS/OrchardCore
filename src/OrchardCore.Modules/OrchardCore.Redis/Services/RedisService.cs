@@ -1,11 +1,10 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Modules;
 using StackExchange.Redis;
 
 namespace OrchardCore.Redis.Services;
 
-public class RedisService : ModularTenantEvents, IRedisService
+public sealed class RedisService : ModularTenantEvents, IRedisService
 {
     private readonly IRedisDatabaseFactory _factory;
     private readonly RedisOptions _options;

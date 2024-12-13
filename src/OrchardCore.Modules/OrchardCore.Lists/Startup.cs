@@ -1,4 +1,3 @@
-using System;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -49,7 +48,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IContentHandler, ContainedPartHandler>();
         services.AddContentPart<ContainedPart>();
         services.AddScoped<IContentsAdminListFilter, ListPartContentsAdminListFilter>();
-        services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ListPartContentsAdminListDisplayDriver>();
+        services.AddDisplayDriver<ContentOptionsViewModel, ListPartContentsAdminListDisplayDriver>();
 
         // List Part
         services.AddContentPart<ListPart>()

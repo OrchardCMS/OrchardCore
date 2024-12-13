@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.Rules.Services;
 
 public class RuleService : IRuleService

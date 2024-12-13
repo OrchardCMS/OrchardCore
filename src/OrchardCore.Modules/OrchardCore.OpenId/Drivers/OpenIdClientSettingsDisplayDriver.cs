@@ -1,8 +1,5 @@
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -68,7 +65,7 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
             model.Authority = settings.Authority?.AbsoluteUri;
             model.CallbackPath = settings.CallbackPath;
             model.ClientId = settings.ClientId;
-            model.ClientSecret = settings.ClientSecret;
+            model.HasClientSecret = !string.IsNullOrEmpty(settings.ClientSecret);
             model.SignedOutCallbackPath = settings.SignedOutCallbackPath;
             model.SignedOutRedirectUri = settings.SignedOutRedirectUri;
             model.ResponseMode = settings.ResponseMode;
@@ -178,12 +175,7 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
             model.ClientSecret = previousClientSecret = null;
         }
 
-        // Restore the client secret if the input is empty (i.e if it hasn't been reset).
-        if (string.IsNullOrEmpty(model.ClientSecret))
-        {
-            settings.ClientSecret = previousClientSecret;
-        }
-        else
+        if (!string.IsNullOrEmpty(model.ClientSecret))
         {
             var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
             settings.ClientSecret = protector.Protect(model.ClientSecret);

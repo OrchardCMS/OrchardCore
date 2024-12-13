@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Https.Settings;
 
 namespace OrchardCore.Https.Services;

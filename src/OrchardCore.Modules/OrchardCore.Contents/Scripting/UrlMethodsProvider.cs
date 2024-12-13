@@ -1,11 +1,10 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Scripting;
 
 namespace OrchardCore.Contents.Scripting;
 
-public class UrlMethodsProvider : IGlobalMethodProvider
+public sealed class UrlMethodsProvider : IGlobalMethodProvider
 {
     private readonly GlobalMethod _getUrlPrefix;
 

@@ -1,4 +1,3 @@
-using System;
 using System.Globalization;
 using GraphQL.Types;
 using GraphQLParser.AST;

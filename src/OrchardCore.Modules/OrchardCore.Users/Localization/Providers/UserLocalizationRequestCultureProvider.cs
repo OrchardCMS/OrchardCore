@@ -1,6 +1,4 @@
-using System;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 
@@ -12,7 +10,7 @@ public class UserLocalizationRequestCultureProvider : RequestCultureProvider
     {
         ArgumentNullException.ThrowIfNull(httpContext);
 
-        if (httpContext?.User?.Identity?.IsAuthenticated == false)
+        if ((httpContext?.User.Identity?.IsAuthenticated ?? false) == false)
         {
             return NullProviderCultureResult;
         }

@@ -1,23 +1,23 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Settings;
+using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
+using OrchardCore.Users.Services;
 
 namespace OrchardCore.Users.Controllers;
 
 [Feature(UserConstants.Features.UserRegistration)]
-public class RegistrationController : Controller
+public sealed class RegistrationController : Controller
 {
     private readonly UserManager<IUser> _userManager;
     private readonly IAuthorizationService _authorizationService;
@@ -25,10 +25,13 @@ public class RegistrationController : Controller
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
     private readonly IDisplayManager<RegisterUserForm> _registerUserDisplayManager;
+    private readonly RegistrationOptions _registrationOptions;
     private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IEnumerable<ILoginFormEvent> _accountEvents;
+    private readonly IUserService _userService;
 
-    protected readonly IStringLocalizer S;
-    protected readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
 
     public RegistrationController(
         UserManager<IUser> userManager,
@@ -37,7 +40,10 @@ public class RegistrationController : Controller
         INotifier notifier,
         ILogger<RegistrationController> logger,
         IDisplayManager<RegisterUserForm> registerUserDisplayManager,
+        IOptions<RegistrationOptions> registrationOptions,
         IUpdateModelAccessor updateModelAccessor,
+        IEnumerable<ILoginFormEvent> accountEvents,
+        IUserService userService,
         IHtmlLocalizer<RegistrationController> htmlLocalizer,
         IStringLocalizer<RegistrationController> stringLocalizer)
     {
@@ -47,7 +53,10 @@ public class RegistrationController : Controller
         _notifier = notifier;
         _logger = logger;
         _registerUserDisplayManager = registerUserDisplayManager;
+        _registrationOptions = registrationOptions.Value;
         _updateModelAccessor = updateModelAccessor;
+        _accountEvents = accountEvents;
+        _userService = userService;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
@@ -55,12 +64,6 @@ public class RegistrationController : Controller
     [AllowAnonymous]
     public async Task<IActionResult> Register(string returnUrl = null)
     {
-        var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
-        if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
-        {
-            return NotFound();
-        }
-
         var shape = await _registerUserDisplayManager.BuildEditorAsync(_updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
 
         ViewData["ReturnUrl"] = returnUrl;
@@ -74,13 +77,6 @@ public class RegistrationController : Controller
     [ActionName(nameof(Register))]
     public async Task<IActionResult> RegisterPOST(string returnUrl = null)
     {
-        var settings = await _siteService.GetSettingsAsync<RegistrationSettings>();
-
-        if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
-        {
-            return NotFound();
-        }
-
         var model = new RegisterUserForm();
 
         var shape = await _registerUserDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
@@ -89,19 +85,19 @@ public class RegistrationController : Controller
 
         if (ModelState.IsValid)
         {
-            var iUser = await this.RegisterUser(model, S["Confirm your account"], _logger);
+            var iUser = await _userService.RegisterAsync(model, ModelState.AddModelError);
 
-            // If we get a user, redirect to returnUrl
+            // If we get a user, redirect to returnUrl.
             if (iUser is User user)
             {
-                if (settings.UsersMustValidateEmail && !user.EmailConfirmed)
+                foreach (var accountEvent in _accountEvents)
                 {
-                    return RedirectToAction(nameof(EmailConfirmationController.ConfirmEmailSent), typeof(EmailConfirmationController).ControllerName(), new { ReturnUrl = returnUrl });
-                }
+                    var loginResult = await accountEvent.ValidatingLoginAsync(user);
 
-                if (settings.UsersAreModerated && !user.IsEnabled)
-                {
-                    return RedirectToAction(nameof(RegistrationPending), new { ReturnUrl = returnUrl });
+                    if (loginResult != null)
+                    {
+                        return loginResult;
+                    }
                 }
 
                 return RedirectToLocal(returnUrl.ToUriComponents());

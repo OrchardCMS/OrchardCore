@@ -1,13 +1,13 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.Json;
 
 namespace OrchardCore.Queries.Deployment;
 
-public class AllQueriesDeploymentSource : IDeploymentSource
+public sealed class AllQueriesDeploymentSource
+    : DeploymentSourceBase<AllQueriesDeploymentStep>
 {
     private readonly IQueryManager _queryManager;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
@@ -20,15 +20,8 @@ public class AllQueriesDeploymentSource : IDeploymentSource
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(AllQueriesDeploymentStep step, DeploymentPlanResult result)
     {
-        var allQueriesStep = step as AllQueriesDeploymentStep;
-
-        if (allQueriesStep == null)
-        {
-            return;
-        }
-
         var queries = await _queryManager.ListQueriesAsync();
 
         result.Steps.Add(new JsonObject

@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Sitemaps.Models;
 
 /// <summary>

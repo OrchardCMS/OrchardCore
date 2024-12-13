@@ -1,12 +1,11 @@
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan;
 
-public class ContentItemDeploymentSource : IDeploymentSource
+public sealed class ContentItemDeploymentSource
+    : DeploymentSourceBase<ContentItemDeploymentStep>
 {
     private readonly IContentManager _contentManager;
 
@@ -15,16 +14,14 @@ public class ContentItemDeploymentSource : IDeploymentSource
         _contentManager = contentManager;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(ContentItemDeploymentStep step, DeploymentPlanResult result)
     {
-        var contentItemDeploymentStep = step as ContentItemDeploymentStep;
-
-        if (contentItemDeploymentStep == null || contentItemDeploymentStep.ContentItemId == null)
+        if (step.ContentItemId == null)
         {
             return;
         }
 
-        var contentItem = await _contentManager.GetAsync(contentItemDeploymentStep.ContentItemId);
+        var contentItem = await _contentManager.GetAsync(step.ContentItemId);
 
         if (contentItem == null)
         {

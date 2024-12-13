@@ -1,6 +1,4 @@
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -104,7 +102,7 @@ public sealed class Startup : StartupBase
                     stringBuilder.Append(error.ErrorMessage + ' ');
                 }
 
-                _logger.LogError("AutoSetup did not start, configuration has following errors: {errors}", stringBuilder.ToString());
+                _logger.LogError("AutoSetup did not start, configuration has following errors: {Errors}", stringBuilder.ToString());
             }
             else if (string.IsNullOrWhiteSpace(options.AutoSetupPath))
             {

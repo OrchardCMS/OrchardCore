@@ -1,6 +1,4 @@
-using System;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Cysharp.Text;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
@@ -80,7 +78,7 @@ public class DynamicCacheTagHelper : TagHelper
     /// <summary>
     /// Prefix used by <see cref="DynamicCacheTagHelper"/> instances when creating entries in <see cref="IDynamicCacheService"/>.
     /// </summary>
-    public static readonly string CacheKeyPrefix = nameof(DynamicCacheTagHelper);
+    public const string CacheKeyPrefix = nameof(DynamicCacheTagHelper);
 
     private readonly IDynamicCacheService _dynamicCacheService;
     private readonly ICacheScopeManager _cacheScopeManager;

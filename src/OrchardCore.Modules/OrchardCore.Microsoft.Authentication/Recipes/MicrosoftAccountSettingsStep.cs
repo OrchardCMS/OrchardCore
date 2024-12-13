@@ -1,6 +1,4 @@
-using System;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Microsoft.Authentication.Services;
 using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Recipes.Models;
@@ -11,22 +9,18 @@ namespace OrchardCore.Microsoft.Authentication.Recipes;
 /// <summary>
 /// This recipe step sets Microsoft Account settings.
 /// </summary>
-public sealed class MicrosoftAccountSettingsStep : IRecipeStepHandler
+public sealed class MicrosoftAccountSettingsStep : NamedRecipeStepHandler
 {
     private readonly IMicrosoftAccountService _microsoftAccountService;
 
     public MicrosoftAccountSettingsStep(IMicrosoftAccountService microsoftAccountService)
+        : base(nameof(MicrosoftAccountSettings))
     {
         _microsoftAccountService = microsoftAccountService;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, nameof(MicrosoftAccountSettings), StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var model = context.Step.ToObject<MicrosoftAccountSettingsStepModel>();
         var settings = await _microsoftAccountService.LoadSettingsAsync();
 

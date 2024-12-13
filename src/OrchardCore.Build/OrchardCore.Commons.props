@@ -2,13 +2,14 @@
 
   <PropertyGroup>
     <LangVersion>12.0</LangVersion>
-    <VersionPrefix>2.0.0</VersionPrefix>
+    <VersionPrefix>3.0.0</VersionPrefix>
     <VersionSuffix>preview</VersionSuffix>
     <VersionSuffix Condition="'$(VersionSuffix)'!='' AND '$(BuildNumber)' != ''">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <DebugType>portable</DebugType>
+    <ImplicitUsings>enable</ImplicitUsings>
     <NetStandardImplicitPackageVersion>2.0.0-*</NetStandardImplicitPackageVersion>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
@@ -38,20 +39,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!--This is used for Source Link -->
-    <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
     <None Include="$(MSBuildThisFileDirectory)/nuget-icon.png">
       <Pack>True</Pack>
       <PackagePath>icon.png</PackagePath>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

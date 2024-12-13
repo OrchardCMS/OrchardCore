@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.AuditTrail.Services.Models;
 
 public abstract class AuditTrailCreateContext : AuditTrailContext

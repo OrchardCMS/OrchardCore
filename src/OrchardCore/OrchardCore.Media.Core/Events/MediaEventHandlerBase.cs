@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Media.Events;
 
 namespace OrchardCore.Media.Core.Events;

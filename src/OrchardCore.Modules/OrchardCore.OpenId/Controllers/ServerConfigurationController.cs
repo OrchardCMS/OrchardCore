@@ -1,6 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -16,7 +14,7 @@ using OrchardCore.OpenId.Settings;
 namespace OrchardCore.OpenId.Controllers;
 
 [Admin, Feature(OpenIdConstants.Features.Server)]
-public class ServerConfigurationController : Controller
+public sealed class ServerConfigurationController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
@@ -25,7 +23,8 @@ public class ServerConfigurationController : Controller
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    protected readonly IHtmlLocalizer H;
+
+    internal readonly IHtmlLocalizer H;
 
     public ServerConfigurationController(
         IAuthorizationService authorizationService,

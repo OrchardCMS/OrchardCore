@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Caching.Distributed;
 using OrchardCore.Environment.Shell;

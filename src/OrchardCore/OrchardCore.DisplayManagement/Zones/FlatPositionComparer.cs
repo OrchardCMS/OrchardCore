@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace OrchardCore.DisplayManagement.Zones;
 
 public class FlatPositionComparer : IComparer<IPositioned>, IComparer<string>

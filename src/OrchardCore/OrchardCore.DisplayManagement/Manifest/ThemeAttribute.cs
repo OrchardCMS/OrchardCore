@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.Modules.Manifest;
 
 namespace OrchardCore.DisplayManagement.Manifest;

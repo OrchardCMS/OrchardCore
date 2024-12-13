@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Indexing;
 
 [AttributeUsage(AttributeTargets.Class)]

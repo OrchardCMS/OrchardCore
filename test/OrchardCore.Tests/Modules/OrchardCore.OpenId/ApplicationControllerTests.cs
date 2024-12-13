@@ -57,7 +57,7 @@ public class ApplicationControllerTests
     [InlineData(OpenIddictConstants.ClientTypes.Public, "", true, false, true)]
     [InlineData(OpenIddictConstants.ClientTypes.Confidential, "ClientSecret", true, false, true)]
     [InlineData(OpenIddictConstants.ClientTypes.Confidential, "", true, false, false)]
-    public async Task ConfidentionalClientNeedsSecret(string clientType, string clientSecret, bool allowAuthFlow, bool allowPasswordFlow, bool expectValidModel)
+    public async Task ConfidentialClientNeedsSecret(string clientType, string clientSecret, bool allowAuthFlow, bool allowPasswordFlow, bool expectValidModel)
     {
         var controller = new ApplicationController(
             Mock.Of<IShapeFactory>(),

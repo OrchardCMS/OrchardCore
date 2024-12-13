@@ -1,4 +1,3 @@
-using System;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -22,7 +21,6 @@ using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
 
 namespace OrchardCore.ContentLocalization;
@@ -41,12 +39,12 @@ public sealed class Startup : StartupBase
         services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
         services.AddContentLocalization();
 
-        services.AddScoped<IPermissionProvider, Permissions>();
+        services.AddPermissionProvider<Permissions>();
         services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
 
         services.AddScoped<IContentsAdminListFilter, LocalizationPartContentsAdminListFilter>();
         services.AddTransient<IContentsAdminListFilterProvider, LocalizationPartContentsAdminListFilterProvider>();
-        services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, LocalizationContentsAdminListDisplayDriver>();
+        services.AddDisplayDriver<ContentOptionsViewModel, LocalizationContentsAdminListDisplayDriver>();
     }
 }
 
@@ -61,12 +59,12 @@ public sealed class ContentPickerStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<Navbar>, ContentCulturePickerNavbarDisplayDriver>();
+        services.AddDisplayDriver<Navbar, ContentCulturePickerNavbarDisplayDriver>();
         services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
-        services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentCulturePickerService, ContentCulturePickerService>();
-        services.AddScoped<IDisplayDriver<ISite>, ContentCulturePickerSettingsDriver>();
-        services.AddScoped<IDisplayDriver<ISite>, ContentRequestCultureProviderSettingsDriver>();
+        services.AddSiteDisplayDriver<ContentCulturePickerSettingsDriver>();
+        services.AddSiteDisplayDriver<ContentRequestCultureProviderSettingsDriver>();
         services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider()));
         services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
     }

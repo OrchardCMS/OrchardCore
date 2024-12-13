@@ -1,17 +1,10 @@
 using System.Text;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Deployment.Steps;
 
-public class CustomFileDeploymentSource : IDeploymentSource
+public sealed class CustomFileDeploymentSource
+    : DeploymentSourceBase<CustomFileDeploymentStep>
 {
-    public Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
-    {
-        if (step is not CustomFileDeploymentStep customFile)
-        {
-            return Task.CompletedTask;
-        }
-
-        return result.FileBuilder.SetFileAsync(customFile.FileName, Encoding.UTF8.GetBytes(customFile.FileContent));
-    }
+    protected override Task ProcessAsync(CustomFileDeploymentStep step, DeploymentPlanResult result)
+        => result.FileBuilder.SetFileAsync(step.FileName, Encoding.UTF8.GetBytes(step.FileContent));
 }

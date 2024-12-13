@@ -1,6 +1,4 @@
-using System;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
@@ -11,22 +9,18 @@ namespace OrchardCore.Tenants.Recipes;
 /// <summary>
 /// This recipe step creates a set of feature profiles.
 /// </summary>
-public sealed class FeatureProfilesStep : IRecipeStepHandler
+public sealed class FeatureProfilesStep : NamedRecipeStepHandler
 {
     private readonly FeatureProfilesManager _featureProfilesManager;
 
     public FeatureProfilesStep(FeatureProfilesManager featureProfilesManager)
+        : base("FeatureProfiles")
     {
         _featureProfilesManager = featureProfilesManager;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "FeatureProfiles", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         if (context.Step.TryGetPropertyValue("FeatureProfiles", out var jsonNode) && jsonNode is JsonObject featureProfiles)
         {
             foreach (var property in featureProfiles)

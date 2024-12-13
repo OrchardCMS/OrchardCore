@@ -1,4 +1,3 @@
-using System.Linq;
 using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.ViewModels;
