@@ -169,7 +169,7 @@
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
 
     <!-- Serilog.AspNetCore -->
-    <PackageVersion Include="Serilog.AspNetCore" Version="8.0.3" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
   </ItemGroup>
 
 </Project>
