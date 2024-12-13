@@ -14,7 +14,7 @@ using OrchardCore.Settings;
 namespace OrchardCore.ReCaptcha.Services;
 
 [Feature("OrchardCore.ReCaptcha")]
-public class ReCaptchaShape : IShapeAttributeProvider
+public sealed class ReCaptchaShape : IShapeAttributeProvider
 {
     private readonly ISiteService _siteService;
     private readonly ILocalizationService _localizationService;

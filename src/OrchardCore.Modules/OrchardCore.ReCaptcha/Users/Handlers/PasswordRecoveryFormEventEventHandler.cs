@@ -3,7 +3,7 @@ using OrchardCore.Users.Events;
 
 namespace OrchardCore.ReCaptcha.Users.Handlers;
 
-public class PasswordRecoveryFormEventEventHandler : PasswordRecoveryFormEvents
+public sealed class PasswordRecoveryFormEventEventHandler : PasswordRecoveryFormEvents
 {
     private readonly ReCaptchaService _reCaptchaService;
 

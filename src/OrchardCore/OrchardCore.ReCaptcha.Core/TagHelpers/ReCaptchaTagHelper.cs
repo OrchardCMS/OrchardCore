@@ -6,7 +6,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers;
 
 [HtmlTargetElement("captcha", TagStructure = TagStructure.WithoutEndTag)]
 [HtmlTargetElement("captcha", Attributes = "language,onload", TagStructure = TagStructure.WithoutEndTag)]
-public class ReCaptchaTagHelper : BaseShapeTagHelper
+public sealed class ReCaptchaTagHelper : BaseShapeTagHelper
 {
     public ReCaptchaTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper)
         : base(shapeFactory, displayHelper)

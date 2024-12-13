@@ -8,10 +8,11 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.AuditTrail.ResetPassword;
 
-public class UserResetPasswordEventHandler : PasswordRecoveryFormEvents
+public sealed class UserResetPasswordEventHandler : PasswordRecoveryFormEvents
 {
     private readonly IAuditTrailManager _auditTrailManager;
     private readonly IServiceProvider _serviceProvider;
+    
     private UserManager<IUser> _userManager;
 
     public UserResetPasswordEventHandler(
