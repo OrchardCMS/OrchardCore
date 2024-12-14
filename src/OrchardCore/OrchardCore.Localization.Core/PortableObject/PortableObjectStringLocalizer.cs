@@ -1,6 +1,4 @@
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Localization.DataAnnotations;
@@ -46,7 +44,7 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
         {
             ArgumentNullException.ThrowIfNull(name);
 
-            var translation = GetTranslationAsync(name, _context, CultureInfo.CurrentUICulture, null).GetAwaiter().GetResult();
+            var translation = GetTranslation(name, _context, CultureInfo.CurrentUICulture, null);
 
             return new LocalizedString(name, translation ?? name, translation == null);
         }
@@ -57,7 +55,7 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
     {
         get
         {
-            var (translation, argumentsWithCount) = GetTranslationAsync(name, arguments).GetAwaiter().GetResult();
+            var (translation, argumentsWithCount) = GetTranslation(name, arguments);
             var formatted = string.Format(translation.Value, argumentsWithCount);
 
             return new LocalizedString(name, formatted, translation.ResourceNotFound);
@@ -76,14 +74,14 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
     }
 
     /// <inheritdocs />
-    public virtual async Task<(LocalizedString, object[])> GetTranslationAsync(string name, params object[] arguments)
+    public virtual (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
     {
         ArgumentNullException.ThrowIfNull(name);
 
         // Check if a plural form is called, which is when the only argument is of type PluralizationArgument.
         if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
         {
-            var translation = await GetTranslationAsync(name, _context, CultureInfo.CurrentUICulture, pluralArgument.Count);
+            var translation = GetTranslation(name, _context, CultureInfo.CurrentUICulture, pluralArgument.Count);
 
             object[] argumentsWithCount;
 
@@ -98,7 +96,7 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
                 argumentsWithCount = [pluralArgument.Count];
             }
 
-            translation ??= await GetTranslationAsync(pluralArgument.Forms, CultureInfo.CurrentUICulture, pluralArgument.Count);
+            translation ??= GetTranslation(pluralArgument.Forms, CultureInfo.CurrentUICulture, pluralArgument.Count);
 
             return (new LocalizedString(name, translation, translation == null), argumentsWithCount);
         }
@@ -145,13 +143,9 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
         } while (currentCulture != currentCulture.Parent);
     }
 
-    [Obsolete("This method is deprecated, please use GetTranslationAsync instead.")]
     protected string GetTranslation(string[] pluralForms, CultureInfo culture, int? count)
-        => GetTranslationAsync(pluralForms, culture, count).GetAwaiter().GetResult();
-
-    protected async Task<string> GetTranslationAsync(string[] pluralForms, CultureInfo culture, int? count)
     {
-        var dictionary = await _localizationManager.GetDictionaryAsync(culture);
+        var dictionary = _localizationManager.GetDictionaryAsync(culture).GetAwaiter().GetResult();
 
         var pluralForm = count.HasValue ? dictionary.PluralRule(count.Value) : 0;
 
@@ -169,11 +163,7 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
         return pluralForms[pluralForm];
     }
 
-    [Obsolete("This method has been deprecated please use instead.")]
     protected string GetTranslation(string name, string context, CultureInfo culture, int? count)
-        => GetTranslationAsync(name, context, culture, count).GetAwaiter().GetResult();
-
-    protected async Task<string> GetTranslationAsync(string name, string context, CultureInfo culture, int? count)
     {
         string translation = null;
         try
@@ -182,7 +172,7 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
             {
                 do
                 {
-                    if (await ExtractTranslationAsync() != null)
+                    if (ExtractTranslation() != null)
                     {
                         break;
                     }
@@ -193,12 +183,12 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
             }
             else
             {
-                await ExtractTranslationAsync();
+                ExtractTranslation();
             }
 
-            async Task< string> ExtractTranslationAsync()
+            string ExtractTranslation()
             {
-                var dictionary = await _localizationManager.GetDictionaryAsync(culture);
+                var dictionary = _localizationManager.GetDictionaryAsync(culture).GetAwaiter().GetResult();
 
                 if (dictionary != null)
                 {

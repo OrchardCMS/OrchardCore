@@ -6,75 +6,72 @@ namespace OrchardCore.Tests.Localization;
 public class PoParserTests
 {
     [Fact]
-    public void ParseRetursSimpleEntry()
+    public async Task ParseRetursSimpleEntry()
     {
-        [Fact]
-        public async Task ParseRetursSimpleEntry()
-        {
-            // msgid "Unknown system error"
-            // msgstr "Error desconegut del sistema"
-            var entries = await ParseTextAsync("SimpleEntry");
+        // msgid "Unknown system error"
+        // msgstr "Error desconegut del sistema"
+        var entries = await ParseTextAsync("SimpleEntry");
 
         Assert.Equal("Unknown system error", entries[0].Key);
         Assert.Equal("Error desconegut del sistema", entries[0].Translations[0]);
     }
 
-        [Fact]
-        public async Task ParseIgnoresEntryWithoutTranslation()
-        {
-            // "msgid "Unknown system error"
-            // "msgstr ""
-            var entries = await ParseTextAsync("EntryWithoutTranslation");
+    [Fact]
+    public async Task ParseIgnoresEntryWithoutTranslation()
+    {
+        // "msgid "Unknown system error"
+        // "msgstr ""
+        var entries = await ParseTextAsync("EntryWithoutTranslation");
 
         Assert.Empty(entries);
     }
 
-        [Fact]
-        public async Task ParseIgnoresPoeditHeader()
-        {
-            // # Translation of kstars.po into Spanish.
-            // # This file is distributed under the same license as the kdeedu package.
-            // # Pablo de Vicente <pablo@foo.com>, 2005, 2006, 2007, 2008.
-            // # Eloy Cuadra <eloy@bar.net>, 2007, 2008.
-            // msgid ""
-            // msgstr ""
-            // "Project-Id-Version: kstars\n"
-            // "Report-Msgid-Bugs-To: http://bugs.kde.org\n"
-            // "POT-Creation-Date: 2008-09-01 09:37+0200\n"
-            // "PO-Revision-Date: 2008-07-22 18:13+0200\n"
-            // "Last-Translator: Eloy Cuadra <eloy@bar.net>\n"
-            // "Language-Team: Spanish <kde-l10n-es@kde.org>\n"
-            // "MIME-Version: 1.0\n"
-            // "Content-Type: text/plain; charset=UTF-8\n"
-            // "Content-Transfer-Encoding: 8bit\n"
-            // "Plural-Forms: nplurals=2; plural=n != 1;\n"
+    [Fact]
+    public async Task ParseIgnoresPoeditHeader()
+    {
+        // # Translation of kstars.po into Spanish.
+        // # This file is distributed under the same license as the kdeedu package.
+        // # Pablo de Vicente <pablo@foo.com>, 2005, 2006, 2007, 2008.
+        // # Eloy Cuadra <eloy@bar.net>, 2007, 2008.
+        // msgid ""
+        // msgstr ""
+        // "Project-Id-Version: kstars\n"
+        // "Report-Msgid-Bugs-To: http://bugs.kde.org\n"
+        // "POT-Creation-Date: 2008-09-01 09:37+0200\n"
+        // "PO-Revision-Date: 2008-07-22 18:13+0200\n"
+        // "Last-Translator: Eloy Cuadra <eloy@bar.net>\n"
+        // "Language-Team: Spanish <kde-l10n-es@kde.org>\n"
+        // "MIME-Version: 1.0\n"
+        // "Content-Type: text/plain; charset=UTF-8\n"
+        // "Content-Transfer-Encoding: 8bit\n"
+        // "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-            // msgid "Unknown system error"
-            // msgstr "Error desconegut del sistema"
-            var entries = await ParseTextAsync("PoeditHeader");
+        // msgid "Unknown system error"
+        // msgstr "Error desconegut del sistema"
+        var entries = await ParseTextAsync("PoeditHeader");
 
         Assert.True(entries.Length == 1);
         Assert.True(entries[0].Translations.Length == 1);
     }
 
-        [Fact]
-        public async Task ParseSetsContext()
-        {
-            // msgctxt "OrchardCore.Localization"
-            // msgid "Unknown system error"
-            // msgstr "Error desconegut del sistema"
-            var entries = await ParseTextAsync("EntryWithContext");
+    [Fact]
+    public async Task ParseSetsContext()
+    {
+        // msgctxt "OrchardCore.Localization"
+        // msgid "Unknown system error"
+        // msgstr "Error desconegut del sistema"
+        var entries = await ParseTextAsync("EntryWithContext");
 
         Assert.Equal("OrchardCore.Localization|Unknown system error", entries[0].Key, ignoreCase: true);
     }
 
-        [Fact]
-        public async Task ParseIgnoresComments()
-        {
-            // # translator-comments
-            // #. extracted-comments
-            // #: reference…
-            // #, flag
+    [Fact]
+    public async Task ParseIgnoresComments()
+    {
+        // # translator-comments
+        // #. extracted-comments
+        // #: reference…
+        // #, flag
 
         // #| msgctxt previous-context
         // #| msgid previous-untranslated-string
@@ -82,74 +79,74 @@ public class PoParserTests
         // msgid "Unknown system error"
         // msgstr "Error desconegut del sistema"
 
-            var entries = await ParseTextAsync("EntryWithComments");
+        var entries = await ParseTextAsync("EntryWithComments");
 
         Assert.Equal("OrchardCore.Localization|Unknown system error", entries[0].Key, ignoreCase: true);
         Assert.Equal("Error desconegut del sistema", entries[0].Translations[0]);
     }
 
-        [Fact]
-        public async Task ParseOnlyTrimsLeadingAndTrailingQuotes()
-        {
-            // msgid "\"{0}\""
-            // msgstr "\"{0}\""
+    [Fact]
+    public async Task ParseOnlyTrimsLeadingAndTrailingQuotes()
+    {
+        // msgid "\"{0}\""
+        // msgstr "\"{0}\""
 
-            var entries = await ParseTextAsync("EntryWithQuotes");
+        var entries = await ParseTextAsync("EntryWithQuotes");
 
         Assert.Equal("\"{0}\"", entries[0].Key);
         Assert.Equal("\"{0}\"", entries[0].Translations[0]);
     }
 
-        [Fact]
-        public async Task ParseHandleUnclosedQuote()
-        {
-            // msgctxt "
-            // msgid "Foo \"{0}\""
-            // msgstr "Foo \"{0}\""
+    [Fact]
+    public async Task ParseHandleUnclosedQuote()
+    {
+        // msgctxt "
+        // msgid "Foo \"{0}\""
+        // msgstr "Foo \"{0}\""
 
-            var entries = await ParseTextAsync("EntryWithUnclosedQuote");
+        var entries = await ParseTextAsync("EntryWithUnclosedQuote");
 
         Assert.Equal("Foo \"{0}\"", entries[0].Key);
     }
 
-        [Fact]
-        public async Task ParseHandlesMultilineEntry()
-        {
-            // msgid ""
-            // "Here is an example of how one might continue a very long string\n"
-            // "for the common case the string represents multi-line output."
-            // msgstr ""
-            // "Here is an example of how one might continue a very long translation\n"
-            // "for the common case the string represents multi-line output."
+    [Fact]
+    public async Task ParseHandlesMultilineEntry()
+    {
+        // msgid ""
+        // "Here is an example of how one might continue a very long string\n"
+        // "for the common case the string represents multi-line output."
+        // msgstr ""
+        // "Here is an example of how one might continue a very long translation\n"
+        // "for the common case the string represents multi-line output."
 
-            var entries = await ParseTextAsync("EntryWithMultilineText");
+        var entries = await ParseTextAsync("EntryWithMultilineText");
 
         Assert.Equal("Here is an example of how one might continue a very long string\nfor the common case the string represents multi-line output.", entries[0].Key);
         Assert.Equal("Here is an example of how one might continue a very long translation\nfor the common case the string represents multi-line output.", entries[0].Translations[0]);
     }
 
-        [Fact]
-        public async Task ParsePreservesEscapedCharacters()
-        {
-            // msgid "Line:\t\"{0}\"\n"
-            // msgstr "Line:\t\"{0}\"\n"
+    [Fact]
+    public async Task ParsePreservesEscapedCharacters()
+    {
+        // msgid "Line:\t\"{0}\"\n"
+        // msgstr "Line:\t\"{0}\"\n"
 
-            var entries = await ParseTextAsync("EntryWithEscapedCharacters");
+        var entries = await ParseTextAsync("EntryWithEscapedCharacters");
 
         Assert.Equal("Line:\t\"{0}\"\n", entries[0].Key);
         Assert.Equal("Line:\t\"{0}\"\n", entries[0].Translations[0]);
     }
 
-        [Fact]
-        public async Task ParseReadsPluralTranslations()
-        {
-            // msgid "book"
-            // msgid_plural "books"
-            // msgstr[0] "kniha"
-            // msgstr[1] "knihy"
-            // msgstr[2] "knih"
+    [Fact]
+    public async Task ParseReadsPluralTranslations()
+    {
+        // msgid "book"
+        // msgid_plural "books"
+        // msgstr[0] "kniha"
+        // msgstr[1] "knihy"
+        // msgstr[2] "knih"
 
-            var entries = await ParseTextAsync("EntryWithPlural");
+        var entries = await ParseTextAsync("EntryWithPlural");
 
         Assert.Equal("book", entries[0].Key);
         Assert.Equal("kniha", entries[0].Translations[0]);
@@ -157,43 +154,43 @@ public class PoParserTests
         Assert.Equal("knih", entries[0].Translations[2]);
     }
 
-        [Fact]
-        public async Task ParseReadsPluralAndMultilineText()
-        {
-            // msgid ""
-            // "Here is an example of how one might continue a very long string\n"
-            // "for the common case the string represents multi-line output."
-            // msgid_plural ""
-            // "Here are examples of how one might continue a very long string\n"
-            // "for the common case the string represents multi-line output."
-            // msgstr[0] ""
-            // "Here is an example of how one might continue a very long translation\n"
-            // "for the common case the string represents multi-line output."
-            // msgstr[1] ""
-            // "Here are examples of how one might continue a very long translation\n"
-            // "for the common case the string represents multi-line output."
+    [Fact]
+    public async Task ParseReadsPluralAndMultilineText()
+    {
+        // msgid ""
+        // "Here is an example of how one might continue a very long string\n"
+        // "for the common case the string represents multi-line output."
+        // msgid_plural ""
+        // "Here are examples of how one might continue a very long string\n"
+        // "for the common case the string represents multi-line output."
+        // msgstr[0] ""
+        // "Here is an example of how one might continue a very long translation\n"
+        // "for the common case the string represents multi-line output."
+        // msgstr[1] ""
+        // "Here are examples of how one might continue a very long translation\n"
+        // "for the common case the string represents multi-line output."
 
-            var entries = await ParseTextAsync("EntryWithPluralAndMultilineText");
+        var entries = await ParseTextAsync("EntryWithPluralAndMultilineText");
 
         Assert.Equal("Here is an example of how one might continue a very long string\nfor the common case the string represents multi-line output.", entries[0].Key);
         Assert.Equal("Here is an example of how one might continue a very long translation\nfor the common case the string represents multi-line output.", entries[0].Translations[0]);
         Assert.Equal("Here are examples of how one might continue a very long translation\nfor the common case the string represents multi-line output.", entries[0].Translations[1]);
     }
 
-        [Fact]
-        public async Task ParseReadsMultipleEntries()
-        {
-            // #. "File {0} does not exist"
-            // msgctxt "OrchardCore.FileSystems.Media.FileSystemStorageProvider"
-            // msgid "File {0} does not exist"
-            // msgstr "Soubor {0} neexistuje"
+    [Fact]
+    public async Task ParseReadsMultipleEntries()
+    {
+        // #. "File {0} does not exist"
+        // msgctxt "OrchardCore.FileSystems.Media.FileSystemStorageProvider"
+        // msgid "File {0} does not exist"
+        // msgstr "Soubor {0} neexistuje"
 
         // #. "Directory {0} does not exist"
         // msgctxt "OrchardCore.FileSystems.Media.Directory"
         // msgid "Directory {0} does not exist"
         // msgstr "Složka {0} neexistuje"
 
-            var entries = await ParseTextAsync("MultipleEntries");
+        var entries = await ParseTextAsync("MultipleEntries");
 
         Assert.Equal(2, entries.Length);
 
@@ -204,15 +201,14 @@ public class PoParserTests
         Assert.Equal("Složka {0} neexistuje", entries[1].Translations[0]);
     }
 
-        private static async Task<CultureDictionaryRecord[]> ParseTextAsync(string resourceName)
-        {
-            var parser = new PoParser();
+    private static async Task<CultureDictionaryRecord[]> ParseTextAsync(string resourceName)
+    {
+        var parser = new PoParser();
 
-            var testAssembly = typeof(PoParserTests).Assembly;
-            using var resource = testAssembly.GetManifestResourceStream("OrchardCore.Tests.Localization.PoFiles." + resourceName + ".po");
-            using var reader = new StreamReader(resource);
+        var testAssembly = typeof(PoParserTests).Assembly;
+        using var resource = testAssembly.GetManifestResourceStream("OrchardCore.Tests.Localization.PoFiles." + resourceName + ".po");
+        using var reader = new StreamReader(resource);
 
-            return (await parser.ParseAsync(reader).ToListAsync()).ToArray();
-        }
+        return (await parser.ParseAsync(reader).ToListAsync()).ToArray();
     }
 }

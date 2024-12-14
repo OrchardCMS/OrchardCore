@@ -43,23 +43,8 @@ public class PortableObjectHtmlLocalizer : HtmlLocalizer
                 // Get an unformatted string and all non plural arguments (1st one is the plural count).
                 var (translation, argumentsWithCount) = pluralLocalizer.GetTranslation(name, arguments);
 
-                // See https://github.com/aspnet/Mvc/blob/master/src/Microsoft.AspNetCore.Mvc.Localization/LocalizedHtmlString.cs#L97
-
-                // But with a plural localizer, arguments may be provided for plural localization. So, we
-                // still use them to get a non formatted translation and extract all non plural arguments.
-
-                // Otherwise an already formatted string containing curly braces will be wrongly reformatted.
-
-                if (_localizer is IPluralStringLocalizer pluralLocalizer && arguments.Length == 1 && arguments[0] is PluralizationArgument)
-                {
-                    // Get an unformatted string and all non plural arguments (1st one is the plural count).
-                    var (translation, argumentsWithCount) = pluralLocalizer.GetTranslationAsync(name, arguments).GetAwaiter().GetResult();
-
-                    // Formatting will use non plural arguments if any.
-                    return ToHtmlString(translation, argumentsWithCount);
-                }
-
-                return ToHtmlString(_localizer[name], arguments);
+                // Formatting will use non plural arguments if any.
+                return ToHtmlString(translation, argumentsWithCount);
             }
 
             return ToHtmlString(_localizer[name], arguments);

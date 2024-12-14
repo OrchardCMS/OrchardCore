@@ -1,9 +1,4 @@
 using System.Collections.Frozen;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Cysharp.Text;
 
 namespace OrchardCore.Localization.PortableObject;
@@ -24,14 +19,6 @@ public class PoParser
             { 't', '\t' }
         }.ToFrozenDictionary();
     }
-
-    /// <summary>
-    /// Parses a .po file.
-    /// </summary>
-    /// <param name="reader">The <see cref="TextReader"/>.</param>
-    /// <returns>A list of culture records.</returns>
-    [Obsolete("This methos has been deprecated, please use ParseAsync instead.")]
-    public IEnumerable<CultureDictionaryRecord> Parse(TextReader reader) => ParseAsync(reader).ToEnumerable();
 
     /// <summary>
     /// Parses a .po file.

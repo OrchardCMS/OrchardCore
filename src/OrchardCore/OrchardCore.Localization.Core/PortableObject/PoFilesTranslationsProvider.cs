@@ -1,6 +1,3 @@
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
 
 namespace OrchardCore.Localization.PortableObject;
