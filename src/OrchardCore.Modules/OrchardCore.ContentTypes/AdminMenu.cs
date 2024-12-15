@@ -40,12 +40,12 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Design"], content => content
                 .Add(S["Content definition"], S["Content definition"].PrefixPosition(), contentDefinition => contentDefinition
-                    .Add(S["Types"], S["Types"].PrefixPosition("1"), types => types
+                    .Add(S["Content types"], S["Content types"].PrefixPosition("1"), contentTypes => contentTypes
                         .Action(nameof(AdminController.List), _adminControllerName, "OrchardCore.ContentTypes")
                         .Permission(Permissions.ViewContentTypes)
                         .LocalNav()
                     )
-                    .Add(S["Parts"], S["Parts"].PrefixPosition("2"), parts => parts
+                    .Add(S["Content parts"], S["Content parts"].PrefixPosition("2"), contentParts => contentParts
                         .Action(nameof(AdminController.ListParts), _adminControllerName, "OrchardCore.ContentTypes")
                         .Permission(Permissions.ViewContentTypes)
                         .LocalNav()
