@@ -1,6 +1,8 @@
 {
   "query": {
-    "term": { "Content.ContentItem.ContentType": "BlogPost" }
+    "query_string": {
+      "query": "+Content.ContentItem.ContentType:BlogPost +Content.ContentItem.Published:true"
+    }
   },
   "sort": {
     "Content.ContentItem.CreatedUtc": {
