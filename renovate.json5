@@ -9,9 +9,19 @@
     // See https://docs.renovatebot.com/configuration-options/#configmigration.
     configMigration: true,
     packageRules: [
+        // Disable certain updates.
         {
+            // The .NET 8 version of Serilog.AspNetCore (8.x) needs to stay on 8.x. We maintain a separate reference to
+            // the 9.x version in Directory.Packages.props, only active when building for .NET 9.
             matchPackageNames: [
-                // See the corresponding comment in Directory.Packages.props.
+                'Serilog.AspNetCore',
+            ],
+            allowedVersions: '<9.0.0',
+            matchCurrentVersion: '<9.0.0',
+        },
+        {
+            // See the corresponding comment in Directory.Packages.props.
+            matchPackageNames: [
                 'System.Drawing.Common',
             ],
             enabled: false,
@@ -85,5 +95,5 @@
     schedule: [
         'before 5am on Sunday',
     ],
-    labels: ['dependencies'],
+    addLabels: ['dependencies'],
 }
