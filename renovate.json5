@@ -11,10 +11,13 @@
     packageRules: [
         // Disable certain updates.
         {
-            // The .NET 8 version of Serilog.AspNetCore (8.x) needs to stay on 8.x. We maintain a separate reference to
-            // the 9.x version in Directory.Packages.props, only active when building for .NET 9.
+            // The .NET 8 versions of these packages need to stay on 8.x. We maintain a separate reference to the 
+            // .NET 9 versions in Directory.Packages.props, only active when building for .NET 9.
             matchPackageNames: [
+                '/^Microsoft\\.AspNetCore.*$/',
+                '/^Microsoft\\.Extensions.*$/',
                 'Serilog.AspNetCore',
+                'System.Text.Json',
             ],
             allowedVersions: '<9.0.0',
             matchCurrentVersion: '<9.0.0',
