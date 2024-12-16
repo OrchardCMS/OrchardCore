@@ -33,7 +33,7 @@ public class ApplicationControllerTests
     {
         var mockOpenIdScopeManager = new Mock<IOpenIdScopeManager>();
         var mockData = Array.Empty<object>();
-        mockOpenIdScopeManager.Setup(m => m.ListAsync(null, null, default)).Returns(mockData.ToAsyncEnumerable());
+        mockOpenIdScopeManager.Setup(m => m.ListAsync(null, null, TestContext.Current.CancellationToken)).Returns(mockData.ToAsyncEnumerable());
         var controller = new ApplicationController(
             Mock.Of<IShapeFactory>(),
             Mock.Of<IOptions<PagerOptions>>(),
