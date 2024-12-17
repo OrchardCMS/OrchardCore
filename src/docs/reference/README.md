@@ -75,6 +75,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 
 ### Design
 
+- [Display Management](modules/DisplayManagement/README.md)
 - [Layers](modules/Layers/README.md)
 - [Widgets](modules/Widgets/README.md)
 - [Templates](modules/Templates/README.md)
