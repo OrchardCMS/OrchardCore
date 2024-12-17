@@ -63,7 +63,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             );
 
         builder
-            .Add(S["Tools"], tools => tools
+            .Add(S["Settings"], settings => settings
                 .Add(S["Media"], S["Media"].PrefixPosition(), media => media
                     .Add(S["Options"], S["Options"].PrefixPosition(), options => options
                         .Action("Options", "Admin", "OrchardCore.Media")

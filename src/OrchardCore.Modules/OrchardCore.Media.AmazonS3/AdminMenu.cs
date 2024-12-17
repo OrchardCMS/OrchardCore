@@ -29,7 +29,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             return ValueTask.CompletedTask;
         }
 
-        builder.Add(S["Tools"], tools => tools
+        builder.Add(S["Settings"], settings => settings
             .Add(S["Media"], S["Media"].PrefixPosition(), media => media
                 .Add(S["Amazon S3 Options"], S["Amazon S3 Options"].PrefixPosition(), options => options
                     .Action("Options", "Admin", "OrchardCore.Media.AmazonS3")
