@@ -42,7 +42,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Search"], S["Search"].PrefixPosition(), search => search
-                    .Add(S["Search engine optimization"], S["Search engine optimization"].PrefixPosition(), seo => seo
+                    .Add(S["Search Engine Optimization"], S["Search Engine Optimization"].PrefixPosition(), seo => seo
                         .AddClass("seo")
                         .Id("seo")
                         .Add(S["Robots"], S["Robots"].PrefixPosition(), robots => robots

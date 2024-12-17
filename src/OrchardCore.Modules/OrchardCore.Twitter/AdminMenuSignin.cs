@@ -26,7 +26,8 @@ public sealed class AdminMenuSignIn : AdminNavigationProvider
             builder
            .Add(S["Security"], security => security
                .Add(S["Authentication"], authentication => authentication
-               .Add(S["Sign in with X (Twitter)"], S["Sign in with X (Twitter)"].PrefixPosition(), twitter => twitter
+
+               .Add(S["Sign In with X (Twitter)"], S["Sign In with X (Twitter)"].PrefixPosition(), twitter => twitter
                    .AddClass("twitter")
                    .Id("twitter")
                    .Action("Index", "Admin", _routeValues)
@@ -42,7 +43,7 @@ public sealed class AdminMenuSignIn : AdminNavigationProvider
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
                     .Add(S["Authentication"], S["Authentication"].PrefixPosition(), authentication => authentication
-                        .Add(S["Sign in with X (Twitter)"], S["Sign in with X (Twitter)"].PrefixPosition(), twitter => twitter
+                        .Add(S["Sign In with X (Twitter)"], S["Sign In with X (Twitter)"].PrefixPosition(), twitter => twitter
                             .AddClass("twitter")
                             .Id("twitter")
                             .Action("Index", "Admin", _routeValues)

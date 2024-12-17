@@ -26,7 +26,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Meta app"], S["Meta app"].PrefixPosition(), metaApp => metaApp
+                        .Add(S["Meta App"], S["Meta App"].PrefixPosition(), metaApp => metaApp
                             .AddClass("facebookApp")
                             .Id("facebookApp")
                             .Action("Index", "Admin", _routeValues)
@@ -42,7 +42,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Integrations"], S["Integrations"].PrefixPosition(), integrations => integrations
-                    .Add(S["Meta app"], S["Meta app"].PrefixPosition(), metaApp => metaApp
+                    .Add(S["Meta App"], S["Meta App"].PrefixPosition(), metaApp => metaApp
                         .AddClass("facebookApp")
                         .Id("facebookApp")
                         .Action("Index", "Admin", _routeValues)

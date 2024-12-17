@@ -27,7 +27,7 @@ public sealed class ChangeEmailAdminMenu : AdminNavigationProvider
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["User change email"], S["User change email"].PrefixPosition(), email => email
+                        .Add(S["User Change Email"], S["User Change Email"].PrefixPosition(), email => email
                             .Permission(CommonPermissions.ManageUsers)
                             .Action("Index", "Admin", _routeValues)
                             .LocalNav()
@@ -41,7 +41,7 @@ public sealed class ChangeEmailAdminMenu : AdminNavigationProvider
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
-                    .Add(S["Change email"], S["Change email"].PrefixPosition(), email => email
+                    .Add(S["Change Email"], S["Change Email"].PrefixPosition(), email => email
                         .Permission(CommonPermissions.ManageUsers)
                         .Action("Index", "Admin", _routeValues)
                         .LocalNav()

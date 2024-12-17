@@ -16,7 +16,7 @@ public sealed class AdminTemplatesAdminMenu : AdminNavigationProvider
     {
         builder
             .Add(S["Design"], design => design
-                .Add(S["Admin templates"], S["Admin templates"].PrefixPosition(), import => import
+                .Add(S["Admin Templates"], S["Admin Templates"].PrefixPosition(), import => import
                     .Action("Admin", "Template", "OrchardCore.Templates")
                     .Permission(AdminTemplatesPermissions.ManageAdminTemplates)
                     .LocalNav()

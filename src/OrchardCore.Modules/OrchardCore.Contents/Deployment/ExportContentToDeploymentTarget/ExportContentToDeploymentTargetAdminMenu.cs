@@ -41,7 +41,7 @@ public sealed class ExportContentToDeploymentTargetAdminMenu : AdminNavigationPr
 
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["Deployment targets"], S["Deployment targets"].PrefixPosition(), targetSettings => targetSettings
+                .Add(S["Deployment Targets"], S["Deployment Targets"].PrefixPosition(), targetSettings => targetSettings
                     .Action("Index", "Admin", _routeValues)
                     .Permission(OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan)
                     .LocalNav()

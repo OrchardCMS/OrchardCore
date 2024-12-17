@@ -19,7 +19,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Tasks"], S["Tasks"].PrefixPosition(), tasks => tasks
-                        .Add(S["Background tasks"], S["Background tasks"].PrefixPosition(), backgroundTasks => backgroundTasks
+                        .Add(S["Background Tasks"], S["Background Tasks"].PrefixPosition(), backgroundTasks => backgroundTasks
                             .Action("Index", "BackgroundTask", "OrchardCore.BackgroundTasks")
                             .Permission(Permissions.ManageBackgroundTasks)
                             .LocalNav()
@@ -32,7 +32,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 
         builder
             .Add(S["Tools"], tools => tools
-                .Add(S["Background tasks"], S["Background tasks"].PrefixPosition(), backgroundTasks => backgroundTasks
+                .Add(S["Background Tasks"], S["Background Tasks"].PrefixPosition(), backgroundTasks => backgroundTasks
                     .Action("Index", "BackgroundTask", "OrchardCore.BackgroundTasks")
                     .Permission(Permissions.ManageBackgroundTasks)
                     .LocalNav()

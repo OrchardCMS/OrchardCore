@@ -27,7 +27,7 @@ public sealed class RegistrationAdminMenu : AdminNavigationProvider
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
-                        .Add(S["User registration"], S["User registration"].PrefixPosition(), registration => registration
+                        .Add(S["User Registration"], S["User Registration"].PrefixPosition(), registration => registration
                             .Permission(CommonPermissions.ManageUsers)
                             .Action("Index", "Admin", _routeValues)
                             .LocalNav()

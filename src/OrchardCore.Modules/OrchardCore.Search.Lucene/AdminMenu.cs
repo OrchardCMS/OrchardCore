@@ -19,7 +19,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 .AddClass("search")
                 .Id("search")
                 .Add(S["Indexing"], S["Indexing"].PrefixPosition(), import => import
-                    .Add(S["Lucene indices"], S["Lucene indices"].PrefixPosition(), indexes => indexes
+                    .Add(S["Lucene Indices"], S["Lucene Indices"].PrefixPosition(), indexes => indexes
                         .Action("Index", "Admin", "OrchardCore.Search.Lucene")
                         .AddClass("luceneindices")
                         .Id("luceneindices")
@@ -28,7 +28,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                      )
                 )
                 .Add(S["Queries"], S["Queries"].PrefixPosition(), import => import
-                    .Add(S["Run Lucene query"], S["Run Lucene query"].PrefixPosition(), queries => queries
+                    .Add(S["Run Lucene Query"], S["Run Lucene Query"].PrefixPosition(), queries => queries
                         .Action("Query", "Admin", "OrchardCore.Search.Lucene")
                         .AddClass("lucenequery")
                         .Id("lucenequery")

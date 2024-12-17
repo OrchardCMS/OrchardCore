@@ -28,13 +28,14 @@ public sealed class AdminMenu : AdminNavigationProvider
                         )
                     )
                 );
+
             return ValueTask.CompletedTask;
         }
 
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
-                    .Add(S["CORS"], S["CORS"].PrefixPosition(), entry => entry
+                    .Add(S["Cross-Origin Resource Sharing"], S["Cross-Origin Resource Sharing"].PrefixPosition(), entry => entry
                         .AddClass("cors")
                         .Id("cors")
                         .Action("Index", "Admin", "OrchardCore.Cors")

@@ -42,7 +42,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Search"], S["Search"].PrefixPosition(), search => search
-                    .Add(S["Site search"], S["Site search"].PrefixPosition(), search => search
+                    .Add(S["Site Search"], S["Site Search"].PrefixPosition(), search => search
                         .Action("Index", "Admin", _routeValues)
                         .AddClass("searchsettings")
                         .Id("searchsettings")

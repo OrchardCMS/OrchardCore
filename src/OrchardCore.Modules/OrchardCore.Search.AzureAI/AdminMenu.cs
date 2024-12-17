@@ -34,7 +34,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 .AddClass("search")
                 .Id("search")
                 .Add(S["Indexing"], S["Indexing"].PrefixPosition(), indexing => indexing
-                    .Add(S["Azure AI indices"], S["Azure AI indices"].PrefixPosition(), indexes => indexes
+                    .Add(S["Azure AI Indices"], S["Azure AI Indices"].PrefixPosition(), indexes => indexes
                         .Action("Index", "Admin", "OrchardCore.Search.AzureAI")
                         .AddClass("azureaiindices")
                         .Id("azureaiindices")
@@ -54,7 +54,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             builder
                .Add(S["Configuration"], configuration => configuration
                    .Add(S["Settings"], settings => settings
-                       .Add(S["Azure AI search"], S["Azure AI search"].PrefixPosition(), azureAISearch => azureAISearch
+                       .Add(S["Azure AI Search"], S["Azure AI Search"].PrefixPosition(), azureAISearch => azureAISearch
                        .AddClass("azure-ai-search")
                            .Id("azureaisearch")
                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AzureAISearchDefaultSettingsDisplayDriver.GroupId })
@@ -69,7 +69,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["Azure AI search"], S["Azure AI search"].PrefixPosition(), azureAISearch => azureAISearch
+                .Add(S["Azure AI Search"], S["Azure AI Search"].PrefixPosition(), azureAISearch => azureAISearch
                 .AddClass("azure-ai-search")
                     .Id("azureaisearch")
                     .Action("Index", "Admin", _routeValues)

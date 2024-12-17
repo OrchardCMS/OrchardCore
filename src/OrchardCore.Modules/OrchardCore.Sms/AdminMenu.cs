@@ -35,7 +35,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                             .Permission(SmsPermissions.ManageSmsSettings)
                             .LocalNav()
                         )
-                        .Add(S["SMS test"], S["SMS test"].PrefixPosition(), sms => sms
+                        .Add(S["SMS Test"], S["SMS Test"].PrefixPosition(), sms => sms
                             .AddClass("smstest")
                             .Id("smstest")
                             .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Sms")
@@ -62,7 +62,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             )
             .Add(S["Tools"], tools => tools
                 .Add(S["Testing"], S["Testing"].PrefixPosition(), testing => testing
-                    .Add(S["SMS test"], S["SMS test"].PrefixPosition(), sms => sms
+                    .Add(S["SMS Test"], S["SMS Test"].PrefixPosition(), sms => sms
                         .AddClass("smstest")
                         .Id("smstest")
                         .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Sms")

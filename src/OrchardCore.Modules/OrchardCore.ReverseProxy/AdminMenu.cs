@@ -27,7 +27,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Reverse proxy"], S["Reverse proxy"].PrefixPosition(), entry => entry
+                        .Add(S["Reverse Proxy"], S["Reverse Proxy"].PrefixPosition(), entry => entry
                         .AddClass("reverseproxy")
                         .Id("reverseproxy")
                             .Action("Index", "Admin", _routeValues)
@@ -43,7 +43,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
-                    .Add(S["Reverse proxy"], S["Reverse proxy"].PrefixPosition(), proxy => proxy
+                    .Add(S["Reverse Proxy"], S["Reverse Proxy"].PrefixPosition(), proxy => proxy
                         .AddClass("reverseproxy")
                         .Id("reverseproxy")
                         .Action("Index", "Admin", _routeValues)

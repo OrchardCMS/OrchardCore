@@ -45,7 +45,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
-                        .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), layers => layers
+                        .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), customSettings => customSettings
                             .Action("Index", "Admin", routeValues)
                             .AddClass(htmlName)
                             .Id(htmlName)

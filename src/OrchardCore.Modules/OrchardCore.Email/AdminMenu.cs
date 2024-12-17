@@ -36,7 +36,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                           .Permission(Permissions.ManageEmailSettings)
                           .LocalNav()
                         )
-                       .Add(S["Email test"], S["Email test"].PrefixPosition(), entry => entry
+                       .Add(S["Email Test"], S["Email Test"].PrefixPosition(), entry => entry
                           .AddClass("emailtest")
                           .Id("emailtest")
                           .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Email")
@@ -52,7 +52,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         builder
             .Add(S["Tools"], tools => tools
                 .Add(S["Testing"], S["Testing"].PrefixPosition(), testing => testing
-                    .Add(S["Email test"], S["Email test"].PrefixPosition(), entry => entry
+                    .Add(S["Email Test"], S["Email Test"].PrefixPosition(), entry => entry
                         .AddClass("emailtest")
                         .Id("emailtest")
                         .Action(nameof(AdminController.Test), typeof(AdminController).ControllerName(), "OrchardCore.Email")

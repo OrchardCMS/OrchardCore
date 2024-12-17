@@ -27,7 +27,7 @@ public sealed class ResetPasswordAdminMenu : AdminNavigationProvider
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["User reset password"], S["User reset password"].PrefixPosition(), password => password
+                        .Add(S["User Reset Password"], S["User Reset Password"].PrefixPosition(), password => password
                             .Permission(CommonPermissions.ManageUsers)
                             .Action("Index", "Admin", _routeValues)
                             .LocalNav()
@@ -41,7 +41,7 @@ public sealed class ResetPasswordAdminMenu : AdminNavigationProvider
         builder
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
-                    .Add(S["Reset password"], S["Reset password"].PrefixPosition(), password => password
+                    .Add(S["Reset Password"], S["Reset Password"].PrefixPosition(), password => password
                         .Permission(CommonPermissions.ManageUsers)
                         .Action("Index", "Admin", _routeValues)
                         .LocalNav()
