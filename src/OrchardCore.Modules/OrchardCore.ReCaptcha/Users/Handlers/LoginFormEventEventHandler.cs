@@ -1,10 +1,9 @@
 using OrchardCore.ReCaptcha.Services;
-using OrchardCore.Users;
 using OrchardCore.Users.Events;
 
 namespace OrchardCore.ReCaptcha.Users.Handlers;
 
-public class LoginFormEventEventHandler : LoginFormEventBase
+public sealed class LoginFormEventEventHandler : LoginFormEventBase
 {
     private readonly ReCaptchaService _reCaptchaService;
 
@@ -13,34 +12,6 @@ public class LoginFormEventEventHandler : LoginFormEventBase
         _reCaptchaService = reCaptchaService;
     }
 
-    public override Task LoggedInAsync(IUser user)
-    {
-        _reCaptchaService.ThisIsAHuman();
-
-        return Task.CompletedTask;
-    }
-
     public override Task LoggingInAsync(string userName, Action<string, string> reportError)
-    {
-        if (_reCaptchaService.IsThisARobot())
-        {
-            return _reCaptchaService.ValidateCaptchaAsync(reportError);
-        }
-
-        return Task.CompletedTask;
-    }
-
-    public override Task LoggingInFailedAsync(string userName)
-    {
-        _reCaptchaService.MaybeThisIsARobot();
-
-        return Task.CompletedTask;
-    }
-
-    public override Task LoggingInFailedAsync(IUser user)
-    {
-        _reCaptchaService.MaybeThisIsARobot();
-
-        return Task.CompletedTask;
-    }
+        => _reCaptchaService.ValidateCaptchaAsync(reportError);
 }
