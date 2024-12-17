@@ -22,7 +22,7 @@ You may configure the Default Azure Email Service provider by the configuration 
 }
 ```
 
-For more information about configurations, please refer to [Configuration](../../core/Configuration/README.md).
+For more information about configurations, please refer to [Configuration](../Configuration/README.md).
 
 !!! note
     Configuration of the **Default Azure Communication Services** provider is not possible through Admin Settings. Utilize the configuration provider for the necessary setup. The provider will appear only if the configuration exists.

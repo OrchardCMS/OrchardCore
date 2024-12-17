@@ -64,9 +64,9 @@ We're here to help you succeed with Orchard Core!
 
 ## Contributing
 
-It's great that you're thinking about contributing to Orchard Core! You'd join [our wonderful community of contributors](https://docs.orchardcore.net/en/latest/community/).
+It's great that you're thinking about contributing to Orchard Core! You'd join [our wonderful community of contributors](https://docs.orchardcore.net/en/latest/community/contributors/).
 
-Check out the docs [on contributing to Orchard Core](https://docs.orchardcore.net/en/latest/guides/contributing/).
+Check out the docs [on contributing to Orchard Core](https://docs.orchardcore.net/en/latest/contributing/).
 
 ## Preview Package Feed
 
@@ -78,7 +78,7 @@ Cloudsmith is the only fully hosted, cloud-native, universal package management 
 
 ## Code of Conduct
 
-See [our Code of Conduct](https://docs.orchardcore.net/en/latest/guides/contributing/#code-of-conduct).
+See [our Code of Conduct](https://docs.orchardcore.net/en/latest/contributing/#code-of-conduct).
 
 ## .NET Foundation
 
