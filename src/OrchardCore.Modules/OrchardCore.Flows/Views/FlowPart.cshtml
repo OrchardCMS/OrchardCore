@@ -1,14 +1,22 @@
+@using Microsoft.AspNetCore.Authorization
 @using OrchardCore.ContentManagement
+@using OrchardCore.Contents
 @using OrchardCore.Flows.Models
 @using OrchardCore.Flows.ViewModels
 @using OrchardCore.Mvc.Utilities
 
 @model FlowPartViewModel
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@inject IAuthorizationService AuthorizationService
 
 <section class="flow">
     @foreach (var widget in Model.FlowPart.Widgets)
     {
+        if (!await AuthorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, widget))
+        {
+            continue;
+        }
+
         var widgetContent = await ContentItemDisplayManager.BuildDisplayAsync(widget, Model.BuildPartDisplayContext.Updater, Model.BuildPartDisplayContext.DisplayType, Model.BuildPartDisplayContext.GroupId);
         var flowMetadata = widget.As<FlowMetadata>();
 
