@@ -25,6 +25,7 @@
           "Search": {
             "AnalyzerName": "standardanalyzer",
             "IndexLatest": false,
+            "StoreSourceData": false,
             "IndexedContentTypes": [
               "Article",
               "Blockquote",
