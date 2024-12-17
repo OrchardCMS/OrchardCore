@@ -21,7 +21,7 @@ Use the minimal SDK version required, the `rollForward` rule will pick the lates
   ```json5
   {
       // The .NET 8 versions of these packages need to stay on 8.x. We maintain a separate reference to the 
-      // .NET 9 versions in Directory.Packages.props, only active when building for .NET 9.
+      // .NET 9 versions in Directory.Packages.props, which is only active when building for .NET 9.
       matchPackageNames: [
           '/^Microsoft\\.AspNetCore.*$/',
           '/^Microsoft\\.Extensions.*$/',
