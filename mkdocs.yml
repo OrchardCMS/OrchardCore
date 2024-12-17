@@ -220,6 +220,7 @@ nav:
           - Feeds: reference/modules/Feeds/README.md
           - Commerce: https://commerce.orchardcore.net/en/latest
       - Core Modules:
+          - Display Management: reference/core/DisplayManagement/README.md
           - Audit Trail: reference/modules/AuditTrail/README.md
           - Auto Setup: reference/modules/AutoSetup/README.md
           - Features: reference/modules/Features/README.md
