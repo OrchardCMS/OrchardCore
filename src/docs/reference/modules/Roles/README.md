@@ -27,17 +27,23 @@ A sample of a roles configuration step:
 
 ```json
 {
-    "name": "roles",
-    "Roles": [
+    "steps": [
         {
-            "Name": "Journalist",
-            "Description" "Journalist Role",
-            "Permissions": ["PublishContent", "EditContent"]
-        },
-        {
-            "Name": "Subscriber",
-            "Description" "Subscriber Role",
-            "Permissions": []
+            "name": "roles",
+            "Roles": [
+                {
+                    "Name": "Journalist",
+                    "Description" "Journalist Role",
+                    "PermissionBehavior": "Replace",
+                    "Permissions": ["PublishContent", "EditContent"]
+                },
+                {
+                    "Name": "Subscriber",
+                    "Description" "Subscriber Role",
+                    "PermissionBehavior": "Replace",
+                    "Permissions": []
+                }
+            ]
         }
     ]
 }
@@ -55,12 +61,16 @@ For instance, to add the "CanChat" permission to the `Subscriber` role, use the 
 
 ```json
 {
-    "name": "roles",
-    "PermissionBehavior": "Add",
-    "Roles": [
+    "steps": [
         {
-            "Name": "Subscriber",
-            "Permissions": ["CanChat"]
+            "name": "roles",
+            "Roles": [
+                {
+                    "Name": "Subscriber",
+                    "PermissionBehavior": "Add",
+                    "Permissions": ["CanChat"]
+                }
+            ]
         }
     ]
 }

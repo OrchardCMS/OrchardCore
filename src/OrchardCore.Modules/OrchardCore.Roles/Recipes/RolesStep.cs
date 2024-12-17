@@ -63,7 +63,8 @@ public sealed class RolesStep : NamedRecipeStepHandler
                 {
                     if (roleEntry.PermissionBehavior == PermissionBehavior.Remove)
                     {
-                        var permissions = r.RoleClaims.Where(c => c.ClaimType == Permission.ClaimType && roleEntry.Permissions.Contains(c.ClaimValue));
+                        // Materialize this list to prevent an exception. 
+                        var permissions = r.RoleClaims.Where(c => c.ClaimType == Permission.ClaimType && roleEntry.Permissions.Contains(c.ClaimValue)).ToArray();
 
                         foreach (var permission in permissions)
                         {
@@ -73,7 +74,7 @@ public sealed class RolesStep : NamedRecipeStepHandler
                     else
                     {
                         var permissions = roleEntry.Permissions.Select(RoleClaim.Create)
-                            .Where(c => !r.RoleClaims.Exists(x => x.ClaimType == c.ClaimType && x.ClaimValue == x.ClaimValue));
+                            .Where(newClaim => !r.RoleClaims.Exists(existingClaim => existingClaim.ClaimType == newClaim.ClaimType && existingClaim.ClaimValue == newClaim.ClaimValue));
 
                         r.RoleClaims.AddRange(permissions);
                     }
