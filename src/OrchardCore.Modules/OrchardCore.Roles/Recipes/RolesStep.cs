@@ -51,11 +51,32 @@ public sealed class RolesStep : NamedRecipeStepHandler
             if (role is Role r)
             {
                 r.RoleDescription = roleEntry.Description;
-                r.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
+
+                if (roleEntry.PermissionBehavior == PermissionBehavior.Replace)
+                {
+                    // At this point, we know we are replacing permissions.
+                    // Remove all existing permission so we can add the replacements later.
+                    r.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
+                }
 
                 if (!await _systemRoleNameProvider.IsAdminRoleAsync(roleName))
                 {
-                    r.RoleClaims.AddRange(roleEntry.Permissions.Select(RoleClaim.Create));
+                    if (roleEntry.PermissionBehavior == PermissionBehavior.Remove)
+                    {
+                        var permissions = r.RoleClaims.Where(c => c.ClaimType == Permission.ClaimType && roleEntry.Permissions.Contains(c.ClaimValue));
+
+                        foreach (var permission in permissions)
+                        {
+                            r.RoleClaims.Remove(permission);
+                        }
+                    }
+                    else
+                    {
+                        var permissions = roleEntry.Permissions.Select(RoleClaim.Create)
+                            .Where(c => !r.RoleClaims.Exists(x => x.ClaimType == c.ClaimType && x.ClaimValue == x.ClaimValue));
+
+                        r.RoleClaims.AddRange(permissions);
+                    }
                 }
             }
 
@@ -83,4 +104,13 @@ public sealed class RolesStepRoleModel
     public string Description { get; set; }
 
     public string[] Permissions { get; set; }
+
+    public PermissionBehavior PermissionBehavior { get; set; }
+}
+
+public enum PermissionBehavior
+{
+    Replace,
+    Add,
+    Remove,
 }
