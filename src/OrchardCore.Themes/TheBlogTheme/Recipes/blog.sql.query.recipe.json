@@ -24,7 +24,7 @@
         {
           "Source": "Sql",
           "Name": "RecentBlogPosts",
-          "Template": "SELECT DocumentId FROM ContentItemIndex WHERE ContentType='BlogPost' ORDER BY CreatedUtc DESC LIMIT 3",
+          "Template": "SELECT DocumentId FROM ContentItemIndex WHERE ContentType='BlogPost' AND Published = 1 ORDER BY CreatedUtc DESC LIMIT 3",
           "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
           "ReturnContentItems": true
         }
