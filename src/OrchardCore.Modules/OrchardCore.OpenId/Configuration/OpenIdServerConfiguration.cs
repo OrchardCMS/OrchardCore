@@ -83,7 +83,7 @@ public sealed class OpenIdServerConfiguration : IConfigureOptions<Authentication
 
         if (settings.LogoutEndpointPath.HasValue)
         {
-            options.LogoutEndpointUris.Add(new Uri(
+            options.EndSessionEndpointUris.Add(new Uri(
                 settings.LogoutEndpointPath.ToUriComponent()[1..], UriKind.Relative));
         }
 
@@ -95,7 +95,7 @@ public sealed class OpenIdServerConfiguration : IConfigureOptions<Authentication
 
         if (settings.UserinfoEndpointPath.HasValue)
         {
-            options.UserinfoEndpointUris.Add(new Uri(
+            options.UserInfoEndpointUris.Add(new Uri(
                 settings.UserinfoEndpointPath.ToUriComponent()[1..], UriKind.Relative));
         }
 
@@ -195,18 +195,18 @@ public sealed class OpenIdServerConfiguration : IConfigureOptions<Authentication
 
     public void Configure(string name, OpenIddictServerAspNetCoreOptions options)
     {
-        // Note: the OpenID module handles the authorization, logout, token and userinfo requests
+        // Note: the OpenID module handles the authorization, end session, token and userinfo requests
         // in its dedicated ASP.NET Core MVC controller, which requires enabling the pass-through mode.
         options.EnableAuthorizationEndpointPassthrough = true;
-        options.EnableLogoutEndpointPassthrough = true;
+        options.EnableEndSessionEndpointPassthrough = true;
         options.EnableTokenEndpointPassthrough = true;
-        options.EnableUserinfoEndpointPassthrough = true;
+        options.EnableUserInfoEndpointPassthrough = true;
 
-        // Note: caching is enabled for both authorization and logout requests to allow sending
-        // large POST authorization and logout requests, but can be programmatically disabled, as the
-        // authorization and logout views support flowing the entire payload and not just the request_id.
+        // Note: caching is enabled for both authorization and end session requests to allow sending
+        // large POST authorization and end session requests, but can be programmatically disabled, as the
+        // authorization and end session views support flowing the entire payload and not just the request_id.
         options.EnableAuthorizationRequestCaching = true;
-        options.EnableLogoutRequestCaching = true;
+        options.EnableEndSessionRequestCaching = true;
 
         // Note: error pass-through is enabled to allow the actions of the MVC authorization controller
         // to handle the errors returned by the interactive endpoints without relying on the generic
