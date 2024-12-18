@@ -11,7 +11,7 @@ If you find a bug in Orchard Core, or have an idea for a new or improved feature
 
 ## What happens after you open an issue
 
-We triage issues every week on [the triage meeting](../../resources/meeting/README.md), as well as core contributors may comment on your issue before that. Please reply to any inquiries.
+We triage issues every week on [the triage meeting](meetings.md), as well as core contributors may comment on your issue before that. Please reply to any inquiries.
 
 Once your issue is triaged, one of the following things will happen:
 
@@ -23,7 +23,7 @@ Once your issue is triaged, one of the following things will happen:
 This is what [issue milestones](https://github.com/OrchardCMS/OrchardCore/milestones) mean:
 
 - The next patch version (e.g. if the current version is `1.2.3`, then `1.2.4`) indicates the highest priority for serious regressions and other urgent bug fixes that we intend to fix ASAP and publish in a patch release.
-- The next minor version (e.g. `1.3` if the current version is `1.2.0`) is for less urgent bug fixes and feature requests that we still think should be addressed in the next planned release. Regressions since the last release found by those from the community who live on the edge and use the [preview releases](../../getting-started/preview-package-source.md) are marked as such too.
+- The next minor version (e.g. `1.3` if the current version is `1.2.0`) is for less urgent bug fixes and feature requests that we still think should be addressed in the next planned release. Regressions since the last release found by those from the community who live on the edge and use the [preview releases](../getting-started/preview-package-source.md) are marked as such too.
 - Some later minor version (literally `1.x` if the current version is `1.anything`) is for issues that we intend to address eventually, maybe.
 - The `backlog` milestone is for everything else that we think is a valid request, but we won't work on it any time soon.
 

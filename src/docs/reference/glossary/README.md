@@ -21,12 +21,12 @@ Define the list of Content Parts and Content Fields a content item can be made o
 ### Content Part
 
 Content parts are atoms of content that are enough to build a specific coherent behavior and that can be reused across content types.
-See [Content Parts](../reference/modules/ContentParts/README.md)
+See [Content Parts](../modules/ContentParts/README.md)
 
 ### Content Field
 
 A content field extends a content type with a named piece of data. There can be multiple fields of the same kind attached to a content type or a content part. For instance __Description__ could be a field defined on a __Product__ content type.
-See [Content Fields](../reference/modules/ContentFields/README.md)
+See [Content Fields](../modules/ContentFields/README.md)
 
 ### Display Type
 
@@ -39,7 +39,7 @@ A field can have different Editors (Ex: The value of a Numeric Field can be set 
 ### Autoroute
 
 A part that dynamically creates and registers a url to access a content item. It can use a Liquid pattern to be automatically generated.
-See [Autoroute](../reference/modules/Autoroute/README.md)
+See [Autoroute](../modules/Autoroute/README.md)
 
 ### Bag
 
@@ -48,44 +48,44 @@ A collection of content items of a certain type in a parent content item. The co
 ### List
 
 A list of content items to a parent container (Ex: A blog contains a list of blog posts). The content items are referenced.
-See [Lists](../reference/modules/Lists/README.md)
+See [Lists](../modules/Lists/README.md)
 
 ### Taxonomy
 
 A hierarchy of content items that are used as references for other content items. Also called managed vocabularies. An example is a list of colors which can then be attached to products. Also often used for categories of articles for instance.
-See [Taxonomies](../reference/modules/Taxonomies/README.md)
+See [Taxonomies](../modules/Taxonomies/README.md)
 
 ### Admin menu
 
 A hierarchy of menu items that are displayed in the admin section of the site.
-See [Admin menu](../reference/modules/AdminMenu/README.md)
+See [Admin menu](../modules/AdminMenu/README.md)
 
 ### Alias
 
 A part that allows you to specify an alias. A way to identify an item with a key that you can call to retrieve it, instead of an Id.  
-See [Alias](../reference/modules/Alias/README.md)
+See [Alias](../modules/Alias/README.md)
 
 ### Content Preview
 
 Allows to Preview and Live Edit a content.  
-See [Content Preview](../reference/modules/ContentPreview/README.md)
+See [Content Preview](../modules/ContentPreview/README.md)
 
 ### Indexing
 
 Define the way the content will be indexed in order to search it from a query.  
-See [Indexing](../reference/modules/Indexing/README.md)
+See [Indexing](../modules/Indexing/README.md)
 
 ### Query
 
 Parameterized Lucene or Sql query defined in admin.  
-See [Queries](../reference/modules/Queries/README.md)
+See [Queries](../modules/Queries/README.md)
 
 ### Tenant
 
 An independent subsite with its own url.  
 One instance can have multiple tenants.  
 They can only be managed in the Default one.  
-See [Tenants](../reference/modules/Tenants/README.md)
+See [Tenants](../modules/Tenants/README.md)
 
 ## Theme Designer
 
@@ -97,17 +97,17 @@ It can also contain a recipe to initialize some content types and content items.
 ### Liquid
 
 A syntax that you can use in the views instead of Razor or in the Templates.  
-See [Liquid](../reference/modules/Liquid/README.md)
+See [Liquid](../modules/Liquid/README.md)
 
 ### Alternate
 
 An override of content type or part or field using a file in a Theme.  
-See [Alternates](../reference/modules/Templates//README.md#shape-differentiators)
+See [Alternates](../modules/Templates//README.md#shape-differentiators)
 
 ### Placement
 
 A mapping file to set the order of appearance or hide contents for a specific content type or Part/Field name or display type in a Theme.  
-See [Placement](../reference/core/Placement/README.md)
+See [Placement](../modules/Placement/README.md)
 
 ### Assets
 
@@ -116,7 +116,7 @@ In the Admin, this is the Media library. In a Theme, these are the folders in ww
 ### Resource
 
 Style or Script libraries that are registered with a specific version and with potentially minified file and CDN urls.  
-See [Resources](../reference/modules/Resources/README.md)
+See [Resources](../modules/Resources/README.md)
 
 ### Shape
 
@@ -125,7 +125,7 @@ See [Resources](../reference/modules/Resources/README.md)
 ### Template
 
 A Liquid override of a Shape or a Display type in admin.  
-See [Templates](../reference/modules/Templates/README.md)
+See [Templates](../modules/Templates/README.md)
 
 ### Zone
 
@@ -134,7 +134,7 @@ A section in the Layout (ex: Footer) in which you can render items.
 ### Layer
 
 A display Rule in which you specify a condition to be rendered (ex: isHomepage()).  
-See [Layers](../reference/modules/Layers/README.md)
+See [Layers](../modules/Layers/README.md)
 
 ### Stereotype
 
@@ -149,12 +149,12 @@ It has the `Widget` stereotype in its content definition.
 ### Flow
 
 Page Layout in which you can add widgets.  
-See [Flow](../reference/modules/Flow/README.md)
+See [Flow](../modules/Flow/README.md)
 
 ### Shortcode
 
 A Shortcode is a small piece of code wrapped into [brackets] that can add some behavior to content editors, like embedding media files.  
-See [Shortcodes](../reference/modules/Shortcodes/README.md)
+See [Shortcodes](../modules/Shortcodes/README.md)
 
 ## Administrator
 
