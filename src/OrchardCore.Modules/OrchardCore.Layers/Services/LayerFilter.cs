@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents;
 using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.Layout;
@@ -95,7 +96,8 @@ public sealed class LayerFilter : IAsyncResultFilter
             var updater = _modelUpdaterAccessor.ModelUpdater;
 
             var layersCache = new Dictionary<string, bool>();
-            var contentDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+            var widgetDefinitions = (await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync())
+                .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
 
             foreach (var widget in widgets)
             {
@@ -119,7 +121,8 @@ public sealed class LayerFilter : IAsyncResultFilter
                     continue;
                 }
 
-                if (contentDefinitions.Any(c => c.Name == widget.ContentItem.ContentType) && await _authorizationService.AuthorizeAsync(context.HttpContext.User, CommonPermissions.ViewContent, widget.ContentItem))
+                if (widgetDefinitions.TryGetValue(widget.ContentItem.ContentType, out var definition) &&
+                    (!definition.IsSecurable() || await _authorizationService.AuthorizeAsync(context.HttpContext.User, CommonPermissions.ViewContent, widget.ContentItem)))
                 {
                     var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
 
