@@ -17,3 +17,18 @@ Use the minimal SDK version required, the `rollForward` rule will pick the lates
 - [ ] Update docker file base images.
 - [ ] Update documentation pages specifying a TFM (search for `<TargetFramework>`).
 - [ ] Add a note about the supported .NET versions to the upcoming release notes.
+- [ ] When dual-targeting framework versions, configure Renovate in the `renovate.json5` file (in the repository root) to update packages targeting the older framework only up to their compatible versions. An example package rule for the `packageRules` section that will update the <9.0.0 (i.e. 8.x) version of the matching packages only up to 8.x:
+  ```json5
+  {
+      // The .NET 8 versions of these packages need to stay on 8.x. We maintain a separate reference to the 
+      // .NET 9 versions in Directory.Packages.props, which is only active when building for .NET 9.
+      matchPackageNames: [
+          '/^Microsoft\\.AspNetCore.*$/',
+          '/^Microsoft\\.Extensions.*$/',
+          'Serilog.AspNetCore',
+          'System.Text.Json',
+      ],
+      allowedVersions: '<9.0.0',
+      matchCurrentVersion: '<9.0.0',
+  }
+  ```
