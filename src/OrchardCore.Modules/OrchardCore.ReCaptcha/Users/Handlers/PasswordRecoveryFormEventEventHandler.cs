@@ -3,32 +3,18 @@ using OrchardCore.Users.Events;
 
 namespace OrchardCore.ReCaptcha.Users.Handlers;
 
-public class PasswordRecoveryFormEventEventHandler : IPasswordRecoveryFormEvents
+public sealed class PasswordRecoveryFormEventEventHandler : PasswordRecoveryFormEvents
 {
-    private readonly ReCaptchaService _recaptchaService;
+    private readonly ReCaptchaService _reCaptchaService;
 
-    public PasswordRecoveryFormEventEventHandler(ReCaptchaService recaptchaService)
+    public PasswordRecoveryFormEventEventHandler(ReCaptchaService reCaptchaService)
     {
-        _recaptchaService = recaptchaService;
+        _reCaptchaService = reCaptchaService;
     }
 
-    public Task RecoveringPasswordAsync(Action<string, string> reportError)
-    {
-        return _recaptchaService.ValidateCaptchaAsync(reportError);
-    }
+    public override Task RecoveringPasswordAsync(Action<string, string> reportError)
+        => _reCaptchaService.ValidateCaptchaAsync(reportError);
 
-    public Task PasswordResetAsync(PasswordRecoveryContext context)
-    {
-        return Task.CompletedTask;
-    }
-
-    public Task ResettingPasswordAsync(Action<string, string> reportError)
-    {
-        return _recaptchaService.ValidateCaptchaAsync(reportError);
-    }
-
-    public Task PasswordRecoveredAsync(PasswordRecoveryContext context)
-    {
-        return Task.CompletedTask;
-    }
+    public override Task ResettingPasswordAsync(Action<string, string> reportError)
+        => _reCaptchaService.ValidateCaptchaAsync(reportError);
 }

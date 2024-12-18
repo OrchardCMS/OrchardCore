@@ -101,20 +101,20 @@ public sealed class AccountController : AccountBaseController
     [ActionName(nameof(Login))]
     public async Task<IActionResult> LoginPOST(string returnUrl = null)
     {
-        ViewData["ReturnUrl"] = returnUrl;
-
-        var model = new LoginForm();
-
-        var formShape = await _loginFormDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
-
         var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
 
         if (loginSettings.DisableLocalLogin)
         {
-            ModelState.AddModelError(string.Empty, S["Local login is disabled."]);
+            await _notifier.ErrorAsync(H["Local login is disabled."]);
 
-            return View(formShape);
+            return RedirectToAction(nameof(Login), new { returnUrl });
         }
+
+        ViewData["ReturnUrl"] = returnUrl;
+
+        var model = new LoginForm();
+
+        var formShape = await _loginFormDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, false);
 
         await _accountEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(model.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
 
