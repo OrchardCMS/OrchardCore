@@ -158,7 +158,7 @@ public sealed class Startup : StartupBase
 Finally, here is an example of consuming your Content Item as your Content Part in a Controller.
 
 ```csharp
-public class ProductController : Controller
+public sealed class ProductController : Controller
 {
     private readonly IOrchardHelper _orchardHelper;
     private readonly IContentManager _contentManager;

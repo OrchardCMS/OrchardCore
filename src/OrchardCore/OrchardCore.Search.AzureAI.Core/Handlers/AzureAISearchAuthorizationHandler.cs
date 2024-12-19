@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Search.Abstractions;
@@ -10,7 +8,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Handlers;
 
-public class AzureAISearchAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+public sealed class AzureAISearchAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
     private readonly IServiceProvider _serviceProvider;
 

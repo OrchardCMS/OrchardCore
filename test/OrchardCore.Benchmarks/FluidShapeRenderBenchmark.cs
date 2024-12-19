@@ -12,133 +12,133 @@ using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement.Liquid.Filters;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.Benchmark
+namespace OrchardCore.Benchmark;
+
+[MemoryDiagnoser]
+public class FluidShapeRenderBenchmark
 {
-    [MemoryDiagnoser]
-    public class FluidShapeRenderBenchmark
+    private static readonly FilterArguments _filterArguments = new FilterArguments().Add("utc", new DateTimeValue(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
+    private static readonly FluidValue _input = ObjectValue.Create(HtmlString.Empty, new TemplateOptions());
+    private static readonly LiquidFilterDelegateResolver<ShapeRenderFilter> _liquidFilterDelegateResolver;
+    private static readonly IServiceProvider _serviceProvider;
+
+    static FluidShapeRenderBenchmark()
     {
-        private static readonly FilterArguments _filterArguments = new FilterArguments().Add("utc", new DateTimeValue(DateTime.UtcNow)).Add("format", StringValue.Create("MMMM dd, yyyy"));
-        private static readonly FluidValue _input = ObjectValue.Create(HtmlString.Empty, new TemplateOptions());
-        private static readonly LiquidFilterDelegateResolver<ShapeRenderFilter> _liquidFilterDelegateResolver;
-        private static readonly IServiceProvider _serviceProvider;
+        var htmlDisplay = new DefaultHtmlDisplay(null, null, null, null, null, null);
 
-        static FluidShapeRenderBenchmark()
-        {
-            var htmlDisplay = new DefaultHtmlDisplay(null, null, null, null, null, null);
+        _serviceProvider = new ServiceCollection()
+            .AddScoped<IDisplayHelper>(sp => new DisplayHelper(htmlDisplay, null, null))
+            .AddTransient<ShapeRenderFilter>()
+            .BuildServiceProvider();
 
-            _serviceProvider = new ServiceCollection()
-                .AddScoped<IDisplayHelper>(sp => new DisplayHelper(htmlDisplay, null, null))
-                .AddTransient<ShapeRenderFilter>()
-                .BuildServiceProvider();
+        _liquidFilterDelegateResolver = new LiquidFilterDelegateResolver<ShapeRenderFilter>();
+    }
 
-            _liquidFilterDelegateResolver = new LiquidFilterDelegateResolver<ShapeRenderFilter>();
-        }
-
-        [Benchmark(Baseline = true)]
+    [Benchmark(Baseline = true)]
 #pragma warning disable CA1822 // Mark members as static
-        public async Task OriginalShapeRenderDynamic()
-        {
-            var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
-            var displayHelper = _serviceProvider.GetRequiredService<IDisplayHelper>();
-            templateContext.AmbientValues["DisplayHelper"] = displayHelper;
-            await OriginalShapeRenderDynamic(_input, _filterArguments, templateContext);
-        }
+    public async Task OriginalShapeRenderDynamic()
+    {
+        var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
+        var displayHelper = _serviceProvider.GetRequiredService<IDisplayHelper>();
+        templateContext.AmbientValues["DisplayHelper"] = displayHelper;
+        await OriginalShapeRenderDynamic(_input, _filterArguments, templateContext);
+    }
 
-        [Benchmark]
-        public async Task ShapeRenderWithAmbientValues()
-        {
-            var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
-            var displayHelper = _serviceProvider.GetRequiredService<IDisplayHelper>();
-            templateContext.AmbientValues["DisplayHelper"] = displayHelper;
-            await ShapeRenderWithAmbientValues(_input, _filterArguments, templateContext);
-        }
+    [Benchmark]
+    public async Task ShapeRenderWithAmbientValues()
+    {
+        var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
+        var displayHelper = _serviceProvider.GetRequiredService<IDisplayHelper>();
+        templateContext.AmbientValues["DisplayHelper"] = displayHelper;
+        await ShapeRenderWithAmbientValues(_input, _filterArguments, templateContext);
+    }
 
-        [Benchmark]
-        public async Task ShapeRenderStatic()
-        {
-            var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
-            await ShapeRenderStatic(_input, _filterArguments, templateContext);
-        }
+    [Benchmark]
+    public async Task ShapeRenderStatic()
+    {
+        var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
+        await ShapeRenderStatic(_input, _filterArguments, templateContext);
+    }
 
-        [Benchmark]
-        public async Task ShapeRenderWithResolver()
+    [Benchmark]
+    public async Task ShapeRenderWithResolver()
 #pragma warning restore CA1822 // Mark members as static
+    {
+        var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
+        await _liquidFilterDelegateResolver.ResolveAsync(_input, _filterArguments, templateContext);
+    }
+
+    private static async ValueTask<FluidValue> OriginalShapeRenderDynamic(FluidValue input, FilterArguments _, TemplateContext context)
+    {
+        if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
         {
-            var templateContext = new LiquidTemplateContext(_serviceProvider, new TemplateOptions());
-            await _liquidFilterDelegateResolver.ResolveAsync(_input, _filterArguments, templateContext);
+            throw new ArgumentException("DisplayHelper missing while invoking 'shape_render'");
         }
 
-        private static async ValueTask<FluidValue> OriginalShapeRenderDynamic(FluidValue input, FilterArguments _, TemplateContext context)
+        // This is marginally different than the exact original as we currently pass any non null object to the display helper.
+        // And the original benchmark was if (input.ToObjectValue() is IShape shape) where input was never IShape.
+        // The original benchmark noop'd here and didn't hit the dynamic display helper.
+        if (input != null)
         {
-            if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
-            {
-                throw new ArgumentException("DisplayHelper missing while invoking 'shape_render'");
-            }
-
-            // This is marginally different than the exact original as we currently pass any non null object to the display helper.
-            // And the original benchmark was if (input.ToObjectValue() is IShape shape) where input was never IShape.
-            // The original benchmark noop'd here and didn't hit the dynamic display helper.
-            if (input != null)
-            {
-                return new HtmlContentValue(await (Task<IHtmlContent>)displayHelper(input));
-            }
-
-            return NilValue.Instance;
+            return new HtmlContentValue(await (Task<IHtmlContent>)displayHelper(input));
         }
 
-        private static ValueTask<FluidValue> ShapeRenderWithAmbientValues(FluidValue input, FilterArguments _, TemplateContext context)
+        return NilValue.Instance;
+    }
+
+    private static ValueTask<FluidValue> ShapeRenderWithAmbientValues(FluidValue input, FilterArguments _, TemplateContext context)
+    {
+        static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
         {
-            static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
-            {
-                return new HtmlContentValue(await task);
-            }
-
-            if (input.ToObjectValue() is IShape shape)
-            {
-                if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || item is not IDisplayHelper displayHelper)
-                {
-                    return ThrowArgumentException<ValueTask<FluidValue>>("DisplayHelper missing while invoking 'shape_render'");
-                }
-
-                var task = displayHelper.ShapeExecuteAsync(shape);
-                if (!task.IsCompletedSuccessfully)
-                {
-                    return Awaited(task);
-                }
-                return new ValueTask<FluidValue>(new HtmlContentValue(task.Result));
-            }
-
-            return new ValueTask<FluidValue>(NilValue.Instance);
+            return new HtmlContentValue(await task);
         }
 
-        private static ValueTask<FluidValue> ShapeRenderStatic(FluidValue input, FilterArguments _, TemplateContext context)
+        if (input.ToObjectValue() is IShape shape)
         {
-            static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
+            if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || item is not IDisplayHelper displayHelper)
             {
-                return new HtmlContentValue(await task);
+                return ThrowArgumentException<ValueTask<FluidValue>>("DisplayHelper missing while invoking 'shape_render'");
             }
 
-            if (input.ToObjectValue() is IShape shape)
+            var task = displayHelper.ShapeExecuteAsync(shape);
+            if (!task.IsCompletedSuccessfully)
             {
-                var services = ((LiquidTemplateContext)context).Services;
+                return Awaited(task);
+            }
+            return ValueTask.FromResult<FluidValue>(new HtmlContentValue(task.Result));
+        }
 
-                var displayHelper = services.GetRequiredService<IDisplayHelper>();
+        return ValueTask.FromResult<FluidValue>(NilValue.Instance);
+    }
 
-                var task = displayHelper.ShapeExecuteAsync(shape);
-                if (!task.IsCompletedSuccessfully)
-                {
-                    return Awaited(task);
-                }
-                return new ValueTask<FluidValue>(new HtmlContentValue(task.Result));
+    private static ValueTask<FluidValue> ShapeRenderStatic(FluidValue input, FilterArguments _, TemplateContext context)
+    {
+        static async ValueTask<FluidValue> Awaited(Task<IHtmlContent> task)
+        {
+            return new HtmlContentValue(await task);
+        }
+
+        if (input.ToObjectValue() is IShape shape)
+        {
+            var services = ((LiquidTemplateContext)context).Services;
+
+            var displayHelper = services.GetRequiredService<IDisplayHelper>();
+
+            var task = displayHelper.ShapeExecuteAsync(shape);
+            if (!task.IsCompletedSuccessfully)
+            {
+                return Awaited(task);
             }
 
-            return new ValueTask<FluidValue>(NilValue.Instance);
+            return ValueTask.FromResult<FluidValue>(new HtmlContentValue(task.Result));
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static T ThrowArgumentException<T>(string message)
-        {
-            throw new ArgumentException(message);
-        }
+        return ValueTask.FromResult<FluidValue>(NilValue.Instance);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static T ThrowArgumentException<T>(string message)
+    {
+        throw new ArgumentException(message);
     }
 }

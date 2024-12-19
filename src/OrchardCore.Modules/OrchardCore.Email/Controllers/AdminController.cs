@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -16,7 +12,7 @@ using OrchardCore.Email.ViewModels;
 
 namespace OrchardCore.Email.Controllers;
 
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
@@ -25,8 +21,8 @@ public class AdminController : Controller
     private readonly IEmailService _emailService;
     private readonly IEmailProviderResolver _emailProviderResolver;
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public AdminController(
         IAuthorizationService authorizationService,
@@ -61,7 +57,7 @@ public class AdminController : Controller
             Provider = _emailOptions.DefaultProviderName,
         };
 
-        PopulateModel(model);
+        await PopulateModelAsync(model);
 
         return View(model);
     }
@@ -107,7 +103,7 @@ public class AdminController : Controller
             }
         }
 
-        PopulateModel(model);
+        await PopulateModelAsync(model);
 
         return View(model);
     }
@@ -140,7 +136,7 @@ public class AdminController : Controller
         return message;
     }
 
-    private async void PopulateModel(EmailTestViewModel model)
+    private async Task PopulateModelAsync(EmailTestViewModel model)
     {
         var options = new List<SelectListItem>();
 

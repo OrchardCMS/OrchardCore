@@ -1,7 +1,6 @@
-namespace OrchardCore.Entities
+namespace OrchardCore.Entities;
+
+public interface IIdGenerator
 {
-    public interface IIdGenerator
-    {
-        string GenerateUniqueId();
-    }
+    string GenerateUniqueId();
 }

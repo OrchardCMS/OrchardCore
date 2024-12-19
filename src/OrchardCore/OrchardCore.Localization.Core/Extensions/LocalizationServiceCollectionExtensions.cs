@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -8,56 +7,55 @@ using OrchardCore.Localization;
 using OrchardCore.Localization.DataAnnotations;
 using OrchardCore.Localization.PortableObject;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+/// <summary>
+/// Provides extension methods for <see cref="IServiceCollection"/>.
+/// </summary>
+public static class LocalizationServiceCollectionExtensions
 {
     /// <summary>
-    /// Provides extension methods for <see cref="IServiceCollection"/>.
+    /// Registers the services to enable localization using Portable Object files.
     /// </summary>
-    public static class LocalizationServiceCollectionExtensions
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    public static IServiceCollection AddPortableObjectLocalization(this IServiceCollection services)
     {
-        /// <summary>
-        /// Registers the services to enable localization using Portable Object files.
-        /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        public static IServiceCollection AddPortableObjectLocalization(this IServiceCollection services)
+        return AddPortableObjectLocalization(services, null);
+    }
+
+    /// <summary>
+    /// Registers the services to enable localization using Portable Object files.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    /// <param name="setupAction">An action to configure the Microsoft.Extensions.Localization.LocalizationOptions.</param>
+    public static IServiceCollection AddPortableObjectLocalization(this IServiceCollection services, Action<LocalizationOptions> setupAction)
+    {
+        services.AddSingleton<IPluralRuleProvider, DefaultPluralRuleProvider>();
+        services.AddSingleton<ITranslationProvider, PoFilesTranslationsProvider>();
+        services.AddSingleton<ILocalizationFileLocationProvider, ContentRootPoFileLocationProvider>();
+        services.AddSingleton<ILocalizationManager, LocalizationManager>();
+        services.AddSingleton<IStringLocalizerFactory, PortableObjectStringLocalizerFactory>();
+        services.AddSingleton<IHtmlLocalizerFactory, PortableObjectHtmlLocalizerFactory>();
+        services.TryAddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
+
+        if (setupAction != null)
         {
-            return AddPortableObjectLocalization(services, null);
+            services.Configure(setupAction);
         }
 
-        /// <summary>
-        /// Registers the services to enable localization using Portable Object files.
-        /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        /// <param name="setupAction">An action to configure the Microsoft.Extensions.Localization.LocalizationOptions.</param>
-        public static IServiceCollection AddPortableObjectLocalization(this IServiceCollection services, Action<LocalizationOptions> setupAction)
-        {
-            services.AddSingleton<IPluralRuleProvider, DefaultPluralRuleProvider>();
-            services.AddSingleton<ITranslationProvider, PoFilesTranslationsProvider>();
-            services.AddSingleton<ILocalizationFileLocationProvider, ContentRootPoFileLocationProvider>();
-            services.AddSingleton<ILocalizationManager, LocalizationManager>();
-            services.AddSingleton<IStringLocalizerFactory, PortableObjectStringLocalizerFactory>();
-            services.AddSingleton<IHtmlLocalizerFactory, PortableObjectHtmlLocalizerFactory>();
-            services.TryAddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
+        return services;
+    }
 
-            if (setupAction != null)
-            {
-                services.Configure(setupAction);
-            }
+    /// <summary>
+    /// Localize data annotations attributes from portable object files.  
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+    public static IServiceCollection AddDataAnnotationsPortableObjectLocalization(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
 
-            return services;
-        }
+        services.AddSingleton<IConfigureOptions<MvcOptions>, LocalizedDataAnnotationsMvcOptions>();
 
-        /// <summary>
-        /// Localize data annotations attributes from portable object files.  
-        /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        public static IServiceCollection AddDataAnnotationsPortableObjectLocalization(this IServiceCollection services)
-        {
-            ArgumentNullException.ThrowIfNull(services);
-
-            services.AddSingleton<IConfigureOptions<MvcOptions>, LocalizedDataAnnotationsMvcOptions>();
-
-            return services;
-        }
+        return services;
     }
 }

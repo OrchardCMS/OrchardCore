@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using System.Globalization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.ReCaptcha.Configuration;
@@ -18,13 +18,16 @@ public sealed class ReCaptchaResetPasswordFormDisplayDriver : DisplayDriver<Rese
 
     public override async Task<IDisplayResult> EditAsync(ResetPasswordForm model, BuildEditorContext context)
     {
-        var _reCaptchaSettings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
+        var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
 
-        if (!_reCaptchaSettings.IsValid())
+        if (!settings.ConfigurationExists())
         {
             return null;
         }
 
-        return View("FormReCaptcha", model).Location("Content:after");
+        return Dynamic("ReCaptcha", (m) =>
+        {
+            m.language = CultureInfo.CurrentUICulture.Name;
+        }).Location("Content:after");
     }
 }

@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,12 +10,11 @@ using OrchardCore.Email.Core;
 using OrchardCore.Email.Core.Services;
 using OrchardCore.Email.ViewModels;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Drivers;
 
-public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSettings>
+public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
@@ -27,7 +23,10 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly EmailProviderOptions _emailProviders;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
+
+    protected override string SettingsGroupId
+        => EmailSettings.GroupId;
 
     public EmailSettingsDisplayDriver(
         IHttpContextAccessor httpContextAccessor,
@@ -46,35 +45,25 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
         _shellReleaseManager = shellReleaseManager;
         S = stringLocalizer;
     }
-    public override async Task<IDisplayResult> EditAsync(EmailSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> EditAsync(ISite site, EmailSettings settings, BuildEditorContext context)
     {
-        if (!context.GroupId.EqualsOrdinalIgnoreCase(EmailSettings.GroupId))
-        {
-            return null;
-        }
-
         if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageEmailSettings))
         {
             return null;
         }
 
-        context.Shape.Metadata.Wrappers.Add("Settings_Wrapper__Reload");
+        context.AddTenantReloadWarningWrapper();
 
         return Initialize<EmailSettingsViewModel>("EmailSettings_Edit", async model =>
         {
             model.DefaultProvider = settings.DefaultProviderName ?? _emailOptions.DefaultProviderName;
             model.Providers = await GetProviderOptionsAsync();
         }).Location("Content:1#Providers")
-        .OnGroup(EmailSettings.GroupId);
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(EmailSettings settings, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, EmailSettings settings, UpdateEditorContext context)
     {
-        if (!context.GroupId.EqualsOrdinalIgnoreCase(EmailSettings.GroupId))
-        {
-            return null;
-        }
-
         if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, Permissions.ManageEmailSettings))
         {
             return null;
@@ -91,7 +80,7 @@ public class EmailSettingsDisplayDriver : SectionDisplayDriver<ISite, EmailSetti
             _shellReleaseManager.RequestRelease();
         }
 
-        return await EditAsync(settings, context);
+        return await EditAsync(site, settings, context);
     }
 
     private async Task<SelectListItem[]> GetProviderOptionsAsync()

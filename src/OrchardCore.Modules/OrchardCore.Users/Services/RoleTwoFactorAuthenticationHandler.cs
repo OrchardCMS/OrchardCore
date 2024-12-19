@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;

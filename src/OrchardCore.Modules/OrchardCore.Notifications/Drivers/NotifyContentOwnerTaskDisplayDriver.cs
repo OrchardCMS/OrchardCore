@@ -7,7 +7,7 @@ using OrchardCore.Notifications.Models;
 
 namespace OrchardCore.Notifications.Drivers;
 
-public class NotifyContentOwnerTaskDisplayDriver : NotifyUserTaskActivityDisplayDriver<NotifyContentOwnerTask>
+public sealed class NotifyContentOwnerTaskDisplayDriver : NotifyUserTaskActivityDisplayDriver<NotifyContentOwnerTask>
 {
     public NotifyContentOwnerTaskDisplayDriver(
         IHtmlSanitizerService htmlSanitizerService,

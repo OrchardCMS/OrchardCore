@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+using System.Globalization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.ReCaptcha.Configuration;
@@ -18,13 +18,16 @@ public sealed class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserFo
 
     public override async Task<IDisplayResult> EditAsync(RegisterUserForm model, BuildEditorContext context)
     {
-        var reCaptchaSettings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
+        var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
 
-        if (!reCaptchaSettings.IsValid())
+        if (!settings.ConfigurationExists())
         {
             return null;
         }
 
-        return View("FormReCaptcha", model).Location("Content:after");
+        return Dynamic("ReCaptcha", (m) =>
+        {
+            m.language = CultureInfo.CurrentUICulture.Name;
+        }).Location("Content:after");
     }
 }

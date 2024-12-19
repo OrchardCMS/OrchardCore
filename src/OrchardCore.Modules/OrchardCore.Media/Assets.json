@@ -12,7 +12,10 @@
       "./node_modules/blueimp-file-upload/js/jquery.iframe-transport.js",
       "Assets/js/MediaApp/**/*.js",
       "Assets/js/MediaField/**/*.js",
-      "Assets/js/Shared/**/*.js"      
+      "Assets/js/Shared/**/*.js"
+    ],
+    "watch": [
+      "Assets/js/app/**/*.js"
     ],
     "output": "wwwroot/Scripts/media.js"
   },

@@ -1,42 +1,38 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Implementation;
 using StackExchange.Profiling;
 
-namespace OrchardCore.MiniProfiler
+namespace OrchardCore.MiniProfiler;
+
+public class ShapeStep : IShapeDisplayEvents
 {
-    public class ShapeStep : IShapeDisplayEvents
+    private readonly Dictionary<object, IDisposable> _timings = [];
+
+    public Task DisplayedAsync(ShapeDisplayContext context)
     {
-        private readonly Dictionary<object, IDisposable> _timings = [];
-
-        public Task DisplayedAsync(ShapeDisplayContext context)
+        if (_timings.TryGetValue(context, out var timing))
         {
-            if (_timings.TryGetValue(context, out var timing))
-            {
-                _timings.Remove(context);
-                timing.Dispose();
-            }
-
-            return Task.CompletedTask;
+            _timings.Remove(context);
+            timing.Dispose();
         }
 
-        public Task DisplayingAsync(ShapeDisplayContext context)
+        return Task.CompletedTask;
+    }
+
+    public Task DisplayingAsync(ShapeDisplayContext context)
+    {
+        var timing = StackExchange.Profiling.MiniProfiler.Current.Step($"Shape: {context.Shape.Metadata.Type}");
+        _timings.Add(context, timing);
+        return Task.CompletedTask;
+    }
+
+    public Task DisplayingFinalizedAsync(ShapeDisplayContext context)
+    {
+        if (_timings.TryGetValue(context, out var timing))
         {
-            var timing = StackExchange.Profiling.MiniProfiler.Current.Step($"Shape: {context.Shape.Metadata.Type}");
-            _timings.Add(context, timing);
-            return Task.CompletedTask;
+            _timings.Remove(context);
+            timing.Dispose();
         }
 
-        public Task DisplayingFinalizedAsync(ShapeDisplayContext context)
-        {
-            if (_timings.TryGetValue(context, out var timing))
-            {
-                _timings.Remove(context);
-                timing.Dispose();
-            }
-
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

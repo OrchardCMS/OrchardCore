@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.ContentManagement.Metadata.Models;
 
 public class ContentTypeDefinitionDriverOptions

@@ -1,8 +1,7 @@
-namespace OrchardCore.Rules.Models
+namespace OrchardCore.Rules.Models;
+
+public class CultureCondition : Condition
 {
-    public class CultureCondition : Condition
-    {
-        public string Value { get; set; }
-        public ConditionOperator Operation { get; set; }
-    }
+    public string Value { get; set; }
+    public ConditionOperator Operation { get; set; }
 }

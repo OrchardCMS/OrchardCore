@@ -70,9 +70,28 @@ Auto-Setup parameters are defined in appsettings.json. Example excerpt:
     `/autosetup` - trigger installation of the Root tenant.
     `/mytenant/autosetup` - auto-install mytenant.
 
-### Environment Variables
+### User Secrets and Environment Variables
 
-Since JSON configuration contains admin-sensitive information, it is recommended to use environment variables instead.
+If your JSON configuration contains sensitive information, or you don't want to commit it to the repository (because e.g. Auto Setup is not utilized by the whole development team), it is recommended to use user secrets or environment variables instead.
+
+[User secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets#secret-manager) are available during local development, and they are stored as JSON files. This means you can move the whole configuration from `appsettings.json` as-is. Alternatively, you can set each option directly from the command line (this will flatten any existing structures in the `secrets.json` file):
+
+```shell
+cd src/OrchardCore.Cms.Web
+dotnet user-secrets init
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:ShellName" "Default"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:SiteName" "AutoSetup Example"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:SiteTimeZone" "Europe/Amsterdam"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:AdminUsername" "admin"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:AdminEmail" "info@orchardproject.net"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:AdminPassword" "OrchardCoreRules1!"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:RecipeName" "SaaS"
+dotnet user-secrets set "OrchardCore:OrchardCore_AutoSetup:Tenants:0:DatabaseProvider" "Sqlite"
+```
+
+If you use a setup like the above when working with the full source code of Orchard Core, then all copies of the source will use it, due to `OrchardCore.Cms.Web` having `UserSecretsId` pre-configured. This is really useful when contributing to Orchard Core. However, if you want to remove this functionality, just remove the `UserSecretsId` element from the given copy's `OrchardCore.Cms.Web.csproj`.
+
+[Environment variables](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration#non-prefixed-environment-variables) are available on both server and local machine. But if you have multiple projects, you have to prefix them to avoid clashes.
 
 ```
 "OrchardCore__OrchardCore_AutoSetup__AutoSetupPath": ""

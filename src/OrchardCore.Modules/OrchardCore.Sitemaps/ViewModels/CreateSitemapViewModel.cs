@@ -1,14 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Sitemaps.ViewModels
+namespace OrchardCore.Sitemaps.ViewModels;
+
+public class CreateSitemapViewModel
 {
-    public class CreateSitemapViewModel
-    {
-        [Required]
-        public string Name { get; set; }
+    [Required]
+    public string Name { get; set; }
 
-        public string Path { get; set; }
+    public string Path { get; set; }
 
-        public bool Enabled { get; set; } = true;
-    }
+    public bool Enabled { get; set; } = true;
 }

@@ -1,97 +1,105 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Scripting;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
-namespace OrchardCore.Users.Handlers
+namespace OrchardCore.Users.Handlers;
+
+public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
 {
-    public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
+    private readonly ILogger _logger;
+    private readonly IScriptingManager _scriptingManager;
+    private readonly ISiteService _siteService;
+    private static readonly JsonMergeSettings _jsonMergeSettings = new JsonMergeSettings
     {
-        private readonly ILogger _logger;
-        private readonly IScriptingManager _scriptingManager;
-        private readonly ISiteService _siteService;
-        private static readonly JsonMergeSettings _jsonMergeSettings = new JsonMergeSettings
-        {
-            MergeArrayHandling = MergeArrayHandling.Union,
-            MergeNullValueHandling = MergeNullValueHandling.Merge
-        };
+        MergeArrayHandling = MergeArrayHandling.Union,
+        MergeNullValueHandling = MergeNullValueHandling.Merge
+    };
 
-        public ScriptExternalLoginEventHandler(
-            ISiteService siteService,
-            IScriptingManager scriptingManager,
-            ILogger<ScriptExternalLoginEventHandler> logger
-        )
-        {
-            _siteService = siteService;
-            _scriptingManager = scriptingManager;
-            _logger = logger;
-        }
+    public ScriptExternalLoginEventHandler(
+        ISiteService siteService,
+        IScriptingManager scriptingManager,
+        ILogger<ScriptExternalLoginEventHandler> logger
+    )
+    {
+        _siteService = siteService;
+        _scriptingManager = scriptingManager;
+        _logger = logger;
+    }
 
-        public async Task<string> GenerateUserName(string provider, IEnumerable<SerializableClaim> claims)
-        {
-            var registrationSettings = await _siteService.GetSettingsAsync<RegistrationSettings>();
+    public async Task<string> GenerateUserName(string provider, IEnumerable<SerializableClaim> claims)
+    {
+        var registrationSettings = await _siteService.GetSettingsAsync<ExternalRegistrationSettings>();
 
-            if (registrationSettings.UseScriptToGenerateUsername)
+        if (registrationSettings.UseScriptToGenerateUsername)
+        {
+            var context = new
             {
-                var context = new { userName = string.Empty, loginProvider = provider, externalClaims = claims };
+                userName = string.Empty,
+                loginProvider = provider,
+                externalClaims = claims
+            };
 
-                var script = $"js: function generateUsername(context) {{\n{registrationSettings.GenerateUsernameScript}\n}}\nvar context = {JConvert.SerializeObject(context, JOptions.CamelCase)};\ngenerateUsername(context);\nreturn context;";
+            var script = $"js: function generateUsername(context) {{\n{registrationSettings.GenerateUsernameScript}\n}}\nvar context = {JConvert.SerializeObject(context, JOptions.CamelCase)};\ngenerateUsername(context);\nreturn context;";
 
-                dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
-                if (evaluationResult?.userName != null)
-                {
-                    return evaluationResult.userName;
-                }
+            dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
+
+            if (evaluationResult is IDictionary<string, object> data && data.TryGetValue("userName", out var userNameObj))
+            {
+                return (string)userNameObj;
             }
-            return string.Empty;
         }
 
-        public async Task UpdateUserAsync(UpdateUserContext context)
+        return string.Empty;
+    }
+
+    public async Task UpdateUserAsync(UpdateUserContext context)
+    {
+        var loginSettings = await _siteService.GetSettingsAsync<ExternalLoginSettings>();
+
+        UpdateUserInternal(context, loginSettings);
+    }
+
+    public void UpdateUserInternal(UpdateUserContext context, ExternalLoginSettings loginSettings)
+    {
+        if (!loginSettings.UseScriptToSyncProperties)
         {
-            var loginSettings = await _siteService.GetSettingsAsync<LoginSettings>();
-            
-            UpdateUserInternal(context, loginSettings);
+            return;
         }
 
-        public void UpdateUserInternal(UpdateUserContext context, LoginSettings loginSettings)
+        var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncPropertiesScript}\n}}\nvar context={JConvert.SerializeObject(context, JOptions.CamelCase)};\nsyncRoles(context);\nreturn context;";
+        dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
+        context.RolesToAdd.AddRange((evaluationResult.rolesToAdd as object[]).Select(i => i.ToString()));
+        context.RolesToRemove.AddRange((evaluationResult.rolesToRemove as object[]).Select(i => i.ToString()));
+
+        if (evaluationResult is IDictionary<string, object> data)
         {
-            if (loginSettings.UseScriptToSyncRoles)
+            if (data.TryGetValue("claimsToUpdate", out var claimsToUpdateObj))
             {
-                var script = $"js: function syncRoles(context) {{\n{loginSettings.SyncRolesScript}\n}}\nvar context={JConvert.SerializeObject(context, JOptions.CamelCase)};\nsyncRoles(context);\nreturn context;";
-                dynamic evaluationResult = _scriptingManager.Evaluate(script, null, null, null);
-                context.RolesToAdd.AddRange((evaluationResult.rolesToAdd as object[]).Select(i => i.ToString()));
-                context.RolesToRemove.AddRange((evaluationResult.rolesToRemove as object[]).Select(i => i.ToString()));
+                var claimsToUpdate = JArray.FromObject(claimsToUpdateObj).Deserialize<List<UserClaim>>(JOptions.CamelCase);
+                context.ClaimsToUpdate.AddRange(claimsToUpdate);
+            }
 
-                if (evaluationResult.claimsToUpdate is not null)
+            if (data.TryGetValue("claimsToRemove", out var claimsToRemoveObj))
+            {
+                var claimsToRemove = JArray.FromObject(claimsToRemoveObj).Deserialize<List<UserClaim>>(JOptions.CamelCase);
+                context.ClaimsToRemove.AddRange(claimsToRemove);
+            }
+
+            if (data.TryGetValue("propertiesToUpdate", out var propertiesToUpdateObj))
+            {
+                var result = JObject.FromObject(propertiesToUpdateObj);
+                if (context.PropertiesToUpdate is not null)
                 {
-                    var claimsToUpdate = ((JsonArray)JArray.FromObject(evaluationResult.claimsToUpdate)).Deserialize<List<UserClaim>>(JOptions.CamelCase);
-                    context.ClaimsToUpdate.AddRange(claimsToUpdate);
+                    // Perhaps other provider will fill some values. we should keep exists value.
+                    context.PropertiesToUpdate.Merge(result, _jsonMergeSettings);
                 }
-
-                if (evaluationResult.claimsToRemove is not null)
+                else
                 {
-                    var claimsToRemove = ((JsonArray)JArray.FromObject(evaluationResult.claimsToRemove)).Deserialize<List<UserClaim>>(JOptions.CamelCase);
-                    context.ClaimsToRemove.AddRange(claimsToRemove);
-                }
-
-                if (evaluationResult.propertiesToUpdate is not null)
-                {
-                    var result = (JsonObject)JObject.FromObject(evaluationResult.propertiesToUpdate);
-                    if (context.PropertiesToUpdate is not null)
-                    {
-                        // Perhaps other provider will fill some values. we should keep exists value.
-                        context.PropertiesToUpdate.Merge(result, _jsonMergeSettings);
-                    }
-                    else
-                    {
-                        context.PropertiesToUpdate = result;
-                    }
+                    context.PropertiesToUpdate = result;
                 }
             }
         }

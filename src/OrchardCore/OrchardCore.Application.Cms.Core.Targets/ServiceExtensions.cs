@@ -1,64 +1,62 @@
-using System;
 using OrchardCore.ResourceManagement.TagHelpers;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+public static class ServiceExtensions
 {
-    public static class ServiceExtensions
+    /// <summary>
+    /// Adds Orchard CMS services to the application.
+    /// </summary>
+    public static OrchardCoreBuilder AddOrchardCms(this IServiceCollection services)
     {
-        /// <summary>
-        /// Adds Orchard CMS services to the application.
-        /// </summary>
-        public static OrchardCoreBuilder AddOrchardCms(this IServiceCollection services)
+        ArgumentNullException.ThrowIfNull(services);
+
+        var builder = services.AddOrchardCore()
+
+            .AddCommands()
+
+            .AddSecurity()
+            .AddMvc()
+            .AddIdGeneration()
+            .AddEmailAddressValidator()
+            .AddHtmlSanitizer()
+            .AddSetupFeatures("OrchardCore.Setup")
+
+            .AddDataAccess()
+            .AddDataStorage()
+            .AddBackgroundService()
+            .AddScripting()
+
+            .AddTheming()
+            .AddLiquidViews()
+            .AddCaching();
+
+        // OrchardCoreBuilder is not available in OrchardCore.ResourceManagement as it has to
+        // remain independent from OrchardCore.
+        builder.ConfigureServices(s =>
         {
-            ArgumentNullException.ThrowIfNull(services);
+            s.AddResourceManagement();
 
-            var builder = services.AddOrchardCore()
+            s.AddTagHelpers<LinkTagHelper>();
+            s.AddTagHelpers<MetaTagHelper>();
+            s.AddTagHelpers<ResourcesTagHelper>();
+            s.AddTagHelpers<ScriptTagHelper>();
+            s.AddTagHelpers<StyleTagHelper>();
+        });
 
-                .AddCommands()
+        return builder;
+    }
 
-                .AddSecurity()
-                .AddMvc()
-                .AddIdGeneration()
-                .AddEmailAddressValidator()
-                .AddHtmlSanitizer()
-                .AddSetupFeatures("OrchardCore.Setup")
+    /// <summary>
+    /// Adds Orchard CMS services to the application and let the app change the
+    /// default tenant behavior and set of features through a configure action.
+    /// </summary>
+    public static IServiceCollection AddOrchardCms(this IServiceCollection services, Action<OrchardCoreBuilder> configure)
+    {
+        var builder = services.AddOrchardCms();
 
-                .AddDataAccess()
-                .AddDataStorage()
-                .AddBackgroundService()
-                .AddScripting()
+        configure?.Invoke(builder);
 
-                .AddTheming()
-                .AddLiquidViews()
-                .AddCaching();
-
-            // OrchardCoreBuilder is not available in OrchardCore.ResourceManagement as it has to
-            // remain independent from OrchardCore.
-            builder.ConfigureServices(s =>
-            {
-                s.AddResourceManagement();
-
-                s.AddTagHelpers<LinkTagHelper>();
-                s.AddTagHelpers<MetaTagHelper>();
-                s.AddTagHelpers<ResourcesTagHelper>();
-                s.AddTagHelpers<ScriptTagHelper>();
-                s.AddTagHelpers<StyleTagHelper>();
-            });
-
-            return builder;
-        }
-
-        /// <summary>
-        /// Adds Orchard CMS services to the application and let the app change the
-        /// default tenant behavior and set of features through a configure action.
-        /// </summary>
-        public static IServiceCollection AddOrchardCms(this IServiceCollection services, Action<OrchardCoreBuilder> configure)
-        {
-            var builder = services.AddOrchardCms();
-
-            configure?.Invoke(builder);
-
-            return services;
-        }
+        return services;
     }
 }

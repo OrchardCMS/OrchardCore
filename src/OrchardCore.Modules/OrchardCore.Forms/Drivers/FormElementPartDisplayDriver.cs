@@ -1,31 +1,29 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
 
-namespace OrchardCore.Forms.Drivers
+namespace OrchardCore.Forms.Drivers;
+
+public sealed class FormElementPartDisplayDriver : ContentPartDisplayDriver<FormElementPart>
 {
-    public class FormElementPartDisplayDriver : ContentPartDisplayDriver<FormElementPart>
+    public override IDisplayResult Edit(FormElementPart part, BuildPartEditorContext context)
     {
-        public override IDisplayResult Edit(FormElementPart part)
+        return Initialize<FormElementPartEditViewModel>("FormElementPart_Fields_Edit", m =>
         {
-            return Initialize<FormElementPartEditViewModel>("FormElementPart_Fields_Edit", m =>
-            {
-                m.Id = part.Id;
-            });
-        }
+            m.Id = part.Id;
+        });
+    }
 
-        public async override Task<IDisplayResult> UpdateAsync(FormElementPart part, IUpdateModel updater)
-        {
-            var viewModel = new FormElementPartEditViewModel();
+    public override async Task<IDisplayResult> UpdateAsync(FormElementPart part, UpdatePartEditorContext context)
+    {
+        var viewModel = new FormElementPartEditViewModel();
 
-            await updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
-            part.Id = viewModel.Id?.Trim();
+        part.Id = viewModel.Id?.Trim();
 
-            return Edit(part);
-        }
+        return Edit(part, context);
     }
 }

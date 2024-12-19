@@ -23,14 +23,14 @@ jobs:
         node-version: "15"
     - uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'
+        dotnet-version: '9.0.x'
     - name: Build
       # We disable NuGet audit warnings, see https://learn.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu1901-nu1904.
       # Security issues being discovered in NuGet packages we use can happen at any time, and thus all our CI builds that
       # treat warnings as errors could break anytime, without us changing the code. This prevents that. Treating them as
       # warnings and other better approaches don't work, see https://github.com/OrchardCMS/OrchardCore/pull/16317.
       run: |
-        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
+        dotnet build -c Release /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj

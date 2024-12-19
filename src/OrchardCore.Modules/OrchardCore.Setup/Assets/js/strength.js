@@ -24,6 +24,7 @@
         var specialchar = new RegExp('[^A-Za-z0-9]');
 
         var valid = false;
+        var $this = $(this);
 
         createProgressBar(0, '');
 
@@ -71,14 +72,15 @@
             target.append(el);
         }
 
-        this.bind('keyup keydown', function (event) {
-            checkStrength($(this).val());
+        this.bind('keyup keydown change', function (event) {
+            checkStrength($this.val());
         });
         this.bind('drop', function (event) {
             checkStrength(event.originalEvent.dataTransfer.getData("text"));
         });
 
         this.parents('form').on('submit', function () {
+            checkStrength($this.val());
             if (!valid) {
                 event.preventDefault();
             }

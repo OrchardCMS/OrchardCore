@@ -1,42 +1,41 @@
-namespace OrchardCore.AuditTrail.Services.Models
+namespace OrchardCore.AuditTrail.Services.Models;
+
+public abstract class AuditTrailContext
 {
-    public abstract class AuditTrailContext
+    public AuditTrailContext(
+        string name,
+        string category,
+        string correlationId,
+        string userId,
+        string userName)
     {
-        public AuditTrailContext(
-            string name,
-            string category,
-            string correlationId,
-            string userId,
-            string userName)
-        {
-            Name = name;
-            Category = category;
-            CorrelationId = correlationId;
-            UserId = userId;
-            UserName = userName;
-        }
-
-        public string Name { get; set; }
-        public string Category { get; set; }
-        public string CorrelationId { get; set; }
-        public string UserId { get; set; }
-        public string UserName { get; set; }
+        Name = name;
+        Category = category;
+        CorrelationId = correlationId;
+        UserId = userId;
+        UserName = userName;
     }
 
-    public class AuditTrailContext<TEvent> : AuditTrailContext where TEvent : class, new()
-    {
-        public AuditTrailContext(
-            string name,
-            string category,
-            string correlationId,
-            string userId,
-            string userName,
-            TEvent auditTrailEventItem)
-            : base(name, category, correlationId, userId, userName)
-        {
-            AuditTrailEventItem = auditTrailEventItem;
-        }
+    public string Name { get; set; }
+    public string Category { get; set; }
+    public string CorrelationId { get; set; }
+    public string UserId { get; set; }
+    public string UserName { get; set; }
+}
 
-        public TEvent AuditTrailEventItem { get; }
+public class AuditTrailContext<TEvent> : AuditTrailContext where TEvent : class, new()
+{
+    public AuditTrailContext(
+        string name,
+        string category,
+        string correlationId,
+        string userId,
+        string userName,
+        TEvent auditTrailEventItem)
+        : base(name, category, correlationId, userId, userName)
+    {
+        AuditTrailEventItem = auditTrailEventItem;
     }
+
+    public TEvent AuditTrailEventItem { get; }
 }

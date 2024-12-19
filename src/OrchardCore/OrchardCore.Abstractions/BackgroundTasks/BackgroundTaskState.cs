@@ -1,10 +1,7 @@
-using System;
+namespace OrchardCore.BackgroundTasks;
 
-namespace OrchardCore.BackgroundTasks
+public class BackgroundTaskState
 {
-    public class BackgroundTaskState
-    {
-        public string Name { get; set; }
-        public DateTime LastStartTime { get; set; }
-    }
+    public string Name { get; set; }
+    public DateTime LastStartTime { get; set; }
 }

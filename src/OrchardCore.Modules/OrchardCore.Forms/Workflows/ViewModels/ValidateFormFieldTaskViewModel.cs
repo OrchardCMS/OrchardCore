@@ -1,13 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Forms.Workflows.ViewModels
-{
-    public class ValidateFormFieldTaskViewModel
-    {
-        [Required]
-        public string FieldName { get; set; }
+namespace OrchardCore.Forms.Workflows.ViewModels;
 
-        [Required]
-        public string ErrorMessage { get; set; }
-    }
+public class ValidateFormFieldTaskViewModel
+{
+    [Required]
+    public string FieldName { get; set; }
+
+    [Required]
+    public string ErrorMessage { get; set; }
 }

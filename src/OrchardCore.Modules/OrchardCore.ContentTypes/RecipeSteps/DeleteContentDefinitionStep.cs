@@ -1,50 +1,43 @@
-using System;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.ContentTypes.RecipeSteps
+namespace OrchardCore.ContentTypes.RecipeSteps;
+
+/// <summary>
+/// This recipe step deletes content definition records.
+/// </summary>
+public sealed class DeleteContentDefinitionStep : NamedRecipeStepHandler
 {
-    /// <summary>
-    /// This recipe step deletes content definition records.
-    /// </summary>
-    public class DeleteContentDefinitionStep : IRecipeStepHandler
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+
+    public DeleteContentDefinitionStep(IContentDefinitionManager contentDefinitionManager)
+        : base("DeleteContentDefinition")
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        _contentDefinitionManager = contentDefinitionManager;
+    }
 
-        public DeleteContentDefinitionStep(IContentDefinitionManager contentDefinitionManager)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
+    {
+        var step = context.Step.ToObject<DeleteContentDefinitionStepModel>();
+
+        foreach (var contentType in step.ContentTypes)
         {
-            _contentDefinitionManager = contentDefinitionManager;
+            // The content definition manager tests existence before trying to delete.
+            await _contentDefinitionManager.DeleteTypeDefinitionAsync(contentType);
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        foreach (var contentPart in step.ContentParts)
         {
-            if (!string.Equals(context.Name, "DeleteContentDefinition", StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
-            var step = context.Step.ToObject<DeleteContentDefinitionStepModel>();
-
-            foreach (var contentType in step.ContentTypes)
-            {
-                // The content definition manager tests existence before trying to delete.
-                await _contentDefinitionManager.DeleteTypeDefinitionAsync(contentType);
-            }
-
-            foreach (var contentPart in step.ContentParts)
-            {
-                // The content definition manager tests existence before trying to delete.
-                await _contentDefinitionManager.DeletePartDefinitionAsync(contentPart);
-            }
+            // The content definition manager tests existence before trying to delete.
+            await _contentDefinitionManager.DeletePartDefinitionAsync(contentPart);
         }
+    }
 
-        private sealed class DeleteContentDefinitionStepModel
-        {
-            public string[] ContentTypes { get; set; } = [];
-            public string[] ContentParts { get; set; } = [];
-        }
+    private sealed class DeleteContentDefinitionStepModel
+    {
+        public string[] ContentTypes { get; set; } = [];
+        public string[] ContentParts { get; set; } = [];
     }
 }

@@ -6,7 +6,6 @@
 @using OrchardCore.Users.Models
 
 @inject SignInManager<IUser> SignInManager
-@inject ISiteService SiteService
 @inject UserManager<IUser> UserManager
 @inject IDisplayManager<LoginForm> LoginFormDisplayManager
 @inject IUpdateModelAccessor UpdateModelAccessor
@@ -15,10 +14,10 @@
     ViewLayout = "Layout__Login";
 
     var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-    var disableLocalLogin = (await SiteService.GetSettingsAsync<LoginSettings>()).DisableLocalLogin;
+    var disableLocalLogin = Site.As<LoginSettings>().DisableLocalLogin;
 }
 
-<style asp-name="font-awesome" version="6"></style>
+<script asp-name="font-awesome" at="Foot" version="6"></script>
 
 <div class="row">
     @if (!ViewContext.ModelState.IsValid)
@@ -41,7 +40,7 @@
             <section>
                 <h1 class="fs-4">@T["Use another service to log in"]</h1>
                 <hr />
-                <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal no-multisubmit">
+                <form asp-controller="ExternalAuthentications" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal no-multisubmit">
                     @foreach (var provider in loginProviders)
                     {
                         <button type="submit" class="btn btn-primary mb-1 @(!disableLocalLogin ? "w-100" : string.Empty)" name="provider" value="@provider.Name" title="@T["Log in using your {0} account", provider.DisplayName]">@provider.DisplayName</button>

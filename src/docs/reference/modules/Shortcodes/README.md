@@ -83,7 +83,7 @@ services.AddShortcode("bold", (args, content, ctx) => {
         content = text;
     }
 
-    return new ValueTask<string>($"<b>{content}</b>");
+    return ValueTask.FromResult($"<b>{content}</b>");
 }, describe => {
     describe.DefaultValue = "[bold text-here]";
     describe.Hint = "Add bold formatting with a shortcode.";
@@ -225,7 +225,7 @@ Shortcodes can also be rendered via a liquid filter or html helper
 === "Razor"
 
     ``` html
-    @Html.Raw(@await Orchard.ShortcodesToHtmlAsync((string)Model.ContentItem.Content.RawHtml.Content.Html))
+    @Html.Raw(await Orchard.ShortcodesToHtmlAsync((string)Model.ContentItem.Content.RawHtml.Content.Html))
     ```
 
 ## Videos

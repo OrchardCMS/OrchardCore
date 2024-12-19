@@ -1,34 +1,31 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using OrchardCore.Sitemaps.Models;
 
-namespace OrchardCore.Sitemaps.Builders
+namespace OrchardCore.Sitemaps.Builders;
+
+public class SitemapTypeBuilder : SitemapTypeBuilderBase<Sitemap>
 {
-    public class SitemapTypeBuilder : SitemapTypeBuilderBase<Sitemap>
+    private static readonly XNamespace _namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
+
+    private readonly IEnumerable<ISitemapSourceBuilder> _sitemapSourceBuilders;
+
+    public SitemapTypeBuilder(IEnumerable<ISitemapSourceBuilder> sitemapSourceBuilders)
     {
-        private static readonly XNamespace _namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
+        _sitemapSourceBuilders = sitemapSourceBuilders;
+    }
 
-        private readonly IEnumerable<ISitemapSourceBuilder> _sitemapSourceBuilders;
-
-        public SitemapTypeBuilder(IEnumerable<ISitemapSourceBuilder> sitemapSourceBuilders)
+    public override async Task BuildSitemapTypeAsync(Sitemap sitemap, SitemapBuilderContext context)
+    {
+        context.Response = new SitemapResponse
         {
-            _sitemapSourceBuilders = sitemapSourceBuilders;
-        }
+            ResponseElement = new XElement(_namespace + "urlset")
+        };
 
-        public override async Task BuildSitemapTypeAsync(Sitemap sitemap, SitemapBuilderContext context)
+        foreach (var source in sitemap.SitemapSources)
         {
-            context.Response = new SitemapResponse
+            foreach (var sourceBuilder in _sitemapSourceBuilders)
             {
-                ResponseElement = new XElement(_namespace + "urlset")
-            };
-
-            foreach (var source in sitemap.SitemapSources)
-            {
-                foreach (var sourceBuilder in _sitemapSourceBuilders)
-                {
-                    await sourceBuilder.BuildAsync(source, context);
-                }
+                await sourceBuilder.BuildAsync(source, context);
             }
         }
     }

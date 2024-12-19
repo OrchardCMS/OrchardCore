@@ -37,7 +37,7 @@ The following properties are available on `HtmlBodyPart`:
 
 By default all HTML input is sanitized when the `HtmlBodyPart` is saved.
 
-You can disable this by unchecking the `Sanitize HTML` setting, or further configuring the [HTML Sanitizer](../../core/Sanitizer/README.md)
+You can disable this by unchecking the `Sanitize HTML` setting, or further configuring the [HTML Sanitizer](../Sanitizer/README.md)
 
 ## Editors
 

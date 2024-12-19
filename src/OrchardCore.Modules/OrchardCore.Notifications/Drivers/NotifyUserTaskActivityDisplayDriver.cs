@@ -1,8 +1,6 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
@@ -40,7 +38,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(TActivity activity)
+    public override IDisplayResult Edit(TActivity activity, BuildEditorContext context)
     {
         var results = new List<IDisplayResult>();
 
@@ -64,30 +62,30 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
         return Combine(results);
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(TActivity activity, IUpdateModel updater)
+    public override async Task<IDisplayResult> UpdateAsync(TActivity activity, UpdateEditorContext context)
     {
         var model = new NotifyUserTaskActivityViewModel();
 
-        await updater.TryUpdateModelAsync(model, Prefix);
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         if (!_liquidTemplateManager.Validate(model.Subject, out var subjectErrors))
         {
-            updater.ModelState.AddModelError(Prefix, nameof(model.Subject), S["Subject field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', subjectErrors)]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Subject), S["Subject field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', subjectErrors)]);
         }
 
         if (!_liquidTemplateManager.Validate(model.Summary, out var summaryErrors))
         {
-            updater.ModelState.AddModelError(Prefix, nameof(model.Summary), S["Summary field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', summaryErrors)]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Summary), S["Summary field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', summaryErrors)]);
         }
 
         if (!_liquidTemplateManager.Validate(model.TextBody, out var textBodyErrors))
         {
-            updater.ModelState.AddModelError(Prefix, nameof(model.TextBody), S["Text Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', textBodyErrors)]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.TextBody), S["Text Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', textBodyErrors)]);
         }
 
         if (!_liquidTemplateManager.Validate(model.HtmlBody, out var htmlBodyErrors))
         {
-            updater.ModelState.AddModelError(Prefix, nameof(model.HtmlBody), S["HTML Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', htmlBodyErrors)]);
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.HtmlBody), S["HTML Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', htmlBodyErrors)]);
         }
 
         activity.Subject = new WorkflowExpression<string>(model.Subject);
@@ -98,11 +96,11 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
 
         var modelOfT = new TEditViewModel();
 
-        await updater.TryUpdateModelAsync(modelOfT, Prefix);
+        await context.Updater.TryUpdateModelAsync(modelOfT, Prefix);
 
         await UpdateActivityAsync(modelOfT, activity);
 
-        return Edit(activity);
+        return Edit(activity, context);
     }
 
     /// <summary>
@@ -112,7 +110,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     {
         EditActivity(activity, model);
 
-        return new ValueTask();
+        return ValueTask.CompletedTask;
     }
 
     /// <summary>
@@ -140,9 +138,9 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
 
     }
 
-    public override IDisplayResult Display(TActivity activity)
+    public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)
     {
-        return Combine(
+        return CombineAsync(
             Shape($"{ActivityName}_Fields_Thumbnail", new ActivityViewModel<TActivity>(activity))
                 .Location("Thumbnail", "Content"),
             Shape($"{ActivityName}_Fields_Design", new ActivityViewModel<TActivity>(activity))

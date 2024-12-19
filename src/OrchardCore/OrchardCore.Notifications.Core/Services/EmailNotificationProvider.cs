@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Email;
 using OrchardCore.Users.Models;
@@ -33,7 +32,7 @@ public class EmailNotificationProvider : INotificationMethodProvider
 
         string body;
         bool isHtmlBody;
-        
+
         if (message.IsHtmlPreferred && !string.IsNullOrWhiteSpace(message.HtmlBody))
         {
             body = message.HtmlBody;

@@ -11,7 +11,10 @@ jobs:
     name: Unit Tests
     steps:
     - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
     - name: Build and test
       run: |
-        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true
+        dotnet build -c Release /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj

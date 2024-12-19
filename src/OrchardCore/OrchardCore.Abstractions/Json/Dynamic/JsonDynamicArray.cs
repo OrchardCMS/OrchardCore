@@ -1,17 +1,17 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
-using System.Linq;
 using System.Reflection;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 #nullable enable
 
 namespace System.Text.Json.Dynamic;
 
 [DebuggerDisplay("JsonDynamicArray[{Count}]")]
-public class JsonDynamicArray : DynamicObject, IEnumerable<object?>, IEnumerable<JsonNode?>
+[JsonConverter(typeof(JsonDynamicJsonConverter<JsonDynamicArray>))]
+public sealed class JsonDynamicArray : JsonDynamicBase, IEnumerable<object?>, IEnumerable<JsonNode?>
 {
     private readonly JsonArray _jsonArray;
     private readonly Dictionary<int, object?> _dictionary = [];
@@ -21,6 +21,8 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<object?>, IEnumerable
     public JsonDynamicArray(JsonArray jsonArray) => _jsonArray = jsonArray;
 
     public int Count => _jsonArray.Count;
+
+    public override JsonNode Node => _jsonArray;
 
     public object? this[int index]
     {
@@ -140,7 +142,7 @@ public class JsonDynamicArray : DynamicObject, IEnumerable<object?>, IEnumerable
         }
     }
 
-    IEnumerator<JsonNode?> IEnumerable<JsonNode?>.GetEnumerator() 
+    IEnumerator<JsonNode?> IEnumerable<JsonNode?>.GetEnumerator()
         => _jsonArray.AsEnumerable().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

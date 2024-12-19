@@ -4,17 +4,20 @@ Enabling the `OrchardCore.Roles` module will allow you to manage the user roles.
 
 ## Predefined Roles
 
-Orchard Core come up with the following predefined permission stereotypes:
+Orchard Core defines the following predefined permission stereotypes:
 
 | Name | Description |
 | --- | --- |
-| `Administrator` | Contains all the administrator users. |
-| `Anonymous` | Contains all the non authenticated users. |
-| `Authenticated` | Contains all the authenticated users. |
-| `Author` | Contains all the users who have the ability to author contents. |
-| `Contributor` | Contains all the users who have the ability to contribute to the contents. |
-| `Editor` | Contains all the users who have the ability to edit the contents. |
-| `Moderator` | Contains all the users who have the ability to moderate the contents. |
+| `Administrator` | A **system role** that grants all permissions to the assigned users. |
+| `Anonymous` | A **system role** representing all non-authenticated users. |
+| `Authenticated` | A **system role** representing all authenticated users. |
+| `Author` | Grants users the ability to create content. |
+| `Contributor` | Grants users the ability to contribute content. |
+| `Editor` | Grants users the ability to edit existing content. |
+| `Moderator` | Grants users the ability to moderate content. |
+
+!!! note
+    System roles cannot be deleted, and the `Administrator` role cannot be edited.
 
 ## Roles Configuration
 
@@ -24,16 +27,51 @@ A sample of a roles configuration step:
 
 ```json
 {
-    "name": "roles",
-    "Roles": [
+    "steps": [
         {
-            "Name": "Journalist",
-            "Permissions": [ "PublishContent", "EditContent" ]
-        },
+            "name": "roles",
+            "Roles": [
+                {
+                    "Name": "Journalist",
+                    "Description" "Journalist Role",
+                    "PermissionBehavior": "Replace",
+                    "Permissions": ["PublishContent", "EditContent"]
+                },
+                {
+                    "Name": "Subscriber",
+                    "Description" "Subscriber Role",
+                    "PermissionBehavior": "Replace",
+                    "Permissions": []
+                }
+            ]
+        }
+    ]
+}
+```
+
+As of version 3.0, the `Roles` recipe includes the ability to define specific permission behaviors, giving you greater control over how permissions are managed within a role. The following behaviors are available:
+
+- **Replace**: This behavior removes all existing permissions associated with the role and replaces them with the new permissions from the `Permissions` collection. This is the default behavior.
+- **Add**: This behavior adds the new permission(s) from the `Permissions` collection to the role, but only if they do not already exist. Existing permissions are left unchanged.
+- **Remove**: This behavior removes the specified permission(s) from the role’s existing permissions based on the `Permissions` collection.
+
+### Example: Adding a New Permission to a Role
+
+For instance, to add the "CanChat" permission to the `Subscriber` role, use the following configuration:
+
+```json
+{
+    "steps": [
         {
-            "Name": "Subscriber",
-            "Permissions": [ ]
-        },
+            "name": "roles",
+            "Roles": [
+                {
+                    "Name": "Subscriber",
+                    "PermissionBehavior": "Add",
+                    "Permissions": ["CanChat"]
+                }
+            ]
+        }
     ]
 }
 ```

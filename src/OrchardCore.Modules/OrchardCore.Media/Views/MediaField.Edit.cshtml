@@ -73,7 +73,8 @@
         document.getElementById('@Html.IdFor(m => m)'),
         document.getElementById('@Html.IdFor(m => m)-ModalBody'),
         '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
-    @(settings.Multiple ? "true" : "false"),
-    @(settings.AllowMediaText ? "true" : "false"),
-    @(settings.AllowAnchors ? "true" : "false"));
+        @(settings.Multiple ? "true" : "false"),
+        @(settings.AllowMediaText ? "true" : "false"),
+        @(settings.AllowAnchors ? "true" : "false"),
+        '@string.Join(',', Model.AllowedExtensions)');
 </script>

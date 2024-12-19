@@ -1,81 +1,78 @@
-using System;
-using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Environment.Shell.Builders
+namespace OrchardCore.Environment.Shell.Builders;
+
+internal sealed class StartupBaseMock : StartupBase
 {
-    internal sealed class StartupBaseMock : StartupBase
+    private readonly object _startup;
+    private readonly MethodInfo _configureService;
+    private readonly MethodInfo _configure;
+
+    public StartupBaseMock(
+        object startup,
+        MethodInfo configureService,
+        MethodInfo configure,
+        PropertyInfo order,
+        PropertyInfo configureOrder)
     {
-        private readonly object _startup;
-        private readonly MethodInfo _configureService;
-        private readonly MethodInfo _configure;
+        _startup = startup;
+        _configureService = configureService;
+        _configure = configure;
 
-        public StartupBaseMock(
-            object startup,
-            MethodInfo configureService,
-            MethodInfo configure,
-            PropertyInfo order,
-            PropertyInfo configureOrder)
+        var orderValue = order?.GetValue(_startup);
+        var configureOrderValue = configureOrder?.GetValue(_startup);
+
+        Order = orderValue != null ? (int)orderValue : default;
+        ConfigureOrder = configureOrderValue != null ? (int)configureOrderValue : Order;
+    }
+
+    /// <inheritdoc />
+    public override int Order { get; }
+
+    /// <inheritdoc />
+    public override int ConfigureOrder { get; }
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        if (_configureService == null)
         {
-            _startup = startup;
-            _configureService = configureService;
-            _configure = configure;
-
-            var orderValue = order?.GetValue(_startup);
-            var configureOrderValue = configureOrder?.GetValue(_startup);
-
-            Order = orderValue != null ? (int)orderValue : default;
-            ConfigureOrder = configureOrderValue != null ? (int)configureOrderValue : Order;
+            return;
         }
 
-        /// <inheritdoc />
-        public override int Order { get; }
+        _configureService.Invoke(_startup, [services]);
+    }
 
-        /// <inheritdoc />
-        public override int ConfigureOrder { get; }
-
-        public override void ConfigureServices(IServiceCollection services)
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        if (_configure == null)
         {
-            if (_configureService == null)
+            return;
+        }
+
+        // Resolve all services
+
+        var parameters = _configure.GetParameters().Select(x =>
+        {
+            if (x.ParameterType == typeof(IServiceProvider))
             {
-                return;
+                return serviceProvider;
+            }
+            else if (x.ParameterType == typeof(IApplicationBuilder))
+            {
+                return app;
+            }
+            else if (x.ParameterType == typeof(IEndpointRouteBuilder))
+            {
+                return routes;
             }
 
-            _configureService.Invoke(_startup, [services]);
-        }
+            return serviceProvider.GetService(x.ParameterType);
+        });
 
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            if (_configure == null)
-            {
-                return;
-            }
-
-            // Resolve all services
-
-            var parameters = _configure.GetParameters().Select(x =>
-            {
-                if (x.ParameterType == typeof(IServiceProvider))
-                {
-                    return serviceProvider;
-                }
-                else if (x.ParameterType == typeof(IApplicationBuilder))
-                {
-                    return app;
-                }
-                else if (x.ParameterType == typeof(IEndpointRouteBuilder))
-                {
-                    return routes;
-                }
-
-                return serviceProvider.GetService(x.ParameterType);
-            });
-
-            _configure.Invoke(_startup, parameters.ToArray());
-        }
+        _configure.Invoke(_startup, parameters.ToArray());
     }
 }

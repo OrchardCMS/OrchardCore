@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Roles.ViewModels;
 
 public class PermissionGroupKey

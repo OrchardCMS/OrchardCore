@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Setup.Services;
 
 namespace OrchardCore.Setup.Events;

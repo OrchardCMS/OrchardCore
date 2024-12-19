@@ -3,41 +3,40 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace OrchardCore.DisplayManagement.ModelBinding
+namespace OrchardCore.DisplayManagement.ModelBinding;
+
+public sealed class ModelBinderAccessorFilter : IActionFilter, IPageFilter
 {
-    public sealed class ModelBinderAccessorFilter : IActionFilter, IPageFilter
+    public void OnActionExecuted(ActionExecutedContext context)
     {
-        public void OnActionExecuted(ActionExecutedContext context)
-        {
-        }
+    }
 
-        public void OnActionExecuting(ActionExecutingContext context)
+    public void OnActionExecuting(ActionExecutingContext context)
+    {
+        var controller = context.Controller as Controller;
+        if (controller != null)
         {
-            var controller = context.Controller as Controller;
-            if (controller != null)
-            {
-                var modelBinderAccessor = context.HttpContext.RequestServices.GetRequiredService<IUpdateModelAccessor>();
-                modelBinderAccessor.ModelUpdater = new ControllerModelUpdater(controller);
-            }
+            var modelBinderAccessor = context.HttpContext.RequestServices.GetRequiredService<IUpdateModelAccessor>();
+            modelBinderAccessor.ModelUpdater = new ControllerModelUpdater(controller);
         }
+    }
 
-        public void OnPageHandlerSelected(PageHandlerSelectedContext context)
+    public void OnPageHandlerSelected(PageHandlerSelectedContext context)
+    {
+    }
+
+    public void OnPageHandlerExecuting(PageHandlerExecutingContext context)
+    {
+        var page = context.HandlerInstance as PageModel;
+
+        if (page != null)
         {
+            var modelBinderAccessor = context.HttpContext.RequestServices.GetRequiredService<IUpdateModelAccessor>();
+            modelBinderAccessor.ModelUpdater = new PageModelUpdater(page);
         }
+    }
 
-        public void OnPageHandlerExecuting(PageHandlerExecutingContext context)
-        {
-            var page = context.HandlerInstance as PageModel;
-
-            if (page != null)
-            {
-                var modelBinderAccessor = context.HttpContext.RequestServices.GetRequiredService<IUpdateModelAccessor>();
-                modelBinderAccessor.ModelUpdater = new PageModelUpdater(page);
-            }
-        }
-
-        public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
-        {
-        }
+    public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
+    {
     }
 }

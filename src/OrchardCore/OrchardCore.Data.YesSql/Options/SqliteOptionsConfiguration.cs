@@ -2,22 +2,21 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
 
-namespace OrchardCore.Data
+namespace OrchardCore.Data;
+
+public sealed class SqliteOptionsConfiguration : IConfigureOptions<SqliteOptions>
 {
-    public sealed class SqliteOptionsConfiguration : IConfigureOptions<SqliteOptions>
+    private readonly IShellConfiguration _shellConfiguration;
+
+    public SqliteOptionsConfiguration(IShellConfiguration shellConfiguration)
     {
-        private readonly IShellConfiguration _shellConfiguration;
+        _shellConfiguration = shellConfiguration;
+    }
 
-        public SqliteOptionsConfiguration(IShellConfiguration shellConfiguration)
-        {
-            _shellConfiguration = shellConfiguration;
-        }
+    public void Configure(SqliteOptions options)
+    {
+        var section = _shellConfiguration.GetSection("OrchardCore_Data_Sqlite");
 
-        public void Configure(SqliteOptions options)
-        {
-            var section = _shellConfiguration.GetSection("OrchardCore_Data_Sqlite");
-
-            section.Bind(options);
-        }
+        section.Bind(options);
     }
 }

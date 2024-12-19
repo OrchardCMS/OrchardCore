@@ -1,20 +1,20 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
 
 namespace OrchardCore.Forms.Drivers;
 
-public class FormElementLabelPartDisplayDriver : ContentPartDisplayDriver<FormElementLabelPart>
+public sealed class FormElementLabelPartDisplayDriver : ContentPartDisplayDriver<FormElementLabelPart>
 {
-    public override IDisplayResult Display(FormElementLabelPart part)
+    public override IDisplayResult Display(FormElementLabelPart part, BuildPartDisplayContext context)
     {
-        return View("FormElementLabelPart", part).Location("Detail", "Content:before");
+        return View("FormElementLabelPart", part)
+            .Location("Detail", "Content:before");
     }
 
-    public override IDisplayResult Edit(FormElementLabelPart part)
+    public override IDisplayResult Edit(FormElementLabelPart part, BuildPartEditorContext context)
     {
         return Initialize<FormElementLabelPartViewModel>("FormElementLabelPart_Fields_Edit", m =>
         {
@@ -23,15 +23,15 @@ public class FormElementLabelPartDisplayDriver : ContentPartDisplayDriver<FormEl
         });
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(FormElementLabelPart part, IUpdateModel updater)
+    public override async Task<IDisplayResult> UpdateAsync(FormElementLabelPart part, UpdatePartEditorContext context)
     {
         var viewModel = new FormElementLabelPartViewModel();
 
-        await updater.TryUpdateModelAsync(viewModel, Prefix);
+        await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
         part.Label = viewModel.Label;
         part.Option = viewModel.LabelOption;
 
-        return Edit(part);
+        return Edit(part, context);
     }
 }

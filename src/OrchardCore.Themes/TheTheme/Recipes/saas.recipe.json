@@ -45,17 +45,17 @@
       "Roles": [
         {
           "Name": "Administrator",
-          "Description": "Administrator",
+          "Description": "A system role that grants all permissions to the assigned users.",
           "Permissions": []
         },
         {
           "Name": "Authenticated",
-          "Description": "Authenticated",
+          "Description": "A system role representing all authenticated users.",
           "Permissions": []
         },
         {
           "Name": "Anonymous",
-          "Description": "Anonymous",
+          "Description": "A system role representing all non-authenticated users.",
           "Permissions": []
         }
       ]

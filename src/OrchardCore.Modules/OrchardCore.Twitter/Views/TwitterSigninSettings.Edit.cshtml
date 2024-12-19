@@ -1,0 +1,26 @@
+@using OrchardCore.Twitter.Signin.ViewModels
+@model TwitterSigninSettingsViewModel
+
+<p class="alert alert-warning" role="alert">
+    @T["The website might be restarted upon saving the settings, potentially leading to temporary unresponsiveness during the process."]
+    <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/X/#sign-in-with-x-twitter" target="_blank">@T["See documentation"]</a>
+</p>
+
+<h3>@T["Sign in with X (Twitter) Settings"]</h3>
+
+<div class="mb-3 row" asp-validation-class-for="CallbackPath">
+    <div class="col-large col-12 col-sm-12 col-md-12 col-lg-12 col-xl-9">
+        <label asp-for="CallbackPath" class="form-label">@T["CallbackPath"]</label>
+        <input asp-for="CallbackPath" class="form-control" placeholder="/signin-x" />
+        <span asp-validation-for="CallbackPath"></span>
+        <span class="hint">@T["The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives."]</span>
+    </div>
+</div>
+
+<div class="mb-3" asp-validation-class-for="SaveTokens">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="SaveTokens">
+        <label class="form-check-label" asp-for="SaveTokens">@T["Store tokens"]</label>
+        <span class="hint dashed">@T["Store external authentication tokens for reuse"]</span>
+    </div>
+</div>

@@ -120,12 +120,13 @@
 <input type="hidden" id="getFoldersUrl" value="@Url.Action("GetFolders", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="deleteFolderUrl" value="@Url.Action("DeleteFolder", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="createFolderUrl" value="@Url.Action("CreateFolder", "Admin", new { area = "OrchardCore.Media" })" />
-<input type="hidden" id="getMediaItemsUrl" value="@Url.Action("GetMediaItems", "Admin", new { area = "OrchardCore.Media", extensions = Model.Extensions })" />
+<input type="hidden" id="getMediaItemsUrl" value="@Url.Action("GetMediaItems", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="deleteMediaUrl" value="@Url.Action("DeleteMedia", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="renameMediaUrl" value="@Url.Action("MoveMedia", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="deleteMediaListUrl" value="@Url.Action("DeleteMediaList", "Admin", new { area = "OrchardCore.Media" })" />
 <input type="hidden" id="moveMediaListUrl" value="@Url.Action("MoveMediaList", "Admin", new { area = "OrchardCore.Media" })" />
-<input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media", extensions = Model.Extensions })" />
+<input type="hidden" id="uploadFiles" value="@Url.Action("Upload", "Admin", new { area = "OrchardCore.Media" })" />
+<input type="hidden" id="allowedExtensions" value="@Model.Extensions" />
 
 @* Settings *@
 <input type="hidden" id="allowNewRootFolders" value="@(Model.AllowNewRootFolders ? "true" : "false")" />
