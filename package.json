@@ -12,7 +12,9 @@
     "lint": "eslint ."
   },
   "workspaces": [
-    ".scripts/assets-build-tool"
+    ".scripts/assets-build-tool",
+    "src/OrchardCore.Modules/*",
+    "src/OrchardCore.Themes/*"
   ],
   "devDependencies": {
     "@babel/core": "^7.22.11",

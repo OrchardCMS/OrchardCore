@@ -29,22 +29,16 @@
   },
   {
     "action": "min",
-    "name": "admin-menu-permission-picker",
-    "source": "Assets/js/jquery.mjs.nestedSortable.js",
+    "name": "admin-menu",
+    "source": "Assets/js/admin-menu.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["admin", "js"]
+  },
+  {
+    "action": "min",
+    "name": "admin-node-icon-picker",
+    "source": "Assets/js/admin-menu-icon-picker.js",
     "dest": "wwwroot/Scripts/",
     "tags": ["admin", "js"]
   }
-/*   {
-    "inputs": [
-      "Assets/js/jquery.mjs.nestedSortable.js"
-    ],
-    "output": "wwwroot/Scripts/admin-menu.js"
-  }, */
-/*   {
-    "inputs": [
-      "node_modules/fontawesome-iconpicker/dist/js/fontawesome-iconpicker.js",
-      "Assets/js/AdminNodeIconPicker.js"
-    ],
-    "output": "wwwroot/Scripts/admin-menu-icon-picker.js"
-  } */
 ]
