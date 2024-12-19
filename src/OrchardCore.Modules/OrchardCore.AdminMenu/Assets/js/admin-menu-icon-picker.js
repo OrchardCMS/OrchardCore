@@ -2,8 +2,6 @@
 // It makes easier to use a single picker instance with several input fields.
 // How to use it: Call show() from outside , passing it the id's of the input fields you want the icon classes applied to.
 
-importScripts('https://cdn.jsdelivr.net/npm/fontawesome-iconpicker@3.2.0/dist/js/fontawesome-iconpicker.min.js');
-
 var iconPickerVue = new Vue({
     el: '#iconPickerVue',
     data: {

@@ -2,7 +2,7 @@
   "name": "@orchardcore/root",
   "private": true,
   "version": "1.0.0",
-  "packageManager": "yarn@3.5.0",
+  "packageManager": "yarn@4.5.3",
   "scripts": {
     "build": "asset-bundler build",
     "copy": "asset-bundler copy",

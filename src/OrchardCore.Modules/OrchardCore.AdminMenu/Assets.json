@@ -29,16 +29,16 @@
   },
   {
     "action": "min",
-    "name": "admin-menu",
-    "source": "Assets/js/admin-menu.js",
+    "name": "admin-node-icon-picker",
+    "source": "Assets/js/admin-menu-icon-picker.js",
     "dest": "wwwroot/Scripts/",
     "tags": ["admin", "js"]
   },
   {
-    "action": "min",
-    "name": "admin-node-icon-picker",
-    "source": "Assets/js/admin-menu-icon-picker.js",
-    "dest": "wwwroot/Scripts/",
+    "action": "parcel",
+    "name": "admin-menu-js",
+    "bundleEntrypoint": "admin-menu",
+    "source": "Assets/js/jquery.mjs.nestedSortable.js",
     "tags": ["admin", "js"]
   }
 ]
