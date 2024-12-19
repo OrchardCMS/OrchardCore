@@ -1,9 +1,6 @@
-using System.Threading.Tasks;
+namespace OrchardCore.ContentManagement;
 
-namespace OrchardCore.ContentManagement
+public interface IContentHandleManager
 {
-    public interface IContentHandleManager
-    {
-        Task<string> GetContentItemIdAsync(string handle);
-    }
+    Task<string> GetContentItemIdAsync(string handle);
 }

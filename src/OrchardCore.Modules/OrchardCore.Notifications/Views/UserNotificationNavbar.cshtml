@@ -1,14 +1,18 @@
 @using Microsoft.AspNetCore.Mvc.Localization
 @using OrchardCore.DisplayManagement.ModelBinding
+@using Microsoft.AspNetCore.Authorization
+@using OrchardCore.Admin
+@using OrchardCore.Notifications.Endpoints.Management
 
 @inject IDisplayManager<Notification> NotificationDisplayDriver
 @inject IUpdateModelAccessor UpdateModelAccessor
+@inject IAuthorizationService AuthorizationService
 
 @model UserNotificationNavbarViewModel
 
 <li class="nav-item">
     <div class="dropdown">
-        <button type="button" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+        <button type="button" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" aria-label="@T["Notifications"]">
             @if (Model.TotalUnread > 0)
             {
                 LocalizedHtmlString title;
@@ -44,20 +48,29 @@
                         </div>
                     }
                 </li>
+            }
+            else
+            {
+                <li class="text-center">@T["You have no unread notifications."]</li>
+            }
+
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+
+            @if (await AuthorizationService.AuthorizeAsync(ViewContext.HttpContext.User, AdminPermissions.AccessAdminPanel))
+            {
                 <li>
-                    <hr class="dropdown-divider">
+                    <a class="dropdown-item fw-bold" asp-action="List" asp-controller="Admin" asp-area="@NotificationConstants.Features.Notifications">@T["Notification Center"]</a>
                 </li>
             }
-            <li>
-                <a class="dropdown-item fw-bold" asp-action="List" asp-controller="Admin" asp-area="OrchardCore.Notifications">@T["Notification Center"]</a>
-            </li>
         </ul>
     </div>
 </li>
 
 <script at="Foot" asp-name="notification-manager-initializes" depends-on="notification-manager">
     (function () {
-        notificationManager.initializeContainer('@Url.Action("Read", "Api", new { area = "OrchardCore.Notifications" })')
+        notificationManager.initializeContainer('@Url.RouteUrl(MarkAsReadEndpoints.RouteName, new { area = NotificationConstants.Features.Notifications }))')
     })();
 </script>
 

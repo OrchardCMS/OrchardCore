@@ -8,7 +8,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.DataProtection.Azure;
 
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     private readonly IShellConfiguration _configuration;
     private readonly ILogger _logger;
@@ -19,8 +19,8 @@ public class Startup : StartupBase
         _logger = logger;
     }
 
-    // Assume that this module will override default configuration, so set the Order to a value above the default.
-    public override int Order => 10;
+    public override int Order
+        => OrchardCoreConstants.ConfigureOrder.AzureDataProtection;
 
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -39,6 +39,8 @@ public class Startup : StartupBase
                         options.ContainerName,
                         options.BlobName);
                 });
+
+            services.AddScoped<IModularTenantEvents, BlobModularTenantEvents>();
         }
         else
         {

@@ -100,6 +100,9 @@ For Lucene queries with custom object schema, you are limited to elements stored
 
 For SQL queries, you can expose any column where property name is a column alias from the query.
 
+!!! note
+    When returning documents from a SQL query, make sure your query returns a list of document IDs. This is commonly available in the `DocumentId` column, but check the tables you're querying.
+
 Here is an example of a custom Query from a manually added table in a database :
 
 ```sql
@@ -150,7 +153,7 @@ Here is an example for creating a SQL query from a Queries recipe step:
     "Source": "Sql",
     "Name": "ContentItems",
     "Template": "select * from ContentItemIndex", // json encoded query template
-    "ReturnDocuments": false
+    "ReturnContentItems": false
 }
 ```
 
@@ -285,6 +288,12 @@ The SQL parser is also able to convert some specific functions to the intended d
 | `month(_date_)`  | Returns the months part of a date.  |
 | `year(_date_)`   | Returns the years part of a date.   |
 | `now()`          | Returns current date time (utc).    |
+
+Order By clauses can also use the `random()` function (case insensitive) to order results randomly, e.g., 
+
+```
+SELECT * FROM ContentItemIndex ORDER BY random()
+```
 
 ## Scripting
 

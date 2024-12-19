@@ -3,7 +3,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Tests.Utilities;
 
-public class SiteMockHelper
+public static class SiteMockHelper
 {
     public static Mock<ISite> GetSite<T>(T obj) where T : new()
     {

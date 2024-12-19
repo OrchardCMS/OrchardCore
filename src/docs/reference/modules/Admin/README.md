@@ -89,7 +89,7 @@ As an illustration, we inject the Visit Site link into `DetailAdmin` display typ
 ```csharp
 public class VisitSiteNavbarDisplayDriver : DisplayDriver<Navbar>
 {
-    public override IDisplayResult Display(Navbar model)
+    public override IDisplayResult Display(Navbar model, BuildDisplayContext context)
     {
         return View("VisitSiteNavbarItem", model)
             .Location("DetailAdmin", "Content:20");
@@ -125,7 +125,7 @@ The `[Admin]` attribute has optional parameters for a custom route template and 
 
 ```csharp
 [Admin("Person/{action}/{id?}", "Person{action}")]
-public class PersonController : Controller
+public sealed class PersonController : Controller
 {
     [Admin("Person", "Person")]
     public IActionResult Index() { ... }

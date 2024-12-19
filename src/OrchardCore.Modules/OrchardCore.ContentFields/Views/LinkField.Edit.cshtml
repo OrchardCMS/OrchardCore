@@ -45,5 +45,27 @@
                 </div>
             }
         </div>
+        <div class="row">
+            <div class="col-md-6" asp-validation-class-for="Target">
+                <label asp-for="Target" class="@Orchard.GetLabelClasses()">
+                    @T["Target"]
+                </label>
+                <div class="@Orchard.GetEndClasses()">
+                    <input asp-for="Target" list="targetOptions" class="form-control" />
+                    <datalist id="targetOptions">
+                        <option value="_self">@T["Opens the linked document in the same frame as it was clicked (default)."]</option>
+                        <option value="_blank">@T["Opens the linked document in a new window or tab."]</option>
+                        <option value="_parent">@T["Opens the linked document in the parent frame."]</option>
+                        <option value="_top">@T["Opens the linked document in the full body of the window."]</option>
+                    </datalist>
+                    <span class="hint">
+                        @T["The target attribute of the anchor tag, see more:"]
+                        <a class="seedoc" target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#target">
+                            @T["Target"]
+                        </a>
+                    </span>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

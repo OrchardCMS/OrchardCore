@@ -1,24 +1,22 @@
-using System.Collections.Generic;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 
-namespace OrchardCore.Alias.GraphQL
-{
-    public class AliasPartIndexAliasProvider : IIndexAliasProvider
-    {
-        private static readonly IndexAlias[] _aliases =
-        [
-            new IndexAlias
-            {
-                Alias = "aliasPart",
-                Index = "AliasPartIndex",
-                IndexType = typeof(AliasPartIndex)
-            }
-        ];
+namespace OrchardCore.Alias.GraphQL;
 
-        public IEnumerable<IndexAlias> GetAliases()
+public class AliasPartIndexAliasProvider : IIndexAliasProvider
+{
+    private static readonly IndexAlias[] _aliases =
+    [
+        new IndexAlias
         {
-            return _aliases;
+            Alias = "aliasPart",
+            Index = "AliasPartIndex",
+            IndexType = typeof(AliasPartIndex)
         }
+    ];
+
+    public ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync()
+    {
+        return ValueTask.FromResult<IEnumerable<IndexAlias>>(_aliases);
     }
 }

@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
@@ -38,8 +36,4 @@ public static class OrchardRazorHelperExtensions
 
         return new HtmlString(html);
     }
-
-    [Obsolete("Replaced by ShortcodesToHtmlAsync")]
-    public static Task<IHtmlContent> HtmlToShortcodesAsync(this IOrchardHelper orchardHelper, string html, object model = null)
-        => orchardHelper.ShortcodesToHtmlAsync(html, model);
 }

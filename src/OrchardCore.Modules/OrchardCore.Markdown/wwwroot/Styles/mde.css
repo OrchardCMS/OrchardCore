@@ -18,7 +18,7 @@
 
 .EasyMDEContainer {
   display: block;
-  color: black;
+  color: var(--bs-body-color);
 }
 
 .EasyMDEContainer.sided--no-fullscreen {
@@ -157,7 +157,7 @@
 
 .editor-toolbar.fullscreen {
   width: 100%;
-  height: 50px;
+  height: var(--oc-top-nav-height, 50px);
   box-sizing: border-box;
   position: fixed;
   top: 0;
@@ -182,7 +182,7 @@
 
 .editor-toolbar.fullscreen::before {
   width: 20px;
-  height: 50px;
+  height: var(--oc-top-nav-height, 50px);
   position: fixed;
   top: 0;
 }
@@ -214,7 +214,7 @@
 
 .editor-toolbar.fullscreen::after {
   width: 20px;
-  height: 50px;
+  height: var(--oc-top-nav-height, 50px);
   position: fixed;
   top: 0;
 }
@@ -398,7 +398,7 @@
   position: fixed;
   bottom: 0;
   width: 50%;
-  top: 50px;
+  top: var(--oc-top-nav-height, 50px);
   z-index: var(--oc-mde-zindex);
   overflow: auto;
   display: none;
@@ -407,7 +407,7 @@
 }
 
 [dir] .editor-preview-side {
-  border: 1px solid #ddd;
+  border: var(--bs-border-width, 1px) solid var(--bs-border-color, #bbb);
 }
 
 [dir=ltr] .editor-preview-side {
@@ -447,7 +447,7 @@
 }
 
 [dir] .editor-preview table td, [dir] .editor-preview table th {
-  border: 1px solid #ddd;
+  border: var(--bs-border-width, 1px) solid var(--bs-border-color, #bbb);
   padding: 5px;
 }
 
@@ -508,7 +508,7 @@
 [dir] .editor-toolbar .easymde-dropdown {
   background: var(--bs-body-bg);
   border-radius: 0;
-  border: 1px solid #fff;
+  border: var(--bs-border-width, 1px) solid var(--bs-border-color, #bbb);
 }
 
 [dir] .editor-toolbar .easymde-dropdown:hover {

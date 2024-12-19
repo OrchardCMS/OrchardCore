@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -12,7 +10,7 @@ using OrchardCore.Sms.ViewModels;
 
 namespace OrchardCore.Sms.Controllers;
 
-public class AdminController : Controller
+public sealed class AdminController : Controller
 {
     private readonly SmsProviderOptions _smsProviderOptions;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
@@ -20,8 +18,8 @@ public class AdminController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly ISmsProviderResolver _smsProviderResolver;
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
 
     public AdminController(
         IOptions<SmsProviderOptions> smsProviderOptions,

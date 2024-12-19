@@ -1,6 +1,5 @@
 [
   {
-    "generateSourceMaps": false,
     "inputs": [
       "Assets/scss/customMetaTagsEditor.scss"
     ],

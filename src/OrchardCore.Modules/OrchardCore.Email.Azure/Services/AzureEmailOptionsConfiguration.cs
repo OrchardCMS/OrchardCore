@@ -6,7 +6,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Services;
 
-public class AzureEmailOptionsConfiguration : IConfigureOptions<AzureEmailOptions>
+public sealed class AzureEmailOptionsConfiguration : IConfigureOptions<AzureEmailOptions>
 {
     public const string ProtectorName = "AzureEmailProtector";
 
@@ -23,10 +23,9 @@ public class AzureEmailOptionsConfiguration : IConfigureOptions<AzureEmailOption
 
     public void Configure(AzureEmailOptions options)
     {
-        var settings = _siteService.GetSiteSettingsAsync()
+        var settings = _siteService.GetSettingsAsync<AzureEmailSettings>()
             .GetAwaiter()
-            .GetResult()
-            .As<AzureEmailSettings>();
+            .GetResult();
 
         options.IsEnabled = settings.IsEnabled;
         options.DefaultSender = settings.DefaultSender;

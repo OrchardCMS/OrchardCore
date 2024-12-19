@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
@@ -6,7 +5,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Drivers;
 
-public class ForgotPasswordLoginFormDisplayDriver : DisplayDriver<LoginForm>
+public sealed class ForgotPasswordLoginFormDisplayDriver : DisplayDriver<LoginForm>
 {
     private readonly ISiteService _siteService;
 
@@ -17,13 +16,13 @@ public class ForgotPasswordLoginFormDisplayDriver : DisplayDriver<LoginForm>
 
     public override async Task<IDisplayResult> EditAsync(LoginForm model, BuildEditorContext context)
     {
-        var settings = (await _siteService.GetSiteSettingsAsync()).As<ResetPasswordSettings>();
+        var settings = await _siteService.GetSettingsAsync<ResetPasswordSettings>();
 
         if (!settings.AllowResetPassword)
         {
             return null;
         }
 
-        return View("LoginFormForgotPassword_Edit", model).Location("Links:5");
+        return View("LoginFormForgotPassword", model).Location("Links:5");
     }
 }

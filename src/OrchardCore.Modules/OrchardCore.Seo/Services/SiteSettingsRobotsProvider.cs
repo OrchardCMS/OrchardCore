@@ -1,5 +1,4 @@
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Settings;
@@ -21,7 +20,7 @@ public class SiteSettingsRobotsProvider : IRobotsProvider
 
     public async Task<string> GetContentAsync()
     {
-        var settings = (await _siteService.GetSiteSettingsAsync()).As<RobotsSettings>();
+        var settings = await _siteService.GetSettingsAsync<RobotsSettings>();
 
         var content = new StringBuilder();
 

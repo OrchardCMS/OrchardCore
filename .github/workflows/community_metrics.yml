@@ -10,7 +10,7 @@ permissions:
   pull-requests: read
 
 jobs:
-  build:
+  generate-community-metrics:
     name: Generate Community Metrics
     runs-on: ubuntu-latest
     steps:
@@ -59,6 +59,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SEARCH_QUERY: 'repo:OrchardCMS/OrchardCore type:discussions created:${{ env.LAST_MONTH }} category:Q&A'
         HIDE_TIME_TO_CLOSE: true
+        HIDE_ITEMS_CLOSED_COUNT: true
 
     - name: Concatenate Issue/PR and Discussion Metrics
       shell: pwsh
@@ -70,10 +71,22 @@ jobs:
       shell: pwsh
       run: |
         Get-Content ./community_metrics.md >> $env:GITHUB_STEP_SUMMARY
-          
+
+    - name: Close Previous Issue
+      shell: pwsh
+      run: |
+        # Without the --repo switch, the GH CLI will try to look it up from the current clone, which doesn't exist
+        # because we don't otherwise need checkout.
+        $issues = gh issue list --repo '${{ github.repository }}' --label 'community metrics' --state open --json number --jq '.[].number'
+        foreach ($issue in $issues)
+        {
+            gh issue close $issue --repo '${{ github.repository }}' --comment 'Closing this issue as newer community metrics are available.'
+        }
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Create Issue
-      # v5.0.0
-      uses: peter-evans/create-issue-from-file@24452a72d85239eacf1468b0f1982a9f3fec4c94
+      uses: peter-evans/create-issue-from-file@e8ef132d6df98ed982188e460ebb3b5d4ef3a9cd # v5.0.1
       with:
         title: Monthly community metrics report for ${{ env.LAST_MONTH }}
         token: ${{ secrets.GITHUB_TOKEN }}

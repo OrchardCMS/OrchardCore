@@ -1,26 +1,9 @@
-@using Microsoft.AspNetCore.Localization
-@using OrchardCore.Localization
-@using System.Globalization
-
-@inject ILocalizationService LocalizationService
-@{
-    var supportedCultures = (await LocalizationService.GetSupportedCulturesAsync()).Select(c => CultureInfo.GetCultureInfo(c));
-
-    if (supportedCultures.Count() < 2)
-    {
-        return;
-    }
-
-    var currentCulture = Context.Request.HttpContext.Features
-            .Get<IRequestCultureFeature>()?.RequestCulture?.Culture ?? CultureInfo.CurrentUICulture;
-}
-
 <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@currentCulture</a>
+    <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@Model.CurrentCulture.NativeName</a>
     <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
-        @foreach (var culture in supportedCultures)
+        @foreach (var culture in Model.SupportedCultures)
         {
-            if (culture.Name == currentCulture.Name)
+            if (culture.Name == Model.CurrentCulture.Name)
             {
                 continue;
             }

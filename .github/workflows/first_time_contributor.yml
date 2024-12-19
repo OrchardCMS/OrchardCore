@@ -1,0 +1,35 @@
+name: First-time Contributor Welcome
+
+on:
+  issues:
+    types: [opened]
+  pull_request_target:
+    types: [opened, closed]
+
+jobs:
+  first-time-contributor-welcome:
+    runs-on: ubuntu-latest
+    steps:
+    # We don't use the actions/first-interaction action because it can't reference the author, nor can it comment after
+    # PR merge.
+    # Once https://github.com/wow-actions/welcome/pull/12 is merged, we should use https://github.com/wow-actions/welcome
+    # directly.
+    - uses: OrchardCMS/welcome-action@task/update-to-node-20
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        FIRST_ISSUE_COMMENT: >
+          Thank you for submitting your first issue, awesome! 🚀 We're thrilled to receive your input. If you haven't
+          completed the template yet, please take a moment to do so. This ensures that we fully understand your feature
+          request or bug report. On what happens next, see 
+          [the docs](https://docs.orchardcore.net/en/latest/guides/contributing/managing-issues/#what-happens-after-you-open-an-issue).
+        FIRST_PR_COMMENT: >
+          Thank you for submitting your first pull request, awesome! 🚀 If you haven't already, please take a moment
+          to review our [contribution guide](https://docs.orchardcore.net/en/latest/guides/contributing/). This
+          guide provides helpful information to ensure your contribution aligns with our standards. A core team member
+          will review your pull request.
+        FIRST_PR_MERGED_COMMENT: >
+          Congratulations on your first PR merge! 🎉 Thank you for your contribution! We're looking forward to welcoming
+          other contributions of yours in the future. @all-contributors please add @{{ author }} for code.
+        STAR_MESSAGE: > 
+          If you like Orchard Core, please star our repo and join our
+          [community channels](https://github.com/OrchardCMS/OrchardCore/?tab=readme-ov-file#get-in-touch).

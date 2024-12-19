@@ -2,11 +2,11 @@
 
 The Azure AI Search module allows you to manage Azure AI Search indices.
 
-Before enabling the service, you'll need to configure the connection to the server. By default, you can navigate to `Configurations` >> `Settings` >> `Azure AI Search` and provide the Azure Search AI service info.
+Before enabling the service, you'll need to configure the connection to the service. By default, you can navigate to `Configurations` >> `Settings` >> `Azure AI Search` and provide the Azure Search AI service info.
 
-Alternatively, you can configure the Azure Search AI service for all your tenants from the `appsettings.json` file by adding the following
+Alternatively, you can configure the Azure Search AI service for all your tenants using one of the configuration providers. For example, you can add the following to the `appsettings.json`:
 
-```
+```json
 {
   "OrchardCore":{
     "OrchardCore_AzureAISearch":{
@@ -94,9 +94,9 @@ To reset all indices:
 }
 ```
 
-### Rebuild Elasticsearch Index Step
+### Rebuild Azure AI Search Index Step
 
-The `Rebuild Index Step` rebuilds an Elasticsearch index. It deletes and recreates the full index content.
+The `Rebuild Index Step` rebuilds an Azure AI Search index. It deletes and recreates the full index content.
 
 ```json
 {

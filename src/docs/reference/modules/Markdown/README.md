@@ -52,7 +52,7 @@ The following properties are available on the `MarkdownFieldViewModel` class.
 
 Markdown output is sanitized during the rendering of content with Display Management.
 
-You can disable this by unchecking the `Sanitize HTML` setting, or further configuring the [HTML Sanitizer](../../core/Sanitizer/README.md)
+You can disable this by unchecking the `Sanitize HTML` setting, or further configuring the [HTML Sanitizer](../Sanitizer/README.md)
 
 When rendering content directly you can disable sanitization by passing a boolean to the helper.
 

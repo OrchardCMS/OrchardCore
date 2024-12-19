@@ -1,7 +1,6 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
+using OrchardCore.Autoroute;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Routing;
 
@@ -24,7 +23,7 @@ public static class AutoroutePartRazorHelperExtensions
         }
 
         // Provided for backwards compatability and avoiding confusion.
-        if (slug.StartsWith("slug:", StringComparison.OrdinalIgnoreCase))
+        if (slug.StartsWith(AutorouteConstants.SlugPrefix, StringComparison.OrdinalIgnoreCase))
         {
             slug = slug[5..];
         }

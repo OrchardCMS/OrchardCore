@@ -1,12 +1,11 @@
-namespace OrchardCore.ContentManagement.Handlers
-{
-    public class UpdateContentContext : ContentContextBase
-    {
-        public UpdateContentContext(ContentItem contentItem) : base(contentItem)
-        {
-            UpdatingItem = contentItem;
-        }
+namespace OrchardCore.ContentManagement.Handlers;
 
-        public ContentItem UpdatingItem { get; set; }
+public class UpdateContentContext : ContentContextBase
+{
+    public UpdateContentContext(ContentItem contentItem) : base(contentItem)
+    {
+        UpdatingItem = contentItem;
     }
+
+    public ContentItem UpdatingItem { get; set; }
 }

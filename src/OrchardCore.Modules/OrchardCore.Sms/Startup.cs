@@ -5,7 +5,6 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Notifications;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Sms.Activities;
 using OrchardCore.Sms.Drivers;
 using OrchardCore.Sms.Services;
@@ -13,7 +12,7 @@ using OrchardCore.Workflows.Helpers;
 
 namespace OrchardCore.Sms;
 
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     private readonly IHostEnvironment _hostEnvironment;
 
@@ -33,16 +32,16 @@ public class Startup : StartupBase
         }
 
         services.AddTwilioSmsProvider()
-            .AddScoped<IDisplayDriver<ISite>, TwilioSettingsDisplayDriver>();
+            .AddSiteDisplayDriver<TwilioSettingsDisplayDriver>();
 
-        services.AddScoped<IPermissionProvider, SmsPermissionProvider>();
-        services.AddScoped<INavigationProvider, AdminMenu>();
-        services.AddScoped<IDisplayDriver<ISite>, SmsSettingsDisplayDriver>();
+        services.AddPermissionProvider<SmsPermissionProvider>();
+        services.AddSiteDisplayDriver<SmsSettingsDisplayDriver>();
+        services.AddNavigationProvider<AdminMenu>();
     }
 }
 
 [Feature("OrchardCore.Notifications.Sms")]
-public class NotificationsStartup : StartupBase
+public sealed class NotificationsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -51,7 +50,7 @@ public class NotificationsStartup : StartupBase
 }
 
 [RequireFeatures("OrchardCore.Workflows")]
-public class WorkflowsStartup : StartupBase
+public sealed class WorkflowsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {

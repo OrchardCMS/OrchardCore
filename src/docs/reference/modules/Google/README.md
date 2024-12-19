@@ -72,4 +72,4 @@ The following configuration values can be customized:
     }
 ```
 
-For more information please refer to [Configuration](../../core/Configuration/README.md).
+For more information please refer to [Configuration](../Configuration/README.md).

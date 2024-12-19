@@ -1,6 +1,4 @@
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -14,107 +12,106 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
 using OrchardCore.Routing;
 
-namespace OrchardCore.AutoSetup
+namespace OrchardCore.AutoSetup;
+
+/// <summary>
+/// The AutoSetup feature startup.
+/// </summary>
+public sealed class Startup : StartupBase
 {
     /// <summary>
-    /// The AutoSetup feature startup.
+    /// AutoSetup Configuration Section Name.
     /// </summary>
-    public sealed class Startup : StartupBase
+    private const string ConfigSectionName = "OrchardCore_AutoSetup";
+
+    /// <summary>
+    /// The Shell settings.
+    /// </summary>
+    private readonly ShellSettings _shellSettings;
+
+    /// <summary>
+    /// The Shell/Tenant configuration.
+    /// </summary>
+    private readonly IShellConfiguration _shellConfiguration;
+
+    /// <summary>
+    /// The logger.
+    /// </summary>
+    private readonly ILogger<Startup> _logger;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Startup"/> class.
+    /// </summary>
+    /// <param name="shellSettings">The Shell settings.</param>
+    /// <param name="shellConfiguration">The shell configuration.</param>
+    /// <param name="logger">The logger.</param>
+    public Startup(ShellSettings shellSettings, IShellConfiguration shellConfiguration, ILogger<Startup> logger)
     {
-        /// <summary>
-        /// AutoSetup Configuration Section Name.
-        /// </summary>
-        private const string ConfigSectionName = "OrchardCore_AutoSetup";
+        _shellSettings = shellSettings;
+        _shellConfiguration = shellConfiguration;
+        _logger = logger;
+    }
 
-        /// <summary>
-        /// The Shell settings.
-        /// </summary>
-        private readonly ShellSettings _shellSettings;
+    /// <summary>
+    /// The configure services.
+    /// </summary>
+    /// <param name="services">
+    /// The services.
+    /// </param>
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        var configuration = _shellConfiguration.GetSection(ConfigSectionName);
+        services.Configure<AutoSetupOptions>(configuration);
 
-        /// <summary>
-        /// The Shell/Tenant configuration.
-        /// </summary>
-        private readonly IShellConfiguration _shellConfiguration;
-
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly ILogger<Startup> _logger;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Startup"/> class.
-        /// </summary>
-        /// <param name="shellSettings">The Shell settings.</param>
-        /// <param name="shellConfiguration">The shell configuration.</param>
-        /// <param name="logger">The logger.</param>
-        public Startup(ShellSettings shellSettings, IShellConfiguration shellConfiguration, ILogger<Startup> logger)
+        if (configuration.Exists())
         {
-            _shellSettings = shellSettings;
-            _shellConfiguration = shellConfiguration;
-            _logger = logger;
+            services.Configure<AutoSetupOptions>(o => o.ConfigurationExists = true);
         }
+    }
 
-        /// <summary>
-        /// The configure services.
-        /// </summary>
-        /// <param name="services">
-        /// The services.
-        /// </param>
-        public override void ConfigureServices(IServiceCollection services)
+    /// <summary>
+    /// Configure application pipeline.
+    /// </summary>
+    /// <param name="app">
+    /// The app.
+    /// </param>
+    /// <param name="routes">
+    /// The routes.
+    /// </param>
+    /// <param name="serviceProvider">
+    /// The "Shell Scope" service provider.
+    /// </param>
+    public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+    {
+        if (_shellSettings.IsUninitialized())
         {
-            var configuration = _shellConfiguration.GetSection(ConfigSectionName);
-            services.Configure<AutoSetupOptions>(configuration);
-
-            if (configuration.Exists())
+            var options = serviceProvider.GetRequiredService<IOptions<AutoSetupOptions>>().Value;
+            if (!options.ConfigurationExists)
             {
-                services.Configure<AutoSetupOptions>(o => o.ConfigurationExists = true);
+                return;
             }
-        }
 
-        /// <summary>
-        /// Configure application pipeline.
-        /// </summary>
-        /// <param name="app">
-        /// The app.
-        /// </param>
-        /// <param name="routes">
-        /// The routes.
-        /// </param>
-        /// <param name="serviceProvider">
-        /// The "Shell Scope" service provider.
-        /// </param>
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            if (_shellSettings.IsUninitialized())
+            var validationContext = new ValidationContext(options, serviceProvider, null);
+
+            var validationErrors = options.Validate(validationContext);
+            if (validationErrors.Any())
             {
-                var options = serviceProvider.GetRequiredService<IOptions<AutoSetupOptions>>().Value;
-                if (!options.ConfigurationExists)
+                var stringBuilder = new StringBuilder();
+                foreach (var error in validationErrors)
                 {
-                    return;
+                    stringBuilder.Append(error.ErrorMessage + ' ');
                 }
 
-                var validationContext = new ValidationContext(options, serviceProvider, null);
-
-                var validationErrors = options.Validate(validationContext);
-                if (validationErrors.Any())
-                {
-                    var stringBuilder = new StringBuilder();
-                    foreach (var error in validationErrors)
-                    {
-                        stringBuilder.Append(error.ErrorMessage + ' ');
-                    }
-
-                    _logger.LogError("AutoSetup did not start, configuration has following errors: {errors}", stringBuilder.ToString());
-                }
-                else if (string.IsNullOrWhiteSpace(options.AutoSetupPath))
-                {
-                    app.UseMiddleware<AutoSetupMiddleware>();
-                }
-                else
-                {
-                    app.MapWhen(ctx => ctx.Request.Path.StartsWithNormalizedSegments(options.AutoSetupPath),
-                        appBuilder => appBuilder.UseMiddleware<AutoSetupMiddleware>());
-                }
+                _logger.LogError("AutoSetup did not start, configuration has following errors: {Errors}", stringBuilder.ToString());
+            }
+            else if (string.IsNullOrWhiteSpace(options.AutoSetupPath))
+            {
+                app.UseMiddleware<AutoSetupMiddleware>();
+            }
+            else
+            {
+                app.MapWhen(ctx => ctx.Request.Path.StartsWithNormalizedSegments(options.AutoSetupPath),
+                    appBuilder => appBuilder.UseMiddleware<AutoSetupMiddleware>());
             }
         }
     }

@@ -14,7 +14,13 @@
     {
         if (Model.Value.Type == "checkbox")
         {
-            isChecked = fieldEntry.AttemptedValue == fieldValue;
+            // Unlike other input controls, a checkbox's value is only included in the
+            // submitted data if the checkbox is currently checked. If it is, then the
+            // value of the checkbox's value attribute is reported as the input's value, 
+            // or 'on' if no value is set.
+            // c.f. https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#additional_attributes
+
+            isChecked = fieldEntry.AttemptedValue == (fieldValue ?? "on");
         }
         else
         {

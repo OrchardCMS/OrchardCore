@@ -1,8 +1,7 @@
-namespace OrchardCore.Settings.ViewModels
+namespace OrchardCore.Settings.ViewModels;
+
+public class AdminIndexViewModel
 {
-    public class AdminIndexViewModel
-    {
-        public dynamic Shape { get; set; }
-        public string GroupId { get; set; }
-    }
+    public dynamic Shape { get; set; }
+    public string GroupId { get; set; }
 }

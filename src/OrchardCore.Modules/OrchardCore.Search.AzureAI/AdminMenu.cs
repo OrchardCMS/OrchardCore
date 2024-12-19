@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Navigation;
@@ -8,27 +6,31 @@ using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI;
 
-public class AdminMenu(
-    IStringLocalizer<AdminMenu> stringLocalizer,
-    IOptions<AzureAISearchDefaultOptions> azureAISearchSettings) : INavigationProvider
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    protected readonly IStringLocalizer S = stringLocalizer;
-    private readonly AzureAISearchDefaultOptions _azureAISearchSettings = azureAISearchSettings.Value;
+    private readonly AzureAISearchDefaultOptions _azureAISearchSettings;
 
-    public Task BuildNavigationAsync(string name, NavigationBuilder builder)
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(
+        IOptions<AzureAISearchDefaultOptions> azureAISearchSettings,
+        IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        if (!string.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
-        {
-            return Task.CompletedTask;
-        }
+        _azureAISearchSettings = azureAISearchSettings.Value;
+        S = stringLocalizer;
+    }
 
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
         builder
             .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
-                .AddClass("azure-ai-service")
-                .Id("azureaiservice")
+                .AddClass("search")
+                .Id("search")
                 .Add(S["Indexing"], S["Indexing"].PrefixPosition(), indexing => indexing
                     .Add(S["Azure AI Indices"], S["Azure AI Indices"].PrefixPosition(), indexes => indexes
                         .Action("Index", "Admin", "OrchardCore.Search.AzureAI")
+                        .AddClass("azureaiindices")
+                        .Id("azureaiindices")
                         .Permission(AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes)
                         .LocalNav()
                     )
@@ -51,6 +53,6 @@ public class AdminMenu(
                 );
         }
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

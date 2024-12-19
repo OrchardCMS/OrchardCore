@@ -8,7 +8,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<AzureAISearchDefaultOptions>
+public sealed class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<AzureAISearchDefaultOptions>
 {
     public const string ProtectorName = "AzureAISearch";
 
@@ -26,7 +26,7 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
         _siteService = siteService;
     }
 
-    public async void Configure(AzureAISearchDefaultOptions options)
+    public void Configure(AzureAISearchDefaultOptions options)
     {
         var fileOptions = _shellConfiguration.GetSection("OrchardCore_AzureAISearch")
             .Get<AzureAISearchDefaultOptions>()
@@ -49,8 +49,9 @@ public class AzureAISearchDefaultOptionsConfigurations : IConfigureOptions<Azure
         else
         {
             // At this point, we can allow the user to update the settings from UI.
-            var site = await _siteService.GetSiteSettingsAsync();
-            var settings = site.As<AzureAISearchDefaultSettings>();
+            var settings = _siteService.GetSettingsAsync<AzureAISearchDefaultSettings>()
+                .GetAwaiter()
+                .GetResult();
 
             if (settings.UseCustomConfiguration)
             {

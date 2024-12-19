@@ -1,6 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -8,7 +6,7 @@ using OrchardCore.Google.Authentication.Settings;
 
 namespace OrchardCore.Google.Authentication.Services;
 
-public class GoogleAuthenticationSettingsConfiguration : IConfigureOptions<GoogleAuthenticationSettings>
+public sealed class GoogleAuthenticationSettingsConfiguration : IConfigureOptions<GoogleAuthenticationSettings>
 {
     private readonly GoogleAuthenticationService _googleAuthenticationService;
     private readonly ShellSettings _shellSettings;

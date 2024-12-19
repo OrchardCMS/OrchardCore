@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Search.Abstractions;
@@ -11,9 +9,14 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Lucene.Handler;
 
-public class ElasticsearchAuthorizationHandler(IServiceProvider serviceProvider) : AuthorizationHandler<PermissionRequirement>
+public sealed class ElasticsearchAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
-    private readonly IServiceProvider _serviceProvider = serviceProvider;
+    private readonly IServiceProvider _serviceProvider;
+
+    public ElasticsearchAuthorizationHandler(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
 
     private IAuthorizationService _authorizationService;
     private ISiteService _siteService;
@@ -62,8 +65,7 @@ public class ElasticsearchAuthorizationHandler(IServiceProvider serviceProvider)
         }
 
         _siteService ??= _serviceProvider.GetRequiredService<ISiteService>();
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-        return siteSettings.As<ElasticSettings>().SearchIndex;
+        return (await _siteService.GetSettingsAsync<ElasticSettings>()).SearchIndex;
     }
 }

@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrchardCore.Workflows.Timers
+namespace OrchardCore.Workflows.Timers;
+
+public class TimerEventViewModel
 {
-    public class TimerEventViewModel
-    {
-        [Required]
-        public string CronExpression { get; set; }
-    }
+    [Required]
+    public string CronExpression { get; set; }
 }

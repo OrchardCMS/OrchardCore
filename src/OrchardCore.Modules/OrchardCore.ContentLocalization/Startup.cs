@@ -1,5 +1,3 @@
-using System;
-using System.Globalization;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -23,74 +21,71 @@ using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
 
-namespace OrchardCore.ContentLocalization
+namespace OrchardCore.ContentLocalization;
+
+public sealed class Startup : StartupBase
 {
-    public class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
+        services.Configure<TemplateOptions>(o =>
         {
-            services.Configure<TemplateOptions>(o =>
-            {
-                o.MemberAccessStrategy.Register<LocalizationPartViewModel>();
-                o.MemberAccessStrategy.Register<CultureInfo>();
-            })
-            .AddLiquidFilter<ContentLocalizationFilter>("localization_set");
+            o.MemberAccessStrategy.Register<LocalizationPartViewModel>();
+        })
+        .AddLiquidFilter<ContentLocalizationFilter>("localization_set");
 
-            services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
-            services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
-            services.AddContentLocalization();
+        services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
+        services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
+        services.AddContentLocalization();
 
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
+        services.AddPermissionProvider<Permissions>();
+        services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
 
-            services.AddScoped<IContentsAdminListFilter, LocalizationPartContentsAdminListFilter>();
-            services.AddTransient<IContentsAdminListFilterProvider, LocalizationPartContentsAdminListFilterProvider>();
-            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, LocalizationContentsAdminListDisplayDriver>();
-        }
+        services.AddScoped<IContentsAdminListFilter, LocalizationPartContentsAdminListFilter>();
+        services.AddTransient<IContentsAdminListFilterProvider, LocalizationPartContentsAdminListFilterProvider>();
+        services.AddDisplayDriver<ContentOptionsViewModel, LocalizationContentsAdminListDisplayDriver>();
+    }
+}
+
+[Feature("OrchardCore.ContentLocalization.ContentCulturePicker")]
+public sealed class ContentPickerStartup : StartupBase
+{
+    private readonly IShellConfiguration _shellConfiguration;
+    public ContentPickerStartup(IShellConfiguration shellConfiguration)
+    {
+        _shellConfiguration = shellConfiguration;
     }
 
-    [Feature("OrchardCore.ContentLocalization.ContentCulturePicker")]
-    public class ContentPickerStartup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        private readonly IShellConfiguration _shellConfiguration;
-        public ContentPickerStartup(IShellConfiguration shellConfiguration)
-        {
-            _shellConfiguration = shellConfiguration;
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IDisplayDriver<Navbar>, ContentCulturePickerNavbarDisplayDriver>();
-            services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IContentCulturePickerService, ContentCulturePickerService>();
-            services.AddScoped<IDisplayDriver<ISite>, ContentCulturePickerSettingsDriver>();
-            services.AddScoped<IDisplayDriver<ISite>, ContentRequestCultureProviderSettingsDriver>();
-            services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider()));
-            services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            routes.MapAreaControllerRoute(
-               name: "RedirectToLocalizedContent",
-               areaName: "OrchardCore.ContentLocalization",
-               pattern: "RedirectToLocalizedContent",
-               defaults: new { controller = "ContentCulturePicker", action = "RedirectToLocalizedContent" }
-           );
-        }
+        services.AddDisplayDriver<Navbar, ContentCulturePickerNavbarDisplayDriver>();
+        services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddScoped<IContentCulturePickerService, ContentCulturePickerService>();
+        services.AddSiteDisplayDriver<ContentCulturePickerSettingsDriver>();
+        services.AddSiteDisplayDriver<ContentRequestCultureProviderSettingsDriver>();
+        services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider()));
+        services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
     }
 
-    [Feature("OrchardCore.ContentLocalization.Sitemaps")]
-    public class SitemapsStartup : StartupBase
+    public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<ISitemapContentItemExtendedMetadataProvider, SitemapUrlHrefLangExtendedMetadataProvider>();
-            services.Replace(ServiceDescriptor.Scoped<IContentItemsQueryProvider, LocalizedContentItemsQueryProvider>());
-        }
+        routes.MapAreaControllerRoute(
+           name: "RedirectToLocalizedContent",
+           areaName: "OrchardCore.ContentLocalization",
+           pattern: "RedirectToLocalizedContent",
+           defaults: new { controller = "ContentCulturePicker", action = "RedirectToLocalizedContent" }
+       );
+    }
+}
+
+[Feature("OrchardCore.ContentLocalization.Sitemaps")]
+public sealed class SitemapsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ISitemapContentItemExtendedMetadataProvider, SitemapUrlHrefLangExtendedMetadataProvider>();
+        services.Replace(ServiceDescriptor.Scoped<IContentItemsQueryProvider, LocalizedContentItemsQueryProvider>());
     }
 }

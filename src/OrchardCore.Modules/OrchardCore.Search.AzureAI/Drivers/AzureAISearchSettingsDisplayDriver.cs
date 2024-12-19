@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,7 +6,6 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
@@ -18,35 +14,35 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Drivers;
 
-public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, AzureAISearchSettings>
+public sealed class AzureAISearchSettingsDisplayDriver : SiteDisplayDriver<AzureAISearchSettings>
 {
     private static readonly char[] _separator = [',', ' '];
 
     private readonly AzureAISearchIndexSettingsService _indexSettingsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
-    protected readonly IStringLocalizer S;
+    private readonly IShellReleaseManager _shellReleaseManager;
+
+    internal readonly IStringLocalizer S;
+
+    protected override string SettingsGroupId
+        => SearchConstants.SearchSettingsGroupId;
 
     public AzureAISearchSettingsDisplayDriver(
         AzureAISearchIndexSettingsService indexSettingsService,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IShellHost shellHost,
-        ShellSettings shellSettings,
-        IStringLocalizer<AzureAISearchSettingsDisplayDriver> stringLocalizer
-        )
+        IShellReleaseManager shellReleaseManager,
+        IStringLocalizer<AzureAISearchSettingsDisplayDriver> stringLocalizer)
     {
         _indexSettingsService = indexSettingsService;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
+        _shellReleaseManager = shellReleaseManager;
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(AzureAISearchSettings settings)
+    public override IDisplayResult Edit(ISite site, AzureAISearchSettings settings, BuildEditorContext context)
         => Initialize<AzureAISearchSettingsViewModel>("AzureAISearchSettings_Edit", async model =>
         {
             model.SearchIndex = settings.SearchIndex;
@@ -56,15 +52,10 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
             .ToList();
         }).Location("Content:2#Azure AI Search;5")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
-        .OnGroup(SearchConstants.SearchSettingsGroupId);
+        .OnGroup(SettingsGroupId);
 
-    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchSettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureAISearchSettings settings, UpdateEditorContext context)
     {
-        if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
-        {
-            return null;
-        }
-
         if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
         {
             return null;
@@ -72,37 +63,34 @@ public class AzureAISearchSettingsDisplayDriver : SectionDisplayDriver<ISite, Az
 
         var model = new AzureAISearchSettingsViewModel();
 
-        if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+
+        if (string.IsNullOrEmpty(model.SearchIndex))
         {
-            if (string.IsNullOrEmpty(model.SearchIndex))
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.SearchIndex), S["Search Index is required."]);
+        }
+        else
+        {
+            var indexes = await _indexSettingsService.GetSettingsAsync();
+
+            if (!indexes.Any(index => index.IndexName == model.SearchIndex))
             {
-                context.Updater.ModelState.AddModelError(Prefix, nameof(model.SearchIndex), S["Search Index is required."]);
-            }
-            else
-            {
-                var indexes = await _indexSettingsService.GetSettingsAsync();
-
-                if (!indexes.Any(index => index.IndexName == model.SearchIndex))
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.SearchIndex), S["Invalid Search Index value."]);
-                }
-            }
-
-            var fields = model.SearchFields?.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
-
-            if (section.SearchIndex != model.SearchIndex || !AreTheSame(section.DefaultSearchFields, fields))
-            {
-                section.SearchIndex = model.SearchIndex;
-                section.DefaultSearchFields = fields;
-
-                if (context.Updater.ModelState.IsValid)
-                {
-                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
-                }
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.SearchIndex), S["Invalid Search Index value."]);
             }
         }
 
-        return Edit(section);
+        var fields = model.SearchFields?.Split(_separator, StringSplitOptions.RemoveEmptyEntries);
+
+        if (settings.SearchIndex != model.SearchIndex || !AreTheSame(settings.DefaultSearchFields, fields))
+        {
+            settings.SearchIndex = model.SearchIndex;
+            settings.DefaultSearchFields = fields;
+
+            _shellReleaseManager.RequestRelease();
+        }
+
+        return Edit(site, settings, context);
     }
 
     private static bool AreTheSame(string[] a, string[] b)

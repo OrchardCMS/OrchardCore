@@ -1,9 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\OrchardCore.Build\OrchardCore.Commons.props" />
-  <ItemGroup>
-    <PackageReference Remove="Microsoft.SourceLink.GitHub" />
-    <PackageReference Remove="StyleCop.Analyzers" />
-  </ItemGroup>
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
     <IncludeBuildOutput>False</IncludeBuildOutput>
@@ -15,7 +11,6 @@
       This setting changes that so that the .template.config folder will be included.
     -->
     <NoDefaultExcludes>True</NoDefaultExcludes>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <PackageType>Template</PackageType>
     <!--
       The previous code used a nuget package to allow the 'RoslynCodeTaskFactory' (see the ReplaceFileText task definition below) to be used.
@@ -24,7 +19,7 @@
       The error message is not accurate, as it indicates there is no content. It should say assemblies instead, since we have content but no assemblies.
         NU5128 warning: Ignore since the project template package doesn't contain content or references to other packages.
     -->
-    <NoWarn>CS8021,CS2008,NU5128</NoWarn>
+    <NoWarn>CS8021;CS2008;NU5128;CA1016</NoWarn>
     <!--
       Prevent the symbol package from being created as this nuget package doesn't have package refs or assemblies.
       Otherwise, the following error will be thrown by `dotnet pack`: error NU5017: Cannot create a package that has no dependencies nor content.

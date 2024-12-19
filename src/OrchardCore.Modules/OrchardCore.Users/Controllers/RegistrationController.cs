@@ -1,180 +1,124 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
+using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.ViewModels;
+using OrchardCore.Users.Services;
 
-namespace OrchardCore.Users.Controllers
+namespace OrchardCore.Users.Controllers;
+
+[Feature(UserConstants.Features.UserRegistration)]
+public sealed class RegistrationController : Controller
 {
-    [Feature("OrchardCore.Users.Registration")]
-    public class RegistrationController : Controller
+    private readonly UserManager<IUser> _userManager;
+    private readonly IAuthorizationService _authorizationService;
+    private readonly ISiteService _siteService;
+    private readonly INotifier _notifier;
+    private readonly ILogger _logger;
+    private readonly IDisplayManager<RegisterUserForm> _registerUserDisplayManager;
+    private readonly RegistrationOptions _registrationOptions;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
+    private readonly IEnumerable<ILoginFormEvent> _accountEvents;
+    private readonly IUserService _userService;
+
+    internal readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+
+    public RegistrationController(
+        UserManager<IUser> userManager,
+        IAuthorizationService authorizationService,
+        ISiteService siteService,
+        INotifier notifier,
+        ILogger<RegistrationController> logger,
+        IDisplayManager<RegisterUserForm> registerUserDisplayManager,
+        IOptions<RegistrationOptions> registrationOptions,
+        IUpdateModelAccessor updateModelAccessor,
+        IEnumerable<ILoginFormEvent> accountEvents,
+        IUserService userService,
+        IHtmlLocalizer<RegistrationController> htmlLocalizer,
+        IStringLocalizer<RegistrationController> stringLocalizer)
     {
-        private readonly UserManager<IUser> _userManager;
-        private readonly IAuthorizationService _authorizationService;
-        private readonly ISiteService _siteService;
-        private readonly INotifier _notifier;
-        private readonly ILogger _logger;
-        protected readonly IStringLocalizer S;
-        protected readonly IHtmlLocalizer H;
+        _userManager = userManager;
+        _authorizationService = authorizationService;
+        _siteService = siteService;
+        _notifier = notifier;
+        _logger = logger;
+        _registerUserDisplayManager = registerUserDisplayManager;
+        _registrationOptions = registrationOptions.Value;
+        _updateModelAccessor = updateModelAccessor;
+        _accountEvents = accountEvents;
+        _userService = userService;
+        H = htmlLocalizer;
+        S = stringLocalizer;
+    }
 
-        public RegistrationController(
-            UserManager<IUser> userManager,
-            IAuthorizationService authorizationService,
-            ISiteService siteService,
-            INotifier notifier,
-            ILogger<RegistrationController> logger,
-            IHtmlLocalizer<RegistrationController> htmlLocalizer,
-            IStringLocalizer<RegistrationController> stringLocalizer)
+    [AllowAnonymous]
+    public async Task<IActionResult> Register(string returnUrl = null)
+    {
+        var shape = await _registerUserDisplayManager.BuildEditorAsync(_updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+
+        ViewData["ReturnUrl"] = returnUrl;
+
+        return View(shape);
+    }
+
+    [HttpPost]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    [ActionName(nameof(Register))]
+    public async Task<IActionResult> RegisterPOST(string returnUrl = null)
+    {
+        var model = new RegisterUserForm();
+
+        var shape = await _registerUserDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, false, string.Empty, string.Empty);
+
+        ViewData["ReturnUrl"] = returnUrl;
+
+        if (ModelState.IsValid)
         {
-            _userManager = userManager;
-            _authorizationService = authorizationService;
-            _siteService = siteService;
-            _notifier = notifier;
-            _logger = logger;
-            H = htmlLocalizer;
-            S = stringLocalizer;
-        }
+            var iUser = await _userService.RegisterAsync(model, ModelState.AddModelError);
 
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> Register(string returnUrl = null)
-        {
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
-            if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
+            // If we get a user, redirect to returnUrl.
+            if (iUser is User user)
             {
-                return NotFound();
-            }
-
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
-        {
-            var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
-
-            if (settings.UsersCanRegister != UserRegistrationType.AllowRegistration)
-            {
-                return NotFound();
-            }
-
-            if (string.IsNullOrEmpty(model.Email))
-            {
-                ModelState.AddModelError("Email", S["Email is required."]);
-            }
-
-            if (ModelState.IsValid)
-            {
-                // Check if user with same email already exists
-                var userWithEmail = await _userManager.FindByEmailAsync(model.Email);
-
-                if (userWithEmail != null)
+                foreach (var accountEvent in _accountEvents)
                 {
-                    ModelState.AddModelError("Email", S["A user with the same email already exists."]);
-                }
-            }
+                    var loginResult = await accountEvent.ValidatingLoginAsync(user);
 
-            ViewData["ReturnUrl"] = returnUrl;
-
-            if (ModelState.IsValid)
-            {
-                var iUser = await this.RegisterUser(model, S["Confirm your account"], _logger);
-                // If we get a user, redirect to returnUrl
-                if (iUser is User user)
-                {
-                    if (settings.UsersMustValidateEmail && !user.EmailConfirmed)
+                    if (loginResult != null)
                     {
-                        return RedirectToAction("ConfirmEmailSent", new { ReturnUrl = returnUrl });
+                        return loginResult;
                     }
-                    if (settings.UsersAreModerated && !user.IsEnabled)
-                    {
-                        return RedirectToAction("RegistrationPending", new { ReturnUrl = returnUrl });
-                    }
-
-                    return RedirectToLocal(returnUrl.ToUriComponents());
                 }
-            }
 
-            // If we got this far, something failed, redisplay form
-            return View(model);
+                return RedirectToLocal(returnUrl.ToUriComponents());
+            }
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        // If we got this far, something failed. Let's redisplay form.
+        return View(shape);
+    }
+
+    [AllowAnonymous]
+    public IActionResult RegistrationPending(string returnUrl = null)
+        => View(new { ReturnUrl = returnUrl });
+
+    private RedirectResult RedirectToLocal(string returnUrl)
+    {
+        if (Url.IsLocalUrl(returnUrl))
         {
-            if (userId == null || code == null)
-            {
-                return RedirectToAction(nameof(RegistrationController.Register), "Registration");
-            }
-
-            var user = await _userManager.FindByIdAsync(userId);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var result = await _userManager.ConfirmEmailAsync(user, code);
-
-            if (result.Succeeded)
-            {
-                return View();
-            }
-
-            return NotFound();
+            return Redirect(returnUrl);
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult ConfirmEmailSent(string returnUrl = null)
-            => View(new { ReturnUrl = returnUrl });
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult RegistrationPending(string returnUrl = null)
-            => View(new { ReturnUrl = returnUrl });
-
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SendVerificationEmail(string id)
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageUsers))
-            {
-                return Forbid();
-            }
-
-            var user = await _userManager.FindByIdAsync(id) as User;
-            if (user != null)
-            {
-                await this.SendEmailConfirmationTokenAsync(user, S["Confirm your account"]);
-
-                await _notifier.SuccessAsync(H["Verification email sent."]);
-            }
-
-            return RedirectToAction(nameof(AdminController.Index), "Admin");
-        }
-
-        private RedirectResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-
-            return Redirect("~/");
-        }
+        return Redirect("~/");
     }
 }

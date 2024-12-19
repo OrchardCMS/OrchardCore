@@ -1,6 +1,6 @@
 namespace OrchardCore.Workflows;
 
-public class WorkflowConstants
+public static class WorkflowConstants
 {
     public const string FormOriginatedLocationItemsKey = "FormOriginatedLocation";
 

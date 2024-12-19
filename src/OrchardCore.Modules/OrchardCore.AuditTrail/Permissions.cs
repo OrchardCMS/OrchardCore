@@ -1,18 +1,19 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AuditTrail;
 
-public class Permissions : IPermissionProvider
+public sealed class Permissions : IPermissionProvider
 {
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.AuditTrail.AuditTrailPermissions.ViewAuditTrail'.")]
     public static readonly Permission ViewAuditTrail = AuditTrailPermissions.ViewAuditTrail;
+
+    [Obsolete("This will be removed in a future release. Instead use 'OrchardCore.AuditTrail.AuditTrailPermissions.ManageAuditTrailSettings'.")]
     public static readonly Permission ManageAuditTrailSettings = AuditTrailPermissions.ManageAuditTrailSettings;
 
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ViewAuditTrail,
-        ManageAuditTrailSettings,
+        AuditTrailPermissions.ViewAuditTrail,
+        AuditTrailPermissions.ManageAuditTrailSettings,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
@@ -22,7 +23,7 @@ public class Permissions : IPermissionProvider
     [
         new PermissionStereotype
         {
-            Name = "Administrator",
+            Name = OrchardCoreConstants.Roles.Administrator,
             Permissions = _allPermissions
         },
     ];

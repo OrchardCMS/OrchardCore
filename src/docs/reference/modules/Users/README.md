@@ -7,12 +7,13 @@ The Users module enables authentication UI and user management.
 The module contains the following features apart from the base feature:
 
 - Users Change Email: Allows users to change their email address.
-- Users Registration: Allows external users to sign up to the site and ask to confirm their email.
+- Users Registration: Allows new users to sign up to the site and ask to confirm their email.
+- External User Authentication: Enables a way to authenticate users using an external identity provider.
 - Reset Password: Allows users to reset their password.
 - User Time Zone: Provides a way to set the time zone per user.
 - Custom User Settings: See [its own documentation page](CustomUserSettings/README.md).
 - [Users Authentication Ticket Store](./TicketStore.md): Stores users authentication tickets on server in memory cache instead of cookies. If distributed cache feature is enabled it will store authentication tickets on distributed cache.
-- Two-Factor Authentication Services: Provices Two-factor core services. This feature cannot be manually enabled or disable as it is enabled by dependency on demand.
+- Two-Factor Authentication Services: Provides Two-factor core services. This feature cannot be manually enabled or disable as it is enabled by dependency on demand.
 - Two-Factor Email Method: Allows users to two-factor authenticate using an email.
 - Two-Factor Authenticator App Method: Allows users to two-factor authenticate using any Authenticator App.
 - User Localization: Allows ability to configure user culture per user from admin UI.

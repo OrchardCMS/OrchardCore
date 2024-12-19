@@ -6,7 +6,6 @@
     "output": "wwwroot/Scripts/diff.js"
   },  
   {
-    "generateSourceMaps": false,
     "generateRTL": true,
     "inputs": [
       "Assets/scss/audittrailui.scss"

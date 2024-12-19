@@ -10,7 +10,7 @@ using OrchardCore.Templates.Cms.Module.ViewModels;
 
 namespace OrchardCore.Templates.Cms.Module.Drivers
 {
-    public class MyTestPartDisplayDriver : ContentPartDisplayDriver<MyTestPart>
+    public sealed class MyTestPartDisplayDriver : ContentPartDisplayDriver<MyTestPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
@@ -23,8 +23,7 @@ namespace OrchardCore.Templates.Cms.Module.Drivers
         {
             return Initialize<MyTestPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, part, context))
                 .Location("Detail", "Content:10")
-                .Location("Summary", "Content:10")
-                ;
+                .Location("Summary", "Content:10");
         }
 
         public override IDisplayResult Edit(MyTestPart part, BuildPartEditorContext context)

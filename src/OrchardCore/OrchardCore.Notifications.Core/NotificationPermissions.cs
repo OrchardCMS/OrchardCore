@@ -2,7 +2,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Notifications;
 
-public class NotificationPermissions
+public static class NotificationPermissions
 {
-    public readonly static Permission ManageNotifications = new("ManageNotifications", "Manage notifications");
+    public static readonly Permission ManageNotifications = new("ManageNotifications", "Manage notifications");
 }

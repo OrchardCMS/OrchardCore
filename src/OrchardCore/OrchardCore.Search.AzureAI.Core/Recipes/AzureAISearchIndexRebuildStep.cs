@@ -1,7 +1,4 @@
-using System;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundJobs;
 using OrchardCore.Recipes.Models;
@@ -11,15 +8,15 @@ using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Recipes;
 
-public class AzureAISearchIndexRebuildStep : IRecipeStepHandler
+public sealed class AzureAISearchIndexRebuildStep : NamedRecipeStepHandler
 {
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    public AzureAISearchIndexRebuildStep()
+        : base(AzureAISearchIndexRebuildDeploymentSource.Name)
     {
-        if (!string.Equals(context.Name, AzureAISearchIndexRebuildDeploymentSource.Name, StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
+    }
 
+    protected override async Task HandleAsync(RecipeExecutionContext context)
+    {
         var model = context.Step.ToObject<AzureAISearchIndexRebuildDeploymentStep>();
 
         if (model == null)
@@ -46,7 +43,7 @@ public class AzureAISearchIndexRebuildStep : IRecipeStepHandler
             foreach (var settings in indexSettings)
             {
                 settings.SetLastTaskId(0);
-                settings.IndexMappings = await indexDocumentManager.GetMappingsAsync(settings.IndexedContentTypes);
+                settings.IndexMappings = await indexDocumentManager.GetMappingsAsync(settings);
                 await indexSettingsService.UpdateAsync(settings);
 
                 await indexManager.RebuildAsync(settings);

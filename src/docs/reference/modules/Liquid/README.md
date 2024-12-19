@@ -398,7 +398,7 @@ The resulting object has access to the following properties:
 | `UserName` | `admin` | The name of the authenticated user. |
 | `NormalizedUserName` | `ADMIN` | The normailzed name of the authenticated user. |
 | `Email` | `admin@gmail.com` | The email of the authenticated user. |
-| `NormailizedEmail` | `ADMIN@GMAIL>COM` | The normalized email of the authenticated user. |
+| `NormailizedEmail` | `ADMIN@GMAIL.COM` | The normalized email of the authenticated user. |
 | `EmailConfirmed` | `true` | True if the user has confirmed his email or if the email confirmation is not required |
 | `IsEnabled` | `true` | True if the user is enabled |
 | `RoleNames` | `[Editor,Contributor]`  | An array of role names assigned to the user |
@@ -410,7 +410,6 @@ You can use this filter to load the user information of the current authenticate
 {% assign user = User | user_id | users_by_id %}
 
 {{ user.UserName }} - {{ user.Email }}
-
 ```
 
 You can use this filter with the UserPicker field to load the picked user's information.
@@ -421,7 +420,6 @@ You can use this filter with the UserPicker field to load the picked user's info
 {% for user in users %}
   {{ user.UserName }} - {{ user.Email }}
 {% endfor %}
-
 ```
 
 #### User has_permission filter
@@ -429,7 +427,7 @@ You can use this filter with the UserPicker field to load the picked user's info
 Checks if the User has permission clearance, optionally on a resource
 
 ```liquid
-{{ User | has_permission:"EditContent",Model.ContentItem }}
+{{ User | has_permission: "EditContent", Model.ContentItem }}
 ```
 
 #### User is_in_role filter
@@ -437,7 +435,7 @@ Checks if the User has permission clearance, optionally on a resource
 Checks if the user is in role
 
 ```liquid
-{{ User | is_in_role:"Administrator" }}
+{{ User | is_in_role: "Administrator" }}
 ```
 
 #### User has_claim filter
@@ -445,9 +443,11 @@ Checks if the user is in role
 Checks if the user has a claim of the specified type
 
 ```liquid
-{{ User | has_claim:"email_verified","true" }}
-{{ User | has_claim:"Permission","ManageSettings" }}
+{{ User | has_claim: "email_verified", "true" }}
 ```
+
+!!! warning
+    To avoid false negatives for Administrator users, ensure you use the `has_permission` filter instead of `has_claim` when checking if a user has a permission. This ensures accurate permission evaluation, especially for administrators who may not have explicit claims but still possess full access rights.
 
 ### Site
 
@@ -504,8 +504,25 @@ The following properties are available on the `Culture` object.
 
 | Property | Example | Description |
 | --------- | ---- |------------ |
-| `Name` | `en-US` | The request's culture as an ISO language code. |
+| `Name` | `en-US` | The ISO language code of the current culture. |
 | `Dir` | `rtl` | The text writing direction. |
+| `DisplayName` | `English (United States)` | The display name of the current culture. |
+| `NativeName` | `English (United States)` | The native name of the current culture. |
+| `TwoLetterISOLanguageName` | `en` | The two-letter ISO language name of the current culture. |
+| `SupportedCultures` | `['en-US', 'fr' ]` | The list of the currently supported cultures in the site. Each result can be chained with other properties listed in this table. |
+| `DefaultCulture` | `en-US` | The default culture as defined in the settings. |
+
+##### Usage
+
+Here is an example of how to print the names of supported cultures and find which one is currently used:
+
+```liquid
+<ul>
+{% for culture in Culture.SupportedCultures %}
+    <li class="{% if culture == Culture %}active{% endif %}">{{ culture.Name }}</li>
+{% endfor %}
+</ul>
+```
 
 ### Environment
 
@@ -541,6 +558,36 @@ Adds key/value to HttpContext.Items collection
 Removes key from HttpContext.Items collection
 
 `{% httpcontext_remove_items "Item1" %}`
+
+### TrackingConsent
+
+Represents the tracking consent feature of the current request.
+
+The following properties are available on the `TrackingConsent` object.
+
+| Property | Example | Description |
+| --------- | ---- |------------ |
+| `CanTrack` | `true` | Indicates if tracking is allowed. |
+| `HasConsent` | `true` | Indicates if the user has given consent for tracking. |
+| `IsConsentNeeded` | `false` | Indicates if consent is needed for tracking. |
+| `CookieName` | `ConsentCookie` | The name of the consent cookie. |
+| `CookieValue` | `true` | The value of the consent cookie. |
+
+#### Usage
+
+Here is an example of how to use the `TrackingConsent` object in a Liquid template:
+
+```liquid
+{% if TrackingConsent.CanTrack %}
+    {% if TrackingConsent.HasConsent %}
+        <p>Tracking is allowed and the user has given consent.</p>
+    {% else %}
+        <p>Tracking is allowed but the user has not given consent.</p>
+    {% endif %}
+{% else %}
+    <p>Tracking is not allowed.</p>
+{% endif %}
+```
 
 ## Shape Filters
 

@@ -10,11 +10,11 @@ using OrchardCore.Users.Services;
 namespace OrchardCore.Users.Localization;
 
 [Feature("OrchardCore.Users.Localization")]
-public class Startup : StartupBase
+public sealed class Startup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<User>, UserLocalizationDisplayDriver>();
+        services.AddDisplayDriver<User, UserLocalizationDisplayDriver>();
         services.AddScoped<IUserClaimsProvider, UserLocalizationClaimsProvider>();
 
         services.Configure<RequestLocalizationOptions>(options =>

@@ -1,15 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json.Serialization;
-
 namespace OrchardCore.Search.AzureAI.Models;
 
 public class AzureAISearchIndexSettings
 {
-    [JsonIgnore]
     public string IndexName { get; set; }
 
-    [JsonIgnore]
     public string IndexFullName { get; set; }
 
     public string AnalyzerName { get; set; }
@@ -24,7 +18,7 @@ public class AzureAISearchIndexSettings
 
     public IList<AzureAISearchIndexMap> IndexMappings { get; set; }
 
-    private long _lastTaskId = 0;
+    private long _lastTaskId;
 
     public long GetLastTaskId()
         => _lastTaskId;

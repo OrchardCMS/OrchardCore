@@ -4,7 +4,7 @@ using OrchardCore.Email.Core.Services;
 
 namespace OrchardCore.Email.Azure.Services;
 
-public class AzureEmailProviderOptionsConfigurations : IConfigureOptions<EmailProviderOptions>
+public sealed class AzureEmailProviderOptionsConfigurations : IConfigureOptions<EmailProviderOptions>
 {
     private readonly AzureEmailOptions _azureOptions;
     private readonly DefaultAzureEmailOptions _defaultAzureOptions;

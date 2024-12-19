@@ -1,72 +1,68 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 
-namespace OrchardCore.Sitemaps.Handlers
-{
-    public class SitemapIndexTypeUpdateHandler : ISitemapTypeUpdateHandler
-    {
-        private readonly ISitemapManager _sitemapManager;
+namespace OrchardCore.Sitemaps.Handlers;
 
-        public SitemapIndexTypeUpdateHandler(ISitemapManager sitemapManager)
+public class SitemapIndexTypeUpdateHandler : ISitemapTypeUpdateHandler
+{
+    private readonly ISitemapManager _sitemapManager;
+
+    public SitemapIndexTypeUpdateHandler(ISitemapManager sitemapManager)
+    {
+        _sitemapManager = sitemapManager;
+    }
+
+    public async Task UpdateSitemapAsync(SitemapUpdateContext context)
+    {
+        var contentItem = context.UpdateObject as ContentItem;
+
+        var allSitemaps = await _sitemapManager.LoadSitemapsAsync();
+
+        var sitemapIndex = allSitemaps
+            .FirstOrDefault(s => s.GetType() == typeof(SitemapIndex));
+
+        if (contentItem == null || sitemapIndex == null)
         {
-            _sitemapManager = sitemapManager;
+            return;
         }
 
-        public async Task UpdateSitemapAsync(SitemapUpdateContext context)
+        var sitemaps = allSitemaps.OfType<Sitemap>();
+
+        if (!sitemaps.Any())
         {
-            var contentItem = context.UpdateObject as ContentItem;
+            return;
+        }
 
-            var allSitemaps = await _sitemapManager.LoadSitemapsAsync();
+        var contentTypeName = contentItem.ContentType;
 
-            var sitemapIndex = allSitemaps
-                .FirstOrDefault(s => s.GetType() == typeof(SitemapIndex));
-
-            if (contentItem == null || sitemapIndex == null)
+        foreach (var sitemap in sitemaps)
+        {
+            foreach (var source in sitemap.SitemapSources.Select(x => x as ContentTypesSitemapSource))
             {
-                return;
-            }
-
-            var sitemaps = allSitemaps.OfType<Sitemap>();
-
-            if (!sitemaps.Any())
-            {
-                return;
-            }
-
-            var contentTypeName = contentItem.ContentType;
-
-            foreach (var sitemap in sitemaps)
-            {
-                foreach (var source in sitemap.SitemapSources.Select(x => x as ContentTypesSitemapSource))
+                if (source == null)
                 {
-                    if (source == null)
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    if (source.IndexAll)
-                    {
-                        sitemap.Identifier = IdGenerator.GenerateId();
-                        break;
-                    }
-                    else if (source.LimitItems && string.Equals(source.LimitedContentType.ContentTypeName, contentTypeName, StringComparison.Ordinal))
-                    {
-                        sitemap.Identifier = IdGenerator.GenerateId();
-                        break;
-                    }
-                    else if (source.ContentTypes.Any(ct => string.Equals(ct.ContentTypeName, contentTypeName, StringComparison.Ordinal)))
-                    {
-                        sitemap.Identifier = IdGenerator.GenerateId();
-                        break;
-                    }
+                if (source.IndexAll)
+                {
+                    sitemap.Identifier = IdGenerator.GenerateId();
+                    break;
+                }
+                else if (source.LimitItems && string.Equals(source.LimitedContentType.ContentTypeName, contentTypeName, StringComparison.Ordinal))
+                {
+                    sitemap.Identifier = IdGenerator.GenerateId();
+                    break;
+                }
+                else if (source.ContentTypes.Any(ct => string.Equals(ct.ContentTypeName, contentTypeName, StringComparison.Ordinal)))
+                {
+                    sitemap.Identifier = IdGenerator.GenerateId();
+                    break;
                 }
             }
-
-            await _sitemapManager.UpdateSitemapAsync();
         }
+
+        await _sitemapManager.UpdateSitemapAsync();
     }
 }

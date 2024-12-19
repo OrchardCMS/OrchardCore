@@ -9,7 +9,6 @@
 @inject IUpdateModelAccessor UpdateModelAccessor
 @inject ThemeTogglerService ThemeTogglerService
 @{
-    var adminSettings = Site.As<AdminSettings>();
     // Navbar is pre-rendered to allow resource injection.
     var navbar = await DisplayAsync(await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater));
 }
@@ -22,7 +21,7 @@
     <link type="image/x-icon" rel="shortcut icon" href="~/TheTheme/images/favicon.ico">
 
     <!-- This script can't wait till the footer -->
-    <script asp-name="admin-head" version="1" at="Head"></script>
+    <script asp-name="theme-head" version="1" at="Head"></script>
 
     @if (Orchard.IsRightToLeft())
     {
@@ -36,8 +35,9 @@
     }
 
     <script asp-name="bootstrap" version="5" at="Foot"></script>
+    <script asp-name="theme-manager" at="Foot"></script>
 
-    <style asp-name="font-awesome" version="6"></style>
+    <script asp-name="font-awesome" at="Foot" version="6"></script>
     <resources type="Header" />
     @await RenderSectionAsync("HeadMeta", required: false)
 </head>

@@ -1,19 +1,14 @@
-using System;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
+using Elastic.Clients.Elasticsearch;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Nest;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
@@ -22,29 +17,27 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Elasticsearch.Drivers;
 
-public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticSettings>
+public sealed class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSettings>
 {
     private static readonly char[] _separator = [',', ' '];
 
-    private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
-    {
-        WriteIndented = true,
-    };
-
-    private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly ElasticConnectionOptions _elasticConnectionOptions;
-    private readonly IElasticClient _elasticClient;
+    private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
+    private readonly ElasticsearchClient _elasticClient;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
+
+    protected override string SettingsGroupId
+        => SearchConstants.SearchSettingsGroupId;
 
     public ElasticSettingsDisplayDriver(
-        ElasticIndexSettingsService elasticIndexSettingsService,
+        ElasticsearchIndexSettingsService elasticIndexSettingsService,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IOptions<ElasticConnectionOptions> elasticConnectionOptions,
-        IElasticClient elasticClient,
+        IOptions<ElasticsearchConnectionOptions> elasticConnectionOptions,
+        ElasticsearchClient elasticClient,
         IStringLocalizer<ElasticSettingsDisplayDriver> stringLocalizer
         )
     {
@@ -56,7 +49,7 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(ElasticSettings settings)
+    public override IDisplayResult Edit(ISite site, ElasticSettings settings, BuildEditorContext context)
         => Initialize<ElasticSettingsViewModel>("ElasticSettings_Edit", async model =>
         {
             model.SearchIndex = settings.SearchIndex;
@@ -64,23 +57,19 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
             model.SearchIndexes = (await _elasticIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
             model.DefaultQuery = settings.DefaultQuery;
             model.SearchType = settings.GetSearchType();
-            model.SearchTypes = [
+            model.SearchTypes =
+            [
                 new(S["Multi-Match Query (Default)"], string.Empty),
                 new(S["Query String Query"], ElasticSettings.QueryStringSearchType),
                 new(S["Custom Query"], ElasticSettings.CustomSearchType),
             ];
         }).Location("Content:2#Elasticsearch;10")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageElasticIndexes))
-        .OnGroup(SearchConstants.SearchSettingsGroupId);
+        .OnGroup(SettingsGroupId);
 
-    public override async Task<IDisplayResult> UpdateAsync(ElasticSettings section, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, ElasticSettings section, UpdateEditorContext context)
     {
-        if (!SearchConstants.SearchSettingsGroupId.EqualsOrdinalIgnoreCase(context.GroupId))
-        {
-            return null;
-        }
-
-        if (!_elasticConnectionOptions.FileConfigurationExists())
+        if (!_elasticConnectionOptions.ConfigurationExists())
         {
             return null;
         }
@@ -123,6 +112,6 @@ public class ElasticSettingsDisplayDriver : SectionDisplayDriver<ISite, ElasticS
             }
         }
 
-        return await EditAsync(section, context);
+        return Edit(site, section, context);
     }
 }

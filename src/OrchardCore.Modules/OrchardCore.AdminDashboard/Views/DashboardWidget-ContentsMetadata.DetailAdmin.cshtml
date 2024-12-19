@@ -13,7 +13,7 @@
 {
     ContentItem contentItem = Model.ContentItem;
     var modifiedUtc = contentItem.ModifiedUtc?.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture);
-        var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
+    var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
     var hasDraft = contentItem.HasDraft();
 
     if (contentItem.ModifiedUtc.HasValue)

@@ -114,8 +114,8 @@ Here is a list of javascript methods provided by Orchard Modules.
 | Function | Description
 | -------- | ----------- |
 | `variables()` | Declare variables at the root of a recipe. Ex: `"variables": { "blogContentItemId": "[js:uuid()]" }`  Retrieve a variable value like this: `"ContentItemId": "[js: variables('blogContentItemId')]"` |
-| `parameters()` | Retrieves the parameters specified during the setup. Ex: `"Owner": "[js: parameters('AdminUserId')]"` See the available [Setup Recipe parameters](../Setup/#recipe-parameters) |
-| `configuration(key: String, defaultValue: String)` | Retrieves the specified configuration setting by its key, optionally providing a default. Ex: `[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]` See [IShellConfiguration](../../core/Configuration/README.md) |
+| `parameters()` | Retrieves the parameters specified during the setup. Ex: `"Owner": "[js: parameters('AdminUserId')]"` See the available [Setup Recipe parameters](../Setup/README.md#recipe-parameters) |
+| `configuration(key: String, defaultValue: String)` | Retrieves the specified configuration setting by its key, optionally providing a default. Ex: `[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]` See [IShellConfiguration](../Configuration/README.md) |
 
 #### Workflows (`OrchardCore.Workflows.Http`)
 
@@ -130,6 +130,7 @@ The following JavaScript functions are available by default to any workflow acti
 | `property(name: String): Any` | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to. |
 | `lastResult(): Any` | Returns the value that the previous activity provided, if any. |
 | `correlationId(): String` | Returns the correlation value of the workflow instance. |
+| `setCorrelationId(id:string): void` | Set the correlation value of the workflow instance. |
 | `signalUrl(signal: String): String` | Returns workflow trigger URL with a protected SAS token into which the specified signal name is encoded. Use this to generate URLs that can be shared with trusted parties to trigger the current workflow if it is blocked on the Signal activity that is configured with the same signal name. |
 | `setOutcome(outcome: String): void` | Adds the provided outcome to the list of outcomes of the current activity |
 | `createWorkflowToken(workflowTypeId: String, activityId: String, expiresInDays: Integer): String` | Generates a workflow SAS token for the specidied workflowTypeid, activityId. You can also set the expiration date in number of days. |

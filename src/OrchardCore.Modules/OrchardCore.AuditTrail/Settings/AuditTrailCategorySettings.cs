@@ -1,8 +1,7 @@
-namespace OrchardCore.AuditTrail.Settings
+namespace OrchardCore.AuditTrail.Settings;
+
+public class AuditTrailCategorySettings
 {
-    public class AuditTrailCategorySettings
-    {
-        public string Name { get; set; }
-        public AuditTrailEventSettings[] Events { get; set; } = [];
-    }
+    public string Name { get; set; }
+    public AuditTrailEventSettings[] Events { get; set; } = [];
 }

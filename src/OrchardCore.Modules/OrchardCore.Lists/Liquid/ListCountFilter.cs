@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.ContentManagement;
@@ -6,33 +5,32 @@ using OrchardCore.Liquid;
 using OrchardCore.Lists.Helpers;
 using YesSql;
 
-namespace OrchardCore.Lists.Liquid
+namespace OrchardCore.Lists.Liquid;
+
+public class ListCountFilter : ILiquidFilter
 {
-    public class ListCountFilter : ILiquidFilter
+    private readonly ISession _session;
+
+    public ListCountFilter(ISession session)
     {
-        private readonly ISession _session;
+        _session = session;
+    }
 
-        public ListCountFilter(ISession session)
+    public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
+    {
+        string listContentItemId;
+
+        if (input.Type == FluidValues.Object && input.ToObjectValue() is ContentItem contentItem)
         {
-            _session = session;
+            listContentItemId = contentItem.ContentItemId;
+        }
+        else
+        {
+            listContentItemId = input.ToStringValue();
         }
 
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, LiquidTemplateContext ctx)
-        {
-            string listContentItemId;
+        var listCount = await ListQueryHelpers.QueryListItemsCountAsync(_session, listContentItemId);
 
-            if (input.Type == FluidValues.Object && input.ToObjectValue() is ContentItem contentItem)
-            {
-                listContentItemId = contentItem.ContentItemId;
-            }
-            else
-            {
-                listContentItemId = input.ToStringValue();
-            }
-
-            var listCount = await ListQueryHelpers.QueryListItemsCountAsync(_session, listContentItemId);
-
-            return NumberValue.Create(listCount);
-        }
+        return NumberValue.Create(listCount);
     }
 }

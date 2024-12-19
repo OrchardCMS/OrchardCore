@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.Localization;
@@ -15,147 +11,146 @@ using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
 using YesSql;
 
-namespace OrchardCore.Alias.Handlers
+namespace OrchardCore.Alias.Handlers;
+
+public class AliasPartHandler : ContentPartHandler<AliasPart>
 {
-    public class AliasPartHandler : ContentPartHandler<AliasPart>
+    private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly ITagCache _tagCache;
+    private readonly ILiquidTemplateManager _liquidTemplateManager;
+    private readonly ISession _session;
+    protected readonly IStringLocalizer S;
+
+    public AliasPartHandler(
+        IContentDefinitionManager contentDefinitionManager,
+        ITagCache tagCache,
+        ILiquidTemplateManager liquidTemplateManager,
+        ISession session,
+        IStringLocalizer<AliasPartHandler> stringLocalizer)
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ITagCache _tagCache;
-        private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly ISession _session;
-        protected readonly IStringLocalizer S;
+        _contentDefinitionManager = contentDefinitionManager;
+        _tagCache = tagCache;
+        _liquidTemplateManager = liquidTemplateManager;
+        _session = session;
+        S = stringLocalizer;
+    }
 
-        public AliasPartHandler(
-            IContentDefinitionManager contentDefinitionManager,
-            ITagCache tagCache,
-            ILiquidTemplateManager liquidTemplateManager,
-            ISession session,
-            IStringLocalizer<AliasPartHandler> stringLocalizer)
+    public override async Task ValidatingAsync(ValidateContentContext context, AliasPart part)
+    {
+        // Only validate the alias if it's not empty.
+        if (string.IsNullOrWhiteSpace(part.Alias))
         {
-            _contentDefinitionManager = contentDefinitionManager;
-            _tagCache = tagCache;
-            _liquidTemplateManager = liquidTemplateManager;
-            _session = session;
-            S = stringLocalizer;
+            return;
         }
 
-        public override async Task ValidatingAsync(ValidateContentContext context, AliasPart part)
+        await foreach (var item in part.ValidateAsync(S, _session))
         {
-            // Only validate the alias if it's not empty.
-            if (string.IsNullOrWhiteSpace(part.Alias))
-            {
-                return;
-            }
+            context.Fail(item);
+        }
+    }
 
-            await foreach (var item in part.ValidateAsync(S, _session))
-            {
-                context.Fail(item);
-            }
+    public override async Task UpdatedAsync(UpdateContentContext context, AliasPart part)
+    {
+        // Compute the Alias only if it's empty.
+        if (!string.IsNullOrEmpty(part.Alias))
+        {
+            return;
         }
 
-        public async override Task UpdatedAsync(UpdateContentContext context, AliasPart part)
+        var pattern = await GetPatternAsync(part);
+
+        if (!string.IsNullOrEmpty(pattern))
         {
-            // Compute the Alias only if it's empty.
-            if (!string.IsNullOrEmpty(part.Alias))
+            var model = new AliasPartViewModel()
             {
-                return;
+                Alias = part.Alias,
+                AliasPart = part,
+                ContentItem = part.ContentItem
+            };
+
+            part.Alias = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
+                new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
+
+            part.Alias = part.Alias.Replace("\r", string.Empty).Replace("\n", string.Empty);
+
+            if (part.Alias?.Length > AliasPart.MaxAliasLength)
+            {
+                part.Alias = part.Alias[..AliasPart.MaxAliasLength];
             }
 
-            var pattern = await GetPatternAsync(part);
-
-            if (!string.IsNullOrEmpty(pattern))
+            if (!await part.IsAliasUniqueAsync(_session, part.Alias))
             {
-                var model = new AliasPartViewModel()
-                {
-                    Alias = part.Alias,
-                    AliasPart = part,
-                    ContentItem = part.ContentItem
-                };
-
-                part.Alias = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,
-                    new Dictionary<string, FluidValue>() { [nameof(ContentItem)] = new ObjectValue(model.ContentItem) });
-
-                part.Alias = part.Alias.Replace("\r", string.Empty).Replace("\n", string.Empty);
-
-                if (part.Alias?.Length > AliasPart.MaxAliasLength)
-                {
-                    part.Alias = part.Alias[..AliasPart.MaxAliasLength];
-                }
-
-                if (!await part.IsAliasUniqueAsync(_session, part.Alias))
-                {
-                    part.Alias = await GenerateUniqueAliasAsync(part.Alias, part);
-                }
-
-                part.Apply();
+                part.Alias = await GenerateUniqueAliasAsync(part.Alias, part);
             }
+
+            part.Apply();
         }
+    }
 
-        public override Task PublishedAsync(PublishContentContext context, AliasPart instance)
+    public override Task PublishedAsync(PublishContentContext context, AliasPart instance)
+    {
+        return _tagCache.RemoveTagAsync($"alias:{instance.Alias}");
+    }
+
+    public override Task RemovedAsync(RemoveContentContext context, AliasPart instance)
+    {
+        if (context.NoActiveVersionLeft)
         {
             return _tagCache.RemoveTagAsync($"alias:{instance.Alias}");
         }
 
-        public override Task RemovedAsync(RemoveContentContext context, AliasPart instance)
+        return Task.CompletedTask;
+    }
+
+    public override Task UnpublishedAsync(PublishContentContext context, AliasPart instance)
+    {
+        return _tagCache.RemoveTagAsync($"alias:{instance.Alias}");
+    }
+
+    public override async Task CloningAsync(CloneContentContext context, AliasPart part)
+    {
+        var clonedPart = context.CloneContentItem.As<AliasPart>();
+        clonedPart.Alias = await GenerateUniqueAliasAsync(part.Alias, clonedPart);
+
+        clonedPart.Apply();
+    }
+
+    /// <summary>
+    /// Get the pattern from the AliasPartSettings property for its type.
+    /// </summary>
+    private async Task<string> GetPatternAsync(AliasPart part)
+    {
+        var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
+        var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(AliasPart), StringComparison.Ordinal));
+        var pattern = contentTypePartDefinition.GetSettings<AliasPartSettings>().Pattern;
+
+        return pattern;
+    }
+
+    private async Task<string> GenerateUniqueAliasAsync(string alias, AliasPart context)
+    {
+        var version = 1;
+        var unversionedAlias = alias;
+
+        var versionSeparatorPosition = alias.LastIndexOf('-');
+        if (versionSeparatorPosition > -1 && int.TryParse(alias[versionSeparatorPosition..].TrimStart('-'), out version))
         {
-            if (context.NoActiveVersionLeft)
+            unversionedAlias = alias[..versionSeparatorPosition];
+        }
+
+        while (true)
+        {
+            // Unversioned length + separator char + version length.
+            var quantityCharactersToTrim = unversionedAlias.Length + 1 + version.ToString().Length - AliasPart.MaxAliasLength;
+            if (quantityCharactersToTrim > 0)
             {
-                return _tagCache.RemoveTagAsync($"alias:{instance.Alias}");
+                unversionedAlias = unversionedAlias[..^quantityCharactersToTrim];
             }
 
-            return Task.CompletedTask;
-        }
-
-        public override Task UnpublishedAsync(PublishContentContext context, AliasPart instance)
-        {
-            return _tagCache.RemoveTagAsync($"alias:{instance.Alias}");
-        }
-
-        public override async Task CloningAsync(CloneContentContext context, AliasPart part)
-        {
-            var clonedPart = context.CloneContentItem.As<AliasPart>();
-            clonedPart.Alias = await GenerateUniqueAliasAsync(part.Alias, clonedPart);
-
-            clonedPart.Apply();
-        }
-
-        /// <summary>
-        /// Get the pattern from the AliasPartSettings property for its type.
-        /// </summary>
-        private async Task<string> GetPatternAsync(AliasPart part)
-        {
-            var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, nameof(AliasPart), StringComparison.Ordinal));
-            var pattern = contentTypePartDefinition.GetSettings<AliasPartSettings>().Pattern;
-
-            return pattern;
-        }
-
-        private async Task<string> GenerateUniqueAliasAsync(string alias, AliasPart context)
-        {
-            var version = 1;
-            var unversionedAlias = alias;
-
-            var versionSeparatorPosition = alias.LastIndexOf('-');
-            if (versionSeparatorPosition > -1 && int.TryParse(alias[versionSeparatorPosition..].TrimStart('-'), out version))
+            var versionedAlias = $"{unversionedAlias}-{version++}";
+            if (await context.IsAliasUniqueAsync(_session, versionedAlias))
             {
-                unversionedAlias = alias[..versionSeparatorPosition];
-            }
-
-            while (true)
-            {
-                // Unversioned length + separator char + version length.
-                var quantityCharactersToTrim = unversionedAlias.Length + 1 + version.ToString().Length - AliasPart.MaxAliasLength;
-                if (quantityCharactersToTrim > 0)
-                {
-                    unversionedAlias = unversionedAlias[..^quantityCharactersToTrim];
-                }
-
-                var versionedAlias = $"{unversionedAlias}-{version++}";
-                if (await context.IsAliasUniqueAsync(_session, versionedAlias))
-                {
-                    return versionedAlias;
-                }
+                return versionedAlias;
             }
         }
     }

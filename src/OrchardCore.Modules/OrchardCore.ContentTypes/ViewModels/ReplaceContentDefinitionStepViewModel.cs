@@ -1,6 +1,5 @@
-namespace OrchardCore.ContentTypes.ViewModels
+namespace OrchardCore.ContentTypes.ViewModels;
+
+public class ReplaceContentDefinitionStepViewModel : ContentDefinitionStepViewModel
 {
-    public class ReplaceContentDefinitionStepViewModel : ContentDefinitionStepViewModel
-    {
-    }
 }

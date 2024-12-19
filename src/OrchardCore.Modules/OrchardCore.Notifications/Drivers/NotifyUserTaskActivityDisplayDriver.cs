@@ -1,8 +1,6 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
@@ -18,7 +16,7 @@ namespace OrchardCore.Notifications.Drivers;
 
 public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewModel> : ActivityDisplayDriver<TActivity, TEditViewModel>
     where TActivity : NotifyUserTaskActivity
-    where TEditViewModel : NotifyUserTaskActivityViewModel, new()
+    where TEditViewModel : class, new()
 {
     private readonly IHtmlSanitizerService _htmlSanitizerService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -26,7 +24,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
 
     protected readonly IStringLocalizer S;
 
-    protected virtual string EditShapeType => $"{nameof(NotifyUserTaskActivity)}_Fields_Edit";
+    protected virtual string EditShapeType { get; }
 
     public NotifyUserTaskActivityDisplayDriver(
         IHtmlSanitizerService htmlSanitizerService,
@@ -40,46 +38,69 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(TActivity model)
+    public override IDisplayResult Edit(TActivity activity, BuildEditorContext context)
     {
-        return Initialize<TEditViewModel>(EditShapeType, viewModel =>
+        var results = new List<IDisplayResult>();
+
+        if (!string.IsNullOrEmpty(EditShapeType))
         {
-            return EditActivityAsync(model, viewModel);
-        }).Location("Content");
-    }
-
-    public async override Task<IDisplayResult> UpdateAsync(TActivity model, IUpdateModel updater)
-    {
-        var viewModel = new TEditViewModel();
-        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
-        {
-            if (!_liquidTemplateManager.Validate(viewModel.Subject, out var subjectErrors))
+            results.Add(Initialize<TEditViewModel>(EditShapeType, viewModel =>
             {
-                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Subject), S["Subject field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', subjectErrors)]);
-            }
-
-            if (!_liquidTemplateManager.Validate(viewModel.Summary, out var summaryErrors))
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(viewModel.Summary), S["Summary field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', summaryErrors)]);
-            }
-
-            if (!_liquidTemplateManager.Validate(viewModel.TextBody, out var textBodyErrors))
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(viewModel.TextBody), S["Text Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', textBodyErrors)]);
-            }
-
-            if (!_liquidTemplateManager.Validate(viewModel.HtmlBody, out var htmlBodyErrors))
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(viewModel.HtmlBody), S["HTML Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', htmlBodyErrors)]);
-            }
-
-            if (updater.ModelState.IsValid)
-            {
-                await UpdateActivityAsync(viewModel, model);
-            }
+                return EditActivityAsync(activity, viewModel);
+            }).Location("Content"));
         }
 
-        return Edit(model);
+        results.Add(Initialize<NotifyUserTaskActivityViewModel>("NotifyUserTaskActivity_Fields_Edit", model =>
+        {
+            model.Subject = activity.Subject.Expression;
+            model.Summary = activity.Summary.Expression;
+            model.TextBody = activity.TextBody.Expression;
+            model.HtmlBody = activity.HtmlBody.Expression;
+            model.IsHtmlPreferred = activity.IsHtmlPreferred;
+        }).Location("Content"));
+
+        return Combine(results);
+    }
+
+    public override async Task<IDisplayResult> UpdateAsync(TActivity activity, UpdateEditorContext context)
+    {
+        var model = new NotifyUserTaskActivityViewModel();
+
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        if (!_liquidTemplateManager.Validate(model.Subject, out var subjectErrors))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Subject), S["Subject field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', subjectErrors)]);
+        }
+
+        if (!_liquidTemplateManager.Validate(model.Summary, out var summaryErrors))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Summary), S["Summary field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', summaryErrors)]);
+        }
+
+        if (!_liquidTemplateManager.Validate(model.TextBody, out var textBodyErrors))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.TextBody), S["Text Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', textBodyErrors)]);
+        }
+
+        if (!_liquidTemplateManager.Validate(model.HtmlBody, out var htmlBodyErrors))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.HtmlBody), S["HTML Body field does not contain a valid Liquid expression. Details: {0}", string.Join(' ', htmlBodyErrors)]);
+        }
+
+        activity.Subject = new WorkflowExpression<string>(model.Subject);
+        activity.Summary = new WorkflowExpression<string>(_htmlSanitizerService.Sanitize(model.Summary ?? string.Empty));
+        activity.TextBody = new WorkflowExpression<string>(model.TextBody);
+        activity.HtmlBody = new WorkflowExpression<string>(_notificationOptions.DisableNotificationHtmlBodySanitizer ? model.HtmlBody : _htmlSanitizerService.Sanitize(model.HtmlBody ?? string.Empty));
+        activity.IsHtmlPreferred = model.IsHtmlPreferred;
+
+        var modelOfT = new TEditViewModel();
+
+        await context.Updater.TryUpdateModelAsync(modelOfT, Prefix);
+
+        await UpdateActivityAsync(modelOfT, activity);
+
+        return Edit(activity, context);
     }
 
     /// <summary>
@@ -89,7 +110,7 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     {
         EditActivity(activity, model);
 
-        return new ValueTask();
+        return ValueTask.CompletedTask;
     }
 
     /// <summary>
@@ -97,15 +118,10 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     /// </summary>
     protected override void EditActivity(TActivity activity, TEditViewModel model)
     {
-        model.Subject = activity.Subject.Expression;
-        model.Summary = activity.Summary.Expression;
-        model.TextBody = activity.TextBody.Expression;
-        model.HtmlBody = activity.HtmlBody.Expression;
-        model.IsHtmlPreferred = activity.IsHtmlPreferred;
     }
 
     /// <summary>
-    /// Updates the activity when the view model is validated.
+    /// Updates the activity.
     /// </summary>
     protected override Task UpdateActivityAsync(TEditViewModel model, TActivity activity)
     {
@@ -115,23 +131,19 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity, TEditViewMo
     }
 
     /// <summary>
-    /// Updates the activity when the view model is validated.
+    /// Updates the activity.
     /// </summary>
     protected override void UpdateActivity(TEditViewModel model, TActivity activity)
     {
-        activity.Subject = new WorkflowExpression<string>(model.Subject);
-        activity.Summary = new WorkflowExpression<string>(_htmlSanitizerService.Sanitize(model.Summary));
-        activity.TextBody = new WorkflowExpression<string>(model.TextBody);
-        activity.HtmlBody = new WorkflowExpression<string>(_notificationOptions.DisableNotificationHtmlBodySanitizer ? model.HtmlBody : _htmlSanitizerService.Sanitize(model.HtmlBody));
-        activity.IsHtmlPreferred = model.IsHtmlPreferred;
+
     }
 
-    public override IDisplayResult Display(TActivity activity)
+    public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)
     {
-        return Combine(
-            Shape($"{typeof(TActivity).Name}_Fields_Thumbnail", new ActivityViewModel<TActivity>(activity))
+        return CombineAsync(
+            Shape($"{ActivityName}_Fields_Thumbnail", new ActivityViewModel<TActivity>(activity))
                 .Location("Thumbnail", "Content"),
-            Shape($"{typeof(TActivity).Name}_Fields_Design", new ActivityViewModel<TActivity>(activity))
+            Shape($"{ActivityName}_Fields_Design", new ActivityViewModel<TActivity>(activity))
                 .Location("Design", "Content")
         );
     }
@@ -148,4 +160,6 @@ public abstract class NotifyUserTaskActivityDisplayDriver<TActivity> : NotifyUse
         : base(htmlSanitizerService, liquidTemplateManager, notificationOptions, stringLocalizer)
     {
     }
+
+    protected sealed override string EditShapeType { get; }
 }

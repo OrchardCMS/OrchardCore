@@ -1,7 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ArchiveLater.Indexes;
@@ -18,7 +14,7 @@ namespace OrchardCore.ArchiveLater.Services;
     Title = "Content Items Archiver",
     Schedule = "* * * * *",
     Description = "Archives content items when their scheduled archive date time arrives.")]
-public class ScheduledArchivingBackgroundTask : IBackgroundTask
+public sealed class ScheduledArchivingBackgroundTask : IBackgroundTask
 {
     private readonly ILogger _logger;
     private readonly IClock _clock;

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using OrchardCore.ContentFields.Settings;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Users.Core.Json;
 using OrchardCore.Users.Indexes;
@@ -26,6 +27,18 @@ public class JsonSerializerTests
         Assert.Equal("OpenIdConnect", obj.LoginProvider);
         Assert.Equal("abc", obj.ProviderKey);
         Assert.Equal("default", obj.ProviderDisplayName);
+    }
+
+    [Theory]
+    [InlineData("{\"name\":\"One\",\"value\":\"1\",\"Weight\":\"1.75\"}", 1.75)]
+    [InlineData("{\"name\":\"One\",\"value\":\"1\",\"Weight\":\"1\"}", 1)]
+    [InlineData("{\"name\":\"One\",\"value\":\"1\",\"Weight\":1}", 1)]
+    [InlineData("{\"name\":\"One\",\"value\":\"1\",\"Weight\":2.75}", 2.75)]
+    public void Deserialize_WhenCalled_ReturnDoubleFromStringWithBaseOptions(string json, double expectedWeight)
+    {
+        var item = JsonSerializer.Deserialize<CustomListValueOption>(json, JOptions.Base);
+
+        Assert.Equal(expectedWeight, item.Weight);
     }
 
     [Fact]
@@ -73,5 +86,10 @@ public class JsonSerializerTests
             Assert.Equal(loginInfo.ProviderKey, userLoginInfo.ProviderKey);
             Assert.Equal(loginInfo.ProviderDisplayName, userLoginInfo.ProviderDisplayName);
         });
+    }
+
+    public sealed class CustomListValueOption : ListValueOption
+    {
+        public double? Weight { get; set; }
     }
 }

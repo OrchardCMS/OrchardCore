@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
@@ -14,8 +13,6 @@ public class DefaultTwoFactorAuthenticationHandler : ITwoFactorAuthenticationHan
         _siteService = siteService;
     }
 
-    public async Task<bool> IsRequiredAsync()
-    {
-        return (await _siteService.GetSiteSettingsAsync()).As<TwoFactorLoginSettings>().RequireTwoFactorAuthentication;
-    }
+    public async Task<bool> IsRequiredAsync(IUser user)
+        => (await _siteService.GetSettingsAsync<TwoFactorLoginSettings>()).RequireTwoFactorAuthentication;
 }

@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
@@ -87,6 +82,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             connection is SqliteConnection sqliteConnection &&
             !File.Exists(sqliteConnection.DataSource))
         {
+            SqliteConnection.ClearPool(sqliteConnection);
             return DbConnectionValidatorResult.DocumentTableNotFound;
         }
 
@@ -178,7 +174,7 @@ public class DbConnectionValidator : IDbConnectionValidator
             sqlBuilder.WhereAnd($"Type = '{_shellDescriptorTypeColumnValue}'");
         }
 
-        return sqlBuilder.ToString();
+        return sqlBuilder.ToSqlString();
     }
 
     private static (IConnectionFactory connectionFactory, ISqlDialect sqlDialect) GetFactoryAndSqlDialect(

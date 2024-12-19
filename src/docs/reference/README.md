@@ -1,4 +1,4 @@
-# Reference of Built-in Modules
+# Modules Reference
 
 This is a comprehensive reference for the modules and their features available in Orchard Core. Under each of these pages, you'll find an overview of the given module with documentation on how to use and extend them.
 
@@ -25,7 +25,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Audit Trail](modules/AuditTrail/README.md)
 - [CORS](modules/Cors/README.md)
 - [ReCaptcha](modules/ReCaptcha/README.md)
-- [Sanitizer](core/Sanitizer/README.md)
+- [Sanitizer](modules/Sanitizer/README.md)
 - [Security](modules/Security/README.md)
 
 ### Authentication and User Management
@@ -33,7 +33,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - Authentication:
   - [Microsoft](modules/Microsoft.Authentication/README.md)
   - [Facebook](modules/Facebook/README.md)
-  - [Twitter](modules/Twitter/README.md)
+  - [X (Twitter)](modules/X/README.md)
   - [GitHub](modules/GitHub/README.md)
   - [Google](modules/Google/README.md)
 - Users:
@@ -75,6 +75,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 
 ### Design
 
+- [Display Management](modules/DisplayManagement/README.md)
 - [Layers](modules/Layers/README.md)
 - [Widgets](modules/Widgets/README.md)
 - [Templates](modules/Templates/README.md)
@@ -83,35 +84,36 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Liquid](modules/Liquid/README.md)
 - [Resources](modules/Resources/README.md)
 - [Rules](modules/Rules/README.md)
-- [Placement](core/Placement/README.md)
+- [Placement](modules/Placement/README.md)
 
 ### Extensibility
 
 - [Auto Setup](modules/AutoSetup/README.md)
 - [GraphQL](modules/Apis.GraphQL/README.md)
-- [GraphQL queries](core/Apis.GraphQL.Abstractions/README.md)
+- [GraphQL queries](modules/Apis.GraphQL.Abstractions/README.md)
 - [Scripting](modules/Scripting/README.md)
-- [Modules](core/Modules/README.md)
+- [Modules](modules/Modules/README.md)
 - [Features](modules/Features/README.md)
-- [Data](core/Data/README.md)
+- [Data](modules/Data/README.md)
 - [Dynamic Cache](modules/DynamicCache/README.md)
-- [Razor Helpers](core/Razor/README.md)
+- [Razor Helpers](modules/Razor/README.md)
 - [Recipes](modules/Recipes/README.md)
 - [Setup](modules/Setup/README.md)
-- [Shells](core/Shells/README.md)
+- [Shells](modules/Shells/README.md)
 - [Workflows](modules/Workflows/README.md)
 - [Background Tasks](modules/BackgroundTasks/README.md)
+- [URL Rewriting](modules/UrlRewriting/README.md)
 
 ### Hosting and Operations
 
-- [Configuration](core/Configuration/README.md)
-- [Key Vault (Azure)](core/KeyVault.Azure/README.md)
+- [Configuration](modules/Configuration/README.md)
+- [Key Vault (Azure)](modules/KeyVault.Azure/README.md)
 - [DataProtection (Azure Storage)](modules/DataProtection.Azure/README.md)
 - [Reverse Proxy](modules/ReverseProxy/README.md)
 - [Tenants](modules/Tenants/README.md)
 - [Health Check](modules/HealthChecks/README.md)
 - [HTTPS](modules/Https/README.md)
-- [Logging Serilog](core/Logging.Serilog/README.md)
+- [Logging Serilog](modules/Logging.Serilog/README.md)
 - [Mini Profiler](modules/MiniProfiler/README.md)
 - [Response Compression](modules/ResponseCompression/README.md)
 - [Email](modules/Email/README.md)
@@ -122,6 +124,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 - [Diagnostics](modules/Diagnostics/README.md)
 - [Remote Deployment](modules/Deployment.Remote/README.md)
 - [Sms](modules/Sms/README.md)
+- [Azure Communication SMS](modules/Sms.Azure/README.md)
 
 ### Localization
 
@@ -138,7 +141,7 @@ Here's a categorized overview of all built-in Orchard Core features at a glance.
 ### Search, Indexing, Querying
 
 - [Azure AI Search](modules/AzureAISearch/README.md)
-- [SQL](modules/SQLIndexing/README.md)
+- [SQL Indexing](modules/SQLIndexing/README.md)
 - [Lucene](modules/Lucene/README.md)
 - [Elasticsearch](modules/Elasticsearch/README.md)
 - [Queries](modules/Queries/README.md)

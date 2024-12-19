@@ -1,7 +1,7 @@
 @model CorsSettingsViewModel
 
 <script asp-name="vuejs" at="Foot"></script>
-<script depends-on="vuejs" asp-src="~/OrchardCore.Cors/Scripts/cors-admin.min.js" debug-src="~/OrchardCore.Cors/Scripts/cors-admin.js" type="text/javascript" asp-name="cors-admin" at="Foot"></script>
+<script depends-on="vuejs" asp-src="~/OrchardCore.Cors/Scripts/cors-admin.min.js" debug-src="~/OrchardCore.Cors/Scripts/cors-admin.js" asp-name="cors-admin" at="Foot"></script>
 <script depends-on="cors-admin" at="Foot">
     corsApp.policies = @Html.Raw(Json.Serialize(Model.Policies));
 </script>
@@ -135,6 +135,18 @@
                         <span class="hint dashed">@T["Allows requests with any method. This will bypass any methods that are configured below."]</span>
                     </div>
                     <options-list v-bind:options="policy.allowedMethods" optionType="@T["Method"]" title="@T["Allowed methods"]" subTitle="" />
+                </div>
+            </div>
+        </div>
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">@T["Exposed headers"]
+                    <span class="hint dashed">@T["Configure which headers should be exposed."]</span>
+                </h5>
+
+                <div>
+                    <span class="hint">@T["Sets response header 'Access-Control-Expose-Headers'."]</span>
+                    <options-list v-bind:options="policy.exposedHeaders" optionType="@T["Header"]" title="@T["Exposed headers"]" subTitle="" />
                 </div>
             </div>
         </div>

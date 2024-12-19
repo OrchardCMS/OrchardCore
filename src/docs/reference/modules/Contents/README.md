@@ -129,6 +129,98 @@ Well known properties include
     To log shapes call `@Orchard.ConsoleLog(Model.Content as object)` after calling `@await DisplayAsync(Model.Content)`
     This will allow the shape to execute, and populate the alternates for any child shapes.
 
+## Contents Module RESTful Web API
+
+The `OrchardCore.Contents` module provides RESTful API endpoints via [`minimal API`](https://github.com/OrchardCMS/OrchardCore/tree/main/src/OrchardCore.Modules/OrchardCore.Contents/Endpoints/Api) featuring endpoints to manage _content items_. These endpoints allow for operations such as retrieving, creating, updating, and deleting single content item instances. Access to these endpoints requires authentication and appropriate user role permissions.
+
+### Useful modules and libraries
+
+- We would suggest you read the docs about the [GraphQL module](../Apis.GraphQL/README.md), to be used for querying content items.
+- There's a [Swagger module](https://github.com/OrchardCoreContrib/OrchardCoreContrib.Modules/blob/main/src/OrchardCoreContrib.Apis.Swagger/README.md) made by the community, that allows you to create APIs documentation using Swagger.
+- Lombiq provide a [client library](https://github.com/Lombiq/Orchard-Core-API-Client) for communicating with the Orchard Core web APIs.
+
+### Activating the "OpenId Authorization Server" and "OpenId Token Validation" Features, and setting User Roles
+
+To utilize the Orchard Core Contents API endpoints, user accounts must authenticate using the OAuth 2 standard by activating and configuring the "OpenId Authorization Server" and "OpenId Token Validation" features. Detailed configuration steps can be found in the [OpenId Authorization Server documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/OpenId/#authorization-server) and the [OpenId Token Validation documentation](https://docs.orchardcore.net/en/main/docs/reference/modules/OpenId/#token-validation).
+
+It is usually better to **create a dedicated user for performing API calls**, maintain control over user rights, and easily activate/deactivate the API user. The `OrchardCore.OpenId` feature allows setting these user role permissions from "Roles → Edit (User)". Those are the available permissions:
+
+- View and edit the OpenID Connect client settings
+- View and edit the OpenID Connect server settings
+- View and edit the OpenID Connect validation settings
+- View, add, edit, and remove the OpenID Connect applications
+- View, add, edit, and remove the OpenID Connect scopes
+
+### Contents API Controller Endpoints
+
+#### GET /api/content/{contentItemId}
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| contentItemId | path | The ID of the Content Item to be retrieved. | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Success |
+
+***
+
+#### POST /api/content
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+|  | payload | The content item model to be updated | Yes | Json |
+
+##### Body payload example
+
+```json
+{
+  "contentItem": "string",
+  "id": 0,
+  "contentItemId": "string",
+  "contentItemVersionId": "string",
+  "contentType": "string",
+  "published": true,
+  "latest": true,
+  "modifiedUtc": "2024-03-14T11:40:20.331Z",
+  "publishedUtc": "2024-03-14T11:40:20.331Z",
+  "createdUtc": "2024-03-14T11:40:20.331Z",
+  "owner": "string",
+  "author": "string",
+  "displayText": "string"
+}
+```
+
+> This payload example model was obtained using the GraphiQL panel available in the Admin: _Configuration_ → _GraphiQL_. In this [video](https://www.youtube.com/watch?v=8SbW3TLNhF0) you can find an overview of how to use GraphiQL. 
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Success |
+
+***
+
+#### DELETE /api/content/{contentItemId}
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| contentItemId | path | The ID of the Content Item to be deleted. | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Success |
+
 ## GraphQL
 
 The contents module provides a feature to provide GraphQL queries for content items.
@@ -242,7 +334,7 @@ The available options depend on the scalar and part fields defined on the type i
 ##### Single Filters
 
 If you supply exactly one parameter to the `where` argument, the query response will only contain content items that adhere to this constraint.  
-Multiple filters can be combined using `AND` and/or `OR`, see [below](#arbitrary-combination-of-filters-with-and-and-or) for more details.
+Multiple filters can be combined using `AND` and/or `OR`, see [below](#arbitrary-combination-of-filters-with-and-or-and-not) for more details.
 
 ##### Filtering by a publication status
 

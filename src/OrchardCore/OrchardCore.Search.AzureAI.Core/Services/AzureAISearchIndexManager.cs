@@ -1,16 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Azure;
 using Azure.Search.Documents.Indexes.Models;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Contents.Indexing;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Search.AzureAI.Models;
-using static OrchardCore.Indexing.DocumentIndex;
+using static OrchardCore.Indexing.DocumentIndexBase;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
@@ -197,61 +193,47 @@ public class AzureAISearchIndexManager
 
     private static SearchIndex GetSearchIndex(string fullIndexName, AzureAISearchIndexSettings settings)
     {
-        var searchFields = new List<SearchField>()
-        {
-            new SimpleField(IndexingConstants.ContentItemIdKey, SearchFieldDataType.String)
-            {
-                IsKey = true,
-                IsFilterable = true,
-                IsSortable = true,
-            },
-            new SimpleField(IndexingConstants.ContentItemVersionIdKey, SearchFieldDataType.String)
-            {
-                IsFilterable = true,
-                IsSortable = true,
-            },
-            new SimpleField(OwnerKey, SearchFieldDataType.String)
-            {
-                IsFilterable = true,
-                IsSortable = true,
-            },
-            new SearchableField(DisplayTextAnalyzedKey)
-            {
-                AnalyzerName = settings.AnalyzerName,
-            },
-            new SearchableField(FullTextKey)
-            {
-                AnalyzerName = settings.AnalyzerName,
-            },
-        };
+        var searchFields = new List<SearchField>();
+
+        var suggesterFieldNames = new List<string>();
 
         foreach (var indexMap in settings.IndexMappings)
         {
-            if (!AzureAISearchIndexNamingHelper.TryGetSafeFieldName(indexMap.AzureFieldKey, out var safeFieldName))
+            if (searchFields.Exists(x => x.Name.EqualsOrdinalIgnoreCase(indexMap.AzureFieldKey)))
             {
                 continue;
             }
 
-            if (searchFields.Exists(x => x.Name.EqualsOrdinalIgnoreCase(safeFieldName)))
+            if (indexMap.IsSuggester && !suggesterFieldNames.Contains(indexMap.AzureFieldKey))
             {
-                continue;
+                suggesterFieldNames.Add(indexMap.AzureFieldKey);
             }
 
-            if (indexMap.Options.HasFlag(Indexing.DocumentIndexOptions.Keyword))
+            var fieldType = GetFieldType(indexMap.Type);
+
+            if (indexMap.IsSearchable)
             {
-                searchFields.Add(new SimpleField(safeFieldName, GetFieldType(indexMap.Type))
+                searchFields.Add(new SearchableField(indexMap.AzureFieldKey, collection: indexMap.IsCollection)
                 {
-                    IsFilterable = true,
-                    IsSortable = true,
+                    AnalyzerName = settings.AnalyzerName,
+                    IsKey = indexMap.IsKey,
+                    IsFilterable = indexMap.IsFilterable,
+                    IsSortable = indexMap.IsSortable,
+                    IsHidden = indexMap.IsHidden,
+                    IsFacetable = indexMap.IsFacetable,
                 });
-
-                continue;
             }
-
-            searchFields.Add(new SearchableField(safeFieldName, true)
+            else
             {
-                AnalyzerName = settings.AnalyzerName,
-            });
+                searchFields.Add(new SimpleField(indexMap.AzureFieldKey, fieldType)
+                {
+                    IsKey = indexMap.IsKey,
+                    IsFilterable = indexMap.IsFilterable,
+                    IsSortable = indexMap.IsSortable,
+                    IsHidden = indexMap.IsHidden,
+                    IsFacetable = indexMap.IsFacetable,
+                });
+            }
         }
 
         var searchIndex = new SearchIndex(fullIndexName)
@@ -259,7 +241,7 @@ public class AzureAISearchIndexManager
             Fields = searchFields,
             Suggesters =
             {
-                new SearchSuggester("sg", FullTextKey),
+                new SearchSuggester("sg", suggesterFieldNames),
             },
         };
 
@@ -274,6 +256,7 @@ public class AzureAISearchIndexManager
             Types.Number => SearchFieldDataType.Double,
             Types.Integer => SearchFieldDataType.Int64,
             Types.GeoPoint => SearchFieldDataType.GeographyPoint,
-            _ => SearchFieldDataType.String,
+            Types.Text => SearchFieldDataType.String,
+            _ => throw new ArgumentOutOfRangeException(nameof(type), $"The type '{type}' is not support by Azure AI Search")
         };
 }

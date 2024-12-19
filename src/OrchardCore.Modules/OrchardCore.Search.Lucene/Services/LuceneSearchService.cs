@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Lucene.Net.QueryParsers.Classic;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Search.Abstractions;
@@ -79,11 +78,7 @@ public class LuceneSearchService : ISearchService
     }
 
     private async Task<string> DefaultIndexAsync()
-    {
-        var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-        return siteSettings.As<LuceneSettings>().SearchIndex;
-    }
+        => (await _siteService.GetSettingsAsync<LuceneSettings>()).SearchIndex;
 
     private async Task<string[]> GetSearchFieldsAsync()
     {

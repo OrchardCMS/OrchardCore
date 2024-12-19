@@ -266,6 +266,44 @@ In our Liquid template we will now retrieve these records.
 
 Please note that Datetimes are stored as UTC so a conversion with the current request culture will be required.
 
+## GraphQL Usage
+
+Enabling the `OrchardCore.ContentFields.Indexing.SQL` module allows building filters based on dynamic content fields in GraphQL queries.
+
+The following examples demonstrate filtering products based on a numeric content field named `Amount` attached to a content part named `PricePart` where the Amount is greater than 10:
+
+Normal usage:
+
+```graphql
+product(where: {price: {amount_gt: 10}}) {
+    contentItemId
+    displayText
+    price {
+        amount
+    }
+}
+```
+
+If the `PricePart` is collapsed:
+
+```graphql
+product(where: {amount_gt: 10}) {
+    contentItemId
+    displayText
+    amount
+}
+```
+
+If the `PricePart` is collaped with prevent field name collision option enabled:
+
+```graphql
+product(where: {priceAmount_gt: 10}) {
+    contentItemId
+    displayText
+    priceAmount
+}
+```
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/tFLZ4Ha7PZE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

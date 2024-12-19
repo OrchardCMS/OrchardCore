@@ -155,10 +155,11 @@ The following JavaScript functions are available by default to any activity that
 | `output` | Sets an output parameter with the specified name. Workflow output can be collected by the invoker of the workflow. | `output(name: string, value: any): void` |
 | `property` | Returns the property value with the specified name. Properties are a dictionary that workflow activities can read and write information from and to. | `property(name: string): any` |
 | `setProperty` | Stores the specified data in workflow properties. | `setProperty(name: string,data:any):void` |
-| `executeQuery` | Returns the result of the query, see [more](../Queries/#scripting). | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
+| `executeQuery` | Returns the result of the query, see [more](../Queries/README.md#scripting). | `executeQuery(name: String, parameters: Dictionary<string,object>): IEnumerable<object>` |
 | `log` | Output logs according to the specified log level. Allowed log levels : `'Trace','Debug','Information','Warning','Error','Critical','None'` | `log(level: string, text: string, param: object): void` |
 | `lastResult` | Returns the value that the previous activity provided, if any. | `lastResult(): any` |
 | `correlationId` | Returns the correlation value of the workflow instance. | `correlationId(): string` |
+| `setCorrelationId` | Set the correlation value of the workflow instance. | `setCorrelationId(id:string): void` |
 | `signalUrl` | Returns workflow trigger URL with a protected SAS token into which the specified signal name is encoded. Use this to generate URLs that can be shared with trusted parties to trigger the current workflow if it is blocked on the Signal activity that is configured with the same signal name. | `signalUrl(signal: string): string` |
 
 #### JavaScript Functions in HTTP activities
@@ -402,31 +403,28 @@ public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : Activit
     private static string DesignShapeType = $"{typeof(TActivity).Name}_Fields_Design";
     private static string EditShapeType = $"{typeof(TActivity).Name}_Fields_Edit";
 
-    public override IDisplayResult Display(TActivity activity)
+    public override Task<IDisplayResult> DisplayAsync(TActivity activity, BuildDisplayContext context)
     {
-        return Combine(
+        return CombineAsync(
             Shape(ThumbnailshapeType, new ActivityViewModel<TActivity>(activity)).Location("Thumbnail", "Content"),
             Shape(DesignShapeType, new ActivityViewModel<TActivity>(activity)).Location("Design", "Content")
         );
     }
 
-    public override IDisplayResult Edit(TActivity activity)
+    public override IDisplayResult Edit(TActivity activity, BuildEditorContext context)
     {
-        return Initialize<TEditViewModel>(EditShapeType, model =>
-        {
-            return EditActivityAsync(activity, model);
-        }).Location("Content");
+        return Initialize<TEditViewModel>(_editShapeType, viewModel => EditActivityAsync(activity, viewModel)).Location("Content");
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(TActivity activity, IUpdateModel updater)
+    public override async Task<IDisplayResult> UpdateAsync(TActivity activity, UpdateEditorContext context)
     {
         var viewModel = new TEditViewModel();
-        if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+        if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix))
         {
             await UpdateActivityAsync(viewModel, activity);
         }
 
-        return Edit(activity);
+        return Edit(activity, context);
     }
 }
 ```
@@ -437,6 +435,25 @@ Continuing with the `NotifyTask` example, we now need to create the following Ra
 - `NotifyTask.Fields.Design.cshtml`
 - `NotifyTask.Fields.Thumbnail.cshtml`
 - `NotifyTask.Fields.Edit.cshtml`
+
+## Trimming
+
+Old workflow instances can be automatically deleted with the Trimming feature. This is enabled by default and you can configure it (including disabling it) in Configuration → Settings → Workflows Trimming. Without trimming, workflow instances remain in the database indefinitely.
+
+By default, the trimming background task runs once a day and removes at most 5000 workflow instances. You can change the frequency of the background task via [the `OrchardCore.BackgroundTasks` configuration](../BackgroundTasks/README.md), and the batch size via the `OrchardCore_Workflows` configuration from e.g. an `appsettings` file:
+
+```json
+"OrchardCore_Workflows": {
+  "Trimming": {
+    "BatchSize": 1000
+  }
+}
+```
+
+See [Configuration](../Configuration/README.md) for more information on such configuration.
+
+!!! tip
+    If you enable the trimming feature on a site that has tens or even hundreds of thousands of workflow instances already, the initial trimming operation may take weeks to complete. You can expedite this by lowering the background task's frequency, even to once a minute temporarily with the `* * * * *` cron expression.
 
 ## Videos
 

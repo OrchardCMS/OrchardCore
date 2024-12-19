@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
@@ -9,34 +7,22 @@ namespace OrchardCore.Users.Services;
 
 public class RoleTwoFactorAuthenticationHandler : ITwoFactorAuthenticationHandler
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserManager<IUser> _userManager;
     private readonly ISiteService _siteService;
 
     public RoleTwoFactorAuthenticationHandler(
-        IHttpContextAccessor httpContextAccessor,
         UserManager<IUser> userManager,
         ISiteService siteService)
     {
-        _httpContextAccessor = httpContextAccessor;
         _userManager = userManager;
         _siteService = siteService;
     }
 
-    public async Task<bool> IsRequiredAsync()
+    public async Task<bool> IsRequiredAsync(IUser user)
     {
-        if (_httpContextAccessor.HttpContext?.User == null)
-        {
-            return false;
-        }
+        ArgumentNullException.ThrowIfNull(user);
 
-        var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
-        if (user == null)
-        {
-            return false;
-        }
-
-        var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<RoleLoginSettings>();
+        var loginSettings = await _siteService.GetSettingsAsync<RoleLoginSettings>();
 
         if (loginSettings.RequireTwoFactorAuthenticationForSpecificRoles && loginSettings.Roles != null)
         {

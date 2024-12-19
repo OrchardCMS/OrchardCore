@@ -1,7 +1,6 @@
 @using OrchardCore.Queries.ViewModels
 @model QueryBasedContentDeploymentStepViewModel
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
-@inject OrchardCore.Queries.IQueryManager QueryManager
 
 <style asp-name="codemirror"></style>
 <script asp-name="codemirror" at="Foot"></script>
@@ -23,7 +22,7 @@
     <div>
         <label asp-for="QueryName" class="form-label">@T["Query"]</label>
         <select class="form-select form-select-sm" asp-for="QueryName">
-            @foreach (var query in (await QueryManager.ListQueriesAsync()))
+            @foreach (var query in Model.Queries)
             {
                 var name = query.Name;
                 <option value="@name">@name</option>

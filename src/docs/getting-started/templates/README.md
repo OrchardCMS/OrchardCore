@@ -9,13 +9,13 @@ More information about `dotnet new` can be found at <https://docs.microsoft.com/
 Once the .NET Core SDK has been installed, type the following command to install the templates for creating Orchard Core web applications:
 
 ```CMD
-dotnet new install OrchardCore.ProjectTemplates::1.8.2
+dotnet new install OrchardCore.ProjectTemplates::2.1.3
 ```
 
 This will use the most stable release of Orchard Core. In order to use the latest `main` branch of Orchard Core, the following command can be used:
 
 ```CMD
-dotnet new install OrchardCore.ProjectTemplates::1.8.2-* --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
+dotnet new install OrchardCore.ProjectTemplates::2.1.3-* --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
 ```
 
 ## Create a new website
@@ -23,9 +23,6 @@ dotnet new install OrchardCore.ProjectTemplates::1.8.2-* --nuget-source https://
 ### From Command Shell (automated way)
 
 #### Generate an Orchard Cms Web Application
-
-!!! warning
-    Due to a bug in the current published version, the following `dotnet new` commands will require the extra argument `--orchard-version 1.8.2`. For instance, instead of typing `dotnet new occms` use `dotnet new occms --orchard-version 1.8.2`
 
 ```CMD
 dotnet new occms
@@ -47,7 +44,7 @@ Options:
 
   -ov|--orchard-version  Specifies which version of Orchard Core packages to use.
                          string - Optional
-                         Default: 1.8.2
+                         Default: 2.1.3
 ```
 
 Logging can be ignored with this command:
@@ -136,7 +133,7 @@ Options:
 
   -ov|--orchard-version  Specifies which version of Orchard Core packages to use.
                          string - Optional
-                         Default: 1.8.2
+                         Default: 2.1.3
 ```
 
 ```CMD

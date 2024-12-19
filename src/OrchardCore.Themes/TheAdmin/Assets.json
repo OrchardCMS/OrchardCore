@@ -1,6 +1,5 @@
 [
   {
-    "generateSourceMaps": false,
     "generateRTL": false,
     "inputs": [
       "Assets/scss/index.scss"
@@ -14,7 +13,6 @@
     "output": "wwwroot/css/TheAdmin.css"
   },
   {
-    "generateSourceMaps": false,
     "generateRTL": true,
     "inputs": [
       "Assets/scss/admin-layout.scss"
@@ -25,7 +23,6 @@
     "output": "wwwroot/css/admin-layout.css"
   },
   {
-    "generateSourceMaps": false,
     "inputs": [
       "Assets/js/*.js"
     ],
@@ -35,34 +32,23 @@
     "output": "wwwroot/js/TheAdmin.js"
   },
   {
-    "generateSourceMaps": false,
     "generateRTL": false,
     "inputs": [
       "Assets/scss/login.scss"
     ],
     "watch": [
+      "Assets/scss/componenets/_recaptcha.scss",
       "Assets/scss/componenets/_validations.scss"
     ],
     "output": "wwwroot/css/login.css"
   },
   {
-    "generateSourceMaps": false,
     "inputs": [
       "Assets/js/header/global/*.js",
-      "Assets/js/header/theme/*.js"
-    ],
-    "watch": [
-      "Assets/js/header/global/*.js",
-      "Assets/js/header/theme/*.js"
-    ],
-    "output": "wwwroot/js/TheAdmin-header.js"
-  },
-  {
-    "generateSourceMaps": false,
-    "inputs": [
       "Assets/js/header/main/*.js"
     ],
     "watch": [
+      "Assets/js/header/global/*.js",
       "Assets/js/header/main/*.js"
     ],
     "output": "wwwroot/js/TheAdmin-main.js"

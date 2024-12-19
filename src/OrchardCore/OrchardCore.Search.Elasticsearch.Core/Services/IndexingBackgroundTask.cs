@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundTasks;
 
@@ -18,11 +15,11 @@ namespace OrchardCore.Search.Elasticsearch.Core.Services;
     Description = "Updates Elasticsearch indexes.",
     LockTimeout = 1000,
     LockExpiration = 300000)]
-public class IndexingBackgroundTask : IBackgroundTask
+public sealed class IndexingBackgroundTask : IBackgroundTask
 {
     public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        var indexingService = serviceProvider.GetService<ElasticIndexingService>();
+        var indexingService = serviceProvider.GetService<ElasticsearchIndexingService>();
 
         if (indexingService != null)
         {

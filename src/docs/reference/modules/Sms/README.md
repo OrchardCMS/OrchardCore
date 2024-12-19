@@ -14,15 +14,20 @@ Enabling the `SMS` feature will add a new settings page under `Configurations` >
 !!! note
     After enabling the SMS feature, you must configure the default provider in order to send SMS messages.
 
-# Configuring Twilio Provider
+## Configuring the Twilio Providers
 
 To enable the [Twilio](https://www.twilio.com) provider, navigate to `Configurations` >> `Settings` >> `SMS`. Click on the `Twilio` tab, click the Enable checkbox and provider your Twilio account info. Then in the `Providers` tab, select Twilio as your default provider.
+
+## Additional Available Providers
+
+- [Azure Communication](../Sms.Azure/README.md) service provider.
 
 ## Adding Custom Providers
 
 The `OrchardCore.Sms` module provides you with the capability to integrate additional providers for dispatching SMS messages. To achieve this, you can easily create an implementation of the `ISmsProvider` interface and then proceed to register it using one of the following approaches:
 
 If your provider does not require any settings like the `LogProvider`, you may register it like this.
+
 ```csharp
 services.AddSmsProvider<YourCustomImplemenation>("A technical name for your implementation")
 ```
@@ -77,7 +82,7 @@ public class TestController
     {
         var message = new SmsMessage
         {
-            To = "17023451234",
+            To = "+17023451234",
             Message = "It's easy to send an SMS message using Orchard!",
         };
 

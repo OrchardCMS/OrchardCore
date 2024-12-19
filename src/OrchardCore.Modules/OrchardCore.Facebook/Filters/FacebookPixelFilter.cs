@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -9,7 +8,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook.Filters;
 
-public class FacebookPixelFilter : IAsyncResultFilter
+public sealed class FacebookPixelFilter : IAsyncResultFilter
 {
     private readonly IResourceManager _resourceManager;
     private readonly ISiteService _siteService;
@@ -34,7 +33,7 @@ public class FacebookPixelFilter : IAsyncResultFilter
 
             if (_scriptsCache == null && canTrack)
             {
-                var settings = (await _siteService.GetSiteSettingsAsync()).As<FacebookPixelSettings>();
+                var settings = await _siteService.GetSettingsAsync<FacebookPixelSettings>();
 
                 if (!string.IsNullOrWhiteSpace(settings?.PixelId))
                 {

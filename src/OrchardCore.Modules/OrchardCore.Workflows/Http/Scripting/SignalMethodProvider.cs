@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,63 +7,62 @@ using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
-namespace OrchardCore.Workflows.Http.Scripting
+namespace OrchardCore.Workflows.Http.Scripting;
+
+public class SignalMethodProvider : IGlobalMethodProvider
 {
-    public class SignalMethodProvider : IGlobalMethodProvider
+    private readonly GlobalMethod _signalUrlMethod;
+
+    public SignalMethodProvider(WorkflowExecutionContext workflowContext, ISecurityTokenService securityTokenService)
     {
-        private readonly GlobalMethod _signalUrlMethod;
-
-        public SignalMethodProvider(WorkflowExecutionContext workflowContext, ISecurityTokenService securityTokenService)
+        _signalUrlMethod = new GlobalMethod
         {
-            _signalUrlMethod = new GlobalMethod
+            Name = "signalUrl",
+            Method = serviceProvider => (Func<string, string>)((signal) =>
             {
-                Name = "signalUrl",
-                Method = serviceProvider => (Func<string, string>)((signal) =>
-                {
-                    var payload = !string.IsNullOrWhiteSpace(workflowContext.CorrelationId) ? SignalPayload.ForCorrelation(signal, workflowContext.CorrelationId) : SignalPayload.ForWorkflow(signal, workflowContext.WorkflowId);
-                    var token = securityTokenService.CreateToken(payload, TimeSpan.FromDays(7));
-                    var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
-                    var linkGenerator = serviceProvider.GetRequiredService<LinkGenerator>();
+                var payload = !string.IsNullOrWhiteSpace(workflowContext.CorrelationId) ? SignalPayload.ForCorrelation(signal, workflowContext.CorrelationId) : SignalPayload.ForWorkflow(signal, workflowContext.WorkflowId);
+                var token = securityTokenService.CreateToken(payload, TimeSpan.FromDays(7));
+                var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+                var linkGenerator = serviceProvider.GetRequiredService<LinkGenerator>();
 
-                    return linkGenerator.GetPathByAction(httpContextAccessor.HttpContext, "Trigger", "HttpWorkflow", new { area = "OrchardCore.Workflows", token });
-                }),
-            };
-        }
-
-        public IEnumerable<GlobalMethod> GetMethods()
-        {
-            return new[] { _signalUrlMethod };
-        }
+                return linkGenerator.GetPathByAction(httpContextAccessor.HttpContext, "Trigger", "HttpWorkflow", new { area = "OrchardCore.Workflows", token });
+            }),
+        };
     }
 
-    public class TokenMethodProvider : IGlobalMethodProvider
+    public IEnumerable<GlobalMethod> GetMethods()
     {
-        private readonly GlobalMethod _createWorkflowToken;
+        return new[] { _signalUrlMethod };
+    }
+}
 
-        public TokenMethodProvider()
+public class TokenMethodProvider : IGlobalMethodProvider
+{
+    private readonly GlobalMethod _createWorkflowToken;
+
+    public TokenMethodProvider()
+    {
+        _createWorkflowToken = new GlobalMethod
         {
-            _createWorkflowToken = new GlobalMethod
+            Name = "createWorkflowToken",
+            Method = serviceProvider => (Func<string, string, int, string>)((workflowTypeId, activityId, days) =>
             {
-                Name = "createWorkflowToken",
-                Method = serviceProvider => (Func<string, string, int, string>)((workflowTypeId, activityId, days) =>
+                var securityTokenService = serviceProvider.GetRequiredService<ISecurityTokenService>();
+
+                var payload = new WorkflowPayload(workflowTypeId, activityId);
+
+                if (days == 0)
                 {
-                    var securityTokenService = serviceProvider.GetRequiredService<ISecurityTokenService>();
+                    days = HttpWorkflowController.NoExpiryTokenLifespan;
+                }
 
-                    var payload = new WorkflowPayload(workflowTypeId, activityId);
+                return securityTokenService.CreateToken(payload, TimeSpan.FromDays(days));
+            })
+        };
+    }
 
-                    if (days == 0)
-                    {
-                        days = HttpWorkflowController.NoExpiryTokenLifespan;
-                    }
-
-                    return securityTokenService.CreateToken(payload, TimeSpan.FromDays(days));
-                })
-            };
-        }
-
-        public IEnumerable<GlobalMethod> GetMethods()
-        {
-            return new[] { _createWorkflowToken };
-        }
+    public IEnumerable<GlobalMethod> GetMethods()
+    {
+        return new[] { _createWorkflowToken };
     }
 }

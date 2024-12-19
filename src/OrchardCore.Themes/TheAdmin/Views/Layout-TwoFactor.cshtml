@@ -1,0 +1,53 @@
+@using OrchardCore.Environment.Shell
+@using OrchardCore.Themes.Services
+
+@inject ThemeTogglerService ThemeTogglerService
+
+<!DOCTYPE html>
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-bs-theme="@await ThemeTogglerService.CurrentTheme()" data-tenant="@ThemeTogglerService.CurrentTenant">
+<head>
+    <title>@RenderTitleSegments(Site.SiteName, "before")</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
+
+    <!-- This script can't wait till the footer -->
+    <script asp-name="admin-main" version="1" at="Head"></script>
+
+    <!-- Bootstrap CSS -->
+    @if (Orchard.IsRightToLeft())
+    {
+        <style asp-name="bootstrap-rtl" version="5" at="Head"></style>
+    }
+    else
+    {
+        <style asp-name="bootstrap" version="5" at="Head"></style>
+    }
+
+    <style>
+        body, html {
+            height: 100%;
+        }
+    </style>
+
+    <script asp-name="font-awesome" at="Foot" version="6"></script>
+
+    <resources type="Header" />
+    @await RenderSectionAsync("HeadMeta", required: false)
+</head>
+<body>
+    <div class="d-flex align-items-center justify-content-center h-100">
+        <div class="container">
+            @await RenderSectionAsync("Header", required: false)
+            @await RenderSectionAsync("Messages", required: false)
+
+            @await RenderBodyAsync()
+        </div>
+    </div>
+
+    @await RenderSectionAsync("Footer", required: false)
+
+    <resources type="Footer" />
+</body>
+</html>

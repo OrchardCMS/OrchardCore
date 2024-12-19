@@ -1,46 +1,40 @@
-using System;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using OrchardCore.GitHub.Services;
 using OrchardCore.GitHub.Settings;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.GitHub.Recipes
+namespace OrchardCore.GitHub.Recipes;
+
+/// <summary>
+/// This recipe step sets GitHub Account settings.
+/// </summary>
+public sealed class GitHubAuthenticationSettingsStep : NamedRecipeStepHandler
 {
-    /// <summary>
-    /// This recipe step sets GitHub Account settings.
-    /// </summary>
-    public class GitHubAuthenticationSettingsStep : IRecipeStepHandler
+    private readonly IGitHubAuthenticationService _githubAuthenticationService;
+
+    public GitHubAuthenticationSettingsStep(IGitHubAuthenticationService githubLoginService)
+        : base(nameof(GitHubAuthenticationSettings))
     {
-        private readonly IGitHubAuthenticationService _githubAuthenticationService;
-
-        public GitHubAuthenticationSettingsStep(IGitHubAuthenticationService githubLoginService)
-        {
-            _githubAuthenticationService = githubLoginService;
-        }
-
-        public async Task ExecuteAsync(RecipeExecutionContext context)
-        {
-            if (!string.Equals(context.Name, nameof(GitHubAuthenticationSettings), StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-            var model = context.Step.ToObject<GitHubLoginSettingsStepModel>();
-            var settings = await _githubAuthenticationService.LoadSettingsAsync();
-
-            settings.ClientID = model.ConsumerKey;
-            settings.ClientSecret = model.ConsumerSecret;
-            settings.CallbackPath = model.CallbackPath;
-
-            await _githubAuthenticationService.UpdateSettingsAsync(settings);
-        }
+        _githubAuthenticationService = githubLoginService;
     }
 
-    public class GitHubLoginSettingsStepModel
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        public string ConsumerKey { get; set; }
-        public string ConsumerSecret { get; set; }
-        public string CallbackPath { get; set; }
+        var model = context.Step.ToObject<GitHubLoginSettingsStepModel>();
+        var settings = await _githubAuthenticationService.LoadSettingsAsync();
+
+        settings.ClientID = model.ConsumerKey;
+        settings.ClientSecret = model.ConsumerSecret;
+        settings.CallbackPath = model.CallbackPath;
+
+        await _githubAuthenticationService.UpdateSettingsAsync(settings);
     }
+}
+
+public sealed class GitHubLoginSettingsStepModel
+{
+    public string ConsumerKey { get; set; }
+    public string ConsumerSecret { get; set; }
+    public string CallbackPath { get; set; }
 }

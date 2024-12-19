@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -10,7 +8,6 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
@@ -19,44 +16,38 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.AzureAI.Drivers;
 
-public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<ISite, AzureAISearchDefaultSettings>
+public sealed class AzureAISearchDefaultSettingsDisplayDriver : SiteDisplayDriver<AzureAISearchDefaultSettings>
 {
     public const string GroupId = "azureAISearch";
 
-    private static readonly char[] _separator = [',', ' '];
-
-    private readonly AzureAISearchIndexSettingsService _indexSettingsService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-    private readonly ShellSettings _shellSettings;
-    private readonly IShellHost _shellHost;
     private readonly AzureAISearchDefaultOptions _searchOptions;
     private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IShellReleaseManager _shellReleaseManager;
 
-    protected readonly IStringLocalizer S;
+    internal readonly IStringLocalizer S;
+
+    protected override string SettingsGroupId
+        => GroupId;
 
     public AzureAISearchDefaultSettingsDisplayDriver(
-        AzureAISearchIndexSettingsService indexSettingsService,
+        IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
         IOptions<AzureAISearchDefaultOptions> searchOptions,
-        ShellSettings shellSettings,
-        IShellHost shellHost,
         IDataProtectionProvider dataProtectionProvider,
-        IStringLocalizer<AzureAISearchDefaultSettingsDisplayDriver> stringLocalizer
-        )
+        IStringLocalizer<AzureAISearchDefaultSettingsDisplayDriver> stringLocalizer)
     {
-        _indexSettingsService = indexSettingsService;
+        _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
-        _shellSettings = shellSettings;
-        _shellHost = shellHost;
         _searchOptions = searchOptions.Value;
         _dataProtectionProvider = dataProtectionProvider;
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(AzureAISearchDefaultSettings settings)
+    public override IDisplayResult Edit(ISite site, AzureAISearchDefaultSettings settings, BuildEditorContext context)
     {
         if (_searchOptions.DisableUIConfiguration)
         {
@@ -65,12 +56,12 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
 
         return Initialize<AzureAISearchDefaultSettingsViewModel>("AzureAISearchDefaultSettings_Edit", model =>
         {
-            model.AuthenticationTypes = new[]
-            {
+            model.AuthenticationTypes =
+            [
                 new SelectListItem(S["Default"], nameof(AzureAIAuthenticationType.Default)),
                 new SelectListItem(S["Managed Identity"], nameof(AzureAIAuthenticationType.ManagedIdentity)),
                 new SelectListItem(S["API Key"], nameof(AzureAIAuthenticationType.ApiKey)),
-            };
+            ];
 
             model.ConfigurationsAreOptional = _searchOptions.FileConfigurationExists();
             model.AuthenticationType = settings.AuthenticationType;
@@ -80,12 +71,12 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
             model.ApiKeyExists = !string.IsNullOrEmpty(settings.ApiKey);
         }).Location("Content")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
-        .OnGroup(GroupId);
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(AzureAISearchDefaultSettings settings, BuildEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, AzureAISearchDefaultSettings settings, UpdateEditorContext context)
     {
-        if (!GroupId.EqualsOrdinalIgnoreCase(context.GroupId) || _searchOptions.DisableUIConfiguration)
+        if (_searchOptions.DisableUIConfiguration)
         {
             return null;
         }
@@ -97,60 +88,59 @@ public class AzureAISearchDefaultSettingsDisplayDriver : SectionDisplayDriver<IS
 
         var model = new AzureAISearchDefaultSettingsViewModel();
 
-        if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+        await context.Updater.TryUpdateModelAsync(model, Prefix);
+
+        if (!_searchOptions.FileConfigurationExists())
         {
-            if (!_searchOptions.FileConfigurationExists())
+            model.UseCustomConfiguration = true;
+        }
+
+        var useCustomConfigurationChanged = settings.UseCustomConfiguration != model.UseCustomConfiguration;
+
+        if (model.UseCustomConfiguration)
+        {
+            settings.AuthenticationType = model.AuthenticationType.Value;
+            settings.Endpoint = model.Endpoint;
+            settings.IdentityClientId = model.IdentityClientId?.Trim();
+
+            if (string.IsNullOrWhiteSpace(model.Endpoint))
             {
-                model.UseCustomConfiguration = true;
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Endpoint), S["Endpoint is required."]);
+            }
+            else if (!Uri.TryCreate(model.Endpoint, UriKind.Absolute, out var _))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Endpoint), S["Endpoint must be a valid url."]);
             }
 
-            var useCustomConfigurationChanged = settings.UseCustomConfiguration != model.UseCustomConfiguration;
-
-            if (model.UseCustomConfiguration)
+            if (model.AuthenticationType == AzureAIAuthenticationType.ApiKey)
             {
-                settings.AuthenticationType = model.AuthenticationType.Value;
-                settings.Endpoint = model.Endpoint;
-                settings.IdentityClientId = model.IdentityClientId?.Trim();
+                var hasNewKey = !string.IsNullOrWhiteSpace(model.ApiKey);
 
-                if (string.IsNullOrWhiteSpace(model.Endpoint))
+                if (!hasNewKey && string.IsNullOrEmpty(settings.ApiKey))
                 {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Endpoint), S["Endpoint is required."]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.ApiKey), S["API Key is required when using API Key authentication type."]);
                 }
-                else if (!Uri.TryCreate(model.Endpoint, UriKind.Absolute, out var _))
+                else if (hasNewKey)
                 {
-                    context.Updater.ModelState.AddModelError(Prefix, nameof(model.Endpoint), S["Endpoint must be a valid url."]);
+                    var protector = _dataProtectionProvider.CreateProtector(AzureAISearchDefaultOptionsConfigurations.ProtectorName);
+
+                    settings.ApiKey = protector.Protect(model.ApiKey);
                 }
-
-                if (model.AuthenticationType == AzureAIAuthenticationType.ApiKey)
-                {
-                    var hasNewKey = !string.IsNullOrWhiteSpace(model.ApiKey);
-
-                    if (!hasNewKey && string.IsNullOrEmpty(settings.ApiKey))
-                    {
-                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.ApiKey), S["API Key is required when using API Key authentication type."]);
-                    }
-                    else if (hasNewKey)
-                    {
-                        var protector = _dataProtectionProvider.CreateProtector(AzureAISearchDefaultOptionsConfigurations.ProtectorName);
-
-                        settings.ApiKey = protector.Protect(model.ApiKey);
-                    }
-                }
-            }
-
-            settings.UseCustomConfiguration = model.UseCustomConfiguration;
-
-            if (context.Updater.ModelState.IsValid &&
-                (_searchOptions.Credential?.Key != model.ApiKey
-                || _searchOptions.Endpoint != settings.Endpoint
-                || _searchOptions.AuthenticationType != settings.AuthenticationType
-                || _searchOptions.IdentityClientId != settings.IdentityClientId
-                || useCustomConfigurationChanged))
-            {
-                await _shellHost.ReleaseShellContextAsync(_shellSettings);
             }
         }
 
-        return Edit(settings);
+        settings.UseCustomConfiguration = model.UseCustomConfiguration;
+
+        if (context.Updater.ModelState.IsValid &&
+            (_searchOptions.Credential?.Key != model.ApiKey ||
+             _searchOptions.Endpoint != settings.Endpoint ||
+             _searchOptions.AuthenticationType != settings.AuthenticationType ||
+             _searchOptions.IdentityClientId != settings.IdentityClientId ||
+             useCustomConfigurationChanged))
+        {
+            _shellReleaseManager.RequestRelease();
+        }
+
+        return Edit(site, settings, context);
     }
 }
