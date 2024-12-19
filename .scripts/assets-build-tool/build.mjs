@@ -55,7 +55,7 @@ if (tagsStr != undefined) {
 // Filter the tags if the user passes the -b cli flag
 let bundleStr = parsedArgs.b;
 if (bundleStr != undefined) {
-  console.log(chalk.yellow("Filtering groups for aptix-bundle"));
+  console.log(chalk.yellow("Filtering groups for orchardcore-bundle"));
   groups = groups.filter((g) => g.bundleEntrypoint);
 }
 
@@ -90,7 +90,7 @@ if (task === "build" || task === "watch") {
     const parcelBundleOutput = buildConfig("parcelBundleOutput");
     groups.push({
       action: "parcel",
-      name: `aptix-bundle`,
+      name: `orchardcore-bundle`,
       source: entries,
       dest: parcelBundleOutput,
     });
