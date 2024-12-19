@@ -536,7 +536,7 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
             .DefineScript("jquery-nestedSortable")
             .SetUrl("~/OrchardCore.Resources/Scripts/jquery.mjs.nestedSortable.js")
             .SetCdn("https://cdn.jsdelivr.net/npm/nestedSortable@1.3.4/jquery.mjs.nestedSortable.js")
-            .SetCdnIntegrity("sha256-9PVpMM44AUEKeZBLORiMsI2UkeLpVFwCwXVx+ACtIQ8=")
+            .SetCdnIntegrity("sha384-drmLwsDDXGEHmNZHoxS1StHzAllg9a/CKXv31Oe4wYiN9wqJNn+QQjAr6Cin+wyH")
             .SetVersion("1.3.4");
 
         return manifest;
