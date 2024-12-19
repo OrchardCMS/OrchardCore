@@ -27,7 +27,7 @@ jobs:
         corepack install
         corepack enable
         yarn install
-        yarn rebuild
+        yarn build
     - name: Check if git has changes
       shell: pwsh
       run: |
