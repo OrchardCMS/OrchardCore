@@ -72,7 +72,10 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
 
         if (string.IsNullOrWhiteSpace(model.Tenant))
         {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Tenant), S["tenant is a required value"]);
+            if (string.IsNullOrWhiteSpace(model.Authority))
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(model.Tenant), S["A tenant or authority value is required."]);
+            }
         }
         else if (!_shellHost.TryGetShellContext(model.Tenant, out var shellContext) || !shellContext.Settings.IsRunning())
         {
