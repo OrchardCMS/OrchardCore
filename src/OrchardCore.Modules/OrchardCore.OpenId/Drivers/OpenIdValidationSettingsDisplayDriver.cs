@@ -70,9 +70,9 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
         settings.DisableTokenTypeValidation = model.DisableTokenTypeValidation;
         settings.Tenant = model.Tenant;
 
-        if (string.IsNullOrWhiteSpace(model.Tenant))
+        if (string.IsNullOrEmpty(model.Tenant))
         {
-            if (string.IsNullOrWhiteSpace(model.Authority))
+            if (string.IsNullOrEmpty(model.Authority))
             {
                 context.Updater.ModelState.AddModelError(Prefix, nameof(model.Tenant), S["A tenant or authority value is required."]);
             }
