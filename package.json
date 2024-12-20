@@ -4,12 +4,19 @@
   "version": "1.0.0",
   "packageManager": "yarn@4.5.3",
   "scripts": {
-    "build": "asset-bundler build",
+    "build": "gulp build && asset-bundler build",
+    "rebuild": "gulp rebuild",
     "copy": "asset-bundler copy",
+    "gulpwatch": "gulp watch",
     "watch": "asset-bundler watch",
     "dry-run": "asset-bundler dry-run",
     "clean": "asset-bundler clean",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "postinstall": "node .scripts/install.js",
+    "update-projects": "node .scripts/update.js",
+    "install-project": "node .scripts/project.js install",
+    "update-project": "node .scripts/project.js update",
+    "cleanup": "node .scripts/cleanup.js"
   },
   "workspaces": [
     ".scripts/assets-build-tool",
