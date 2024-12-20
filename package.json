@@ -11,7 +11,7 @@
     "install-project": "node .scripts/project.js install",
     "update-project": "node .scripts/project.js update",
     "cleanup": "node .scripts/cleanup.js",
-    "asset-build": "asset-bundler build",
+    "build": "asset-bundler build",
     "copy": "asset-bundler copy",
     "watch": "asset-bundler watch",
     "dry-run": "asset-bundler dry-run",
