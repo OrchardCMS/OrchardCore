@@ -4,19 +4,21 @@
   "version": "1.0.0",
   "packageManager": "yarn@4.5.3",
   "scripts": {
-    "build": "gulp build && asset-bundler build",
-    "rebuild": "gulp rebuild",
-    "copy": "asset-bundler copy",
-    "gulpwatch": "gulp watch",
-    "watch": "asset-bundler watch",
-    "dry-run": "asset-bundler dry-run",
-    "clean": "asset-bundler clean",
-    "lint": "eslint .",
+    "gulp-build": "gulp build",
+    "gulp-watch": "gulp watch",
+    "gulp-rebuild": "gulp rebuild",
     "postinstall": "node .scripts/install.js",
     "update-projects": "node .scripts/update.js",
     "install-project": "node .scripts/project.js install",
     "update-project": "node .scripts/project.js update",
-    "cleanup": "node .scripts/cleanup.js"
+    "cleanup": "node .scripts/cleanup.js",
+
+    "build": "asset-bundler build",
+    "copy": "asset-bundler copy",
+    "watch": "asset-bundler watch",
+    "dry-run": "asset-bundler dry-run",
+    "clean": "asset-bundler clean",
+    "lint": "eslint ."
   },
   "workspaces": [
     ".scripts/assets-build-tool",
