@@ -60,4 +60,8 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="admin-permission-picker,vuejs">initMenuPermissionsPicker(document.querySelector("#PermissionPicker"))</script>
+<script at="Foot" depends-on="menu-permission-picker,vuejs">
+    document.addEventListener('DOMContentLoaded', () => {
+        initMenuPermissionsPicker(document.querySelector("#PermissionPicker"))
+    });
+</script>
