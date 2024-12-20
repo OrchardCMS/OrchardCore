@@ -27,7 +27,7 @@ passwordManager = function () {
   var copyPassword = function copyPassword(str) {
     return navigator.clipboard.writeText(str);
   };
-  var generatePassword = function generatePassword(requiredPasswordLength, requireUppercase, requireLowercase, requireDigit, requireNonAlphanumeric, requiredUniqueChars) {
+  var _generatePassword = function generatePassword(requiredPasswordLength, requireUppercase, requireLowercase, requireDigit, requireNonAlphanumeric, requiredUniqueChars) {
     var password = [];
     requiredUniqueChars = requiredUniqueChars | 1;
     if (requireUppercase) {
@@ -56,12 +56,12 @@ passwordManager = function () {
     }
     if (requiredUniqueChars > 1 && !meetUniqueRule(password, requiredUniqueChars)) {
       // The generated password does not meet the required-unique-chars requirment, create another one
-      return generatePassword(requiredPasswordLength, requireUppercase, requireLowercase, requireDigit, requireNonAlphanumeric, requiredUniqueChars);
+      return _generatePassword(requiredPasswordLength, requireUppercase, requireLowercase, requireDigit, requireNonAlphanumeric, requiredUniqueChars);
     }
     return shuffle(password).join('');
   };
   return {
-    generatePassword: generatePassword,
+    generatePassword: _generatePassword,
     copyPassword: copyPassword
   };
 }();

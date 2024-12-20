@@ -237,8 +237,8 @@ let gulpStr = parsedArgs.g;
 if (gulpStr != undefined) {
     buildProcesses.push({
         order: 0,
-        name: "starting gulp build",
-        command: `gulp build`,
+        name: "gulp build",
+        command: `gulp rebuild`,
     });
 }
 
