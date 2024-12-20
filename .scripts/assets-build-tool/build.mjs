@@ -210,16 +210,6 @@ const buildProcesses = groups
                     )
                 );
                 break;
-            /*         case "gulp":
-            if (task === "build") {
-              return {
-                order: group.order,
-                name: group.name,
-                command: `gulp build`,
-              };
-            }
-            console.log(chalk.yellow("Use gulp from group: ", group.name));
-            break; */
             default:
                 console.log(
                     chalk.yellow(
@@ -233,13 +223,28 @@ const buildProcesses = groups
     .filter((el) => el != undefined); // remove undefined entries
 
 // Add the gulp build process if the user passes the -g cli flag
-let gulpStr = parsedArgs.g;
-if (gulpStr != undefined) {
+let gulpBuildStr = parsedArgs["g"];
+let gulpRebuildStr = parsedArgs["r"];
+
+if (gulpBuildStr != undefined && gulpRebuildStr == undefined) {
     buildProcesses.push({
         order: 0,
         name: "gulp build",
+        command: `gulp build`,
+    });
+}
+else if (gulpBuildStr != undefined && gulpRebuildStr != undefined) {
+    buildProcesses.push({
+        order: 0,
+        name: "gulp rebuild",
         command: `gulp rebuild`,
     });
+}
+
+// Add the gulp build process if the user passes the -g cli flag
+
+if (gulpBuildStr != undefined && gulpRebuildStr != undefined) {
+
 }
 
 if (buildProcesses.length <= 0) {

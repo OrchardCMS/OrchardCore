@@ -85,7 +85,7 @@
       "console": "internalConsole"
     },
     {
-      "name": "Launch Asset Bundler",
+      "name": "Asset Bundler Tool Debug",
       "program": "${workspaceFolder}/.scripts/assets-build-tool/build.mjs",
       "request": "launch",
       "skipFiles": ["<node_internals>/**"],
