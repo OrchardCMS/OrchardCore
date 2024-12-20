@@ -68,10 +68,10 @@
       }
     },
     {
-        "name": ".NET Core Attach",
-        "type": "coreclr",
-        "request": "attach",
-        "processId": "${command:pickProcess}"
+      "name": ".NET Core Attach",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": "${command:pickProcess}"
     },
     {
       "name": "Gulp Debug",
@@ -81,10 +81,15 @@
       "stopOnEntry": false,
       "args": [],
       "cwd": "${workspaceRoot}",
-      "runtimeArgs": [
-        "--nolazy"
-      ],
+      "runtimeArgs": ["--nolazy"],
       "console": "internalConsole"
+    },
+    {
+      "name": "Launch Asset Bundler",
+      "program": "${workspaceFolder}/.scripts/assets-build-tool/build.mjs",
+      "request": "launch",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node"
     }
   ]
 }
