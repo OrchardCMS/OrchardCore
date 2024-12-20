@@ -1,4 +1,6 @@
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
@@ -7,6 +9,7 @@ using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Utilities;
 using OrchardCore.Menu.Models;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Menu;
 
@@ -70,9 +73,39 @@ public class MenuShapes : ShapeTableProvider
 
                 // The first level of menu item shapes is created.
                 // Each other level is created when the menu item is displayed.
+                IEnumerable<Permission> allPermissions = null;
+
+                var permissionService = context.ServiceProvider.GetRequiredService<IPermissionService>();
+                var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+                var authorizationService = context.ServiceProvider.GetRequiredService<IAuthorizationService>();
 
                 foreach (var contentItem in menuItems)
                 {
+                    var hasPermission = true;
+
+                    if (contentItem.TryGet<MenuItemPermissionPart>(out var permissionPart) &&
+                    permissionPart.PermissionNames is not null &&
+                    permissionPart.PermissionNames.Length > 0)
+                    {
+                        allPermissions ??= await permissionService.GetPermissionsAsync();
+
+                        foreach (var permission in allPermissions.Where(x => permissionPart.PermissionNames.Contains(x.Name)))
+                        {
+                            if (await authorizationService.AuthorizeAsync(httpContextAccessor.HttpContext.User, permission, contentItem))
+                            {
+                                continue;
+                            }
+
+                            hasPermission = false;
+                            break;
+                        }
+                    }
+
+                    if (!hasPermission)
+                    {
+                        continue;
+                    }
+
                     var shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new
                     {
                         ContentItem = contentItem,
@@ -102,8 +135,39 @@ public class MenuShapes : ShapeTableProvider
 
                 if (menuItems != null)
                 {
+                    IEnumerable<Permission> allPermissions = null;
+
+                    var permissionService = context.ServiceProvider.GetRequiredService<IPermissionService>();
+                    var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+                    var authorizationService = context.ServiceProvider.GetRequiredService<IAuthorizationService>();
+
                     foreach (var contentItem in menuItems)
                     {
+                        var hasPermission = true;
+
+                        if (contentItem.TryGet<MenuItemPermissionPart>(out var permissionPart) &&
+                        permissionPart.PermissionNames is not null &&
+                        permissionPart.PermissionNames.Length > 0)
+                        {
+                            allPermissions ??= await permissionService.GetPermissionsAsync();
+
+                            foreach (var permission in allPermissions.Where(x => permissionPart.PermissionNames.Contains(x.Name)))
+                            {
+                                if (await authorizationService.AuthorizeAsync(httpContextAccessor.HttpContext.User, permission, contentItem))
+                                {
+                                    continue;
+                                }
+
+                                hasPermission = false;
+                                break;
+                            }
+                        }
+
+                        if (!hasPermission)
+                        {
+                            continue;
+                        }
+
                         var shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new
                         {
                             ContentItem = contentItem,

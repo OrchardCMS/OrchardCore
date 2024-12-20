@@ -1,17 +1,17 @@
-using OrchardCore.AdminMenu.Services;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu.AdminNodes;
 
 public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, PlaceholderAdminNode>
 {
-    private readonly IAdminMenuPermissionService _adminMenuPermissionService;
+    private readonly IPermissionService _permissionService;
 
-    public PlaceholderAdminNodeDriver(IAdminMenuPermissionService adminMenuPermissionService)
+    public PlaceholderAdminNodeDriver(IPermissionService permissionService)
     {
-        _adminMenuPermissionService = adminMenuPermissionService;
+        _permissionService = permissionService;
     }
 
     public override Task<IDisplayResult> DisplayAsync(PlaceholderAdminNode treeNode, BuildDisplayContext context)
@@ -29,7 +29,7 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
             model.LinkText = treeNode.LinkText;
             model.IconClass = treeNode.IconClass;
 
-            var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
+            var permissions = await _permissionService.GetPermissionsAsync();
 
             var selectedPermissions = permissions.Where(p => treeNode.PermissionNames.Contains(p.Name));
 
@@ -60,7 +60,7 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
         treeNode.IconClass = model.IconClass;
 
         var selectedPermissions = (model.SelectedPermissionNames == null ? Array.Empty<string>() : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries));
-        var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
+        var permissions = await _permissionService.GetPermissionsAsync();
         treeNode.PermissionNames = permissions
             .Where(p => selectedPermissions.Contains(p.Name))
             .Select(p => p.Name).ToArray();

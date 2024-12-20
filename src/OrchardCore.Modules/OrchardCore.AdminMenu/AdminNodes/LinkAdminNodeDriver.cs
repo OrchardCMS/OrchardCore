@@ -1,17 +1,17 @@
-using OrchardCore.AdminMenu.Services;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu.AdminNodes;
 
 public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
 {
-    private readonly IAdminMenuPermissionService _adminMenuPermissionService;
+    private readonly IPermissionService permissionService;
 
-    public LinkAdminNodeDriver(IAdminMenuPermissionService adminMenuPermissionService)
+    public LinkAdminNodeDriver(IPermissionService permissionService)
     {
-        _adminMenuPermissionService = adminMenuPermissionService;
+        this.permissionService = permissionService;
     }
 
     public override Task<IDisplayResult> DisplayAsync(LinkAdminNode treeNode, BuildDisplayContext context)
@@ -31,7 +31,7 @@ public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
             model.IconClass = treeNode.IconClass;
             model.Target = treeNode.Target;
 
-            var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
+            var permissions = await permissionService.GetPermissionsAsync();
 
             var selectedPermissions = permissions.Where(p => treeNode.PermissionNames.Contains(p.Name));
 
@@ -69,7 +69,7 @@ public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
             ? []
             : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
-        var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
+        var permissions = await permissionService.GetPermissionsAsync();
         treeNode.PermissionNames = permissions
             .Where(p => selectedPermissions.Contains(p.Name))
             .Select(p => p.Name).ToArray();

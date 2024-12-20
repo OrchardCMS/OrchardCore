@@ -26,7 +26,7 @@ public sealed class Migrations : DataMigration
         await _recipeMigrator.ExecuteAsync($"menu{RecipesConstants.RecipeExtension}", this);
 
         // Shortcut other migration steps on new content definition schemas.
-        return 4;
+        return 5;
     }
 
     // Add content menu. This only needs to run on old content definition schemas.
@@ -64,6 +64,13 @@ public sealed class Migrations : DataMigration
         }
 
         return 4;
+    }
+
+    public async Task<int> UpdateFrom4Async()
+    {
+        await _recipeMigrator.ExecuteAsync($"menu-updatefrom4{RecipesConstants.RecipeExtension}", this);
+
+        return 5;
     }
 
     private static void MigrateMenuItems(List<ContentItem> menuItems)
