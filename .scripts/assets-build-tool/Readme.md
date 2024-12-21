@@ -14,7 +14,7 @@ Assets build scripts. The process uses a `Assets.json` file that defines actions
 
 Runs the Parcel bundler.
 
-**Note**: Sometimes, parcel is too aggressive in it's caching. If you manually delete any output folders, you may need to delete the `.parcel-cache` folder as well for parcel to write to it again. Running the `yarn clean` command will clean it up for you.
+**Note**: Sometimes, Parcel is too aggressive in its caching. If you manually delete any output folders, you may need to delete the `.parcel-cache` folder as well for Parcel to write to it again. Running the `yarn clean` command will clean it up for you.
 
 ```json
 [
