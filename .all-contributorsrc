@@ -3268,6 +3268,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "salmattia",
+      "name": "Mattia Salvetti",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36173554?v=4",
+      "profile": "https://github.com/salmattia",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
