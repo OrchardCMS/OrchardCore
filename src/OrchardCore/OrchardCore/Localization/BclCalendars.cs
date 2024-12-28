@@ -5,12 +5,12 @@ namespace OrchardCore.Localization;
 
 internal static class BclCalendars
 {
-    public readonly static Calendar Hebrew = new HebrewCalendar();
-    public readonly static Calendar Hijri = new HijriCalendar();
-    public readonly static Calendar Gregorian = new GregorianCalendar();
-    public readonly static Calendar Julian = new JulianCalendar();
-    public readonly static Calendar Persian = new PersianCalendar();
-    public readonly static Calendar UmAlQura = new UmAlQuraCalendar();
+    public static readonly Calendar Hebrew = new HebrewCalendar();
+    public static readonly Calendar Hijri = new HijriCalendar();
+    public static readonly Calendar Gregorian = new GregorianCalendar();
+    public static readonly Calendar Julian = new JulianCalendar();
+    public static readonly Calendar Persian = new PersianCalendar();
+    public static readonly Calendar UmAlQura = new UmAlQuraCalendar();
 
     public static CalendarSystem GetCalendarByName(CalendarName calendarName) =>
         calendarName switch
@@ -20,8 +20,8 @@ internal static class BclCalendars
             CalendarName.Gregorian => CalendarSystem.Iso,
             CalendarName.Julian => CalendarSystem.Julian,
             CalendarName.Persian => CultureInfo.CurrentUICulture.Calendar.IsLeapYear(1)
-                ? CalendarSystem.PersianSimple
-                : CalendarSystem.PersianAstronomical,
+            ? CalendarSystem.PersianSimple
+            : CalendarSystem.PersianAstronomical,
             CalendarName.UmAlQura => CalendarSystem.UmAlQura,
             _ => throw new NotSupportedException($"The calendar is not supported."),
         };

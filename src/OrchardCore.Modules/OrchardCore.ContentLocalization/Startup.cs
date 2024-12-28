@@ -44,7 +44,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IContentsAdminListFilter, LocalizationPartContentsAdminListFilter>();
         services.AddTransient<IContentsAdminListFilterProvider, LocalizationPartContentsAdminListFilterProvider>();
-        services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, LocalizationContentsAdminListDisplayDriver>();
+        services.AddDisplayDriver<ContentOptionsViewModel, LocalizationContentsAdminListDisplayDriver>();
     }
 }
 
@@ -59,7 +59,7 @@ public sealed class ContentPickerStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<Navbar>, ContentCulturePickerNavbarDisplayDriver>();
+        services.AddDisplayDriver<Navbar, ContentCulturePickerNavbarDisplayDriver>();
         services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentCulturePickerService, ContentCulturePickerService>();

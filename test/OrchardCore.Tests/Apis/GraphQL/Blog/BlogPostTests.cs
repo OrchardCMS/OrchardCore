@@ -28,7 +28,7 @@ public class BlogPostTests
             });
 
         Assert.Single(
-            result["data"]["blog"].AsArray().Where(node => node["contentItemId"].ToString() == context.BlogContentItemId));
+            result["data"]["blog"].AsArray(), node => node["contentItemId"].ToString() == context.BlogContentItemId);
     }
 
     [Fact]

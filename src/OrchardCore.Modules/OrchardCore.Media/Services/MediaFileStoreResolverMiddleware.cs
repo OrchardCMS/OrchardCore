@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.FileStorage;
 using OrchardCore.Routing;
 
 namespace OrchardCore.Media.Services;
@@ -50,10 +51,10 @@ public class MediaFileStoreResolverMiddleware
         }
 
         var validatePath = context.Request.Path.StartsWithNormalizedSegments(_assetsRequestPath, StringComparison.OrdinalIgnoreCase, out var subPath);
-        if (!validatePath)
+        if (!validatePath || string.IsNullOrEmpty(_mediaFileStore.NormalizePath(subPath)))
         {
-            _logger.LogDebug("Request path {Path} does not match the assets request path {RequestPath}", subPath, _assetsRequestPath);
             await _next(context);
+
             return;
         }
 

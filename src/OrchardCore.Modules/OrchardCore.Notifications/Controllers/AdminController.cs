@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Entities;
+using OrchardCore.Environment.Cache;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Navigation.Core;
@@ -28,6 +29,7 @@ public sealed class AdminController : Controller, IUpdateModel
 {
     private readonly IAuthorizationService _authorizationService;
     private readonly ISession _session;
+    private readonly ITagCache _tagCache;
     private readonly IDisplayManager<Notification> _notificationDisplayManager;
     private readonly INotificationsAdminListQueryService _notificationsAdminListQueryService;
     private readonly IDisplayManager<ListNotificationOptions> _notificationOptionsDisplayManager;
@@ -42,6 +44,7 @@ public sealed class AdminController : Controller, IUpdateModel
     public AdminController(
         IAuthorizationService authorizationService,
         ISession session,
+        ITagCache tagCache,
         IOptions<PagerOptions> pagerOptions,
         IDisplayManager<Notification> notificationDisplayManager,
         INotificationsAdminListQueryService notificationsAdminListQueryService,
@@ -54,6 +57,7 @@ public sealed class AdminController : Controller, IUpdateModel
     {
         _authorizationService = authorizationService;
         _session = session;
+        _tagCache = tagCache;
         _notificationDisplayManager = notificationDisplayManager;
         _notificationsAdminListQueryService = notificationsAdminListQueryService;
         _notificationOptionsDisplayManager = notificationOptionsDisplayManager;
@@ -193,6 +197,7 @@ public sealed class AdminController : Controller, IUpdateModel
                     }
                     if (counter > 0)
                     {
+                        await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
                         await _notifier.SuccessAsync(H["{0} {1} unread successfully.", counter, H.Plural(counter, "notification", "notifications")]);
                     }
                     break;
@@ -214,6 +219,7 @@ public sealed class AdminController : Controller, IUpdateModel
                     }
                     if (counter > 0)
                     {
+                        await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
                         await _notifier.SuccessAsync(H["{0} {1} read successfully.", counter, H.Plural(counter, "notification", "notifications")]);
                     }
                     break;
@@ -225,6 +231,7 @@ public sealed class AdminController : Controller, IUpdateModel
                     }
                     if (counter > 0)
                     {
+                        await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
                         await _notifier.SuccessAsync(H["{0} {1} removed successfully.", counter, H.Plural(counter, "notification", "notifications")]);
                     }
                     break;
@@ -261,6 +268,7 @@ public sealed class AdminController : Controller, IUpdateModel
 
         if (counter > 0)
         {
+            await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
             await _notifier.SuccessAsync(H["{0} {1} read successfully.", counter, H.Plural(counter, "notification", "notifications")]);
         }
 
@@ -296,6 +304,7 @@ public sealed class AdminController : Controller, IUpdateModel
                 notification.Put(readPart);
 
                 await _session.SaveAsync(notification, collection: NotificationConstants.NotificationCollection);
+                await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
             }
         }
 
@@ -316,6 +325,7 @@ public sealed class AdminController : Controller, IUpdateModel
             if (notification != null)
             {
                 _session.Delete(notification, collection: NotificationConstants.NotificationCollection);
+                await _tagCache.RemoveTagAsync(NotificationsHelper.GetUnreadUserNotificationTagKey(User.Identity.Name));
             }
         }
 

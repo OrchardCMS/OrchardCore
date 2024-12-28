@@ -69,10 +69,10 @@ public sealed class ImportRemoteInstanceController : Controller
         }
 
         // Create a temporary filename to save the archive
-        var tempArchiveName = Path.GetTempFileName() + ".zip";
+        var tempArchiveName = PathExtensions.GetTempFileName() + ".zip";
 
         // Create a temporary folder to extract the archive to
-        var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var tempArchiveFolder = PathExtensions.GetTempFileName();
 
         try
         {

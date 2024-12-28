@@ -9,12 +9,13 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
-public class TypedContentTypeBuilder : IContentTypeBuilder
+public sealed class TypedContentTypeBuilder : IContentTypeBuilder
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly GraphQLContentOptions _contentOptions;
 
-    public TypedContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
+    public TypedContentTypeBuilder(
+        IHttpContextAccessor httpContextAccessor,
         IOptions<GraphQLContentOptions> contentOptionsAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
@@ -64,7 +65,8 @@ public class TypedContentTypeBuilder : IContentTypeBuilder
                             continue;
                         }
 
-                        var partType = typeActivator.GetTypeActivator(part.PartDefinition.Name).Type;
+                        var partActivator = typeActivator.GetTypeActivator(part.PartDefinition.Name);
+                        var partType = partActivator.Type;
                         var rolledUpField = new FieldType
                         {
                             Name = field.Name,
@@ -93,21 +95,16 @@ public class TypedContentTypeBuilder : IContentTypeBuilder
                 }
                 else
                 {
-                    var field = new FieldType
-                    {
-                        Name = partFieldName,
-                        Type = queryGraphType.GetType(),
-                        Description = queryGraphType.Description,
-                    };
-                    contentItemType.Field(partFieldName, queryGraphType.GetType())
-                                   .Description(queryGraphType.Description)
-                                   .Resolve(context =>
-                                   {
-                                       var nameToResolve = partName;
-                                       var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
+                    contentItemType
+                        .Field(partFieldName, queryGraphType.GetType())
+                        .Description(queryGraphType.Description)
+                        .Resolve(context =>
+                        {
+                            var nameToResolve = partName;
+                            var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
 
-                                       return context.Source.Get(typeToResolve, nameToResolve);
-                                   });
+                            return context.Source.Get(typeToResolve, nameToResolve);
+                        });
                 }
             }
 
@@ -142,5 +139,9 @@ public class TypedContentTypeBuilder : IContentTypeBuilder
                 }
             }
         }
+    }
+
+    public void Clear()
+    {
     }
 }

@@ -19,12 +19,13 @@ public class AbsoluteUrlFilter : ILiquidFilter
 
         if (string.IsNullOrWhiteSpace(relativePath))
         {
-            return new ValueTask<FluidValue>(input);
+            return ValueTask.FromResult(input);
         }
 
         var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
 
-        var result = new StringValue(urlHelper.ToAbsoluteUrl(relativePath));
-        return new ValueTask<FluidValue>(result);
+        var result = StringValue.Create(urlHelper.ToAbsoluteUrl(relativePath));
+
+        return ValueTask.FromResult<FluidValue>(result);
     }
 }

@@ -95,7 +95,7 @@ public sealed class AddToDeploymentPlanController : Controller
     [HttpPost]
     public async Task<IActionResult> AddContentItems(long deploymentPlanId, string returnUrl, IEnumerable<long> itemIds)
     {
-        if (itemIds?.Count() == 0)
+        if (itemIds is null || !itemIds.Any())
         {
             return this.LocalRedirect(returnUrl, true);
         }
@@ -126,7 +126,16 @@ public sealed class AddToDeploymentPlanController : Controller
 
                 return Forbid();
             }
-            var step = (ContentItemDeploymentStep)_factories.FirstOrDefault(x => x.Name == nameof(ContentItemDeploymentStep)).Create();
+
+            var step = (ContentItemDeploymentStep)_factories.FirstOrDefault(x => x.Name == nameof(ContentItemDeploymentStep))?.Create();
+
+            if (step is null)
+            {
+                await _notifier.WarningAsync(H["Couldn't add selected content to deployment plan."]);
+
+                return BadRequest();
+            }
+
             step.ContentItemId = item.ContentItemId;
 
             deploymentPlan.DeploymentSteps.Add(step);

@@ -13,7 +13,8 @@ public static class UserFilters
     {
         if (input.ToObjectValue() is LiquidUserAccessor)
         {
-            var httpContextAccessor = ((LiquidTemplateContext)ctx).Services.GetRequiredService<IHttpContextAccessor>();
+            var context = (LiquidTemplateContext)ctx;
+            var httpContextAccessor = context.Services.GetRequiredService<IHttpContextAccessor>();
 
             var user = httpContextAccessor.HttpContext?.User;
             if (user != null)
@@ -23,12 +24,12 @@ public static class UserFilters
 
                 if (user.HasClaim(claimType, claimName))
                 {
-                    return new ValueTask<FluidValue>(BooleanValue.True);
+                    return BooleanValue.True;
                 }
             }
         }
 
-        return new ValueTask<FluidValue>(BooleanValue.False);
+        return BooleanValue.False;
     }
 
     public static ValueTask<FluidValue> UserId(FluidValue input, FilterArguments _, TemplateContext ctx)
@@ -43,11 +44,11 @@ public static class UserFilters
                 var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (userId != null)
                 {
-                    return new ValueTask<FluidValue>(FluidValue.Create(userId, ctx.Options));
+                    return ValueTask.FromResult(FluidValue.Create(userId, ctx.Options));
                 }
             }
         }
 
-        return new ValueTask<FluidValue>(NilValue.Instance);
+        return ValueTask.FromResult<FluidValue>(NilValue.Instance);
     }
 }

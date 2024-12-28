@@ -13,7 +13,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Contents.Services;
 
-public class DefaultContentsAdminListFilterProvider : IContentsAdminListFilterProvider
+public sealed class DefaultContentsAdminListFilterProvider : IContentsAdminListFilterProvider
 {
     public void Build(QueryEngineBuilder<ContentItem> builder)
     {
@@ -51,7 +51,7 @@ public class DefaultContentsAdminListFilterProvider : IContentsAdminListFilterPr
                         query.With<ContentItemIndex>(x => x.Latest);
                     }
 
-                    return new ValueTask<IQuery<ContentItem>>(query);
+                    return ValueTask.FromResult<IQuery<ContentItem>>(query);
                 })
                 .MapTo<ContentOptionsViewModel>((val, model) =>
                 {

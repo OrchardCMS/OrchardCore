@@ -35,6 +35,6 @@ public class NewShapeFilter : ILiquidFilter
             return Awaited(task, ctx.Options);
         }
 
-        return new ValueTask<FluidValue>(FluidValue.Create(task.Result, ctx.Options));
+        return ValueTask.FromResult<FluidValue>(FluidValue.Create(task.Result, ctx.Options));
     }
 }

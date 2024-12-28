@@ -5,7 +5,8 @@ using OrchardCore.Json;
 
 namespace OrchardCore.Deployment.Deployment;
 
-public class DeploymentPlanDeploymentSource : IDeploymentSource
+public sealed class DeploymentPlanDeploymentSource
+    : DeploymentSourceBase<DeploymentPlanDeploymentStep>
 {
     private readonly IDeploymentPlanService _deploymentPlanService;
     private readonly IEnumerable<IDeploymentStepFactory> _deploymentStepFactories;
@@ -21,13 +22,8 @@ public class DeploymentPlanDeploymentSource : IDeploymentSource
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(DeploymentPlanDeploymentStep step, DeploymentPlanResult result)
     {
-        if (deploymentStep is not DeploymentPlanDeploymentStep deploymentPlanStep)
-        {
-            return;
-        }
-
         if (!await _deploymentPlanService.DoesUserHavePermissionsAsync())
         {
             return;
@@ -35,9 +31,9 @@ public class DeploymentPlanDeploymentSource : IDeploymentSource
 
         var deploymentStepFactories = _deploymentStepFactories.ToDictionary(f => f.Name);
 
-        var deploymentPlans = deploymentPlanStep.IncludeAll
+        var deploymentPlans = step.IncludeAll
             ? (await _deploymentPlanService.GetAllDeploymentPlansAsync()).ToArray()
-            : (await _deploymentPlanService.GetDeploymentPlansAsync(deploymentPlanStep.DeploymentPlanNames)).ToArray();
+            : (await _deploymentPlanService.GetDeploymentPlansAsync(step.DeploymentPlanNames)).ToArray();
 
         var plans = (from plan in deploymentPlans
                      select new

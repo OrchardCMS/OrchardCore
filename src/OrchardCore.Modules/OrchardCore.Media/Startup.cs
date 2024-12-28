@@ -41,7 +41,6 @@ using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes;
 using SixLabors.ImageSharp.Web.Caching;
@@ -85,7 +84,7 @@ public sealed class Startup : StartupBase
         .AddLiquidFilter<AssetUrlFilter>("asset_url")
         .AddLiquidFilter<ResizeUrlFilter>("resize_url");
 
-        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddTransient<IConfigureOptions<MediaOptions>, MediaOptionsConfiguration>();
 

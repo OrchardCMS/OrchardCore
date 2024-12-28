@@ -12,9 +12,9 @@ public static class DisplayTextFilter
 
         if (contentItem == null)
         {
-            return new ValueTask<FluidValue>(NilValue.Instance);
+            return ValueTask.FromResult<FluidValue>(NilValue.Instance);
         }
 
-        return new ValueTask<FluidValue>(new StringValue(contentItem.DisplayText ?? ""));
+        return ValueTask.FromResult<FluidValue>(new StringValue(contentItem.DisplayText ?? string.Empty));
     }
 }

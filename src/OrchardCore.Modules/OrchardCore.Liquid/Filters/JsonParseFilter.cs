@@ -12,9 +12,9 @@ public static class JsonParseFilter
         var parsedValue = JNode.Parse(input.ToStringValue());
         if (parsedValue.GetValueKind() == JsonValueKind.Array)
         {
-            return new ValueTask<FluidValue>(FluidValue.Create(parsedValue, context.Options));
+            return ValueTask.FromResult(FluidValue.Create(parsedValue, context.Options));
         }
 
-        return new ValueTask<FluidValue>(new ObjectValue(parsedValue));
+        return ValueTask.FromResult<FluidValue>(new ObjectValue(parsedValue));
     }
 }

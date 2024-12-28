@@ -8,7 +8,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services;
 
-public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+public sealed class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
     private readonly IServiceProvider _serviceProvider;
 
@@ -69,12 +69,13 @@ public class RoleAuthorizationHandler : AuthorizationHandler<PermissionRequireme
                 return;
             }
 
-            var roleNames = user.RoleNames ?? [];
+            IEnumerable<string> roleNames = user.RoleNames ?? [];
 
             if (!roleNames.Any())
             {
                 // When the user is in no roles, we check to see if the current user can manage any roles.
-                roleNames = (await _roleService.GetRoleNamesAsync()).Where(roleName => !RoleHelper.SystemRoleNames.Contains(roleName)).ToList();
+                roleNames = (await _roleService.GetAssignableRolesAsync())
+                    .Select(x => x.RoleName);
             }
 
             // Check every role to see if the current user has permission to at least one role.

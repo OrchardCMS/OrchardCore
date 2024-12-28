@@ -1,5 +1,6 @@
 using System.Collections.Immutable;
 using System.Globalization;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
@@ -10,6 +11,7 @@ using OrchardCore.OpenId.YesSql.Indexes;
 using OrchardCore.OpenId.YesSql.Models;
 using YesSql;
 using YesSql.Services;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.YesSql.Stores;
 
@@ -44,7 +46,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
         cancellationToken.ThrowIfCancellationRequested();
 
         await _session.SaveAsync(authorization, collection: OpenIdCollection);
-        await _session.SaveChangesAsync();
+        await _session.FlushAsync();
     }
 
     /// <inheritdoc/>
@@ -55,64 +57,57 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
         cancellationToken.ThrowIfCancellationRequested();
 
         _session.Delete(authorization, collection: OpenIdCollection);
-        await _session.SaveChangesAsync();
-    }
-
-    /// <inheritdoc/>
-    public virtual IAsyncEnumerable<TAuthorization> FindAsync(
-        string subject, string client, CancellationToken cancellationToken)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(subject);
-        ArgumentException.ThrowIfNullOrEmpty(client);
-
-        cancellationToken.ThrowIfCancellationRequested();
-
-        return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-            index => index.ApplicationId == client && index.Subject == subject,
-            collection: OpenIdCollection).ToAsyncEnumerable();
-    }
-
-    /// <inheritdoc/>
-    public virtual IAsyncEnumerable<TAuthorization> FindAsync(
-        string subject, string client, string status, CancellationToken cancellationToken)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(subject);
-        ArgumentException.ThrowIfNullOrEmpty(client);
-        ArgumentException.ThrowIfNullOrEmpty(status);
-
-        cancellationToken.ThrowIfCancellationRequested();
-
-        return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-            index => index.ApplicationId == client && index.Subject == subject && index.Status == status,
-            collection: OpenIdCollection).ToAsyncEnumerable();
-    }
-
-    /// <inheritdoc/>
-    public virtual IAsyncEnumerable<TAuthorization> FindAsync(
-        string subject, string client,
-        string status, string type, CancellationToken cancellationToken)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(subject);
-        ArgumentException.ThrowIfNullOrEmpty(client);
-        ArgumentException.ThrowIfNullOrEmpty(status);
-        ArgumentException.ThrowIfNullOrEmpty(type);
-
-        cancellationToken.ThrowIfCancellationRequested();
-
-        return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-            index => index.ApplicationId == client && index.Subject == subject &&
-                     index.Status == status && index.Type == type,
-            collection: OpenIdCollection).ToAsyncEnumerable();
+        await _session.FlushAsync();
     }
 
     /// <inheritdoc/>
     public virtual async IAsyncEnumerable<TAuthorization> FindAsync(
         string subject, string client, string status, string type,
-        ImmutableArray<string> scopes, [EnumeratorCancellation] CancellationToken cancellationToken)
+        ImmutableArray<string>? scopes, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        await foreach (var authorization in FindAsync(subject, client, status, type, cancellationToken))
+        Expression<Func<OpenIdAuthorizationIndex, bool>> query = index => true;
+
+        if (!string.IsNullOrEmpty(subject))
         {
-            if (new HashSet<string>(await GetScopesAsync(authorization, cancellationToken), StringComparer.Ordinal).IsSupersetOf(scopes))
+            Expression<Func<OpenIdAuthorizationIndex, bool>> filter = index => index.Subject == subject;
+
+            query = Expression.Lambda<Func<OpenIdAuthorizationIndex, bool>>(
+                Expression.AndAlso(query.Body, filter.Body), query.Parameters[0]);
+        }
+
+        if (!string.IsNullOrEmpty(client))
+        {
+            Expression<Func<OpenIdAuthorizationIndex, bool>> filter = index => index.ApplicationId == client;
+
+            query = Expression.Lambda<Func<OpenIdAuthorizationIndex, bool>>(
+                Expression.AndAlso(query.Body, filter.Body), query.Parameters[0]);
+        }
+
+        if (!string.IsNullOrEmpty(status))
+        {
+            Expression<Func<OpenIdAuthorizationIndex, bool>> filter = index => index.Status == status;
+
+            query = Expression.Lambda<Func<OpenIdAuthorizationIndex, bool>>(
+                Expression.AndAlso(query.Body, filter.Body), query.Parameters[0]);
+        }
+
+        if (!string.IsNullOrEmpty(type))
+        {
+            Expression<Func<OpenIdAuthorizationIndex, bool>> filter = index => index.Type == type;
+
+            query = Expression.Lambda<Func<OpenIdAuthorizationIndex, bool>>(
+                Expression.AndAlso(query.Body, filter.Body), query.Parameters[0]);
+        }
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var authorizations = _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
+            query, collection: OpenIdCollection).ToAsyncEnumerable();
+
+        await foreach (var authorization in authorizations)
+        {
+            if (scopes is null || new HashSet<string>(await GetScopesAsync(authorization, cancellationToken),
+                StringComparer.Ordinal).IsSupersetOf(scopes.Value))
             {
                 yield return authorization;
             }
@@ -172,7 +167,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
     {
         ArgumentNullException.ThrowIfNull(authorization);
 
-        return new ValueTask<string>(authorization.ApplicationId);
+        return ValueTask.FromResult(authorization.ApplicationId);
     }
 
     /// <inheritdoc/>
@@ -188,10 +183,10 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
 
         if (authorization.CreationDate is null)
         {
-            return new ValueTask<DateTimeOffset?>(result: null);
+            return ValueTask.FromResult<DateTimeOffset?>(result: null);
         }
 
-        return new ValueTask<DateTimeOffset?>(DateTime.SpecifyKind(authorization.CreationDate.Value, DateTimeKind.Utc));
+        return ValueTask.FromResult<DateTimeOffset?>(DateTime.SpecifyKind(authorization.CreationDate.Value, DateTimeKind.Utc));
     }
 
     /// <inheritdoc/>
@@ -199,7 +194,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
     {
         ArgumentNullException.ThrowIfNull(authorization);
 
-        return new ValueTask<string>(authorization.AuthorizationId);
+        return ValueTask.FromResult(authorization.AuthorizationId);
     }
 
     /// <inheritdoc/>
@@ -207,7 +202,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
     {
         ArgumentNullException.ThrowIfNull(authorization);
 
-        return new ValueTask<string>(authorization.Id.ToString(CultureInfo.InvariantCulture));
+        return ValueTask.FromResult(authorization.Id.ToString(CultureInfo.InvariantCulture));
     }
 
     /// <inheritdoc/>
@@ -217,11 +212,10 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
 
         if (authorization.Properties == null)
         {
-            return new ValueTask<ImmutableDictionary<string, JsonElement>>(ImmutableDictionary.Create<string, JsonElement>());
+            return ValueTask.FromResult(ImmutableDictionary.Create<string, JsonElement>());
         }
 
-        return new ValueTask<ImmutableDictionary<string, JsonElement>>(
-            JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(authorization.Properties.ToString()));
+        return ValueTask.FromResult(JConvert.DeserializeObject<ImmutableDictionary<string, JsonElement>>(authorization.Properties.ToString()));
     }
 
     /// <inheritdoc/>
@@ -229,7 +223,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
     {
         ArgumentNullException.ThrowIfNull(authorization);
 
-        return new ValueTask<ImmutableArray<string>>(authorization.Scopes);
+        return ValueTask.FromResult(authorization.Scopes);
     }
 
     /// <inheritdoc/>
@@ -237,7 +231,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
     {
         ArgumentNullException.ThrowIfNull(authorization);
 
-        return new ValueTask<string>(authorization.Status);
+        return ValueTask.FromResult(authorization.Status);
     }
 
     /// <inheritdoc/>
@@ -245,7 +239,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
     {
         ArgumentNullException.ThrowIfNull(authorization);
 
-        return new ValueTask<string>(authorization.Subject);
+        return ValueTask.FromResult(authorization.Subject);
     }
 
     /// <inheritdoc/>
@@ -253,7 +247,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
     {
         ArgumentNullException.ThrowIfNull(authorization);
 
-        return new ValueTask<string>(authorization.Type);
+        return ValueTask.FromResult(authorization.Type);
     }
 
     /// <inheritdoc/>
@@ -320,7 +314,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
 
             try
             {
-                await _session.SaveChangesAsync();
+                await _session.FlushAsync();
             }
             catch (Exception exception)
             {
@@ -339,6 +333,138 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
         }
 
         return result;
+    }
+
+    /// <inheritdoc/>
+    public virtual async ValueTask<long> RevokeAsync(
+        string subject, string client, string status, string type, CancellationToken cancellationToken)
+    {
+        Expression<Func<OpenIdAuthorizationIndex, bool>> query = index => true;
+
+        if (!string.IsNullOrEmpty(subject))
+        {
+            Expression<Func<OpenIdAuthorizationIndex, bool>> filter = index => index.Subject == subject;
+
+            query = Expression.Lambda<Func<OpenIdAuthorizationIndex, bool>>(
+                Expression.AndAlso(query.Body, filter.Body), query.Parameters[0]);
+        }
+
+        if (!string.IsNullOrEmpty(client))
+        {
+            Expression<Func<OpenIdAuthorizationIndex, bool>> filter = index => index.ApplicationId == client;
+
+            query = Expression.Lambda<Func<OpenIdAuthorizationIndex, bool>>(
+                Expression.AndAlso(query.Body, filter.Body), query.Parameters[0]);
+        }
+
+        if (!string.IsNullOrEmpty(status))
+        {
+            Expression<Func<OpenIdAuthorizationIndex, bool>> filter = index => index.Status == status;
+
+            query = Expression.Lambda<Func<OpenIdAuthorizationIndex, bool>>(
+                Expression.AndAlso(query.Body, filter.Body), query.Parameters[0]);
+        }
+
+        if (!string.IsNullOrEmpty(type))
+        {
+            Expression<Func<OpenIdAuthorizationIndex, bool>> filter = index => index.Type == type;
+
+            query = Expression.Lambda<Func<OpenIdAuthorizationIndex, bool>>(
+                Expression.AndAlso(query.Body, filter.Body), query.Parameters[0]);
+        }
+
+        // Note: YesSql doesn't support set-based updates, which prevents updating entities
+        // in a single command without having to retrieve and materialize them first.
+        // To work around this limitation, entities are manually listed and updated.
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var authorizations = (await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
+            query, collection: OpenIdCollection).ListAsync()).ToList();
+
+        if (authorizations.Count is 0)
+        {
+            return 0;
+        }
+
+        foreach (var authorization in authorizations)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            authorization.Status = Statuses.Revoked;
+
+            await _session.SaveAsync(authorization, checkConcurrency: false, collection: OpenIdCollection);
+        }
+
+        await _session.SaveChangesAsync();
+
+        return authorizations.Count;
+    }
+
+    /// <inheritdoc/>
+    public virtual async ValueTask<long> RevokeByApplicationIdAsync(string identifier, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(identifier);
+
+        // Note: YesSql doesn't support set-based updates, which prevents updating entities
+        // in a single command without having to retrieve and materialize them first.
+        // To work around this limitation, entities are manually listed and updated.
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var authorizations = (await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
+            token => token.ApplicationId == identifier, collection: OpenIdCollection).ListAsync()).ToList();
+
+        if (authorizations.Count is 0)
+        {
+            return 0;
+        }
+
+        foreach (var authorization in authorizations)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            authorization.Status = Statuses.Revoked;
+
+            await _session.SaveAsync(authorization, checkConcurrency: false, collection: OpenIdCollection);
+        }
+
+        await _session.SaveChangesAsync();
+
+        return authorizations.Count;
+    }
+
+    /// <inheritdoc/>
+    public virtual async ValueTask<long> RevokeBySubjectAsync(string subject, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(subject);
+
+        // Note: YesSql doesn't support set-based updates, which prevents updating entities
+        // in a single command without having to retrieve and materialize them first.
+        // To work around this limitation, entities are manually listed and updated.
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var authorizations = (await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
+            token => token.Subject == subject, collection: OpenIdCollection).ListAsync()).ToList();
+
+        if (authorizations.Count is 0)
+        {
+            return 0;
+        }
+
+        foreach (var authorization in authorizations)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            authorization.Status = Statuses.Revoked;
+
+            await _session.SaveAsync(authorization, checkConcurrency: false, collection: OpenIdCollection);
+        }
+
+        await _session.SaveChangesAsync();
+
+        return authorizations.Count;
     }
 
     /// <inheritdoc/>
@@ -441,7 +567,7 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
 
         try
         {
-            await _session.SaveChangesAsync();
+            await _session.FlushAsync();
         }
         catch (ConcurrencyException exception)
         {

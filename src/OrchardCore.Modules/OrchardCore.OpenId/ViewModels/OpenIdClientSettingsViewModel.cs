@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.OpenId.ViewModels;
 
@@ -16,6 +17,9 @@ public class OpenIdClientSettingsViewModel
     public string ClientId { get; set; }
 
     public string ClientSecret { get; set; }
+
+    [BindNever]
+    public bool HasClientSecret { get; set; }
 
     [RegularExpression(@"\/[-A-Za-z0-9+&@#\/%?=~_|!:,.;]+[-A-Za-z0-9+&@#\/%=~_|]", ErrorMessage = "Invalid path")]
     public string CallbackPath { get; set; }

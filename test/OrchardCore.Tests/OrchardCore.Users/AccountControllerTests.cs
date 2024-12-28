@@ -1,10 +1,6 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
-using OrchardCore.Entities;
-using OrchardCore.Environment.Extensions;
-using OrchardCore.Environment.Extensions.Features;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Recipes.Services;
-using OrchardCore.Settings;
+using OrchardCore.Deployment.Services;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Users;
 using OrchardCore.Users.Controllers;
@@ -21,10 +17,7 @@ public class AccountControllerTests
     public async Task ExternalLoginSignIn_Test()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings()
-        {
-            UsersCanRegister = UserRegistrationType.AllowRegistration,
-        });
+        var context = await GetSiteContextAsync(new RegistrationSettings(), true, true, true);
 
         // Act
         var model = new RegisterViewModel()
@@ -52,7 +45,7 @@ public class AccountControllerTests
             var externalClaims = new List<SerializableClaim>();
             var userRoles = await userManager.GetRolesAsync(user);
 
-            var context = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties)
+            var context = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties.DeepClone() as JsonObject)
             {
                 UserClaims = user.UserClaims,
                 UserRoles = userRoles
@@ -63,10 +56,10 @@ public class AccountControllerTests
 
             var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginEventHandler>()
                         .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginEventHandler)) as ScriptExternalLoginEventHandler;
-            var loginSettings = new LoginSettings
+            var loginSettings = new ExternalLoginSettings
             {
-                UseScriptToSyncRoles = true,
-                SyncRolesScript = """
+                UseScriptToSyncProperties = true,
+                SyncPropertiesScript = """
                     if(!context.user.userClaims?.find(x=> x.claimType=="lastName" && claimValue=="Zhang")){
                         context.claimsToUpdate.push({claimType:"lastName",    claimValue:"Zhang"});
                     }
@@ -94,7 +87,7 @@ public class AccountControllerTests
             };
             scriptExternalLoginEventHandler.UpdateUserInternal(context, loginSettings);
 
-            if (await AccountController.UpdateUserPropertiesAsync(userManager, user, context))
+            if (await userManager.UpdateUserPropertiesAsync(user, context))
             {
                 await userManager.UpdateAsync(user);
             }
@@ -122,7 +115,7 @@ public class AccountControllerTests
             var externalClaims = new List<SerializableClaim>();
             var userRoles = await userManager.GetRolesAsync(user);
 
-            var updateContext = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties)
+            var updateContext = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties.DeepClone() as JsonObject)
             {
                 UserClaims = user.UserClaims,
                 UserRoles = userRoles,
@@ -130,10 +123,10 @@ public class AccountControllerTests
 
             var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginEventHandler>()
                       .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginEventHandler)) as ScriptExternalLoginEventHandler;
-            var loginSettings = new LoginSettings
+            var loginSettings = new ExternalLoginSettings
             {
-                UseScriptToSyncRoles = true,
-                SyncRolesScript = """
+                UseScriptToSyncProperties = true,
+                SyncPropertiesScript = """
                     context.claimsToUpdate.push({claimType:"displayName", claimValue:"Sam Zhang"});
                     context.claimsToUpdate.push({claimType:"firstName",   claimValue:"Sam"});
                     context.claimsToUpdate.push({claimType:"lastName",    claimValue:"Zhang"});
@@ -152,7 +145,7 @@ public class AccountControllerTests
             };
             scriptExternalLoginEventHandler.UpdateUserInternal(updateContext, loginSettings);
 
-            if (await AccountController.UpdateUserPropertiesAsync(userManager, user, updateContext))
+            if (await userManager.UpdateUserPropertiesAsync(user, updateContext))
             {
                 await userManager.UpdateAsync(user);
             }
@@ -172,10 +165,7 @@ public class AccountControllerTests
     public async Task Register_WhenAllowed_RegisterUser()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings()
-        {
-            UsersCanRegister = UserRegistrationType.AllowRegistration,
-        });
+        var context = await GetSiteContextAsync(new RegistrationSettings());
 
         var responseFromGet = await context.Client.GetAsync("Register");
 
@@ -211,10 +201,7 @@ public class AccountControllerTests
     public async Task Register_WhenNotAllowed_ReturnNotFound()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings()
-        {
-            UsersCanRegister = UserRegistrationType.NoRegistration,
-        });
+        var context = await GetSiteContextAsync(new RegistrationSettings(), false);
 
         // Act
         var response = await context.Client.GetAsync("Register");
@@ -227,10 +214,7 @@ public class AccountControllerTests
     public async Task Register_WhenFeatureIsNotEnable_ReturnNotFound()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings()
-        {
-            UsersCanRegister = UserRegistrationType.AllowRegistration,
-        }, enableRegistrationFeature: false);
+        var context = await GetSiteContextAsync(new RegistrationSettings(), enableRegistrationFeature: false);
 
         // Act
         var response = await context.Client.GetAsync("Register");
@@ -243,10 +227,7 @@ public class AccountControllerTests
     public async Task Register_WhenRequireUniqueEmailIsTrue_PreventRegisteringMultipleUsersWithTheSameEmails()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings()
-        {
-            UsersCanRegister = UserRegistrationType.AllowRegistration,
-        });
+        var context = await GetSiteContextAsync(new RegistrationSettings());
 
         var responseFromGet = await context.Client.GetAsync("Register");
 
@@ -290,10 +271,7 @@ public class AccountControllerTests
     public async Task Register_WhenRequireUniqueEmailIsFalse_AllowRegisteringMultipleUsersWithTheSameEmails()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings()
-        {
-            UsersCanRegister = UserRegistrationType.AllowRegistration,
-        }, enableRegistrationFeature: true, requireUniqueEmail: false);
+        var context = await GetSiteContextAsync(new RegistrationSettings(), enableRegistrationFeature: true, requireUniqueEmail: false);
 
         // Register First User
         var responseFromGet = await context.Client.GetAsync("Register");
@@ -341,7 +319,6 @@ public class AccountControllerTests
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings()
         {
-            UsersCanRegister = UserRegistrationType.AllowRegistration,
             UsersAreModerated = true,
         });
 
@@ -380,11 +357,10 @@ public class AccountControllerTests
     public async Task Register_WhenRequireEmailConfirmation_RedirectToConfirmEmailSent()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings()
+        var context = await GetSiteContextAsync(new RegistrationSettings
         {
-            UsersCanRegister = UserRegistrationType.AllowRegistration,
             UsersMustValidateEmail = true,
-        });
+        }, true, true, false);
 
         var responseFromGet = await context.Client.GetAsync("Register");
 
@@ -433,52 +409,96 @@ public class AccountControllerTests
         return PostRequestHelper.CreateMessageWithCookies("Register", data, response);
     }
 
-    private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true)
+    private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true, bool enableExternalAuthentication = false)
     {
         var context = new SiteContext();
 
         await context.InitializeAsync();
 
-        await context.UsingTenantScopeAsync(async scope =>
+        var recipeSteps = new JsonArray
         {
-            if (!requireUniqueEmail)
+            new JsonObject
             {
-                var recipeExecutor = scope.ServiceProvider.GetRequiredService<IRecipeExecutor>();
-                var recipeHarvesters = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeHarvester>>();
-                var recipeCollections = await Task.WhenAll(
-                    recipeHarvesters.Select(recipe => recipe.HarvestRecipesAsync()));
-
-                var recipe = recipeCollections.SelectMany(recipeCollection => recipeCollection)
-                    .FirstOrDefault(recipe => recipe.Name == "UserSettingsTest");
-
-                var executionId = Guid.NewGuid().ToString("n");
-
-                await recipeExecutor.ExecuteAsync(
-                    executionId,
-                    recipe,
-                    new Dictionary<string, object>(),
-                    CancellationToken.None);
+                { "name", "settings" },
+                { nameof(RegistrationSettings), JsonSerializer.SerializeToNode(settings)},
+                { nameof(IdentitySettings), JsonSerializer.SerializeToNode(new IdentitySettings
+                {
+                    UserSettings = new IdentityUserSettings
+                    {
+                        RequireUniqueEmail = requireUniqueEmail,
+                    }
+                })},
             }
+        };
+
+        if (enableRegistrationFeature || enableExternalAuthentication)
+        {
+            var featureIds = new JsonArray();
 
             if (enableRegistrationFeature)
             {
-                var shellFeatureManager = scope.ServiceProvider.GetRequiredService<IShellFeaturesManager>();
-                var extensionManager = scope.ServiceProvider.GetRequiredService<IExtensionManager>();
-
-                var extensionInfo = extensionManager.GetExtension(UserConstants.Features.UserRegistration);
-
-                await shellFeatureManager.EnableFeaturesAsync([new FeatureInfo(UserConstants.Features.UserRegistration, extensionInfo)], true);
+                featureIds.Add(UserConstants.Features.UserRegistration);
             }
 
-            var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
+            if (enableExternalAuthentication)
+            {
+                featureIds.Add(UserConstants.Features.ExternalAuthentication);
+            }
 
-            var site = await siteService.LoadSiteSettingsAsync();
+            recipeSteps.Add(new JsonObject
+            {
+                { "name", "feature" },
+                { "enable", featureIds },
+            });
+        }
 
-            site.Put(settings);
+        var recipe = new JsonObject
+        {
+            ["steps"] = recipeSteps,
+        };
 
-            await siteService.UpdateSiteSettingsAsync(site);
-        });
+        var t = recipe.ToJsonString();
+
+        await RunRecipeAsync(context, recipe);
 
         return context;
+    }
+
+    private static async Task RunRecipeAsync(SiteContext context, JsonObject data)
+    {
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var tempArchiveName = PathExtensions.GetTempFileName() + ".json";
+            var tempArchiveFolder = PathExtensions.GetTempFileName();
+
+            try
+            {
+                using (var stream = new FileStream(tempArchiveName, FileMode.Create))
+                {
+                    var bytes = Encoding.UTF8.GetBytes(data.ToJsonString());
+
+                    await stream.WriteAsync(bytes);
+                }
+
+                Directory.CreateDirectory(tempArchiveFolder);
+                File.Move(tempArchiveName, Path.Combine(tempArchiveFolder, "Recipe.json"));
+
+                var deploymentManager = scope.ServiceProvider.GetRequiredService<IDeploymentManager>();
+
+                await deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
+            }
+            finally
+            {
+                if (File.Exists(tempArchiveName))
+                {
+                    File.Delete(tempArchiveName);
+                }
+
+                if (Directory.Exists(tempArchiveFolder))
+                {
+                    Directory.Delete(tempArchiveFolder, true);
+                }
+            }
+        });
     }
 }

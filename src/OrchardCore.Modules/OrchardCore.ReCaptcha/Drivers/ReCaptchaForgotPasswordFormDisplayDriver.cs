@@ -1,3 +1,4 @@
+using System.Globalization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.ReCaptcha.Configuration;
@@ -19,11 +20,14 @@ public sealed class ReCaptchaForgotPasswordFormDisplayDriver : DisplayDriver<For
     {
         var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
 
-        if (!settings.IsValid())
+        if (!settings.ConfigurationExists())
         {
             return null;
         }
 
-        return View("FormReCaptcha", model).Location("Content:after");
+        return Dynamic("ReCaptcha", (m) =>
+        {
+            m.language = CultureInfo.CurrentUICulture.Name;
+        }).Location("Content:after");
     }
 }

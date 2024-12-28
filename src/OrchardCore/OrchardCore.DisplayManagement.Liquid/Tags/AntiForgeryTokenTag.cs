@@ -26,6 +26,6 @@ public class AntiForgeryTokenTag
         writer.Write(encoder.Encode(tokenSet.RequestToken));
         writer.Write("\" />");
 
-        return new ValueTask<Completion>(Completion.Normal);
+        return ValueTask.FromResult(Completion.Normal);
     }
 }

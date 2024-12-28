@@ -4,13 +4,15 @@ using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Users.AuditTrail.Models;
 using OrchardCore.Users.Events;
+using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.AuditTrail.ResetPassword;
 
-public class UserResetPasswordEventHandler : IPasswordRecoveryFormEvents
+public sealed class UserResetPasswordEventHandler : PasswordRecoveryFormEvents
 {
     private readonly IAuditTrailManager _auditTrailManager;
     private readonly IServiceProvider _serviceProvider;
+    
     private UserManager<IUser> _userManager;
 
     public UserResetPasswordEventHandler(
@@ -21,39 +23,41 @@ public class UserResetPasswordEventHandler : IPasswordRecoveryFormEvents
         _serviceProvider = serviceProvider;
     }
 
-    public Task PasswordRecoveredAsync(PasswordRecoveryContext context)
+    public override Task PasswordRecoveredAsync(PasswordRecoveryContext context)
         => RecordAuditTrailEventAsync(UserResetPasswordAuditTrailEventConfiguration.PasswordRecovered, context.User);
 
-    public Task PasswordResetAsync(PasswordRecoveryContext context)
+    public override Task PasswordResetAsync(PasswordRecoveryContext context)
         => RecordAuditTrailEventAsync(UserResetPasswordAuditTrailEventConfiguration.PasswordReset, context.User);
 
-    #region Unused events
-
-    public Task RecoveringPasswordAsync(Action<string, string> reportError) => Task.CompletedTask;
-
-    public Task ResettingPasswordAsync(Action<string, string> reportError) => Task.CompletedTask;
-
-    #endregion
     private async Task RecordAuditTrailEventAsync(string name, IUser user)
     {
         var userName = user.UserName;
-        _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
 
-        var userId = await _userManager.GetUserIdAsync(user);
+        var userEvent = new AuditTrailUserEvent
+        {
+            UserName = userName,
+        };
+
+        if (user is User u)
+        {
+            userEvent.UserId = u.UserId;
+        }
+
+        if (string.IsNullOrEmpty(userEvent.UserId))
+        {
+            _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
+            userEvent.UserId = await _userManager.GetUserIdAsync(user);
+        }
 
         await _auditTrailManager.RecordEventAsync(
             new AuditTrailContext<AuditTrailUserEvent>
             (
                 name,
                 UserResetPasswordAuditTrailEventConfiguration.User,
-                userId,
-                userId,
+                userEvent.UserId,
+                userEvent.UserId,
                 userName,
-                new AuditTrailUserEvent
-                {
-                    UserId = userId,
-                    UserName = userName
-                }
+                userEvent
             ));
     }
 }

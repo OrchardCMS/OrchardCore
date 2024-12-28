@@ -105,10 +105,10 @@ public class FluidShapeRenderBenchmark
             {
                 return Awaited(task);
             }
-            return new ValueTask<FluidValue>(new HtmlContentValue(task.Result));
+            return ValueTask.FromResult<FluidValue>(new HtmlContentValue(task.Result));
         }
 
-        return new ValueTask<FluidValue>(NilValue.Instance);
+        return ValueTask.FromResult<FluidValue>(NilValue.Instance);
     }
 
     private static ValueTask<FluidValue> ShapeRenderStatic(FluidValue input, FilterArguments _, TemplateContext context)
@@ -129,10 +129,11 @@ public class FluidShapeRenderBenchmark
             {
                 return Awaited(task);
             }
-            return new ValueTask<FluidValue>(new HtmlContentValue(task.Result));
+
+            return ValueTask.FromResult<FluidValue>(new HtmlContentValue(task.Result));
         }
 
-        return new ValueTask<FluidValue>(NilValue.Instance);
+        return ValueTask.FromResult<FluidValue>(NilValue.Instance);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]

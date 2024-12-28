@@ -18,10 +18,7 @@ public static class ViewLocalizerExtensions
     /// <returns></returns>
     public static LocalizedHtmlString Plural(this IViewLocalizer localizer, int count, string singular, string plural, params object[] arguments)
     {
-        if (plural == null)
-        {
-            throw new ArgumentNullException(nameof(plural), "Plural text can't be null. If you don't want to specify the plural text, use IStringLocalizer without Plural extension.");
-        }
+        ArgumentNullException.ThrowIfNull(plural);
 
         return localizer[singular, new PluralizationArgument { Count = count, Forms = [singular, plural], Arguments = arguments }];
     }
@@ -35,10 +32,7 @@ public static class ViewLocalizerExtensions
     /// <param name="arguments">The parameters used in the key.</param>
     public static LocalizedHtmlString Plural(this IViewLocalizer localizer, int count, string[] pluralForms, params object[] arguments)
     {
-        if (pluralForms == null)
-        {
-            throw new ArgumentNullException(nameof(pluralForms), "PluralForms array can't be null. If you don't want to specify the plural text, use IStringLocalizer without Plural extension.");
-        }
+        ArgumentNullException.ThrowIfNull(pluralForms);
 
         if (pluralForms.Length == 0)
         {

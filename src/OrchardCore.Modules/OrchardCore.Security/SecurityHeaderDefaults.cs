@@ -4,7 +4,8 @@ namespace OrchardCore.Security;
 
 public static class SecurityHeaderDefaults
 {
-    internal static readonly char PoliciesSeparator = ',';
+    internal const char PoliciesSeparator = ',';
+
     internal static readonly string[] ContentSecurityPolicyNames =
     [
         ContentSecurityPolicyValue.BaseUri,
@@ -23,6 +24,7 @@ public static class SecurityHeaderDefaults
         ContentSecurityPolicyValue.StyleSource,
         ContentSecurityPolicyValue.Sandbox
     ];
+
     internal static readonly string[] PermissionsPolicyNames =
     [
         PermissionsPolicyValue.Accelerometer,
@@ -58,9 +60,9 @@ public static class SecurityHeaderDefaults
 
     public static readonly string[] ContentSecurityPolicy = [];
 
-    public static readonly string ContentTypeOptions = ContentTypeOptionsValue.NoSniff;
+    public const string ContentTypeOptions = ContentTypeOptionsValue.NoSniff;
 
     public static readonly string[] PermissionsPolicy = [];
 
-    public static readonly string ReferrerPolicy = ReferrerPolicyValue.NoReferrer;
+    public const string ReferrerPolicy = ReferrerPolicyValue.NoReferrer;
 }

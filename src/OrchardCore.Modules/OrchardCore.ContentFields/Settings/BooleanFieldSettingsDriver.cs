@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
@@ -13,7 +12,7 @@ public sealed class BooleanFieldSettingsDriver : ContentPartFieldDefinitionDispl
     {
         return Initialize<BooleanFieldSettings>("BooleanFieldSettings_Edit", model =>
         {
-            var settings = partFieldDefinition.Settings.ToObject<BooleanFieldSettings>();
+            var settings = partFieldDefinition.GetSettings<BooleanFieldSettings>();
 
             model.Hint = settings.Hint;
             model.Label = settings.Label;

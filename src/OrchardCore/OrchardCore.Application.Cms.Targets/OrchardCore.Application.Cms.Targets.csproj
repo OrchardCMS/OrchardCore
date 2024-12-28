@@ -38,8 +38,4 @@
     <ProjectReference Include="..\..\OrchardCore.Themes\TheTheme\TheTheme.csproj" PrivateAssets="none" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="OrchardCore.Translations.All" />
-  </ItemGroup>
-
 </Project>

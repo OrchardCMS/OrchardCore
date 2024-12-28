@@ -13,7 +13,6 @@ jobs:
     
     steps:
       - name: Update Contributor Map
-        # v1.1
-        uses: tunaitis/contributor-map@bf97d201f9b59abe463fa4ef3b5c4478d22f606d
+        uses: tunaitis/contributor-map@bf97d201f9b59abe463fa4ef3b5c4478d22f606d # renovate: tag=v1.1
         with:
             output: src/docs/community/contributors/images/contributors-map.svg

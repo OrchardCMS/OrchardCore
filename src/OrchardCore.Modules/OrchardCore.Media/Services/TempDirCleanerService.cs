@@ -4,7 +4,7 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Services;
 
-public class TempDirCleanerService : ModularTenantEvents
+public sealed class TempDirCleanerService : ModularTenantEvents
 {
     private readonly IMediaFileStore _fileStore;
     private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;

@@ -1,7 +1,7 @@
 version: '2.2'
 services:
   es01:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
     container_name: es01
     environment:
       - node.name=es01
@@ -10,6 +10,10 @@ services:
       - cluster.initial_master_nodes=es01,es02
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      # Disable security features
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
     ulimits:
       memlock:
         soft: -1
@@ -21,7 +25,7 @@ services:
     networks:
       - elastic
   es02:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
     container_name: es02
     environment:
       - node.name=es02
@@ -30,6 +34,10 @@ services:
       - cluster.initial_master_nodes=es01,es02
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      # Disable security features
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
     ulimits:
       memlock:
         soft: -1
@@ -40,9 +48,13 @@ services:
       - elastic
   kibana:
     container_name: kibana
-    image: docker.elastic.co/kibana/kibana:7.17.5
+    image: docker.elastic.co/kibana/kibana:8.17.0
     environment:
       ELASTICSEARCH_HOSTS: '["http://es01:9200","http://es02:9200"]'
+      # Disable security features in Kibana
+      ELASTICSEARCH_USERNAME: elastic
+      ELASTICSEARCH_PASSWORD:
+      XPACK_SECURITY_ENABLED: false
     networks:
       - elastic
     depends_on:

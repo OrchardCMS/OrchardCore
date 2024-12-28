@@ -1,11 +1,21 @@
 version: 2
 updates:
-  - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  # Dependabot can handle at most 150 "manifests", so for NuGet, csprojs referencing packages (see docs:
+  # https://docs.github.com/en/enterprise-cloud@latest/code-security/supply-chain-security/understanding-your-software-supply-chain/troubleshooting-the-dependency-graph#are-there-limits-which-affect-the-dependency-graph-data).
+  # Thus, it would fail for the whole solution.
+  # Grouping updates per directories or otherwise trying to have smaller batches is unnecessary, because due to
+  # centralized package management, Dependabot will find all dependencies from any project. So, just processing the
+  # OrchardCore project.
+  - package-ecosystem: "nuget"
+    directory: "/src/OrchardCore/OrchardCore"
     schedule:
       interval: "weekly"
     groups:
-       # Grouped version updates configuration
        all-dependencies:
           patterns:
             - "*"
+    ignore:
+      # We'll update GraphQL for v3 because it's breaking, see https://github.com/OrchardCMS/OrchardCore/issues/16826.
+      - dependency-name: "GraphQL*"
+      # See the corresponding comment in Directory.Packages.props.
+      - dependency-name: "System.Drawing.Common"

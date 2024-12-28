@@ -1,0 +1,32 @@
+@using Microsoft.AspNetCore.Identity
+
+@model SummaryAdminUserViewModel
+
+@inject UserManager<IUser> UserManager
+@inject IAuthorizationService AuthorizationService
+
+@{
+    var isCurrentUser = Model.User.UserName == User.Identity.Name;
+    var canEdit = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, Model.User);
+    var isLockedOut = await UserManager.IsLockedOutAsync(Model.User);
+}
+
+@if (canEdit)
+{
+    <li>
+        <a asp-action="EditPassword" asp-route-id="@Model.User.UserId" class="dropdown-item">@T["Change password"]</a>
+    </li>
+    if (isLockedOut)
+    {
+        <li>
+            <a asp-action="Unlock" asp-route-id="@Model.User.UserId" class="dropdown-item" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Unlock user"]" data-message="@T["Are you sure you want to unlock this user?"]">@T["Unlock"]</a>
+        </li>
+    }
+}
+
+@if (!isCurrentUser && await AuthorizationService.AuthorizeAsync(User, CommonPermissions.DeleteUsers, Model.User))
+{
+    <li>
+        <a asp-action="Delete" asp-route-id="@Model.User.UserId" class="dropdown-item text-danger" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+    </li>
+}
