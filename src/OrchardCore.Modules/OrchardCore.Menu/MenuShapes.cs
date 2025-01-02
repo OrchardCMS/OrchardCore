@@ -81,7 +81,7 @@ public class MenuShapes : ShapeTableProvider
 
                 foreach (var contentItem in menuItems)
                 {
-                    var rmiss = await HasPermissionAsync(contentItem, permissionService, authorizationService, httpContextAccessor.HttpContext?.User);
+                    var hasPermission = await HasPermissionAsync(contentItem, permissionService, authorizationService, httpContextAccessor.HttpContext?.User);
 
                     if (!hasPermission)
                     {
