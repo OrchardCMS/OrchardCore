@@ -16,18 +16,21 @@
         return;
     }
 
-    var displayItem = await ContentManager.GetAsync(contentItemId, VersionOptions.Published);
-
-    if (displayItem is null)
+    if (menuItemPart.CheckContentPermissions)
     {
-        return;
-    }
+        var displayItem = await ContentManager.GetAsync(contentItemId, VersionOptions.Published);
 
-    await ContentManager.LoadAsync(displayItem);
+        if (displayItem is null)
+        {
+            return;
+        }
 
-    if (!await AuthorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, displayItem))
-    {
-        return;
+        await ContentManager.LoadAsync(displayItem);
+
+        if (!await AuthorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, displayItem))
+        {
+            return;
+        }
     }
 
     var routeValues = new RouteValueDictionary(AutorouteOptions.Value.GlobalRouteValues);
