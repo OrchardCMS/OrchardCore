@@ -1,4 +1,13 @@
 {
+  "name": "MenuAddPermissions",
+  "displayName": "Add Permissions to Menus",
+  "description": "Updated the content definitions for menu content types to include permission-based checks.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": false,
+  "categories": [ "default" ],
+  "tags": [ "menu" ],
   "steps": [
     {
       "name": "ContentDefinition",
