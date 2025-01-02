@@ -37,10 +37,8 @@ public class PlaceholderAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
 
             if (node.PermissionNames.Length > 0)
             {
-                var permissions = await _permissionService.GetPermissionsAsync();
                 // Find the actual permissions and apply them to the menu.
-                var selectedPermissions = permissions.Where(p => node.PermissionNames.Contains(p.Name));
-                itemBuilder.Permissions(selectedPermissions);
+                itemBuilder.Permissions(await _permissionService.FindByNamesAsync(node.PermissionNames));
             }
 
             // Add adminNode's IconClass property values to menuItem.Classes.

@@ -14,7 +14,6 @@ public class LinkAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
     private readonly IPermissionService _permissionService;
     private readonly AdminOptions _adminOptions;
 
-
     public LinkAdminNodeNavigationBuilder(
         IPermissionService permissionService,
         IOptions<AdminOptions> adminOptions,
@@ -62,11 +61,8 @@ public class LinkAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
 
             if (node.PermissionNames.Length > 0)
             {
-                var permissions = await _permissionService.GetPermissionsAsync();
-
                 // Find the actual permissions and apply them to the menu.
-                var selectedPermissions = permissions.Where(p => node.PermissionNames.Contains(p.Name));
-                itemBuilder.Permissions(selectedPermissions);
+                itemBuilder.Permissions(await _permissionService.FindByNamesAsync(node.PermissionNames));
             }
 
             // Add adminNode's IconClass property values to menuItem.Classes.

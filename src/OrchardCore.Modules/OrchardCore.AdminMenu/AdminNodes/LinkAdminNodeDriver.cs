@@ -7,11 +7,11 @@ namespace OrchardCore.AdminMenu.AdminNodes;
 
 public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
 {
-    private readonly IPermissionService permissionService;
+    private readonly IPermissionService _permissionService;
 
     public LinkAdminNodeDriver(IPermissionService permissionService)
     {
-        this.permissionService = permissionService;
+        _permissionService = permissionService;
     }
 
     public override Task<IDisplayResult> DisplayAsync(LinkAdminNode treeNode, BuildDisplayContext context)
@@ -31,22 +31,22 @@ public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
             model.IconClass = treeNode.IconClass;
             model.Target = treeNode.Target;
 
-            var permissions = await permissionService.GetPermissionsAsync();
+            var permissions = await _permissionService.GetPermissionsAsync();
 
-            var selectedPermissions = permissions.Where(p => treeNode.PermissionNames.Contains(p.Name));
+            var selectedPermissions = await _permissionService.FindByNamesAsync(treeNode.PermissionNames);
 
             model.SelectedItems = selectedPermissions
                 .Select(p => new PermissionViewModel
                 {
                     Name = p.Name,
                     DisplayText = p.Description
-                }).ToList();
+                }).ToArray();
             model.AllItems = permissions
                 .Select(p => new PermissionViewModel
                 {
                     Name = p.Name,
                     DisplayText = p.Description
-                }).ToList();
+                }).ToArray();
         }).Location("Content");
     }
 
@@ -69,10 +69,8 @@ public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
             ? []
             : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
-        var permissions = await permissionService.GetPermissionsAsync();
-        treeNode.PermissionNames = permissions
-            .Where(p => selectedPermissions.Contains(p.Name))
-            .Select(p => p.Name).ToArray();
+        var permissions = await _permissionService.FindByNamesAsync(selectedPermissions);
+        treeNode.PermissionNames = permissions.Select(p => p.Name).ToArray();
 
         return Edit(treeNode, context);
     }

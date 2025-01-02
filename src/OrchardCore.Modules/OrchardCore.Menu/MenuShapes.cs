@@ -73,7 +73,6 @@ public class MenuShapes : ShapeTableProvider
 
                 // The first level of menu item shapes is created.
                 // Each other level is created when the menu item is displayed.
-                IEnumerable<Permission> allPermissions = null;
 
                 var permissionService = context.ServiceProvider.GetRequiredService<IPermissionService>();
                 var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
@@ -87,9 +86,9 @@ public class MenuShapes : ShapeTableProvider
                     permissionPart.PermissionNames is not null &&
                     permissionPart.PermissionNames.Length > 0)
                     {
-                        allPermissions ??= await permissionService.GetPermissionsAsync();
+                        var permissions = await permissionService.FindByNamesAsync(permissionPart.PermissionNames);
 
-                        foreach (var permission in allPermissions.Where(x => permissionPart.PermissionNames.Contains(x.Name)))
+                        foreach (var permission in permissions)
                         {
                             if (await authorizationService.AuthorizeAsync(httpContextAccessor.HttpContext.User, permission, contentItem))
                             {
@@ -135,8 +134,6 @@ public class MenuShapes : ShapeTableProvider
 
                 if (menuItems != null)
                 {
-                    IEnumerable<Permission> allPermissions = null;
-
                     var permissionService = context.ServiceProvider.GetRequiredService<IPermissionService>();
                     var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
                     var authorizationService = context.ServiceProvider.GetRequiredService<IAuthorizationService>();
@@ -149,9 +146,9 @@ public class MenuShapes : ShapeTableProvider
                         permissionPart.PermissionNames is not null &&
                         permissionPart.PermissionNames.Length > 0)
                         {
-                            allPermissions ??= await permissionService.GetPermissionsAsync();
+                            var permissions = await permissionService.FindByNamesAsync(permissionPart.PermissionNames);
 
-                            foreach (var permission in allPermissions.Where(x => permissionPart.PermissionNames.Contains(x.Name)))
+                            foreach (var permission in permissions)
                             {
                                 if (await authorizationService.AuthorizeAsync(httpContextAccessor.HttpContext.User, permission, contentItem))
                                 {

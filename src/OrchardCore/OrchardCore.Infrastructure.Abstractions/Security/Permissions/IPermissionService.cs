@@ -1,6 +1,8 @@
-﻿namespace OrchardCore.Security.Permissions;
+namespace OrchardCore.Security.Permissions;
 
 public interface IPermissionService
 {
-    Task<IEnumerable<Permission>> GetPermissionsAsync();
+    ValueTask<Permission> FindByNameAsync(string name);
+
+    ValueTask<IEnumerable<Permission>> GetPermissionsAsync();
 }
