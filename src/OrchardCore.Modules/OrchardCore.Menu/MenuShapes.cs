@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -80,25 +81,7 @@ public class MenuShapes : ShapeTableProvider
 
                 foreach (var contentItem in menuItems)
                 {
-                    var hasPermission = true;
-
-                    if (contentItem.TryGet<MenuItemPermissionPart>(out var permissionPart) &&
-                    permissionPart.PermissionNames is not null &&
-                    permissionPart.PermissionNames.Length > 0)
-                    {
-                        var permissions = await permissionService.FindByNamesAsync(permissionPart.PermissionNames);
-
-                        foreach (var permission in permissions)
-                        {
-                            if (await authorizationService.AuthorizeAsync(httpContextAccessor.HttpContext.User, permission, contentItem))
-                            {
-                                continue;
-                            }
-
-                            hasPermission = false;
-                            break;
-                        }
-                    }
+                    var rmiss = await HasPermissionAsync(contentItem, permissionService, authorizationService, httpContextAccessor.HttpContext?.User);
 
                     if (!hasPermission)
                     {
@@ -140,25 +123,7 @@ public class MenuShapes : ShapeTableProvider
 
                     foreach (var contentItem in menuItems)
                     {
-                        var hasPermission = true;
-
-                        if (contentItem.TryGet<MenuItemPermissionPart>(out var permissionPart) &&
-                        permissionPart.PermissionNames is not null &&
-                        permissionPart.PermissionNames.Length > 0)
-                        {
-                            var permissions = await permissionService.FindByNamesAsync(permissionPart.PermissionNames);
-
-                            foreach (var permission in permissions)
-                            {
-                                if (await authorizationService.AuthorizeAsync(httpContextAccessor.HttpContext.User, permission, contentItem))
-                                {
-                                    continue;
-                                }
-
-                                hasPermission = false;
-                                break;
-                            }
-                        }
+                        var hasPermission = await HasPermissionAsync(contentItem, permissionService, authorizationService, httpContextAccessor.HttpContext?.User);
 
                         if (!hasPermission)
                         {
@@ -238,6 +203,27 @@ public class MenuShapes : ShapeTableProvider
         return ValueTask.CompletedTask;
     }
 
+    private async static Task<bool> HasPermissionAsync(ContentItem contentItem, IPermissionService permissionService, IAuthorizationService authorizationService, ClaimsPrincipal user)
+    {
+        if (contentItem.TryGet<MenuItemPermissionPart>(out var permissionPart) &&
+            permissionPart.PermissionNames is not null &&
+            permissionPart.PermissionNames.Length > 0)
+        {
+            var permissions = await permissionService.FindByNamesAsync(permissionPart.PermissionNames);
+
+            foreach (var permission in permissions)
+            {
+                if (await authorizationService.AuthorizeAsync(user, permission, contentItem))
+                {
+                    continue;
+                }
+
+                return false;
+            }
+        }
+
+        return true;
+    }
     /// <summary>
     /// Converts "foo-ba r" to "FooBaR".
     /// </summary>
