@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
+using OrchardCore.Contents;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
@@ -81,7 +82,7 @@ public class MenuShapes : ShapeTableProvider
 
                 foreach (var contentItem in menuItems)
                 {
-                    if (!await HasPermissionAsync(contentItem, permissionService, authorizationService, httpContextAccessor.HttpContext?.User))
+                    if (!await ShouldCreateAsync(contentItem, contentManager, permissionService, authorizationService, httpContextAccessor.HttpContext?.User))
                     {
                         continue;
                     }
@@ -118,10 +119,11 @@ public class MenuShapes : ShapeTableProvider
                     var permissionService = context.ServiceProvider.GetRequiredService<IPermissionService>();
                     var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
                     var authorizationService = context.ServiceProvider.GetRequiredService<IAuthorizationService>();
+                    var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
 
                     foreach (var contentItem in menuItems)
                     {
-                        if (!await HasPermissionAsync(contentItem, permissionService, authorizationService, httpContextAccessor.HttpContext?.User))
+                        if (!await ShouldCreateAsync(contentItem, contentManager, permissionService, authorizationService, httpContextAccessor.HttpContext?.User))
                         {
                             continue;
                         }
@@ -199,7 +201,12 @@ public class MenuShapes : ShapeTableProvider
         return ValueTask.CompletedTask;
     }
 
-    private async static Task<bool> HasPermissionAsync(ContentItem contentItem, IPermissionService permissionService, IAuthorizationService authorizationService, ClaimsPrincipal user)
+    private async static Task<bool> ShouldCreateAsync(
+        ContentItem contentItem,
+        IContentManager contentManager,
+        IPermissionService permissionService,
+        IAuthorizationService authorizationService,
+        ClaimsPrincipal user)
     {
         if (contentItem.TryGet<MenuItemPermissionPart>(out var permissionPart) &&
             permissionPart.PermissionNames is not null &&
@@ -215,6 +222,33 @@ public class MenuShapes : ShapeTableProvider
                 }
 
                 return false;
+            }
+        }
+
+        if (contentItem.TryGet<ContentMenuItemPart>(out var menuItemPart))
+        {
+            string contentItemId = menuItemPart.ContentItem.Content.ContentMenuItemPart.SelectedContentItem.ContentItemIds[0];
+
+            if (string.IsNullOrEmpty(contentItemId))
+            {
+                return false;
+            }
+
+            if (menuItemPart.CheckContentPermissions)
+            {
+                var displayItem = await contentManager.GetAsync(contentItemId, VersionOptions.Published);
+
+                if (displayItem is null)
+                {
+                    return false;
+                }
+
+                await contentManager.LoadAsync(displayItem);
+
+                if (!await authorizationService.AuthorizeAsync(user, CommonPermissions.ViewContent, displayItem))
+                {
+                    return false;
+                }
             }
         }
 

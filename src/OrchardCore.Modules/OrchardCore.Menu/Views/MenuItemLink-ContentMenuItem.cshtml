@@ -7,38 +7,21 @@
 
 @{
     ContentItem contentItem = Model.ContentItem;
+
     var menuItemPart = contentItem.As<ContentMenuItemPart>();
 
     string contentItemId = menuItemPart.ContentItem.Content.ContentMenuItemPart.SelectedContentItem.ContentItemIds[0];
 
-    if (string.IsNullOrEmpty(contentItemId))
-    {
-        return;
-    }
-
-    if (menuItemPart.CheckContentPermissions)
-    {
-        var displayItem = await ContentManager.GetAsync(contentItemId, VersionOptions.Published);
-
-        if (displayItem is null)
-        {
-            return;
-        }
-
-        await ContentManager.LoadAsync(displayItem);
-
-        if (!await AuthorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, displayItem))
-        {
-            return;
-        }
-    }
-
     var routeValues = new RouteValueDictionary(AutorouteOptions.Value.GlobalRouteValues);
-    routeValues[AutorouteOptions.Value.ContentItemIdKey] = menuItemPart.ContentItem.Content.ContentMenuItemPart.SelectedContentItem.ContentItemIds[0];
+
+    routeValues[AutorouteOptions.Value.ContentItemIdKey] = contentItemId;
+
     var linkUrl = Url.RouteUrl(routeValues);
 
     TagBuilder tag = Tag(Model, "a");
+
     tag.Attributes["href"] = linkUrl;
+
     tag.InnerHtml.Append(contentItem.DisplayText);
 }
 
