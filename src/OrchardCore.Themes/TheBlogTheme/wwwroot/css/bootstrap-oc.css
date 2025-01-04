@@ -253,6 +253,10 @@ ul.pager {
   margin-top: 1rem;
 }
 
+.g-recaptcha {
+  margin-bottom: 1rem;
+}
+
 .term-badge > a {
   text-decoration: none;
 }

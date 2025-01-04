@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Documents;
@@ -205,7 +201,7 @@ public sealed class DefaultQueryManager : IQueryManager
 
     public async Task SaveAsync(params Query[] queries)
     {
-        if (queries?.Length == 0)
+        if (queries == null || queries.Length == 0)
         {
             return;
         }

@@ -9,7 +9,6 @@
 @inject IUpdateModelAccessor UpdateModelAccessor
 @inject ThemeTogglerService ThemeTogglerService
 @{
-    var adminSettings = Site.As<AdminSettings>();
     // Navbar is pre-rendered to allow resource injection.
     var navbar = await DisplayAsync(await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater));
 }
@@ -38,7 +37,7 @@
     <script asp-name="bootstrap" version="5" at="Foot"></script>
     <script asp-name="theme-manager" at="Foot"></script>
 
-    <style asp-name="font-awesome" version="6"></style>
+    <script asp-name="font-awesome" at="Foot" version="6"></script>
     <resources type="Header" />
     @await RenderSectionAsync("HeadMeta", required: false)
 </head>

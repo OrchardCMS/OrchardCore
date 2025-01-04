@@ -1,76 +1,117 @@
-using System;
-using System.Linq;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Roles.Recipes
+namespace OrchardCore.Roles.Recipes;
+
+/// <summary>
+/// This recipe step creates a set of roles.
+/// </summary>
+public sealed class RolesStep : NamedRecipeStepHandler
 {
-    /// <summary>
-    /// This recipe step creates a set of roles.
-    /// </summary>
-    public class RolesStep : IRecipeStepHandler
+    private readonly RoleManager<IRole> _roleManager;
+    private readonly ISystemRoleNameProvider _systemRoleNameProvider;
+
+    public RolesStep(
+        RoleManager<IRole> roleManager,
+        ISystemRoleNameProvider systemRoleNameProvider)
+        : base("Roles")
     {
-        private readonly RoleManager<IRole> _roleManager;
-
-        public RolesStep(RoleManager<IRole> roleManager)
-        {
-            _roleManager = roleManager;
-        }
-
-        public async Task ExecuteAsync(RecipeExecutionContext context)
-        {
-            if (!string.Equals(context.Name, "Roles", StringComparison.OrdinalIgnoreCase))
-            {
-                return;
-            }
-
-            var model = context.Step.ToObject<RolesStepModel>();
-
-            foreach (var importedRole in model.Roles)
-            {
-                if (string.IsNullOrWhiteSpace(importedRole.Name))
-                {
-                    continue;
-                }
-
-                var role = (Role)await _roleManager.FindByNameAsync(importedRole.Name);
-                var isNewRole = role == null;
-
-                if (isNewRole)
-                {
-                    role = new Role { RoleName = importedRole.Name };
-                }
-
-                role.RoleDescription = importedRole.Description;
-                role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
-                role.RoleClaims.AddRange(importedRole.Permissions.Select(p => new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = p }));
-
-                if (isNewRole)
-                {
-                    await _roleManager.CreateAsync(role);
-                }
-                else
-                {
-                    await _roleManager.UpdateAsync(role);
-                }
-            }
-        }
-
-        public class RolesStepModel
-        {
-            public RolesStepRoleModel[] Roles { get; set; }
-        }
+        _roleManager = roleManager;
+        _systemRoleNameProvider = systemRoleNameProvider;
     }
 
-    public class RolesStepRoleModel
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string[] Permissions { get; set; }
+        var model = context.Step.ToObject<RolesStepModel>();
+
+        foreach (var roleEntry in model.Roles)
+        {
+            var roleName = roleEntry.Name?.Trim();
+
+            if (string.IsNullOrWhiteSpace(roleName))
+            {
+                continue;
+            }
+
+            var role = await _roleManager.FindByNameAsync(roleName);
+            var isNewRole = role == null;
+
+            if (isNewRole)
+            {
+                role = new Role
+                {
+                    RoleName = roleName,
+                };
+            }
+
+            if (role is Role r)
+            {
+                r.RoleDescription = roleEntry.Description;
+
+                if (roleEntry.PermissionBehavior == PermissionBehavior.Replace)
+                {
+                    // At this point, we know we are replacing permissions.
+                    // Remove all existing permission so we can add the replacements later.
+                    r.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
+                }
+
+                if (!await _systemRoleNameProvider.IsAdminRoleAsync(roleName))
+                {
+                    if (roleEntry.PermissionBehavior == PermissionBehavior.Remove)
+                    {
+                        // Materialize this list to prevent an exception. 
+                        var permissions = r.RoleClaims.Where(c => c.ClaimType == Permission.ClaimType && roleEntry.Permissions.Contains(c.ClaimValue)).ToArray();
+
+                        foreach (var permission in permissions)
+                        {
+                            r.RoleClaims.Remove(permission);
+                        }
+                    }
+                    else
+                    {
+                        var permissions = roleEntry.Permissions.Select(RoleClaim.Create)
+                            .Where(newClaim => !r.RoleClaims.Exists(existingClaim => existingClaim.ClaimType == newClaim.ClaimType && existingClaim.ClaimValue == newClaim.ClaimValue));
+
+                        r.RoleClaims.AddRange(permissions);
+                    }
+                }
+            }
+
+            if (isNewRole)
+            {
+                await _roleManager.CreateAsync(role);
+            }
+            else
+            {
+                await _roleManager.UpdateAsync(role);
+            }
+        }
     }
+}
+
+public sealed class RolesStepModel
+{
+    public RolesStepRoleModel[] Roles { get; set; }
+}
+
+public sealed class RolesStepRoleModel
+{
+    public string Name { get; set; }
+
+    public string Description { get; set; }
+
+    public string[] Permissions { get; set; }
+
+    public PermissionBehavior PermissionBehavior { get; set; }
+}
+
+public enum PermissionBehavior
+{
+    Replace,
+    Add,
+    Remove,
 }

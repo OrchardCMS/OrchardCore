@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +7,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
-using OrchardCore.Settings;
+using OrchardCore.Security.Permissions;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Endpoints.EmailAuthenticator;
@@ -34,10 +33,12 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
             options.Filters.Add<TwoFactorAuthenticationAuthorizationFilter>();
         });
 
+        services.AddDisplayDriver<User, UserTwoFactorDisplayDriver>();
         services.AddScoped<IUserClaimsProvider, TwoFactorAuthenticationClaimsProvider>();
-        services.AddScoped<IDisplayDriver<UserMenu>, TwoFactorUserMenuDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ISite>, TwoFactorLoginSettingsDisplayDriver>();
-        services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodDisplayDriver>();
+        services.AddDisplayDriver<UserMenu, TwoFactorUserMenuDisplayDriver>();
+        services.AddSiteDisplayDriver<TwoFactorLoginSettingsDisplayDriver>();
+        services.AddDisplayDriver<TwoFactorMethod, TwoFactorMethodDisplayDriver>();
+        services.AddPermissionProvider<TwoFactorPermissionProvider>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -117,7 +118,7 @@ public sealed class RoleTwoFactorAuthenticationStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<ISite>, RoleLoginSettingsDisplayDriver>();
+        services.AddSiteDisplayDriver<RoleLoginSettingsDisplayDriver>();
         services.AddScoped<ITwoFactorAuthenticationHandler, RoleTwoFactorAuthenticationHandler>();
     }
 }
@@ -138,8 +139,8 @@ public sealed class AuthenticatorAppStartup : StartupBase
         });
 
         services.AddTransient<IConfigureOptions<TwoFactorOptions>, AuthenticatorAppProviderTwoFactorOptionsConfiguration>();
-        services.AddScoped<IDisplayDriver<ISite>, AuthenticatorAppLoginSettingsDisplayDriver>();
-        services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginAuthenticationAppDisplayDriver>();
+        services.AddSiteDisplayDriver<AuthenticatorAppLoginSettingsDisplayDriver>();
+        services.AddDisplayDriver<TwoFactorMethod, TwoFactorMethodLoginAuthenticationAppDisplayDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -183,8 +184,8 @@ public sealed class EmailAuthenticatorStartup : StartupBase
                 options.Tokens.ProviderMap[TokenOptions.DefaultEmailProvider] = new TokenProviderDescriptor(emailProviderType);
             });
 
-        services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginEmailDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ISite>, EmailAuthenticatorLoginSettingsDisplayDriver>();
+        services.AddDisplayDriver<TwoFactorMethod, TwoFactorMethodLoginEmailDisplayDriver>();
+        services.AddSiteDisplayDriver<EmailAuthenticatorLoginSettingsDisplayDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -207,8 +208,8 @@ public sealed class SmsAuthenticatorStartup : StartupBase
         });
 
         services.AddTransient<IConfigureOptions<TwoFactorOptions>, PhoneProviderTwoFactorOptionsConfiguration>();
-        services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginSmsDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ISite>, SmsAuthenticatorLoginSettingsDisplayDriver>();
+        services.AddDisplayDriver<TwoFactorMethod, TwoFactorMethodLoginSmsDisplayDriver>();
+        services.AddSiteDisplayDriver<SmsAuthenticatorLoginSettingsDisplayDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

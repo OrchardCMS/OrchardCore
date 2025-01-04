@@ -1,9 +1,6 @@
-using System.Threading.Tasks;
+namespace OrchardCore.Security;
 
-namespace OrchardCore.Security
+public interface IRoleCreatedEventHandler
 {
-    public interface IRoleCreatedEventHandler
-    {
-        Task RoleCreatedAsync(string roleName);
-    }
+    Task RoleCreatedAsync(string roleName);
 }

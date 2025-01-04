@@ -1,10 +1,6 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+namespace OrchardCore.ContentManagement.GraphQL.Queries;
 
-namespace OrchardCore.ContentManagement.GraphQL.Queries
+public interface IIndexAliasProvider
 {
-    public interface IIndexAliasProvider
-    {
-        ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync();
-    }
+    ValueTask<IEnumerable<IndexAlias>> GetAliasesAsync();
 }

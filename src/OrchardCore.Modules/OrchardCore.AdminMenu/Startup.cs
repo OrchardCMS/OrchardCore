@@ -9,28 +9,27 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.AdminMenu
+namespace OrchardCore.AdminMenu;
+
+public sealed class Startup : StartupBase
 {
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IAdminMenuPermissionService, AdminMenuPermissionService>();
+        services.AddPermissionProvider<Permissions>();
+        services.AddNavigationProvider<AdminMenu>();
+        services.AddScoped<IAdminMenuPermissionService, AdminMenuPermissionService>();
 
-            services.AddScoped<IAdminMenuService, AdminMenuService>();
-            services.AddScoped<AdminMenuNavigationProvidersCoordinator>();
+        services.AddScoped<IAdminMenuService, AdminMenuService>();
+        services.AddScoped<AdminMenuNavigationProvidersCoordinator>();
 
-            services.AddRecipeExecutionStep<AdminMenuStep>();
+        services.AddRecipeExecutionStep<AdminMenuStep>();
 
-            services.AddDeployment<AdminMenuDeploymentSource, AdminMenuDeploymentStep, AdminMenuDeploymentStepDriver>();
+        services.AddDeployment<AdminMenuDeploymentSource, AdminMenuDeploymentStep, AdminMenuDeploymentStepDriver>();
 
-            // placeholder treeNode
-            services.AddAdminNode<PlaceholderAdminNode, PlaceholderAdminNodeNavigationBuilder, PlaceholderAdminNodeDriver>();
+        // placeholder treeNode
+        services.AddAdminNode<PlaceholderAdminNode, PlaceholderAdminNodeNavigationBuilder, PlaceholderAdminNodeDriver>();
 
-            // link treeNode
-            services.AddAdminNode<LinkAdminNode, LinkAdminNodeNavigationBuilder, LinkAdminNodeDriver>();
-        }
+        // link treeNode
+        services.AddAdminNode<LinkAdminNode, LinkAdminNodeNavigationBuilder, LinkAdminNodeDriver>();
     }
 }

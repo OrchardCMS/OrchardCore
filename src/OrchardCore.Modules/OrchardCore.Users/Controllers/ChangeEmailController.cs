@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,92 +8,92 @@ using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
-namespace OrchardCore.Users.Controllers
+namespace OrchardCore.Users.Controllers;
+
+[Feature("OrchardCore.Users.ChangeEmail")]
+public sealed class ChangeEmailController : Controller
 {
-    [Feature("OrchardCore.Users.ChangeEmail")]
-    public class ChangeEmailController : Controller
+    private readonly IUserService _userService;
+    private readonly UserManager<IUser> _userManager;
+    private readonly ISiteService _siteService;
+
+    internal readonly IStringLocalizer S;
+
+    public ChangeEmailController(
+        IUserService userService,
+        UserManager<IUser> userManager,
+        ISiteService siteService,
+        IStringLocalizer<ChangeEmailController> stringLocalizer)
     {
-        private readonly IUserService _userService;
-        private readonly UserManager<IUser> _userManager;
-        private readonly ISiteService _siteService;
-        protected readonly IStringLocalizer S;
+        _userService = userService;
+        _userManager = userManager;
+        _siteService = siteService;
 
-        public ChangeEmailController(
-            IUserService userService,
-            UserManager<IUser> userManager,
-            ISiteService siteService,
-            IStringLocalizer<ChangeEmailController> stringLocalizer)
+        S = stringLocalizer;
+    }
+
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> Index()
+    {
+        if (!(await _siteService.GetSettingsAsync<ChangeEmailSettings>()).AllowChangeEmail)
         {
-            _userService = userService;
-            _userManager = userManager;
-            _siteService = siteService;
-
-            S = stringLocalizer;
+            return NotFound();
         }
 
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> Index()
-        {
-            if (!(await _siteService.GetSettingsAsync<ChangeEmailSettings>()).AllowChangeEmail)
-            {
-                return NotFound();
-            }
+        var user = await _userService.GetAuthenticatedUserAsync(User);
 
+        return View(new ChangeEmailViewModel() { Email = ((User)user).Email });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Index(ChangeEmailViewModel model)
+    {
+        if (!(await _siteService.GetSettingsAsync<ChangeEmailSettings>()).AllowChangeEmail)
+        {
+            return NotFound();
+        }
+
+        if (ModelState.IsValid)
+        {
             var user = await _userService.GetAuthenticatedUserAsync(User);
+            var userWithEmail = await _userManager.FindByEmailAsync(model.Email);
 
-            return View(new ChangeEmailViewModel() { Email = ((User)user).Email });
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(ChangeEmailViewModel model)
-        {
-            if (!(await _siteService.GetSettingsAsync<ChangeEmailSettings>()).AllowChangeEmail)
+            if (((User)user).Email.Equals(model.Email, StringComparison.OrdinalIgnoreCase))
             {
-                return NotFound();
+                ModelState.AddModelError("Email", S["This email is already your current one."]);
             }
-
-            if (ModelState.IsValid)
+            else if (userWithEmail != null && user.UserName != userWithEmail.UserName)
             {
-                var user = await _userService.GetAuthenticatedUserAsync(User);
-                var userWithEmail = await _userManager.FindByEmailAsync(model.Email);
-
-                if (((User)user).Email.Equals(model.Email, StringComparison.OrdinalIgnoreCase))
+                ModelState.AddModelError("Email", S["A user with the same email already exists."]);
+            }
+            else
+            {
+                if (await _userService.ChangeEmailAsync(user, model.Email,
+                    (key, message) => ModelState.AddModelError(key, message)))
                 {
-                    ModelState.AddModelError("Email", S["This email is already your current one."]);
-                }
-                else if (userWithEmail != null && user.UserName != userWithEmail.UserName)
-                {
-                    ModelState.AddModelError("Email", S["A user with the same email already exists."]);
-                }
-                else
-                {
-                    if (await _userService.ChangeEmailAsync(user, model.Email,
-                        (key, message) => ModelState.AddModelError(key, message)))
-                    {
-                        return RedirectToLocal(Url.Action("ChangeEmailConfirmation", "ChangeEmail"));
-                    }
+                    return RedirectToLocal(Url.Action("ChangeEmailConfirmation", "ChangeEmail"));
                 }
             }
-
-            return View(model);
         }
 
-        [HttpGet]
-        public IActionResult ChangeEmailConfirmation()
+        return View(model);
+    }
+
+    [HttpGet]
+    public IActionResult ChangeEmailConfirmation()
+    {
+        return View();
+    }
+
+    private RedirectResult RedirectToLocal(string returnUrl)
+    {
+        if (Url.IsLocalUrl(returnUrl))
         {
-            return View();
+            return Redirect(returnUrl);
         }
 
-        private RedirectResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-
-            return Redirect("~/");
-        }
+        return Redirect("~/");
     }
 }

@@ -1,9 +1,6 @@
 # Admin Dashboard (`OrchardCore.AdminDashboard`)
 
-Admin widgets are created using content items and can be secured like any other content item. To create a content type as a dashboard widget, ensure that the content type includes at least the following steps:
-
-- Assign the `DashboardWidget` stereotype to the content type.
-- Attach the `DashboardPart` part to the content type.
+Admin widgets are created using content items and can be secured like any other content item. To create a content type as a dashboard widget, set the stereotype to `DashboardWidget`.
 
 ### Creating a New Widget
 

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OrchardCore.Queries;
 
 public sealed class ListQueryResult

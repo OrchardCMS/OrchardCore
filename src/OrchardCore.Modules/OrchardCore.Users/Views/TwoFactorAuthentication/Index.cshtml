@@ -22,25 +22,11 @@
     return;
 }
 
-@{
-    var canTrack = ViewContext.HttpContext.Features.Get<ITrackingConsentFeature>()?.CanTrack ?? true;
-}
-
 @if (User.HasClaim(claim => claim.Type == UserConstants.TwoFactorAuthenticationClaimType))
 {
     <div class="alert alert-danger text-center py-3">
         @T["Two-factor authentication must be enabled before proceeding."]
     </div>
-}
-
-@if (!canTrack)
-{
-    <div class="alert alert-danger text-center">
-        <strong>@T["Privacy and cookie policy have not been accepted."]</strong>
-        <p>@T["You must accept the policy before you can enable two-factor authentication."]</p>
-    </div>
-
-    return;
 }
 
 <div class="card text-bg-theme">

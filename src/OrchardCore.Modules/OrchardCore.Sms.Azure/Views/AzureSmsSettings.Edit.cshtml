@@ -1,0 +1,29 @@
+@using OrchardCore.Sms.Azure.Services
+@using OrchardCore.Sms.Azure.ViewModels
+@using OrchardCore.Sms
+
+@model AzureSettingsViewModel
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="IsEnabled" checked="@Model.IsEnabled" role="button" data-bs-toggle="collapse" data-bs-target="#Azure_Provider_Settings" aria-expanded="@Model.IsEnabled.ToString().ToLowerInvariant()" aria-controls="Azure_Provider_Settings" />
+        <label class="form-check-label" asp-for="IsEnabled">@T["Enable"]</label>
+    </div>
+</div>
+
+<div id="Azure_Provider_Settings" class="collapse@(Model.IsEnabled ? " show" : string.Empty)">
+
+    <div class="mb-3" asp-validation-class-for="PhoneNumber">
+        <label asp-for="PhoneNumber" class="form-label">@T["Phone Number"]</label>
+        <input asp-for="PhoneNumber" class="form-control" />
+        <span asp-validation-for="PhoneNumber"></span>
+        <span class="hint">@T["The default phone number to use as a sender. Phone number must include a country code. For example, +1 for United States."]</span>
+    </div>
+
+    <div class="mb-3" asp-validation-class-for="ConnectionString">
+        <label asp-for="ConnectionString" class="form-label">@T["Connection String"]</label>
+        <input asp-for="ConnectionString" class="form-control" type="password" autocomplete="new-password" placeholder="@(Model.HasConnectionString ? T["Enter a new value to replace the existing secret"] : T["Enter the connection string"])" />
+        <span asp-validation-for="ConnectionString"></span>
+    </div>
+
+</div>

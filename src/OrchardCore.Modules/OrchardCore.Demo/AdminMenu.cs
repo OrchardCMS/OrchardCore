@@ -1,57 +1,50 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Demo
+namespace OrchardCore.Demo;
+
+public sealed class AdminMenu : AdminNavigationProvider
 {
-    public sealed class AdminMenu : INavigationProvider
+    internal readonly IStringLocalizer S;
+
+    public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {
-        internal readonly IStringLocalizer S;
+        S = stringLocalizer;
+    }
 
-        public AdminMenu(IStringLocalizer<AdminMenu> localizer)
-        {
-            S = localizer;
-        }
+    protected override ValueTask BuildAsync(NavigationBuilder builder)
+    {
+        builder
+            .Add(S["Demo"], "10", demo => demo
+                .AddClass("demo").Id("demo")
+                .Add(S["This Menu Item 1"], "0", item => item
+                    .Add(S["This is Menu Item 1.1"], subItem => subItem
+                        .Action("Index", "Admin", "OrchardCore.Demo"))
+                    .Add(S["This is Menu Item 1.2"], subItem => subItem
+                        .Action("Index", "Admin", "OrchardCore.Demo"))
+                    .Add(S["This is Menu Item 1.2"], subItem => subItem
+                        .Action("Index", "Admin", "OrchardCore.Demo"))
+                )
+                .Add(S["This Menu Item 2"], "0", item => item
+                    .Add(S["This is Menu Item 2.1"], subItem => subItem
+                        .Action("Index", "Admin", "OrchardCore.Demo"))
+                    .Add(S["This is Menu Item 2.2"], subItem => subItem
+                        .Action("Index", "Admin", "OrchardCore.Demo"))
+                    .Add(S["This is Menu Item 3.2"], subItem => subItem
+                        .Action("Index", "Admin", "OrchardCore.Demo"))
+                )
+                .Add(S["This Menu Item 3"], "0", item => item
+                    .Add(S["This is Menu Item 3.1"], subItem => subItem
+                        .Action("Index", "Admin", "OrchardCore.Demo"))
+                    .Add(S["This is Menu Item 3.2"], subItem => subItem
+                        .Action("Index", "Admin", "OrchardCore.Demo"))
 
-        public Task BuildNavigationAsync(string name, NavigationBuilder builder)
-        {
-            if (!NavigationHelper.IsAdminMenu(name))
-            {
-                return Task.CompletedTask;
-            }
+                )
+                .Add(S["Todo (Liquid - Frontend)"], "0", item => item
+                    .Action("Index", "Todo", "OrchardCore.Demo")
+                )
+            );
 
-            builder
-                .Add(S["Demo"], "10", demo => demo
-                    .AddClass("demo").Id("demo")
-                    .Add(S["This Menu Item 1"], "0", item => item
-                        .Add(S["This is Menu Item 1.1"], subItem => subItem
-                            .Action("Index", "Admin", "OrchardCore.Demo"))
-                        .Add(S["This is Menu Item 1.2"], subItem => subItem
-                            .Action("Index", "Admin", "OrchardCore.Demo"))
-                        .Add(S["This is Menu Item 1.2"], subItem => subItem
-                            .Action("Index", "Admin", "OrchardCore.Demo"))
-                    )
-                    .Add(S["This Menu Item 2"], "0", item => item
-                        .Add(S["This is Menu Item 2.1"], subItem => subItem
-                            .Action("Index", "Admin", "OrchardCore.Demo"))
-                        .Add(S["This is Menu Item 2.2"], subItem => subItem
-                            .Action("Index", "Admin", "OrchardCore.Demo"))
-                        .Add(S["This is Menu Item 3.2"], subItem => subItem
-                            .Action("Index", "Admin", "OrchardCore.Demo"))
-                    )
-                    .Add(S["This Menu Item 3"], "0", item => item
-                        .Add(S["This is Menu Item 3.1"], subItem => subItem
-                            .Action("Index", "Admin", "OrchardCore.Demo"))
-                        .Add(S["This is Menu Item 3.2"], subItem => subItem
-                            .Action("Index", "Admin", "OrchardCore.Demo"))
-
-                    )
-                    .Add(S["Todo (Liquid - Frontend)"], "0", item => item
-                        .Action("Index", "Todo", "OrchardCore.Demo")
-                    )
-                );
-
-            return Task.CompletedTask;
-        }
+        return ValueTask.CompletedTask;
     }
 }

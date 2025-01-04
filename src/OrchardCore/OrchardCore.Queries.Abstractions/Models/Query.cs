@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Entities;
 
 namespace OrchardCore.Queries;
@@ -23,9 +22,6 @@ public class Query : Entity
     /// This is used runtime determination of the results returned when Content Items are not returned.
     /// </summary>
     public string Schema { get; set; }
-
-    [JsonIgnore]
-    public bool CanReturnContentItems { get; set; }
 
     public bool ReturnContentItems { get; set; }
 }

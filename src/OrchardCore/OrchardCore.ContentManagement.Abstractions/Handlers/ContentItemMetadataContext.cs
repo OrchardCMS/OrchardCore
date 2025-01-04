@@ -1,8 +1,7 @@
-namespace OrchardCore.ContentManagement.Handlers
+namespace OrchardCore.ContentManagement.Handlers;
+
+public class ContentItemMetadataContext
 {
-    public class ContentItemMetadataContext
-    {
-        public ContentItem ContentItem { get; set; }
-        public ContentItemMetadata Metadata { get; set; }
-    }
+    public ContentItem ContentItem { get; set; }
+    public ContentItemMetadata Metadata { get; set; }
 }

@@ -37,14 +37,7 @@ else
     <div class="mb-3" asp-validation-class-for="IndexedContentTypes">
         <label asp-for="IndexedContentTypes" class="form-label">@T["Content Types"]</label>
         <span class="hint dashed">@T["The content types to index. Choose at least one."]</span>
-        @if (Model.IsCreate)
-        {
-            @await Component.InvokeAsync("SelectContentTypes", new { htmlName = Html.NameFor(m => m.IndexedContentTypes) })
-        }
-        else
-        {
-            @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.IndexedContentTypes, htmlName = Html.NameFor(m => m.IndexedContentTypes) })
-        }
+        @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.IndexedContentTypes, htmlName = Html.NameFor(m => m.IndexedContentTypes) })
         <span asp-validation-for="IndexedContentTypes" class="text-danger"></span>
     </div>
 

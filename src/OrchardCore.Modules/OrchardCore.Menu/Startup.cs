@@ -4,7 +4,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement;
 using OrchardCore.Menu.Drivers;
 using OrchardCore.Menu.Handlers;
 using OrchardCore.Menu.Models;
@@ -15,40 +15,39 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.Menu
+namespace OrchardCore.Menu;
+
+public sealed class Startup : StartupBase
 {
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDataMigration<Migrations>();
-            services.AddScoped<IShapeTableProvider, MenuShapes>();
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
+        services.AddDataMigration<Migrations>();
+        services.AddShapeTableProvider<MenuShapes>();
+        services.AddPermissionProvider<Permissions>();
+        services.AddNavigationProvider<AdminMenu>();
 
-            services.AddScoped<IStereotypesProvider, MenuItemStereotypesProvider>();
+        services.AddScoped<IStereotypesProvider, MenuItemStereotypesProvider>();
 
-            // MenuPart
-            services.AddScoped<IContentHandler, MenuContentHandler>();
-            services.AddContentPart<MenuPart>()
-                .UseDisplayDriver<MenuPartDisplayDriver>();
+        // MenuPart
+        services.AddScoped<IContentHandler, MenuContentHandler>();
+        services.AddContentPart<MenuPart>()
+            .UseDisplayDriver<MenuPartDisplayDriver>();
 
-            services.AddContentPart<MenuItemsListPart>();
+        services.AddContentPart<MenuItemsListPart>();
 
-            // LinkMenuItemPart
-            services.AddContentPart<LinkMenuItemPart>()
-                .UseDisplayDriver<LinkMenuItemPartDisplayDriver>();
+        // LinkMenuItemPart
+        services.AddContentPart<LinkMenuItemPart>()
+            .UseDisplayDriver<LinkMenuItemPartDisplayDriver>();
 
-            // ContentMenuItemPart
-            services.AddContentPart<ContentMenuItemPart>()
-                .UseDisplayDriver<ContentMenuItemPartDisplayDriver>();
+        // ContentMenuItemPart
+        services.AddContentPart<ContentMenuItemPart>()
+            .UseDisplayDriver<ContentMenuItemPartDisplayDriver>();
 
-            // HtmlMenuItemPart
-            services.AddContentPart<HtmlMenuItemPart>()
-                .UseDisplayDriver<HtmlMenuItemPartDisplayDriver>();
-            services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlMenuItemPartSettingsDisplayDriver>();
+        // HtmlMenuItemPart
+        services.AddContentPart<HtmlMenuItemPart>()
+            .UseDisplayDriver<HtmlMenuItemPartDisplayDriver>();
+        services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlMenuItemPartSettingsDisplayDriver>();
 
-            services.AddTagHelpers<MenuTagHelper>();
-        }
+        services.AddTagHelpers<MenuTagHelper>();
     }
 }

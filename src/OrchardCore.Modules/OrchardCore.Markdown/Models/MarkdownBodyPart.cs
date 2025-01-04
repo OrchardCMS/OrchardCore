@@ -1,9 +1,8 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Markdown.Models
+namespace OrchardCore.Markdown.Models;
+
+public class MarkdownBodyPart : ContentPart
 {
-    public class MarkdownBodyPart : ContentPart
-    {
-        public string Markdown { get; set; }
-    }
+    public string Markdown { get; set; }
 }

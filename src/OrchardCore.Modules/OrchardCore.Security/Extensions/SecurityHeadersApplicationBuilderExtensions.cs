@@ -1,38 +1,36 @@
-using System;
 using OrchardCore.Security.Options;
 using OrchardCore.Security.Services;
 
-namespace Microsoft.AspNetCore.Builder
+namespace Microsoft.AspNetCore.Builder;
+
+public static class SecurityHeadersApplicationBuilderExtensions
 {
-    public static class SecurityHeadersApplicationBuilderExtensions
+    public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app)
     {
-        public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app)
-        {
-            ArgumentNullException.ThrowIfNull(app);
+        ArgumentNullException.ThrowIfNull(app);
 
-            return app.UseSecurityHeaders(new SecurityHeadersOptions());
-        }
+        return app.UseSecurityHeaders(new SecurityHeadersOptions());
+    }
 
-        public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app, SecurityHeadersOptions options)
-        {
-            ArgumentNullException.ThrowIfNull(app);
-            ArgumentNullException.ThrowIfNull(options);
+    public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app, SecurityHeadersOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(app);
+        ArgumentNullException.ThrowIfNull(options);
 
-            app.UseMiddleware<SecurityHeadersMiddleware>(options);
+        app.UseMiddleware<SecurityHeadersMiddleware>(options);
 
-            return app;
-        }
+        return app;
+    }
 
-        public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app, Action<SecurityHeadersOptions> optionsAction)
-        {
-            ArgumentNullException.ThrowIfNull(app);
-            ArgumentNullException.ThrowIfNull(optionsAction);
+    public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app, Action<SecurityHeadersOptions> optionsAction)
+    {
+        ArgumentNullException.ThrowIfNull(app);
+        ArgumentNullException.ThrowIfNull(optionsAction);
 
-            var options = new SecurityHeadersOptions();
+        var options = new SecurityHeadersOptions();
 
-            optionsAction.Invoke(options);
+        optionsAction.Invoke(options);
 
-            return app.UseSecurityHeaders(options);
-        }
+        return app.UseSecurityHeaders(options);
     }
 }

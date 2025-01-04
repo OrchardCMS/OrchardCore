@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.HttpOverrides;
 
-namespace OrchardCore.ReverseProxy.Settings
+namespace OrchardCore.ReverseProxy.Settings;
+
+public class ReverseProxySettings
 {
-    public class ReverseProxySettings
-    {
-        public ForwardedHeaders ForwardedHeaders { get; set; }
-    }
+    public ForwardedHeaders ForwardedHeaders { get; set; }
 }

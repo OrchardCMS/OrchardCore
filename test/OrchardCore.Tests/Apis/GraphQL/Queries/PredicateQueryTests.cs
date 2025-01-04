@@ -1,4 +1,4 @@
-﻿using OrchardCore.ContentManagement.GraphQL.Queries;
+using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
 using YesSql.Indexes;
 
@@ -6,7 +6,7 @@ namespace OrchardCore.Tests.Apis.GraphQL;
 
 public class PredicateQueryTests
 {
-    private YesSql.IConfiguration _configuration;
+    private readonly YesSql.IConfiguration _configuration;
 
     public PredicateQueryTests()
     {

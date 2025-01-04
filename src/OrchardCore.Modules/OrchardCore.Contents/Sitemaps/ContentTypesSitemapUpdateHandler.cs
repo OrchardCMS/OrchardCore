@@ -1,30 +1,28 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Sitemaps.Handlers;
 
-namespace OrchardCore.Contents.Sitemaps
+namespace OrchardCore.Contents.Sitemaps;
+
+public class ContentTypesSitemapUpdateHandler : ContentHandlerBase
 {
-    public class ContentTypesSitemapUpdateHandler : ContentHandlerBase
+    private readonly ISitemapUpdateHandler _sitemapUpdateHandler;
+
+    public ContentTypesSitemapUpdateHandler(ISitemapUpdateHandler sitemapUpdateHandler)
     {
-        private readonly ISitemapUpdateHandler _sitemapUpdateHandler;
+        _sitemapUpdateHandler = sitemapUpdateHandler;
+    }
 
-        public ContentTypesSitemapUpdateHandler(ISitemapUpdateHandler sitemapUpdateHandler)
+    public override Task PublishedAsync(PublishContentContext context) => UpdateSitemapAsync(context);
+
+    public override Task UnpublishedAsync(PublishContentContext context) => UpdateSitemapAsync(context);
+
+    private Task UpdateSitemapAsync(ContentContextBase context)
+    {
+        var updateContext = new SitemapUpdateContext
         {
-            _sitemapUpdateHandler = sitemapUpdateHandler;
-        }
+            UpdateObject = context.ContentItem,
+        };
 
-        public override Task PublishedAsync(PublishContentContext context) => UpdateSitemapAsync(context);
-
-        public override Task UnpublishedAsync(PublishContentContext context) => UpdateSitemapAsync(context);
-
-        private Task UpdateSitemapAsync(ContentContextBase context)
-        {
-            var updateContext = new SitemapUpdateContext
-            {
-                UpdateObject = context.ContentItem,
-            };
-
-            return _sitemapUpdateHandler.UpdateSitemapAsync(updateContext);
-        }
+        return _sitemapUpdateHandler.UpdateSitemapAsync(updateContext);
     }
 }

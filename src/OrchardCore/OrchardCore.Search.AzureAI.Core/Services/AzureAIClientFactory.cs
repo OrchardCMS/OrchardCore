@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Concurrent;
 using Azure.Identity;
 using Azure.Search.Documents;

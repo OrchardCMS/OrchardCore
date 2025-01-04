@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
@@ -11,7 +9,7 @@ using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Drivers;
 
-public class SitemapsRobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, SitemapsRobotsSettings>
+public sealed class SitemapsRobotsSettingsDisplayDriver : SiteDisplayDriver<SitemapsRobotsSettings>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
@@ -24,7 +22,10 @@ public class SitemapsRobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, S
         _authorizationService = authorizationService;
     }
 
-    public override async Task<IDisplayResult> EditAsync(SitemapsRobotsSettings settings, BuildEditorContext context)
+    protected override string SettingsGroupId
+        => SeoConstants.RobotsSettingsGroupId;
+
+    public override async Task<IDisplayResult> EditAsync(ISite site, SitemapsRobotsSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
@@ -37,21 +38,20 @@ public class SitemapsRobotsSettingsDisplayDriver : SectionDisplayDriver<ISite, S
         {
             model.IncludeSitemaps = settings.IncludeSitemaps;
         }).Location("Content:4")
-        .OnGroup(SeoConstants.RobotsSettingsGroupId);
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(SitemapsRobotsSettings settings, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, SitemapsRobotsSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!context.GroupId.Equals(SeoConstants.RobotsSettingsGroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(user, SeoConstants.ManageSeoSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, SeoConstants.ManageSeoSettings))
         {
             return null;
         }
 
         await context.Updater.TryUpdateModelAsync(settings, Prefix);
 
-        return await EditAsync(settings, context);
+        return await EditAsync(site, settings, context);
     }
 }

@@ -4,17 +4,16 @@ using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 
-namespace OrchardCore.BackgroundTasks
+namespace OrchardCore.BackgroundTasks;
+
+public sealed class Startup : StartupBase
 {
-    public sealed class Startup : StartupBase
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services
-                .AddScoped<BackgroundTaskManager>()
-                .AddScoped<IPermissionProvider, Permissions>()
-                .AddScoped<INavigationProvider, AdminMenu>()
-                .AddScoped<IBackgroundTaskSettingsProvider, BackgroundTaskSettingsProvider>();
-        }
+        services
+            .AddScoped<BackgroundTaskManager>()
+            .AddPermissionProvider<Permissions>()
+            .AddNavigationProvider<AdminMenu>()
+            .AddScoped<IBackgroundTaskSettingsProvider, BackgroundTaskSettingsProvider>();
     }
 }

@@ -1,23 +1,22 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Setup.Services;
 
-namespace OrchardCore.Setup
+namespace OrchardCore.Setup;
+
+/// <summary>
+/// Provides extension methods for <see cref="IServiceCollection"/>.
+/// </summary>
+public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Provides extension methods for <see cref="IServiceCollection"/>.
+    /// Adds tenant level services.
     /// </summary>
-    public static class ServiceCollectionExtensions
+    public static IServiceCollection AddSetup(this IServiceCollection services)
     {
-        /// <summary>
-        /// Adds tenant level services.
-        /// </summary>
-        public static IServiceCollection AddSetup(this IServiceCollection services)
-        {
-            services.AddScoped<ISetupService, SetupService>();
+        services.AddScoped<ISetupService, SetupService>();
 
-            services.AddSingleton<ISetupUserIdGenerator, SetupUserIdGenerator>();
+        services.AddSingleton<ISetupUserIdGenerator, SetupUserIdGenerator>();
 
-            return services;
-        }
+        return services;
     }
 }

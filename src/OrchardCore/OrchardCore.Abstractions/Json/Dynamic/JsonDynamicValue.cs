@@ -1,3 +1,4 @@
+using System.Dynamic;
 using System.Globalization;
 using System.Numerics;
 using System.Text.Json.Nodes;
@@ -124,6 +125,38 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
         }
     }
 
+    public override bool TryConvert(ConvertBinder binder, out object? result)
+    {
+        if (!binder.Explicit)
+        {
+            try
+            {
+                if (_jsonValue is null || _jsonValue.GetValueKind() == JsonValueKind.Null)
+                {
+                    if (binder.Type.IsValueType &&
+                        (!binder.Type.IsGenericType || binder.Type.GetGenericTypeDefinition() != typeof(Nullable<>)))
+                    {
+                        // Create default instance of the value type.
+                        result = Activator.CreateInstance(binder.Type);
+                    }
+                    else
+                    {
+                        result = null;
+                    }
+                }
+                else
+                {
+                    result = ((IConvertible)this).ToType(binder.Type, CultureInfo.InvariantCulture);
+                }
+
+                return true;
+            }
+            catch (Exception) { }
+        }
+
+        return base.TryConvert(binder, out result);
+    }
+
     TypeCode IConvertible.GetTypeCode()
     {
         if (_jsonValue == null)
@@ -225,30 +258,15 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
         return left.Equals(right);
     }
 
-    public static bool operator !=(JsonDynamicValue left, JsonDynamicValue right)
-    {
-        return !(left == right);
-    }
+    public static bool operator !=(JsonDynamicValue left, JsonDynamicValue right) => !(left == right);
 
-    public static bool operator <(JsonDynamicValue left, JsonDynamicValue right)
-    {
-        return ReferenceEquals(left, null) ? !ReferenceEquals(right, null) : left.CompareTo(right) < 0;
-    }
+    public static bool operator <(JsonDynamicValue left, JsonDynamicValue right) => ReferenceEquals(left, null) ? !ReferenceEquals(right, null) : left.CompareTo(right) < 0;
 
-    public static bool operator <=(JsonDynamicValue left, JsonDynamicValue right)
-    {
-        return ReferenceEquals(left, null) || left.CompareTo(right) <= 0;
-    }
+    public static bool operator <=(JsonDynamicValue left, JsonDynamicValue right) => ReferenceEquals(left, null) || left.CompareTo(right) <= 0;
 
-    public static bool operator >(JsonDynamicValue left, JsonDynamicValue right)
-    {
-        return !ReferenceEquals(left, null) && left.CompareTo(right) > 0;
-    }
+    public static bool operator >(JsonDynamicValue left, JsonDynamicValue right) => !ReferenceEquals(left, null) && left.CompareTo(right) > 0;
 
-    public static bool operator >=(JsonDynamicValue left, JsonDynamicValue right)
-    {
-        return ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.CompareTo(right) >= 0;
-    }
+    public static bool operator >=(JsonDynamicValue left, JsonDynamicValue right) => ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.CompareTo(right) >= 0;
 
     public static explicit operator bool(JsonDynamicValue value)
     {
@@ -722,7 +740,7 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
 
     private static int CompareBigInteger(BigInteger i1, object i2)
     {
-        int result = i1.CompareTo(ToBigInteger(i2));
+        var result = i1.CompareTo(ToBigInteger(i2));
 
         if (result != 0)
         {
@@ -737,7 +755,7 @@ public sealed class JsonDynamicValue : JsonDynamicBase, IComparable, IComparable
         }
         else if (i2 is double || i2 is float)
         {
-            double d = Convert.ToDouble(i2, CultureInfo.InvariantCulture);
+            var d = Convert.ToDouble(i2, CultureInfo.InvariantCulture);
             return (0d).CompareTo(Math.Abs(d - Math.Truncate(d)));
         }
 

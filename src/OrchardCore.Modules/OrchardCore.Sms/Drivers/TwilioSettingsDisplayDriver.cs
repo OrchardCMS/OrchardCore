@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
@@ -8,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
@@ -21,7 +18,7 @@ using OrchardCore.Sms.ViewModels;
 
 namespace OrchardCore.Sms.Drivers;
 
-public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSettings>
+public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettings>
 {
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -30,8 +27,11 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly INotifier _notifier;
 
-    protected readonly IHtmlLocalizer H;
-    protected readonly IStringLocalizer S;
+    internal readonly IHtmlLocalizer H;
+    internal readonly IStringLocalizer S;
+
+    protected override string SettingsGroupId
+        => SmsSettings.GroupId;
 
     public TwilioSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,
@@ -53,7 +53,7 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(TwilioSettings settings)
+    public override IDisplayResult Edit(ISite site, TwilioSettings settings, BuildEditorContext c)
     {
         return Initialize<TwilioSettingsViewModel>("TwilioSettings_Edit", model =>
         {
@@ -63,15 +63,14 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
             model.HasAuthToken = !string.IsNullOrEmpty(settings.AuthToken);
         }).Location("Content:5#Twilio")
         .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, SmsPermissions.ManageSmsSettings))
-        .OnGroup(SmsSettings.GroupId);
+        .OnGroup(SettingsGroupId);
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ISite site, TwilioSettings settings, IUpdateModel updater, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ISite site, TwilioSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!context.GroupId.Equals(SmsSettings.GroupId, StringComparison.OrdinalIgnoreCase)
-            || !await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, SmsPermissions.ManageSmsSettings))
         {
             return null;
         }
@@ -80,11 +79,10 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
         var hasChanges = settings.IsEnabled != model.IsEnabled;
+        var smsSettings = site.As<SmsSettings>();
 
         if (!model.IsEnabled)
         {
-            var smsSettings = site.As<SmsSettings>();
-
             if (hasChanges && smsSettings.DefaultProviderName == TwilioSmsProvider.TechnicalName)
             {
                 await _notifier.WarningAsync(H["You have successfully disabled the default SMS provider. The SMS service is now disable and will remain disabled until you designate a new default provider."]);
@@ -137,11 +135,21 @@ public class TwilioSettingsDisplayDriver : SectionDisplayDriver<ISite, TwilioSet
             }
         }
 
+        if (context.Updater.ModelState.IsValid && settings.IsEnabled && string.IsNullOrEmpty(smsSettings.DefaultProviderName))
+        {
+            // If we are enabling the only provider, set it as the default one.
+            smsSettings.DefaultProviderName = TwilioSmsProvider.TechnicalName;
+
+            site.Put(smsSettings);
+
+            hasChanges = true;
+        }
+
         if (hasChanges)
         {
             _shellReleaseManager.RequestRelease();
         }
 
-        return Edit(settings);
+        return Edit(site, settings, context);
     }
 }

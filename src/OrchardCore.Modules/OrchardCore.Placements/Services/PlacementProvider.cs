@@ -1,108 +1,103 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Shapes;
 
-namespace OrchardCore.Placements.Services
+namespace OrchardCore.Placements.Services;
+
+public class PlacementProvider : IShapePlacementProvider
 {
-    public class PlacementProvider : IShapePlacementProvider
+    private readonly PlacementsManager _placementsManager;
+    private readonly IEnumerable<IPlacementNodeFilterProvider> _placementNodeFilterProviders;
+
+    public PlacementProvider(
+        PlacementsManager placementsManager,
+        IEnumerable<IPlacementNodeFilterProvider> placementNodeFilterProviders)
     {
-        private readonly PlacementsManager _placementsManager;
+        _placementsManager = placementsManager;
+        _placementNodeFilterProviders = placementNodeFilterProviders;
+    }
+
+    public async Task<IPlacementInfoResolver> BuildPlacementInfoResolverAsync(IBuildShapeContext context)
+    {
+        var placements = await _placementsManager.ListShapePlacementsAsync();
+        return new PlacementInfoResolver(placements, _placementNodeFilterProviders);
+    }
+
+    public class PlacementInfoResolver : IPlacementInfoResolver
+    {
+        private readonly IReadOnlyDictionary<string, PlacementNode[]> _placements;
         private readonly IEnumerable<IPlacementNodeFilterProvider> _placementNodeFilterProviders;
 
-        public PlacementProvider(
-            PlacementsManager placementsManager,
+        public PlacementInfoResolver(
+            IReadOnlyDictionary<string, PlacementNode[]> placements,
             IEnumerable<IPlacementNodeFilterProvider> placementNodeFilterProviders)
         {
-            _placementsManager = placementsManager;
+            _placements = placements;
             _placementNodeFilterProviders = placementNodeFilterProviders;
         }
 
-        public async Task<IPlacementInfoResolver> BuildPlacementInfoResolverAsync(IBuildShapeContext context)
+        public PlacementInfo ResolvePlacement(ShapePlacementContext placementContext)
         {
-            var placements = await _placementsManager.ListShapePlacementsAsync();
-            return new PlacementInfoResolver(placements, _placementNodeFilterProviders);
-        }
+            PlacementInfo placement = null;
 
-        public class PlacementInfoResolver : IPlacementInfoResolver
-        {
-            private readonly IReadOnlyDictionary<string, PlacementNode[]> _placements;
-            private readonly IEnumerable<IPlacementNodeFilterProvider> _placementNodeFilterProviders;
-
-            public PlacementInfoResolver(
-                IReadOnlyDictionary<string, PlacementNode[]> placements,
-                IEnumerable<IPlacementNodeFilterProvider> placementNodeFilterProviders)
+            if (_placements.ContainsKey(placementContext.ShapeType))
             {
-                _placements = placements;
-                _placementNodeFilterProviders = placementNodeFilterProviders;
-            }
+                var shapePlacements = _placements[placementContext.ShapeType];
 
-            public PlacementInfo ResolvePlacement(ShapePlacementContext placementContext)
-            {
-                PlacementInfo placement = null;
-
-                if (_placements.ContainsKey(placementContext.ShapeType))
+                foreach (var placementRule in shapePlacements)
                 {
-                    var shapePlacements = _placements[placementContext.ShapeType];
+                    var filters = placementRule.Filters.ToList();
 
-                    foreach (var placementRule in shapePlacements)
+                    Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, placementRule);
+
+                    if (filters.Count > 0)
                     {
-                        var filters = placementRule.Filters.ToList();
+                        predicate = filters.Aggregate(predicate, BuildPredicate);
+                    }
 
-                        Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, placementRule);
+                    if (!predicate(placementContext))
+                    {
+                        // Ignore rule
+                        continue;
+                    }
 
-                        if (filters.Count > 0)
-                        {
-                            predicate = filters.Aggregate(predicate, BuildPredicate);
-                        }
+                    placement ??= new PlacementInfo
+                    {
+                        Source = "OrchardCore.Placements",
+                    };
 
-                        if (!predicate(placementContext))
-                        {
-                            // Ignore rule
-                            continue;
-                        }
+                    if (!string.IsNullOrEmpty(placementRule.Location))
+                    {
+                        placement.Location = placementRule.Location;
+                    }
 
-                        placement ??= new PlacementInfo
-                        {
-                            Source = "OrchardCore.Placements",
-                        };
+                    if (!string.IsNullOrEmpty(placementRule.ShapeType))
+                    {
+                        placement.ShapeType = placementRule.ShapeType;
+                    }
 
-                        if (!string.IsNullOrEmpty(placementRule.Location))
-                        {
-                            placement.Location = placementRule.Location;
-                        }
+                    if (placementRule.Alternates?.Length > 0)
+                    {
+                        placement.Alternates = placement.Alternates.Combine(new AlternatesCollection(placementRule.Alternates));
+                    }
 
-                        if (!string.IsNullOrEmpty(placementRule.ShapeType))
-                        {
-                            placement.ShapeType = placementRule.ShapeType;
-                        }
-
-                        if (placementRule.Alternates?.Length > 0)
-                        {
-                            placement.Alternates = placement.Alternates.Combine(new AlternatesCollection(placementRule.Alternates));
-                        }
-
-                        if (placementRule.Wrappers?.Length > 0)
-                        {
-                            placement.Wrappers = placement.Wrappers.Combine(new AlternatesCollection(placementRule.Wrappers));
-                        }
+                    if (placementRule.Wrappers?.Length > 0)
+                    {
+                        placement.Wrappers = placement.Wrappers.Combine(new AlternatesCollection(placementRule.Wrappers));
                     }
                 }
-
-                return placement;
             }
 
-            private static bool CheckFilter(ShapePlacementContext ctx, PlacementNode filter) => ShapePlacementParsingStrategy.CheckFilter(ctx, filter);
+            return placement;
+        }
 
-            private Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
-                  KeyValuePair<string, object> term)
-            {
-                return ShapePlacementParsingStrategy.BuildPredicate(predicate, term, _placementNodeFilterProviders);
-            }
+        private static bool CheckFilter(ShapePlacementContext ctx, PlacementNode filter) => ShapePlacementParsingStrategy.CheckFilter(ctx, filter);
+
+        private Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
+              KeyValuePair<string, object> term)
+        {
+            return ShapePlacementParsingStrategy.BuildPredicate(predicate, term, _placementNodeFilterProviders);
         }
     }
 }

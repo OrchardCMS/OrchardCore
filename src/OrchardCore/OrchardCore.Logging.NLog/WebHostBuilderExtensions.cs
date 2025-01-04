@@ -1,12 +1,8 @@
-using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using NLog;
 using NLog.Config;
 using NLog.Web;
-using OrchardCore.Abstractions.Setup;
-using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Builders.Models;
 
 namespace OrchardCore.Logging;
 

@@ -1,9 +1,8 @@
-namespace OrchardCore.Settings
+namespace OrchardCore.Settings;
+
+public enum ResourceDebugMode
 {
-    public enum ResourceDebugMode
-    {
-        FromConfiguration,
-        Enabled,
-        Disabled
-    }
+    FromConfiguration,
+    Enabled,
+    Disabled
 }

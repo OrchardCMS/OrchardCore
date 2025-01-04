@@ -21,6 +21,12 @@
   },
   {
     "inputs": [
+      "Assets/js/credential-helpers.js"
+    ],
+    "output": "wwwroot/Scripts/credential-helpers.js"
+  },
+  {
+    "inputs": [
       "node_modules/bootstrap/dist/js/bootstrap.bundle.js"
     ],
     "output": "wwwroot/Scripts/bootstrap.bundle.js"

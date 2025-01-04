@@ -1,99 +1,86 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Json;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
-namespace OrchardCore.Queries.Recipes
+namespace OrchardCore.Queries.Recipes;
+
+/// <summary>
+/// This recipe step creates a set of queries.
+/// </summary>
+public sealed class QueryStep : NamedRecipeStepHandler
 {
-    /// <summary>
-    /// This recipe step creates a set of queries.
-    /// </summary>
-    public sealed class QueryStep : IRecipeStepHandler
+    private readonly IQueryManager _queryManager;
+    private readonly JsonSerializerOptions _jsonSerializerOptions;
+
+    internal readonly IStringLocalizer S;
+
+    public QueryStep(
+        IQueryManager queryManager,
+        IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
+        IStringLocalizer<QueryStep> stringLocalizer)
+        : base("Queries")
     {
-        private readonly IQueryManager _queryManager;
-        private readonly JsonSerializerOptions _jsonSerializerOptions;
-        private readonly ILogger _logger;
+        _queryManager = queryManager;
+        _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
+        S = stringLocalizer;
+    }
 
-        internal readonly IStringLocalizer S;
+    protected override async Task HandleAsync(RecipeExecutionContext context)
+    {
+        var model = context.Step.ToObject<QueryStepModel>(_jsonSerializerOptions);
 
-        public QueryStep(
-            IQueryManager queryManager,
-            IOptions<DocumentJsonSerializerOptions> jsonSerializerOptions,
-            ILogger<QueryStep> logger,
-            IStringLocalizer<QueryStep> stringLocalizer)
+        var queries = new List<Query>();
+
+        foreach (var token in model.Queries.Cast<JsonObject>())
         {
-            _queryManager = queryManager;
-            _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
-            _logger = logger;
-            S = stringLocalizer;
-        }
+            var name = token[nameof(Query.Name)]?.GetValue<string>();
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
-        {
-            if (!string.Equals(context.Name, "Queries", StringComparison.OrdinalIgnoreCase))
+            if (string.IsNullOrEmpty(name))
             {
-                return;
+                context.Errors.Add(S["Query name is missing or empty. The query will not be imported."]);
+
+                continue;
             }
 
-            var model = context.Step.ToObject<QueryStepModel>(_jsonSerializerOptions);
+            var sourceName = token[nameof(Query.Source)]?.GetValue<string>();
 
-            var queries = new List<Query>();
-
-            foreach (var token in model.Queries.Cast<JsonObject>())
+            if (string.IsNullOrEmpty(sourceName))
             {
-                var name = token[nameof(Query.Name)]?.GetValue<string>();
+                context.Errors.Add(S["Could not find query source value. The query '{0}' will not be imported.", name]);
 
-                if (string.IsNullOrEmpty(name))
-                {
-                    context.Errors.Add(S["Query name is missing or empty. The query will not be imported."]);
+                continue;
+            }
 
-                    continue;
-                }
+            var query = await _queryManager.GetQueryAsync(name);
 
-                var sourceName = token[nameof(Query.Source)]?.GetValue<string>();
-
-                if (string.IsNullOrEmpty(sourceName))
-                {
-                    context.Errors.Add(S["Could not find query source value. The query '{0}' will not be imported.", name]);
-
-                    continue;
-                }
-
-                var query = await _queryManager.GetQueryAsync(name);
+            if (query == null)
+            {
+                query = await _queryManager.NewAsync(sourceName, token);
 
                 if (query == null)
                 {
-                    query = await _queryManager.NewAsync(sourceName, token);
+                    context.Errors.Add(S["Could not find query source: '{0}'. The query '{1}' will not be imported.", sourceName, name]);
 
-                    if (query == null)
-                    {
-                        context.Errors.Add(S["Could not find query source: '{0}'. The query '{1}' will not be imported.", sourceName, name]);
-
-                        continue;
-                    }
-
-                    queries.Add(query);
+                    continue;
                 }
-                else
-                {
-                    await _queryManager.UpdateAsync(query, token);
-                }
+
+                queries.Add(query);
             }
-
-            await _queryManager.SaveAsync(queries.ToArray());
+            else
+            {
+                await _queryManager.UpdateAsync(query, token);
+            }
         }
-    }
 
-    public class QueryStepModel
-    {
-        public JsonArray Queries { get; set; }
+        await _queryManager.SaveAsync(queries.ToArray());
     }
+}
+
+public sealed class QueryStepModel
+{
+    public JsonArray Queries { get; set; }
 }

@@ -9,7 +9,7 @@
         <div class="col">
             <div class="form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IncludeAll" data-element-id-to-collapse="indexes-list" />
+                    <input class="form-check-input" asp-for="IncludeAll" data-bs-toggle="collapse" role="button" data-bs-target="#indexes-list" aria-expanded="false" aria-controls="indexes-list" />
                     @T["Include all Azure AI Search indices."]
                 </label>
             </div>
@@ -43,11 +43,3 @@
         </div>
     </div>
 </div>
-
-<script at="Foot">
-    (function () {
-        document.getElementById('@Html.IdFor(x => x.IncludeAll)').addEventListener('change', (e) => {
-            new bootstrap.Collapse(document.getElementById(e.target.dataset.elementIdToCollapse));
-        });
-    })();
-</script>

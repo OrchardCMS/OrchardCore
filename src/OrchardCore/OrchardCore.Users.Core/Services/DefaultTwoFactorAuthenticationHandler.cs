@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;

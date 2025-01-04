@@ -1,11 +1,10 @@
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Shapes;
 
-namespace OrchardCore.Demo.Models
+namespace OrchardCore.Demo.Models;
+
+public class TestContentPartA : ContentPart
 {
-    public class TestContentPartA : ContentPart
-    {
-        public ShapeMetadata Metadata { get; set; }
-        public string Line { get; set; }
-    }
+    public ShapeMetadata Metadata { get; set; }
+    public string Line { get; set; }
 }

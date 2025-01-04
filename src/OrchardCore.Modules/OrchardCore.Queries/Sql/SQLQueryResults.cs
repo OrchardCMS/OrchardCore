@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using OrchardCore.Queries;
 
 namespace OrchardCore.Data;

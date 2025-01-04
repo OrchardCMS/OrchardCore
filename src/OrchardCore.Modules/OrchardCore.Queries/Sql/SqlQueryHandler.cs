@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using OrchardCore.Entities;
 using OrchardCore.Queries.Core;
 using OrchardCore.Queries.Sql.Models;
@@ -29,8 +28,6 @@ public sealed class SqlQueryHandler : QueryHandlerBase
             metadata.Template = template;
             context.Query.Put(metadata);
         };
-
-        context.Query.CanReturnContentItems = true;
 
         return Task.CompletedTask;
     }

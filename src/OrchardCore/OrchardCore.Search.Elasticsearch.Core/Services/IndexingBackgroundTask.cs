@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundTasks;
 
@@ -22,7 +19,7 @@ public sealed class IndexingBackgroundTask : IBackgroundTask
 {
     public Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
     {
-        var indexingService = serviceProvider.GetService<ElasticIndexingService>();
+        var indexingService = serviceProvider.GetService<ElasticsearchIndexingService>();
 
         if (indexingService != null)
         {

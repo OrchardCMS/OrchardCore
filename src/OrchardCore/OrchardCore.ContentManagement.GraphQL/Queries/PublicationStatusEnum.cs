@@ -1,10 +1,9 @@
-namespace OrchardCore.ContentManagement.GraphQL.Queries
+namespace OrchardCore.ContentManagement.GraphQL.Queries;
+
+public enum PublicationStatusEnum
 {
-    public enum PublicationStatusEnum
-    {
-        Published,
-        Draft,
-        Latest,
-        All,
-    }
+    Published,
+    Draft,
+    Latest,
+    All,
 }

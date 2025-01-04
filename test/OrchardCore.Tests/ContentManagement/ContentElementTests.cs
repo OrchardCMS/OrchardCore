@@ -66,4 +66,35 @@ public class ContentElementTests
         // contentPart should be returned from cache, so it must be same as actualPart.
         Assert.Same(contentPart, actualPart);
     }
+
+    [Fact]
+    public void Apply_WhenCalledWithNullProperty_SetThePropertyToNull()
+    {
+        var contentItem = new ContentItem();
+
+        contentItem.Apply(new TestContentPart()
+        {
+            Minutes = -15,
+        });
+
+        var instance = contentItem.As<TestContentPart>();
+
+        Assert.NotNull(instance);
+        Assert.Equal(-15, instance.Minutes);
+
+        contentItem.Apply(new TestContentPart()
+        {
+            Minutes = null,
+        });
+
+        // Using 'dynamic' to bypass object retrieval from the cache when using '.Get()' or '.As()' extension methods.
+        var minutes = (int?)contentItem.Content.TestContentPart.Minutes;
+
+        Assert.Null(minutes);
+    }
+}
+
+public class TestContentPart : ContentPart
+{
+    public int? Minutes { get; set; }
 }

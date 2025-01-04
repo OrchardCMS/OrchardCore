@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Notifications.Models;
@@ -111,11 +108,11 @@ public abstract class NotifyUserTaskActivity : TaskActivity
         };
     }
 
-    abstract public override string Name { get; }
+    public abstract override string Name { get; }
 
-    abstract public override LocalizedString DisplayText { get; }
+    public abstract override LocalizedString DisplayText { get; }
 
-    abstract protected Task<IEnumerable<IUser>> GetUsersAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
+    protected abstract Task<IEnumerable<IUser>> GetUsersAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext);
 }
 
 public abstract class NotifyUserTaskActivity<TActivity> : NotifyUserTaskActivity where TActivity : ITask
