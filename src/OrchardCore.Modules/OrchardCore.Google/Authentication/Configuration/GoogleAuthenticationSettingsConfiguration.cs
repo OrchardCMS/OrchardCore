@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Google.Authentication.Settings;
 
 namespace OrchardCore.Google.Authentication.Services;
@@ -9,17 +7,10 @@ namespace OrchardCore.Google.Authentication.Services;
 public sealed class GoogleAuthenticationSettingsConfiguration : IConfigureOptions<GoogleAuthenticationSettings>
 {
     private readonly GoogleAuthenticationService _googleAuthenticationService;
-    private readonly ShellSettings _shellSettings;
-    private readonly ILogger _logger;
 
-    public GoogleAuthenticationSettingsConfiguration(
-        GoogleAuthenticationService gitHubAuthenticationService,
-        ShellSettings shellSettings,
-        ILogger<GoogleAuthenticationSettingsConfiguration> logger)
+    public GoogleAuthenticationSettingsConfiguration(GoogleAuthenticationService gitHubAuthenticationService)
     {
         _googleAuthenticationService = gitHubAuthenticationService;
-        _shellSettings = shellSettings;
-        _logger = logger;
     }
 
     public void Configure(GoogleAuthenticationSettings options)
@@ -43,11 +34,6 @@ public sealed class GoogleAuthenticationSettingsConfiguration : IConfigureOption
 
         if ((_googleAuthenticationService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
         {
-            if (_shellSettings.IsRunning())
-            {
-                _logger.LogWarning("Google Authentication is not correctly configured.");
-            }
-
             return null;
         }
 
