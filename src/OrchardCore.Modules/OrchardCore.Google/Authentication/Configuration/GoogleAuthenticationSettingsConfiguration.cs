@@ -8,9 +8,9 @@ public sealed class GoogleAuthenticationSettingsConfiguration : IConfigureOption
 {
     private readonly GoogleAuthenticationService _googleAuthenticationService;
 
-    public GoogleAuthenticationSettingsConfiguration(GoogleAuthenticationService gitHubAuthenticationService)
+    public GoogleAuthenticationSettingsConfiguration(GoogleAuthenticationService googleAuthenticationService)
     {
-        _googleAuthenticationService = gitHubAuthenticationService;
+        _googleAuthenticationService = googleAuthenticationService;
     }
 
     public void Configure(GoogleAuthenticationSettings options)
