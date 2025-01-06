@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-latest]
+        os: [ubuntu-24.04, windows-2022]
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
