@@ -6,9 +6,9 @@
  * @license MIT License
  * @see https://github.com/farbelous/fontawesome-iconpicker/blob/master/LICENSE
  */
-@import '../../node_modules/bootstrap/scss/_functions';
-@import '../../node_modules/bootstrap/scss/_variables';
-@import '../../node_modules/bootstrap/scss/mixins/_color-mode';
+@import '../../../../../node_modules/bootstrap/scss/_functions';
+@import '../../../../../node_modules/bootstrap/scss/_variables';
+@import '../../../../../node_modules/bootstrap/scss/mixins/_color-mode';
 
 .iconpicker-popover.popover {
     position: absolute;

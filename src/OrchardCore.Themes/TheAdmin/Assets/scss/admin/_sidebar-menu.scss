@@ -1,7 +1,7 @@
 // Layout 3 : ta-left-sidebar when expanded
 // ----------------------------------------
 @import '../_variables';
-@import '../../../node_modules/bootstrap/scss/mixins/_breakpoints';
+@import '../../../../../../node_modules/bootstrap/scss/mixins/_breakpoints';
 
 body:not(.left-sidebar-compact) {
     #ta-left-sidebar {
