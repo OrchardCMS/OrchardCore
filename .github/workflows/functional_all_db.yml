@@ -29,9 +29,9 @@ jobs:
         github.event_name == 'push' ||
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container:
-      image: cypress/included:13.16.1
+      image: cypress/included:13.17.0
     steps:
     - uses: actions/checkout@v4
       # We need to install dotnet in the docker container.
@@ -59,9 +59,9 @@ jobs:
         github.event_name == 'push' ||
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container:
-      image: cypress/included:13.16.1
+      image: cypress/included:13.17.0
     env:
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
@@ -90,9 +90,9 @@ jobs:
         github.event_name == 'push' ||
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container:
-      image: cypress/included:13.16.1
+      image: cypress/included:13.17.0
     services:
       postgres:
         image: postgres:11
@@ -136,9 +136,9 @@ jobs:
         github.event_name == 'push' ||
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container:
-      image: cypress/included:13.16.1
+      image: cypress/included:13.17.0
     services:
       mysql:
         image: mysql:8
@@ -178,9 +178,9 @@ jobs:
         github.event_name == 'push' ||
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container:
-      image: cypress/included:13.16.1
+      image: cypress/included:13.17.0
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest

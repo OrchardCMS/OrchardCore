@@ -1,9 +1,13 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Widgets.Models;
@@ -15,16 +19,22 @@ namespace OrchardCore.Widgets.Drivers;
 public sealed class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<WidgetsListPart>
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAuthorizationService _authorizationService;
     private readonly IContentManager _contentManager;
     private readonly IServiceProvider _serviceProvider;
 
     public WidgetsListPartDisplayDriver(
         IContentManager contentManager,
         IContentDefinitionManager contentDefinitionManager,
+        IHttpContextAccessor httpContextAccessor,
+        IAuthorizationService authorizationService,
         IServiceProvider serviceProvider
         )
     {
         _contentDefinitionManager = contentDefinitionManager;
+        _httpContextAccessor = httpContextAccessor;
+        _authorizationService = authorizationService;
         _contentManager = contentManager;
         _serviceProvider = serviceProvider;
     }
@@ -41,10 +51,24 @@ public sealed class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<Widg
 
         var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
 
+        var user = _httpContextAccessor.HttpContext.User;
+        var widgetDefinitions = (await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync())
+            .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+
         foreach (var zone in part.Widgets.Keys)
         {
             foreach (var widget in part.Widgets[zone])
             {
+                if (!widgetDefinitions.TryGetValue(widget.ContentType, out var definition))
+                {
+                    continue;
+                }
+
+                if (definition.IsSecurable() && !await _authorizationService.AuthorizeAsync(user, CommonPermissions.ViewContent, widget))
+                {
+                    continue;
+                }
+
                 var layerMetadata = widget.As<WidgetMetadata>();
 
                 if (layerMetadata != null)

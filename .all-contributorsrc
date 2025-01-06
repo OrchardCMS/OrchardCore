@@ -3268,6 +3268,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "salmattia",
+      "name": "Mattia Salvetti",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36173554?v=4",
+      "profile": "https://github.com/salmattia",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "cbadger-montecitobank",
+      "name": "cbadger",
+      "avatar_url": "https://avatars.githubusercontent.com/u/123421218?v=4",
+      "profile": "https://github.com/cbadger-montecitobank",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
