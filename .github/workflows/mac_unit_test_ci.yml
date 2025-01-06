@@ -1,6 +1,6 @@
 name: Unit Tests - MacOS
 on:
-# manual trigger
+  # manual trigger
   workflow_dispatch:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
