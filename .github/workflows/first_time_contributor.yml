@@ -8,7 +8,7 @@ on:
 
 jobs:
   first-time-contributor-welcome:
-    runs-on: ubuntu-2204
+    runs-on: ubuntu-22.04
     steps:
     # We don't use the actions/first-interaction action because it can't reference the author, nor can it comment after
     # PR merge.

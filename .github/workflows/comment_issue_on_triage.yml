@@ -9,7 +9,7 @@ on:
 
 jobs:
   comment-issue-on-triage:
-    runs-on: ubuntu-2204
+    runs-on: ubuntu-22.04
     permissions:
       issues: write
     # Despite the trigger being called "issues", this would still run for setting the milestone of PRs too.
