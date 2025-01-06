@@ -329,21 +329,21 @@
   {
     "copy": true,
     "inputs": [
-      "../../../../node_modules/nouislider/dist/nouislider.js"
+      "../../../node_modules/nouislider/dist/nouislider.js"
     ],
     "output": "wwwroot/Scripts/nouislider/nouislider.js"
   },
   {
     "copy": true,
     "inputs": [
-      "../../../../node_modules/nouislider/dist/nouislider.d.ts"
+      "../../../node_modules/nouislider/dist/nouislider.d.ts"
     ],
     "output": "wwwroot/Scripts/nouislider/nouislider.d.ts"
   },
   {
     "copy": true,
     "inputs": [
-      "../../../../node_modules/nouislider/dist/nouislider.css"
+      "../../../node_modules/nouislider/dist/nouislider.css"
     ],
     "output": "wwwroot/Scripts/nouislider/nouislider.css"
   },
