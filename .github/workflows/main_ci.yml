@@ -21,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-22.04, windows-latest]
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -38,14 +38,14 @@ jobs:
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
     - name: Functional Tests
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-22.04'
       run: |
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
         npm run mvc:test
     - uses: actions/upload-artifact@v4
-      if: matrix.os == 'ubuntu-latest' && failure()
+      if: matrix.os == 'ubuntu-22.04' && failure()
       with:
         name: Functional Test failure
         path: |
