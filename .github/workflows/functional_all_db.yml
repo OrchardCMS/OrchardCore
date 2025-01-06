@@ -26,10 +26,6 @@ jobs:
     # https://github.com/orgs/community/discussions/124396.
     # They either need to be repeated for each job, or we need to use a separate job (i.e. VM to run the condition) that
     # triggers the others.
-    if: github.event_name == 'workflow_dispatch' ||
-        github.event_name == 'push' ||
-        github.event.review.state == 'APPROVED' ||
-        github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
       image: cypress/included:13.17.0
@@ -53,10 +49,6 @@ jobs:
   
   test_functional_cms_sqlite:
     name: Functional Tests - CMS Sqlite
-    if: github.event_name == 'workflow_dispatch' ||
-        github.event_name == 'push' ||
-        github.event.review.state == 'APPROVED' ||
-        github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
       image: cypress/included:13.17.0
@@ -81,10 +73,6 @@ jobs:
 
   test_functional_cms_postgresql:
     name: Functional Tests - CMS Postgres
-    if: github.event_name == 'workflow_dispatch' ||
-        github.event_name == 'push' ||
-        github.event.review.state == 'APPROVED' ||
-        github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
       image: cypress/included:13.17.0
@@ -124,10 +112,6 @@ jobs:
 
   test_functional_cms_mysql:
     name: Functional Tests - CMS MySql
-    if: github.event_name == 'workflow_dispatch' ||
-        github.event_name == 'push' ||
-        github.event.review.state == 'APPROVED' ||
-        github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
       image: cypress/included:13.17.0
@@ -163,10 +147,6 @@ jobs:
 
   test_functional_cms_mssql:
     name: Functional Tests - CMS SqlServer 2019
-    if: github.event_name == 'workflow_dispatch' ||
-        github.event_name == 'push' ||
-        github.event.review.state == 'APPROVED' ||
-        github.event.review.state == 'CHANGES_REQUESTED'
     runs-on: ubuntu-24.04
     container:
       image: cypress/included:13.17.0
