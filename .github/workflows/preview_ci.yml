@@ -9,7 +9,7 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 jobs:
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     name: Build, Test, Deploy
     steps:
     - uses: actions/checkout@v4
