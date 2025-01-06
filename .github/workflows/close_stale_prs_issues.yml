@@ -11,7 +11,7 @@ on:
 
 jobs:
   close-stale-prs-issues:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-2204
     steps:
       - uses: actions/stale@v9
         with:

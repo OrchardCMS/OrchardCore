@@ -8,7 +8,7 @@ on:
 jobs:
   validate-pull-request:
     name: Validate Pull Request
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-2204
     timeout-minutes: 3
     steps:
       - name: Check for Merge Conflict in PR

@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-2204, windows-latest]
     steps:
     - name: Get the version
       id: get_version
@@ -37,7 +37,7 @@ jobs:
       with:
         dotnet-version: '9.0.x'
     - name: Set build number 
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-2204'
       run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 15471 ))" >> $GITHUB_ENV
     - name: Build
       # NuGetAudit is intentionally not disabled here like it is for other CI builds, because we need to address any
@@ -48,35 +48,35 @@ jobs:
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
     - name: Functional Tests
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-2204'
       run: |
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
         npm run mvc:test
     - uses: actions/upload-artifact@v4
-      if: matrix.os == 'ubuntu-latest' && failure()
+      if: matrix.os == 'ubuntu-2204' && failure()
       with:
         name: Functional Test failure
         path: |
           test/OrchardCore.Tests.Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data_Tests/logs
     - name: Deploy release NuGet packages
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-2204'
       run: |
         dotnet pack -c Release --no-build -p:Version=${{ steps.get_version.outputs.VERSION }} -p:TreatWarningsAsErrors=false
         dotnet nuget push './src/**/*.nupkg' -t 600 -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json --skip-duplicate
     - name: Set up Docker Buildx
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-2204'
       uses: docker/setup-buildx-action@v3
     - name: Login to DockerHub
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-2204'
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     - name: Deploy release docker images
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-2204'
       shell: pwsh
       run: |
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item -Recurse -Confirm:$false
