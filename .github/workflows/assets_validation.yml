@@ -28,6 +28,7 @@ jobs:
         gulp rebuild
         npm install -g corepack
         corepack enable
+        yarn cache clean --all
         yarn install
         yarn build
     - name: Check if git has changes
