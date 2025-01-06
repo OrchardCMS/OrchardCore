@@ -7,7 +7,7 @@
   },
   {
     "inputs": [
-      "node_modules/qrcodejs/qrcode.js"
+      "../../../node_modules/qrcodejs/qrcode.js"
     ],
     "output": "wwwroot/Scripts/qrcode.js"
   }

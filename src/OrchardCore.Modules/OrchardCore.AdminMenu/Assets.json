@@ -31,7 +31,7 @@
   },
   {
     "inputs": [
-      "node_modules/fontawesome-iconpicker/dist/js/fontawesome-iconpicker.js",
+      "../../../node_modules/fontawesome-iconpicker/dist/js/fontawesome-iconpicker.js",
       "Assets/js/AdminNodeIconPicker.js"
     ],
     "output": "wwwroot/Scripts/admin-menu-icon-picker.js"
