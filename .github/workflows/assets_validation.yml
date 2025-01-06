@@ -24,10 +24,12 @@ jobs:
     - uses: actions/checkout@v4
     - name: Rebuild packages
       run: |
+        npm install
+        gulp rebuild
         npm install -g corepack
         corepack enable
         yarn install
-        yarn build -gr
+        yarn build
     - name: Check if git has changes
       shell: pwsh
       run: |
