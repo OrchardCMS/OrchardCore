@@ -16,3 +16,6 @@ If you want to learn or improve your knowledge about Orchard Core, you can follo
 ## Gurubase
 
 You can also ask the [Orchard Core Guru on Gurubase](https://gurubase.io/g/orchard-core) for help. It is an Orchard Core-focused AI to answer your questions.
+
+## Other Resources
+- [Orchard Core Basics Companion (OCBC)](https://gcl.gitbook.io/orchard-core-basics-companion-ocbc): This documentation is designed to guide developers through Orchard Core in a clear, approachable, and practical way.
