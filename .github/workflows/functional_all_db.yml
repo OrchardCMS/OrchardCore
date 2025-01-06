@@ -13,7 +13,6 @@ on:
       - 'mkdocs.yml'
       - 'src/docs/**/*'
     branches: [ main, release/** ]
-  pull_request:
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true

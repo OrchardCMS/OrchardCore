@@ -5,7 +5,6 @@ on:
   # the branch where the workflow was triggered, i.e. `main` for the schedule trigger. So, better to occasionally run
   # it manually in a PR.
   workflow_dispatch:
-  pull_request:
     
 jobs:
   update-contributor-map:
