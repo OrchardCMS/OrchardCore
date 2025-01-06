@@ -241,12 +241,6 @@ else if (gulpBuildStr != undefined && gulpRebuildStr != undefined) {
     });
 }
 
-// Add the gulp build process if the user passes the -g cli flag
-
-if (gulpBuildStr != undefined && gulpRebuildStr != undefined) {
-
-}
-
 if (buildProcesses.length <= 0) {
     console.log(chalk.yellow("Nothing to build, exiting..."));
     process.exit(0);
