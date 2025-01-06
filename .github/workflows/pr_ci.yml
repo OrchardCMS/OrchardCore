@@ -21,11 +21,7 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: "15"
-    - uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: | 
-        8.0.x
-        9.0.x
+    - uses: ./.github/actions/setup-dotnet
     - name: Build
       # We disable NuGet audit warnings, see https://learn.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu1901-nu1904.
       # Security issues being discovered in NuGet packages we use can happen at any time, and thus all our CI builds that
