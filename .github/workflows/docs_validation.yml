@@ -27,5 +27,9 @@ jobs:
         # Necessary to avoid mkdocs-git-revision-date-localized-plugin warnings.
         fetch-depth: 0
 
+    - name: Install Dependencies
+      run: |
+        pip install -r src/docs/requirements.txt -v
+
     - name: Build Documentation
       run: python -m mkdocs build --strict
