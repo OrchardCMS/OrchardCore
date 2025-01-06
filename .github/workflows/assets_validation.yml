@@ -27,8 +27,7 @@ jobs:
         npm install -g corepack
         corepack enable
         yarn install
-        gulp rebuild
-        yarn build
+        yarn build -gr
     - name: Check if git has changes
       shell: pwsh
       run: |
