@@ -28,7 +28,9 @@ jobs:
     - uses: actions/setup-dotnet@v4
       if: steps.check-publish.outputs.should-publish == 'true'
       with:
-        dotnet-version: '9.0.x'
+        dotnet-version: | 
+          8.0.x
+          9.0.x
     - name: Set build number
       if: steps.check-publish.outputs.should-publish == 'true'
       run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 16368 ))" >> $GITHUB_ENV

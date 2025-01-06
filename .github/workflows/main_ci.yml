@@ -29,7 +29,9 @@ jobs:
         node-version: "15"
     - uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '9.0.x'
+        dotnet-version: | 
+          8.0.x
+          9.0.x
     - name: Build
       # See pr_ci.yml for the reason why we disable NuGet audit warnings.
       run: |
