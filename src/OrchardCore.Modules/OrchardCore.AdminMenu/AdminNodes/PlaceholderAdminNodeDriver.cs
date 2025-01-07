@@ -29,8 +29,6 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
             model.LinkText = treeNode.LinkText;
             model.IconClass = treeNode.IconClass;
 
-            var permissions = await _permissionService.GetPermissionsAsync();
-
             var selectedPermissions = await _permissionService.FindByNamesAsync(treeNode.PermissionNames);
 
             model.SelectedItems = selectedPermissions
@@ -39,6 +37,9 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
                     Name = p.Name,
                     DisplayText = p.Description
                 }).ToArray();
+
+            var permissions = await _permissionService.GetPermissionsAsync();
+
             model.AllItems = permissions
                 .Select(p => new PermissionViewModel
                 {

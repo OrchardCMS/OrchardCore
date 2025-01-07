@@ -31,8 +31,6 @@ public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
             model.IconClass = treeNode.IconClass;
             model.Target = treeNode.Target;
 
-            var permissions = await _permissionService.GetPermissionsAsync();
-
             var selectedPermissions = await _permissionService.FindByNamesAsync(treeNode.PermissionNames);
 
             model.SelectedItems = selectedPermissions
@@ -41,6 +39,9 @@ public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
                     Name = p.Name,
                     DisplayText = p.Description
                 }).ToArray();
+
+            var permissions = await _permissionService.GetPermissionsAsync();
+
             model.AllItems = permissions
                 .Select(p => new PermissionViewModel
                 {

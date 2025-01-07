@@ -31,12 +31,10 @@ public sealed class DefaultPermissionService : IPermissionService
 
     public async ValueTask<IEnumerable<Permission>> GetPermissionsAsync()
     {
-        if (_permissions != null)
+        if (_permissions == null)
         {
-            return _permissions.Values;
+            await LoadPermissionsAsync();
         }
-
-        await LoadPermissionsAsync();
 
         return _permissions.Values;
     }
