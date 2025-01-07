@@ -76,7 +76,7 @@ public class ResourceManagerTests
     }
 
     [Fact]
-    public void RegisterResouceUrl()
+    public void RegisterResourceUrl()
     {
         var resourceManager = new ResourceManager(
             new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),

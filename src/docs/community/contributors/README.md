@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-354-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-355-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -490,6 +490,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/jbytes1027"><img src="https://avatars.githubusercontent.com/u/50090107?v=4?s=100" width="100px;" alt="James Pretorius"/><br /><sub><b>James Pretorius</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=jbytes1027" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/sparkie79"><img src="https://avatars.githubusercontent.com/u/4757890?v=4?s=100" width="100px;" alt="sparkie79"/><br /><sub><b>sparkie79</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=sparkie79" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/salmattia"><img src="https://avatars.githubusercontent.com/u/36173554?v=4?s=100" width="100px;" alt="Mattia Salvetti"/><br /><sub><b>Mattia Salvetti</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=salmattia" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/cbadger-montecitobank"><img src="https://avatars.githubusercontent.com/u/123421218?v=4?s=100" width="100px;" alt="cbadger"/><br /><sub><b>cbadger</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=cbadger-montecitobank" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
