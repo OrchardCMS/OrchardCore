@@ -2198,7 +2198,7 @@
  * http://alex-d.github.com/Trumbowyg
  * ===========================================================
  * Author : Viper
- *          Github: https://github.com/Globulopolis
+ *          GitHub: https://github.com/Globulopolis
  *          Website: http://киноархив.com
  */
 
