@@ -24,10 +24,10 @@ jobs:
           # The double empty lines in the body are necessary; it'll show up as a single empty line in the comment.
           BODY: >
             We triaged this issue and set the milestone according to the priority we think is appropriate (see 
-            [the docs](https://docs.orchardcore.net/en/latest/docs/guides/contributing/managing-issues/) on how we 
+            [the docs](https://docs.orchardcore.net/en/latest/docs/contributing/managing-issues/) on how we 
             triage and prioritize issues).
 
 
             This indicates when the core team may start working on it. However, if you'd like to contribute, we'd 
             warmly welcome you to do that anytime. See our guide on contributions 
-            [here](https://docs.orchardcore.net/en/latest/docs/guides/contributing/).
+            [here](https://docs.orchardcore.net/en/latest/docs/contributing/).
