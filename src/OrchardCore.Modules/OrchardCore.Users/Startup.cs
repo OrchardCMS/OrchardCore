@@ -30,7 +30,6 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
-using OrchardCore.ResourceManagement;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
@@ -41,6 +40,7 @@ using OrchardCore.Users.Controllers;
 using OrchardCore.Users.DataMigrations;
 using OrchardCore.Users.Deployment;
 using OrchardCore.Users.Drivers;
+using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
@@ -110,6 +110,7 @@ public sealed class Startup : StartupBase
             options.LogoutPath = "/" + userOptions.Value.LogoffPath;
             options.AccessDeniedPath = "/Error/403";
         });
+
         services.AddTransient<IPostConfigureOptions<SecurityStampValidatorOptions>, ConfigureSecurityStampOptions>();
         services.AddDataMigration<Migrations>();
 
@@ -126,9 +127,9 @@ public sealed class Startup : StartupBase
 
         services.AddSiteDisplayDriver<LoginSettingsDisplayDriver>();
 
-        services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
-        services.AddScoped<IDisplayDriver<User>, UserInformationDisplayDriver>();
-        services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
+        services.AddDisplayDriver<User, UserDisplayDriver>();
+        services.AddDisplayDriver<User, UserInformationDisplayDriver>();
+        services.AddDisplayDriver<User, UserButtonsDisplayDriver>();
 
         services.AddScoped<IThemeSelector, UsersThemeSelector>();
 
@@ -136,7 +137,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IUsersAdminListQueryService, DefaultUsersAdminListQueryService>();
 
-        services.AddScoped<IDisplayDriver<UserIndexOptions>, UserOptionsDisplayDriver>();
+        services.AddDisplayDriver<UserIndexOptions, UserOptionsDisplayDriver>();
 
         services.AddSingleton<IUsersAdminListFilterParser>(sp =>
         {
@@ -153,16 +154,17 @@ public sealed class Startup : StartupBase
         });
 
         services.AddTransient<IUsersAdminListFilterProvider, DefaultUsersAdminListFilterProvider>();
-        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, UserOptionsConfiguration>();
-        services.AddScoped<IDisplayDriver<Navbar>, UserMenuNavbarDisplayDriver>();
-        services.AddScoped<IDisplayDriver<UserMenu>, UserMenuDisplayDriver>();
+        services.AddResourceConfiguration<UserOptionsConfiguration>();
+        services.AddDisplayDriver<Navbar, UserMenuNavbarDisplayDriver>();
+        services.AddDisplayDriver<UserMenu, UserMenuDisplayDriver>();
         services.AddShapeTableProvider<UserMenuShapeTableProvider>();
 
         services.AddRecipeExecutionStep<UsersStep>();
 
         services.AddScoped<CustomUserSettingsService>();
         services.AddRecipeExecutionStep<CustomUserSettingsStep>();
-        services.AddScoped<IDisplayDriver<LoginForm>, LoginFormDisplayDriver>();
+        services.AddDisplayDriver<LoginForm, LoginFormDisplayDriver>();
+        services.AddScoped<ILoginFormEvent, EmailConfirmationLoginFormEvent>();
     }
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -248,8 +250,9 @@ public sealed class ExternalAuthenticationStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<ILoginFormEvent, ExternalLoginFormEvents>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
-        services.AddScoped<IDisplayDriver<UserMenu>, ExternalAuthenticationUserMenuDisplayDriver>();
+        services.AddDisplayDriver<UserMenu, ExternalAuthenticationUserMenuDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalRegistrationSettingsDisplayDriver>();
         services.AddSiteDisplayDriver<ExternalLoginSettingsDisplayDriver>();
         services.AddTransient<IConfigureOptions<ExternalLoginOptions>, ExternalLoginOptionsConfigurations>();
@@ -272,6 +275,16 @@ public sealed class ExternalAuthenticationStartup : StartupBase
     }
 }
 
+[RequireFeatures("OrchardCore.Email")]
+public sealed class EmailStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<UserEmailService>();
+        services.AddScoped<IRegistrationFormEvents, EmailConfirmationRegistrationFormEvents>();
+    }
+}
+
 [RequireFeatures("OrchardCore.Roles")]
 public sealed class RolesStartup : StartupBase
 {
@@ -279,7 +292,7 @@ public sealed class RolesStartup : StartupBase
     {
         services.AddScoped<IRoleRemovedEventHandler, UserRoleRemovedEventHandler>();
         services.AddIndexProvider<UserByRoleNameIndexProvider>();
-        services.AddScoped<IDisplayDriver<User>, UserRoleDisplayDriver>();
+        services.AddDisplayDriver<User, UserRoleDisplayDriver>();
         services.AddScoped<IAuthorizationHandler, RoleAuthorizationHandler>();
         services.AddPermissionProvider<UserRolePermissions>();
         services.AddSingleton<IUsersAdminListFilterProvider, RolesAdminListFilterProvider>();
@@ -393,7 +406,7 @@ public sealed class ChangeEmailStartup : StartupBase
 
         services.AddSiteDisplayDriver<ChangeEmailSettingsDisplayDriver>();
         services.AddNavigationProvider<ChangeEmailAdminMenu>();
-        services.AddScoped<IDisplayDriver<UserMenu>, ChangeEmailUserMenuDisplayDriver>();
+        services.AddDisplayDriver<UserMenu, ChangeEmailUserMenuDisplayDriver>();
     }
 }
 
@@ -422,12 +435,15 @@ public sealed class RegistrationStartup : StartupBase
             o.MemberAccessStrategy.Register<ConfirmEmailViewModel>();
         });
 
+        services.AddDisplayDriver<User, UserRegistrationAdminDisplayDriver>();
         services.AddSiteDisplayDriver<RegistrationSettingsDisplayDriver>();
         services.AddNavigationProvider<RegistrationAdminMenu>();
 
-        services.AddScoped<IDisplayDriver<LoginForm>, RegisterUserLoginFormDisplayDriver>();
-        services.AddScoped<IDisplayDriver<RegisterUserForm>, RegisterUserFormDisplayDriver>();
+        services.AddDisplayDriver<LoginForm, RegisterUserLoginFormDisplayDriver>();
+        services.AddDisplayDriver<RegisterUserForm, RegisterUserFormDisplayDriver>();
         services.AddTransient<IConfigureOptions<RegistrationOptions>, RegistrationOptionsConfigurations>();
+        services.AddScoped<ILoginFormEvent, UserModerationLoginFormEvent>();
+        services.AddScoped<IRegistrationFormEvents, UserModerationRegistrationFormEvents>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -500,9 +516,9 @@ public sealed class ResetPasswordStartup : StartupBase
         services.AddSiteDisplayDriver<ResetPasswordSettingsDisplayDriver>();
         services.AddNavigationProvider<ResetPasswordAdminMenu>();
 
-        services.AddScoped<IDisplayDriver<ResetPasswordForm>, ResetPasswordFormDisplayDriver>();
-        services.AddScoped<IDisplayDriver<LoginForm>, ForgotPasswordLoginFormDisplayDriver>();
-        services.AddScoped<IDisplayDriver<ForgotPasswordForm>, ForgotPasswordFormDisplayDriver>();
+        services.AddDisplayDriver<ResetPasswordForm, ResetPasswordFormDisplayDriver>();
+        services.AddDisplayDriver<LoginForm, ForgotPasswordLoginFormDisplayDriver>();
+        services.AddDisplayDriver<ForgotPasswordForm, ForgotPasswordFormDisplayDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -565,7 +581,7 @@ public sealed class CustomUserSettingsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
+        services.AddDisplayDriver<User, CustomUserSettingsDisplayDriver>();
         services.AddPermissionProvider<CustomUserSettingsPermissions>();
         services.AddDeployment<CustomUserSettingsDeploymentSource, CustomUserSettingsDeploymentStep, CustomUserSettingsDeploymentStepDriver>();
         services.AddScoped<IStereotypesProvider, CustomUserSettingsStereotypesProvider>();

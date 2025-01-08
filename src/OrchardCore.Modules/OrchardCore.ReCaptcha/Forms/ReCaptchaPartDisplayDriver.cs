@@ -20,7 +20,7 @@ public sealed class ReCaptchaPartDisplayDriver : ContentPartDisplayDriver<ReCapt
         return Initialize<ReCaptchaPartViewModel>("ReCaptchaPart", async model =>
         {
             var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
-            model.SettingsAreConfigured = settings.IsValid();
+            model.SettingsAreConfigured = settings.ConfigurationExists();
         }).Location("Detail", "Content");
     }
 
@@ -29,7 +29,7 @@ public sealed class ReCaptchaPartDisplayDriver : ContentPartDisplayDriver<ReCapt
         return Initialize<ReCaptchaPartViewModel>("ReCaptchaPart_Fields_Edit", async model =>
         {
             var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
-            model.SettingsAreConfigured = settings.IsValid();
+            model.SettingsAreConfigured = settings.ConfigurationExists();
         });
     }
 }

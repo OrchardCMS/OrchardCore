@@ -43,8 +43,6 @@ public sealed class LuceneQueryHandler : QueryHandlerBase
             context.Query.Put(metadata);
         }
 
-        context.Query.CanReturnContentItems = true;
-
         return Task.CompletedTask;
     }
 }

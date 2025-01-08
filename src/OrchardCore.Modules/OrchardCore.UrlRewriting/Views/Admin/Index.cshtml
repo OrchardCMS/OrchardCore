@@ -1,0 +1,137 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@using OrchardCore.UrlRewriting.Endpoints.Rules
+
+@model ListRewriteRuleViewModel
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["URL Rewriting Rules"])</h1></zone>
+
+@* the form is necessary to generate an antiforgery token for the delete and toggle actions *@
+<form asp-action="Index" method="post" class="no-multisubmit">
+    <input type="submit" name="submit.Filter" id="submitFilter" class="visually-hidden" />
+    <input asp-for="Options.BulkAction" type="hidden" />
+    <input type="submit" name="submit.BulkAction" class="visually-hidden" />
+
+    <div class="card text-bg-theme mb-3 position-sticky action-bar">
+        <div class="card-body">
+            <div class="row gx-3">
+                <div class="col">
+                    <div class="has-search">
+                        <i class="fa-solid fa-search form-control-feedback" aria-hidden="true"></i>
+                        <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus autocomplete="off" />
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <button type="button" class="btn btn-secondary create" role="button" data-bs-toggle="modal" data-bs-target="#modalAddRule">@T["Add Rule"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ul class="list-group with-checkbox" id="rewrite-rules-sortable-list">
+        @if (Model.Rules.Count > 0)
+        {
+            int startIndex = 0;
+            int endIndex = startIndex + Model.Rules.Count - 1;
+
+            <li class="list-group-item text-bg-theme ignore-elements">
+                <div class="row gx-3">
+                    <div class="col">
+                        <div class="form-check my-1">
+                            <input type="checkbox" class="form-check-input" id="select-all">
+                            <label class="form-check-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+                            <label id="items" for="select-all">@T.Plural(Model.Rules.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural(Model.Rules.Count, " / {0} item in total", " / {0} items in total")</span></label>
+                            <label id="selected-items" class="text-muted" for="select-all"></label>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="dropdown d-none" id="actions">
+                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @T["Actions"]
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bulk-action-menu-button">
+                                @foreach (var item in Model.Options.BulkActions)
+                                {
+                                    <li>
+                                        <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            @foreach (var entry in Model.Rules)
+            {
+                <li class="list-group-item item d-flex justify-content-between" data-filter-value="@entry.Rule.Name.ToLowerInvariant()">
+                    <div class="d-flex flex-row">
+                        <div class="ui-sortable-handle d-inline me-2">
+                            <i class="fa-solid fa-arrows-alt" aria-hidden="true"></i>
+                        </div>
+
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" value="@entry.Rule.Id" name="ruleIds" id="ruleIds-@entry.Rule.Id">
+                            <label class="form-check-label" for="ruleIds-@entry.Rule.Id">&nbsp;</label>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow-1">
+                        @await DisplayAsync(entry.Shape)
+                    </div>
+                </li>
+            }
+        }
+        else
+        {
+            <li class="list-group-item list-group-item-info text-center ignore-elements">
+                @T["<strong>Nothing here!</strong> There are no rewrite rules at the moment."]
+            </li>
+        }
+    </ul>
+
+    <div id="list-alert" class="alert alert-info my-3 d-none text-center" role="alert">
+        @T["Your search returned no results."]
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="modalAddRule" tabindex="-1" role="dialog" aria-labelledby="available-rule-types-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="available-rule-types-title">@T["Available Rule Types"]</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    @if (!Model.SourceNames.Any())
+                    {
+                        <p class="p-3 mb-2 bg-warning text-white">@T["You need to enable a feature which provides a rewrite rule source."]</p>
+                    }
+                    else
+                    {
+                        <div class="row row-cols-1 row-cols-md-3 g-2">
+                            @foreach (var source in Model.SourceNames)
+                            {
+                                OrchardCore.DisplayManagement.IShape shape = await New.RewriteRule_Link(Name: source);
+                                shape.Metadata.Alternates.Add("RewriteRule_Link__" + source);
+                                shape.Properties["Source"] = source;
+
+                                @await DisplayAsync(shape)
+                            }
+                        </div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script asp-name="sortable-rules" at="Foot"></script>
+<script asp-src="~/OrchardCore.UrlRewriting/Scripts/admin-ui.min.js" debug-src="~/OrchardCore.UrlRewriting/Scripts/admin-ui.min.js" asp-name="url-rewriting-rules-admin" at="Foot" depends-on="sortable-rules"></script>
+
+<script at="Foot" depends-on="url-rewriting-rules-admin">
+    document.addEventListener('DOMContentLoaded', (e) => {
+        urlRewritingAdmin.initialize('@Url.RouteUrl(SortRulesEndpoint.RouteName, new { area = "OrchardCore.UrlRewriting" })','@T["Unable to sort the list. Try refreshing your page and try again."]','@T["selected"]');
+    });
+</script>

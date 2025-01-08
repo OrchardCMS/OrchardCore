@@ -9,7 +9,6 @@ using OrchardCore.Modules;
 using OrchardCore.Notifications.Indexes;
 using OrchardCore.Notifications.Models;
 using OrchardCore.Notifications.ViewModels;
-using OrchardCore.Users.Models;
 using YesSql;
 
 namespace OrchardCore.Notifications.Endpoints.Management;

@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace OrchardCore.Diagnostics;
 
@@ -10,7 +9,7 @@ public sealed class Startup : Modules.StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<IStartupFilter, DiagnosticsStartupFilter>());
+        services.AddSingleton<IStartupFilter, DiagnosticsStartupFilter>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

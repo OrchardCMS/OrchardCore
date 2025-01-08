@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.Handlers;
@@ -10,9 +9,9 @@ namespace OrchardCore.Search.Elasticsearch.Drivers;
 
 public sealed class ContentPickerFieldElasticEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver
 {
-    private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
 
-    public ContentPickerFieldElasticEditorSettingsDriver(ElasticIndexSettingsService elasticIndexSettingsService)
+    public ContentPickerFieldElasticEditorSettingsDriver(ElasticsearchIndexSettingsService elasticIndexSettingsService)
     {
         _elasticIndexSettingsService = elasticIndexSettingsService;
     }

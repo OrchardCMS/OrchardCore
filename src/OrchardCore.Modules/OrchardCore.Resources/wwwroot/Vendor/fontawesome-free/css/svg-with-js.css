@@ -1,5 +1,5 @@
 /*!
- * Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  * Copyright 2024 Fonticons, Inc.
  */
@@ -9,14 +9,20 @@
   --fa-font-light: normal 300 1em/1 'Font Awesome 6 Pro';
   --fa-font-thin: normal 100 1em/1 'Font Awesome 6 Pro';
   --fa-font-duotone: normal 900 1em/1 'Font Awesome 6 Duotone';
+  --fa-font-duotone-regular: normal 400 1em/1 'Font Awesome 6 Duotone';
+  --fa-font-duotone-light: normal 300 1em/1 'Font Awesome 6 Duotone';
+  --fa-font-duotone-thin: normal 100 1em/1 'Font Awesome 6 Duotone';
   --fa-font-brands: normal 400 1em/1 'Font Awesome 6 Brands';
   --fa-font-sharp-solid: normal 900 1em/1 'Font Awesome 6 Sharp';
   --fa-font-sharp-regular: normal 400 1em/1 'Font Awesome 6 Sharp';
   --fa-font-sharp-light: normal 300 1em/1 'Font Awesome 6 Sharp';
   --fa-font-sharp-thin: normal 100 1em/1 'Font Awesome 6 Sharp';
-  --fa-font-sharp-duotone-solid: normal 900 1em/1 'Font Awesome 6 Sharp Duotone'; }
+  --fa-font-sharp-duotone-solid: normal 900 1em/1 'Font Awesome 6 Sharp Duotone';
+  --fa-font-sharp-duotone-regular: normal 400 1em/1 'Font Awesome 6 Sharp Duotone';
+  --fa-font-sharp-duotone-light: normal 300 1em/1 'Font Awesome 6 Sharp Duotone';
+  --fa-font-sharp-duotone-thin: normal 100 1em/1 'Font Awesome 6 Sharp Duotone'; }
 
-svg:not(:root).svg-inline--fa, svg:not(:host).svg-inline--fa {
+svg.svg-inline--fa:not(:root), svg.svg-inline--fa:not(:host) {
   overflow: visible;
   box-sizing: content-box; }
 
@@ -57,7 +63,7 @@ svg:not(:root).svg-inline--fa, svg:not(:host).svg-inline--fa {
   right: 0;
   top: 0; }
 
-.fa-layers-text, .fa-layers-counter {
+.fa-layers-counter, .fa-layers-text {
   display: inline-block;
   position: absolute;
   text-align: center; }
@@ -453,7 +459,3 @@ svg:not(:root).svg-inline--fa, svg:not(:host).svg-inline--fa {
 .svg-inline--fa mask .fa-primary,
 .svg-inline--fa mask .fa-secondary {
   fill: black; }
-
-.fad.fa-inverse,
-.fa-duotone.fa-inverse {
-  color: var(--fa-inverse, #fff); }

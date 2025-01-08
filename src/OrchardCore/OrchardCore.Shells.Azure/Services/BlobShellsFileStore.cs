@@ -12,19 +12,14 @@ public class BlobShellsFileStore : IShellsFileStore
     }
 
     public Task<string> CreateFileFromStreamAsync(string path, Stream inputStream)
-    {
-        return _fileStore.CreateFileFromStreamAsync(path, inputStream, true);
-    }
+        => _fileStore.CreateFileFromStreamAsync(path, inputStream, true);
 
     public Task<IFileStoreEntry> GetFileInfoAsync(string path)
-    {
-        return _fileStore.GetFileInfoAsync(path);
-    }
+        => _fileStore.GetFileInfoAsync(path);
 
     public Task<Stream> GetFileStreamAsync(string path)
-    {
-        return _fileStore.GetFileStreamAsync(path);
-    }
+        => _fileStore.GetFileStreamAsync(path);
 
-    public Task RemoveFileAsync(string path) => _fileStore.TryDeleteFileAsync(path);
+    public Task RemoveFileAsync(string path)
+        => _fileStore.TryDeleteFileAsync(path);
 }

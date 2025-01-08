@@ -7,7 +7,8 @@ using OrchardCore.Placements.Services;
 
 namespace OrchardCore.Placements.Deployment;
 
-public class PlacementsDeploymentSource : IDeploymentSource
+public sealed class PlacementsDeploymentSource
+    : DeploymentSourceBase<PlacementsDeploymentStep>
 {
     private readonly PlacementsManager _placementsManager;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
@@ -20,13 +21,8 @@ public class PlacementsDeploymentSource : IDeploymentSource
         _jsonSerializerOptions = jsonSerializerOptions.Value.SerializerOptions;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(PlacementsDeploymentStep step, DeploymentPlanResult result)
     {
-        if (step is not PlacementsDeploymentStep)
-        {
-            return;
-        }
-
         var placementObjects = new JsonObject();
         var placements = await _placementsManager.ListShapePlacementsAsync();
 

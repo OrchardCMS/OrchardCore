@@ -43,7 +43,10 @@ public sealed class AdminController : Controller
     [Admin("Queries/Sql/Query", "QueriesRunSql")]
     public Task<IActionResult> Query(string query)
     {
-        query = string.IsNullOrWhiteSpace(query) ? "" : System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query));
+        query = string.IsNullOrWhiteSpace(query)
+            ? ""
+            : Base64.FromUTF8Base64String(query);
+
         return Query(new AdminQueryViewModel
         {
             DecodedQuery = query,

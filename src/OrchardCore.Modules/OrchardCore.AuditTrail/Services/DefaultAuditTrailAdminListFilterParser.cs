@@ -3,7 +3,7 @@ using YesSql.Filters.Query;
 
 namespace OrchardCore.AuditTrail.Services;
 
-public class DefaultAuditTrailAdminListFilterParser : IAuditTrailAdminListFilterParser
+public sealed class DefaultAuditTrailAdminListFilterParser : IAuditTrailAdminListFilterParser
 {
     private readonly IQueryParser<AuditTrailEvent> _parser;
 

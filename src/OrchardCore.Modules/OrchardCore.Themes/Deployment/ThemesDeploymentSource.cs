@@ -1,12 +1,12 @@
 using System.Text.Json.Nodes;
 using OrchardCore.Admin;
 using OrchardCore.Deployment;
-using OrchardCore.Themes.Recipes;
 using OrchardCore.Themes.Services;
 
 namespace OrchardCore.Themes.Deployment;
 
-public class ThemesDeploymentSource : IDeploymentSource
+public sealed class ThemesDeploymentSource
+    : DeploymentSourceBase<ThemesDeploymentStep>
 {
     private readonly ISiteThemeService _siteThemeService;
     private readonly IAdminThemeService _adminThemeService;
@@ -17,20 +17,13 @@ public class ThemesDeploymentSource : IDeploymentSource
         _adminThemeService = adminThemeService;
     }
 
-    public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
+    protected override async Task ProcessAsync(ThemesDeploymentStep step, DeploymentPlanResult result)
     {
-        var themesStep = step as ThemesDeploymentStep;
-
-        if (themesStep == null)
-        {
-            return;
-        }
-
         result.Steps.Add(new JsonObject
         {
             ["name"] = "Themes",
-            [nameof(ThemeStepModel.Site)] = await _siteThemeService.GetSiteThemeNameAsync(),
-            [nameof(ThemeStepModel.Admin)] = await _adminThemeService.GetAdminThemeNameAsync(),
+            ["Site"] = await _siteThemeService.GetSiteThemeNameAsync(),
+            ["Admin"] = await _adminThemeService.GetAdminThemeNameAsync(),
         });
     }
 }

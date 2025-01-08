@@ -1,8 +1,6 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.Deployment.Services;
-using OrchardCore.Entities;
-using OrchardCore.Recipes.Services;
-using OrchardCore.Settings;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Users;
 using OrchardCore.Users.Controllers;
@@ -47,7 +45,7 @@ public class AccountControllerTests
             var externalClaims = new List<SerializableClaim>();
             var userRoles = await userManager.GetRolesAsync(user);
 
-            var context = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties)
+            var context = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties.DeepClone() as JsonObject)
             {
                 UserClaims = user.UserClaims,
                 UserRoles = userRoles
@@ -89,7 +87,7 @@ public class AccountControllerTests
             };
             scriptExternalLoginEventHandler.UpdateUserInternal(context, loginSettings);
 
-            if (await UserManagerHelper.UpdateUserPropertiesAsync(userManager, user, context))
+            if (await userManager.UpdateUserPropertiesAsync(user, context))
             {
                 await userManager.UpdateAsync(user);
             }
@@ -117,7 +115,7 @@ public class AccountControllerTests
             var externalClaims = new List<SerializableClaim>();
             var userRoles = await userManager.GetRolesAsync(user);
 
-            var updateContext = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties)
+            var updateContext = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties.DeepClone() as JsonObject)
             {
                 UserClaims = user.UserClaims,
                 UserRoles = userRoles,
@@ -147,7 +145,7 @@ public class AccountControllerTests
             };
             scriptExternalLoginEventHandler.UpdateUserInternal(updateContext, loginSettings);
 
-            if (await UserManagerHelper.UpdateUserPropertiesAsync(userManager, user, updateContext))
+            if (await userManager.UpdateUserPropertiesAsync(user, updateContext))
             {
                 await userManager.UpdateAsync(user);
             }
@@ -359,10 +357,10 @@ public class AccountControllerTests
     public async Task Register_WhenRequireEmailConfirmation_RedirectToConfirmEmailSent()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings()
+        var context = await GetSiteContextAsync(new RegistrationSettings
         {
             UsersMustValidateEmail = true,
-        });
+        }, true, true, false);
 
         var responseFromGet = await context.Client.GetAsync("Register");
 
@@ -417,98 +415,90 @@ public class AccountControllerTests
 
         await context.InitializeAsync();
 
-        await context.UsingTenantScopeAsync(async scope =>
+        var recipeSteps = new JsonArray
         {
-            if (!requireUniqueEmail)
+            new JsonObject
             {
-                var recipeExecutor = scope.ServiceProvider.GetRequiredService<IRecipeExecutor>();
-                var recipeHarvesters = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeHarvester>>();
-                var recipeCollections = await Task.WhenAll(
-                    recipeHarvesters.Select(recipe => recipe.HarvestRecipesAsync()));
-
-                var recipe = recipeCollections.SelectMany(recipeCollection => recipeCollection)
-                    .FirstOrDefault(recipe => recipe.Name == "UserSettingsTest");
-
-                var executionId = Guid.NewGuid().ToString("n");
-
-                await recipeExecutor.ExecuteAsync(
-                    executionId,
-                    recipe,
-                    new Dictionary<string, object>(),
-                    CancellationToken.None);
+                { "name", "settings" },
+                { nameof(RegistrationSettings), JsonSerializer.SerializeToNode(settings)},
+                { nameof(IdentitySettings), JsonSerializer.SerializeToNode(new IdentitySettings
+                {
+                    UserSettings = new IdentityUserSettings
+                    {
+                        RequireUniqueEmail = requireUniqueEmail,
+                    }
+                })},
             }
-
-            var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
-
-            var site = await siteService.LoadSiteSettingsAsync();
-
-            site.Put(settings);
-
-            await siteService.UpdateSiteSettingsAsync(site);
-        });
+        };
 
         if (enableRegistrationFeature || enableExternalAuthentication)
         {
-            await context.UsingTenantScopeAsync(async scope =>
+            var featureIds = new JsonArray();
+
+            if (enableRegistrationFeature)
             {
-                var featureIds = new JsonArray();
+                featureIds.Add(UserConstants.Features.UserRegistration);
+            }
 
-                if (enableRegistrationFeature)
-                {
-                    featureIds.Add(UserConstants.Features.UserRegistration);
-                }
+            if (enableExternalAuthentication)
+            {
+                featureIds.Add(UserConstants.Features.ExternalAuthentication);
+            }
 
-                if (enableExternalAuthentication)
-                {
-                    featureIds.Add(UserConstants.Features.ExternalAuthentication);
-                }
-
-                var tempArchiveName = Path.GetTempFileName() + ".json";
-                var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-
-                var data = new JsonObject
-                {
-                    ["steps"] = new JsonArray
-                    {
-                        new JsonObject
-                        {
-                            { "name", "feature" },
-                            { "enable", featureIds },
-                        }
-                    },
-                };
-
-                try
-                {
-                    using (var stream = new FileStream(tempArchiveName, FileMode.Create))
-                    {
-                        var bytes = Encoding.UTF8.GetBytes(data.ToString());
-
-                        await stream.WriteAsync(bytes);
-                    }
-
-                    Directory.CreateDirectory(tempArchiveFolder);
-                    File.Move(tempArchiveName, Path.Combine(tempArchiveFolder, "Recipe.json"));
-
-                    var deploymentManager = scope.ServiceProvider.GetRequiredService<IDeploymentManager>();
-
-                    await deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
-                }
-                finally
-                {
-                    if (File.Exists(tempArchiveName))
-                    {
-                        File.Delete(tempArchiveName);
-                    }
-
-                    if (Directory.Exists(tempArchiveFolder))
-                    {
-                        Directory.Delete(tempArchiveFolder, true);
-                    }
-                }
+            recipeSteps.Add(new JsonObject
+            {
+                { "name", "feature" },
+                { "enable", featureIds },
             });
         }
 
+        var recipe = new JsonObject
+        {
+            ["steps"] = recipeSteps,
+        };
+
+        var t = recipe.ToJsonString();
+
+        await RunRecipeAsync(context, recipe);
+
         return context;
+    }
+
+    private static async Task RunRecipeAsync(SiteContext context, JsonObject data)
+    {
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var tempArchiveName = PathExtensions.GetTempFileName() + ".json";
+            var tempArchiveFolder = PathExtensions.GetTempFileName();
+
+            try
+            {
+                using (var stream = new FileStream(tempArchiveName, FileMode.Create))
+                {
+                    var bytes = Encoding.UTF8.GetBytes(data.ToJsonString());
+
+                    await stream.WriteAsync(bytes);
+                }
+
+                Directory.CreateDirectory(tempArchiveFolder);
+                File.Move(tempArchiveName, Path.Combine(tempArchiveFolder, "Recipe.json"));
+
+                var deploymentManager = scope.ServiceProvider.GetRequiredService<IDeploymentManager>();
+
+                await deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
+            }
+            finally
+            {
+                if (File.Exists(tempArchiveName))
+                {
+                    File.Delete(tempArchiveName);
+                }
+
+                if (Directory.Exists(tempArchiveFolder))
+                {
+                    Directory.Delete(tempArchiveFolder, true);
+                }
+            }
+        });
     }
 }

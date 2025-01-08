@@ -23,6 +23,6 @@ public sealed class Startup : StartupBase
             .AddScoped<IUserEventHandler>(sp => sp.GetRequiredService<UserEventHandler>())
             .AddScoped<ILoginFormEvent>(sp => sp.GetRequiredService<UserEventHandler>());
 
-        services.AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailUserEventDisplayDriver>();
+        services.AddDisplayDriver<AuditTrailEvent, AuditTrailUserEventDisplayDriver>();
     }
 }

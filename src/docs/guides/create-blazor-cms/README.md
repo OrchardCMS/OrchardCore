@@ -157,7 +157,7 @@ In this section, we will create a .NET Blazor application, as Razor Class librar
 - You can run the following commands to create a new Razor class library project.
 
 ```dotnetcli
-dotnet new razorclasslib -f net8.0 -o OCBlazorLib
+dotnet new razorclasslib -f net9.0 -o OCBlazorLib
 dotnet sln add ./OCBlazorLib
 dotnet add ./BlazorCms/BlazorCms.csproj reference ./OCBlazorLib/OCBlazorLib.csproj
 ```
@@ -632,7 +632,7 @@ In our `OCBlazorLib` blazor Library project, Let's enrich our `/content` page to
 - In `OCBlazorLib.csproj` Add a NuGet package reference to `OrchardCore.ContentManagement`
 
 ```dotnetcli
-dotnet add ./OCBlazorLib/OCBlazorLib.csproj package OrchardCore.ContentManagement --version 2.0.2
+dotnet add ./OCBlazorLib/OCBlazorLib.csproj package OrchardCore.ContentManagement --version 2.1.3
 ```
 
 - Add the following `using` statements in `_Imports.razor`
@@ -730,6 +730,50 @@ Run the application. Click on the `Orchard Core` link on the Left Nav will load 
 # Add multitenancy to the Blazor App
 One of the key features of Orchard Core is its multi-tenancy support. In this section, we will add multi-tenancy support to our Blazor application.
 
+!!! note
+    Orchard Core listens for requests, also on '/' (e.g. when a site needs to be configured). So having our Blazor app listening to '/' as well can pose a problem.
+    A solution is to replace `@page "/"` with `@page "/home"` in our `home.razor` file (and update our `navmenu.razor`), so Blazor (the app) will listen to `/home` while Orchard Core is not hindered by that.
+
+=== "Home.razor"
+
+    ```razor
+         @page "/home"
+         
+         <PageTitle>Home</PageTitle>
+         
+         <h1>Hello, Orchard!</h1>
+         
+         Welcome to your new Blazor CMS app.
+    ```
+    
+=== "NavMenu.razor"
+
+    ```razor
+        <div class="top-row ps-3 navbar navbar-dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="">BlazorCMS</a>
+            </div>
+        </div>
+        
+        <input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+        
+        <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+            <nav class="flex-column">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="home" Match="NavLinkMatch.All">
+                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                    </NavLink>
+                </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="content">
+                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Orchard Core
+                    </NavLink>
+                </div>
+                @*More Nav links here *@
+            </nav>
+        </div>
+    ```
+    
 ## Enable the tenant feature.
 
 In orchard core admin, go to `Configuration` -> `Features` and enable the `Tenants` feature.

@@ -14,12 +14,13 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries;
 /// <summary>
 /// Registers all Content Types as queries.
 /// </summary>
-public class ContentTypeQuery : ISchemaBuilder
+public sealed class ContentTypeQuery : ISchemaBuilder
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IOptions<GraphQLContentOptions> _contentOptionsAccessor;
     private readonly IOptions<GraphQLSettings> _settingsAccessor;
-    protected readonly IStringLocalizer S;
+
+    internal readonly IStringLocalizer S;
 
     public ContentTypeQuery(IHttpContextAccessor httpContextAccessor,
         IOptions<GraphQLContentOptions> contentOptionsAccessor,
@@ -35,6 +36,7 @@ public class ContentTypeQuery : ISchemaBuilder
     public Task<string> GetIdentifierAsync()
     {
         var contentDefinitionManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IContentDefinitionManager>();
+
         return contentDefinitionManager.GetIdentifierAsync();
     }
 
@@ -52,17 +54,16 @@ public class ContentTypeQuery : ISchemaBuilder
                 continue;
             }
 
-            var typeType = new ContentItemType(_contentOptionsAccessor)
-            {
-                Name = typeDefinition.Name,
-                Description = S["Represents a {0}.", typeDefinition.DisplayName]
-            };
-
-            var query = new ContentItemsFieldType(typeDefinition.Name, schema, _contentOptionsAccessor, _settingsAccessor)
+            var typeType = new ContentItemType(_contentOptionsAccessor, serviceProvider.GetRequiredService<IStringLocalizer<ContentItemType>>())
             {
                 Name = typeDefinition.Name,
                 Description = S["Represents a {0}.", typeDefinition.DisplayName],
-                ResolvedType = new ListGraphType(typeType)
+            };
+
+            var query = new ContentItemsFieldType(typeDefinition.Name, schema, _contentOptionsAccessor, _settingsAccessor, serviceProvider)
+            {
+                Description = S["Represents a {0}.", typeDefinition.DisplayName],
+                ResolvedType = new ListGraphType(typeType),
             };
 
             query.RequirePermission(CommonPermissions.ExecuteGraphQL);

@@ -62,7 +62,7 @@ public class CreateContentTask : ContentTask
         return Outcomes(S["Done"], S["Failed"]);
     }
 
-    public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+    public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
     {
         if (InlineEvent.IsStart && InlineEvent.ContentType == ContentType)
         {
