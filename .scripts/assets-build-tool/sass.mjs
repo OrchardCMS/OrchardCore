@@ -8,6 +8,7 @@ import * as sass from "sass";
 
 let action = process.argv[2];
 const config = JSON5.parse(Buffer.from(process.argv[3], "base64").toString("utf-8"));
+const dest = config.dest ?? config.basePath + "wwwroot/Styles/";
 
 if (config.dryRun) {
   action = "dry-run";
@@ -21,17 +22,17 @@ glob(config.source).then((files) => {
     return;
   }
 
-  const destExists = fs.existsSync(config.dest);
+  const destExists = fs.existsSync(dest);
 
   if (destExists) {
-    const stats = fs.lstatSync(config.dest);
+    const stats = fs.lstatSync(dest);
     if (!stats.isDirectory()) {
       console.log(chalk.red("Destination is not a directory"));
       console.log("Files:", files);
-      console.log("Destination:", config.dest);
+      console.log("Destination:", dest);
       return;
     }
-    console.log(chalk.yellow(`Destination ${config.dest} already exists, files may be overwritten`));
+    console.log(chalk.yellow(`Destination ${dest} already exists, files may be overwritten`));
   }
 
   let baseFolder;
@@ -50,7 +51,7 @@ glob(config.source).then((files) => {
       relativePath = path.basename(file);
     }
 
-    const target = path.join(config.dest, relativePath);
+    const target = path.join(dest, relativePath);
 
     if (action === "dry-run") {
       console.log(`Dry run (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target));
@@ -63,7 +64,7 @@ glob(config.source).then((files) => {
             const cssResult = await sass.compileAsync(file);
 
             if (cssResult) {
-              const normalTarget = path.join(config.dest, path.parse(target).name + ".css");
+              const normalTarget = path.join(dest, path.parse(target).name + ".css");
               fs.outputFile(normalTarget, cssResult.css);
               console.log(`Tranpiled (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(normalTarget));
 
@@ -75,13 +76,13 @@ glob(config.source).then((files) => {
               });
 
               if (code) {
-                const minifiedTarget = path.join(config.dest, path.parse(target).name + ".min.css");
+                const minifiedTarget = path.join(dest, path.parse(target).name + ".min.css");
                 fs.outputFile(minifiedTarget, code);
                 console.log(`Minified (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(minifiedTarget));
               }
 
               if (map) {
-                const mappedTarget = path.join(config.dest, path.parse(target).name + ".css.map");
+                const mappedTarget = path.join(dest, path.parse(target).name + ".css.map");
                 fs.outputFile(mappedTarget, map);
                 console.log(`Mapped (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(mappedTarget));
               }
