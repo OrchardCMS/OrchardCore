@@ -1818,12 +1818,48 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@orchardcore/admindashboard@workspace:src/OrchardCore.Modules/OrchardCore.AdminDashboard":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/admindashboard@workspace:src/OrchardCore.Modules/OrchardCore.AdminDashboard"
+  dependencies:
+    "@popperjs/core": "npm:2.11.8"
+    bootstrap: "npm:5.3.3"
+  languageName: unknown
+  linkType: soft
+
 "@orchardcore/adminmenu@workspace:src/OrchardCore.Modules/OrchardCore.AdminMenu":
   version: 0.0.0-use.local
   resolution: "@orchardcore/adminmenu@workspace:src/OrchardCore.Modules/OrchardCore.AdminMenu"
   dependencies:
+    "@popperjs/core": "npm:2.11.8"
     bootstrap: "npm:5.3.3"
     fontawesome-iconpicker: "npm:3.2.0"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/apis-graphql@workspace:src/OrchardCore.Modules/OrchardCore.Apis.GraphQL":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/apis-graphql@workspace:src/OrchardCore.Modules/OrchardCore.Apis.GraphQL"
+  dependencies:
+    "@babel/cli": "npm:^7.22.10"
+    "@babel/core": "npm:^7.22.11"
+    "@babel/preset-env": "npm:^7.22.10"
+    "@babel/preset-react": "npm:^7.22.5"
+    "@babel/preset-typescript": "npm:^7.22.11"
+    assert: "npm:^2.0.0"
+    css-loader: "npm:^6.8.1"
+    graphiql: "npm:^1.11.5"
+    graphiql-explorer: "npm:^0.9.0"
+    graphql: "npm:^15.8.0"
+    null-loader: "npm:^4.0.1"
+    prop-types: "npm:15.8.1"
+    react: "npm:^16.14.0"
+    react-dom: "npm:^16.14.0"
+    style-loader: "npm:^3.3.3"
+    ts-loader: "npm:^9.4.4"
+    typescript: "npm:^5.2.2"
+    webpack: "npm:^5.94.0"
+    webpack-cli: "npm:^5.1.4"
   languageName: unknown
   linkType: soft
 
@@ -1861,8 +1897,102 @@ __metadata:
     parcel-config-vue2: "npm:^0.1.3"
     parcel-transformer-vue2: "npm:^0.1.7"
     sass: "npm:^1.72.0"
+    vue-hot-reload-api: "npm:2.3.4"
   bin:
     asset-bundler: ./build.mjs
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/audittrail@workspace:src/OrchardCore.Modules/OrchardCore.AuditTrail":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/audittrail@workspace:src/OrchardCore.Modules/OrchardCore.AuditTrail"
+  dependencies:
+    "@babel/cli": "npm:^7.22.10"
+    "@babel/core": "npm:^7.22.11"
+    "@babel/preset-env": "npm:^7.22.10"
+    "@babel/preset-react": "npm:^7.22.5"
+    "@babel/preset-typescript": "npm:^7.22.11"
+    "@popperjs/core": "npm:2.11.8"
+    "@types/react": "npm:^18.2.21"
+    "@types/react-dom": "npm:^18.2.7"
+    assert: "npm:^2.0.0"
+    bootstrap: "npm:5.3.3"
+    css-loader: "npm:^6.8.1"
+    diff: "npm:5.1.0"
+    null-loader: "npm:^4.0.1"
+    prop-types: "npm:15.8.1"
+    react: "npm:^16.14.0"
+    react-diff-viewer: "npm:^3.1.1"
+    react-dom: "npm:^16.14.0"
+    sass-loader: "npm:^13.3.2"
+    style-loader: "npm:^3.3.3"
+    ts-loader: "npm:^9.4.4"
+    typescript: "npm:^5.2.2"
+    webpack: "npm:^5.94.0"
+    webpack-cli: "npm:^5.1.4"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/contentfields@workspace:src/OrchardCore.Modules/OrchardCore.ContentFields":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/contentfields@workspace:src/OrchardCore.Modules/OrchardCore.ContentFields"
+  dependencies:
+    "@popperjs/core": "npm:2.11.8"
+    bootstrap: "npm:5.3.3"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/liquid@workspace:src/OrchardCore.Modules/OrchardCore.Liquid":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/liquid@workspace:src/OrchardCore.Modules/OrchardCore.Liquid"
+  dependencies:
+    monaco-editor: "npm:0.46.0"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/markdown@workspace:src/OrchardCore.Modules/OrchardCore.Markdown":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/markdown@workspace:src/OrchardCore.Modules/OrchardCore.Markdown"
+  dependencies:
+    "@popperjs/core": "npm:2.11.8"
+    bootstrap: "npm:5.3.3"
+    easymde: "npm:2.18.0"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/media@workspace:src/OrchardCore.Modules/OrchardCore.Media":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/media@workspace:src/OrchardCore.Modules/OrchardCore.Media"
+  dependencies:
+    "@popperjs/core": "npm:2.11.8"
+    blueimp-file-upload: "npm:10.32.0"
+    bootstrap: "npm:5.3.3"
+    jquery: "npm:3.7.1"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/resources@workspace:src/OrchardCore.Modules/OrchardCore.Resources":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/resources@workspace:src/OrchardCore.Modules/OrchardCore.Resources"
+  dependencies:
+    "@fortawesome/fontawesome-free": "npm:6.7.2"
+    "@popperjs/core": "npm:2.11.8"
+    bootstrap: "npm:5.3.3"
+    bootstrap-select: "npm:1.14.0-beta3"
+    codemirror: "npm:5.65.7"
+    jquery: "npm:3.7.1"
+    jquery-resizable-dom: "npm:0.35.0"
+    jquery.easing: "npm:1.4.1"
+    js-cookie: "npm:3.0.5"
+    monaco-editor: "npm:^0.46.0"
+    nestedSortable: "npm:1.3.4"
+    nouislider: "npm:15.7.0"
+    sortablejs: "npm:^1.15.3"
+    trumbowyg: "npm:2.28.0"
+    typescript-json-schema: "npm:^0.51.0"
+    vue: "npm:^2.6.14"
+    vue-multiselect: "npm:^2.1.6"
+    vuedraggable: "npm:^2.24.3"
   languageName: unknown
   linkType: soft
 
@@ -1874,6 +2004,7 @@ __metadata:
     "@babel/preset-env": "npm:^7.22.10"
     "@babel/preset-flow": "npm:7.22.5"
     "@orchardcore/asset-build-tool": "workspace:^"
+    "@popperjs/core": "npm:2.11.8"
     all-contributors-cli: "npm:^6.26.1"
     bootstrap: "npm:5.3.3"
     child_process: "npm:^1.0.2"
@@ -1906,6 +2037,110 @@ __metadata:
     rtlcss: "npm:4.1.0"
     source-map: "npm:^0.7.4"
     typescript: "npm:^5.2.2"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/setup@workspace:src/OrchardCore.Modules/OrchardCore.Setup":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/setup@workspace:src/OrchardCore.Modules/OrchardCore.Setup"
+  dependencies:
+    "@popperjs/core": "npm:2.11.8"
+    bootstrap: "npm:5.3.3"
+    jquery: "npm:3.7.1"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/shortcodes@workspace:src/OrchardCore.Modules/OrchardCore.Shortcodes":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/shortcodes@workspace:src/OrchardCore.Modules/OrchardCore.Shortcodes"
+  dependencies:
+    "@popperjs/core": "npm:2.11.8"
+    bootstrap: "npm:5.3.3"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/spatial@workspace:src/OrchardCore.Modules/OrchardCore.Spatial":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/spatial@workspace:src/OrchardCore.Modules/OrchardCore.Spatial"
+  dependencies:
+    leaflet: "npm:1.9.4"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/theadmin@workspace:src/OrchardCore.Themes/TheAdmin":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/theadmin@workspace:src/OrchardCore.Themes/TheAdmin"
+  dependencies:
+    "@popperjs/core": "npm:2.11.8"
+    bootstrap: "npm:5.3.3"
+    bootstrap-select: "npm:1.14.0-beta3"
+    jquery: "npm:3.7.1"
+    nouislider: "npm:15.7.0"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/theagencytheme@workspace:src/OrchardCore.Themes/TheAgencyTheme":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/theagencytheme@workspace:src/OrchardCore.Themes/TheAgencyTheme"
+  dependencies:
+    "@popperjs/core": "npm:2.11.8"
+    bootstrap: "npm:5.1.3"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/theblogtheme@workspace:src/OrchardCore.Themes/TheBlogTheme":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/theblogtheme@workspace:src/OrchardCore.Themes/TheBlogTheme"
+  dependencies:
+    "@popperjs/core": "npm:2.11.8"
+    bootstrap: "npm:5.1.3"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/thecomingsoontheme@workspace:src/OrchardCore.Themes/TheComingSoonTheme":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/thecomingsoontheme@workspace:src/OrchardCore.Themes/TheComingSoonTheme"
+  dependencies:
+    "@popperjs/core": "npm:2.11.8"
+    bootstrap: "npm:5.1.3"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/themes@workspace:src/OrchardCore.Modules/OrchardCore.Themes":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/themes@workspace:src/OrchardCore.Modules/OrchardCore.Themes"
+  dependencies:
+    "@popperjs/core": "npm:2.11.8"
+    bootstrap: "npm:5.3.3"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/thetheme@workspace:src/OrchardCore.Themes/TheTheme":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/thetheme@workspace:src/OrchardCore.Themes/TheTheme"
+  dependencies:
+    "@popperjs/core": "npm:2.11.8"
+    bootstrap: "npm:5.3.3"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/users@workspace:src/OrchardCore.Modules/OrchardCore.Users":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/users@workspace:src/OrchardCore.Modules/OrchardCore.Users"
+  dependencies:
+    qrcodejs: "npm:^1.0.0"
+  languageName: unknown
+  linkType: soft
+
+"@orchardcore/workflows@workspace:src/OrchardCore.Modules/OrchardCore.Workflows":
+  version: 0.0.0-use.local
+  resolution: "@orchardcore/workflows@workspace:src/OrchardCore.Modules/OrchardCore.Workflows"
+  dependencies:
+    "@popperjs/core": "npm:2.11.8"
+    "@types/bootstrap": "npm:5.2.7"
+    "@types/jquery": "npm:3.5.5"
+    bootstrap: "npm:5.3.3"
+    jsplumb: "npm:2.15.6"
   languageName: unknown
   linkType: soft
 
@@ -9586,223 +9821,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"orchardcore.admindashboard@workspace:src/OrchardCore.Modules/OrchardCore.AdminDashboard":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.admindashboard@workspace:src/OrchardCore.Modules/OrchardCore.AdminDashboard"
-  dependencies:
-    bootstrap: "npm:5.3.3"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.apis.graphql@workspace:src/OrchardCore.Modules/OrchardCore.Apis.GraphQL":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.apis.graphql@workspace:src/OrchardCore.Modules/OrchardCore.Apis.GraphQL"
-  dependencies:
-    "@babel/cli": "npm:^7.22.10"
-    "@babel/core": "npm:^7.22.11"
-    "@babel/preset-env": "npm:^7.22.10"
-    "@babel/preset-react": "npm:^7.22.5"
-    "@babel/preset-typescript": "npm:^7.22.11"
-    assert: "npm:^2.0.0"
-    css-loader: "npm:^6.8.1"
-    graphiql: "npm:^1.11.5"
-    graphiql-explorer: "npm:^0.9.0"
-    graphql: "npm:^15.8.0"
-    null-loader: "npm:^4.0.1"
-    prop-types: "npm:15.8.1"
-    react: "npm:^16.14.0"
-    react-dom: "npm:^16.14.0"
-    style-loader: "npm:^3.3.3"
-    ts-loader: "npm:^9.4.4"
-    typescript: "npm:^5.2.2"
-    webpack: "npm:^5.94.0"
-    webpack-cli: "npm:^5.1.4"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.audittrail@workspace:src/OrchardCore.Modules/OrchardCore.AuditTrail":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.audittrail@workspace:src/OrchardCore.Modules/OrchardCore.AuditTrail"
-  dependencies:
-    "@babel/cli": "npm:^7.22.10"
-    "@babel/core": "npm:^7.22.11"
-    "@babel/preset-env": "npm:^7.22.10"
-    "@babel/preset-react": "npm:^7.22.5"
-    "@babel/preset-typescript": "npm:^7.22.11"
-    "@types/react": "npm:^18.2.21"
-    "@types/react-dom": "npm:^18.2.7"
-    assert: "npm:^2.0.0"
-    bootstrap: "npm:5.3.3"
-    css-loader: "npm:^6.8.1"
-    diff: "npm:5.1.0"
-    null-loader: "npm:^4.0.1"
-    prop-types: "npm:15.8.1"
-    react: "npm:^16.14.0"
-    react-diff-viewer: "npm:^3.1.1"
-    react-dom: "npm:^16.14.0"
-    sass-loader: "npm:^13.3.2"
-    style-loader: "npm:^3.3.3"
-    ts-loader: "npm:^9.4.4"
-    typescript: "npm:^5.2.2"
-    webpack: "npm:^5.94.0"
-    webpack-cli: "npm:^5.1.4"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.contentfields@workspace:src/OrchardCore.Modules/OrchardCore.ContentFields":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.contentfields@workspace:src/OrchardCore.Modules/OrchardCore.ContentFields"
-  dependencies:
-    bootstrap: "npm:5.3.3"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.liquid@workspace:src/OrchardCore.Modules/OrchardCore.Liquid":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.liquid@workspace:src/OrchardCore.Modules/OrchardCore.Liquid"
-  dependencies:
-    monaco-editor: "npm:0.46.0"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.markdown@workspace:src/OrchardCore.Modules/OrchardCore.Markdown":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.markdown@workspace:src/OrchardCore.Modules/OrchardCore.Markdown"
-  dependencies:
-    bootstrap: "npm:5.3.3"
-    easymde: "npm:2.18.0"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.media@workspace:src/OrchardCore.Modules/OrchardCore.Media":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.media@workspace:src/OrchardCore.Modules/OrchardCore.Media"
-  dependencies:
-    blueimp-file-upload: "npm:10.32.0"
-    bootstrap: "npm:5.3.3"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.resources@workspace:src/OrchardCore.Modules/OrchardCore.Resources":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.resources@workspace:src/OrchardCore.Modules/OrchardCore.Resources"
-  dependencies:
-    "@fortawesome/fontawesome-free": "npm:6.7.2"
-    "@popperjs/core": "npm:2.11.8"
-    bootstrap: "npm:5.3.3"
-    bootstrap-select: "npm:1.14.0-beta3"
-    codemirror: "npm:5.65.7"
-    jquery: "npm:3.7.1"
-    jquery-resizable-dom: "npm:0.35.0"
-    jquery.easing: "npm:1.4.1"
-    js-cookie: "npm:3.0.5"
-    monaco-editor: "npm:^0.46.0"
-    nestedSortable: "npm:1.3.4"
-    nouislider: "npm:15.7.0"
-    sortablejs: "npm:^1.15.3"
-    trumbowyg: "npm:2.28.0"
-    typescript-json-schema: "npm:^0.51.0"
-    vue: "npm:^2.6.14"
-    vue-multiselect: "npm:^2.1.6"
-    vuedraggable: "npm:^2.24.3"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.setup@workspace:src/OrchardCore.Modules/OrchardCore.Setup":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.setup@workspace:src/OrchardCore.Modules/OrchardCore.Setup"
-  dependencies:
-    bootstrap: "npm:5.3.3"
-    jquery: "npm:3.7.1"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.shortcodes@workspace:src/OrchardCore.Modules/OrchardCore.Shortcodes":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.shortcodes@workspace:src/OrchardCore.Modules/OrchardCore.Shortcodes"
-  dependencies:
-    bootstrap: "npm:5.3.3"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.spatial@workspace:src/OrchardCore.Modules/OrchardCore.Spatial":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.spatial@workspace:src/OrchardCore.Modules/OrchardCore.Spatial"
-  dependencies:
-    leaflet: "npm:1.9.4"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.theadmin@workspace:src/OrchardCore.Themes/TheAdmin":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.theadmin@workspace:src/OrchardCore.Themes/TheAdmin"
-  dependencies:
-    "@popperjs/core": "npm:2.11.8"
-    bootstrap: "npm:5.3.3"
-    bootstrap-select: "npm:1.14.0-beta3"
-    nouislider: "npm:15.7.0"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.theagencytheme@workspace:src/OrchardCore.Themes/TheAgencyTheme":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.theagencytheme@workspace:src/OrchardCore.Themes/TheAgencyTheme"
-  dependencies:
-    bootstrap: "npm:5.1.3"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.theblogtheme@workspace:src/OrchardCore.Themes/TheBlogTheme":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.theblogtheme@workspace:src/OrchardCore.Themes/TheBlogTheme"
-  dependencies:
-    bootstrap: "npm:5.1.3"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.thecomingsoontheme@workspace:src/OrchardCore.Themes/TheComingSoonTheme":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.thecomingsoontheme@workspace:src/OrchardCore.Themes/TheComingSoonTheme"
-  dependencies:
-    bootstrap: "npm:5.1.3"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.themes@workspace:src/OrchardCore.Modules/OrchardCore.Themes":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.themes@workspace:src/OrchardCore.Modules/OrchardCore.Themes"
-  dependencies:
-    bootstrap: "npm:5.3.3"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.thetheme@workspace:src/OrchardCore.Themes/TheTheme":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.thetheme@workspace:src/OrchardCore.Themes/TheTheme"
-  dependencies:
-    bootstrap: "npm:5.3.3"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.users@workspace:src/OrchardCore.Modules/OrchardCore.Users":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.users@workspace:src/OrchardCore.Modules/OrchardCore.Users"
-  dependencies:
-    qrcodejs: "npm:^1.0.0"
-  languageName: unknown
-  linkType: soft
-
-"orchardcore.workflows@workspace:src/OrchardCore.Modules/OrchardCore.Workflows":
-  version: 0.0.0-use.local
-  resolution: "orchardcore.workflows@workspace:src/OrchardCore.Modules/OrchardCore.Workflows"
-  dependencies:
-    "@types/bootstrap": "npm:5.2.7"
-    "@types/jquery": "npm:3.5.5"
-    bootstrap: "npm:5.3.3"
-    jsplumb: "npm:2.15.6"
-  languageName: unknown
-  linkType: soft
-
 "ordered-binary@npm:^1.4.1":
   version: 1.5.3
   resolution: "ordered-binary@npm:1.5.3"
@@ -12752,6 +12770,13 @@ __metadata:
   version: 3.17.5
   resolution: "vscode-languageserver-types@npm:3.17.5"
   checksum: 10/900d0b81df5bef8d90933e75be089142f6989cc70fdb2d5a3a5f11fa20feb396aaea23ccffc8fbcc83a2f0e1b13c6ee48ff8151f236cbd6e61a4f856efac1a58
+  languageName: node
+  linkType: hard
+
+"vue-hot-reload-api@npm:2.3.4":
+  version: 2.3.4
+  resolution: "vue-hot-reload-api@npm:2.3.4"
+  checksum: 10/948b0a44a1727b297bff86979e0dcb38615b45f9e7760a7b8c57929b4eda0ea7b4eb0393bf33c0d88be1432eff92615b497a2a9b6b418dd9cb38b48f40138e47
   languageName: node
   linkType: hard
 

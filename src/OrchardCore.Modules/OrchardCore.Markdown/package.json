@@ -1,7 +1,8 @@
 {
-  "name": "orchardcore.markdown",
+  "name": "@orchardcore/markdown",
   "version": "1.0.0",
   "dependencies": {
+    "@popperjs/core": "2.11.8",
     "bootstrap": "5.3.3",
     "easymde": "2.18.0"
   }
