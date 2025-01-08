@@ -2,17 +2,20 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu.AdminNodes;
 
 public class PlaceholderAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
 {
     private readonly ILogger _logger;
-    private readonly IAdminMenuPermissionService _adminMenuPermissionService;
+    private readonly IPermissionService _permissionService;
 
-    public PlaceholderAdminNodeNavigationBuilder(IAdminMenuPermissionService adminMenuPermissionService, ILogger<PlaceholderAdminNodeNavigationBuilder> logger)
+    public PlaceholderAdminNodeNavigationBuilder(
+        IPermissionService permissionService,
+        ILogger<PlaceholderAdminNodeNavigationBuilder> logger)
     {
-        _adminMenuPermissionService = adminMenuPermissionService;
+        _permissionService = permissionService;
         _logger = logger;
     }
 
@@ -34,10 +37,8 @@ public class PlaceholderAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
 
             if (node.PermissionNames.Length > 0)
             {
-                var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
                 // Find the actual permissions and apply them to the menu.
-                var selectedPermissions = permissions.Where(p => node.PermissionNames.Contains(p.Name));
-                itemBuilder.Permissions(selectedPermissions);
+                itemBuilder.Permissions(await _permissionService.FindByNamesAsync(node.PermissionNames));
             }
 
             // Add adminNode's IconClass property values to menuItem.Classes.

@@ -16,5 +16,17 @@
       "Assets/js/activate-links.js"
     ],
     "output": "wwwroot/Scripts/activate-links.js"
+  },
+  {
+    "inputs": [
+      "Assets/scss/menu-permission-picker.scss"
+    ],
+    "output": "wwwroot/Styles/menu-permission-picker.css"
+  },
+  {
+    "inputs": [
+      "Assets/js/menu-permission-picker.js"
+    ],
+    "output": "wwwroot/Scripts/menu-permission-picker.js"
   }
 ]
