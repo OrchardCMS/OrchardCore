@@ -127,14 +127,6 @@
   },
   {
     "action": "copy",
-    "generateRTL": true,
-    "name": "bootstrap-select",
-    "source": "node_modules/bootstrap-select/dist/css/bootstrap-select.css",
-    "dest": "wwwroot/Styles/",
-    "tags": ["resources", "css"]
-  },
-  {
-    "action": "copy",
     "name": "bootstrap-select",
     "source": "node_modules/bootstrap-select/dist/js/bootstrap-select.js",
     "dest": "wwwroot/Scripts/",
@@ -241,6 +233,13 @@
   {
     "action": "copy",
     "name": "codemirror",
+    "source": "node_modules/codemirror/mode/javascript/javascript.js",
+    "dest": "wwwroot/Scripts/codemirror/mode/javascript/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
     "source": "node_modules/codemirror/mode/sql/sql.js",
     "dest": "wwwroot/Scripts/codemirror/mode/sql/",
     "tags": ["resources", "js"]
@@ -290,14 +289,6 @@
   {
     "action": "copy",
     "name": "trumbowyg",
-    "generateRTL": true,
-    "source": "node_modules/trumbowyg/dist/ui/sass/trumbowyg.scss",
-    "dest": "wwwroot/Styles/trumbowyg/",
-    "tags": ["resources", "css"]
-  },
-  {
-    "action": "copy",
-    "name": "trumbowyg",
     "source": "node_modules/trumbowyg/dist/ui/icons.svg",
     "dest": "wwwroot/Scripts/trumbowyg/ui/",
     "tags": ["resources", "css"]
@@ -341,6 +332,13 @@
     "action": "copy",
     "name": "vue-multiselect",
     "source": "node_modules/vue-multiselect/dist/vue-multiselect.min.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "sortable",
+    "source": "node_modules/sortablejs/Sortable.js",
     "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
