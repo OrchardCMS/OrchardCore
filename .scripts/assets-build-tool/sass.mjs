@@ -1,5 +1,5 @@
 import fs from "fs-extra";
-import glob from "glob";
+import { glob } from 'glob'
 import JSON5 from "json5";
 import chalk from "chalk";
 import path from "path";

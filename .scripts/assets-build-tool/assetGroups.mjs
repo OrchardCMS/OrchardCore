@@ -1,4 +1,4 @@
-import glob from "glob";
+import { glob } from 'glob'
 import JSON5 from "json5";
 import fs from "fs-extra";
 import path from "path";
