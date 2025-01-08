@@ -1,9 +1,0 @@
-[
-  {
-    "action": "gulp",
-    "inputs": [
-      "Assets/scss/admin-menu-permission-picker.scss"
-    ],
-    "output": "wwwroot/Styles/admin-menu-permission-picker.css"
-  }
-]
