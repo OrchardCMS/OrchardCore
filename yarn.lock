@@ -1887,7 +1887,7 @@ __metadata:
     "@swc/core": "npm:1.4.8"
     chalk: "npm:^5.2.0"
     concurrently: "npm:9.1.2"
-    fs-extra: "npm:^11.1.1"
+    fs-extra: "npm:^11.2.0"
     glob: "npm:^11.0.0"
     json5: "npm:^2.2.3"
     lightningcss: "npm:1.28.2"
@@ -6517,7 +6517,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fs-extra@npm:^11.1.1":
+"fs-extra@npm:^11.2.0":
   version: 11.2.0
   resolution: "fs-extra@npm:11.2.0"
   dependencies:
