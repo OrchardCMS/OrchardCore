@@ -253,6 +253,7 @@ const { result } = concurrently(
         return a.order - b.order;
     }),
     {
+        restartTries: 3,
         prefixColors: [
             "green",
             "yellow",
