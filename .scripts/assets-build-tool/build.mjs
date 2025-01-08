@@ -81,11 +81,6 @@ if (task === "build" || task === "watch") {
     groups = groups.filter((g) => !g.bundleEntrypoint);
 
     if (parcelGroupsByBundle) {
-        console.log(
-            chalk.yellow("Building Parcel bundles: "),
-            _.keys(parcelGroupsByBundle).join(", ")
-        );
-
         const entries = [];
         // loop through each bundle and generate  the new combined group
         _.forEach(parcelGroupsByBundle, (value, bundleEntrypoint) => {
@@ -103,12 +98,19 @@ if (task === "build" || task === "watch") {
         });
 
         const parcelBundleOutput = buildConfig("parcelBundleOutput");
-        groups.push({
-            action: "parcel",
-            name: `orchardcore-bundle`,
-            source: entries,
-            dest: parcelBundleOutput,
-        });
+        if (entries.length > 0) {
+            console.log(
+                chalk.yellow("Building Parcel bundles: "),
+                _.keys(parcelGroupsByBundle).join(", ")
+            );
+            
+            groups.push({
+                action: "parcel",
+                name: `orchardcore-bundle`,
+                source: entries,
+                dest: parcelBundleOutput,
+            });
+        }
     }
 }
 
@@ -232,8 +234,7 @@ if (gulpBuildStr != undefined && gulpRebuildStr == undefined) {
         name: "gulp build",
         command: `gulp build`,
     });
-}
-else if (gulpBuildStr != undefined && gulpRebuildStr != undefined) {
+} else if (gulpBuildStr != undefined && gulpRebuildStr != undefined) {
     buildProcesses.push({
         order: 0,
         name: "gulp rebuild",
