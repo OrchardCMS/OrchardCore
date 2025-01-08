@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Twitter.Settings;
 
 namespace OrchardCore.Twitter.Services;
@@ -9,17 +7,10 @@ namespace OrchardCore.Twitter.Services;
 public sealed class TwitterSettingsConfiguration : IConfigureOptions<TwitterSettings>
 {
     private readonly ITwitterSettingsService _twitterSettingsService;
-    private readonly ShellSettings _shellSettings;
-    private readonly ILogger _logger;
 
-    public TwitterSettingsConfiguration(
-        ITwitterSettingsService twitterSettingsService,
-        ShellSettings shellSettings,
-        ILogger<TwitterSettingsConfiguration> logger)
+    public TwitterSettingsConfiguration(ITwitterSettingsService twitterSettingsService)
     {
         _twitterSettingsService = twitterSettingsService;
-        _shellSettings = shellSettings;
-        _logger = logger;
     }
 
     public void Configure(TwitterSettings options)
@@ -43,11 +34,6 @@ public sealed class TwitterSettingsConfiguration : IConfigureOptions<TwitterSett
 
         if ((_twitterSettingsService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
         {
-            if (_shellSettings.IsRunning())
-            {
-                _logger.LogWarning("X (Twitter) is not correctly configured.");
-            }
-
             return null;
         }
 
