@@ -85,35 +85,28 @@
   },
   {
     "action": "copy",
-    "name": "bootstrap-bundle-js",
+
     "source": "node_modules/bootstrap/dist/js/bootstrap.bundle.js",
     "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
-    "name": "bootstrap-bundle-js",
+
     "source": "node_modules/bootstrap/dist/js/bootstrap.bundle.js.map",
     "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
-    "name": "bootstrap-bundle-js",
+
     "source": "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
     "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
-    "name": "bootstrap-bundle-js",
-    "source": "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js.map",
-    "dest": "wwwroot/Scripts/",
-    "tags": ["resources", "js"]
-  },
-  {
-    "action": "copy",
-    "name": "bootstrap-bundle-js",
+
     "source": "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js.map",
     "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
@@ -291,7 +284,7 @@
     "name": "trumbowyg",
     "source": "node_modules/trumbowyg/dist/ui/icons.svg",
     "dest": "wwwroot/Scripts/trumbowyg/ui/",
-    "tags": ["resources", "css"]
+    "tags": ["resources", "images"]
   },
   {
     "action": "copy",
@@ -337,6 +330,20 @@
   },
   {
     "action": "copy",
+    "name": "vue-multiselect",
+    "source": "node_modules/vue-multiselect/dist/vue-multiselect.min.css*",
+    "dest": "wwwroot/Styles/",
+    "tags": ["resources", "css"]
+  },
+  {
+    "action": "copy",
+    "name": "vuedraggable",
+    "source": "node_modules/vuedraggable/dist/vuedraggable.umd.*",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
     "name": "sortable",
     "source": "node_modules/sortablejs/Sortable.js",
     "dest": "wwwroot/Scripts/",
@@ -376,5 +383,33 @@
     "source": "node_modules/nouislider/dist/nouislider.css",
     "dest": "wwwroot/Scripts/nouislider/",
     "tags": ["resources", "css"]
+  },
+  {
+    "action": "copy",
+    "name": "fortawesome",
+    "source": "node_modules/@fortawesome/fontawesome-free/css/*",
+    "dest": "wwwroot/Vendor/fontawesome-free/css/",
+    "tags": ["resources", "css"]
+  },
+  {
+    "action": "copy",
+    "name": "fortawesome",
+    "source": "node_modules/@fortawesome/fontawesome-free/js/*",
+    "dest": "wwwroot/Vendor/fontawesome-free/js/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "fortawesome",
+    "source": "node_modules/@fortawesome/fontawesome-free/webfonts/*",
+    "dest": "wwwroot/Vendor/fontawesome-free/webfonts/",
+    "tags": ["resources", "fonts"]
+  },
+  {
+    "action": "copy",
+    "name": "monaco",
+    "source": "Assets/monaco/*",
+    "dest": "wwwroot/Scripts/monaco/",
+    "tags": ["resources", "js"]
   }
 ]

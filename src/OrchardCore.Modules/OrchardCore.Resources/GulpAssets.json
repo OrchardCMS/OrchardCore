@@ -51,48 +51,6 @@
   {
     "copy": true,
     "inputs": [
-      "../../../node_modules/vue-multiselect/dist/vue-multiselect.min.css*"
-    ],
-    "output": "wwwroot/Styles/@"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "../../../node_modules/vuedraggable/dist/vuedraggable.umd.*"
-    ],
-    "output": "wwwroot/Scripts/@"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "../../../node_modules/@fortawesome/fontawesome-free/css/*"
-    ],
-    "output": "wwwroot/Vendor/fontawesome-free/css/@"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "../../../node_modules/@fortawesome/fontawesome-free/js/*"
-    ],
-    "output": "wwwroot/Vendor/fontawesome-free/js/@"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "../../../node_modules/@fortawesome/fontawesome-free/webfonts/*"
-    ],
-    "output": "wwwroot/Vendor/fontawesome-free/webfonts/@"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "Assets/monaco/*"
-    ],
-    "output": "wwwroot/Scripts/monaco/@"
-  },
-  {
-    "copy": true,
-    "inputs": [
       "../../../node_modules/monaco-editor/min/**/*"
     ],
     "output": "wwwroot/Scripts/monaco/@"
