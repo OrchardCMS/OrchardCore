@@ -103,7 +103,7 @@ if (task === "build" || task === "watch") {
                 chalk.yellow("Building Parcel bundles: "),
                 _.keys(parcelGroupsByBundle).join(", ")
             );
-            
+
             groups.push({
                 action: "parcel",
                 name: `orchardcore-bundle`,
@@ -133,7 +133,7 @@ const buildProcesses = groups
                 }
                 return {
                     order: group.order,
-                    name: group.name,
+                    name: group.name ?? "PARCEL",
                     command: `node ${path.join(
                         __dirname,
                         "parcel.mjs"
@@ -144,7 +144,7 @@ const buildProcesses = groups
                 if (script) {
                     const cmd = {
                         order: group.order,
-                        name: group.name,
+                        name: group.name ?? "RUN",
                         command: `cd ${group.source} && ${script}`,
                     };
                     console.log("run command: ", cmd);
@@ -162,7 +162,7 @@ const buildProcesses = groups
                 if (task === "copy" || task === "build" || task === "dry-run") {
                     return {
                         order: group.order,
-                        name: group.name,
+                        name: group.name ?? "COPY",
                         command: `node ${path.join(
                             __dirname,
                             "copy.mjs"
@@ -180,7 +180,7 @@ const buildProcesses = groups
                 if (task === "copy" || task === "build" || task === "dry-run") {
                     return {
                         order: group.order,
-                        name: group.name,
+                        name: group.name ?? "MIN",
                         command: `node ${path.join(
                             __dirname,
                             "min.mjs"
@@ -198,7 +198,7 @@ const buildProcesses = groups
                 if (task === "copy" || task === "build" || task === "dry-run") {
                     return {
                         order: group.order,
-                        name: group.name,
+                        name: group.name ?? "SASS",
                         command: `node ${path.join(
                             __dirname,
                             "sass.mjs"

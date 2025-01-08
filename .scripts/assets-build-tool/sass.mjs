@@ -8,7 +8,7 @@ import * as sass from "sass";
 
 let action = process.argv[2];
 const config = JSON5.parse(Buffer.from(process.argv[3], "base64").toString("utf-8"));
-const dest = config.dest ?? config.basePath + "wwwroot/Styles/";
+const dest = config.dest ?? config.basePath + "/wwwroot/Styles/";
 
 if (config.dryRun) {
   action = "dry-run";
