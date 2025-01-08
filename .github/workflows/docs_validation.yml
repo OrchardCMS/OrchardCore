@@ -20,7 +20,7 @@ concurrency:
 jobs:
   validate-building-documentation:
     name: Validating Building the Documentation
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
       with:
@@ -28,10 +28,7 @@ jobs:
         fetch-depth: 0
 
     - name: Install Dependencies
-      # Installing pip v22.0.3 is only necessary because unbuntu-latest runners include v22.0.2, which has a bug. That
-      # line can be removed once the runners are updated, see https://github.com/actions/runner-images?tab=readme-ov-file#available-images.
       run: |
-        python -m pip install pip==22.0.3
         pip install -r src/docs/requirements.txt -v
 
     - name: Build Documentation
