@@ -18,8 +18,8 @@ public class ContentUrlFilter : ILiquidFilter
         var urlHelper = _urlHelperFactory.GetUrlHelper(context.ViewContext);
 
         var trimmedInputString = input.ToStringValue().Trim();
-        var absoluteUrl = urlHelper.Content(trimmedInputString);
+        var absolutePath = urlHelper.Content(trimmedInputString);
 
-        return ValueTask.FromResult<FluidValue>(new StringValue(absoluteUrl));
+        return new StringValue(absolutePath);
     }
 }
