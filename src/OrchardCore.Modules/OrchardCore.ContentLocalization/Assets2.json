@@ -1,0 +1,8 @@
+[
+  {
+    "action": "sass",
+    "name": "content-localization",
+    "source": "Assets/contentLocalization.scss",
+    "tags": ["admin", "dashboard", "scss"]
+  }
+]

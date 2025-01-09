@@ -1,8 +1,0 @@
-[
-  {
-    "inputs": [
-      "Assets/js/*.js"
-    ],
-    "output": "wwwroot/Scripts/optionsEditor.js"
-  }
-]

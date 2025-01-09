@@ -1,8 +1,0 @@
-[
-  {
-    "inputs": [
-      "Assets/js/list-items-filter.js"
-    ],
-    "output": "wwwroot/Scripts/list-items-filter.js"
-  }
-]

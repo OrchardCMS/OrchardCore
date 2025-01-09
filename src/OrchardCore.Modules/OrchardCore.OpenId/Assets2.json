@@ -1,0 +1,15 @@
+[ 
+  {
+    "action": "sass",
+    "name": "parametersEditor",
+    "source": "Assets/scss/parametersEditor/parametersEditor.scss",
+    "tags": ["admin", "dashboard", "scss"]
+  },
+  {
+    "action": "min",
+    "name": "parametersEditor",
+    "source": "Assets/js/parametersEditor/parametersEditor.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

@@ -1,0 +1,15 @@
+[
+  {
+    "action": "sass",
+    "name": "widgets",
+    "source": "Assets/scss/widgetslist.edit.scss",
+    "tags": ["admin", "dashboard", "scss"]
+  },
+  {
+    "action": "min",
+    "name": "widgets",
+    "source": "Assets/js/widgetslist.edit.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

@@ -1,0 +1,35 @@
+[
+  {
+    "action": "sass",
+    "name": "menu",
+    "source": "Assets/scss/menu.scss",
+    "tags": ["admin", "dashboard", "scss"]
+  },
+  {
+    "action": "min",
+    "name": "nestedSortable",
+    "source": "Assets/js/menu.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "min",
+    "name": "activate-links",
+    "source": "Assets/js/activate-links.js",
+    "dest": "wwwroot/Scripts/menu.js",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "sass",
+    "name": "menu-permission-picker",
+    "source": "Assets/scss/menu-permission-picker.scss",
+    "tags": ["admin", "dashboard", "scss"]
+  },
+  {
+    "action": "min",
+    "name": "menu-permission-picker",
+    "source": "Assets/js/menu-permission-picker.js",
+    "dest": "wwwroot/Scripts/menu.js",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

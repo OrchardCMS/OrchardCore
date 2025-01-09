@@ -1,0 +1,9 @@
+[
+    {
+      "action": "min",
+      "name": "templates",
+      "source": "Assets/js/templatepreview.edit.js",
+      "dest": "wwwroot/Scripts/",
+      "tags": ["admin", "dashboard", "js"]
+    }
+]

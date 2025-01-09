@@ -1,0 +1,15 @@
+[
+  {
+    "action": "sass",
+    "name": "rules",
+    "source": "Assets/scss/rules.scss",
+    "tags": ["admin", "dashboard", "scss"]
+  },
+  {
+    "action": "min",
+    "name": "rules",
+    "source": "Assets/js/rules.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

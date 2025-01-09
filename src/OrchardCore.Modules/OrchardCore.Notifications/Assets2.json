@@ -1,0 +1,9 @@
+[
+  {
+    "action": "min",
+    "name": "notification-manager",
+    "source": "Assets/js/notification-manager.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

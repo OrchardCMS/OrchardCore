@@ -1,0 +1,17 @@
+
+[
+  {
+    "action": "min",
+    "name": "url-rewriting",
+    "source": "Assets/js/sortable-rules.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "min",
+    "name": "url-rewriting",
+    "source": "Assets/js/admin-ui.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

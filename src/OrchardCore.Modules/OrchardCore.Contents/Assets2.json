@@ -1,0 +1,28 @@
+[
+  {
+    "action": "sass",
+    "name": "content-localization",
+    "source": "Assets/scss/Contents.scss",
+    "tags": ["admin", "dashboard", "scss"]
+  },
+  {
+    "action": "sass",
+    "name": "content-localization",
+    "source": "Assets/scss/audittrail-disabledcontent.scss",
+    "tags": ["admin", "dashboard", "scss"]
+  },
+  {
+    "action": "min",
+    "name": "content-localization",
+    "source": "Assets/js/audittrail-disabledcontent.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "min",
+    "name": "content-localization",
+    "source": "Assets/js/content-type-check-all.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

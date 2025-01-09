@@ -1,0 +1,9 @@
+[
+  {
+    "action": "min",
+    "name": "ci-list-ordering",
+    "source": "Assets/Scripts/ci-list-ordering.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

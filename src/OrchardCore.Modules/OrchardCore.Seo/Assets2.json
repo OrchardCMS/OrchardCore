@@ -1,0 +1,15 @@
+[
+  {
+    "action": "sass",
+    "name": "seo",
+    "source": "Assets/scss/customMetaTagsEditor.scss",
+    "tags": ["admin", "dashboard", "scss"]
+  },
+  {
+    "action": "min",
+    "name": "seo",
+    "source": "Assets/js/customMetaTagsEditor.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]
