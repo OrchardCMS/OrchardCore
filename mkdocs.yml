@@ -94,6 +94,30 @@ plugins:
   - redirects:
       redirect_maps:
         'topics/docs-contributions/README.md': 'contributing/contributing-documentation.md'
+        'glossary/README.md': 'reference/glossary/README.md'
+        'guides/contributing/README.md': 'contributing/README.md'
+        'guides/contributing/managing-issues.md': 'contributing/managing-issues.md'
+        'guides/contributing/contributing-code.md': 'contributing/contributing-code.md'
+        'guides/contributing/reviewing-pull-requests.md': 'contributing/reviewing-pull-requests.md'
+        'guides/contributing/contributing-documentation.md': 'contributing/contributing-documentation.md'
+        'guides/contributing/benchmarking.md': 'contributing/benchmarking.md'
+        'resources/tutorials/README.md': 'getting-started/external-resources.md'
+        'resources/development-tools/README.md': 'getting-started/development-tools.md'
+        'resources/meeting/README.md': 'contributing/meetings.md'
+        'resources/branding/README.md': 'reference/branding/README.md'
+        'resources/libraries/README.md': 'reference/libraries/README.md'
+        'resources/owners/README.md': 'community/owners/README.md'
+        'reference/core/DisplayManagement/README.md': 'reference/modules/DisplayManagement/README.md'
+        'reference/core/Configuration/README.md': 'reference/modules/Configuration/README.md'
+        'reference/core/Placement/README.md': 'reference/modules/Placement/README.md'
+        'reference/core/Data/README.md': 'reference/modules/Data/README.md'
+        'reference/core/Apis.GraphQL.Abstractions/README.md': 'reference/modules/Apis.GraphQL.Abstractions/README.md'
+        'reference/core/KeyVault.Azure/README.md': 'reference/modules/KeyVault.Azure/README.md'
+        'reference/core/Logging.Serilog/README.md': 'reference/modules/Logging.Serilog/README.md'
+        'reference/core/Modules/README.md': 'reference/modules/Modules/README.md'
+        'reference/core/Razor/README.md': 'reference/modules/Razor/README.md'
+        'reference/core/Sanitizer/README.md': 'reference/modules/Sanitizer/README.md'
+        'reference/core/Shells/README.md': 'reference/modules/Shells/README.md'
 
 # Page tree
 nav:

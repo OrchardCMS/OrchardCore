@@ -6,7 +6,7 @@ labels: 'bug :bug:'
 assignees: ''
 
 ---
-<!-- Please also see the docs on how we manage issues: https://docs.orchardcore.net/en/latest/docs/guides/contributing/managing-issues/. -->
+<!-- Please also see the docs on how we manage issues: https://docs.orchardcore.net/en/latest/docs/contributing/managing-issues/. -->
 <!-- Please replace all placeholders such as this below. -->
 
 ### Describe the bug
