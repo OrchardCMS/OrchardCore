@@ -102,7 +102,7 @@ glob(config.source).then((files) => {
                                 dest,
                                 path.parse(target).name + ".map"
                             );
-                            fs.outputFile(mappedTarget, (output.map.replace(/(?:\\[rn])+/g, "\\n")) + "\n");
+                            fs.outputFile(mappedTarget, output.map);
                             console.log(
                                 `Mapped (${chalk.gray("from")}, ${chalk.cyan(
                                     "to"
