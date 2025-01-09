@@ -20,6 +20,6 @@ public class ContentUrlFilter : ILiquidFilter
         var trimmedInputString = input.ToStringValue().Trim();
         var absoluteUrl = urlHelper.Content(trimmedInputString);
 
-        return ValueTask.FromResult<FluidValue>(new StringValue(absoluteUrl));
+        return new StringValue(absolutePath);
     }
 }
