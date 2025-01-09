@@ -15,14 +15,12 @@
     "action": "min",
     "name": "content-localization",
     "source": "Assets/js/audittrail-disabledcontent.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   },
   {
     "action": "min",
     "name": "content-localization",
     "source": "Assets/js/content-type-check-all.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   }
 ]

@@ -9,14 +9,12 @@
     "action": "min",
     "name": "shortcodes",
     "source": "Assets/js/shortcodes.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   },
   {
     "action": "min",
     "name": "shortcodes-templates",
     "source": "Assets/js/shortcode-templates.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   }
 ]

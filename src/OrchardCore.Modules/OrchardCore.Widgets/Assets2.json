@@ -9,7 +9,6 @@
     "action": "min",
     "name": "widgets",
     "source": "Assets/js/widgetslist.edit.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   }
 ]

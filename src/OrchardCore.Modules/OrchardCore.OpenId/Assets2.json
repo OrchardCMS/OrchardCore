@@ -9,7 +9,6 @@
     "action": "min",
     "name": "parametersEditor",
     "source": "Assets/js/parametersEditor/parametersEditor.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   }
 ]

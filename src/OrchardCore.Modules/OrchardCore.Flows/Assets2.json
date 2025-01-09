@@ -3,7 +3,6 @@
     "action": "min",
     "name": "flows",
     "source": "Assets/js/flows.edit.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   },
   {

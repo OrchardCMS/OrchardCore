@@ -7,16 +7,14 @@
   },
   {
     "action": "min",
-    "name": "nestedSortable",
+    "name": "menu",
     "source": "Assets/js/menu.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   },
   {
     "action": "min",
     "name": "activate-links",
     "source": "Assets/js/activate-links.js",
-    "dest": "wwwroot/Scripts/menu.js",
     "tags": ["admin", "dashboard", "js"]
   },
   {
@@ -29,7 +27,6 @@
     "action": "min",
     "name": "menu-permission-picker",
     "source": "Assets/js/menu-permission-picker.js",
-    "dest": "wwwroot/Scripts/menu.js",
     "tags": ["admin", "dashboard", "js"]
   }
 ]

@@ -9,7 +9,6 @@
     "action": "min",
     "name": "seo",
     "source": "Assets/js/customMetaTagsEditor.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   }
 ]

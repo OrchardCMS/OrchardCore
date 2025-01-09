@@ -15,21 +15,18 @@
     "action": "min",
     "name": "taxonomies-menu",
     "source": "Assets/js/menu.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   },
   {
     "action": "min",
     "name": "taxonomies-activate-links",
     "source": "Assets/js/activate-links.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   },
   {
     "action": "min",
     "name": "taxonomies-tags-editor",
     "source": "Assets/js/tags-editor.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   }
 ]

@@ -3,14 +3,12 @@
     "action": "min",
     "name": "trumbowyg.media.tag",
     "source": "Assets/trumbowyg.media.tag.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   },
   {
     "action": "min",
     "name": "trumbowyg.media.url",
     "source": "Assets/trumbowyg.media.url.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   }
 ]

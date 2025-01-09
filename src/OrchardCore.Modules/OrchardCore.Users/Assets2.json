@@ -3,14 +3,12 @@
     "action": "min",
     "name": "users-password-generator",
     "source": "Assets/js/password-generator.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   },
   {
     "action": "min",
     "name": "users-qrcode",
     "source": "../../../node_modules/qrcodejs/qrcode.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   }
 ]

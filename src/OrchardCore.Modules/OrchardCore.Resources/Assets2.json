@@ -3,126 +3,104 @@
     "action": "copy",
     "name": "credential-helpers",
     "source": "Assets/js/credential-helpers.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
     "name": "bootstrap",
     "source": "node_modules/bootstrap/dist/css/bootstrap.css",
-    "dest": "wwwroot/Styles/",
     "tags": ["resources", "css"]
   },
   {
     "action": "copy",
     "name": "bootstrap",
     "source": "node_modules/bootstrap/dist/css/bootstrap.css.map",
-    "dest": "wwwroot/Styles/",
     "tags": ["resources", "css"]
   },
   {
     "action": "copy",
     "name": "bootstrap",
     "source": "node_modules/bootstrap/dist/css/bootstrap.min.css",
-    "dest": "wwwroot/Styles/",
     "tags": ["resources", "css"]
   },
   {
     "action": "copy",
     "name": "bootstrap-rtl",
     "source": "node_modules/bootstrap/dist/css/bootstrap.rtl.css",
-    "dest": "wwwroot/Styles/",
     "tags": ["resources", "css"]
   },
   {
     "action": "copy",
     "name": "bootstrap-rtl",
     "source": "node_modules/bootstrap/dist/css/bootstrap.rtl.css.map",
-    "dest": "wwwroot/Styles/",
     "tags": ["resources", "css"]
   },
   {
     "action": "copy",
     "name": "bootstrap-rtl",
     "source": "node_modules/bootstrap/dist/css/bootstrap.rtl.min.css",
-    "dest": "wwwroot/Styles/",
     "tags": ["resources", "css"]
   },
   {
     "action": "copy",
     "name": "bootstrap-rtl",
     "source": "node_modules/bootstrap/dist/css/bootstrap.rtl.min.css.map",
-    "dest": "wwwroot/Styles/",
     "tags": ["resources", "css"]
   },
   {
     "action": "copy",
     "name": "bootstrap-js",
     "source": "node_modules/bootstrap/dist/js/bootstrap.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
     "name": "bootstrap-js",
     "source": "node_modules/bootstrap/dist/js/bootstrap.js.map",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
     "name": "bootstrap-js",
     "source": "node_modules/bootstrap/dist/js/bootstrap..min.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
     "name": "bootstrap-js",
     "source": "node_modules/bootstrap/dist/js/bootstrap.min.js.map",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
-
     "source": "node_modules/bootstrap/dist/js/bootstrap.bundle.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
-
     "source": "node_modules/bootstrap/dist/js/bootstrap.bundle.js.map",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
-
     "source": "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
-
     "source": "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js.map",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
     "name": "popper-js",
     "source": "node_modules/@popperjs/core/dist/umd/popper.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
     "name": "bootstrap-select",
     "source": "node_modules/bootstrap-select/dist/js/bootstrap-select.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
@@ -248,35 +226,30 @@
     "action": "copy",
     "name": "jquery",
     "source": "node_modules/jquery/dist/jquery.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
     "name": "jquery",
     "source": "node_modules/jquery/dist/jquery.slim.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
     "name": "jquery",
     "source": "node_modules/jquery.easing/jquery.easing.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
     "name": "jquery",
     "source": "node_modules/jquery-resizable-dom/dist/jquery-resizable.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
     "name": "jquery",
     "source": "node_modules/@popperjs/core/dist/umd/popper.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
@@ -311,56 +284,48 @@
     "action": "copy",
     "name": "vue",
     "source": "node_modules/vue/dist/vue.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
     "name": "vue",
     "source": "node_modules/vue/dist/vue.min.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
     "name": "vue-multiselect",
     "source": "node_modules/vue-multiselect/dist/vue-multiselect.min.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
     "name": "vue-multiselect",
     "source": "node_modules/vue-multiselect/dist/vue-multiselect.min.css*",
-    "dest": "wwwroot/Styles/",
     "tags": ["resources", "css"]
   },
   {
     "action": "copy",
     "name": "vuedraggable",
     "source": "node_modules/vuedraggable/dist/vuedraggable.umd.*",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
     "name": "sortable",
     "source": "node_modules/sortablejs/Sortable.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
     "name": "sortable",
     "source": "node_modules/sortablejs/Sortable.min.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
     "name": "js-cookie",
     "source": "node_modules/js-cookie/dist/js.cookie.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["resources", "js"]
   },
   {

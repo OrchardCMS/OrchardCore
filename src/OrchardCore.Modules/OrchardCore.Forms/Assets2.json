@@ -3,14 +3,12 @@
     "action": "min",
     "name": "selectOptionsEditor",
     "source": "Assets/js/SelectOptionsEditor/selectOptionsEditor.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   },
   {
     "action": "min",
     "name": "formElementLabelManager",
     "source": "Assets/js/formElementLabelManager.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   },
   {

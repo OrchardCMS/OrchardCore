@@ -3,7 +3,6 @@
     "action": "min",
     "name": "content-types",
     "source": "Assets/js/list-items-filter.js",
-    "dest": "wwwroot/Scripts/",
     "tags": ["admin", "dashboard", "js"]
   }
 ]

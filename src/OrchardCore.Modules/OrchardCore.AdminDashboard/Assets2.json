@@ -3,7 +3,6 @@
     "action": "sass",
     "name": "admin-dashboard",
     "source": "Assets/scss/dashboard.scss",
-    "dest": "wwwroot/Styles/",
     "tags": ["admin", "dashboard", "scss"]
   }
 ]
