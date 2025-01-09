@@ -1,0 +1,415 @@
+[
+  {
+    "action": "copy",
+    "name": "credential-helpers",
+    "source": "Assets/js/credential-helpers.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "bootstrap",
+    "source": "node_modules/bootstrap/dist/css/bootstrap.css",
+    "dest": "wwwroot/Styles/",
+    "tags": ["resources", "css"]
+  },
+  {
+    "action": "copy",
+    "name": "bootstrap",
+    "source": "node_modules/bootstrap/dist/css/bootstrap.css.map",
+    "dest": "wwwroot/Styles/",
+    "tags": ["resources", "css"]
+  },
+  {
+    "action": "copy",
+    "name": "bootstrap",
+    "source": "node_modules/bootstrap/dist/css/bootstrap.min.css",
+    "dest": "wwwroot/Styles/",
+    "tags": ["resources", "css"]
+  },
+  {
+    "action": "copy",
+    "name": "bootstrap-rtl",
+    "source": "node_modules/bootstrap/dist/css/bootstrap.rtl.css",
+    "dest": "wwwroot/Styles/",
+    "tags": ["resources", "css"]
+  },
+  {
+    "action": "copy",
+    "name": "bootstrap-rtl",
+    "source": "node_modules/bootstrap/dist/css/bootstrap.rtl.css.map",
+    "dest": "wwwroot/Styles/",
+    "tags": ["resources", "css"]
+  },
+  {
+    "action": "copy",
+    "name": "bootstrap-rtl",
+    "source": "node_modules/bootstrap/dist/css/bootstrap.rtl.min.css",
+    "dest": "wwwroot/Styles/",
+    "tags": ["resources", "css"]
+  },
+  {
+    "action": "copy",
+    "name": "bootstrap-rtl",
+    "source": "node_modules/bootstrap/dist/css/bootstrap.rtl.min.css.map",
+    "dest": "wwwroot/Styles/",
+    "tags": ["resources", "css"]
+  },
+  {
+    "action": "copy",
+    "name": "bootstrap-js",
+    "source": "node_modules/bootstrap/dist/js/bootstrap.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "bootstrap-js",
+    "source": "node_modules/bootstrap/dist/js/bootstrap.js.map",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "bootstrap-js",
+    "source": "node_modules/bootstrap/dist/js/bootstrap..min.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "bootstrap-js",
+    "source": "node_modules/bootstrap/dist/js/bootstrap.min.js.map",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+
+    "source": "node_modules/bootstrap/dist/js/bootstrap.bundle.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+
+    "source": "node_modules/bootstrap/dist/js/bootstrap.bundle.js.map",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+
+    "source": "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+
+    "source": "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js.map",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "popper-js",
+    "source": "node_modules/@popperjs/core/dist/umd/popper.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "bootstrap-select",
+    "source": "node_modules/bootstrap-select/dist/js/bootstrap-select.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
+    "source": "node_modules/codemirror/lib/codemirror.css",
+    "dest": "wwwroot/Styles/codemirror/",
+    "tags": ["resources", "css"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
+    "source": "node_modules/codemirror/addon/display/fullscreen.css",
+    "dest": "wwwroot/Styles/codemirror/addon/display/",
+    "tags": ["resources", "css"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
+    "source": "node_modules/codemirror/addon/hint/show-hint.css",
+    "dest": "wwwroot/Styles/codemirror/addon/hint/",
+    "tags": ["resources", "css"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
+    "source": "node_modules/codemirror/lib/codemirror.js",
+    "dest": "wwwroot/Scripts/codemirror/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
+    "source": "node_modules/codemirror/addon/selection/active-line.js",
+    "dest": "wwwroot/Scripts/codemirror/addon/selection/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
+    "source": "node_modules/codemirror/addon/display/autorefresh.js",
+    "dest": "wwwroot/Scripts/codemirror/addon/display/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
+    "source": "node_modules/codemirror/addon/display/fullscreen.js",
+    "dest": "wwwroot/Scripts/codemirror/addon/display/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
+    "source": "node_modules/codemirror/addon/edit/closetag.js",
+    "dest": "wwwroot/Scripts/codemirror/addon/edit/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
+    "source": "node_modules/codemirror/addon/hint/show-hint.js",
+    "dest": "wwwroot/Scripts/codemirror/addon/hint/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
+    "source": "node_modules/codemirror/addon/hint/sql-hint.js",
+    "dest": "wwwroot/Scripts/codemirror/addon/hint/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
+    "source": "node_modules/codemirror/addon/mode/multiplex.js",
+    "dest": "wwwroot/Scripts/codemirror/addon/mode/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
+    "source": "node_modules/codemirror/addon/mode/simple.js",
+    "dest": "wwwroot/Scripts/codemirror/addon/mode/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
+    "source": "node_modules/codemirror/mode/css/css.js",
+    "dest": "wwwroot/Scripts/codemirror/mode/css/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
+    "source": "node_modules/codemirror/mode/htmlmixed/htmlmixed.js",
+    "dest": "wwwroot/Scripts/codemirror/mode/htmlmixed/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
+    "source": "node_modules/codemirror/mode/javascript/javascript.js",
+    "dest": "wwwroot/Scripts/codemirror/mode/javascript/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
+    "source": "node_modules/codemirror/mode/sql/sql.js",
+    "dest": "wwwroot/Scripts/codemirror/mode/sql/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "codemirror",
+    "source": "node_modules/codemirror/mode/xml/xml.js",
+    "dest": "wwwroot/Scripts/codemirror/mode/xml/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "jquery",
+    "source": "node_modules/jquery/dist/jquery.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "jquery",
+    "source": "node_modules/jquery/dist/jquery.slim.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "jquery",
+    "source": "node_modules/jquery.easing/jquery.easing.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "jquery",
+    "source": "node_modules/jquery-resizable-dom/dist/jquery-resizable.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "jquery",
+    "source": "node_modules/@popperjs/core/dist/umd/popper.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "trumbowyg",
+    "source": "node_modules/trumbowyg/dist/ui/icons.svg",
+    "dest": "wwwroot/Scripts/trumbowyg/ui/",
+    "tags": ["resources", "images"]
+  },
+  {
+    "action": "copy",
+    "name": "trumbowyg",
+    "source": "node_modules/trumbowyg/dist/trumbowyg.js",
+    "dest": "wwwroot/Scripts/trumbowyg/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "trumbowyg",
+    "source": "Assets/trumbowyg/js/trumbowyg.shortcodes.js",
+    "dest": "wwwroot/Scripts/trumbowyg/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "trumbowyg",
+    "source": "Assets/trumbowyg/js/trumbowyg.theme.js",
+    "dest": "wwwroot/Scripts/trumbowyg/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "vue",
+    "source": "node_modules/vue/dist/vue.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "vue",
+    "source": "node_modules/vue/dist/vue.min.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "vue-multiselect",
+    "source": "node_modules/vue-multiselect/dist/vue-multiselect.min.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "vue-multiselect",
+    "source": "node_modules/vue-multiselect/dist/vue-multiselect.min.css*",
+    "dest": "wwwroot/Styles/",
+    "tags": ["resources", "css"]
+  },
+  {
+    "action": "copy",
+    "name": "vuedraggable",
+    "source": "node_modules/vuedraggable/dist/vuedraggable.umd.*",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "sortable",
+    "source": "node_modules/sortablejs/Sortable.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "sortable",
+    "source": "node_modules/sortablejs/Sortable.min.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "js-cookie",
+    "source": "node_modules/js-cookie/dist/js.cookie.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "nouislider",
+    "source": "node_modules/nouislider/dist/nouislider.js",
+    "dest": "wwwroot/Scripts/nouislider/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "nouislider",
+    "source": "node_modules/nouislider/dist/nouislider.d.ts",
+    "dest": "wwwroot/Scripts/nouislider/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "nouislider",
+    "source": "node_modules/nouislider/dist/nouislider.css",
+    "dest": "wwwroot/Scripts/nouislider/",
+    "tags": ["resources", "css"]
+  },
+  {
+    "action": "copy",
+    "name": "fortawesome",
+    "source": "node_modules/@fortawesome/fontawesome-free/css/*",
+    "dest": "wwwroot/Vendor/fontawesome-free/css/",
+    "tags": ["resources", "css"]
+  },
+  {
+    "action": "copy",
+    "name": "fortawesome",
+    "source": "node_modules/@fortawesome/fontawesome-free/js/*",
+    "dest": "wwwroot/Vendor/fontawesome-free/js/",
+    "tags": ["resources", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "fortawesome",
+    "source": "node_modules/@fortawesome/fontawesome-free/webfonts/*",
+    "dest": "wwwroot/Vendor/fontawesome-free/webfonts/",
+    "tags": ["resources", "fonts"]
+  },
+  {
+    "action": "copy",
+    "name": "monaco",
+    "source": "Assets/monaco/*",
+    "dest": "wwwroot/Scripts/monaco/",
+    "tags": ["resources", "js"]
+  }
+]
