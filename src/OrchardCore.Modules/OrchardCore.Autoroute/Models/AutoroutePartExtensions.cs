@@ -9,7 +9,7 @@ public static class AutoroutePartExtensions
     {
         if (autoroute.Path == "/")
         {
-            yield return new ValidationResult(S["Your permalink can't be set to the homepage, please use the homepage feature instead."], new[] { nameof(autoroute.Path) });
+            yield return new ValidationResult(S["Your permalink can't be set to the homepage, please use the homepage option instead."], new[] { nameof(autoroute.Path) });
         }
 
         if (HasInvalidCharacters(autoroute.Path))
