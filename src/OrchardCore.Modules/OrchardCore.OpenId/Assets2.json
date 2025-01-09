@@ -3,7 +3,7 @@
     "action": "sass",
     "name": "parametersEditor",
     "source": "Assets/scss/parametersEditor/parametersEditor.scss",
-    "tags": ["admin", "dashboard", "scss"]
+    "tags": ["admin", "dashboard", "css"]
   },
   {
     "action": "min",

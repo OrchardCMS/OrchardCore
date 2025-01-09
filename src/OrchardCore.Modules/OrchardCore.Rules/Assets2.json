@@ -3,7 +3,7 @@
     "action": "sass",
     "name": "rules",
     "source": "Assets/scss/rules.scss",
-    "tags": ["admin", "dashboard", "scss"]
+    "tags": ["admin", "dashboard", "css"]
   },
   {
     "action": "min",

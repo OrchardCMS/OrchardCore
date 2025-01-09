@@ -3,13 +3,13 @@
     "action": "sass",
     "name": "taxonomies-menu",
     "source": "Assets/scss/menu.scss",
-    "tags": ["admin", "dashboard", "scss"]
+    "tags": ["admin", "dashboard", "css"]
   },
   {
     "action": "sass",
     "name": "taxonomies-tags-editor",
     "source": "Assets/scss/tags-editor.scss",
-    "tags": ["admin", "dashboard", "scss"]
+    "tags": ["admin", "dashboard", "css"]
   },
   {
     "action": "min",

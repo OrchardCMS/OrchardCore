@@ -3,7 +3,7 @@
     "action": "sass",
     "name": "shortcodes",
     "source": "Assets/scss/shortcodes.scss",
-    "tags": ["admin", "dashboard", "scss"]
+    "tags": ["admin", "dashboard", "css"]
   },
   {
     "action": "min",

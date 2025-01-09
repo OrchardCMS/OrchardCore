@@ -3,7 +3,7 @@
     "action": "sass",
     "name": "widgets",
     "source": "Assets/scss/widgetslist.edit.scss",
-    "tags": ["admin", "dashboard", "scss"]
+    "tags": ["admin", "dashboard", "css"]
   },
   {
     "action": "min",

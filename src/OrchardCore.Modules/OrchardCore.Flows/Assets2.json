@@ -9,6 +9,6 @@
     "action": "sass",
     "name": "flows",
     "source": "Assets/scss/flows.edit.scss",
-    "tags": ["admin", "dashboard", "scss"]
+    "tags": ["admin", "dashboard", "css"]
   }
 ]

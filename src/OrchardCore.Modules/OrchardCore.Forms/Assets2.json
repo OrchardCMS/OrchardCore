@@ -15,6 +15,6 @@
     "action": "sass",
     "name": "SelectOptionsEditor",
     "source": "Assets/scss/SelectOptionsEditor/selectOptionsEditor.scss",
-    "tags": ["admin", "dashboard", "scss"]
+    "tags": ["admin", "dashboard", "css"]
   }
 ]

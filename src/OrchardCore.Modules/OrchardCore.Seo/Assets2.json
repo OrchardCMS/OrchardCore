@@ -3,7 +3,7 @@
     "action": "sass",
     "name": "seo",
     "source": "Assets/scss/customMetaTagsEditor.scss",
-    "tags": ["admin", "dashboard", "scss"]
+    "tags": ["admin", "dashboard", "css"]
   },
   {
     "action": "min",

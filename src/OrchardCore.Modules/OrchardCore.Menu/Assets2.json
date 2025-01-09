@@ -3,7 +3,7 @@
     "action": "sass",
     "name": "menu",
     "source": "Assets/scss/menu.scss",
-    "tags": ["admin", "dashboard", "scss"]
+    "tags": ["admin", "dashboard", "css"]
   },
   {
     "action": "min",
@@ -21,7 +21,7 @@
     "action": "sass",
     "name": "menu-permission-picker",
     "source": "Assets/scss/menu-permission-picker.scss",
-    "tags": ["admin", "dashboard", "scss"]
+    "tags": ["admin", "dashboard", "css"]
   },
   {
     "action": "min",
