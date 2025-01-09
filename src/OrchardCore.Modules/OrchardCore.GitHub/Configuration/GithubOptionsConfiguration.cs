@@ -35,7 +35,7 @@ public class GitHubOptionsConfiguration :
         if (string.IsNullOrWhiteSpace(_gitHubAuthenticationSettings.ClientID) ||
             string.IsNullOrWhiteSpace(_gitHubAuthenticationSettings.ClientSecret))
         {
-            _logger.LogWarning("The Github login provider is enabled but not configured.");
+            _logger.LogWarning("The GitHub login provider is enabled but not configured.");
 
             return;
         }

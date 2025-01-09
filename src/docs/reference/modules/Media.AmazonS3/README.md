@@ -41,7 +41,7 @@ The following configuration values are used by default and can be customized:
 }
 ```
 
-Refer also to the [Configuration Section](../../core/Configuration/README.md),
+Refer also to the [Configuration Section](../Configuration/README.md),
 and the [Media Section](../Media/README.md) for other Media related configuration settings.
 
 There are two hosting options: inside and outside AWS Cloud.

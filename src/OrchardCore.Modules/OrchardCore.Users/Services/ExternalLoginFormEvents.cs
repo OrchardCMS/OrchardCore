@@ -35,6 +35,14 @@ public sealed class ExternalLoginFormEvents : LoginFormEventBase
         _httpContextAccessor = httpContextAccessor;
     }
 
+    public override Task LoggedInAsync(IUser user)
+    {
+        var tempData = _tempDataDictionaryFactory.GetTempData(_httpContextAccessor.HttpContext);
+        tempData.Remove(ExternalLoginAutoRedirectKeyName);
+
+        return Task.CompletedTask;
+    }
+
     public override async Task<IActionResult> LoggingInAsync()
     {
         if (!_externalLoginOptions.UseExternalProviderIfOnlyOneDefined)
