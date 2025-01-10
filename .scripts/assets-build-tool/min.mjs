@@ -4,6 +4,7 @@ import JSON5 from "json5";
 import chalk from "chalk";
 import path from "path";
 import swc from "@swc/core";
+import { transform } from "lightningcss";
 
 let action = process.argv[2];
 const config = JSON5.parse(
@@ -11,11 +12,12 @@ const config = JSON5.parse(
 );
 
 let dest = config.dest;
+let fileExtension = config.source.split(".").pop();
 
 if (config.dest == undefined) {
-    if (config.tags.includes("js")) {
+    if (config.tags.includes("js") || fileExtension == "js") {
         dest = config.basePath + "/wwwroot/Scripts/";
-    } else if (config.tags.includes("css")) {
+    } else if (config.tags.includes("css") || fileExtension == "css") {
         dest = config.basePath + "/wwwroot/Styles/";
     }
 }
@@ -78,7 +80,7 @@ glob(config.source).then((files) => {
                 if (!stat.isDirectory()) {
                     let fileInfo = path.parse(file);
 
-                    if (fileInfo.ext === ".js" || fileInfo.ext === ".css") {
+                    if (fileInfo.ext === ".js") {
                         let reader = await fs.readFile(file, "utf8");
 
                         swc.minify(reader, {
@@ -111,6 +113,70 @@ glob(config.source).then((files) => {
                                 chalk.cyan(mappedTarget)
                             );
                         });
+
+                        fs.copy(file, target)
+                            .then(() =>
+                                console.log(
+                                    `Copied (${chalk.gray(
+                                        "from"
+                                    )}, ${chalk.cyan("to")})`,
+                                    chalk.gray(file),
+                                    chalk.cyan(target)
+                                )
+                            )
+                            .catch((err) => {
+                                console.log(
+                                    `${chalk.red(
+                                        "Error copying"
+                                    )} (${chalk.gray("from")}, ${chalk.cyan(
+                                        "to"
+                                    )})`,
+                                    chalk.gray(file),
+                                    chalk.cyan(target),
+                                    chalk.red(err)
+                                );
+                                throw err;
+                            });
+                    }
+                    else if (fileInfo.ext === ".css") {
+                        let reader = await fs.readFile(file, "utf8");
+
+                        let { code, map } = transform({
+                            filename: "style.css",
+                            code: Buffer.from(reader),
+                            minify: true,
+                            sourceMap: true,
+                        });
+
+                        if (code) {
+                            const minifiedTarget = path.join(
+                                dest,
+                                path.parse(target).name + ".min.css"
+                            );
+                            fs.outputFile(minifiedTarget, code);
+                            console.log(
+                                `Minified (${chalk.gray("from")}, ${chalk.cyan(
+                                    "to"
+                                )})`,
+                                chalk.gray(file),
+                                chalk.cyan(minifiedTarget)
+                            );
+                        }
+
+                        if (map) {
+                            const mappedTarget = path.join(
+                                dest,
+                                path.parse(target).name + ".map"
+                            );
+                            fs.outputFile(mappedTarget, map);
+                            console.log(
+                                `Mapped (${chalk.gray("from")}, ${chalk.cyan(
+                                    "to"
+                                )})`,
+                                chalk.gray(file),
+                                chalk.cyan(mappedTarget)
+                            );
+                        }
 
                         fs.copy(file, target)
                             .then(() =>

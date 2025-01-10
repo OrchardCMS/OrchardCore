@@ -1,0 +1,8 @@
+[
+  {
+    "action": "min",
+    "name": "contentfields",
+    "source": "Assets/js/contentpreview.edit.js",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

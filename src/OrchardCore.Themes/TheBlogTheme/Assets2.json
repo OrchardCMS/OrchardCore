@@ -1,0 +1,30 @@
+[
+  {
+    "action": "copy",
+    "name": "theme-theblogtheme",
+    "source": "Assets/dist/assets/**",
+    "dest": "wwwroot/assets/",
+    "tags": ["theme", "images"]
+  },
+  {
+    "action": "min",
+    "name": "theme-theblogtheme",
+    "source": "Assets/dist/css/styles.css",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
+  },
+  {
+    "action": "sass",
+    "name": "theme-theblogtheme",
+    "source": "Assets/src/scss/bootstrap-oc.scss",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
+  },
+  {
+    "action": "min",
+    "name": "theme-theblogtheme",
+    "source": "Assets/dist/js/scripts.js",
+    "dest": "wwwroot/js/",
+    "tags": ["theme", "js"]
+  }
+]

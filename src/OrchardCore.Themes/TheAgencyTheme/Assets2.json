@@ -1,0 +1,30 @@
+[
+  {
+    "action": "copy",
+    "name": "theme-theagencytheme",
+    "source": "Assets/dist/assets/**",
+    "dest": "wwwroot/assets/",
+    "tags": ["theme", "images"]
+  },
+  {
+    "action": "min",
+    "name": "theme-theagencytheme",
+    "source": "Assets/dist/css/styles.css",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
+  },
+  {
+    "action": "sass",
+    "name": "theme-theagencytheme",
+    "source": "Assets/src/scss/bootstrap-oc.scss",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
+  },
+  {
+    "action": "min",
+    "name": "theme-theagencytheme",
+    "source": "Assets/dist/js/scripts.js",
+    "dest": "wwwroot/js/",
+    "tags": ["theme", "js"]
+  }
+]

@@ -1,0 +1,1 @@
+{"version":3,"sourceRoot":null,"mappings":"AAAA","sources":["style.css"],"sourcesContent":["pre, .audittrail-comment {\n  white-space: pre-wrap;\n  word-break: normal;\n  margin-bottom: 0;\n}"],"names":[]}

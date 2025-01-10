@@ -10,11 +10,12 @@ const config = JSON5.parse(
 );
 
 let dest = config.dest;
+let fileExtension = config.source.split(".").pop();
 
 if (config.dest == undefined) {
-    if (config.tags.includes("js")) {
+    if (config.tags.includes("js") || fileExtension == "js") {
         dest = config.basePath + "/wwwroot/Scripts/";
-    } else if (config.tags.includes("css")) {
+    } else if (config.tags.includes("css") || fileExtension == "css") {
         dest = config.basePath + "/wwwroot/Styles/";
     }
 }
