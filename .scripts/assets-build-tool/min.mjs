@@ -107,7 +107,8 @@ glob(config.source).then((files) => {
                                 dest,
                                 path.parse(target).name + ".map"
                             );
-                            fs.outputFile(mappedTarget, output.map);
+                            const normalized = output.map.replace(/(?:\\[rn])+/g, "\\n");
+                            fs.outputFile(mappedTarget, normalized + "\n");
                             console.log(
                                 `Mapped (${chalk.gray("from")}, ${chalk.cyan(
                                     "to"
@@ -197,7 +198,6 @@ glob(config.source).then((files) => {
                         });
 
                         let { code, map } = transform({
-                            filename: "style.css",
                             code: Buffer.from(reader),
                             minify: true,
                             sourceMap: true,
@@ -226,7 +226,8 @@ glob(config.source).then((files) => {
                                 dest,
                                 path.parse(target).name + ".map"
                             );
-                            await fs.outputFile(mappedTarget, (map.toString().replace(/(?:\\[rn])+/g, "\\n")) + "\n");
+                            const normalized = map.toString().replace(/(?:\\[rn])+/g, "\\n");
+                            await fs.outputFile(mappedTarget, normalized + "\n");
                             console.log(
                                 `Mapped (${chalk.gray("from")}, ${chalk.cyan(
                                     "to"
