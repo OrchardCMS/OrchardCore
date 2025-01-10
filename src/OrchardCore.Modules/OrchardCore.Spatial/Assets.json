@@ -1,9 +1,0 @@
-[
-  {
-    "generateRTL": true,
-    "inputs": [
-      "Assets/js/coordinate-leaflet-field.js"
-    ],
-    "output": "wwwroot/Scripts/coordinate-leaflet-field.js"
-  }
-]

@@ -7,6 +7,12 @@
     "tags": ["admin", "js"]
   },
   {
+    "action": "min",
+    "name": "spatial-leaflet-js",
+    "source": "Assets/js/coordinate-leaflet-field.js",
+    "tags": ["admin", "js"]
+  },
+  {
     "action": "copy",
     "name": "spatial-leaflet-js-map",
     "source": "../../../node_modules/leaflet/dist/*.map",

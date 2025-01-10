@@ -1,6 +1,7 @@
 [
   {
     "action": "sass",
+    "generateRTL": true,
     "name": "shortcodes",
     "source": "Assets/scss/shortcodes.scss",
     "tags": ["admin", "dashboard", "css"]

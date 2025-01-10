@@ -1,0 +1,21 @@
+[
+  {
+    "action": "sass",
+    "generateRTL": true,
+    "name": "markdown-css",
+    "source": "Assets/Styles/mde.scss",
+    "tags": ["admin", "markdown", "css"]
+  },
+  {
+    "action": "copy",
+    "name": "markdown-easymde",
+    "source": "../../../node_modules/easymde/dist/easymde.min.js",
+    "tags": ["admin", "markdown", "js"]
+  },
+  {
+    "action": "min",
+    "name": "markdown-mediatoolbar",
+    "source": "Assets/Scripts/mde.mediatoolbar.js",
+    "tags": ["admin", "markdown", "js"]
+  }
+]

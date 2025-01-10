@@ -2,13 +2,6 @@
   {
     "generateRTL": true,
     "inputs": [
-      "../../../node_modules/bootstrap-select/dist/css/bootstrap-select.css"
-    ],
-    "output": "wwwroot/Styles/bootstrap-select.css"
-  },
-  {
-    "generateRTL": true,
-    "inputs": [
       "../../../node_modules/trumbowyg/dist/ui/sass/trumbowyg.scss"
     ],
     "output": "wwwroot/Styles/trumbowyg/trumbowyg.css"

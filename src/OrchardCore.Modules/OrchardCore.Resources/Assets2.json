@@ -376,5 +376,12 @@
     "source": "Assets/monaco/*",
     "dest": "wwwroot/Scripts/monaco/",
     "tags": ["resources", "js"]
+  },
+  {
+    "action": "min",
+    "generateRTL": true,
+    "name": "bootstrap-select-css",
+    "source": "../../../node_modules/bootstrap-select/dist/css/bootstrap-select.css",
+    "tags": ["resources", "css"]
   }
 ]

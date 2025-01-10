@@ -1,9 +1,17 @@
 .shortcode-modal-btn {
   position: absolute;
   top: 0;
-  right: 0;
   z-index: 500;
 }
+
+[dir="ltr"] .shortcode-modal-btn {
+  right: 0;
+}
+
+[dir="rtl"] .shortcode-modal-btn {
+  left: 0;
+}
+
 .shortcode-modal-btn svg {
   width: 24px;
 }
@@ -17,6 +25,7 @@
     max-width: 1200px;
   }
 }
+
 #shortcodePreview {
   max-width: 310px;
 }

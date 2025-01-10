@@ -5,6 +5,9 @@ import chalk from "chalk";
 import path from "path";
 import swc from "@swc/core";
 import { transform } from "lightningcss";
+import postcss from "postcss";
+import postcssRTLCSS from "postcss-rtlcss";
+import { Mode, Source } from "postcss-rtlcss/options";
 
 let action = process.argv[2];
 const config = JSON5.parse(
@@ -137,9 +140,61 @@ glob(config.source).then((files) => {
                                 );
                                 throw err;
                             });
-                    }
-                    else if (fileInfo.ext === ".css") {
+                    } else if (fileInfo.ext === ".css") {
                         let reader = await fs.readFile(file, "utf8");
+
+                        if (config.generateRTL) {
+                            const rtlTarget = path.join(
+                                dest,
+                                path.parse(target).name + ".css"
+                            );
+
+                            const options = {
+                                mode: Mode.combined,
+                                from: Source.css,
+                            };
+
+                            const result = await postcss([
+                                postcssRTLCSS(options),
+                            ]).process(reader, { from: file });
+                            reader = result.css;
+
+                            console.log(
+                                `RTL (${chalk.gray("from")}, ${chalk.cyan(
+                                    "to"
+                                )})`,
+                                chalk.gray(rtlTarget),
+                                chalk.cyan(rtlTarget)
+                            );
+                        }
+
+                        const copyTarget = path.join(
+                            dest,
+                            path.parse(target).base
+                        );
+
+                        await fs.outputFile(copyTarget, reader).then(() => {
+                            console.log(
+                                `Copied (${chalk.gray(
+                                    "from"
+                                )}, ${chalk.cyan("to")})`,
+                                chalk.gray(file),
+                                chalk.cyan(target)
+                            )
+                        })
+                        .catch((err) => {
+                            console.log(
+                                `${chalk.red(
+                                    "Error copying"
+                                )} (${chalk.gray("from")}, ${chalk.cyan(
+                                    "to"
+                                )})`,
+                                chalk.gray(file),
+                                chalk.cyan(target),
+                                chalk.red(err)
+                            );
+                            throw err;
+                        });
 
                         let { code, map } = transform({
                             filename: "style.css",
@@ -153,7 +208,10 @@ glob(config.source).then((files) => {
                                 dest,
                                 path.parse(target).name + ".min.css"
                             );
-                            fs.outputFile(minifiedTarget, code);
+                            await fs.outputFile(
+                                minifiedTarget,
+                                code.toString()
+                            );
                             console.log(
                                 `Minified (${chalk.gray("from")}, ${chalk.cyan(
                                     "to"
@@ -168,7 +226,7 @@ glob(config.source).then((files) => {
                                 dest,
                                 path.parse(target).name + ".map"
                             );
-                            fs.outputFile(mappedTarget, map);
+                            await fs.outputFile(mappedTarget, (output.map.replace(/(?:\\[rn])+/g, "\\n")) + "\n");
                             console.log(
                                 `Mapped (${chalk.gray("from")}, ${chalk.cyan(
                                     "to"
@@ -177,30 +235,6 @@ glob(config.source).then((files) => {
                                 chalk.cyan(mappedTarget)
                             );
                         }
-
-                        fs.copy(file, target)
-                            .then(() =>
-                                console.log(
-                                    `Copied (${chalk.gray(
-                                        "from"
-                                    )}, ${chalk.cyan("to")})`,
-                                    chalk.gray(file),
-                                    chalk.cyan(target)
-                                )
-                            )
-                            .catch((err) => {
-                                console.log(
-                                    `${chalk.red(
-                                        "Error copying"
-                                    )} (${chalk.gray("from")}, ${chalk.cyan(
-                                        "to"
-                                    )})`,
-                                    chalk.gray(file),
-                                    chalk.cyan(target),
-                                    chalk.red(err)
-                                );
-                                throw err;
-                            });
                     } else {
                         console.log(
                             "Trying to minify a file with an extension that is not allowed."
