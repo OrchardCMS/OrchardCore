@@ -14,16 +14,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, windows-latest]
+        os: [ubuntu-24.04, windows-2022]
     name: Build & Test
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
         node-version: "15"
-    - uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x'
+    - uses: ./.github/actions/setup-dotnet
     - name: Build
       # We disable NuGet audit warnings, see https://learn.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu1901-nu1904.
       # Security issues being discovered in NuGet packages we use can happen at any time, and thus all our CI builds that
@@ -35,14 +33,14 @@ jobs:
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
     - name: Functional Tests
-      if: matrix.os == 'ubuntu-22.04'
+      if: matrix.os == 'ubuntu-24.04'
       run: |
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
         npm run mvc:test
     - uses: actions/upload-artifact@v4
-      if: matrix.os == 'ubuntu-22.04' && failure()
+      if: matrix.os == 'ubuntu-24.04' && failure()
       with:
         name: functional-test-failure
         path: |
