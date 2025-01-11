@@ -76,21 +76,21 @@
             query.Remove("ui-culture");
             var queryString = QueryString.Create(query);
 
-                    <div class="row float-end">
-                        <div class="col">
-                            <label for="culturesList" class="form-label mt-2">@T["Change language"]</label>
-                        </div>
-                        <div class="col">
-                            <select id="culturesList" class="form-select">
+            <div class="row float-end">
+                <div class="col">
+                    <label for="culturesList" class="form-label mt-2">@T["Change language"]</label>
+                </div>
+                <div class="col">
+                    <select id="culturesList" class="form-select">
                         @foreach (var culture in LocOptions.Value.SupportedUICultures.OrderBy(x => x.NativeName))
                         {
                             var uriString = UriHelper.BuildRelative(Context.Request.PathBase, Context.Request.Path, queryString.Add("ui-culture", culture.Name));
 
-                                            <option value="@culture" data-url="@uriString" selected="@(culture.Name == Orchard.CultureName())">@(culture.NativeName ?? culture.Name)</option>
+                            <option value="@culture" data-url="@uriString" selected="@(culture.Name == Orchard.CultureName())">@(culture.NativeName ?? culture.Name)</option>
                         }
-                            </select>
-                        </div>
-                    </div>
+                    </select>
+                </div>
+            </div>
         }
         <h1>@T["Setup"]</h1>
         <p class="lead">@T["Please answer a few questions to configure your site."]</p>
@@ -100,9 +100,9 @@
 
     @if (defaultRecipe == null)
     {
-                <div class="alert alert-danger" role="alert">
-                    <strong>@T["No recipes available."]</strong> @T["It is not possible to set up a site without a recipe."]
-                </div>
+        <div class="alert alert-danger" role="alert">
+            <strong>@T["No recipes available."]</strong> @T["It is not possible to set up a site without a recipe."]
+        </div>
     }
 
     <div class="row mt-2">
@@ -116,46 +116,46 @@
         </div>
         @if (!Model.RecipeNamePreset)
         {
-                    <div class="mb-3 col-md-4">
-                        <input type="hidden" asp-for="RecipeName" required />
-                        <nav>
-                            <div asp-validation-class-for="RecipeName">
-                                <label asp-for="RecipeName" class="form-label">@T["Recipe"]</label>
+            <div class="mb-3 col-md-4">
+                <input type="hidden" asp-for="RecipeName" required />
+                <nav>
+                    <div asp-validation-class-for="RecipeName">
+                        <label asp-for="RecipeName" class="form-label">@T["Recipe"]</label>
                         @if (defaultRecipe == null)
                         {
-                                            <div id="noRecipes" class="dropdown disabled">
-                                                <button id="noRecipeButton" title="@T["No Recipes Available"]" class="btn btn-secondary dropdown-toggle disabled" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <div id="noRecipes" class="dropdown disabled">
+                                <button id="noRecipeButton" title="@T["No Recipes Available"]" class="btn btn-secondary dropdown-toggle disabled" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     @T["No Recipes Available"]
-                                                </button>
-                                            </div>
+                                </button>
+                            </div>
                         }
                         else
                         {
-                                            <div id="recipes" class="dropdown">
-                                                <button id="recipeButton" title="@defaultRecipe.Description" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <div id="recipes" class="dropdown">
+                                <button id="recipeButton" title="@defaultRecipe.Description" class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     @defaultRecipe.DisplayName
-                                                </button>
-                                                <div class="dropdown-menu">
+                                </button>
+                                <div class="dropdown-menu">
                                     @foreach (var recipe in Model.Recipes.OrderBy(x => x.Name))
                                     {
-                                                                <a href="#" data-recipe-name="@recipe.Name" data-recipe-description="@recipe.Description" data-recipe-display-name="@recipe.DisplayName" class="dropdown-item">@recipe.DisplayName <span class="text-muted form-text small">@recipe.Description</span></a>
+                                        <a href="#" data-recipe-name="@recipe.Name" data-recipe-description="@recipe.Description" data-recipe-display-name="@recipe.DisplayName" class="dropdown-item">@recipe.DisplayName <span class="text-muted form-text small">@recipe.Description</span></a>
                                     }
-                                                </div>
-                                            </div>
-                        }
+                                </div>
                             </div>
-                        </nav>
-                        <span class="text-muted form-text small">@T["Recipes allow you to setup your site with additional pre-configured options, features and settings out of the box."]</span>
+                        }
                     </div>
+                </nav>
+                <span class="text-muted form-text small">@T["Recipes allow you to setup your site with additional pre-configured options, features and settings out of the box."]</span>
+            </div>
         }
         <div class="mb-3 col-md-4" asp-validation-class-for="SiteTimeZone">
             <label asp-for="SiteTimeZone" class="form-label">@T["Default Time Zone"]</label>
             <select asp-for="SiteTimeZone" class="form-select">
                 @foreach (var timeZone in Clock.GetTimeZones())
                 {
-                            <option value="@timeZone.TimeZoneId" selected="@(timeZone.TimeZoneId == localTimeZone.TimeZoneId)">
+                    <option value="@timeZone.TimeZoneId" selected="@(timeZone.TimeZoneId == localTimeZone.TimeZoneId)">
                         @timeZone
-                            </option>
+                    </option>
                 }
             </select>
             <span asp-validation-for="SiteTimeZone"></span>
@@ -164,47 +164,47 @@
     </div>
     @if (!Model.DatabaseConfigurationPreset)
     {
-                <div class="row">
-                    <div class="mb-3 col-md-6">
-                        <label asp-for="DatabaseProvider" class="form-label">@T["What type of database to use?"]</label>
-                        <select asp-for="DatabaseProvider" class="form-select" required>
+        <div class="row">
+            <div class="mb-3 col-md-6">
+                <label asp-for="DatabaseProvider" class="form-label">@T["What type of database to use?"]</label>
+                <select asp-for="DatabaseProvider" class="form-select" required>
                     @foreach (var provider in Model.DatabaseProviders)
                     {
-                                        <option value="@provider.Value" data-connection-string="@provider.HasConnectionString" data-table-prefix="@provider.HasTablePrefix" data-connection-string-sample="@T["The connection string to your database instance, e.g. {0}.", provider.SampleConnectionString]">@provider.Name</option>
+                        <option value="@provider.Value" data-connection-string="@provider.HasConnectionString" data-table-prefix="@provider.HasTablePrefix" data-connection-string-sample="@T["The connection string to your database instance, e.g. {0}.", provider.SampleConnectionString]">@provider.Name</option>
                     }
-                        </select>
-                        <span asp-validation-for="DatabaseProvider" class="text-danger"></span>
-                        <span class="text-muted form-text small">@T["The database is used to store the site's configuration and its contents."]</span>
-                    </div>
+                </select>
+                <span asp-validation-for="DatabaseProvider" class="text-danger"></span>
+                <span class="text-muted form-text small">@T["The database is used to store the site's configuration and its contents."]</span>
+            </div>
 
-                    <div class="mb-3 col-md-6 tablePrefix" asp-validation-class-for="TablePrefix">
-                        <label asp-for="TablePrefix" class="form-label">@T["Table Prefix"]</label>
-                        <input asp-for="TablePrefix" class="form-control" />
-                        <span asp-validation-for="TablePrefix" class="text-danger"></span>
-                        <span class="text-muted form-text small">@T["You can specify a table prefix if you intend to reuse the same database for multiple sites."]</span>
-                    </div>
-                </div>
+            <div class="mb-3 col-md-6 tablePrefix" asp-validation-class-for="TablePrefix">
+                <label asp-for="TablePrefix" class="form-label">@T["Table Prefix"]</label>
+                <input asp-for="TablePrefix" class="form-control" />
+                <span asp-validation-for="TablePrefix" class="text-danger"></span>
+                <span class="text-muted form-text small">@T["You can specify a table prefix if you intend to reuse the same database for multiple sites."]</span>
+            </div>
+        </div>
 
-                <div class="row connectionString" asp-validation-class-for="ConnectionString">
-                    <div class="mb-3 col-md-12">
-                        <label asp-for="ConnectionString" class="form-label">@T["Connection string"]</label>
-                        <div class="input-group mb-2 mb-sm-0">
-                            <input asp-for="ConnectionString" class="form-control pwd" type="password" required />
-                            <button type="button" id="toggleConnectionString" class="btn btn-secondary" tabindex="-1" aria-hidden="true" title="@T["Show/hide connection string"]"><i class="icon fa fa-eye"></i></button>
-                        </div>
-                        <span asp-validation-for="ConnectionString" class="text-danger"></span>
-                        <span id="connectionStringHint" class="text-muted form-text small"></span>
-                    </div>
+        <div class="row connectionString" asp-validation-class-for="ConnectionString">
+            <div class="mb-3 col-md-12">
+                <label asp-for="ConnectionString" class="form-label">@T["Connection string"]</label>
+                <div class="input-group mb-2 mb-sm-0">
+                    <input asp-for="ConnectionString" class="form-control pwd" type="password" required />
+                    <button type="button" id="toggleConnectionString" class="btn btn-secondary" tabindex="-1" aria-hidden="true" title="@T["Show/hide connection string"]"><i class="icon fa fa-eye"></i></button>
                 </div>
+                <span asp-validation-for="ConnectionString" class="text-danger"></span>
+                <span id="connectionStringHint" class="text-muted form-text small"></span>
+            </div>
+        </div>
 
-                <div class="row row-cols-1 row-cols-md-2">
-                    <div class="mb-3 col tablePrefix">
-                        <label asp-for="Schema" class="form-label">@T["Table Schema"]</label>
-                        <input asp-for="Schema" class="form-control" />
-                        <span asp-validation-for="Schema" class="text-danger"></span>
-                        <div class="text-muted form-text small">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
-                    </div>
-                </div>
+        <div class="row row-cols-1 row-cols-md-2">
+            <div class="mb-3 col tablePrefix">
+                <label asp-for="Schema" class="form-label">@T["Table Schema"]</label>
+                <input asp-for="Schema" class="form-control" />
+                <span asp-validation-for="Schema" class="text-danger"></span>
+                <div class="text-muted form-text small">@T["When left blank, the default value on the server will be used."] @T["For example, '{0}' for SQL Server.", "dbo"]</div>
+            </div>
+        </div>
     }
     <fieldset>
         <legend>@T["Super User"]</legend>
