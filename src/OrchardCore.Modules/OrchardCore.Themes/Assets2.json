@@ -1,0 +1,8 @@
+[
+  {
+    "action": "sass",
+    "name": "themes-admin",
+    "source": "Assets/scss/themes.admin.scss",
+    "tags": ["themes", "css"]
+  }
+]

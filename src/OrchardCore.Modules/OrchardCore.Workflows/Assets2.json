@@ -1,0 +1,26 @@
+[
+  {
+    "action": "min",
+    "name": "workflow-jsplumbtoolkit-defaults.css",
+    "source": "../../../node_modules/jsplumb/css/jsplumbtoolkit-defaults.css",
+    "tags": ["workflows", "css"]
+  },
+  {
+    "action": "sass",
+    "name": "workflow-editor-css",
+    "source": "Assets/Styles/orchard.workflows-editor.scss",
+    "tags": ["workflows", "css"]
+  },
+  {
+    "action": "sass",
+    "name": "workflow-viewer-css",
+    "source": "Assets/Styles/orchard.workflows-viewer.scss",
+    "tags": ["workflows", "css"]
+  },
+  {
+    "action": "min",
+    "name": "workflow-jsplumb",
+    "source": "../../../node_modules/jsplumb/dist/js/jsplumb.js",
+    "tags": ["workflows", "js"]
+  } 
+]

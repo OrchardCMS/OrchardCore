@@ -1,0 +1,24 @@
+[
+  {
+    "action": "sass",
+    "name": "theme-theadmin",
+    "source": "Assets/scss/TheAdmin.scss",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
+  },
+  {
+    "action": "sass",
+    "generateRTL": true,
+    "name": "theme-theadmin-layout",
+    "source": "Assets/scss/admin-layout.scss",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
+  },
+  {
+    "action": "sass",
+    "name": "theme-theadmin-login",
+    "source": "Assets/scss/login.scss",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
+  }
+]
