@@ -180,6 +180,7 @@
 </form>
 <script at="Foot">
     $(function () {
+        const EscapeKeyCode = 27;
         var searchBox = $('#search-box');
 
         // On each keypress filter the list of features
@@ -188,7 +189,7 @@
             var elementsToFilter = $("[data-filter-value]");
 
             // On ESC, clear the search box and display all features
-            if (e.keyCode == 27 || search == '') {
+            if (e.keyCode == EscapeKeyCode || search == '') {
                 searchBox.val('');
                 elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
             } else {
@@ -225,6 +226,14 @@
             if (key == 13) {
                 return false;
             }
+        });
+
+        // this function will be executed on click of X (clear button)
+        searchBox.on('search', function () {
+            var e = $.Event('keyup');
+            e.keyCode= EscapeKeyCode;
+            
+            searchBox.trigger(e);
         });
 
         $(".dropdown-menu a").filter(function () {
