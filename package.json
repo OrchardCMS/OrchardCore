@@ -20,8 +20,11 @@
   },
   "workspaces": [
     ".scripts/assets-build-tool",
+    "src/lib/",
     "src/OrchardCore.Modules/*",
-    "src/OrchardCore.Themes/*"
+    "src/OrchardCore.Modules/*/Assets/",
+    "src/OrchardCore.Themes/*",
+    "src/OrchardCore.Themes/*/Assets/"
   ],
   "devDependencies": {
     "@babel/core": "^7.22.11",
