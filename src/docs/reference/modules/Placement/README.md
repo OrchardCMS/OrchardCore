@@ -103,9 +103,9 @@ The placement rules are stricter for non-standard display modes.
 
 ```json
 {
-  "TextField_Display"" [
+  "TextField_Display": [
     {
-      "place": Content:1",
+      "place": "Content:1",
       "differentiator": "Blog-MyField-TextField_Display__Header"
     }
   ]
