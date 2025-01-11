@@ -94,7 +94,7 @@ It is built using the `Part` it's contained in, and the name of the `Field`.
 For instance, if a field named `MyField` would be added to an `Article` content type, its differentiator would be `Article-MyField`.  
 If a field named `City` was added to an `Address` part then its differentiator would be `Address-City`.
 
-### Field Display Models
+### Field Display Modes
 
 The placement rules are stricter for non-standard display modes.
 
