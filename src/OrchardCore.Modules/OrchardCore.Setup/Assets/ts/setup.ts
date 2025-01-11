@@ -1,4 +1,4 @@
-import strenght from "@orchardcore/frontend/components/strength";
+import strenght from "@orchardcore/frontend/components/password-strength";
 
 // Show or hide the connection string or table prefix section when the database provider is selected
 const toggleConnectionStringAndPrefix = () => {
