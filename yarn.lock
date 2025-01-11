@@ -2142,9 +2142,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@orchardcore/themes@workspace:src/OrchardCore.Modules/OrchardCore.Themes":
+"@orchardcore/themes@workspace:src/OrchardCore.Modules/OrchardCore.Themes/Assets":
   version: 0.0.0-use.local
-  resolution: "@orchardcore/themes@workspace:src/OrchardCore.Modules/OrchardCore.Themes"
+  resolution: "@orchardcore/themes@workspace:src/OrchardCore.Modules/OrchardCore.Themes/Assets"
   dependencies:
     "@popperjs/core": "npm:2.11.8"
     bootstrap: "npm:5.3.3"

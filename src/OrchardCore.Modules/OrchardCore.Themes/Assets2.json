@@ -4,5 +4,19 @@
     "name": "themes-admin",
     "source": "Assets/scss/themes.admin.scss",
     "tags": ["themes", "css"]
+  },
+  {
+    "action": "parcel",
+    "name": "themes-theme-manager",
+    "source": "Assets/ts/theme-manager.ts",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["themes", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "themes-theme-head",
+    "source": "Assets/ts/theme-head.ts",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["themes", "js"]
   }
 ]
