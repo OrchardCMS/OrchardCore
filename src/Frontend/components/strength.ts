@@ -1,4 +1,20 @@
-export default function strength(element, options) {
+/**
+ * This function initializes a password strength checker on a given input element.
+ * It evaluates the password based on specified requirements such as minimum length,
+ * presence of uppercase, lowercase, digits, and special characters.
+ * A visual progress bar is displayed to indicate the strength level of the password.
+ *
+ * @param {HTMLElement} element - The input element to which the strength checker is applied.
+ * @param {Object} options - Configuration options for password requirements and display settings.
+ * @param {number} options.requiredLength - Minimum required length of the password.
+ * @param {boolean} options.requireUppercase - Whether an uppercase letter is required.
+ * @param {boolean} options.requireLowercase - Whether a lowercase letter is required.
+ * @param {boolean} options.requireDigit - Whether a digit is required.
+ * @param {boolean} options.requireNonAlphanumeric - Whether a special character is required.
+ * @param {string} options.target - CSS selector for the element where the strength progress bar is displayed.
+ * @param {string} options.style - CSS style string for the progress bar.
+ */
+export default function strength(element: HTMLInputElement, options: any) {
 
     const settings = Object.assign({
         requiredLength: 8,
@@ -22,11 +38,11 @@ export default function strength(element, options) {
 
     let valid = false;
 
-    function getPercentage(a, b) {
+    function getPercentage(a: number, b: number) {
         return (b / a) * 100;
     }
 
-    function getLevel(value) {
+    function getLevel(value: number) {
 
         if (value >= 100) {
             return "bg-success";
@@ -43,7 +59,7 @@ export default function strength(element, options) {
         return "bg-danger";
     }
 
-    function checkStrength(value) {
+    function checkStrength(value: string) {
 
         const minLength = value.length >= settings.requiredLength ? 1 : 0;
         capitalletters = !settings.requireUppercase || value.match(upperCase) ? 1 : 0;
@@ -59,7 +75,7 @@ export default function strength(element, options) {
         createProgressBar(percentage, getLevel(percentage));
     }
 
-    function createProgressBar(percentage, level) {
+    function createProgressBar(percentage: string | number, level: string) {
         const el = document.createElement("div");
         el.className = "progress";
         el.setAttribute("value", percentage.toString());
@@ -75,15 +91,15 @@ export default function strength(element, options) {
         target.appendChild(el);
     }
 
-    element.addEventListener("keyup", (event) => checkStrength(element.value));
-    element.addEventListener("keydown", (event) => checkStrength(element.value));
-    element.addEventListener("change", (event) => checkStrength(element.value));
+    element.addEventListener("keyup", () => checkStrength(element.value));
+    element.addEventListener("keydown", () => checkStrength(element.value));
+    element.addEventListener("change", () => checkStrength(element.value));
     element.addEventListener("drop", (event) => {
         event.preventDefault();
-        checkStrength(event.dataTransfer.getData("text"));
+        checkStrength(event.dataTransfer?.getData("text") ?? "");
     });
 
-    element.form.addEventListener("submit", (event) => {
+    element.form?.addEventListener("submit", (event) => {
         checkStrength(element.value);
         if (!valid) {
             event.preventDefault();

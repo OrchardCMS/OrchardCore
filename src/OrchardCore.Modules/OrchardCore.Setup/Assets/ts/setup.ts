@@ -1,6 +1,112 @@
-import strenght from "./strength";
+import strenght from "@orchardcore/frontend/components/strength";
 
-document.addEventListener("DOMContentLoaded", function () {
+// Show or hide the connection string or table prefix section when the database provider is selected
+const toggleConnectionStringAndPrefix = () => {
+    const selectedOption = document.querySelector(
+        "#DatabaseProvider option:checked"
+    );
+    if (selectedOption) {
+        const connectionString =
+            selectedOption
+                .getAttribute("data-connection-string")
+                ?.toLowerCase() === "true";
+        const tablePrefix =
+            selectedOption.getAttribute("data-table-prefix")?.toLowerCase() ===
+            "true";
+
+        const connectionStringElements =
+            document.querySelectorAll<HTMLDivElement>(".connectionString");
+        connectionStringElements.forEach(
+            (el) => (el.style.display = connectionString ? "block" : "none")
+        );
+
+        const tablePrefixElements =
+            document.querySelectorAll<HTMLDivElement>(".tablePrefix");
+        tablePrefixElements.forEach(
+            (el) => (el.style.display = tablePrefix ? "block" : "none")
+        );
+
+        document.querySelectorAll(".pwd").forEach((el) => {
+            if (connectionString) {
+                el.setAttribute("required", "required");
+            } else {
+                el.removeAttribute("required");
+            }
+        });
+
+        const connectionStringHint = document.getElementById(
+            "connectionStringHint"
+        );
+        if (connectionStringHint) {
+            connectionStringHint.textContent =
+                selectedOption.getAttribute("data-connection-string-sample") ||
+                "";
+        }
+    }
+};
+
+const refreshDescription = (target: Element) => {
+    const recipeName = target.getAttribute("data-recipe-name");
+    const recipeDisplayName = target.getAttribute("data-recipe-display-name");
+    const recipeDescription = target.getAttribute("data-recipe-description");
+
+    const recipeButton = document.getElementById("recipeButton");
+    const recipeNameInput = document.getElementById(
+        "RecipeName"
+    ) as HTMLInputElement;
+
+    if (recipeButton && recipeNameInput) {
+        recipeButton.textContent = recipeDisplayName || "";
+        recipeNameInput.value = recipeName || "";
+        recipeButton.setAttribute("title", recipeDescription || "");
+        recipeButton.focus();
+    }
+};
+
+const setLocalizationUrl = () => {
+    const culturesList = document.getElementById(
+        "culturesList"
+    ) as HTMLSelectElement;
+
+    culturesList.addEventListener("change", () => {
+        const selectedOption = culturesList.options[culturesList.selectedIndex];
+        if (selectedOption) {
+            window.location.href = selectedOption.dataset.url || "";
+        }
+    });
+};
+
+const togglePasswordVisibility = (
+    passwordCtl: HTMLInputElement | null,
+    togglePasswordCtl: HTMLElement | null
+) => {
+    if (!passwordCtl || !togglePasswordCtl) {
+        return;
+    }
+
+    // toggle the type attribute
+    const type =
+        passwordCtl.getAttribute("type") === "password" ? "text" : "password";
+    passwordCtl.setAttribute("type", type);
+
+    // toggle the eye slash icon
+    const icon = togglePasswordCtl.getElementsByClassName("icon")[0];
+    if (icon) {
+        if (icon.getAttribute("data-icon")) {
+            // if the icon is rendered as a svg
+            icon.setAttribute(
+                "data-icon",
+                type === "password" ? "eye" : "eye-slash"
+            );
+        } else {
+            // if the icon is still a <i> element
+            icon.classList.toggle("fa-eye", type === "password");
+            icon.classList.toggle("fa-eye-slash", type !== "password");
+        }
+    }
+};
+
+const init = () => {
     toggleConnectionStringAndPrefix();
 
     // Show hide the connection string when a provider is selected
@@ -17,7 +123,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    const passwordElement = document.getElementById("Password");
+    const passwordElement = <HTMLInputElement>(
+        document.getElementById("Password")
+    );
+
     const options = JSON.parse(passwordElement?.dataset.strength ?? "") ?? {
         requiredLength: 6,
         requiredUniqueChars: 1,
@@ -27,7 +136,9 @@ document.addEventListener("DOMContentLoaded", function () {
         requireDigit: true,
     };
 
-    strenght(passwordElement, options);
+    if (passwordElement) {
+        strenght(passwordElement, options);
+    }
 
     if (passwordElement) {
         passwordElement.addEventListener("focus", function () {
@@ -94,112 +205,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     setLocalizationUrl();
-});
+};
 
-// Show or hide the connection string or table prefix section when the database provider is selected
-function toggleConnectionStringAndPrefix() {
-    const selectedOption = document.querySelector(
-        "#DatabaseProvider option:checked"
-    );
-    if (selectedOption) {
-        const connectionString =
-            selectedOption
-                .getAttribute("data-connection-string")
-                ?.toLowerCase() === "true";
-        const tablePrefix =
-            selectedOption.getAttribute("data-table-prefix")?.toLowerCase() ===
-            "true";
-
-        const connectionStringElements =
-            document.querySelectorAll<HTMLDivElement>(".connectionString");
-        connectionStringElements.forEach(
-            (el) => (el.style.display = connectionString ? "block" : "none")
-        );
-
-        const tablePrefixElements =
-            document.querySelectorAll<HTMLDivElement>(".tablePrefix");
-        tablePrefixElements.forEach(
-            (el) => (el.style.display = tablePrefix ? "block" : "none")
-        );
-
-        document.querySelectorAll(".pwd").forEach((el) => {
-            if (connectionString) {
-                el.setAttribute("required", "required");
-            } else {
-                el.removeAttribute("required");
-            }
-        });
-
-        const connectionStringHint = document.getElementById(
-            "connectionStringHint"
-        );
-        if (connectionStringHint) {
-            connectionStringHint.textContent =
-                selectedOption.getAttribute("data-connection-string-sample") ||
-                "";
-        }
-    }
-}
-
-// Show the recipe description
-function refreshDescription(target: Element) {
-    const recipeName = target.getAttribute("data-recipe-name");
-    const recipeDisplayName = target.getAttribute("data-recipe-display-name");
-    const recipeDescription = target.getAttribute("data-recipe-description");
-
-    const recipeButton = document.getElementById("recipeButton");
-    const recipeNameInput = document.getElementById(
-        "RecipeName"
-    ) as HTMLInputElement;
-
-    if (recipeButton && recipeNameInput) {
-        recipeButton.textContent = recipeDisplayName || "";
-        recipeNameInput.value = recipeName || "";
-        recipeButton.setAttribute("title", recipeDescription || "");
-        recipeButton.focus();
-    }
-}
-
-function setLocalizationUrl() {
-    const culturesList = document.getElementById(
-        "culturesList"
-    ) as HTMLSelectElement;
-
-    culturesList.addEventListener("change", () => {
-        const selectedOption = culturesList.options[culturesList.selectedIndex];
-        if (selectedOption) {
-            window.location.href = selectedOption.dataset.url || "";
-        }
-    })
-
-}
-
-function togglePasswordVisibility(
-    passwordCtl: HTMLInputElement | null,
-    togglePasswordCtl: HTMLElement | null
-) {
-    if (!passwordCtl || !togglePasswordCtl) {
-        return;
-    }
-
-    // toggle the type attribute
-    const type =
-        passwordCtl.getAttribute("type") === "password" ? "text" : "password";
-    passwordCtl.setAttribute("type", type);
-
-    // toggle the eye slash icon
-    const icon = togglePasswordCtl.getElementsByClassName("icon")[0];
-    if (icon) {
-        if (icon.getAttribute("data-icon")) {
-            // if the icon is rendered as a svg
-            icon.setAttribute(
-                "data-icon",
-                type === "password" ? "eye" : "eye-slash"
-            );
-        } else {
-            // if the icon is still a <i> element
-            icon.classList.toggle("fa-eye", type === "password");
-            icon.classList.toggle("fa-eye-slash", type !== "password");
-        }
-    }
-}
+init();

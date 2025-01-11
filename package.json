@@ -20,7 +20,7 @@
   },
   "workspaces": [
     ".scripts/assets-build-tool",
-    "src/lib/",
+    "src/Frontend/",
     "src/OrchardCore.Modules/*",
     "src/OrchardCore.Modules/*/Assets/",
     "src/OrchardCore.Themes/*",
