@@ -22,6 +22,21 @@ public static class ApplicationBuilderExtensions
         {
             RoleName = "Anonymous",
             RoleDescription = "A system role representing all non-authenticated users."
+        },
+        new Role
+        {
+            RoleName = "Moderator",
+            RoleDescription = "Grants users the ability to moderate content."
+        },
+        new Role
+        {
+            RoleName = "Author",
+            RoleDescription = "Grants users the ability to create content."
+        },
+        new Role
+        {
+            RoleName = "Contributor",
+            RoleDescription = "Grants users the ability to contribute content."
         }
     ];
 
