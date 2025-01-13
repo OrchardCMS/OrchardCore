@@ -16,19 +16,13 @@ public sealed class RolesMigrations : DataMigration
     private static readonly string _alternativeAdminRoleName = "SiteOwner";
 
     private readonly SystemRoleOptions _systemRoleOptions;
-    private readonly ISystemRoleNameProvider _systemRoleNameProvider;
-    private readonly RoleManager<IRole> _roleManager;
     private readonly ILogger _logger;
 
     public RolesMigrations(
         IOptions<SystemRoleOptions> systemRoleOptions,
-        ISystemRoleNameProvider systemRoleNameProvider,
-        RoleManager<IRole> roleManager,
         ILogger<RolesMigrations> logger)
     {
         _systemRoleOptions = systemRoleOptions.Value;
-        _systemRoleNameProvider = systemRoleNameProvider;
-        _roleManager = roleManager;
         _logger = logger;
     }
 
@@ -130,18 +124,6 @@ public sealed class RolesMigrations : DataMigration
         });
 
         return 1;
-    }
-
-    public async Task<int> UpdateFrom1Async()
-    {
-        var systemRoles = await _systemRoleNameProvider.GetSystemRolesAsync();
-
-        foreach (var role in systemRoles)
-        {
-            await _roleManager.CreateAsync(new Role { RoleName = role });
-        }
-
-        return 2;
     }
 
     private static string GenerateNewAdminRoleName(List<IRole> roles)
