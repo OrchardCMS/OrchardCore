@@ -65,6 +65,31 @@
       "name": "themes",
       "admin": "TheAdmin",
       "site": ""
+    },
+    {
+      "name": "Roles",
+      "Roles": [
+        {
+          "Name": "Moderator",
+          "Description": "Grants users the ability to moderate content.",
+          "Permissions": []
+        },
+        {
+          "Name": "Editor",
+          "Description": "Grants users the ability to edit existing content.",
+          "Permissions": []
+        },
+        {
+          "Name": "Author",
+          "Description": "Grants users the ability to create content.",
+          "Permissions": []
+        },
+        {
+          "Name": "Contributor",
+          "Description": "Grants users the ability to contribute content.",
+          "Permissions": []
+        }
+      ]
     }
   ]
 }
