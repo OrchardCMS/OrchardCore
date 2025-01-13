@@ -83,6 +83,15 @@
           "Name": "Contributor",
           "Description": "Grants users the ability to contribute content.",
           "Permissions": []
+        },
+        {
+          "Name": "Authenticated",
+          "Description": "A system role representing all authenticated users.",
+          "Permissions": [
+            "ViewContent",
+            "ExecuteGraphQL",
+            "ExecuteApiAll"
+          ]
         }
       ]
     },

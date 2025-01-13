@@ -27,7 +27,10 @@ public sealed class SystemRolesMigrations : DataMigration
 
         foreach (var role in systemRoles)
         {
-            await _roleManager.CreateAsync(new Role { RoleName = role });
+            if (await _roleManager.FindByNameAsync(role) is null)
+            {
+                await _roleManager.CreateAsync(new Role { RoleName = role });
+            }
         }
 
         _logger.LogInformation("The system roles have been created successfully.");
