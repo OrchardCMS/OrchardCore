@@ -49,12 +49,4 @@ public static class RoleServiceExtensions
 
         return accessibleRoles;
     }
-
-    [Obsolete("This method is obsolete and will be removed in future releases.")]
-    public static async Task<IEnumerable<string>> GetAccessibleRoleNamesAsync(this IRoleService roleService, IAuthorizationService authorizationService, ClaimsPrincipal user, Permission permission)
-    {
-        var roles = await roleService.GetAccessibleRolesAsync(authorizationService, user, permission);
-
-        return roles.Select(x => x.RoleName);
-    }
 }
