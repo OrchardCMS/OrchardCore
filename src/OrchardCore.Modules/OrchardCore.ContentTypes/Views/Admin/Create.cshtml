@@ -29,7 +29,7 @@
         var $displayName = $("#@Html.IdFor(m => m.DisplayName)");
 
         var nameAltered;
-        $name.keypress(function () {
+        $name.keydown(function () {
             nameAltered = true;
         });
 
