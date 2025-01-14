@@ -48,7 +48,10 @@ public class StyleTagHelper : TagHelper
     {
         output.SuppressOutput();
 
-        if (string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Src))
+        var hasName = !string.IsNullOrEmpty(Name);
+        var hasSource = !string.IsNullOrEmpty(Src);
+
+        if (!hasName && hasSource)
         {
             // Include custom style
             var setting = _resourceManager.RegisterUrl("stylesheet", Src, DebugSrc);
@@ -89,7 +92,7 @@ public class StyleTagHelper : TagHelper
 
             if (!string.IsNullOrEmpty(DependsOn))
             {
-                setting.SetDependencies(DependsOn.Split(_splitSeparators, StringSplitOptions.RemoveEmptyEntries));
+                setting.SetDependencies(DependsOn.Split(_splitSeparators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
             if (At == ResourceLocation.Inline)
@@ -99,7 +102,7 @@ public class StyleTagHelper : TagHelper
                 output.Content.AppendHtml(sw.ToString());
             }
         }
-        else if (!string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Src))
+        else if (hasName && !hasSource)
         {
             // Resource required
 
@@ -152,7 +155,7 @@ public class StyleTagHelper : TagHelper
             // This allows additions to the pre registered style dependencies.
             if (!string.IsNullOrEmpty(DependsOn))
             {
-                setting.SetDependencies(DependsOn.Split(_splitSeparators, StringSplitOptions.RemoveEmptyEntries));
+                setting.SetDependencies(DependsOn.Split(_splitSeparators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
             var childContent = await output.GetChildContentAsync();
@@ -170,7 +173,7 @@ public class StyleTagHelper : TagHelper
                 output.Content.AppendHtml(sw.ToString());
             }
         }
-        else if (!string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Src))
+        else if (hasName && hasSource)
         {
             // Inline declaration
 
@@ -194,12 +197,12 @@ public class StyleTagHelper : TagHelper
 
             if (!string.IsNullOrEmpty(Culture))
             {
-                definition.SetCultures(Culture.Split(',', StringSplitOptions.RemoveEmptyEntries));
+                definition.SetCultures(Culture.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
             if (!string.IsNullOrEmpty(DependsOn))
             {
-                definition.SetDependencies(DependsOn.Split(',', StringSplitOptions.RemoveEmptyEntries));
+                definition.SetDependencies(DependsOn.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
             // Also include the style.
@@ -241,11 +244,52 @@ public class StyleTagHelper : TagHelper
                 output.Content.AppendHtml(sw.ToString());
             }
         }
-        else if (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Src))
+        else
         {
             // Custom style content
 
             var childContent = await output.GetChildContentAsync();
+
+            if (!string.IsNullOrEmpty(DependsOn))
+            {
+                var dependencies = DependsOn.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var dependency in dependencies)
+                {
+                    var dependencyParts = dependency.Split(';');
+
+                    var resourceNameWithVersion = dependencyParts[0];
+
+                    var versionParts = resourceNameWithVersion.Split(':');
+
+                    var resourceName = versionParts[0];
+
+                    var script = _resourceManager.RegisterResource("stylesheet", resourceName);
+
+                    if (versionParts.Length == 2)
+                    {
+                        script.Version = versionParts[1];
+                    }
+
+                    if (dependencyParts.Length == 2 &&
+                        Enum.TryParse<ResourceLocation>(dependencyParts[1], true, out var location)
+                        && location != ResourceLocation.Unspecified)
+                    {
+                        script.AtLocation(location);
+                    }
+                    else
+                    {
+                        if (At == ResourceLocation.Head)
+                        {
+                            script.AtHead();
+                        }
+                        else
+                        {
+                            script.AtFoot();
+                        }
+                    }
+                }
+            }
 
             var builder = new TagBuilder("style");
             builder.InnerHtml.AppendHtml(childContent);

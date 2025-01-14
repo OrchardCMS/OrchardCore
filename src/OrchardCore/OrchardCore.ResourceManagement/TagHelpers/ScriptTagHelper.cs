@@ -108,7 +108,7 @@ public class ScriptTagHelper : TagHelper
             // This allows additions to the pre registered scripts dependencies.
             if (!string.IsNullOrEmpty(DependsOn))
             {
-                setting.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
+                setting.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
             // Allow Inline to work with both named scripts, and named inline scripts.
@@ -158,6 +158,47 @@ public class ScriptTagHelper : TagHelper
 
             var childContent = await output.GetChildContentAsync();
 
+            if (!string.IsNullOrEmpty(DependsOn))
+            {
+                var dependencies = DependsOn.Split(_separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var dependency in dependencies)
+                {
+                    var dependencyParts = dependency.Split(';');
+
+                    var resourceNameWithVersion = dependencyParts[0];
+
+                    var versionParts = resourceNameWithVersion.Split(':');
+
+                    var resourceName = versionParts[0];
+
+                    var script = _resourceManager.RegisterResource("script", resourceName);
+
+                    if (versionParts.Length == 2)
+                    {
+                        script.Version = versionParts[1];
+                    }
+
+                    if (dependencyParts.Length == 2 &&
+                        Enum.TryParse<ResourceLocation>(dependencyParts[1], true, out var location)
+                        && location != ResourceLocation.Unspecified)
+                    {
+                        script.AtLocation(location);
+                    }
+                    else
+                    {
+                        if (At == ResourceLocation.Head)
+                        {
+                            script.AtHead();
+                        }
+                        else
+                        {
+                            script.AtFoot();
+                        }
+                    }
+                }
+            }
+
             var builder = new TagBuilder("script");
             builder.InnerHtml.AppendHtml(childContent);
             builder.TagRenderMode = TagRenderMode.Normal;
@@ -198,7 +239,7 @@ public class ScriptTagHelper : TagHelper
 
         if (!string.IsNullOrEmpty(DependsOn))
         {
-            definition.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
+            definition.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
         }
 
         if (AppendVersion.HasValue)
