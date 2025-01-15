@@ -4,7 +4,7 @@ using OrchardCore.Security;
 
 namespace OrchardCore.Roles;
 
-public class DefaultSystemRoleProvider : ISystemRoleProvider
+internal sealed class DefaultSystemRoleProvider : ISystemRoleProvider
 {
     private readonly IEnumerable<IRole> _systemRoles;
 
@@ -29,12 +29,12 @@ public class DefaultSystemRoleProvider : ISystemRoleProvider
             },
             new Role
             {
-                RoleName = "Authenticated",
+                RoleName = OrchardCoreConstants.Roles.Authenticated,
                 RoleDescription = "A system role representing all authenticated users."
             },
             new Role
             {
-                RoleName = "Anonymous",
+                RoleName = OrchardCoreConstants.Roles.Anonymous,
                 RoleDescription = "A system role representing all non-authenticated users."
             }
         ];
