@@ -256,37 +256,24 @@ public class StyleTagHelper : TagHelper
 
                 foreach (var dependency in dependencies)
                 {
-                    var dependencyParts = dependency.Split(';');
-
-                    var resourceNameWithVersion = dependencyParts[0];
-
-                    var versionParts = resourceNameWithVersion.Split(':');
+                    var versionParts = dependency.Split(':');
 
                     var resourceName = versionParts[0];
 
-                    var script = _resourceManager.RegisterResource("stylesheet", resourceName);
+                    var style = _resourceManager.RegisterResource("stylesheet", resourceName);
 
                     if (versionParts.Length == 2)
                     {
-                        script.Version = versionParts[1];
+                        style.Version = versionParts[1];
                     }
 
-                    if (dependencyParts.Length == 2 &&
-                        Enum.TryParse<ResourceLocation>(dependencyParts[1], true, out var location)
-                        && location != ResourceLocation.Unspecified)
+                    if (At == ResourceLocation.Head)
                     {
-                        script.AtLocation(location);
+                        style.AtHead();
                     }
                     else
                     {
-                        if (At == ResourceLocation.Head)
-                        {
-                            script.AtHead();
-                        }
-                        else
-                        {
-                            script.AtFoot();
-                        }
+                        style.AtFoot();
                     }
                 }
             }

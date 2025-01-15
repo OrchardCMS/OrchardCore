@@ -164,11 +164,7 @@ public class ScriptTagHelper : TagHelper
 
                 foreach (var dependency in dependencies)
                 {
-                    var dependencyParts = dependency.Split(';');
-
-                    var resourceNameWithVersion = dependencyParts[0];
-
-                    var versionParts = resourceNameWithVersion.Split(':');
+                    var versionParts = dependency.Split(':');
 
                     var resourceName = versionParts[0];
 
@@ -179,22 +175,13 @@ public class ScriptTagHelper : TagHelper
                         script.Version = versionParts[1];
                     }
 
-                    if (dependencyParts.Length == 2 &&
-                        Enum.TryParse<ResourceLocation>(dependencyParts[1], true, out var location)
-                        && location != ResourceLocation.Unspecified)
+                    if (At == ResourceLocation.Head)
                     {
-                        script.AtLocation(location);
+                        script.AtHead();
                     }
                     else
                     {
-                        if (At == ResourceLocation.Head)
-                        {
-                            script.AtHead();
-                        }
-                        else
-                        {
-                            script.AtFoot();
-                        }
+                        script.AtFoot();
                     }
                 }
             }
