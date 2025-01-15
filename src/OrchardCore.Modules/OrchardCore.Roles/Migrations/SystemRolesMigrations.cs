@@ -7,29 +7,31 @@ namespace OrchardCore.Roles.Migrations;
 
 public sealed class SystemRolesMigrations : DataMigration
 {
-    private readonly ISystemRoleNameProvider _systemRoleNameProvider;
+    private readonly ISystemRoleProvider _systemRoleProvider;
     private readonly RoleManager<IRole> _roleManager;
     private readonly ILogger _logger;
 
     public SystemRolesMigrations(
-        ISystemRoleNameProvider systemRoleNameProvider,
+        ISystemRoleProvider systemRoleProvider,
         RoleManager<IRole> roleManager,
         ILogger<RolesMigrations> logger)
     {
-        _systemRoleNameProvider = systemRoleNameProvider;
+        _systemRoleProvider = systemRoleProvider;
         _roleManager = roleManager;
         _logger = logger;
     }
 
     public async Task<int> CreateAsync()
     {
-        var systemRoles = await _systemRoleNameProvider.GetSystemRolesAsync();
+        var systemRoles = await _systemRoleProvider.GetSystemRolesAsync();
 
-        foreach (var role in systemRoles)
+        foreach (var systemRole in systemRoles)
         {
-            if (await _roleManager.FindByNameAsync(role) is null)
+            var role = await _roleManager.FindByNameAsync(systemRole.RoleName);
+
+            if (role is null)
             {
-                await _roleManager.CreateAsync(new Role { RoleName = role });
+                await _roleManager.CreateAsync(role);
             }
         }
 

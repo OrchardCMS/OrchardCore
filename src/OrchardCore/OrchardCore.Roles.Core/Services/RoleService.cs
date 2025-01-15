@@ -8,11 +8,13 @@ namespace OrchardCore.Roles.Services;
 public class RoleService : IRoleService
 {
     private readonly RoleManager<IRole> _roleManager;
-    private readonly ISystemRoleNameProvider _systemRoleProvider;
+    private readonly ISystemRoleNameProvider _systemRoleNameProvider;
+    private readonly ISystemRoleProvider _systemRoleProvider;
 
     public RoleService(
         RoleManager<IRole> roleManager,
-        ISystemRoleNameProvider systemRoleProvider)
+        ISystemRoleNameProvider systemRoleNameProvider,
+        ISystemRoleProvider systemRoleProvider)
     {
         _roleManager = roleManager;
         _systemRoleProvider = systemRoleProvider;

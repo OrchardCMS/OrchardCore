@@ -15,7 +15,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
     private readonly ShellDescriptor _shellDescriptor;
     private readonly IExtensionManager _extensionManager;
     private readonly IDocumentManager<RolesDocument> _documentManager;
-    private readonly ISystemRoleNameProvider _systemRoleNameProvider;
+    private readonly ISystemRoleProvider _systemRoleProvider;
     private readonly IEnumerable<IPermissionProvider> _permissionProviders;
     private readonly ITypeFeatureProvider _typeFeatureProvider;
     private readonly ILogger _logger;
@@ -26,7 +26,8 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
         ShellDescriptor shellDescriptor,
         IExtensionManager extensionManager,
         IDocumentManager<RolesDocument> documentManager,
-        ISystemRoleNameProvider systemRoleNameProvider,
+        ISystemRoleProvider systemRoleNameProvider,
+        ISystemRoleProvider systemRoleProvider,
         IEnumerable<IPermissionProvider> permissionProviders,
         ITypeFeatureProvider typeFeatureProvider,
         ILogger<RoleUpdater> logger)
@@ -34,7 +35,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
         _shellDescriptor = shellDescriptor;
         _extensionManager = extensionManager;
         _documentManager = documentManager;
-        _systemRoleNameProvider = systemRoleNameProvider;
+        _systemRoleProvider = systemRoleProvider;
         _permissionProviders = permissionProviders;
         _typeFeatureProvider = typeFeatureProvider;
         _logger = logger;
@@ -204,7 +205,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
 
     private async Task<bool> UpdatePermissionsAsync(Role role, IEnumerable<string> permissions)
     {
-        if (await _systemRoleNameProvider.IsAdminRoleAsync(role.RoleName))
+        if (await _systemRoleProvider.IsAdminRoleAsync(role.RoleName))
         {
             // Don't update claims for admin role.
             return true;

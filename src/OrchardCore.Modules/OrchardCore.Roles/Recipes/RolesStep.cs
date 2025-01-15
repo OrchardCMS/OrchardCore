@@ -13,15 +13,15 @@ namespace OrchardCore.Roles.Recipes;
 public sealed class RolesStep : NamedRecipeStepHandler
 {
     private readonly RoleManager<IRole> _roleManager;
-    private readonly ISystemRoleNameProvider _systemRoleNameProvider;
+    private readonly ISystemRoleProvider _systemRoleProvider;
 
     public RolesStep(
         RoleManager<IRole> roleManager,
-        ISystemRoleNameProvider systemRoleNameProvider)
+        ISystemRoleProvider systemRoleProvider)
         : base("Roles")
     {
         _roleManager = roleManager;
-        _systemRoleNameProvider = systemRoleNameProvider;
+        _systemRoleProvider = systemRoleProvider;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -59,7 +59,7 @@ public sealed class RolesStep : NamedRecipeStepHandler
                     r.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
                 }
 
-                if (!await _systemRoleNameProvider.IsAdminRoleAsync(roleName))
+                if (!await _systemRoleProvider.IsAdminRoleAsync(roleName))
                 {
                     if (roleEntry.PermissionBehavior == PermissionBehavior.Remove)
                     {

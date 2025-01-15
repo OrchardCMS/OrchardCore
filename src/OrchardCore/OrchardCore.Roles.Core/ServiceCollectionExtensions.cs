@@ -8,6 +8,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddRolesCoreServices(this IServiceCollection services)
     {
         services.TryAddSingleton<ISystemRoleNameProvider, DefaultSystemRoleNameProvider>();
+        services.TryAddSingleton<ISystemRoleProvider, DefaultSystemRoleProvider>();
 
         return services;
     }

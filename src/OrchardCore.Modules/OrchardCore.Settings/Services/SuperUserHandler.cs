@@ -11,14 +11,15 @@ namespace OrchardCore.Settings.Services;
 public class SuperUserHandler : IAuthorizationHandler
 {
     private readonly ISiteService _siteService;
-    private readonly ISystemRoleNameProvider _systemRoleNameProvider;
+    private readonly ISystemRoleProvider _systemRoleProvider;
 
     public SuperUserHandler(
         ISiteService siteService,
-        ISystemRoleNameProvider systemRoleNameProvider)
+        ISystemRoleNameProvider systemRoleNameProvider,
+        ISystemRoleProvider systemRoleProvider)
     {
         _siteService = siteService;
-        _systemRoleNameProvider = systemRoleNameProvider;
+        _systemRoleProvider = systemRoleProvider;
     }
 
     public async Task HandleAsync(AuthorizationHandlerContext context)
@@ -30,7 +31,9 @@ public class SuperUserHandler : IAuthorizationHandler
             return;
         }
 
-        if (user.IsInRole(await _systemRoleNameProvider.GetAdminRoleAsync()))
+        var adminRole = await _systemRoleProvider.GetAdminRoleAsync();
+
+        if (user.IsInRole(adminRole.RoleName))
         {
             SucceedAllRequirements(context);
 
