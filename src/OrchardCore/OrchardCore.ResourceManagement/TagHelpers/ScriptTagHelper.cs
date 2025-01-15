@@ -176,14 +176,7 @@ public class ScriptTagHelper : TagHelper
                         script.Version = versionParts[1];
                     }
 
-                    if (At == ResourceLocation.Head)
-                    {
-                        script.AtHead();
-                    }
-                    else
-                    {
-                        script.AtFoot();
-                    }
+                    script.AtLocation(At);
                 }
             }
 
