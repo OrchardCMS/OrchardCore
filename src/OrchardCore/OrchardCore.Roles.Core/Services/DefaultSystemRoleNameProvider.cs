@@ -4,6 +4,7 @@ using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Roles;
 
+[Obsolete]
 internal sealed class DefaultSystemRoleNameProvider : ISystemRoleNameProvider
 {
     private readonly string _adminRoleName;

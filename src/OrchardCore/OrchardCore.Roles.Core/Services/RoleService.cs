@@ -8,12 +8,15 @@ namespace OrchardCore.Roles.Services;
 public class RoleService : IRoleService
 {
     private readonly RoleManager<IRole> _roleManager;
-    private readonly ISystemRoleNameProvider _systemRoleNameProvider;
     private readonly ISystemRoleProvider _systemRoleProvider;
 
     public RoleService(
         RoleManager<IRole> roleManager,
+#pragma warning disable IDE0060 // Remove unused parameter
+#pragma warning disable CS0618 // Type or member is obsolete
         ISystemRoleNameProvider systemRoleNameProvider,
+#pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore IDE0060 // Remove unused parameter
         ISystemRoleProvider systemRoleProvider)
     {
         _roleManager = roleManager;

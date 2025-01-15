@@ -10,16 +10,17 @@ public class DefaultSystemRoleNameProviderTests
     {
         // Arrange
         var shellSettings = new ShellSettings();
-
         var options = new Mock<IOptions<SystemRoleOptions>>();
-        options.Setup(x => x.Value).Returns(new SystemRoleOptions());
+        options.Setup(o => o.Value)
+            .Returns(new SystemRoleOptions());
 
-        var provider = new DefaultSystemRoleNameProvider(shellSettings, options.Object);
+        var provider = new DefaultSystemRoleProvider(shellSettings, options.Object);
 
-        // Assert
+        // Act
         var roles = await provider.GetSystemRolesAsync();
 
-        Assert.Contains(OrchardCoreConstants.Roles.Administrator, roles as IEnumerable<string>);
+        // Assert
+        Assert.Contains(OrchardCoreConstants.Roles.Administrator, roles.Select(r => r.RoleName));
     }
 
     [Fact]
@@ -28,20 +29,22 @@ public class DefaultSystemRoleNameProviderTests
         // Arrange
         var shellSettings = new ShellSettings();
         var configureSystemAdminRoleName = "SystemAdmin";
-
         var options = new Mock<IOptions<SystemRoleOptions>>();
-        options.Setup(x => x.Value).Returns(new SystemRoleOptions
-        {
-            SystemAdminRoleName = configureSystemAdminRoleName,
-        });
+        options.Setup(o => o.Value)
+            .Returns(new SystemRoleOptions
+            {
+                SystemAdminRoleName = configureSystemAdminRoleName,
+            });
 
-        var provider = new DefaultSystemRoleNameProvider(shellSettings, options.Object);
+        var provider = new DefaultSystemRoleProvider(shellSettings, options.Object);
 
-        // Assert
+        // Act
         var roles = await provider.GetSystemRolesAsync();
 
-        Assert.Contains(configureSystemAdminRoleName, roles as IEnumerable<string>);
-        Assert.DoesNotContain(OrchardCoreConstants.Roles.Administrator, roles as IEnumerable<string>);
+        // Assert
+        var roleNames = roles.Select(r => r.RoleName);
+        Assert.Contains(configureSystemAdminRoleName, roleNames);
+        Assert.DoesNotContain(OrchardCoreConstants.Roles.Administrator, roleNames);
     }
 
     [Fact]
@@ -52,31 +55,17 @@ public class DefaultSystemRoleNameProviderTests
         shellSettings["AdminRoleName"] = "Foo";
 
         var options = new Mock<IOptions<SystemRoleOptions>>();
-        options.Setup(x => x.Value).Returns(new SystemRoleOptions());
+        options.Setup(o => o.Value)
+            .Returns(new SystemRoleOptions());
 
-        var provider = new DefaultSystemRoleNameProvider(shellSettings, options.Object);
-        // Assert
+        var provider = new DefaultSystemRoleProvider(shellSettings, options.Object);
+
+        // Act
         var roles = await provider.GetSystemRolesAsync();
 
-        Assert.DoesNotContain(OrchardCoreConstants.Roles.Administrator, roles as IEnumerable<string>);
-        Assert.Contains("Foo", roles as IEnumerable<string>);
-    }
-
-    [Fact]
-    public async Task SystemRoleNamesContains_WhenCalled_ReturnsCaseInsensitive()
-    {
-        // Arrange
-        var shellSettings = new ShellSettings();
-        shellSettings["AdminRoleName"] = "Foo";
-
-        var options = new Mock<IOptions<SystemRoleOptions>>();
-        options.Setup(x => x.Value).Returns(new SystemRoleOptions());
-
-        var provider = new DefaultSystemRoleNameProvider(shellSettings, options.Object);
-
         // Assert
-        var roles = await provider.GetSystemRolesAsync();
-
-        Assert.Contains("fOo", roles as IEnumerable<string>);
+        var roleNames = roles.Select(r => r.RoleName);
+        Assert.DoesNotContain(OrchardCoreConstants.Roles.Administrator, roleNames);
+        Assert.Contains("Foo", roleNames);
     }
 }

@@ -13,7 +13,7 @@ public static class SystemRoleProviderExtensions
 
         var systemRoles = await systemRoleNameProvider.GetSystemRolesAsync();
 
-        return systemRoles.Any(role => role.RoleName == name);
+        return systemRoles.Any(role => role.RoleName.Equals(name, StringComparison.OrdinalIgnoreCase));
     }
 
     public static async ValueTask<bool> IsAdminRoleAsync(this ISystemRoleProvider systemRoleNameProvider, string name)
@@ -22,6 +22,6 @@ public static class SystemRoleProviderExtensions
 
         var adminRole = await systemRoleNameProvider.GetAdminRoleAsync();
 
-        return adminRole.RoleName == name;
+        return adminRole.RoleName.Equals(name, StringComparison.OrdinalIgnoreCase);
     }
 }

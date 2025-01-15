@@ -17,7 +17,11 @@ public class RoleClaimsProvider : IUserClaimsProvider
     public RoleClaimsProvider(
         UserManager<IUser> userManager,
         RoleManager<IRole> roleManager,
+#pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable IDE0060 // Remove unused parameter
         ISystemRoleNameProvider systemRoleNameProvider,
+#pragma warning restore IDE0060 // Remove unused parameter
+#pragma warning restore CS0618 // Type or member is obsolete
         ISystemRoleProvider systemRoleProvider,
         IOptions<IdentityOptions> identityOptions)
     {
