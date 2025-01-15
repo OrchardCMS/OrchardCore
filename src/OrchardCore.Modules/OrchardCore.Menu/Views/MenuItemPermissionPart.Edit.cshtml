@@ -6,9 +6,9 @@
     var allItems = JConvert.SerializeObject(Model.AllItems, JOptions.CamelCase);
 }
 
-<script asp-name="vuejs" at="Foot"></script>
+<script asp-name="vuejs" at="Foot" version="2"></script>
 <script asp-name="vue-multiselect" at="Foot"></script>
-<script asp-name="menu-permission-picker" asp-src="~/OrchardCore.Menu/Scripts/menu-permission-picker.min.js" debug-src="~/OrchardCore.Menu/Scripts/menu-permission-picker.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>
+<script asp-name="menu-permission-picker" asp-src="~/OrchardCore.Menu/Scripts/menu-permission-picker.min.js" debug-src="~/OrchardCore.Menu/Scripts/menu-permission-picker.js" at="Foot" depends-on="vuejs:2,vue-multiselect"></script>
 <style asp-name="menu-permission-picker" asp-src="~/OrchardCore.Menu/Styles/menu-permission-picker.min.css" debug-src="~/OrchardCore.Menu/Styles/menu-permission-picker.css" depends-on="vue-multiselect"></style>
 
 <div class="mb-3">
@@ -60,7 +60,7 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="menu-permission-picker,vuejs">
+<script at="Foot" depends-on="menu-permission-picker,vuejs:2">
     document.addEventListener('DOMContentLoaded', () => {
         initMenuPermissionsPicker(document.querySelector("#PermissionPicker"))
     });
