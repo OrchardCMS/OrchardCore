@@ -271,14 +271,7 @@ public class StyleTagHelper : TagHelper
                         style.Version = versionParts[1];
                     }
 
-                    if (At == ResourceLocation.Head)
-                    {
-                        style.AtHead();
-                    }
-                    else
-                    {
-                        style.AtFoot();
-                    }
+                    style.AtLocation(At);
                 }
             }
 
