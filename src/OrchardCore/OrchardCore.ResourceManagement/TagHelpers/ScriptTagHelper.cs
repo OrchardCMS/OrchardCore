@@ -54,19 +54,19 @@ public class ScriptTagHelper : TagHelper
 
         if (!hasName && hasSource)
         {
-            // <script asp-src="~/TheBlogTheme/js/clean-blog.min.js"></script>
+            // <script asp-src="~/TheBlogTheme/js/clean-blog.min.js" at="Foot"></script>
             RequireSettings setting;
 
             if (string.IsNullOrEmpty(DependsOn))
             {
-                // Include custom script url
+                // Include custom script url.
                 setting = _resourceManager.RegisterUrl("script", Src, DebugSrc);
             }
             else
             {
-                // Anonymous declaration with dependencies, then display
+                // Anonymous declaration with dependencies, then display.
 
-                // Using the source as the name to prevent duplicate references to the same file
+                // Using the source as the name to prevent duplicate references to the same file.
                 var name = Src.ToLowerInvariant();
 
                 PopulateResourceDefinition(_resourceManager.InlineManifest.DefineScript(name));
@@ -88,8 +88,8 @@ public class ScriptTagHelper : TagHelper
         }
         else if (hasName && !hasSource)
         {
-            // Resource required
-            // <script asp-name="bootstrap"></script>
+            // Resource required.
+            // <script asp-name="bootstrap" at="Foot"></script>
 
             var setting = _resourceManager.RegisterResource("script", Name);
 
@@ -108,7 +108,7 @@ public class ScriptTagHelper : TagHelper
             // This allows additions to the pre registered scripts dependencies.
             if (!string.IsNullOrEmpty(DependsOn))
             {
-                setting.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
+                setting.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
             // Allow Inline to work with both named scripts, and named inline scripts.
@@ -118,7 +118,7 @@ public class ScriptTagHelper : TagHelper
                 var childContent = await output.GetChildContentAsync();
                 if (!childContent.IsEmptyOrWhiteSpace)
                 {
-                    // Inline content definition
+                    // Inline content definition.
                     _resourceManager.InlineManifest.DefineScript(Name)
                        .SetInnerContent(childContent.GetContent());
                 }
@@ -135,11 +135,11 @@ public class ScriptTagHelper : TagHelper
         }
         else if (hasName && hasSource)
         {
-            // Inline declaration
+            // Inline declaration.
 
             PopulateResourceDefinition(_resourceManager.InlineManifest.DefineScript(Name));
 
-            // If At is specified then we also render it
+            // If At is specified then we also render it.
             if (At != ResourceLocation.Unspecified)
             {
                 var setting = _resourceManager.RegisterResource("script", Name);
@@ -154,9 +154,31 @@ public class ScriptTagHelper : TagHelper
         }
         else
         {
-            // Custom script content
+            // Custom script content.
+            // <script at="Foot"> /* example JavaScript code*/ </script>
 
             var childContent = await output.GetChildContentAsync();
+
+            if (!string.IsNullOrEmpty(DependsOn))
+            {
+                var dependencies = DependsOn.Split(_separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var dependency in dependencies)
+                {
+                    var versionParts = dependency.Split(':');
+
+                    var resourceName = versionParts[0];
+
+                    var script = _resourceManager.RegisterResource("script", resourceName);
+
+                    if (versionParts.Length == 2)
+                    {
+                        script.Version = versionParts[1];
+                    }
+
+                    script.AtLocation(At);
+                }
+            }
 
             var builder = new TagBuilder("script");
             builder.InnerHtml.AppendHtml(childContent);
@@ -198,7 +220,7 @@ public class ScriptTagHelper : TagHelper
 
         if (!string.IsNullOrEmpty(DependsOn))
         {
-            definition.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
+            definition.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
         }
 
         if (AppendVersion.HasValue)
