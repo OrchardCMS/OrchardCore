@@ -53,7 +53,9 @@ public class StyleTagHelper : TagHelper
 
         if (!hasName && hasSource)
         {
-            // Include custom style
+            // Include custom style.
+            // <style asp-src="~/example.css" at="Head"></style>
+
             var setting = _resourceManager.RegisterUrl("stylesheet", Src, DebugSrc);
 
             foreach (var attribute in output.Attributes)
@@ -104,7 +106,8 @@ public class StyleTagHelper : TagHelper
         }
         else if (hasName && !hasSource)
         {
-            // Resource required
+            // Resource required.
+            // <style asp-name="example" at="Head"></style>
 
             var setting = _resourceManager.RegisterResource("stylesheet", Name);
 
@@ -161,7 +164,7 @@ public class StyleTagHelper : TagHelper
             var childContent = await output.GetChildContentAsync();
             if (!childContent.IsEmptyOrWhiteSpace)
             {
-                // Inline named style definition
+                // Inline named style definition.
                 _resourceManager.InlineManifest.DefineStyle(Name)
                     .SetInnerContent(childContent.GetContent());
             }
@@ -175,7 +178,7 @@ public class StyleTagHelper : TagHelper
         }
         else if (hasName && hasSource)
         {
-            // Inline declaration
+            // Inline declaration.
 
             var definition = _resourceManager.InlineManifest.DefineStyle(Name);
             definition.SetUrl(Src, DebugSrc);
@@ -246,7 +249,8 @@ public class StyleTagHelper : TagHelper
         }
         else
         {
-            // Custom style content
+            // Custom style content.
+            // <style at="Head"> /* example css code*/ </style>
 
             var childContent = await output.GetChildContentAsync();
 
@@ -287,7 +291,7 @@ public class StyleTagHelper : TagHelper
                 builder.Attributes.Add(attribute.Name, attribute.Value.ToString());
             }
 
-            // If no type was specified, define a default one
+            // If no type was specified, define a default one.
             if (!builder.Attributes.ContainsKey("type"))
             {
                 builder.Attributes.Add("type", "text/css");
