@@ -82,13 +82,11 @@ public class PredicateQuery : IPredicateQuery
                 if (propertyProvider.TryGetValue(propertyPath[(index + 1)..], out var columnName))
                 {
                     _usedAliases.Add(alias);
-                    return;
                 }
             }
             else
             {
                 _usedAliases.Add(alias);
-                return;
             }
         }
         // else: No aliases registered for this path, return the formatted path.
