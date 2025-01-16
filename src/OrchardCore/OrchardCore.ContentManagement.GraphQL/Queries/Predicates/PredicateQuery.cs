@@ -66,7 +66,7 @@ public class PredicateQuery : IPredicateQuery
             return;
         }
 
-        var index = propertyPath.IndexOf('.');
+        var index = IndexOfUnquoted(propertyPath, '.');
 
         // if empty prefix, use default (empty alias)
         var aliasPath = index == -1 ? string.Empty : propertyPath[..index];
@@ -103,7 +103,7 @@ public class PredicateQuery : IPredicateQuery
             return Quote(alias);
         }
 
-        var index = propertyPath.IndexOf('.');
+        var index = IndexOfUnquoted(propertyPath, '.');
 
         // if empty prefix, use default (empty alias)
         var aliasPath = index == -1 ? string.Empty : propertyPath[..index];
@@ -148,14 +148,9 @@ public class PredicateQuery : IPredicateQuery
 
     private string Quote(string alias)
     {
-        if (IsQuoted(alias))
-        {
-            return alias;
-        }
-
-        var index = alias.IndexOf('.');
+        var index = IndexOfUnquoted(alias, '.');
         return index == -1
-            ? Dialect.QuoteForColumnName(alias)
+            ? (IsQuoted(alias) ? alias : Dialect.QuoteForColumnName(alias))
             : Quote(alias[..index], alias[(index + 1)..]);
     }
 
@@ -183,6 +178,34 @@ public class PredicateQuery : IPredicateQuery
         }
 
         return false;
+    }
+
+    private int IndexOfUnquoted(string value, char c, int startIndex = 0)
+    {
+        if (startIndex >= value.Length)
+        {
+            return -1;
+        }
+
+        var index = value.IndexOf(c, startIndex);
+
+        if (index >= 0)
+        {
+            var (startQuote, endQuote) = GetQuoteChars(Dialect);
+            var startQuoteIndex = value.IndexOf(startQuote, startIndex);
+
+            if (startQuoteIndex >= 0 && startQuoteIndex < index)
+            {
+                var endQuoteIndex = value.IndexOf(endQuote, startQuoteIndex + 1);
+
+                if(endQuoteIndex >= index)
+                {
+                    return IndexOfUnquoted(value, c, endQuoteIndex + 1);
+                }
+            }
+        }
+
+        return index;
     }
 
     private static (char startQuote, char endQuote) GetQuoteChars(ISqlDialect dialect)
