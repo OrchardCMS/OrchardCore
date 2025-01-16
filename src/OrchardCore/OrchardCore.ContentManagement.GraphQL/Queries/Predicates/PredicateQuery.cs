@@ -105,12 +105,6 @@ public class PredicateQuery : IPredicateQuery
             return Quote(alias);
         }
 
-        // If the path is already quoted, return it as-is.
-        if (IsQuoted(propertyPath))
-        {
-            return propertyPath;
-        }
-
         var index = propertyPath.IndexOf('.');
 
         // if empty prefix, use default (empty alias)
