@@ -47,11 +47,11 @@ public sealed class ContentItemWhereInput : WhereInputObjectGraphType
             .Type(whereInputType);
     }
 
-    public override void AddScalarFilterFields(Type graphType, string fieldName, string description)
+    public override void AddScalarFilterFields(Type graphType, string fieldName, string description, string aliasName)
     {
         if (!_optionsAccessor.Value.ShouldSkip(typeof(ContentItemType), fieldName))
         {
-            base.AddScalarFilterFields(graphType, fieldName, description);
+            base.AddScalarFilterFields(graphType, fieldName, description, aliasName);
         }
     }
 }

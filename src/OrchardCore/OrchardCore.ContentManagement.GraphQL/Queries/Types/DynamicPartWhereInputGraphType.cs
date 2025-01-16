@@ -24,7 +24,7 @@ public sealed class DynamicPartWhereInputGraphType : WhereInputObjectGraphType<C
 
                 if (fieldType != null)
                 {
-                    AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description);
+                    AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description, fieldProvider.GetFieldIndex(field)?.AliasName);
                     break;
                 }
             }

@@ -1,4 +1,5 @@
 using System.Collections.Frozen;
+using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.Extensions.Localization;
@@ -157,8 +158,9 @@ public class ContentFieldsProvider : IContentFieldProvider
 
         return new FieldTypeIndexDescriptor
         {
+            AliasName = $"{field.PartDefinition.Name.ToFieldName()}_{field.Name.ToCamelCase()}",
             Index = fieldDescriptor.Index,
-            IndexType = fieldDescriptor.IndexType,
+            IndexType = fieldDescriptor.IndexType
         };
     }
 

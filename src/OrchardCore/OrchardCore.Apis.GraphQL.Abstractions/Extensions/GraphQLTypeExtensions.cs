@@ -1,6 +1,6 @@
 using GraphQL.Types;
 
-namespace OrchardCore.ContentManagement.GraphQL;
+namespace OrchardCore.Apis.GraphQL;
 
 public static class GraphQLTypeExtensions
 {
@@ -9,6 +9,9 @@ public static class GraphQLTypeExtensions
 
     public static FieldType WithPartNameMetaData(this FieldType fieldType, string partName)
         => fieldType.WithMetaData("PartName", partName);
+
+    public static FieldType WithAliasNameMetaData(this FieldType fieldType, string aliasName)
+        => fieldType.WithMetaData("AliasName", aliasName);
 
     /// <summary>
     /// Checks if the field exists in the GraphQL type in a case-insensitive way.
@@ -27,10 +30,13 @@ public static class GraphQLTypeExtensions
 
     private static FieldType WithMetaData(this FieldType fieldType, string name, object value)
     {
-        // TODO: Understand if locking is the best solution to https://github.com/OrchardCMS/OrchardCore/issues/15308
-        lock (fieldType.Metadata)
+        if (value != null)
         {
-            fieldType.Metadata.TryAdd(name, value);
+            // TODO: Understand if locking is the best solution to https://github.com/OrchardCMS/OrchardCore/issues/15308
+            lock (fieldType.Metadata)
+            {
+                fieldType.Metadata.TryAdd(name, value);
+            }
         }
 
         return fieldType;

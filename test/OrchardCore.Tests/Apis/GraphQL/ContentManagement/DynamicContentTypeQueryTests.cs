@@ -109,4 +109,36 @@ public class DynamicContentTypeQueryTests
 
         Assert.Equal(context.Product2ContentItemId, result["data"]["product"].AsArray().First()["contentItemId"].ToString());
     }
+
+
+    [Fact]
+    public async Task ShouldQuerySimilarNamedContentFields()
+    {
+        using var context = new DynamicContentTypeContext();
+        await context.InitializeAsync();
+
+        var numberResult = await context
+            .GraphQLClient
+            .Content
+            .Query(@"numberType(where: {value: 123}) {
+                        contentItemId
+                        displayText
+                        value
+                    }");
+
+        var stringResult = await context
+            .GraphQLClient
+            .Content
+            .Query(@"stringType(where: {value: ""Text123""}) {
+                        contentItemId
+                        displayText
+                        value
+                    }");
+
+        Assert.Single(numberResult["data"]["numberType"].AsArray());
+        Assert.Equal("123", numberResult["data"]["numberType"].AsArray().First()["value"].ToString());
+
+        Assert.Single(stringResult["data"]["stringType"].AsArray());
+        Assert.Equal("Text123", stringResult["data"]["stringType"].AsArray().First()["value"].ToString());
+    }
 }
