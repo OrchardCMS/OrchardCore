@@ -198,7 +198,7 @@ public class PredicateQuery : IPredicateQuery
             {
                 var endQuoteIndex = value.IndexOf(endQuote, startQuoteIndex + 1);
 
-                if(endQuoteIndex >= index)
+                if (endQuoteIndex >= index)
                 {
                     return IndexOfUnquoted(value, c, endQuoteIndex + 1);
                 }

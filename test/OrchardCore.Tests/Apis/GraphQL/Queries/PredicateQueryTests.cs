@@ -80,7 +80,7 @@ public class PredicateQueryTests
         // Arrange
         var configuration = new Configuration();
 
-        if(dialect == "MySql")
+        if (dialect == "MySql")
         {
             configuration
                 .UseMySql("Fake database connection string for testing;", "TenantSchema")
