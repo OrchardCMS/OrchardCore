@@ -180,17 +180,19 @@ public class PredicateQuery : IPredicateQuery
         return false;
     }
 
-    private int IndexOfUnquoted(string value, char c, int startIndex = 0)
+    private int IndexOfUnquoted(string value, char c)
     {
-        if (startIndex >= value.Length)
-        {
-            return -1;
-        }
+        var startIndex = 0;
 
-        var index = value.IndexOf(c, startIndex);
-
-        if (index >= 0)
+        while (true)
         {
+            var index = value.IndexOf(c, startIndex);
+
+            if (index < 0)
+            {
+                return -1;
+            }
+
             var (startQuote, endQuote) = GetQuoteChars(Dialect);
             var startQuoteIndex = value.IndexOf(startQuote, startIndex);
 
@@ -200,12 +202,13 @@ public class PredicateQuery : IPredicateQuery
 
                 if (endQuoteIndex >= index)
                 {
-                    return IndexOfUnquoted(value, c, endQuoteIndex + 1);
+                    startIndex = endQuoteIndex + 1;
+                    continue;
                 }
             }
-        }
 
-        return index;
+            return index;
+        }
     }
 
     private static (char startQuote, char endQuote) GetQuoteChars(ISqlDialect dialect)
