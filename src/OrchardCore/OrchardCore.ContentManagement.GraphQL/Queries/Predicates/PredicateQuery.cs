@@ -1,4 +1,8 @@
 using YesSql;
+using YesSql.Provider.MySql;
+using YesSql.Provider.PostgreSql;
+using YesSql.Provider.Sqlite;
+using YesSql.Provider.SqlServer;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
 
@@ -22,7 +26,6 @@ public class PredicateQuery : IPredicateQuery
 
     public IDictionary<string, object> Parameters { get; } = new Dictionary<string, object>();
 
-
     public string NewQueryParameter(object value)
     {
         var count = Parameters.Count;
@@ -41,6 +44,7 @@ public class PredicateQuery : IPredicateQuery
 
         _aliases[path] = alias;
     }
+
     public void CreateTableAlias(string path, string tableAlias)
     {
         ArgumentNullException.ThrowIfNull(path);
@@ -49,7 +53,6 @@ public class PredicateQuery : IPredicateQuery
 
         _tableAliases[path] = tableAlias;
     }
-
 
     public void SearchUsedAlias(string propertyPath)
     {
@@ -63,10 +66,10 @@ public class PredicateQuery : IPredicateQuery
             return;
         }
 
-        var values = propertyPath.Split('.', 2);
+        var index = propertyPath.IndexOf('.');
 
         // if empty prefix, use default (empty alias)
-        var aliasPath = values.Length == 1 ? string.Empty : values[0];
+        var aliasPath = index == -1 ? string.Empty : propertyPath[..index];
 
         // get the actual index from the alias
         if (_aliases.TryGetValue(aliasPath, out alias))
@@ -76,7 +79,7 @@ public class PredicateQuery : IPredicateQuery
 
             if (propertyProvider != null)
             {
-                if (propertyProvider.TryGetValue(values.Last(), out var columnName))
+                if (propertyProvider.TryGetValue(propertyPath[(index + 1)..], out var columnName))
                 {
                     _usedAliases.Add(alias);
                     return;
@@ -88,9 +91,7 @@ public class PredicateQuery : IPredicateQuery
                 return;
             }
         }
-
-        // No aliases registered for this path, return the formatted path.
-        return;
+        // else: No aliases registered for this path, return the formatted path.
     }
 
     public string GetColumnName(string propertyPath)
@@ -101,28 +102,38 @@ public class PredicateQuery : IPredicateQuery
         // aliasPart.Alias -> AliasFieldIndex.Alias
         if (_aliases.TryGetValue(propertyPath, out var alias))
         {
-            return Dialect.QuoteForColumnName(alias);
+            return Quote(alias);
         }
 
-        var values = propertyPath.Split('.', 2);
+        // If the path is already quoted, return it as-is.
+        if (IsQuoted(propertyPath))
+        {
+            return propertyPath;
+        }
+
+        var index = propertyPath.IndexOf('.');
 
         // if empty prefix, use default (empty alias)
-        var aliasPath = values.Length == 1 ? string.Empty : values[0];
+        var aliasPath = index == -1 ? string.Empty : propertyPath[..index];
 
         // get the actual index from the alias
         if (_aliases.TryGetValue(aliasPath, out alias))
         {
-            var tableAlias = _tableAliases[alias];
+            if (!_tableAliases.TryGetValue(alias, out var tableAlias))
+            {
+                throw new InvalidOperationException($"Missing table alias for path {alias}.");
+            }
+
             // get the index property provider fore the alias
             var propertyProvider = _propertyProviders.FirstOrDefault(x => x.IndexName.Equals(alias, StringComparison.OrdinalIgnoreCase));
 
             if (propertyProvider != null)
             {
-                if (propertyProvider.TryGetValue(values.Last(), out var columnName))
+                if (propertyProvider.TryGetValue(propertyPath[(index + 1)..], out var columnName))
                 {
                     // Switch the given alias in the path with the mapped alias.
                     // aliasPart.alias -> AliasPartIndex.Alias
-                    return $"{Dialect.QuoteForAliasName(tableAlias)}.{Dialect.QuoteForColumnName(columnName)}";
+                    return Quote(tableAlias, columnName);
                 }
             }
             else
@@ -130,16 +141,65 @@ public class PredicateQuery : IPredicateQuery
                 // no property provider exists; hope sql is case-insensitive (will break postgres; property providers must be supplied for postgres)
                 // Switch the given alias in the path with the mapped alias.
                 // aliasPart.Alias -> AliasPartIndex.alias
-                return $"{Dialect.QuoteForAliasName(tableAlias)}.{Dialect.QuoteForColumnName(values.Last())}";
+                return Quote(tableAlias, propertyPath[(index + 1)..]);
             }
         }
 
         // No aliases registered for this path, return the formatted path.
-        return Dialect.QuoteForColumnName(propertyPath);
+        return Quote(propertyPath);
     }
 
     public IEnumerable<string> GetUsedAliases()
     {
         return _usedAliases;
     }
+
+    private string Quote(string alias)
+    {
+        if (IsQuoted(alias))
+        {
+            return alias;
+        }
+
+        var index = alias.IndexOf('.');
+        return index == -1
+            ? Dialect.QuoteForColumnName(alias)
+            : Quote(alias[..index], alias[(index + 1)..]);
+    }
+
+    private string Quote(string tableAlias, string columnName)
+    {
+        if (!IsQuoted(tableAlias))
+        {
+            tableAlias = Dialect.QuoteForAliasName(tableAlias);
+        }
+
+        if (!IsQuoted(columnName))
+        {
+            columnName = Dialect.QuoteForColumnName(columnName);
+        }
+
+        return $"{tableAlias}.{columnName}";
+    }
+
+    private bool IsQuoted(string value)
+    {
+        if (value.Length >= 2)
+        {
+            var (startQuote, endQuote) = GetQuoteChars(Dialect);
+            return value[0] == startQuote && value[^1] == endQuote;
+        }
+
+        return false;
+    }
+
+    private static (char startQuote, char endQuote) GetQuoteChars(ISqlDialect dialect)
+        => dialect switch
+        {
+            MySqlDialect => ('`', '`'),
+            PostgreSqlDialect => ('"', '"'),
+            SqliteDialect or
+            SqlServerDialect or
+            _ => ('[', ']')
+        };
 }
