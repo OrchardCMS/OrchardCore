@@ -77,8 +77,11 @@ public static class GetIntellisenseEndpoint
             cache.Set(scriptCacheKey, scriptBytes);
         }
 
+// False positive: No comparison is taking place here
+#pragma warning disable RS1024
         // Uses a custom GetHashCode because Object.GetHashCode differs across processes
         StringValues eTag = $"\"{GetHashCode(scriptBytes)}\"";
+#pragma warning restore RS1024
 
         // Mark that the eTag corresponds to a fresh file
         cache.Set(eTag, true);
