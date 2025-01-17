@@ -7,9 +7,12 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Environment.Shell.Configuration;
 using System.Text;
+
+#nullable enable
 
 namespace OrchardCore.Liquid.Endpoints.Scripts;
 
@@ -36,23 +39,56 @@ public static class GetIntellisenseEndpoint
         return Encoding.UTF8.GetBytes(script);
     }
 
+    private static uint GetHashCode(this byte[] bytes)
+    {
+        uint hash = 0;
+        foreach (byte b in bytes)
+        {
+            hash += b;
+        }
+        return hash;
+    }
+
     private static IResult HandleRequest(HttpContext context, IMemoryCache cache)
     {
-        const string cacheKey = "OrchardCore.Liquid/Scripts/liquid-intellisense.js";
-
-        bool isScriptCached = cache.TryGetValue(cacheKey, out byte[] scriptBytes);
-        if (!isScriptCached)
-        {
-            scriptBytes = GenerateScript(context.RequestServices);
-            cache.Set(cacheKey, scriptBytes);
-        }
-
-        // Set cache header from configuration
         var shellConfiguration = context.RequestServices.GetRequiredService<IShellConfiguration>();
         context.Response.Headers.CacheControl = shellConfiguration.GetValue(
                 "StaticFileOptions:CacheControl",
                 // Fallback value
                 $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}");
+
+        // Assumes IfNoneMatch has only one ETag for performance
+        var requestETag = context.Request.Headers.IfNoneMatch;
+        if (!StringValues.IsNullOrEmpty(requestETag) && cache.Get(requestETag) != null)
+        {
+            context.Response.Headers.ETag = requestETag;
+
+            return Results.StatusCode(304);
+        }
+
+        const string scriptCacheKey = "OrchardCore.Liquid/Scripts/liquid-intellisense.js";
+
+        var scriptBytes = (byte[]?)cache.Get(scriptCacheKey);
+        if (scriptBytes == null)
+        {
+            scriptBytes = GenerateScript(context.RequestServices);
+
+            cache.Set(scriptCacheKey, scriptBytes);
+        }
+
+        // Uses a custom GetHashCode because Object.GetHashCode differs across processes
+        StringValues eTag = $"\"{GetHashCode(scriptBytes)}\"";
+
+        // Mark that the eTag corresponds to a fresh file
+        cache.Set(eTag, true);
+
+        context.Response.Headers.ETag = eTag;
+
+        // Can be true if the cache was reset after the last client request
+        if (requestETag.Equals(eTag))
+        {
+            return Results.StatusCode(304);
+        }
 
         return Results.Bytes(scriptBytes, "application/javascript");
     }
