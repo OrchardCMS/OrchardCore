@@ -1855,13 +1855,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@orchardcore/adminmenu@workspace:src/OrchardCore.Modules/OrchardCore.AdminMenu":
+"@orchardcore/adminmenu@workspace:src/OrchardCore.Modules/OrchardCore.AdminMenu/Assets":
   version: 0.0.0-use.local
-  resolution: "@orchardcore/adminmenu@workspace:src/OrchardCore.Modules/OrchardCore.AdminMenu"
+  resolution: "@orchardcore/adminmenu@workspace:src/OrchardCore.Modules/OrchardCore.AdminMenu/Assets"
   dependencies:
     "@popperjs/core": "npm:2.11.8"
     bootstrap: "npm:5.3.3"
     fontawesome-iconpicker: "npm:3.2.0"
+    vue: "npm:^2.6.14"
   languageName: unknown
   linkType: soft
 
@@ -2086,9 +2087,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@orchardcore/shortcodes@workspace:src/OrchardCore.Modules/OrchardCore.Shortcodes":
+"@orchardcore/shortcodes@workspace:src/OrchardCore.Modules/OrchardCore.Shortcodes/Assets":
   version: 0.0.0-use.local
-  resolution: "@orchardcore/shortcodes@workspace:src/OrchardCore.Modules/OrchardCore.Shortcodes"
+  resolution: "@orchardcore/shortcodes@workspace:src/OrchardCore.Modules/OrchardCore.Shortcodes/Assets"
   dependencies:
     "@popperjs/core": "npm:2.11.8"
     bootstrap: "npm:5.3.3"

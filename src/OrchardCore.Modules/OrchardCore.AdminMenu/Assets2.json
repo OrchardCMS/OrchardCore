@@ -1,0 +1,45 @@
+[
+  {
+    "action": "sass",
+    "name": "admin-menu-permission-picker",
+    "source": "Assets/scss/admin-menu-permission-picker.scss",
+    "tags": ["admin", "dashboard", "css"]
+  },
+  {
+    "action": "min",
+    "name": "admin-menu-permission-picker",
+    "source": "Assets/js/admin-menu-permission-picker.js",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "sass",
+    "name": "admin-menu",
+    "source": "Assets/scss/admin-menu.scss",
+    "tags": ["admin", "dashboard", "css"]
+  },
+  {
+    "action": "sass",
+    "name": "admin-menu-icon-picker",
+    "source": "Assets/scss/admin-menu-icon-picker.scss",
+    "tags": ["admin", "dashboard", "css"]
+  },
+  {
+    "action": "min",
+    "name": "admin-menu",
+    "source": "Assets/js/admin-menu.js",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "min",
+    "name": "admin-menu",
+    "source": "Assets/js/admin-menu.js",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "admin-menu-icon-picker",
+    "source": "Assets/js/admin-menu-icon-picker.ts",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]
