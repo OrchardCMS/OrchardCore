@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
@@ -19,7 +20,7 @@ public sealed class SelectPartDisplayDriver : ContentPartDisplayDriver<SelectPar
 
     public override IDisplayResult Display(SelectPart part, BuildPartDisplayContext context)
     {
-        return View("SelectPart", part).Location("Detail", "Content");
+        return View("SelectPart", part).Location(DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(SelectPart part, BuildPartEditorContext context)

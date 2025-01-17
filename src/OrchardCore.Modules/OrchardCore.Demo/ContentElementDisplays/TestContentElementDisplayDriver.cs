@@ -1,6 +1,7 @@
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Demo.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
@@ -22,9 +23,9 @@ public sealed class TestContentElementDisplayDriver : ContentDisplayDriver
 
         return Combine(
             // A new shape is created and the properties of the object are bound to it when rendered
-            Copy("TestContentPartA", testContentPart).Location("Detail", "Content"),
+            Copy("TestContentPartA", testContentPart).Location(DisplayType.Detail, "Content"),
             // New shape, no initialization, custom location
-            Dynamic("LowerDoll").Location("Detail", "Footer"),
+            Dynamic("LowerDoll").Location(DisplayType.Detail, "Footer"),
             // New shape
             Factory("TestContentPartA",
                 async ctx => (await ctx.New.TestContentPartA()).Creating(_creating++),
@@ -34,14 +35,14 @@ public sealed class TestContentElementDisplayDriver : ContentDisplayDriver
 
                     return Task.CompletedTask;
                 })
-                .Location("Detail", "Content")
+                .Location(DisplayType.Detail, "Content")
                 .Cache("lowerdoll2", cache => cache.WithExpiryAfter(TimeSpan.FromSeconds(5))),
             // A strongly typed shape model is used and initialized when rendered
             Initialize<TestContentPartAShape>(shape => { shape.Line = "Strongly typed shape"; })
-                .Location("Detail", "Content:2"),
+                .Location(DisplayType.Detail, "Content:2"),
             // Cached shape
             Dynamic("LowerDoll")
-                .Location("Detail", "/Footer")
+                .Location(DisplayType.Detail, "/Footer")
                 .Cache("lowerdoll", cache => cache.WithExpiryAfter(TimeSpan.FromSeconds(5)))
             );
     }

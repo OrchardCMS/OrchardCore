@@ -1,3 +1,4 @@
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
@@ -8,8 +9,8 @@ public sealed class ShortcodeDescriptorDisplayDriver : DisplayDriver<ShortcodeDe
     public override Task<IDisplayResult> DisplayAsync(ShortcodeDescriptor descriptor, BuildDisplayContext context)
     {
         return CombineAsync(
-            View("ShortcodeDescriptor_Fields_SummaryAdmin", descriptor).Location("SummaryAdmin", "Content"),
-            View("ShortcodeDescriptor_SummaryAdmin__Button__Actions", descriptor).Location("SummaryAdmin", "Actions")
+            View("ShortcodeDescriptor_Fields_SummaryAdmin", descriptor).Location(DisplayType.SummaryAdmin, "Content"),
+            View("ShortcodeDescriptor_SummaryAdmin__Button__Actions", descriptor).Location(DisplayType.SummaryAdmin, "Actions")
         );
     }
 }

@@ -1,4 +1,5 @@
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Search.AzureAI.Deployment;
@@ -14,7 +15,7 @@ public sealed class AzureAISearchIndexRebuildDeploymentStepDriver(AzureAISearchI
 
     public override Task<IDisplayResult> DisplayAsync(AzureAISearchIndexRebuildDeploymentStep step, BuildDisplayContext context)
         => CombineAsync(
-            View("AzureAISearchIndexRebuildDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+            View("AzureAISearchIndexRebuildDeploymentStep_Fields_Summary", step).Location(DisplayType.Summary, "Content"),
             View("AzureAISearchIndexRebuildDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
         );
 

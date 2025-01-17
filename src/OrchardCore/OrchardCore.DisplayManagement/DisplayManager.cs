@@ -32,10 +32,10 @@ public class DisplayManager<TModel> : BaseDisplayManager, IDisplayManager<TModel
     {
         var actualShapeType = typeof(TModel).Name;
 
-        var actualDisplayType = string.IsNullOrEmpty(displayType) ? "Detail" : displayType;
+        var actualDisplayType = string.IsNullOrEmpty(displayType) ? DisplayType.Detail : displayType;
 
         // _[DisplayType] is only added for the ones different than Detail
-        if (actualDisplayType != "Detail")
+        if (actualDisplayType != DisplayType.Detail)
         {
             actualShapeType = actualShapeType + "_" + actualDisplayType;
         }

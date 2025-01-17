@@ -93,7 +93,7 @@ public sealed class AdminController : Controller
             model.Queries.Add(new QueryEntry
             {
                 Query = query,
-                Shape = await _displayManager.BuildDisplayAsync(query, _updateModelAccessor.ModelUpdater, "SummaryAdmin")
+                Shape = await _displayManager.BuildDisplayAsync(query, _updateModelAccessor.ModelUpdater, DisplayType.SummaryAdmin)
             });
         }
 

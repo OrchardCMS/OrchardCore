@@ -27,7 +27,7 @@ public sealed class ContentTypeConditionEvaluatorDriver : ContentDisplayDriver, 
     public override Task<IDisplayResult> DisplayAsync(ContentItem contentItem, BuildDisplayContext context)
     {
         // Do not include Widgets or any display type other than Detail.
-        if (context.DisplayType == "Detail" && (!context.Shape.TryGetProperty(nameof(ContentTypeSettings.Stereotype), out string stereotype) || stereotype != "Widget"))
+        if (context.DisplayType == DisplayType.Detail && (!context.Shape.TryGetProperty(nameof(ContentTypeSettings.Stereotype), out string stereotype) || stereotype != "Widget"))
         {
             _contentTypes.Add(contentItem.ContentType);
         }

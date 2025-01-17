@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using OrchardCore.Admin.Models;
 using OrchardCore.ContentLocalization.ViewModels;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Localization;
@@ -34,6 +35,6 @@ public sealed class ContentCulturePickerNavbarDisplayDriver : DisplayDriver<Navb
             .Features
             .Get<IRequestCultureFeature>()?.RequestCulture?.Culture ?? CultureInfo.CurrentUICulture;
         }).RenderWhen(() => Task.FromResult(supportedCultures.Count() > 1))
-        .Location("Detail", "Content:5");
+        .Location(DisplayType.Detail, "Content:5");
     }
 }

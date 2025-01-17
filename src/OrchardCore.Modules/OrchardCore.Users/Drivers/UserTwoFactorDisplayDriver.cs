@@ -1,4 +1,5 @@
-﻿using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
@@ -11,7 +12,7 @@ public sealed class UserTwoFactorDisplayDriver : DisplayDriver<User>
     {
         return CombineAsync(
             Initialize<SummaryAdminUserViewModel>("UserTwoFactorActionsMenu", model => model.User = user)
-            .Location("SummaryAdmin", "ActionsMenu:10")
+            .Location(DisplayType.SummaryAdmin, "ActionsMenu:10")
         );
     }
 }

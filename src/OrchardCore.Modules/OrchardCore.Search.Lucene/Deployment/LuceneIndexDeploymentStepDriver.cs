@@ -1,4 +1,5 @@
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Search.Lucene.ViewModels;
@@ -18,7 +19,7 @@ public sealed class LuceneIndexDeploymentStepDriver : DisplayDriver<DeploymentSt
     {
         return
             CombineAsync(
-                View("LuceneIndexDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("LuceneIndexDeploymentStep_Fields_Summary", step).Location(DisplayType.Summary, "Content"),
                 View("LuceneIndexDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

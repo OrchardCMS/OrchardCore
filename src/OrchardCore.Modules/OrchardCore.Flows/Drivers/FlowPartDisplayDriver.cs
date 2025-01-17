@@ -7,6 +7,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
@@ -50,7 +51,7 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
             m.FlowPart = flowPart;
             m.BuildPartDisplayContext = context;
         })
-        .Location("Detail", "Content");
+        .Location(DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(FlowPart flowPart, BuildPartEditorContext context)

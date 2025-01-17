@@ -1,6 +1,7 @@
 using OrchardCore.CustomSettings.Services;
 using OrchardCore.CustomSettings.ViewModels;
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
@@ -19,7 +20,7 @@ public sealed class CustomSettingsDeploymentStepDriver : DisplayDriver<Deploymen
     {
         return
             CombineAsync(
-                View("CustomSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("CustomSettingsDeploymentStep_Fields_Summary", step).Location(DisplayType.Summary, "Content"),
                 View("CustomSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

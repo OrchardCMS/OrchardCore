@@ -1,3 +1,4 @@
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
@@ -10,7 +11,7 @@ public sealed class IsAnonymousConditionDisplayDriver : DisplayDriver<Condition,
     {
         return
             CombineAsync(
-                View("IsAnonymousCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                View("IsAnonymousCondition_Fields_Summary", condition).Location(DisplayType.Summary, "Content"),
                 View("IsAnonymousCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
             );
     }

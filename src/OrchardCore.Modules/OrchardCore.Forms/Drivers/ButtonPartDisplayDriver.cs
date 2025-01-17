@@ -1,5 +1,6 @@
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
@@ -11,7 +12,7 @@ public sealed class ButtonPartDisplayDriver : ContentPartDisplayDriver<ButtonPar
     public override IDisplayResult Display(ButtonPart part, BuildPartDisplayContext context)
     {
         return View("ButtonPart", part)
-            .Location("Detail", "Content");
+            .Location(DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(ButtonPart part, BuildPartEditorContext context)

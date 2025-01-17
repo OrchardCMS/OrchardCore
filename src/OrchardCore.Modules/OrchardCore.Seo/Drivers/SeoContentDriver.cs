@@ -51,7 +51,7 @@ public sealed class SeoContentDriver : ContentDisplayDriver
         _primaryContentRendered = true;
 
         // Do not include Widgets or any display type other than detail.
-        if (context.DisplayType != "Detail" || context.Shape.TryGetProperty(nameof(ContentTypeSettings.Stereotype), out string _))
+        if (context.DisplayType != DisplayType.Detail || context.Shape.TryGetProperty(nameof(ContentTypeSettings.Stereotype), out string _))
         {
             return null;
         }

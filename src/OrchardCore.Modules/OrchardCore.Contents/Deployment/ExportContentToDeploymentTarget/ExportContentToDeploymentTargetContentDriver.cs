@@ -2,6 +2,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
@@ -25,7 +26,7 @@ public sealed class ExportContentToDeploymentTargetContentDriver : ContentDispla
     {
         return CombineAsync(
             Dynamic("ExportContentToDeploymentTarget_Modal__ActionDeploymentTarget")
-                .Location("SummaryAdmin", "ActionsMenu:30")
+                .Location(DisplayType.SummaryAdmin, "ActionsMenu:30")
                 .RenderWhen(async () =>
                 {
                     if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
@@ -41,7 +42,7 @@ public sealed class ExportContentToDeploymentTargetContentDriver : ContentDispla
                     return false;
                 }),
             Shape("ExportContentToDeploymentTarget_SummaryAdmin__Button__Actions", new ContentItemViewModel(model))
-                .Location("SummaryAdmin", "ActionsMenu:40")
+                .Location(DisplayType.SummaryAdmin, "ActionsMenu:40")
                 .RenderWhen(async () =>
                 {
                     if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())

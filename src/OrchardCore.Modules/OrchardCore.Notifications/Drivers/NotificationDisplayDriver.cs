@@ -1,3 +1,4 @@
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Notifications.ViewModels;
@@ -10,11 +11,11 @@ public sealed class NotificationDisplayDriver : DisplayDriver<Notification>
     {
         return CombineAsync(
             Shape("NotificationsMeta_SummaryAdmin", new NotificationViewModel(notification))
-                .Location("SummaryAdmin", "Meta:20"),
+                .Location(DisplayType.SummaryAdmin, "Meta:20"),
             Shape("NotificationsActions_SummaryAdmin", new NotificationViewModel(notification))
-                .Location("SummaryAdmin", "Actions:5"),
+                .Location(DisplayType.SummaryAdmin, "Actions:5"),
             Shape("NotificationsButtonActions_SummaryAdmin", new NotificationViewModel(notification))
-                .Location("SummaryAdmin", "ActionsMenu:10")
+                .Location(DisplayType.SummaryAdmin, "ActionsMenu:10")
         );
     }
 }

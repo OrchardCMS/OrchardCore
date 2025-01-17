@@ -1,5 +1,6 @@
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Search.Models;
 using OrchardCore.Search.ViewModels;
@@ -11,7 +12,7 @@ public sealed class SearchFormPartDisplayDriver : ContentPartDisplayDriver<Searc
     public override IDisplayResult Display(SearchFormPart part, BuildPartDisplayContext context)
     {
         return View(GetDisplayShapeType(context), part)
-            .Location("Detail", "Content");
+            .Location(DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(SearchFormPart part, BuildPartEditorContext context)

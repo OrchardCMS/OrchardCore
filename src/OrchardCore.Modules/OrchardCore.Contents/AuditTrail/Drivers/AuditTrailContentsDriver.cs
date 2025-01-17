@@ -4,6 +4,7 @@ using OrchardCore.AuditTrail;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
@@ -26,7 +27,7 @@ public sealed class AuditTrailContentsDriver : ContentDisplayDriver
     {
         return Task.FromResult<IDisplayResult>(
             Initialize<ContentItemViewModel>("AuditTrailContentsAction_SummaryAdmin", m => m.ContentItem = contentItem)
-            .Location("SummaryAdmin", "ActionsMenu:10")
+            .Location(DisplayType.SummaryAdmin, "ActionsMenu:10")
             .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, AuditTrailPermissions.ViewAuditTrail))
         );
     }

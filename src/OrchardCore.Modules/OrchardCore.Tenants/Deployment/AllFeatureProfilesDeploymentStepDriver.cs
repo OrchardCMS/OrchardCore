@@ -1,4 +1,5 @@
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
@@ -10,7 +11,7 @@ public sealed class AllFeatureProfilesDeploymentStepDriver : DisplayDriver<Deplo
     {
         return
             CombineAsync(
-                View("AllFeatureProfilesDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("AllFeatureProfilesDeploymentStep_Summary", step).Location(DisplayType.Summary, "Content"),
                 View("AllFeatureProfilesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

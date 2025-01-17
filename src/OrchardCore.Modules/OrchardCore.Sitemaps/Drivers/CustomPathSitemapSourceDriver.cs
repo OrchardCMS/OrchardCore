@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
@@ -19,7 +20,7 @@ public sealed class CustomPathSitemapSourceDriver : DisplayDriver<SitemapSource,
     public override Task<IDisplayResult> DisplayAsync(CustomPathSitemapSource sitemapSource, BuildDisplayContext context)
     {
         return CombineAsync(
-            View("CustomPathSitemapSource_SummaryAdmin", sitemapSource).Location("SummaryAdmin", "Content"),
+            View("CustomPathSitemapSource_SummaryAdmin", sitemapSource).Location(DisplayType.SummaryAdmin, "Content"),
             View("CustomPathSitemapSource_Thumbnail", sitemapSource).Location("Thumbnail", "Content")
         );
     }

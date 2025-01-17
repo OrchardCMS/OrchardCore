@@ -1,4 +1,5 @@
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
@@ -10,7 +11,7 @@ public sealed class AllShortcodeTemplatesDeploymentStepDriver : DisplayDriver<De
     {
         return
             CombineAsync(
-                View("AllShortcodeTemplatesDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("AllShortcodeTemplatesDeploymentStep_Summary", step).Location(DisplayType.Summary, "Content"),
                 View("AllShortcodeTemplatesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

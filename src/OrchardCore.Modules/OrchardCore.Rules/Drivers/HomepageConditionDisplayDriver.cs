@@ -1,3 +1,4 @@
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
@@ -11,7 +12,7 @@ public sealed class HomepageConditionDisplayDriver : DisplayDriver<Condition, Ho
     {
         return
             CombineAsync(
-                View("HomepageCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                View("HomepageCondition_Fields_Summary", condition).Location(DisplayType.Summary, "Content"),
                 View("HomepageCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
             );
     }

@@ -5,6 +5,7 @@ using OrchardCore.Autoroute;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentPreview;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Settings;
 using OrchardCore.Templates.ViewModels;
@@ -93,7 +94,7 @@ public sealed class PreviewController : Controller
             return NotFound();
         }
 
-        var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "Detail");
+        var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, DisplayType.Detail);
 
         return View(model);
     }

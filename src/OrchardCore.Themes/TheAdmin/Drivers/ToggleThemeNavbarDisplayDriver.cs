@@ -1,4 +1,5 @@
 using OrchardCore.Admin.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
@@ -18,6 +19,6 @@ public sealed class ToggleThemeNavbarDisplayDriver : DisplayDriver<Navbar>
     {
         return View("ToggleTheme", model)
             .RenderWhen(async () => (await _siteService.GetSettingsAsync<AdminSettings>()).DisplayThemeToggler)
-            .Location("DetailAdmin", "Content:10");
+            .Location(DisplayType.DetailAdmin, "Content:10");
     }
 }

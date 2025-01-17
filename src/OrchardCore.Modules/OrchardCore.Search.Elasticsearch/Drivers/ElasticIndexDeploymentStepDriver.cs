@@ -1,4 +1,5 @@
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Search.Elasticsearch.Core.Services;
@@ -19,7 +20,7 @@ public sealed class ElasticIndexDeploymentStepDriver : DisplayDriver<DeploymentS
     {
         return
             CombineAsync(
-                View("ElasticIndexDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("ElasticIndexDeploymentStep_Fields_Summary", step).Location(DisplayType.Summary, "Content"),
                 View("ElasticIndexDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

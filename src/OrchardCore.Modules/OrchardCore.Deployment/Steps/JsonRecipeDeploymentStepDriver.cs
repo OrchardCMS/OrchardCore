@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment.ViewModels;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
@@ -39,7 +40,7 @@ public sealed class JsonRecipeDeploymentStepDriver : DisplayDriver<DeploymentSte
     {
         return
             CombineAsync(
-                View("JsonRecipeDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("JsonRecipeDeploymentStep_Fields_Summary", step).Location(DisplayType.Summary, "Content"),
                 View("JsonRecipeDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

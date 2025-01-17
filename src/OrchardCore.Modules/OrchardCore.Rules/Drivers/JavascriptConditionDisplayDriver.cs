@@ -2,6 +2,7 @@ using Acornima;
 using Jint.Runtime;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
@@ -36,7 +37,7 @@ public sealed class JavascriptConditionDisplayDriver : DisplayDriver<Condition, 
     {
         return
             CombineAsync(
-                View("JavascriptCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                View("JavascriptCondition_Fields_Summary", condition).Location(DisplayType.Summary, "Content"),
                 View("JavascriptCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
             );
     }

@@ -5,6 +5,7 @@ using OrchardCore.ArchiveLater.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.Contents;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Modules;
 
@@ -29,7 +30,7 @@ public sealed class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<Arc
     public override IDisplayResult Display(ArchiveLaterPart part, BuildPartDisplayContext context)
         => Initialize<ArchiveLaterPartViewModel>(
             $"{nameof(ArchiveLaterPart)}_SummaryAdmin",
-            model => PopulateViewModel(part, model)).Location("SummaryAdmin", "Meta:25");
+            model => PopulateViewModel(part, model)).Location(DisplayType.SummaryAdmin, "Meta:25");
 
     public override IDisplayResult Edit(ArchiveLaterPart part, BuildPartEditorContext context)
         => Initialize<ArchiveLaterPartViewModel>(

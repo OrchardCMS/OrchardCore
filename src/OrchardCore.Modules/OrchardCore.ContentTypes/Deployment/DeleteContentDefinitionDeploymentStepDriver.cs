@@ -1,5 +1,6 @@
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
@@ -13,7 +14,7 @@ public sealed class DeleteContentDefinitionDeploymentStepDriver : DisplayDriver<
     {
         return
             CombineAsync(
-                View("DeleteContentDefinitionDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("DeleteContentDefinitionDeploymentStep_Fields_Summary", step).Location(DisplayType.Summary, "Content"),
                 View("DeleteContentDefinitionDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

@@ -1,3 +1,4 @@
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
@@ -17,19 +18,19 @@ public sealed class TwoFactorMethodDisplayDriver : DisplayDriver<TwoFactorMethod
         {
             vm.Provider = model.Provider;
             vm.IsEnabled = model.IsEnabled;
-        }).Location("SummaryAdmin", "Icon");
+        }).Location(DisplayType.SummaryAdmin, "Icon");
 
         var content = Initialize<TwoFactorMethod>($"TwoFactorMethod_{model.Provider}_Content", vm =>
         {
             vm.Provider = model.Provider;
             vm.IsEnabled = model.IsEnabled;
-        }).Location("SummaryAdmin", "Content");
+        }).Location(DisplayType.SummaryAdmin, "Content");
 
         var actions = Initialize<TwoFactorMethod>($"TwoFactorMethod_{model.Provider}_Actions", vm =>
         {
             vm.Provider = model.Provider;
             vm.IsEnabled = model.IsEnabled;
-        }).Location("SummaryAdmin", "Actions");
+        }).Location(DisplayType.SummaryAdmin, "Actions");
 
         return Combine(icon, content, actions);
     }

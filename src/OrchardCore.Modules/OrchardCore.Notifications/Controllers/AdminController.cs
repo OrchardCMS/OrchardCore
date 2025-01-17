@@ -117,7 +117,7 @@ public sealed class AdminController : Controller, IUpdateModel
 
         foreach (var notification in queryResult.Notifications)
         {
-            var shape = await _notificationDisplayManager.BuildDisplayAsync(notification, this, "SummaryAdmin");
+            var shape = await _notificationDisplayManager.BuildDisplayAsync(notification, this, DisplayType.SummaryAdmin);
             shape.Properties[nameof(Notification)] = notification;
 
             notificationShapes.Add(shape);

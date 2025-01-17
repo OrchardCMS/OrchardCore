@@ -1,5 +1,6 @@
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
@@ -11,7 +12,7 @@ public sealed class FormElementLabelPartDisplayDriver : ContentPartDisplayDriver
     public override IDisplayResult Display(FormElementLabelPart part, BuildPartDisplayContext context)
     {
         return View("FormElementLabelPart", part)
-            .Location("Detail", "Content:before");
+            .Location(DisplayType.Detail, "Content:before");
     }
 
     public override IDisplayResult Edit(FormElementLabelPart part, BuildPartEditorContext context)
