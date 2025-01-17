@@ -100,7 +100,7 @@ public class PredicateQuery : IPredicateQuery
         // aliasPart.Alias -> AliasFieldIndex.Alias
         if (_aliases.TryGetValue(propertyPath, out var alias))
         {
-            return Quote(alias);
+            return EnsureQuotes(alias);
         }
 
         var index = IndexOfUnquoted(propertyPath, '.');
@@ -125,7 +125,7 @@ public class PredicateQuery : IPredicateQuery
                 {
                     // Switch the given alias in the path with the mapped alias.
                     // aliasPart.alias -> AliasPartIndex.Alias
-                    return Quote(tableAlias, columnName);
+                    return EnsureQuotes(tableAlias, columnName);
                 }
             }
             else
@@ -133,12 +133,12 @@ public class PredicateQuery : IPredicateQuery
                 // no property provider exists; hope sql is case-insensitive (will break postgres; property providers must be supplied for postgres)
                 // Switch the given alias in the path with the mapped alias.
                 // aliasPart.Alias -> AliasPartIndex.alias
-                return Quote(tableAlias, propertyPath[(index + 1)..]);
+                return EnsureQuotes(tableAlias, propertyPath[(index + 1)..]);
             }
         }
 
         // No aliases registered for this path, return the formatted path.
-        return Quote(propertyPath);
+        return EnsureQuotes(propertyPath);
     }
 
     public IEnumerable<string> GetUsedAliases()
@@ -146,15 +146,15 @@ public class PredicateQuery : IPredicateQuery
         return _usedAliases;
     }
 
-    private string Quote(string alias)
+    private string EnsureQuotes(string alias)
     {
         var index = IndexOfUnquoted(alias, '.');
         return index == -1
             ? (IsQuoted(alias) ? alias : Dialect.QuoteForColumnName(alias))
-            : Quote(alias[..index], alias[(index + 1)..]);
+            : EnsureQuotes(alias[..index], alias[(index + 1)..]);
     }
 
-    private string Quote(string tableAlias, string columnName)
+    private string EnsureQuotes(string tableAlias, string columnName)
     {
         if (!IsQuoted(tableAlias))
         {
@@ -217,7 +217,13 @@ public class PredicateQuery : IPredicateQuery
             MySqlDialect => ('`', '`'),
             PostgreSqlDialect => ('"', '"'),
             SqliteDialect or
-            SqlServerDialect or
-            _ => ('[', ']')
+            SqlServerDialect => ('[', ']'),
+            _ => ExtractQuoteChars(dialect)
         };
+
+    private static (char startQuote, char endQuote) ExtractQuoteChars(ISqlDialect dialect)
+    {
+        var quoted = dialect.QuoteForColumnName("alias");
+        return (quoted[0], quoted[^1]);
+    }
 }
