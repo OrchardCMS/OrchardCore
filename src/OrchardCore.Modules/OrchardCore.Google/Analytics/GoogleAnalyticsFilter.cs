@@ -16,7 +16,7 @@ public sealed class GoogleAnalyticsFilter : IAsyncResultFilter
     private readonly JavaScriptEncoder _jsEncoder;
     private readonly UrlEncoder _urlEncoder;
 
-    private static readonly HtmlString _preamble = new HtmlString($"<!-- Global site tag (gtag.js) - Google Analytics -->\n<script async src=\"https://www.googletagmanager.com/gtag/js?id=");
+    private static readonly HtmlString _preamble = new($"<!-- Global site tag (gtag.js) - Google Analytics -->\n<script async src=\"https://www.googletagmanager.com/gtag/js?id=");
     private static readonly HtmlString _middle = new HtmlString($"\"></script>\n<script>window.dataLayer = window.dataLayer || [];function gtag() {{ dataLayer.push(arguments); }}gtag('js', new Date());gtag('config', '");
     private static readonly HtmlString _end = new HtmlString($"')</script>\n<!-- End Global site tag (gtag.js) - Google Analytics -->");
 
