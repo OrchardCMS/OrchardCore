@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
 using OrchardCore.GitHub.Services;
 using OrchardCore.GitHub.Settings;
 
@@ -10,17 +8,10 @@ namespace OrchardCore.GitHub.Configuration;
 public sealed class GitHubAuthenticationSettingsConfiguration : IConfigureOptions<GitHubAuthenticationSettings>
 {
     private readonly IGitHubAuthenticationService _gitHubAuthenticationService;
-    private readonly ShellSettings _shellSettings;
-    private readonly ILogger _logger;
 
-    public GitHubAuthenticationSettingsConfiguration(
-        IGitHubAuthenticationService gitHubAuthenticationService,
-        ShellSettings shellSettings,
-        ILogger<GitHubAuthenticationSettingsConfiguration> logger)
+    public GitHubAuthenticationSettingsConfiguration(IGitHubAuthenticationService gitHubAuthenticationService)
     {
         _gitHubAuthenticationService = gitHubAuthenticationService;
-        _shellSettings = shellSettings;
-        _logger = logger;
     }
 
     public void Configure(GitHubAuthenticationSettings options)
@@ -44,11 +35,6 @@ public sealed class GitHubAuthenticationSettingsConfiguration : IConfigureOption
 
         if ((_gitHubAuthenticationService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
         {
-            if (_shellSettings.IsRunning())
-            {
-                _logger.LogWarning("GitHub Authentication is not correctly configured.");
-            }
-
             return null;
         }
 

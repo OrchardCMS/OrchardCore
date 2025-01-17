@@ -7,6 +7,7 @@ using Elastic.Clients.Elasticsearch.Fluent;
 using Elastic.Clients.Elasticsearch.IndexManagement;
 using Elastic.Clients.Elasticsearch.Mapping;
 using Elastic.Clients.Elasticsearch.QueryDsl;
+using Elastic.Transport;
 using Elastic.Transport.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -224,7 +225,7 @@ public sealed class ElasticsearchIndexManager
                         {
                             [nameof(ContainedPartModel.Ids)] = new KeywordProperty(),
                             [nameof(ContainedPartModel.Order)] = new FloatNumberProperty(),
-                        }
+                        },
                     },
 
                     // We map DisplayText here because we have 3 different fields with it.
@@ -236,7 +237,7 @@ public sealed class ElasticsearchIndexManager
                             [nameof(DisplayTextModel.Analyzed)] = new TextProperty(),
                             [nameof(DisplayTextModel.Normalized)] = new KeywordProperty(),
                             [nameof(DisplayTextModel.Keyword)] = new KeywordProperty(),
-                        }
+                        },
                     },
 
                     // We map ContentType as a keyword because else the automatic mapping will break the queries.
@@ -485,20 +486,35 @@ public sealed class ElasticsearchIndexManager
         return indexName;
     }
 
-    public Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
+    public async Task StoreDocumentsAsync(string indexName, IEnumerable<DocumentIndex> indexDocuments)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
         ArgumentNullException.ThrowIfNull(indexDocuments);
 
         if (indexDocuments == null || !indexDocuments.Any())
         {
-            return Task.CompletedTask;
+            return;
         }
 
-        return _elasticClient.BulkAsync(GetFullIndexNameInternal(indexName), descriptor => descriptor
-            .IndexMany(indexDocuments.Select(CreateElasticDocument))
-            .Refresh(Refresh.True)
-        );
+        var indexFullName = GetFullIndexNameInternal(indexName);
+
+        foreach (var batch in indexDocuments.PagesOf(2500))
+        {
+            var response = await _elasticClient.BulkAsync(indexFullName,
+                descriptor => descriptor.CreateElasticDocument(batch).Refresh(Refresh.True));
+
+            if (!response.IsValidResponse)
+            {
+                if (response.TryGetOriginalException(out var ex))
+                {
+                    _logger.LogWarning("There were issues indexing a document using Elasticsearch. Exception: {OriginalException}", ex);
+                }
+                else
+                {
+                    _logger.LogWarning("There were issues indexing a document using Elasticsearch.");
+                }
+            }
+        }
     }
 
     public async Task<ElasticsearchResult> SearchAsync(ElasticsearchSearchContext context)
@@ -521,47 +537,15 @@ public sealed class ElasticsearchIndexManager
                 Size = context.Size,
                 Sort = context.Sorts ?? [],
                 Source = context.Source,
-                Fields = context.Fields,
+                Fields = context.Fields ?? [],
                 Highlight = context.Highlight,
             };
 
             var searchResponse = await _elasticClient.SearchAsync<JsonObject>(searchRequest);
 
-            if (searchResponse.IsValidResponse)
+            if (searchResponse.IsSuccess())
             {
-                elasticTopDocs.Count = searchResponse.Hits.Count;
-
-                var documents = searchResponse.Documents.GetEnumerator();
-                var hits = searchResponse.Hits.GetEnumerator();
-
-                while (documents.MoveNext() && hits.MoveNext())
-                {
-                    var hit = hits.Current;
-
-                    var document = documents.Current;
-
-                    if (document != null)
-                    {
-                        elasticTopDocs.TopDocs.Add(new ElasticsearchRecord(document)
-                        {
-                            Score = hit.Score,
-                            Highlights = hit?.Highlight
-                        });
-
-                        continue;
-                    }
-
-                    var topDoc = new JsonObject
-                    {
-                        { nameof(ContentItem.ContentItemId), hit.Id },
-                    };
-
-                    elasticTopDocs.TopDocs.Add(new ElasticsearchRecord(topDoc)
-                    {
-                        Score = hit.Score,
-                        Highlights = hit.Highlight
-                    });
-                }
+                ProcessSuccessfulSearchResponse(elasticTopDocs, searchResponse);
             }
 
             _timestamps[fullIndexName] = _clock.UtcNow;
@@ -579,6 +563,7 @@ public sealed class ElasticsearchIndexManager
     /// <param name="from"></param>
     /// <param name="size"></param>
     /// <returns><see cref="ElasticsearchResult"/>.</returns>
+    [Obsolete("This method will be removed in future release. Instead use SearchAsync(ElasticsearchSearchContext) method instead.")]
     public Task<ElasticsearchResult> SearchAsync(string indexName, Query query, IList<SortOptions> sort, int from, int size)
     {
         var context = new ElasticsearchSearchContext(indexName, query)
@@ -607,86 +592,40 @@ public sealed class ElasticsearchIndexManager
         }
     }
 
-    private static Dictionary<string, object> CreateElasticDocument(DocumentIndex documentIndex)
-    {
-        var entries = new Dictionary<string, object>
-        {
-            { IndexingConstants.ContentItemIdKey, documentIndex.ContentItemId },
-            { IndexingConstants.ContentItemVersionIdKey, documentIndex.ContentItemVersionId }
-        };
-
-        foreach (var entry in documentIndex.Entries)
-        {
-            switch (entry.Type)
-            {
-                case DocumentIndexBase.Types.Boolean:
-                    if (entry.Value is bool boolValue)
-                    {
-                        AddValue(entries, entry.Name, boolValue);
-                    }
-                    break;
-
-                case DocumentIndexBase.Types.DateTime:
-
-                    if (entry.Value is DateTimeOffset offsetValue)
-                    {
-                        AddValue(entries, entry.Name, offsetValue);
-                    }
-                    else if (entry.Value is DateTime dateTimeValue)
-                    {
-                        AddValue(entries, entry.Name, dateTimeValue.ToUniversalTime());
-                    }
-
-                    break;
-
-                case DocumentIndexBase.Types.Integer:
-                    if (entry.Value != null && long.TryParse(entry.Value.ToString(), out var value))
-                    {
-                        AddValue(entries, entry.Name, value);
-                    }
-
-                    break;
-
-                case DocumentIndexBase.Types.Number:
-                    if (entry.Value != null)
-                    {
-                        AddValue(entries, entry.Name, Convert.ToDouble(entry.Value));
-                    }
-                    break;
-
-                case DocumentIndexBase.Types.Text:
-                    if (entry.Value != null)
-                    {
-                        var stringValue = Convert.ToString(entry.Value);
-
-                        if (!string.IsNullOrEmpty(stringValue))
-                        {
-                            AddValue(entries, entry.Name, stringValue);
-                        }
-                    }
-                    break;
-                case DocumentIndexBase.Types.GeoPoint:
-                    if (entry.Value is DocumentIndexBase.GeoPoint point)
-                    {
-                        AddValue(entries, entry.Name, GeoLocation.LatitudeLongitude(new LatLonGeoLocation
-                        {
-                            Lat = (double)point.Latitude,
-                            Lon = (double)point.Longitude,
-                        }));
-                    }
-
-                    break;
-            }
-        }
-
-        return entries;
-    }
-
     public string GetFullIndexName(string indexName)
     {
         ArgumentException.ThrowIfNullOrEmpty(indexName);
 
         return GetFullIndexNameInternal(indexName);
+    }
+
+    internal async Task<ElasticsearchResult> SearchAsync(string indexName, string query)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(indexName);
+        ArgumentException.ThrowIfNullOrEmpty(query);
+
+        var elasticTopDocs = new ElasticsearchResult()
+        {
+            TopDocs = [],
+        };
+
+        if (await ExistsAsync(indexName))
+        {
+            var fullIndexName = GetFullIndexName(indexName);
+
+            var endpoint = new EndpointPath(Elastic.Transport.HttpMethod.GET, fullIndexName + "/_search");
+            var searchResponse = await _elasticClient.Transport
+                .RequestAsync<SearchResponse<JsonObject>>(endpoint, postData: PostData.String(query));
+
+            if (searchResponse.IsSuccess())
+            {
+                ProcessSuccessfulSearchResponse(elasticTopDocs, searchResponse);
+            }
+
+            _timestamps[fullIndexName] = _clock.UtcNow;
+        }
+
+        return elasticTopDocs;
     }
 
     private static IAnalyzer GetAnalyzer(JsonObject analyzerProperties)
@@ -723,33 +662,6 @@ public sealed class ElasticsearchIndexManager
     private string GetFullIndexNameInternal(string indexName)
         => GetIndexPrefix() + _separator + indexName;
 
-    private static void AddValue(Dictionary<string, object> entries, string key, object value)
-    {
-        if (entries.TryAdd(key, value))
-        {
-            return;
-        }
-
-        // At this point, we know that a value already exists.
-        if (entries[key] is List<object> list)
-        {
-            list.Add(value);
-
-            entries[key] = list;
-
-            return;
-        }
-
-        // Convert the existing value to a list of values.
-        var values = new List<object>()
-        {
-            entries[key],
-            value,
-        };
-
-        entries[key] = values;
-    }
-
     private string GetIndexPrefix()
     {
         if (_indexPrefix == null)
@@ -767,6 +679,44 @@ public sealed class ElasticsearchIndexManager
         }
 
         return _indexPrefix;
+    }
+
+    private static void ProcessSuccessfulSearchResponse(ElasticsearchResult elasticTopDocs, SearchResponse<JsonObject> searchResponse)
+    {
+        elasticTopDocs.Count = searchResponse.Hits.Count;
+
+        var documents = searchResponse.Documents.GetEnumerator();
+        var hits = searchResponse.Hits.GetEnumerator();
+
+        while (documents.MoveNext() && hits.MoveNext())
+        {
+            var hit = hits.Current;
+
+            var document = documents.Current;
+
+            if (document != null)
+            {
+                elasticTopDocs.TopDocs.Add(new ElasticsearchRecord(document)
+                {
+                    Score = hit.Score,
+                    Highlights = hit?.Highlight
+                });
+
+                continue;
+            }
+
+            var topDoc = new JsonObject
+            {
+                { nameof(ContentItem.ContentItemId), hit.Id },
+            };
+
+            elasticTopDocs.TopDocs.Add(new ElasticsearchRecord(topDoc)
+            {
+                Score = hit.Score,
+                Highlights = hit.Highlight
+            });
+        }
+
     }
 
     private static void RemoveTypeNode(JsonObject analyzerProperties)

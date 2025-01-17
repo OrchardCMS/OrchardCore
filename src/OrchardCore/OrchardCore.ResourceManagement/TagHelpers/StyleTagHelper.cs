@@ -48,9 +48,14 @@ public class StyleTagHelper : TagHelper
     {
         output.SuppressOutput();
 
-        if (string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Src))
+        var hasName = !string.IsNullOrEmpty(Name);
+        var hasSource = !string.IsNullOrEmpty(Src);
+
+        if (!hasName && hasSource)
         {
-            // Include custom style
+            // Include custom style.
+            // <style asp-src="~/example.css" at="Head"></style>
+
             var setting = _resourceManager.RegisterUrl("stylesheet", Src, DebugSrc);
 
             foreach (var attribute in output.Attributes)
@@ -89,7 +94,7 @@ public class StyleTagHelper : TagHelper
 
             if (!string.IsNullOrEmpty(DependsOn))
             {
-                setting.SetDependencies(DependsOn.Split(_splitSeparators, StringSplitOptions.RemoveEmptyEntries));
+                setting.SetDependencies(DependsOn.Split(_splitSeparators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
             if (At == ResourceLocation.Inline)
@@ -99,9 +104,10 @@ public class StyleTagHelper : TagHelper
                 output.Content.AppendHtml(sw.ToString());
             }
         }
-        else if (!string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Src))
+        else if (hasName && !hasSource)
         {
-            // Resource required
+            // Resource required.
+            // <style asp-name="example" at="Head"></style>
 
             var setting = _resourceManager.RegisterResource("stylesheet", Name);
 
@@ -152,13 +158,13 @@ public class StyleTagHelper : TagHelper
             // This allows additions to the pre registered style dependencies.
             if (!string.IsNullOrEmpty(DependsOn))
             {
-                setting.SetDependencies(DependsOn.Split(_splitSeparators, StringSplitOptions.RemoveEmptyEntries));
+                setting.SetDependencies(DependsOn.Split(_splitSeparators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
             var childContent = await output.GetChildContentAsync();
             if (!childContent.IsEmptyOrWhiteSpace)
             {
-                // Inline named style definition
+                // Inline named style definition.
                 _resourceManager.InlineManifest.DefineStyle(Name)
                     .SetInnerContent(childContent.GetContent());
             }
@@ -170,9 +176,9 @@ public class StyleTagHelper : TagHelper
                 output.Content.AppendHtml(sw.ToString());
             }
         }
-        else if (!string.IsNullOrEmpty(Name) && !string.IsNullOrEmpty(Src))
+        else if (hasName && hasSource)
         {
-            // Inline declaration
+            // Inline declaration.
 
             var definition = _resourceManager.InlineManifest.DefineStyle(Name);
             definition.SetUrl(Src, DebugSrc);
@@ -194,12 +200,12 @@ public class StyleTagHelper : TagHelper
 
             if (!string.IsNullOrEmpty(Culture))
             {
-                definition.SetCultures(Culture.Split(',', StringSplitOptions.RemoveEmptyEntries));
+                definition.SetCultures(Culture.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
             if (!string.IsNullOrEmpty(DependsOn))
             {
-                definition.SetDependencies(DependsOn.Split(',', StringSplitOptions.RemoveEmptyEntries));
+                definition.SetDependencies(DependsOn.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
             // Also include the style.
@@ -241,11 +247,33 @@ public class StyleTagHelper : TagHelper
                 output.Content.AppendHtml(sw.ToString());
             }
         }
-        else if (string.IsNullOrEmpty(Name) && string.IsNullOrEmpty(Src))
+        else
         {
-            // Custom style content
+            // Custom style content.
+            // <style at="Head"> /* example css code*/ </style>
 
             var childContent = await output.GetChildContentAsync();
+
+            if (!string.IsNullOrEmpty(DependsOn))
+            {
+                var dependencies = DependsOn.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var dependency in dependencies)
+                {
+                    var versionParts = dependency.Split(':');
+
+                    var resourceName = versionParts[0];
+
+                    var style = _resourceManager.RegisterResource("stylesheet", resourceName);
+
+                    if (versionParts.Length == 2)
+                    {
+                        style.Version = versionParts[1];
+                    }
+
+                    style.AtLocation(At);
+                }
+            }
 
             var builder = new TagBuilder("style");
             builder.InnerHtml.AppendHtml(childContent);
@@ -256,7 +284,7 @@ public class StyleTagHelper : TagHelper
                 builder.Attributes.Add(attribute.Name, attribute.Value.ToString());
             }
 
-            // If no type was specified, define a default one
+            // If no type was specified, define a default one.
             if (!builder.Attributes.ContainsKey("type"))
             {
                 builder.Attributes.Add("type", "text/css");

@@ -15,7 +15,7 @@ public sealed class ElasticsearchQueryHandler : QueryHandlerBase
 
     private static Task UpdateQueryAsync(DataQueryContextBase context)
     {
-        if (context.Query.Source == ElasticsearchQuerySource.SourceName)
+        if (context.Query.Source != ElasticsearchQuerySource.SourceName)
         {
             return Task.CompletedTask;
         }
@@ -42,8 +42,6 @@ public sealed class ElasticsearchQueryHandler : QueryHandlerBase
 
             context.Query.Put(metadata);
         }
-
-        context.Query.CanReturnContentItems = true;
 
         return Task.CompletedTask;
     }

@@ -104,8 +104,8 @@ var corsApp = new Vue({
       var searchBox = $('#search-box');
 
       // On Enter, edit the item if there is a single one
-      searchBox.keypress(function (event) {
-        if (event.which == 13) {
+      searchBox.keydown(function (e) {
+        if (e.key == 'Enter') {
           // Edit the item if there is a single filtered element
           var visible = $('#corsAdmin > ul > li:visible');
           if (visible.length == 1) {

@@ -10,12 +10,15 @@ using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Layers.Drivers;
 
-public class LayerMetadataWelder : ContentDisplayDriver
+public sealed class LayerMetadataWelder : ContentDisplayDriver
 {
     private readonly ILayerService _layerService;
-    protected readonly IStringLocalizer S;
 
-    public LayerMetadataWelder(ILayerService layerService, IStringLocalizer<LayerMetadataWelder> stringLocalizer)
+    internal readonly IStringLocalizer S;
+
+    public LayerMetadataWelder(
+        ILayerService layerService,
+        IStringLocalizer<LayerMetadataWelder> stringLocalizer)
     {
         _layerService = layerService;
         S = stringLocalizer;
@@ -55,8 +58,7 @@ public class LayerMetadataWelder : ContentDisplayDriver
             shape.Title = model.DisplayText;
             shape.LayerMetadata = layerMetadata;
             shape.Layers = (await _layerService.GetLayersAsync()).Layers;
-        })
-        .Location("Content:before");
+        }).Location("Content:before");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ContentItem model, UpdateEditorContext context)
@@ -70,6 +72,11 @@ public class LayerMetadataWelder : ContentDisplayDriver
             return null;
         }
 
+        if (string.IsNullOrEmpty(viewModel.Title))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Title), S["Title is required field."]);
+        }
+
         if (string.IsNullOrEmpty(viewModel.LayerMetadata.Zone))
         {
             context.Updater.ModelState.AddModelError(Prefix, "LayerMetadata.Zone", S["Zone is missing"]);
@@ -77,13 +84,10 @@ public class LayerMetadataWelder : ContentDisplayDriver
 
         if (string.IsNullOrEmpty(viewModel.LayerMetadata.Layer))
         {
-            context.Updater.ModelState.AddModelError(Prefix, "LayerMetadata.Layer", S["Layer is missing"]);
+            context.Updater.ModelState.AddModelError(Prefix, "LayerMetadata.Layer", S["Layer is missing field."]);
         }
 
-        if (context.Updater.ModelState.IsValid)
-        {
-            model.Apply(viewModel.LayerMetadata);
-        }
+        model.Apply(viewModel.LayerMetadata);
 
         model.DisplayText = viewModel.Title;
 

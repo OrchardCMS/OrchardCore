@@ -1,6 +1,5 @@
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
@@ -10,7 +9,6 @@ using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Deployment;
@@ -85,7 +83,7 @@ public sealed class Startup : StartupBase
         services.AddActivity<LogTask, LogTaskDisplayDriver>();
 
         services.AddRecipeExecutionStep<WorkflowTypeStep>();
-        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
 
         services.AddTrimmingServices(_shellConfiguration);
     }

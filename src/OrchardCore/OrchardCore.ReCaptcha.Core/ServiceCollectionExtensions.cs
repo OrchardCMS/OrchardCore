@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
-using OrchardCore.ReCaptcha.ActionFilters.Detection;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.Services;
 using OrchardCore.ReCaptcha.TagHelpers;
@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
     {
         // c.f. https://learn.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/use-httpclientfactory-to-implement-resilient-http-requests
         services.AddSingleton<ReCaptchaService>();
-
+        services.AddShapeAttributes<ReCaptchaShape>();
         services
             .AddHttpClient(nameof(ReCaptchaService))
             .AddResilienceHandler("oc-handler", builder => builder
@@ -32,7 +32,6 @@ public static class ServiceCollectionExtensions
                 })
             );
 
-        services.AddSingleton<IDetectRobots, IPAddressRobotDetector>();
         services.AddTransient<IConfigureOptions<ReCaptchaSettings>, ReCaptchaSettingsConfiguration>();
 
         services.AddTagHelpers<ReCaptchaTagHelper>();

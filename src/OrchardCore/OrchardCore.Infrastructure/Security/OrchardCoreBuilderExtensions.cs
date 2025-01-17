@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using OrchardCore.Security;
 using OrchardCore.Security.AuthorizationHandlers;
+using OrchardCore.Security.Permissions;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -25,6 +26,7 @@ public static partial class OrchardCoreBuilderExtensions
             });
 
             services.AddScoped<IPermissionGrantingService, DefaultPermissionGrantingService>();
+            services.AddScoped<IPermissionService, DefaultPermissionService>();
             services.AddScoped<IAuthorizationHandler, PermissionHandler>();
         });
 
