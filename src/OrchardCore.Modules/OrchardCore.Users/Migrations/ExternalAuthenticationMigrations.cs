@@ -7,7 +7,7 @@ using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
-namespace OrchardCore.Users.DataMigrations;
+namespace OrchardCore.Users.Migrations;
 
 public sealed class ExternalAuthenticationMigrations : DataMigration
 {

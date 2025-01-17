@@ -37,13 +37,13 @@ using OrchardCore.Setup.Events;
 using OrchardCore.Sms;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
-using OrchardCore.Users.DataMigrations;
 using OrchardCore.Users.Deployment;
 using OrchardCore.Users.Drivers;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Liquid;
+using OrchardCore.Users.Migrations;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Recipes;
 using OrchardCore.Users.Services;
@@ -112,7 +112,7 @@ public sealed class Startup : StartupBase
         });
 
         services.AddTransient<IPostConfigureOptions<SecurityStampValidatorOptions>, ConfigureSecurityStampOptions>();
-        services.AddDataMigration<Migrations>();
+        services.AddDataMigration<UsersMigrations>();
 
         services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
         services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();

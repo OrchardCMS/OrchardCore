@@ -9,9 +9,9 @@ using OrchardCore.Users.Models;
 using YesSql;
 using YesSql.Sql;
 
-namespace OrchardCore.Users;
+namespace OrchardCore.Users.Migrations;
 
-public sealed class Migrations : DataMigration
+public sealed class UsersMigrations : DataMigration
 {
     public async Task<int> CreateAsync()
     {
@@ -251,7 +251,7 @@ public sealed class Migrations : DataMigration
         {
             var session = scope.ServiceProvider.GetRequiredService<ISession>();
             var dbConnectionAccessor = scope.ServiceProvider.GetService<IDbConnectionAccessor>();
-            var logger = scope.ServiceProvider.GetService<ILogger<Migrations>>();
+            var logger = scope.ServiceProvider.GetService<ILogger<UsersMigrations>>();
             var tablePrefix = session.Store.Configuration.TablePrefix;
             var documentTableName = session.Store.Configuration.TableNameConvention.GetDocumentTable();
             var table = $"{session.Store.Configuration.TablePrefix}{documentTableName}";
