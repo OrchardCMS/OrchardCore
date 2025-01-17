@@ -26,7 +26,7 @@ public class ContentFieldsProvider : IContentFieldProvider
                 UnderlyingType = typeof(BooleanField),
                 FieldAccessor = field => ((BooleanField)field).Value,
                 IndexType = typeof(BooleanFieldIndex),
-                Index = nameof(BooleanFieldIndex.Boolean),
+                IndexProperty = nameof(BooleanFieldIndex.Boolean),
             }
         },
         {
@@ -39,7 +39,7 @@ public class ContentFieldsProvider : IContentFieldProvider
                 UnderlyingType = typeof(DateField),
                 FieldAccessor = field => ((DateField)field).Value,
                 IndexType = typeof(DateFieldIndex),
-                Index = nameof(DateFieldIndex.Date),
+                IndexProperty = nameof(DateFieldIndex.Date),
             }
         },
         {
@@ -52,7 +52,7 @@ public class ContentFieldsProvider : IContentFieldProvider
                 UnderlyingType = typeof(DateTimeField),
                 FieldAccessor = field => ((DateTimeField)field).Value,
                 IndexType = typeof(DateTimeFieldIndex),
-                Index = nameof(DateTimeFieldIndex.DateTime),
+                IndexProperty = nameof(DateTimeFieldIndex.DateTime),
             }
         },
         {
@@ -65,7 +65,7 @@ public class ContentFieldsProvider : IContentFieldProvider
                 UnderlyingType = typeof(NumericField),
                 FieldAccessor = field => ((NumericField)field).Value,
                 IndexType = typeof(NumericFieldIndex),
-                Index = nameof(NumericFieldIndex.Numeric)
+                IndexProperty = nameof(NumericFieldIndex.Numeric)
             }
         },
         {
@@ -78,7 +78,7 @@ public class ContentFieldsProvider : IContentFieldProvider
                 UnderlyingType = typeof(TextField),
                 FieldAccessor = field => ((TextField)field).Text,
                 IndexType = typeof(TextFieldIndex),
-                Index = nameof(TextFieldIndex.Text)
+                IndexProperty = nameof(TextFieldIndex.Text)
             }
         },
         {
@@ -91,7 +91,7 @@ public class ContentFieldsProvider : IContentFieldProvider
                 UnderlyingType = typeof(TimeField),
                 FieldAccessor = field => ((TimeField)field).Value,
                 IndexType = typeof(TimeFieldIndex),
-                Index = nameof(TimeFieldIndex.Time)
+                IndexProperty = nameof(TimeFieldIndex.Time)
             }
         },
         {
@@ -158,8 +158,8 @@ public class ContentFieldsProvider : IContentFieldProvider
 
         return new FieldTypeIndexDescriptor
         {
-            AliasName = $"{field.PartDefinition.Name.ToFieldName()}_{field.Name.ToCamelCase()}",
-            Index = fieldDescriptor.Index,
+            AliasName = $"{field.PartDefinition.Name.ToFieldName()}:{field.Name.ToCamelCase()}:{fieldDescriptor.IndexProperty}",
+            Index = fieldDescriptor.IndexType.Name,
             IndexType = fieldDescriptor.IndexType
         };
     }
@@ -167,7 +167,7 @@ public class ContentFieldsProvider : IContentFieldProvider
     public bool HasFieldIndex(ContentPartFieldDefinition field)
         => _contentFieldTypeMappings.TryGetValue(field.FieldDefinition.Name, out var fieldTypeDescriptor) &&
         fieldTypeDescriptor.IndexType != null &&
-        !string.IsNullOrWhiteSpace(fieldTypeDescriptor.Index);
+        !string.IsNullOrWhiteSpace(fieldTypeDescriptor.IndexProperty);
 
     private sealed class FieldTypeDescriptor
     {
@@ -181,7 +181,7 @@ public class ContentFieldsProvider : IContentFieldProvider
 
         public Func<ContentElement, object> FieldAccessor { get; set; }
 
-        public string Index { get; set; }
+        public string IndexProperty { get; set; }
 
         public Type IndexType { get; set; }
     }

@@ -108,6 +108,18 @@ public class PredicateQuery : IPredicateQuery
             if (alias.isPartial)
             {
                 var tableAlias = _tableAliases[alias.alias];
+
+                var propertyProvider = _propertyProviders.FirstOrDefault(x => x.IndexName.Equals(alias.alias, StringComparison.OrdinalIgnoreCase)) ??
+                                       _propertyProviders.FirstOrDefault(x => string.IsNullOrEmpty(x.IndexName));
+
+                if (propertyProvider != null)
+                {
+                    if (propertyProvider.TryGetValue(propertyPath, out var columnName))
+                    {
+                        return $"{Dialect.QuoteForAliasName(tableAlias)}.{Dialect.QuoteForColumnName(columnName)}";
+                    }
+                }
+
                 return $"{Dialect.QuoteForAliasName(tableAlias)}.{Dialect.QuoteForColumnName(alias.alias)}";
             }
 

@@ -141,4 +141,24 @@ public class DynamicContentTypeQueryTests
         Assert.Single(stringResult["data"]["stringType"].AsArray());
         Assert.Equal("Text123", stringResult["data"]["stringType"].AsArray().First()["value"].ToString());
     }
+
+    [Fact]
+    public async Task ShouldDistinquishMultipleNamedContentFields()
+    {
+        using var context = new DynamicContentTypeContext();
+        await context.InitializeAsync();
+
+        // Make sure values of field2 are not included by querying field1
+        var result = await context
+            .GraphQLClient
+            .Content
+            .Query(@"twoNumbersType(where: {field1: 200}) {
+                        contentItemId
+                        displayText
+                        field1
+                        field2
+                    }");
+
+        Assert.Empty(result["data"]["twoNumbersType"].AsArray());
+    }
 }

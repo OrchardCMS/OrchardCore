@@ -55,9 +55,25 @@ public sealed class DynamicContentFieldsIndexAliasProvider : IIndexAliasProvider
                     aliases.Add(new IndexAlias
                     {
                         Alias = fieldIndex.AliasName,
-                        Index = fieldIndex.Index,
+                        Index = fieldIndex.IndexType.Name,
                         IndexType = fieldIndex.IndexType,
-                        IsPartial = true
+                        IsPartial = true,
+                    });
+
+                    aliases.Add(new IndexAlias
+                    {
+                        Alias = $"{fieldIndex.AliasName}:ContentPart",
+                        Index = fieldIndex.IndexType.Name,
+                        IndexType = fieldIndex.IndexType,
+                        IsPartial = true,
+                    });
+
+                    aliases.Add(new IndexAlias
+                    {
+                        Alias = $"{fieldIndex.AliasName}:ContentField",
+                        Index = fieldIndex.IndexType.Name,
+                        IndexType = fieldIndex.IndexType,
+                        IsPartial = true,
                     });
 
                     break;

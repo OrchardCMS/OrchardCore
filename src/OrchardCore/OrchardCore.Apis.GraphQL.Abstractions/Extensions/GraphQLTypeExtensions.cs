@@ -13,6 +13,12 @@ public static class GraphQLTypeExtensions
     public static FieldType WithAliasNameMetaData(this FieldType fieldType, string aliasName)
         => fieldType.WithMetaData("AliasName", aliasName);
 
+    public static FieldType WithContentPartMetaData(this FieldType fieldType, string contentPart)
+        => fieldType.WithMetaData("ContentPart", contentPart);
+
+    public static FieldType WithContentFieldMetaData(this FieldType fieldType, string contentField)
+        => fieldType.WithMetaData("ContentField", contentField);
+
     /// <summary>
     /// Checks if the field exists in the GraphQL type in a case-insensitive way.
     /// </summary>

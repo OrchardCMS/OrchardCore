@@ -86,7 +86,7 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
                                 var index = fieldProvider.GetFieldIndex(field);
                                 if (index != null)
                                 {
-                                    curInputGraphType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description, index.AliasName);
+                                    curInputGraphType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description, index.AliasName, part.Name, field.Name);
                                 }
                             }
                             else if (graphType is IObjectGraphType curObjectGraphType)
@@ -135,7 +135,7 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
                                     var index = fieldProvider.GetFieldIndex(field);
                                     if (index != null)
                                     {
-                                        partInputContentItemType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description, index.AliasName);
+                                        partInputContentItemType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description, index.AliasName, part.Name, field.Name);
                                     }
                                 }
                                 else if (partContentItemType is IObjectGraphType partContentItemObjectType)
@@ -156,7 +156,7 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
             {
                 if (graphType is IFilterInputObjectGraphType curInputGraphType)
                 {
-                    curInputGraphType.AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description, null);
+                    curInputGraphType.AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description, null, null, null);
                 }
                 else if (graphType is IObjectGraphType curObjectGraphType)
                 {

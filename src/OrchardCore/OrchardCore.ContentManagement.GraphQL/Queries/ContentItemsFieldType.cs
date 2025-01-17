@@ -156,7 +156,13 @@ public class ContentItemsFieldType : FieldType
                 predicateQuery.CreateAlias(alias.Alias, alias.Index, alias.IsPartial);
                 if (indexAliases.Add(alias.Alias))
                 {
-                    indexes.TryAdd(alias.Index, alias);
+                    if (!indexes.TryAdd(alias.Index, alias))
+                    {
+                        if (indexes[alias.Index].IndexType != alias.IndexType)
+                        {
+                            throw new InvalidOperationException("An ambiguous index has been found.");
+                        }
+                    }
                 }
             }
         }
@@ -287,10 +293,12 @@ public class ContentItemsFieldType : FieldType
             var values = entry.Key.Split('_', 2);
             var fieldName = values[0];
 
-            // Get the actual used alias name
+            // Get the actual field used, to get the alias name and additional required expressions for indexed content fields.
             var currentField = filterInputGraphType?.Fields.Where(field => field.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 
-            var property = currentField?.GetMetadata<string>("AliasName");
+            var aliasName = currentField?.GetMetadata<string>("AliasName");
+            var property = aliasName;
+
             if (string.IsNullOrEmpty(property))
             {
                 property = fieldName;
@@ -375,6 +383,32 @@ public class ContentItemsFieldType : FieldType
 
             if (expression != null)
             {
+                // For indexed content fields, add the additionally required columns.
+                if (!string.IsNullOrEmpty(aliasName))
+                {
+                    var contentPart = currentField.GetMetadata<string>("ContentPart");
+                    var contentField = currentField.GetMetadata<string>("ContentField");
+
+                    if (!string.IsNullOrEmpty(contentPart) || !string.IsNullOrEmpty(contentField))
+                    {
+                        var andExpression = Expression.Conjunction();
+
+                        if (!string.IsNullOrEmpty(contentPart))
+                        {
+                            andExpression.Add(Expression.Equal($"{aliasName}:ContentPart", contentPart));
+                        }
+
+                        if (!string.IsNullOrEmpty(contentField))
+                        {
+                            andExpression.Add(Expression.Equal($"{aliasName}:ContentField", contentField));
+                        }
+
+                        andExpression.Add(expression);
+
+                        expression = andExpression;
+                    }
+                }
+
                 expressions.Add(expression);
             }
         }
