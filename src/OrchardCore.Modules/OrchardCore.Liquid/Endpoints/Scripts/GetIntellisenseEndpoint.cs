@@ -39,12 +39,13 @@ public static class GetIntellisenseEndpoint
         return Encoding.UTF8.GetBytes(script);
     }
 
-    private static uint GetHashCode(this byte[] bytes)
+    private static uint GetHashCode(byte[] bytes)
     {
         uint hash = 0;
         foreach (byte b in bytes)
         {
             hash += b;
+            hash *= 17;
         }
         return hash;
     }
