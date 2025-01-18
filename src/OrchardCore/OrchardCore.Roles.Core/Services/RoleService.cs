@@ -12,11 +12,6 @@ public class RoleService : IRoleService
 
     public RoleService(
         RoleManager<IRole> roleManager,
-#pragma warning disable IDE0060 // Remove unused parameter
-#pragma warning disable CS0618 // Type or member is obsolete
-        ISystemRoleNameProvider systemRoleNameProvider,
-#pragma warning restore CS0618 // Type or member is obsolete
-#pragma warning restore IDE0060 // Remove unused parameter
         ISystemRoleProvider systemRoleProvider)
     {
         _roleManager = roleManager;

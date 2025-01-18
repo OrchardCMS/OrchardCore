@@ -26,9 +26,6 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
         ShellDescriptor shellDescriptor,
         IExtensionManager extensionManager,
         IDocumentManager<RolesDocument> documentManager,
-#pragma warning disable IDE0060 // Remove unused parameter
-        ISystemRoleProvider systemRoleNameProvider,
-#pragma warning restore IDE0060 // Remove unused parameter
         ISystemRoleProvider systemRoleProvider,
         IEnumerable<IPermissionProvider> permissionProviders,
         ITypeFeatureProvider typeFeatureProvider,
