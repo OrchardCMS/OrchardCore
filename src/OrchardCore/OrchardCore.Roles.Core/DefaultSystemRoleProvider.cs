@@ -8,6 +8,7 @@ namespace OrchardCore.Roles;
 public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
 {
     private readonly IEnumerable<IRole> _systemRoles;
+    private readonly IRole _adminRole;
     private readonly IStringLocalizer S;
 
     public DefaultSystemRoleProvider(
@@ -28,12 +29,14 @@ public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
             adminRoleName = OrchardCoreConstants.Roles.Administrator;
         }
 
+        _adminRole = new Role
+        {
+            RoleName = adminRoleName,
+            RoleDescription = S["A system role that grants all permissions to the assigned users."]
+        };
+
         _systemRoles = [
-            new Role
-            {
-                RoleName = adminRoleName,
-                RoleDescription = S["A system role that grants all permissions to the assigned users."]
-            },
+            _adminRole,
             new Role
             {
                 RoleName = OrchardCoreConstants.Roles.Authenticated,
@@ -49,4 +52,7 @@ public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
 
     public ValueTask<IEnumerable<IRole>> GetSystemRolesAsync()
         => ValueTask.FromResult(_systemRoles);
+
+    public ValueTask<IRole> GetAdminRoleAsync()
+        => ValueTask.FromResult(_adminRole);
 }

@@ -4,13 +4,6 @@ namespace OrchardCore.Roles;
 
 public static class SystemRoleProviderExtensions
 {
-    public static async ValueTask<IRole> GetAdminRoleAsync(this ISystemRoleProvider systemRoleNameProvider)
-    {
-        var systemRoles = await systemRoleNameProvider.GetSystemRolesAsync();
-
-        return systemRoles.SingleOrDefault(role => role.RoleName.Equals(OrchardCoreConstants.Roles.Administrator, StringComparison.OrdinalIgnoreCase));
-    }
-
     public static async ValueTask<bool> IsSystemRoleAsync(this ISystemRoleProvider systemRoleNameProvider, string name)
     {
         ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));

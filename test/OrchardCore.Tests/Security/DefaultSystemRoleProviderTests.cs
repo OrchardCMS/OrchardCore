@@ -4,10 +4,10 @@ using OrchardCore.Roles;
 
 namespace OrchardCore.Tests.Security;
 
-public class DefaultSystemRoleNameProviderTests
+public class DefaultSystemRoleProviderTests
 {
     [Fact]
-    public async Task SystemRoleNamesContains_WhenConstructed_ContainsDefaultAdminRole()
+    public async Task SystemRolesContains_WhenConstructed_ContainsDefaultAdminRole()
     {
         // Arrange
         var localizer = Mock.Of<IStringLocalizer<DefaultSystemRoleProvider>>();
@@ -26,7 +26,7 @@ public class DefaultSystemRoleNameProviderTests
     }
 
     [Fact]
-    public async Task SystemRoleNamesContains_WhenConstructed_ContainsConfiguredAdminRole()
+    public async Task SystemRolesContains_WhenConstructed_ContainsConfiguredAdminRole()
     {
         // Arrange
         var localizer = Mock.Of<IStringLocalizer<DefaultSystemRoleProvider>>();
@@ -51,7 +51,7 @@ public class DefaultSystemRoleNameProviderTests
     }
 
     [Fact]
-    public async Task SystemRoleNamesContains_WhenConstructed_ContainsAppSettingsRole()
+    public async Task SystemRolesContains_WhenConstructed_ContainsAppSettingsRole()
     {
         // Arrange
         var localizer = Mock.Of<IStringLocalizer<DefaultSystemRoleProvider>>();
