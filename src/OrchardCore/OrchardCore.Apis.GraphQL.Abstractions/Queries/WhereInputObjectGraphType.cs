@@ -99,26 +99,26 @@ public abstract class WhereInputObjectGraphType<TSourceType> : InputObjectGraphT
 
     private void AddEqualityFilters(Type graphType, string fieldName, string description)
     {
-        AddFilterFields(CreateGraphType(graphType), EqualityOperators, fieldName, description);
+        AddFilterFields(graphType, EqualityOperators, fieldName, description);
     }
 
     private void AddStringFilters(Type graphType, string fieldName, string description)
     {
-        AddFilterFields(CreateGraphType(graphType), StringComparisonOperators, fieldName, description);
+        AddFilterFields(graphType, StringComparisonOperators, fieldName, description);
     }
 
     private void AddNonStringFilters(Type graphType, string fieldName, string description)
     {
-        AddFilterFields(CreateGraphType(graphType), NonStringValueComparisonOperators, fieldName, description);
+        AddFilterFields(graphType, NonStringValueComparisonOperators, fieldName, description);
     }
 
     private void AddMultiValueFilters(Type graphType, string fieldName, string description)
     {
-        AddFilterFields(CreateGraphType(graphType), MultiValueComparisonOperators, fieldName, description);
+        AddFilterFields(graphType, MultiValueComparisonOperators, fieldName, description);
     }
 
     private void AddFilterFields(
-        IGraphType resolvedType,
+        Type graphType,
         IDictionary<string, Func<IStringLocalizer, string, string>> filters,
         string fieldName,
         string description)
@@ -129,45 +129,8 @@ public abstract class WhereInputObjectGraphType<TSourceType> : InputObjectGraphT
             {
                 Name = fieldName + filter.Key,
                 Description = filter.Value(S, description),
-                ResolvedType = resolvedType,
+                Type = graphType,
             });
         }
-    }
-
-    private readonly Dictionary<Type, IGraphType> graphTypes = new();
-
-    private IGraphType CreateGraphType(Type type)
-    {
-        if (type.IsGenericType)
-        {
-            var genericDef = type.GetGenericTypeDefinition();
-            if (genericDef == typeof(ListGraphType<>))
-            {
-                var innerType = type.GetGenericArguments()[0];
-
-                return new ListGraphType(CreateGraphType(innerType));
-            }
-
-            if (genericDef == typeof(NonNullGraphType<>))
-            {
-                var innerType = type.GetGenericArguments()[0];
-
-                return new NonNullGraphType(CreateGraphType(innerType));
-            }
-        }
-
-        if (typeof(ScalarGraphType).IsAssignableFrom(type))
-        {
-            if (!graphTypes.TryGetValue(type, out var graphType))
-            {
-                graphType = (IGraphType)Activator.CreateInstance(type);
-
-                graphTypes[type] = graphType;
-            }
-
-            return graphType;
-        }
-
-        throw new InvalidOperationException($"{type.Name} is not a valid {nameof(ScalarGraphType)}.");
     }
 }
