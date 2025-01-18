@@ -1,15 +1,22 @@
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Security;
 
 namespace OrchardCore.Roles;
 
-internal sealed class DefaultSystemRoleProvider : ISystemRoleProvider
+public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
 {
     private readonly IEnumerable<IRole> _systemRoles;
+    private readonly IStringLocalizer S;
 
-    public DefaultSystemRoleProvider(ShellSettings shellSettings, IOptions<SystemRoleOptions> options)
+    public DefaultSystemRoleProvider(
+        ShellSettings shellSettings,
+        IStringLocalizer<DefaultSystemRoleProvider> localizer,
+        IOptions<SystemRoleOptions> options)
     {
+        S = localizer;
+
         var adminRoleName = shellSettings["AdminRoleName"];
         if (string.IsNullOrWhiteSpace(adminRoleName))
         {
@@ -25,17 +32,17 @@ internal sealed class DefaultSystemRoleProvider : ISystemRoleProvider
             new Role
             {
                 RoleName = adminRoleName,
-                RoleDescription = "A system role that grants all permissions to the assigned users."
+                RoleDescription = S["A system role that grants all permissions to the assigned users."]
             },
             new Role
             {
                 RoleName = OrchardCoreConstants.Roles.Authenticated,
-                RoleDescription = "A system role representing all authenticated users."
+                RoleDescription = S["A system role representing all authenticated users."]
             },
             new Role
             {
                 RoleName = OrchardCoreConstants.Roles.Anonymous,
-                RoleDescription = "A system role representing all non-authenticated users."
+                RoleDescription = S["A system role representing all non-authenticated users."]
             }
         ];
     }

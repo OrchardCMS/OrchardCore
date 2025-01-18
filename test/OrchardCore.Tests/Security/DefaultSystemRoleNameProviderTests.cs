@@ -1,4 +1,5 @@
 using OrchardCore.Environment.Shell;
+using OrchardCore.Localization;
 using OrchardCore.Roles;
 
 namespace OrchardCore.Tests.Security;
@@ -9,12 +10,13 @@ public class DefaultSystemRoleNameProviderTests
     public async Task SystemRoleNamesContains_WhenConstructed_ContainsDefaultAdminRole()
     {
         // Arrange
+        var localizer = Mock.Of<IStringLocalizer<DefaultSystemRoleProvider>>();
         var shellSettings = new ShellSettings();
         var options = new Mock<IOptions<SystemRoleOptions>>();
         options.Setup(o => o.Value)
             .Returns(new SystemRoleOptions());
 
-        var provider = new DefaultSystemRoleProvider(shellSettings, options.Object);
+        var provider = new DefaultSystemRoleProvider(shellSettings, localizer, options.Object);
 
         // Act
         var roles = await provider.GetSystemRolesAsync();
@@ -27,6 +29,7 @@ public class DefaultSystemRoleNameProviderTests
     public async Task SystemRoleNamesContains_WhenConstructed_ContainsConfiguredAdminRole()
     {
         // Arrange
+        var localizer = Mock.Of<IStringLocalizer<DefaultSystemRoleProvider>>();
         var shellSettings = new ShellSettings();
         var configureSystemAdminRoleName = "SystemAdmin";
         var options = new Mock<IOptions<SystemRoleOptions>>();
@@ -36,7 +39,7 @@ public class DefaultSystemRoleNameProviderTests
                 SystemAdminRoleName = configureSystemAdminRoleName,
             });
 
-        var provider = new DefaultSystemRoleProvider(shellSettings, options.Object);
+        var provider = new DefaultSystemRoleProvider(shellSettings, localizer, options.Object);
 
         // Act
         var roles = await provider.GetSystemRolesAsync();
@@ -51,6 +54,7 @@ public class DefaultSystemRoleNameProviderTests
     public async Task SystemRoleNamesContains_WhenConstructed_ContainsAppSettingsRole()
     {
         // Arrange
+        var localizer = Mock.Of<IStringLocalizer<DefaultSystemRoleProvider>>();
         var shellSettings = new ShellSettings();
         shellSettings["AdminRoleName"] = "Foo";
 
@@ -58,7 +62,7 @@ public class DefaultSystemRoleNameProviderTests
         options.Setup(o => o.Value)
             .Returns(new SystemRoleOptions());
 
-        var provider = new DefaultSystemRoleProvider(shellSettings, options.Object);
+        var provider = new DefaultSystemRoleProvider(shellSettings, localizer, options.Object);
 
         // Act
         var roles = await provider.GetSystemRolesAsync();
