@@ -11,7 +11,6 @@ using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 
 namespace OrchardCore.AdminDashboard.Controllers;
@@ -73,7 +72,7 @@ public sealed class DashboardController : Controller
                 wrappers.Add(new DashboardWrapper
                 {
                     Dashboard = widget,
-                    Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, _updateModelAccessor.ModelUpdater, DisplayType.DetailAdmin)
+                    Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.DetailAdmin)
                 });
             }
 
@@ -125,7 +124,7 @@ public sealed class DashboardController : Controller
             var wrapper = new DashboardWrapper
             {
                 Dashboard = widget,
-                Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, _updateModelAccessor.ModelUpdater, DisplayType.DetailAdmin)
+                Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.DetailAdmin)
             };
 
             wrappers.Add(wrapper);

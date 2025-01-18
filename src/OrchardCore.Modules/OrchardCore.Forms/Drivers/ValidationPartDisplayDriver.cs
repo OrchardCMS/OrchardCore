@@ -1,6 +1,5 @@
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
@@ -11,7 +10,7 @@ public sealed class ValidationPartDisplayDriver : ContentPartDisplayDriver<Valid
 {
     public override IDisplayResult Display(ValidationPart part, BuildPartDisplayContext context)
     {
-        return View("ValidationPart", part).Location(DisplayType.Detail, "Content");
+        return View("ValidationPart", part).Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(ValidationPart part, BuildPartEditorContext context)

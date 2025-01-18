@@ -1,5 +1,4 @@
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
@@ -11,7 +10,7 @@ public sealed class FacebookLoginDeploymentStepDriver : DisplayDriver<Deployment
     {
         return
             CombineAsync(
-                View("FacebookLoginDeploymentStep_Summary", step).Location(DisplayType.Summary, "Content"),
+                View("FacebookLoginDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("FacebookLoginDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

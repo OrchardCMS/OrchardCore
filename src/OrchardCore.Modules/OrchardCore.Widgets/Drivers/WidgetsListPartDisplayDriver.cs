@@ -8,7 +8,6 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Widgets.Models;
@@ -42,7 +41,7 @@ public sealed class WidgetsListPartDisplayDriver : ContentPartDisplayDriver<Widg
 
     public override async Task<IDisplayResult> DisplayAsync(WidgetsListPart part, BuildPartDisplayContext context)
     {
-        if (context.DisplayType != DisplayType.Detail || part.Widgets.Count == 0)
+        if (context.DisplayType != OrchardCoreConstants.DisplayType.Detail || part.Widgets.Count == 0)
         {
             return null;
         }

@@ -1,5 +1,4 @@
 using OrchardCore.Admin.Models;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
@@ -10,6 +9,6 @@ public sealed class VisitSiteNavbarDisplayDriver : DisplayDriver<Navbar>
     public override IDisplayResult Display(Navbar model, BuildDisplayContext context)
     {
         return View("VisitSiteNavbarItem", model)
-            .Location(DisplayType.DetailAdmin, "Content:20");
+            .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:20");
     }
 }

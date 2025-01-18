@@ -1,6 +1,5 @@
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
@@ -14,7 +13,7 @@ public sealed class FormContentDisplayDriver : ContentDisplayDriver
         var formItemShape = context.Shape;
         // If the content item contains FormPart add Form Wrapper only in Display type Detail
         var formPart = model.As<FormPart>();
-        if (formPart != null && context.DisplayType == DisplayType.Detail)
+        if (formPart != null && context.DisplayType == OrchardCoreConstants.DisplayType.Detail)
         {
             // Add wrapper for content type if template is not available it will fall back to Form_Wrapper
             formItemShape.Metadata.Wrappers.Add($"Form_Wrapper__{model.ContentType}");

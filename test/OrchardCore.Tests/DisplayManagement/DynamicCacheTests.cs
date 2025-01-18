@@ -122,7 +122,7 @@ public class DynamicCacheTests
 
         var contentShape = await factory.CreateAsync("Content");
 
-        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, DisplayType.Detail, "", factory, null, null));
+        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
 
         var result = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
 
@@ -179,7 +179,7 @@ public class DynamicCacheTests
 
         var shapeResult = CreateShapeResult();
         var contentShape = await factory.CreateAsync("Content");
-        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, DisplayType.Detail, "", factory, null, null));
+        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
 
         // Shape is created and initialized.
         Assert.Equal(7, ((MyModel)shapeResult.Shape).MyProperty);
@@ -197,7 +197,7 @@ public class DynamicCacheTests
             // Create new ShapeResult.
             shapeResult = CreateShapeResult();
             contentShape = await factory.CreateAsync("Content");
-            await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, DisplayType.Detail, "", factory, null, null));
+            await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
 
             result = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
 
@@ -215,7 +215,7 @@ public class DynamicCacheTests
         // Create new ShapeResult.
         shapeResult = CreateShapeResult();
         contentShape = await factory.CreateAsync("Content");
-        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, DisplayType.Detail, "", factory, null, null));
+        await shapeResult.ApplyAsync(new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null));
 
         result = await displayManager.ExecuteAsync(CreateDisplayContext(shapeResult.Shape));
 
@@ -239,7 +239,7 @@ public class DynamicCacheTests
         {
             var contentItem = new ContentItem();
             var contentShape = await factory.CreateAsync("Content");
-            var buildDisplayContext = new BuildDisplayContext(contentShape, DisplayType.Detail, "", factory, null, null);
+            var buildDisplayContext = new BuildDisplayContext(contentShape, OrchardCoreConstants.DisplayType.Detail, "", factory, null, null);
             var driverResult = new MyDisplayDriver().Display(contentItem, buildDisplayContext);
             await driverResult.ApplyAsync(buildDisplayContext);
 

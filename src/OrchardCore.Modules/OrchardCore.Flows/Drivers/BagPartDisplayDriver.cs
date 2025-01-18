@@ -11,7 +11,6 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Flows.Models;
@@ -63,8 +62,8 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
             m.BuildPartDisplayContext = context;
             m.Settings = context.TypePartDefinition.GetSettings<BagPartSettings>();
         })
-        .Location(DisplayType.Detail, "Content")
-        .Location(DisplayType.Summary, "Content");
+        .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
+        .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }
 
     public override IDisplayResult Edit(BagPart bagPart, BuildPartEditorContext context)

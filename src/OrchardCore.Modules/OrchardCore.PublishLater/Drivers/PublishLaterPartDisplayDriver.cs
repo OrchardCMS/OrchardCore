@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.Contents;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Modules;
 using OrchardCore.PublishLater.Models;
@@ -31,7 +30,7 @@ public sealed class PublishLaterPartDisplayDriver : ContentPartDisplayDriver<Pub
     {
         return Initialize<PublishLaterPartViewModel>($"{nameof(PublishLaterPart)}_SummaryAdmin",
             model => PopulateViewModel(part, model))
-            .Location(DisplayType.SummaryAdmin, "Meta:25");
+            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:25");
     }
 
     public override IDisplayResult Edit(PublishLaterPart part, BuildPartEditorContext context)

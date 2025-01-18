@@ -1,6 +1,5 @@
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Lists.Models;
 
@@ -14,7 +13,7 @@ public sealed class ListPartFeedDisplayDriver : ContentPartDisplayDriver<ListPar
         {
             shape.ContentItem = listPart.ContentItem;
         })
-        .Location(DisplayType.Detail, "Content");
+        .Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(ListPart part, BuildPartEditorContext context)

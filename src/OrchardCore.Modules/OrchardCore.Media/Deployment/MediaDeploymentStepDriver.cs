@@ -1,5 +1,4 @@
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Media.ViewModels;
@@ -19,7 +18,7 @@ public sealed class MediaDeploymentStepDriver : DisplayDriver<DeploymentStep, Me
     {
         return
             CombineAsync(
-                View("MediaDeploymentStep_Fields_Summary", step).Location(DisplayType.Summary, "Content"),
+                View("MediaDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("MediaDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

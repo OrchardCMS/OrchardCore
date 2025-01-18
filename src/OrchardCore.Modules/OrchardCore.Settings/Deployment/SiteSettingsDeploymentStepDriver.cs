@@ -1,5 +1,4 @@
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings.ViewModels;
@@ -12,7 +11,7 @@ public sealed class SiteSettingsDeploymentStepDriver : DisplayDriver<DeploymentS
     {
         return
             CombineAsync(
-                View("SiteSettingsDeploymentStep_Fields_Summary", step).Location(DisplayType.Summary, "Content"),
+                View("SiteSettingsDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("SiteSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

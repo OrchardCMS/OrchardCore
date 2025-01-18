@@ -51,7 +51,7 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
             m.FlowPart = flowPart;
             m.BuildPartDisplayContext = context;
         })
-        .Location(DisplayType.Detail, "Content");
+        .Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(FlowPart flowPart, BuildPartEditorContext context)

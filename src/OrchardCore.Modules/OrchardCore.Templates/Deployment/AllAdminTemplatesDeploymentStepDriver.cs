@@ -1,5 +1,4 @@
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Templates.ViewModels;
@@ -12,7 +11,7 @@ public sealed class AllAdminTemplatesDeploymentStepDriver : DisplayDriver<Deploy
     {
         return
             CombineAsync(
-                View("AllAdminTemplatesDeploymentStep_Summary", step).Location(DisplayType.Summary, "Content"),
+                View("AllAdminTemplatesDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("AllAdminTemplatesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

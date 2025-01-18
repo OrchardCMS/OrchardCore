@@ -1,4 +1,3 @@
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.ViewModels;
@@ -10,12 +9,12 @@ public sealed class RuleDisplayDriver : DisplayDriver<Rule>
     public override Task<IDisplayResult> DisplayAsync(Rule rule, BuildDisplayContext context)
     {
         return CombineAsync(
-            View("Rule_Fields_Summary", rule).Location(DisplayType.Summary, "Content"),
+            View("Rule_Fields_Summary", rule).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
             Initialize<ConditionGroupViewModel>("ConditionGroup_Fields_Summary", m =>
             {
                 m.Entries = rule.Conditions.Select(x => new ConditionEntry { Condition = x }).ToArray();
                 m.Condition = rule;
-            }).Location(DisplayType.Summary, "Content")
+            }).Location(OrchardCoreConstants.DisplayType.Summary, "Content")
         );
     }
 }

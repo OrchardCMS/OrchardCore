@@ -2,7 +2,6 @@ using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using OrchardCore.Admin.Models;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Localization.ViewModels;
@@ -35,6 +34,6 @@ public sealed class AdminCulturePickerNavbarDisplayDriver : DisplayDriver<Navbar
             .Get<IRequestCultureFeature>()?.RequestCulture?.Culture ?? CultureInfo.CurrentUICulture;
 
         }).RenderWhen(() => Task.FromResult(supportedCultures.Count() > 1))
-        .Location(DisplayType.DetailAdmin, "Content:5");
+        .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:5");
     }
 }

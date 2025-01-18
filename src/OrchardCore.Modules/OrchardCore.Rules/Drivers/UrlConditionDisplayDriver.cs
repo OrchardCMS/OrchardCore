@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
@@ -20,7 +19,7 @@ public sealed class UrlConditionDisplayDriver : DisplayDriver<Condition, UrlCond
     {
         return
             CombineAsync(
-                View("UrlCondition_Fields_Summary", condition).Location(DisplayType.Summary, "Content"),
+                View("UrlCondition_Fields_Summary", condition).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("UrlCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
             );
     }

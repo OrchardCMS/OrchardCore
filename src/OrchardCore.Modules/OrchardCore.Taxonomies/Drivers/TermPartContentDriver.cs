@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -43,7 +42,7 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
                 m.ContentItem = part.ContentItem;
                 m.ContentItems = (await QueryTermItemsAsync(part, pager)).ToArray();
                 m.Pager = await context.New.PagerSlim(pager);
-            }).Location(DisplayType.Detail, "Content:5");
+            }).Location(OrchardCoreConstants.DisplayType.Detail, "Content:5");
         }
 
         return null;

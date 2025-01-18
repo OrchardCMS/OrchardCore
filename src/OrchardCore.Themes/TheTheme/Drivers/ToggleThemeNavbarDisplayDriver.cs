@@ -1,5 +1,5 @@
+using OrchardCore;
 using OrchardCore.Admin.Models;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Themes.Services;
@@ -19,6 +19,6 @@ public sealed class ToggleThemeNavbarDisplayDriver : DisplayDriver<Navbar>
     {
         return View("ToggleTheme", model)
             .RenderWhen(async () => await _siteThemeService.GetSiteThemeNameAsync() == "TheTheme")
-            .Location(DisplayType.Detail, "Content:10");
+            .Location(OrchardCoreConstants.DisplayType.Detail, "Content:10");
     }
 }

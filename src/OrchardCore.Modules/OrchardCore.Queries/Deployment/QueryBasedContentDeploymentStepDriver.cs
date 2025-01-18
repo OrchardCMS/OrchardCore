@@ -1,7 +1,6 @@
 using System.Text.Json;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
@@ -27,7 +26,7 @@ public sealed class QueryBasedContentDeploymentStepDriver : DisplayDriver<Deploy
     {
         return
             CombineAsync(
-                View("QueryBasedContentDeploymentStep_Fields_Summary", step).Location(DisplayType.Summary, "Content"),
+                View("QueryBasedContentDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("QueryBasedContentDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

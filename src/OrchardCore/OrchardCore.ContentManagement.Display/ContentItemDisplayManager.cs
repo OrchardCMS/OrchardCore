@@ -52,7 +52,7 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
         var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType)
             ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
-        var actualDisplayType = string.IsNullOrEmpty(displayType) ? DisplayType.Detail : displayType;
+        var actualDisplayType = string.IsNullOrEmpty(displayType) ? OrchardCoreConstants.DisplayType.Detail : displayType;
         var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
 
         var actualShapeType = "Content";
@@ -63,7 +63,7 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
         }
 
         // [DisplayType] is only added for the ones different than Detail
-        if (actualDisplayType != DisplayType.Detail)
+        if (actualDisplayType != OrchardCoreConstants.DisplayType.Detail)
         {
             actualShapeType = actualShapeType + "_" + actualDisplayType;
         }
@@ -77,7 +77,7 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
 
         if (hasStereotype)
         {
-            if (actualDisplayType != DisplayType.Detail)
+            if (actualDisplayType != OrchardCoreConstants.DisplayType.Detail)
             {
                 // Add fallback/default alternate Stereotype_[DisplayType] e.g. Content.Summary
                 metadata.Alternates.Add($"Stereotype_{actualDisplayType}");

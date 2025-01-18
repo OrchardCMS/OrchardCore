@@ -491,7 +491,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
                 IsEnabled = providers.Contains(key),
             };
 
-            var shape = await _twoFactorDisplayManager.BuildDisplayAsync(method, this, DisplayType.SummaryAdmin);
+            var shape = await _twoFactorDisplayManager.BuildDisplayAsync(method, this, OrchardCoreConstants.DisplayType.SummaryAdmin);
 
             model.AuthenticationMethods.Add(shape);
         }

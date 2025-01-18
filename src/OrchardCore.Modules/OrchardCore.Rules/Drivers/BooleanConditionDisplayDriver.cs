@@ -1,4 +1,3 @@
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
@@ -12,7 +11,7 @@ public sealed class BooleanConditionDisplayDriver : DisplayDriver<Condition, Boo
     {
         return
             CombineAsync(
-                View("BooleanCondition_Fields_Summary", condition).Location(DisplayType.Summary, "Content"),
+                View("BooleanCondition_Fields_Summary", condition).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("BooleanCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
             );
     }

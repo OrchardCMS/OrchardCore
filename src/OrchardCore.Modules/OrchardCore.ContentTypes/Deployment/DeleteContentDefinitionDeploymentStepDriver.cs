@@ -14,7 +14,7 @@ public sealed class DeleteContentDefinitionDeploymentStepDriver : DisplayDriver<
     {
         return
             CombineAsync(
-                View("DeleteContentDefinitionDeploymentStep_Fields_Summary", step).Location(DisplayType.Summary, "Content"),
+                View("DeleteContentDefinitionDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("DeleteContentDefinitionDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

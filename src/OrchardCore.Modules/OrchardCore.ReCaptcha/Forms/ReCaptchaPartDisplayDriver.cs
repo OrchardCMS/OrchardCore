@@ -1,6 +1,5 @@
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.Settings;
@@ -22,7 +21,7 @@ public sealed class ReCaptchaPartDisplayDriver : ContentPartDisplayDriver<ReCapt
         {
             var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
             model.SettingsAreConfigured = settings.ConfigurationExists();
-        }).Location(DisplayType.Detail, "Content");
+        }).Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(ReCaptchaPart part, BuildPartEditorContext context)

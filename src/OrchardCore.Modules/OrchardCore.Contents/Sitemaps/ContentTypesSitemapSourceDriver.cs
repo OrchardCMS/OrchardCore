@@ -1,4 +1,3 @@
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Sitemaps.Models;
@@ -18,7 +17,7 @@ public sealed class ContentTypesSitemapSourceDriver : DisplayDriver<SitemapSourc
     public override Task<IDisplayResult> DisplayAsync(ContentTypesSitemapSource sitemapSource, BuildDisplayContext context)
     {
         return CombineAsync(
-            View("ContentTypesSitemapSource_SummaryAdmin", sitemapSource).Location(DisplayType.SummaryAdmin, "Content"),
+            View("ContentTypesSitemapSource_SummaryAdmin", sitemapSource).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content"),
             View("ContentTypesSitemapSource_Thumbnail", sitemapSource).Location("Thumbnail", "Content")
         );
     }

@@ -2,7 +2,6 @@ using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.ViewModels;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
@@ -23,13 +22,13 @@ public sealed class AuditTrailEventDisplayDriver : DisplayDriver<AuditTrailEvent
 
         return CombineAsync(
             Initialize<AuditTrailEventViewModel>("AuditTrailEventTags_SummaryAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
-                .Location(DisplayType.SummaryAdmin, "EventTags:10"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "EventTags:10"),
             Initialize<AuditTrailEventViewModel>("AuditTrailEventMeta_SummaryAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
-                .Location(DisplayType.SummaryAdmin, "EventMeta:10"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "EventMeta:10"),
             Initialize<AuditTrailEventViewModel>("AuditTrailEventActions_SummaryAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
-                .Location(DisplayType.SummaryAdmin, "Actions:10"),
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:10"),
             Initialize<AuditTrailEventViewModel>("AuditTrailEventDetail_DetailAdmin", model => BuildViewModel(auditTrailEvent, model, descriptor))
-                .Location(DisplayType.DetailAdmin, "Content:before")
+                .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:before")
         );
     }
 

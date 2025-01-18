@@ -1,5 +1,4 @@
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Services;
@@ -19,7 +18,7 @@ public sealed class CustomUserSettingsDeploymentStepDriver : DisplayDriver<Deplo
     public override Task<IDisplayResult> DisplayAsync(CustomUserSettingsDeploymentStep step, BuildDisplayContext context)
     {
         return CombineAsync(
-                View("CustomUserSettingsDeploymentStep_Fields_Summary", step).Location(DisplayType.Summary, "Content"),
+                View("CustomUserSettingsDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("CustomUserSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content"));
     }
 

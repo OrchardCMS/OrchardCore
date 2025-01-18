@@ -12,7 +12,7 @@ public sealed class ContentDefinitionDeploymentStepDriver : DisplayDriver<Deploy
     {
         return
             CombineAsync(
-                View("ContentDefinitionDeploymentStep_Fields_Summary", step).Location(DisplayType.Summary, "Content"),
+                View("ContentDefinitionDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("ContentDefinitionDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

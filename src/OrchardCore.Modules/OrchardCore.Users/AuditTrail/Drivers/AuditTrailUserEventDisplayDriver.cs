@@ -1,6 +1,5 @@
 using OrchardCore.AuditTrail.Drivers;
 using OrchardCore.AuditTrail.Models;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.AuditTrail.Models;
@@ -16,6 +15,6 @@ public sealed class AuditTrailUserEventDisplayDriver : AuditTrailEventSectionDis
         {
             m.AuditTrailEvent = auditTrailEvent;
             m.UserEvent = userEvent;
-        }).Location(DisplayType.DetailAdmin, "Content:10");
+        }).Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:10");
     }
 }

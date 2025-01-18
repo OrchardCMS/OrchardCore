@@ -4,7 +4,6 @@ using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Localization;
@@ -31,8 +30,8 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
     public override IDisplayResult Display(LocalizationPart part, BuildPartDisplayContext context)
     {
         return Combine(
-            Initialize<LocalizationPartViewModel>("LocalizationPart_SummaryAdmin", model => BuildViewModelAsync(model, part)).Location(DisplayType.SummaryAdmin, "Tags:11"),
-            Initialize<LocalizationPartViewModel>("LocalizationPart_SummaryAdminLinks", model => BuildViewModelAsync(model, part)).Location(DisplayType.SummaryAdmin, "Actions:5")
+            Initialize<LocalizationPartViewModel>("LocalizationPart_SummaryAdmin", model => BuildViewModelAsync(model, part)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Tags:11"),
+            Initialize<LocalizationPartViewModel>("LocalizationPart_SummaryAdminLinks", model => BuildViewModelAsync(model, part)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:5")
         );
     }
 

@@ -4,7 +4,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.Contents;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
@@ -98,7 +97,7 @@ public sealed class DashboardContentDisplayDriver : ContentDisplayDriver
         var shapeTag = Initialize<ContentItemViewModel>("DashboardWidget_DetailAdmin__ContentsTags", m =>
         {
             m.ContentItem = model;
-        }).Location(DisplayType.DetailAdmin, "Tags:10");
+        }).Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Tags:10");
         results.Add(shapeTag);
 
         return Combine(results.ToArray());

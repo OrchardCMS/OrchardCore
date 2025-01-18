@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
@@ -25,7 +24,7 @@ public sealed class ContentItemDeploymentStepDriver : DisplayDriver<DeploymentSt
     {
         return
             CombineAsync(
-                View("ContentItemDeploymentStep_Fields_Summary", step).Location(DisplayType.Summary, "Content"),
+                View("ContentItemDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("ContentItemDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

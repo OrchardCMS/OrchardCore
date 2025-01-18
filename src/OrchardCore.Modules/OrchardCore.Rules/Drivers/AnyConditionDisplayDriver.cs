@@ -1,4 +1,3 @@
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Rules.Models;
@@ -12,13 +11,13 @@ public sealed class AnyConditionDisplayDriver : DisplayDriver<Condition, AnyCond
     {
         return
             CombineAsync(
-                View("AnyCondition_Fields_Summary", condition).Location(DisplayType.Summary, "Content"),
+                View("AnyCondition_Fields_Summary", condition).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("AnyCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content"),
                 Initialize<ConditionGroupViewModel>("ConditionGroup_Fields_Summary", m =>
                 {
                     m.Entries = condition.Conditions.Select(x => new ConditionEntry { Condition = x }).ToArray();
                     m.Condition = condition;
-                }).Location(DisplayType.Summary, "Content")
+                }).Location(OrchardCoreConstants.DisplayType.Summary, "Content")
             );
     }
 

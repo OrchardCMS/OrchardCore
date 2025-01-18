@@ -1,5 +1,4 @@
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings.ViewModels;
@@ -21,7 +20,7 @@ public class SiteSettingsPropertyDeploymentStepDriver<TModel> : DisplayDriver<De
     {
         return CombineAsync(
                 Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Summary", m => BuildViewModel(m))
-                    .Location(DisplayType.Summary, "Content"),
+                    .Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Thumbnail", m => BuildViewModel(m))
                     .Location("Thumbnail", "Content")
             );

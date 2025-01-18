@@ -1,5 +1,4 @@
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
@@ -11,7 +10,7 @@ public sealed class OpenIdValidationDeploymentStepDriver : DisplayDriver<Deploym
     {
         return
             CombineAsync(
-                View("OpenIdValidationDeploymentStep_Summary", step).Location(DisplayType.Summary, "Content"),
+                View("OpenIdValidationDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("OpenIdValidationDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

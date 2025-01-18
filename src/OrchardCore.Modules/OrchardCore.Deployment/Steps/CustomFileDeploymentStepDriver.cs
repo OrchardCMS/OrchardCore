@@ -11,7 +11,7 @@ public sealed class CustomFileDeploymentStepDriver : DisplayDriver<DeploymentSte
     {
         return
             CombineAsync(
-                View("CustomFileDeploymentStep_Fields_Summary", step).Location(DisplayType.Summary, "Content"),
+                View("CustomFileDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("CustomFileDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }
