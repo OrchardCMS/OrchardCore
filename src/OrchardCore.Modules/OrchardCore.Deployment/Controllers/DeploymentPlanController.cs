@@ -169,7 +169,7 @@ public sealed class DeploymentPlanController : Controller
         var items = new List<dynamic>();
         foreach (var step in deploymentPlan.DeploymentSteps)
         {
-            var item = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, "Summary");
+            var item = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.Summary);
             item.Properties["DeploymentStep"] = step;
             items.Add(item);
         }

@@ -62,8 +62,8 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
             m.BuildPartDisplayContext = context;
             m.Settings = context.TypePartDefinition.GetSettings<BagPartSettings>();
         })
-        .Location("Detail", "Content")
-        .Location("Summary", "Content");
+        .Location(OrchardCoreConstants.DisplayType.Detail, "Content")
+        .Location(OrchardCoreConstants.DisplayType.Summary, "Content");
     }
 
     public override IDisplayResult Edit(BagPart bagPart, BuildPartEditorContext context)
