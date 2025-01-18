@@ -27,11 +27,9 @@ public sealed class SystemRolesMigrations : DataMigration
 
         foreach (var systemRole in systemRoles)
         {
-            var role = await _roleManager.FindByNameAsync(systemRole.RoleName);
-
-            if (role is null)
+            if (!await _roleManager.RoleExistsAsync(systemRole.RoleName))
             {
-                await _roleManager.CreateAsync(role);
+                await _roleManager.CreateAsync(systemRole);
             }
         }
 
