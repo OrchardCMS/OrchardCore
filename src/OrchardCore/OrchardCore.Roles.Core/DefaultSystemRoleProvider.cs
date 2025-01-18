@@ -13,10 +13,10 @@ public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
 
     public DefaultSystemRoleProvider(
         ShellSettings shellSettings,
-        IStringLocalizer<DefaultSystemRoleProvider> localizer,
+        IStringLocalizer<DefaultSystemRoleProvider> stringLocalizer,
         IOptions<SystemRoleOptions> options)
     {
-        S = localizer;
+        S = stringLocalizer;
 
         var adminRoleName = shellSettings["AdminRoleName"];
         if (string.IsNullOrWhiteSpace(adminRoleName))
