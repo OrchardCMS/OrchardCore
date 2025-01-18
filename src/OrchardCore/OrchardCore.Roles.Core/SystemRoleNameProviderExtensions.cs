@@ -1,10 +1,9 @@
 namespace OrchardCore.Roles;
 
+[Obsolete("This class has been deprecated, please use SystemRoleProviderExtensions instead.")]
 public static class SystemRoleNameProviderExtensions
 {
-#pragma warning disable CS0618 // Type or member is obsolete
     public static async ValueTask<bool> IsAdminRoleAsync(this ISystemRoleNameProvider provider, string roleName)
-#pragma warning restore CS0618 // Type or member is obsolete
     {
         ArgumentNullException.ThrowIfNull(roleName);
 
@@ -13,9 +12,7 @@ public static class SystemRoleNameProviderExtensions
         return roleName.Equals(adminRole, StringComparison.OrdinalIgnoreCase);
     }
 
-#pragma warning disable CS0618 // Type or member is obsolete
     public static async ValueTask<bool> IsSystemRoleAsync(this ISystemRoleNameProvider provider, string roleName)
-#pragma warning restore CS0618 // Type or member is obsolete
     {
         ArgumentNullException.ThrowIfNull(roleName);
 
