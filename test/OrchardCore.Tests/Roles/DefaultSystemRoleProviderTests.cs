@@ -1,13 +1,11 @@
 using OrchardCore.Environment.Shell;
-using OrchardCore.Localization;
-using OrchardCore.Roles;
 
-namespace OrchardCore.Tests.Security;
+namespace OrchardCore.Roles.Tests;
 
 public class DefaultSystemRoleProviderTests
 {
     [Fact]
-    public async Task SystemRolesContains_WhenConstructed_ContainsDefaultAdminRole()
+    public async Task GetSystemRoles_Have_Administrator_Authenticated_Anonymous()
     {
         // Arrange
         var localizer = Mock.Of<IStringLocalizer<DefaultSystemRoleProvider>>();
@@ -22,11 +20,14 @@ public class DefaultSystemRoleProviderTests
         var roles = await provider.GetSystemRolesAsync();
 
         // Assert
-        Assert.Contains(OrchardCoreConstants.Roles.Administrator, roles.Select(r => r.RoleName));
+        var roleNames = roles.Select(r => r.RoleName);
+        Assert.Contains(OrchardCoreConstants.Roles.Administrator, roleNames);
+        Assert.Contains(OrchardCoreConstants.Roles.Authenticated, roleNames);
+        Assert.Contains(OrchardCoreConstants.Roles.Anonymous, roleNames);
     }
 
     [Fact]
-    public async Task SystemRolesContains_WhenConstructed_ContainsConfiguredAdminRole()
+    public async Task GetAdminRole_FromConfiguredAdminRole()
     {
         // Arrange
         var localizer = Mock.Of<IStringLocalizer<DefaultSystemRoleProvider>>();
@@ -42,21 +43,21 @@ public class DefaultSystemRoleProviderTests
         var provider = new DefaultSystemRoleProvider(shellSettings, localizer, options.Object);
 
         // Act
-        var roles = await provider.GetSystemRolesAsync();
+        var role = await provider.GetAdminRoleAsync();
 
         // Assert
-        var roleNames = roles.Select(r => r.RoleName);
-        Assert.Contains(configureSystemAdminRoleName, roleNames);
-        Assert.DoesNotContain(OrchardCoreConstants.Roles.Administrator, roleNames);
+        Assert.Equal(configureSystemAdminRoleName, role.RoleName);
+        Assert.NotEqual(OrchardCoreConstants.Roles.Administrator, role.RoleName);
     }
 
     [Fact]
-    public async Task SystemRolesContains_WhenConstructed_ContainsAppSettingsRole()
+    public async Task GetAdminRole_FromAppSettings()
     {
         // Arrange
+        var adminRoleName = "Foo";
         var localizer = Mock.Of<IStringLocalizer<DefaultSystemRoleProvider>>();
         var shellSettings = new ShellSettings();
-        shellSettings["AdminRoleName"] = "Foo";
+        shellSettings["AdminRoleName"] = adminRoleName;
 
         var options = new Mock<IOptions<SystemRoleOptions>>();
         options.Setup(o => o.Value)
@@ -65,11 +66,10 @@ public class DefaultSystemRoleProviderTests
         var provider = new DefaultSystemRoleProvider(shellSettings, localizer, options.Object);
 
         // Act
-        var roles = await provider.GetSystemRolesAsync();
+        var role = await provider.GetAdminRoleAsync();
 
         // Assert
-        var roleNames = roles.Select(r => r.RoleName);
-        Assert.DoesNotContain(OrchardCoreConstants.Roles.Administrator, roleNames);
-        Assert.Contains("Foo", roleNames);
+        Assert.Equal(adminRoleName, role.RoleName);
+        Assert.NotEqual(OrchardCoreConstants.Roles.Administrator, role.RoleName);
     }
 }
