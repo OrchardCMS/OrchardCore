@@ -26,7 +26,7 @@ public sealed class QueryBasedContentDeploymentStepDriver : DisplayDriver<Deploy
     {
         return
             CombineAsync(
-                View("QueryBasedContentDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("QueryBasedContentDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("QueryBasedContentDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

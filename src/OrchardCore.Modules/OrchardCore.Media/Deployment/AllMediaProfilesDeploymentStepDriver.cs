@@ -10,7 +10,7 @@ public sealed class AllMediaProfilesDeploymentStepDriver : DisplayDriver<Deploym
     {
         return
             CombineAsync(
-                View("AllMediaProfilesDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("AllMediaProfilesDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("AllMediaProfilesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }
