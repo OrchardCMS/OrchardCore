@@ -3,6 +3,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Taxonomies.Models;
@@ -27,7 +28,7 @@ public sealed class TaxonomyPartDisplayDriver : ContentPartDisplayDriver<Taxonom
         {
             m.ContentItem = part.ContentItem;
             m.TaxonomyPart = part;
-        }).Location("Detail", "Content");
+        }).Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(TaxonomyPart part, BuildPartEditorContext context)

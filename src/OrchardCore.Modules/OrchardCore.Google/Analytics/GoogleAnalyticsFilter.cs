@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -12,15 +13,23 @@ public sealed class GoogleAnalyticsFilter : IAsyncResultFilter
 {
     private readonly IResourceManager _resourceManager;
     private readonly ISiteService _siteService;
+    private readonly JavaScriptEncoder _jsEncoder;
+    private readonly UrlEncoder _urlEncoder;
 
-    private HtmlString _scriptsCache;
+    private static readonly HtmlString _preamble = new($"<!-- Global site tag (gtag.js) - Google Analytics -->\n<script async src=\"https://www.googletagmanager.com/gtag/js?id=");
+    private static readonly HtmlString _middle = new HtmlString($"\"></script>\n<script>window.dataLayer = window.dataLayer || [];function gtag() {{ dataLayer.push(arguments); }}gtag('js', new Date());gtag('config', '");
+    private static readonly HtmlString _end = new HtmlString($"')</script>\n<!-- End Global site tag (gtag.js) - Google Analytics -->");
 
     public GoogleAnalyticsFilter(
         IResourceManager resourceManager,
-        ISiteService siteService)
+        ISiteService siteService,
+        JavaScriptEncoder jsEncoder,
+        UrlEncoder urlEncoder)
     {
         _resourceManager = resourceManager;
         _siteService = siteService;
+        _jsEncoder = jsEncoder;
+        _urlEncoder = urlEncoder;
     }
 
     public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
@@ -30,19 +39,14 @@ public sealed class GoogleAnalyticsFilter : IAsyncResultFilter
         {
             var canTrack = context.HttpContext.Features.Get<ITrackingConsentFeature>()?.CanTrack ?? true;
 
-            if (_scriptsCache == null && canTrack)
+            if (canTrack)
             {
                 var settings = await _siteService.GetSettingsAsync<GoogleAnalyticsSettings>();
 
-                if (!string.IsNullOrWhiteSpace(settings?.TrackingID))
+                if (settings is not null)
                 {
-                    _scriptsCache = new HtmlString($"<!-- Global site tag (gtag.js) - Google Analytics -->\n<script async src=\"https://www.googletagmanager.com/gtag/js?id={settings.TrackingID}\"></script>\n<script>window.dataLayer = window.dataLayer || [];function gtag() {{ dataLayer.push(arguments); }}gtag('js', new Date());gtag('config', '{settings.TrackingID}')</script>\n<!-- End Global site tag (gtag.js) - Google Analytics -->");
+                    _resourceManager.RegisterHeadScript(new HtmlContentBuilder([_preamble, _urlEncoder.Encode(settings.TrackingID), _middle, _jsEncoder.Encode(settings.TrackingID), _end]));
                 }
-            }
-
-            if (_scriptsCache != null)
-            {
-                _resourceManager.RegisterHeadScript(_scriptsCache);
             }
         }
 

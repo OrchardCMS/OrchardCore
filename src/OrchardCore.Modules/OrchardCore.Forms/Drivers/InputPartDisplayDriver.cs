@@ -10,7 +10,7 @@ public sealed class InputPartDisplayDriver : ContentPartDisplayDriver<InputPart>
 {
     public override IDisplayResult Display(InputPart part, BuildPartDisplayContext context)
     {
-        return View("InputPart", part).Location("Detail", "Content");
+        return View("InputPart", part).Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(InputPart part, BuildPartEditorContext context)
