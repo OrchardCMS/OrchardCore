@@ -59,7 +59,7 @@ public sealed class RolesStep : NamedRecipeStepHandler
                     r.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
                 }
 
-                if (!await _systemRoleProvider.IsAdminRoleAsync(roleName))
+                if (!_systemRoleProvider.IsAdminRole(roleName))
                 {
                     if (roleEntry.PermissionBehavior == PermissionBehavior.Remove)
                     {

@@ -39,7 +39,7 @@ public class RoleClaimsProvider : IUserClaimsProvider
 
         foreach (var roleName in roleNames)
         {
-            if (await _systemRoleProvider.IsAdminRoleAsync(roleName))
+            if (_systemRoleProvider.IsAdminRole(roleName))
             {
                 isAdministrator = true;
                 break;

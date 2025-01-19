@@ -50,8 +50,8 @@ public class RoleService : IRoleService
     }
 
     public ValueTask<bool> IsAdminRoleAsync(string role)
-        => _systemRoleProvider.IsAdminRoleAsync(role);
+        => ValueTask.FromResult(_systemRoleProvider.IsAdminRole(role));
 
     public ValueTask<bool> IsSystemRoleAsync(string role)
-         => _systemRoleProvider.IsSystemRoleAsync(role);
+         => ValueTask.FromResult(_systemRoleProvider.IsSystemRole(role));
 }

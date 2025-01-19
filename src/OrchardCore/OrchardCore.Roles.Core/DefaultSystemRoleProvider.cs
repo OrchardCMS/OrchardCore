@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
@@ -7,7 +8,7 @@ namespace OrchardCore.Roles;
 
 public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
 {
-    private readonly IEnumerable<IRole> _systemRoles;
+    private readonly FrozenDictionary<string, IRole> _systemRoles;
     private readonly IRole _adminRole;
     private readonly IStringLocalizer S;
 
@@ -35,24 +36,35 @@ public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
             RoleDescription = S["A system role that grants all permissions to the assigned users."]
         };
 
-        _systemRoles = [
-            _adminRole,
-            new Role
+        _systemRoles = new Dictionary<string, IRole>()
+        {
+            { _adminRole.RoleName, _adminRole },
             {
-                RoleName = OrchardCoreConstants.Roles.Authenticated,
-                RoleDescription = S["A system role representing all authenticated users."]
+                OrchardCoreConstants.Roles.Authenticated, new Role
+                {
+                    RoleName = OrchardCoreConstants.Roles.Authenticated,
+                    RoleDescription = S["A system role representing all authenticated users."]
+                }
             },
-            new Role
             {
-                RoleName = OrchardCoreConstants.Roles.Anonymous,
-                RoleDescription = S["A system role representing all non-authenticated users."]
+                OrchardCoreConstants.Roles.Anonymous, new Role
+                {
+                    RoleName = OrchardCoreConstants.Roles.Anonymous,
+                    RoleDescription = S["A system role representing all non-authenticated users."]
+                }
             }
-        ];
+        }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
     }
 
-    public ValueTask<IEnumerable<IRole>> GetSystemRolesAsync()
-        => ValueTask.FromResult(_systemRoles);
+    public IEnumerable<IRole> GetSystemRoles()
+        => _systemRoles.Values.AsEnumerable<IRole>();
 
-    public ValueTask<IRole> GetAdminRoleAsync()
-        => ValueTask.FromResult(_adminRole);
+    public IRole GetAdminRole() => _adminRole;
+
+    public bool IsSystemRole(string roleName)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(roleName, nameof(roleName));
+
+        return _systemRoles.ContainsKey(roleName);
+    }
 }

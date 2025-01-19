@@ -23,7 +23,7 @@ public sealed class SystemRolesMigrations : DataMigration
 
     public async Task<int> CreateAsync()
     {
-        var systemRoles = await _systemRoleProvider.GetSystemRolesAsync();
+        var systemRoles = _systemRoleProvider.GetSystemRoles();
 
         foreach (var systemRole in systemRoles)
         {

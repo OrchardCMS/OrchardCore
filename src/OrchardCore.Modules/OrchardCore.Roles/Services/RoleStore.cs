@@ -91,7 +91,7 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
             });
         }
 
-        if (await _systemRoleProvider.IsSystemRoleAsync(roleToRemove.RoleName))
+        if (_systemRoleProvider.IsSystemRole(roleToRemove.RoleName))
         {
             return IdentityResult.Failed(new IdentityError
             {

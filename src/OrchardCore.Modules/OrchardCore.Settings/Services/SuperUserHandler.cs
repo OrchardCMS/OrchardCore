@@ -30,7 +30,7 @@ public class SuperUserHandler : IAuthorizationHandler
             return;
         }
 
-        var adminRole = await _systemRoleProvider.GetAdminRoleAsync();
+        var adminRole = _systemRoleProvider.GetAdminRole();
 
         if (user.IsInRole(adminRole.RoleName))
         {

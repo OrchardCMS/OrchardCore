@@ -4,7 +4,9 @@ namespace OrchardCore.Roles;
 
 public interface ISystemRoleProvider
 {
-    ValueTask<IEnumerable<IRole>> GetSystemRolesAsync();
+    IEnumerable<IRole> GetSystemRoles();
 
-    ValueTask<IRole> GetAdminRoleAsync();
+    IRole GetAdminRole();
+
+    bool IsSystemRole(string role);
 }
