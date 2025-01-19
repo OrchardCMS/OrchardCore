@@ -8,8 +8,8 @@ namespace OrchardCore.Roles;
 
 public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
 {
-    private readonly FrozenDictionary<string, IRole> _systemRoles;
-    private readonly IRole _adminRole;
+    private readonly FrozenDictionary<string, Role> _systemRoles;
+    private readonly Role _adminRole;
     private readonly IStringLocalizer S;
 
     public DefaultSystemRoleProvider(
@@ -36,7 +36,7 @@ public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
             RoleDescription = S["A system role that grants all permissions to the assigned users."]
         };
 
-        _systemRoles = new Dictionary<string, IRole>()
+        _systemRoles = new Dictionary<string, Role>()
         {
             { _adminRole.RoleName, _adminRole },
             {
