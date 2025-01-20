@@ -10,15 +10,12 @@ public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
 {
     private readonly FrozenDictionary<string, Role> _systemRoles;
     private readonly Role _adminRole;
-    private readonly IStringLocalizer S;
 
     public DefaultSystemRoleProvider(
         ShellSettings shellSettings,
-        IStringLocalizer<DefaultSystemRoleProvider> stringLocalizer,
+        IStringLocalizer<DefaultSystemRoleProvider> S,
         IOptions<SystemRoleOptions> options)
     {
-        S = stringLocalizer;
-
         var adminRoleName = shellSettings["AdminRoleName"];
         if (string.IsNullOrWhiteSpace(adminRoleName))
         {
