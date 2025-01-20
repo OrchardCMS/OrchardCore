@@ -53,8 +53,7 @@ public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
         }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
     }
 
-    public IEnumerable<IRole> GetSystemRoles()
-        => _systemRoles.Values.AsEnumerable<IRole>();
+    public IEnumerable<IRole> GetSystemRoles() => _systemRoles.Values;
 
     public IRole GetAdminRole() => _adminRole;
 
