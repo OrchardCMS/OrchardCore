@@ -8,5 +8,5 @@ public interface ISystemRoleProvider
 
     IRole GetAdminRole();
 
-    bool IsSystemRole(string role);
+    bool IsSystemRole(string name);
 }

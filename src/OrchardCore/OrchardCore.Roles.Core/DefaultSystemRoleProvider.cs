@@ -61,7 +61,7 @@ public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
 
     public IRole GetAdminRole() => _adminRole;
 
-    public bool IsSystemRole(string roleName)
+    public bool IsSystemRole(string name)
     {
         ArgumentException.ThrowIfNullOrEmpty(roleName, nameof(roleName));
 
