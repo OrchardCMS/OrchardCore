@@ -63,8 +63,8 @@ public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
 
     public bool IsSystemRole(string name)
     {
-        ArgumentException.ThrowIfNullOrEmpty(roleName, nameof(roleName));
+        ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
 
-        return _systemRoles.ContainsKey(roleName);
+        return _systemRoles.ContainsKey(name);
     }
 }
