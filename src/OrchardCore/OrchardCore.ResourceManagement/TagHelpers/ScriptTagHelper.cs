@@ -165,7 +165,7 @@ public class ScriptTagHelper : TagHelper
 
                 foreach (var dependency in dependencies)
                 {
-                    var versionParts = dependency.Split(':');
+                    var versionParts = dependency.Split(':', 2);
 
                     var resourceName = versionParts[0];
 

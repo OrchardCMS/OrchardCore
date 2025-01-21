@@ -200,12 +200,12 @@ public class StyleTagHelper : TagHelper
 
             if (!string.IsNullOrEmpty(Culture))
             {
-                definition.SetCultures(Culture.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+                definition.SetCultures(Culture.Split(_splitSeparators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
             if (!string.IsNullOrEmpty(DependsOn))
             {
-                definition.SetDependencies(DependsOn.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+                definition.SetDependencies(DependsOn.Split(_splitSeparators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
             // Also include the style.
@@ -256,11 +256,11 @@ public class StyleTagHelper : TagHelper
 
             if (!string.IsNullOrEmpty(DependsOn))
             {
-                var dependencies = DependsOn.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+                var dependencies = DependsOn.Split(_splitSeparators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (var dependency in dependencies)
                 {
-                    var versionParts = dependency.Split(':');
+                    var versionParts = dependency.Split(':', 2);
 
                     var resourceName = versionParts[0];
 
