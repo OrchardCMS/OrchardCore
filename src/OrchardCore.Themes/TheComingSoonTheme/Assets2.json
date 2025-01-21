@@ -2,28 +2,28 @@
   {
     "action": "copy",
     "name": "theme-thecomingsoontheme",
-    "source": "Assets/dist/assets/**",
+    "source": "Assets/TheComingSoonTheme/dist/assets/**",
     "dest": "wwwroot/assets/",
     "tags": ["theme", "images"]
   },
   {
     "action": "min",
     "name": "theme-thecomingsoontheme",
-    "source": "Assets/dist/css/styles.css",
+    "source": "Assets/TheComingSoonTheme/dist/css/styles.css",
     "dest": "wwwroot/css/",
     "tags": ["theme", "css"]
   },
   {
     "action": "sass",
     "name": "theme-thecomingsoontheme",
-    "source": "Assets/src/scss/bootstrap-oc.scss",
+    "source": "Assets/TheComingSoonTheme/src/scss/bootstrap-oc.scss",
     "dest": "wwwroot/css/",
     "tags": ["theme", "css"]
   },
   {
     "action": "min",
     "name": "theme-thecomingsoontheme",
-    "source": "Assets/dist/js/scripts.js",
+    "source": "Assets/TheComingSoonTheme/dist/js/scripts.js",
     "dest": "wwwroot/js/",
     "tags": ["theme", "js"]
   }
