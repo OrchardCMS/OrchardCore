@@ -1,15 +1,15 @@
+using System.Text;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.Settings;
 using OrchardCore.Facebook.Settings;
-using System.Text;
+using OrchardCore.Settings;
 
 #nullable enable
 
@@ -104,10 +104,9 @@ public static class GetSdkEndpoints
             cache.Set(scriptCacheKey, scriptBytes);
         }
 
-        // Uses a custom GetHashCode because Object.GetHashCode differs across processes
-
 // False positive: No comparison is taking place here
 #pragma warning disable RS1024
+        // Uses a custom GetHashCode because Object.GetHashCode differs across processes
         StringValues eTag = $"\"{GetHashCode(scriptBytes)}\"";
 #pragma warning restore RS1024
 
