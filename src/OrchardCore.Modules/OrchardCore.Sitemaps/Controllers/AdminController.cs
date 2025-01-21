@@ -136,7 +136,7 @@ public sealed class AdminController : Controller
         var items = new List<dynamic>();
         foreach (var source in sitemap.SitemapSources)
         {
-            var item = await _displayManager.BuildDisplayAsync(source, _updateModelAccessor.ModelUpdater, "SummaryAdmin");
+            var item = await _displayManager.BuildDisplayAsync(source, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin);
             item.Properties["SitemapId"] = sitemap.SitemapId;
             item.Properties["SitemapSource"] = source;
             items.Add(item);

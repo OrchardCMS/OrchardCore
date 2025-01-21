@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Admin.Models;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
@@ -31,7 +30,6 @@ public sealed class Startup : StartupBase
         services.AddScoped<IThemeService, ThemeService>();
         services.AddScoped<ThemeTogglerService>();
         services.AddDeployment<ThemesDeploymentSource, ThemesDeploymentStep, ThemesDeploymentStepDriver>();
-        services.AddDisplayDriver<Navbar, ToggleThemeNavbarDisplayDriver>();
         services.AddDisplayDriver<ThemeEntry, ThemeEntryDisplayDriver>();
     }
 }

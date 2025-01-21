@@ -10,7 +10,7 @@ public sealed class LabelPartDisplayDriver : ContentPartDisplayDriver<LabelPart>
 {
     public override IDisplayResult Display(LabelPart part, BuildPartDisplayContext context)
     {
-        return View("LabelPart", part).Location("Detail", "Content");
+        return View("LabelPart", part).Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(LabelPart part, BuildPartEditorContext context)

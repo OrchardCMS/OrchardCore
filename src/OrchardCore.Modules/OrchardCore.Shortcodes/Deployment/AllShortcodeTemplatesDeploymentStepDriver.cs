@@ -10,7 +10,7 @@ public sealed class AllShortcodeTemplatesDeploymentStepDriver : DisplayDriver<De
     {
         return
             CombineAsync(
-                View("AllShortcodeTemplatesDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("AllShortcodeTemplatesDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("AllShortcodeTemplatesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

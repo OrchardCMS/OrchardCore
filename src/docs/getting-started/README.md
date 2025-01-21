@@ -10,7 +10,7 @@ In this article, we are going to see how easy it is to create a CMS Web applicat
 !!! note
     This guide follows a manual process so you can have a deeper understanding of what's happening. You can also use our [code generation templates](templates/README.md) for a quicker start if you create a brand-new application. Check out [this guide](../guides/create-cms-application/README.md).
 
-In Visual Studio (or [any other .NET IDE](../resources/development-tools/README.md)), create a new empty .NET web application, e.g. `Cms.Web`. Do not check "Place solution and project in the same directory", because later when you create modules and themes you will want them to live alongside the web application within the solution.
+In Visual Studio (or [any other .NET IDE](../getting-started/development-tools.md)), create a new empty .NET web application, e.g. `Cms.Web`. Do not check "Place solution and project in the same directory", because later when you create modules and themes you will want them to live alongside the web application within the solution.
 
 !!! note
     If you want to use the `preview` packages, [configure the OrchardCore Preview url in your Package sources](preview-package-source.md).

@@ -19,7 +19,7 @@ public sealed class ElasticIndexRebuildDeploymentStepDriver : DisplayDriver<Depl
     {
         return
             CombineAsync(
-                View("ElasticIndexRebuildDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("ElasticIndexRebuildDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("ElasticIndexRebuildDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }
