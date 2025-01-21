@@ -79,12 +79,8 @@ public sealed class ContentTypeQuery : ISchemaBuilder
             {
                 schema.Query.AddField(query);
             }
-            else
-            {
-                // Register the content item type explicitly since it won't be discovered from the root 'query' type.
-            }
 
-            // TODO: Test: Always register type to make it easier to find it.
+            // Register the content item type explicitly to make it easier to find it.
             schema.RegisterType(typeType);
 
             if (!string.IsNullOrEmpty(stereotype))
