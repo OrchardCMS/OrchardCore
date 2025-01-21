@@ -8,38 +8,18 @@ namespace OrchardCore.Roles;
 internal sealed class DefaultSystemRoleNameProvider : ISystemRoleNameProvider
 #pragma warning restore CS0618 // Type or member is obsolete
 {
-    private readonly string _adminRoleName;
+    private readonly ISystemRoleProvider _provider;
 
     private readonly FrozenSet<string> _systemRoleNames;
 
-    public DefaultSystemRoleNameProvider(
-        ShellSettings shellSettings,
-        IOptions<SystemRoleOptions> options)
+    public DefaultSystemRoleNameProvider(ISystemRoleProvider provider)
     {
-        _adminRoleName = shellSettings["AdminRoleName"];
-
-        if (string.IsNullOrWhiteSpace(_adminRoleName))
-        {
-            _adminRoleName = options.Value.SystemAdminRoleName;
-        }
-
-        if (string.IsNullOrWhiteSpace(_adminRoleName))
-        {
-            _adminRoleName = OrchardCoreConstants.Roles.Administrator;
-        }
-
-        var roles = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            OrchardCoreConstants.Roles.Anonymous,
-            OrchardCoreConstants.Roles.Authenticated,
-            _adminRoleName,
-        };
-
-        _systemRoleNames = roles.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
+        _provider = provider;
+        _systemRoleNames = provider.GetSystemRoles().Select(x => x.RoleName).ToFrozenSet(StringComparer.OrdinalIgnoreCase);
     }
 
     public ValueTask<string> GetAdminRoleAsync()
-        => ValueTask.FromResult(_adminRoleName);
+        => ValueTask.FromResult(_provider.GetAdminRole().RoleName);
 
     public ValueTask<FrozenSet<string>> GetSystemRolesAsync()
         => ValueTask.FromResult(_systemRoleNames);

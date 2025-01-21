@@ -16,7 +16,7 @@ public class SystemRoleProviderExtensionsTests
     public void IsAdminRole_ReturnsTrue_IfTheRoleExists(string roleName, bool expectedResult)
     {
         // Arrange
-        var localizer = Mock.Of<IStringLocalizer<DefaultSystemRoleProvider>>();
+        var stringLocalizer = Mock.Of<IStringLocalizer<DefaultSystemRoleProvider>>();
         var shellSettings = new ShellSettings();
 
         var options = new Mock<IOptions<SystemRoleOptions>>();
@@ -24,7 +24,7 @@ public class SystemRoleProviderExtensionsTests
             .Returns(new SystemRoleOptions());
 
         // Act
-        var provider = new DefaultSystemRoleProvider(shellSettings, localizer, options.Object);
+        var provider = new DefaultSystemRoleProvider(shellSettings, options.Object, stringLocalizer);
 
         // Assert
         Assert.Equal(expectedResult, provider.IsAdminRole(roleName));

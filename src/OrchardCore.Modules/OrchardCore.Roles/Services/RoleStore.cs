@@ -15,8 +15,9 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     private readonly IServiceProvider _serviceProvider;
     private readonly ISystemRoleProvider _systemRoleProvider;
     private readonly IDocumentManager<RolesDocument> _documentManager;
-    protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
+
+    protected readonly IStringLocalizer S;
 
     private bool _updating;
 

@@ -6,15 +6,15 @@ using OrchardCore.Security;
 
 namespace OrchardCore.Roles;
 
-public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
+internal sealed class DefaultSystemRoleProvider : ISystemRoleProvider
 {
     private readonly FrozenDictionary<string, Role> _systemRoles;
     private readonly Role _adminRole;
 
     public DefaultSystemRoleProvider(
         ShellSettings shellSettings,
-        IStringLocalizer<DefaultSystemRoleProvider> S,
-        IOptions<SystemRoleOptions> options)
+        IOptions<SystemRoleOptions> options,
+        IStringLocalizer<DefaultSystemRoleProvider> S)
     {
         var adminRoleName = shellSettings["AdminRoleName"];
         if (string.IsNullOrWhiteSpace(adminRoleName))
@@ -53,13 +53,14 @@ public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
         }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
     }
 
-    public IEnumerable<IRole> GetSystemRoles() => _systemRoles.Values;
+    public IEnumerable<IRole> GetSystemRoles()
+        => _systemRoles.Values;
 
     public IRole GetAdminRole() => _adminRole;
 
     public bool IsSystemRole(string name)
     {
-        ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+        ArgumentException.ThrowIfNullOrEmpty(name);
 
         return _systemRoles.ContainsKey(name);
     }

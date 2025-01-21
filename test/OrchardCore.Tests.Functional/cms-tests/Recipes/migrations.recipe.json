@@ -11,7 +11,7 @@
 
   // The variables are evaluated the first time they are accessed, and reused across steps
   "variables": {
-    "homeContentItemId": "[js:uuid()]",
+    "homeContentItemId": "[js:uuid()]"
   },
 
   "steps": [

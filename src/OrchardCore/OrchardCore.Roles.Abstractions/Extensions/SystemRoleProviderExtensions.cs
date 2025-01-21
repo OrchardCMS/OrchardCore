@@ -4,7 +4,7 @@ public static class SystemRoleProviderExtensions
 {
     public static bool IsAdminRole(this ISystemRoleProvider systemRoleNameProvider, string name)
     {
-        ArgumentException.ThrowIfNullOrEmpty(name, nameof(name));
+        ArgumentException.ThrowIfNullOrEmpty(name);
 
         var adminRole = systemRoleNameProvider.GetAdminRole();
 

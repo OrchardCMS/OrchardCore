@@ -10,6 +10,7 @@ public static class ServiceCollectionExtensions
 #pragma warning disable CS0618 // Type or member is obsolete
         services.TryAddSingleton<ISystemRoleNameProvider, DefaultSystemRoleNameProvider>();
 #pragma warning restore CS0618 // Type or member is obsolete
+
         services.TryAddSingleton<ISystemRoleProvider, DefaultSystemRoleProvider>();
 
         return services;

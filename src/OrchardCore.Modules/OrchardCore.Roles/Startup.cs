@@ -34,8 +34,8 @@ public sealed class Startup : StartupBase
     {
         services.AddScoped<IUserClaimsProvider, RoleClaimsProvider>();
 
-        services.AddDataMigration<SystemRolesMigrations>()
-            .AddDataMigration<RolesMigrations>();
+        services.AddDataMigration<SystemRolesMigrations>();
+        services.AddDataMigration<RolesMigrations>();
 
         services.AddScoped<RoleStore>();
         services.Replace(ServiceDescriptor.Scoped<IRoleClaimStore<IRole>>(sp => sp.GetRequiredService<RoleStore>()));
