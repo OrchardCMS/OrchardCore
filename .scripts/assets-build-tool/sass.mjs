@@ -80,7 +80,7 @@ glob(config.source).then((files) => {
                             sourceMapIncludeSources: false,
                         });
 
-                        if (scssResult.sourceMap) {
+                        if (mode === "development" && scssResult.sourceMap) {
                             const mappedTarget = path.join(
                                 dest,
                                 path.parse(target).name + ".scss.map"
@@ -153,7 +153,7 @@ glob(config.source).then((files) => {
                                 );
                             }
 
-                            if (map) {
+                            if (mode === "development" && map) {
                                 const mappedTarget = path.join(
                                     dest,
                                     path.parse(target).name + ".css.map"
