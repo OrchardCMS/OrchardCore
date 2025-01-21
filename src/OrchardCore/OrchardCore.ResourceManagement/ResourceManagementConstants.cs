@@ -5,4 +5,6 @@ internal static class ResourceManagementConstants
     public static readonly char[] DependsOnSeparator = [',', ' '];
 
     public static readonly char[] CulturesSeparator = [',', ' '];
+
+    public const char VersionSeparator = ':';
 }
