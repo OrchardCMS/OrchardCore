@@ -118,7 +118,7 @@ public static class GetSdkEndpoints
             return Results.StatusCode(304);
         }
 
-        string scriptCacheKey = $"/OrchardCore.Facebook/sdk/fbsdk.js.{settings.AppId}.{settings.Version}";
+        string scriptCacheKey = $"/OrchardCore.Facebook/sdk/fb.js.{settings.AppId}.{settings.Version}";
 
         var scriptBytes = (byte[]?)cache.Get(scriptCacheKey);
         if (scriptBytes == null)
