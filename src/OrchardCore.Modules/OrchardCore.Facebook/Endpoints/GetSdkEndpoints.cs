@@ -41,10 +41,9 @@ public static class GetSdkEndpoints
         return hash;
     }
 
-    private static async Task<IResult> HandleFbsdkScriptRequestAsync(HttpContext context, ISiteService siteService, IMemoryCache cache)
+    private static async Task<IResult> HandleFbsdkScriptRequestAsync(HttpContext context, ISiteService siteService, IMemoryCache cache, IShellConfiguration shellConfiguration)
     {
         context.Response.Headers.Vary = "Accept-Language";
-        var shellConfiguration = context.RequestServices.GetRequiredService<IShellConfiguration>();
         context.Response.Headers.CacheControl = shellConfiguration.GetValue(
                 "StaticFileOptions:CacheControl",
                 // Fallback value
@@ -96,7 +95,7 @@ public static class GetSdkEndpoints
         return Results.Bytes(scriptBytes, "application/javascript");
     }
 
-    private static async Task<IResult> HandleFbScriptRequestAsync(HttpContext context, ISiteService siteService, IMemoryCache cache)
+    private static async Task<IResult> HandleFbScriptRequestAsync(HttpContext context, ISiteService siteService, IMemoryCache cache, IShellConfiguration shellConfiguration)
     {
         var settings = await siteService.GetSettingsAsync<FacebookSettings>();
 
@@ -105,7 +104,6 @@ public static class GetSdkEndpoints
             return Results.Forbid();
         }
 
-        var shellConfiguration = context.RequestServices.GetRequiredService<IShellConfiguration>();
         context.Response.Headers.CacheControl = shellConfiguration.GetValue(
                 "StaticFileOptions:CacheControl",
                 // Fallback value

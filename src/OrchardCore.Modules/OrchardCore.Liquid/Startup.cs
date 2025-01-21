@@ -10,6 +10,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Liquid.Filters;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid.Drivers;
 using OrchardCore.Liquid.Filters;
@@ -32,6 +33,8 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddSingleton<IShellConfiguration, ShellConfiguration>();
+
         services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
 
         services.Configure<TemplateOptions>(options =>

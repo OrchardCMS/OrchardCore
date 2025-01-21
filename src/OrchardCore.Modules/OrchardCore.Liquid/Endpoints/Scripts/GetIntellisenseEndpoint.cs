@@ -50,9 +50,8 @@ public static class GetIntellisenseEndpoint
         return hash;
     }
 
-    private static IResult HandleRequest(HttpContext context, IMemoryCache cache)
+    private static IResult HandleRequest(HttpContext context, IMemoryCache cache, IShellConfiguration shellConfiguration)
     {
-        var shellConfiguration = context.RequestServices.GetRequiredService<IShellConfiguration>();
         context.Response.Headers.CacheControl = shellConfiguration.GetValue(
                 "StaticFileOptions:CacheControl",
                 // Fallback value
