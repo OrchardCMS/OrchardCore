@@ -8,8 +8,6 @@ namespace OrchardCore.ResourceManagement.TagHelpers;
 [HtmlTargetElement("script", Attributes = AtAttributeName)]
 public class ScriptTagHelper : TagHelper
 {
-    private static readonly char[] _separator = [',', ' '];
-
     private const string NameAttributeName = "asp-name";
     private const string SrcAttributeName = "asp-src";
     private const string AtAttributeName = "at";
@@ -108,7 +106,7 @@ public class ScriptTagHelper : TagHelper
             // This allows additions to the pre registered scripts dependencies.
             if (!string.IsNullOrEmpty(DependsOn))
             {
-                setting.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+                setting.SetDependencies(DependsOn.Split(ResourceManagementConstants.DependsOnSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
             // Allow Inline to work with both named scripts, and named inline scripts.
@@ -161,7 +159,7 @@ public class ScriptTagHelper : TagHelper
 
             if (!string.IsNullOrEmpty(DependsOn))
             {
-                var dependencies = DependsOn.Split(_separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+                var dependencies = DependsOn.Split(ResourceManagementConstants.DependsOnSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (var dependency in dependencies)
                 {
@@ -215,12 +213,12 @@ public class ScriptTagHelper : TagHelper
 
         if (!string.IsNullOrEmpty(Culture))
         {
-            definition.SetCultures(Culture.Split(_separator, StringSplitOptions.RemoveEmptyEntries));
+            definition.SetCultures(Culture.Split(ResourceManagementConstants.CulturesSeparator, StringSplitOptions.RemoveEmptyEntries));
         }
 
         if (!string.IsNullOrEmpty(DependsOn))
         {
-            definition.SetDependencies(DependsOn.Split(_separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+            definition.SetDependencies(DependsOn.Split(ResourceManagementConstants.DependsOnSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
         }
 
         if (AppendVersion.HasValue)

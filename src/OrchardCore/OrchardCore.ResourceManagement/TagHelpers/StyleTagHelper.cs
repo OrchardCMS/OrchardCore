@@ -8,7 +8,6 @@ namespace OrchardCore.ResourceManagement.TagHelpers;
 [HtmlTargetElement("style", Attributes = AtAttributeName)]
 public class StyleTagHelper : TagHelper
 {
-    private static readonly char[] _splitSeparators = [',', ' '];
     private const string NameAttributeName = "asp-name";
     private const string SrcAttributeName = "asp-src";
     private const string AtAttributeName = "at";
@@ -94,7 +93,7 @@ public class StyleTagHelper : TagHelper
 
             if (!string.IsNullOrEmpty(DependsOn))
             {
-                setting.SetDependencies(DependsOn.Split(_splitSeparators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+                setting.SetDependencies(DependsOn.Split(ResourceManagementConstants.DependsOnSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
             if (At == ResourceLocation.Inline)
@@ -158,7 +157,7 @@ public class StyleTagHelper : TagHelper
             // This allows additions to the pre registered style dependencies.
             if (!string.IsNullOrEmpty(DependsOn))
             {
-                setting.SetDependencies(DependsOn.Split(_splitSeparators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+                setting.SetDependencies(DependsOn.Split(ResourceManagementConstants.DependsOnSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
             var childContent = await output.GetChildContentAsync();
@@ -200,12 +199,12 @@ public class StyleTagHelper : TagHelper
 
             if (!string.IsNullOrEmpty(Culture))
             {
-                definition.SetCultures(Culture.Split(_splitSeparators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+                definition.SetCultures(Culture.Split(ResourceManagementConstants.CulturesSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
             if (!string.IsNullOrEmpty(DependsOn))
             {
-                definition.SetDependencies(DependsOn.Split(_splitSeparators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
+                definition.SetDependencies(DependsOn.Split(ResourceManagementConstants.DependsOnSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries));
             }
 
             // Also include the style.
@@ -256,7 +255,7 @@ public class StyleTagHelper : TagHelper
 
             if (!string.IsNullOrEmpty(DependsOn))
             {
-                var dependencies = DependsOn.Split(_splitSeparators, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+                var dependencies = DependsOn.Split(ResourceManagementConstants.DependsOnSeparator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (var dependency in dependencies)
                 {
