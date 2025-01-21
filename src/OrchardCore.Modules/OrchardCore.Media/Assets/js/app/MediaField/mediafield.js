@@ -144,13 +144,16 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                     $('#allowedExtensions').val(this.allowedExtensions);
                     $('#fileupload').attr('accept', this.allowedExtensions);
                     $("#mediaApp").appendTo($(modalBodyElement).find('.modal-body'));
-                    $("#mediaApp").show();
 
                     // Reload current folder in case the allowed extensions have changed.
                     mediaApp.refresh();
 
                     var modal = new bootstrap.Modal(modalBodyElement);
                     modal.show();
+
+                    setTimeout(function () {
+                        $("#mediaApp").show();      
+                    }, 100)
 
                     $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
                         self.addMediaFiles(mediaApp.selectedMedias);

@@ -2039,10 +2039,12 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
           }
         });
       });
-      if (displayMediaApplication) {
-        document.getElementById('mediaApp').style.display = "";
-      }
       $(document).trigger('mediaApp:ready');
+      if (displayMediaApplication) {
+        setTimeout(function () {
+          $("#mediaApp").show();
+        }, 100);
+      }
     },
     error: function error(_error7) {
       console.error(_error7.responseText);
@@ -3141,12 +3143,14 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
           $('#allowedExtensions').val(this.allowedExtensions);
           $('#fileupload').attr('accept', this.allowedExtensions);
           $("#mediaApp").appendTo($(modalBodyElement).find('.modal-body'));
-          $("#mediaApp").show();
 
           // Reload current folder in case the allowed extensions have changed.
           mediaApp.refresh();
           var modal = new bootstrap.Modal(modalBodyElement);
           modal.show();
+          setTimeout(function () {
+            $("#mediaApp").show();
+          }, 100);
           $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
             self.addMediaFiles(mediaApp.selectedMedias);
 
