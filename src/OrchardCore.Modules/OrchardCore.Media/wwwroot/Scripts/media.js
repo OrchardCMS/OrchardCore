@@ -2042,7 +2042,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
       $(document).trigger('mediaApp:ready');
       if (displayMediaApplication) {
         setTimeout(function () {
-          $("#mediaApp").show();
+          document.getElementById("mediaApp").classList.remove("d-none");
         }, 100);
       }
     },
@@ -3003,7 +3003,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
   //when hide modal detach media app to avoid issue on BagPart
   modalBodyElement.addEventListener('hidden.bs.modal', function (event) {
     $("#mediaApp").appendTo('body');
-    $("#mediaApp").hide();
+    document.getElementById("mediaApp").classList.add("d-none");
   });
   mediaFieldApps.push(mediaFieldApp = new Vue({
     el: mediaFieldEditor.get(0),
@@ -3149,7 +3149,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
           var modal = new bootstrap.Modal(modalBodyElement);
           modal.show();
           setTimeout(function () {
-            $("#mediaApp").show();
+            document.getElementById("mediaApp").classList.remove("d-none");
           }, 100);
           $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
             self.addMediaFiles(mediaApp.selectedMedias);

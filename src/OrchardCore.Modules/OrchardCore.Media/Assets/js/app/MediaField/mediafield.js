@@ -13,7 +13,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
     //when hide modal detach media app to avoid issue on BagPart
     modalBodyElement.addEventListener('hidden.bs.modal', function (event) {
         $("#mediaApp").appendTo('body');
-        $("#mediaApp").hide();
+        document.getElementById("mediaApp").classList.add("d-none");
     });
 
     mediaFieldApps.push(mediaFieldApp = new Vue({
@@ -152,7 +152,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                     modal.show();
 
                     setTimeout(function () {
-                        $("#mediaApp").show();      
+                        document.getElementById("mediaApp").classList.remove("d-none");
                     }, 100)
 
                     $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {

@@ -530,9 +530,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
 
             if (displayMediaApplication) {
                 setTimeout(function () {
-                    $("#mediaApp").show();      
-                }, 100)
-              
+                    document.getElementById("mediaApp").classList.remove("d-none");
+                }, 100)              
             }
         },
         error: function (error) {
