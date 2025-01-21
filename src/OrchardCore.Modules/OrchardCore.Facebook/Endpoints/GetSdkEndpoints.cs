@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +9,6 @@ using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Settings;
 using OrchardCore.Facebook.Settings;
-using System.Globalization;
 using System.Text;
 
 #nullable enable
@@ -41,55 +41,26 @@ public static class GetSdkEndpoints
         return hash;
     }
 
-    private static async Task<IResult> HandleFbsdkScriptRequestAsync(HttpContext context, ISiteService siteService, IMemoryCache cache, IShellConfiguration shellConfiguration)
+    private static IResult HandleFbsdkScriptRequestAsync([FromQuery(Name = "lang")] string language, [FromQuery(Name = "sdkf")] string sdkFilename, HttpContext context, IMemoryCache cache)
     {
-        context.Response.Headers.Vary = "Accept-Language";
-        context.Response.Headers.CacheControl = shellConfiguration.GetValue(
-                "StaticFileOptions:CacheControl",
-                // Fallback value
-                $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}");
+        // Set the cache timeout to the maximum allowed length of one year
+        // max-age is needed because immutable is not widly supported
+        context.Response.Headers.CacheControl = $"public, max-age=31536000, immutable";
 
-        // Assumes IfNoneMatch has only one ETag for performance
-        var requestETag = context.Request.Headers.IfNoneMatch;
-        if (!StringValues.IsNullOrEmpty(requestETag) && cache.Get(requestETag) != null)
-        {
-            context.Response.Headers.ETag = requestETag;
+        string scriptCacheKey = $"~/OrchardCore.Facebook/sdk/fbsdk.js?sdkf={sdkFilename}&lang={language}";
 
-            return Results.StatusCode(304);
-        }
-
-        var settings = await siteService.GetSettingsAsync<FacebookSettings>();
-        var locale = CultureInfo.CurrentUICulture.Name;
-        string scriptCacheKey = $"/OrchardCore.Facebook/sdk/fbsdk.js.{locale}.{settings.SdkJs}";
-
-        var scriptBytes = (byte[]?)cache.Get(scriptCacheKey);
+        var scriptBytes = cache.Get(scriptCacheKey) as byte[];
         if (scriptBytes == null)
         {
+            // Note: Update script version in ResourceManagementOptionsConfiguration.cs after editing
             scriptBytes = Encoding.UTF8.GetBytes($@"(function(d){{
                 var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {{ return; }}
                 js = d.createElement('script'); js.id = id; js.async = true;
-                js.src = ""https://connect.facebook.net/{locale.Replace('-', '_')}/{settings.SdkJs}"";
+                js.src = ""https://connect.facebook.net/{language.Replace('-', '_')}/{sdkFilename}"";
                 d.getElementsByTagName('head')[0].appendChild(js);
             }} (document));");
 
             cache.Set(scriptCacheKey, scriptBytes);
-        }
-
-// False positive: No comparison is taking place here
-#pragma warning disable RS1024
-        // Uses a custom GetHashCode because Object.GetHashCode differs across processes
-        StringValues eTag = $"\"{GetHashCode(scriptBytes)}\"";
-#pragma warning restore RS1024
-
-        // Mark that the eTag corresponds to a fresh file
-        cache.Set(eTag, true);
-
-        context.Response.Headers.ETag = eTag;
-
-        // Can be true if the cache was reset after the last client request
-        if (requestETag.Equals(eTag))
-        {
-            return Results.StatusCode(304);
         }
 
         return Results.Bytes(scriptBytes, "application/javascript");
