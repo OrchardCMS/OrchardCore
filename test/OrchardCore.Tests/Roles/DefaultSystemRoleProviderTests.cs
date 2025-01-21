@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Roles.Tests;

@@ -6,7 +6,7 @@ using OrchardCore.Security;
 
 namespace OrchardCore.Roles;
 
-internal sealed class DefaultSystemRoleProvider : ISystemRoleProvider
+public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
 {
     private readonly FrozenDictionary<string, Role> _systemRoles;
     private readonly Role _adminRole;
