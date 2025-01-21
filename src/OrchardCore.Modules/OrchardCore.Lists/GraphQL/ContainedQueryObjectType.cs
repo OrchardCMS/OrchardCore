@@ -19,12 +19,12 @@ public class ContainedQueryObjectType : ObjectGraphType<ContainedPart>
 
         Field<ContentItemInterface, ContentItem>("listContentItem")
            .Description(S["the parent list content item"])
-           .ResolveLockedAsync(async x =>
+           .ResolveLockedAsync(x =>
            {
                var contentItemId = x.Source.ListContentItemId;
                var contentManager = x.RequestServices.GetService<IContentManager>();
 
-               return await contentManager.GetAsync(contentItemId);
+               return contentManager.GetAsync(contentItemId);
            });
 
         Field(x => x.ListContentType)
