@@ -105,7 +105,7 @@ glob(config.source).then((files) => {
                                 chalk.cyan(minifiedTarget)
                             );
 
-                            if (output.map) {
+                            if (mode === "development" && output.map) {
                                 const mappedTarget = path.join(
                                     dest,
                                     path.parse(target).name + ".map"
@@ -230,7 +230,7 @@ glob(config.source).then((files) => {
                             );
                         }
 
-                        if (map) {
+                        if (mode === "development" && map) {
                             const mappedTarget = path.join(
                                 dest,
                                 path.parse(target).name + ".map"
