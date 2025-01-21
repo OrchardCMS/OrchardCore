@@ -20,7 +20,7 @@ internal sealed class ContainedPartContentItemTypeInitializer : IContentItemType
     {
         // Get all types with a list part that can contain the current type.
         var parentTypes = schema.AdditionalTypeInstances
-            .Where(t => t.Metadata.TryGetValue("ContainedContentTypes", out var containedTypes) && ((containedTypes as IEnumerable<string>)?.Any(ct => ct == contentItemType.Name) ?? false));
+            .Where(t => t.Metadata.TryGetValue(nameof(ListPartSettings.ContainedContentTypes), out var containedTypes) && ((containedTypes as IEnumerable<string>)?.Any(ct => ct == contentItemType.Name) ?? false));
 
         foreach (var parentType in parentTypes)
         {

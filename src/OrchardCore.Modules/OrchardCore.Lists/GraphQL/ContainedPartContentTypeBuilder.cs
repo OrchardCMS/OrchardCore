@@ -12,17 +12,19 @@ internal sealed class ContainedPartContentTypeBuilder : IContentTypeBuilder
         foreach (var listPart in contentTypeDefinition.Parts.Where(p => p.PartDefinition.Name.Equals(nameof(ListPart), StringComparison.OrdinalIgnoreCase)))
         {
             var settings = listPart?.GetSettings<ListPartSettings>();
-            if (settings != null)
+            if (settings == null)
             {
-                if (contentItemType.Metadata.TryGetValue("ContainedContentTypes", out var containedContentTypes) &&
-                    containedContentTypes is IEnumerable<string> existingContainedContentTypes)
-                {
-                    contentItemType.Metadata["ContainedContentTypes"] = existingContainedContentTypes.Concat(settings.ContainedContentTypes).Distinct().ToArray();
-                }
-                else
-                {
-                    contentItemType.Metadata["ContainedContentTypes"] = settings.ContainedContentTypes;
-                }
+                continue;
+            }
+
+            if (contentItemType.Metadata.TryGetValue("ContainedContentTypes", out var containedContentTypes) &&
+                containedContentTypes is IEnumerable<string> existingContainedContentTypes)
+            {
+                contentItemType.Metadata[nameof(ListPartSettings.ContainedContentTypes)] = existingContainedContentTypes.Concat(settings.ContainedContentTypes).Distinct().ToArray();
+            }
+            else
+            {
+                contentItemType.Metadata[nameof(ListPartSettings.ContainedContentTypes)] = settings.ContainedContentTypes;
             }
         }
     }
