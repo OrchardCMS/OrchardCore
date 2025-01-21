@@ -22,7 +22,10 @@ public sealed class MicrosoftAccountStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddPermissionProvider<Permissions>();
+        if (!services.Any(s => s.ImplementationType == typeof(Permissions)))
+        {
+            services.AddPermissionProvider<Permissions>();
+        }
 
         services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
         services.AddSiteDisplayDriver<MicrosoftAccountSettingsDisplayDriver>();

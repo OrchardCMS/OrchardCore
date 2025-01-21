@@ -23,7 +23,10 @@ public sealed class AzureADStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddPermissionProvider<Permissions>();
+        if (!services.Any(s => s.ImplementationType == typeof(Permissions)))
+        {
+            services.AddPermissionProvider<Permissions>();
+        }
 
         services.AddSingleton<IAzureADService, AzureADService>();
         services.AddRecipeExecutionStep<AzureADSettingsStep>();
