@@ -41,7 +41,7 @@ public sealed class DefaultPermissionService : IPermissionService
 
     private async Task LoadPermissionsAsync()
     {
-        _permissions = [];
+        _permissions = new Dictionary<string, Permission>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var permissionProvider in _permissionProviders)
         {
@@ -49,7 +49,10 @@ public sealed class DefaultPermissionService : IPermissionService
 
             foreach (var permission in permissions)
             {
-                _permissions[permission.Name] = permission;
+                if (!_permissions.TryAdd(permission.Name, permission))
+                {
+                    throw new InvalidOperationException($"The permission {permission.Name} already exists. Ambiguous permission names are not allowed.");
+                }
             }
         }
     }
