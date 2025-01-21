@@ -1,4 +1,5 @@
 using OrchardCore.Deployment.ViewModels;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 
@@ -10,7 +11,7 @@ public sealed class CustomFileDeploymentStepDriver : DisplayDriver<DeploymentSte
     {
         return
             CombineAsync(
-                View("CustomFileDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("CustomFileDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("CustomFileDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

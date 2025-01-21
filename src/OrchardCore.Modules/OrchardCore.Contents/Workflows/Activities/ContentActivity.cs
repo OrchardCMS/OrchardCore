@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
@@ -53,11 +54,14 @@ public abstract class ContentActivity : Activity
 
     public override Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
     {
-        var contentEvent = input?.GetValue<ContentEventContext>(ContentEventConstants.ContentEventInputKey);
-
-        if (contentEvent != null)
+        if(input != null && input.TryGetValue(ContentEventConstants.ContentEventInputKey, out var contentEventObj))
         {
-            InlineEvent = contentEvent;
+            InlineEvent = contentEventObj switch
+            {
+                ContentEventContext contentEvent => contentEvent,
+                IDictionary<string, object> contentEventDict => JObject.FromObject(contentEventDict).ToObject<ContentEventContext>(),
+                _ => throw new InvalidCastException($"Cannot convert {contentEventObj} to ContentEventContext")
+            };
 
             InlineEvent.IsStart = workflowContext.Status == WorkflowStatus.Starting;
         }
