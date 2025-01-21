@@ -2005,6 +2005,7 @@ __metadata:
     blueimp-file-upload: "npm:10.32.0"
     bootstrap: "npm:5.3.3"
     jquery: "npm:3.7.1"
+    vue: "npm:2.6.14"
   languageName: unknown
   linkType: soft
 
@@ -14166,6 +14167,13 @@ __metadata:
   version: 1.9.1
   resolution: "vue-template-es2015-compiler@npm:1.9.1"
   checksum: 10/4814787d94a03fcb17a7c71adf13b539c106188a7d92dd9020513d7c473793c05e2a7749729422565d762fb271474caf67030c44fc6df39533b8bbd3fd1f845e
+  languageName: node
+  linkType: hard
+
+"vue@npm:2.6.14":
+  version: 2.6.14
+  resolution: "vue@npm:2.6.14"
+  checksum: 10/382e261c1d995285b1834f093b53d935a537e6afd18a557131890144bcc5b61c87101db70daf8593bd1cdcfad3dcd90a2f4fea35b6ca0cee1e8c6f7f8f88c104
   languageName: node
   linkType: hard
 

@@ -1,9 +1,8 @@
+import { getTenantName } from "@orchardcore/frontend/helpers/globals";
+
 const darkThemeName = "dark";
 const lightThemeName = "light";
 const themeStoreKeySuffix = "theme";
-
-const getTenantName = () =>
-    document.documentElement.getAttribute("data-tenant") || "default";
 
 const getStoreKeySuffix = () => themeStoreKeySuffix || "theme";
 
@@ -48,7 +47,6 @@ export {
     darkThemeName,
     lightThemeName,
     themeStoreKeySuffix,
-    getTenantName,
     getStoreKeySuffix,
     getStoreKey,
     getStoredTheme,
