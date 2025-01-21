@@ -85,10 +85,6 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Roles\Extensions\" />
-  </ItemGroup>
-
   <Import Project="..\..\src\OrchardCore.Build\OrchardCore.Commons.targets" />
 
 </Project>
