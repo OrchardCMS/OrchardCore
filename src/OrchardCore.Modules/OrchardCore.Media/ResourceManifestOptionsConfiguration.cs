@@ -3,8 +3,7 @@ using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Media;
 
-public sealed class ResourceManagementOptionsConfiguration
-    : IConfigureOptions<ResourceManagementOptions>
+public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
     private static readonly ResourceManifest _manifest;
 
@@ -20,11 +19,9 @@ public sealed class ResourceManagementOptionsConfiguration
 
         _manifest
             .DefineStyle("media")
-            .SetUrl(
-                "~/OrchardCore.Media/Styles/media.min.css",
-                "~/OrchardCore.Media/Styles/media.css"
-            )
+            .SetUrl("~/OrchardCore.Media/Styles/media.min.css", "~/OrchardCore.Media/Styles/media.css")
             .SetVersion("1.0.0");
+
     }
 
     public void Configure(ResourceManagementOptions options)

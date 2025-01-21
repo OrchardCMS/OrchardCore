@@ -6,6 +6,6 @@
     "blueimp-file-upload": "10.32.0",
     "bootstrap": "5.3.3",
     "jquery": "3.7.1",
-    "vue": "2.6.14"
+    "vue": "^2.6.14"
   }
 }
