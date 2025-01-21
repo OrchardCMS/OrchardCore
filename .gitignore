@@ -199,6 +199,9 @@ node_modules/
 #exclude parcel
 .parcel-cache
 
+#exclude .map files
+*.map
+
 wwwroot
 **/Localization/**/*.po
 !test/OrchardCore.Tests/Localization/**/*.po

@@ -164,7 +164,7 @@ glob(config.source).then((files) => {
 
                             const result = await postcss([
                                 postcssRTLCSS(options),
-                            ]).process(reader, { from: file });
+                            ]).process(reader);
                             reader = result.css;
 
                             console.log(
