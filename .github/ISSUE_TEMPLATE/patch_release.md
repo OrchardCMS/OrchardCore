@@ -20,8 +20,7 @@ assignees: ''
 ### Create Pull Request:
 
   - [ ] From the release branch (e.g., `release/2.1`), create a new temporary branch for your release (e.g., `release-notes/2.1.1`).
-  - [ ] Update version references in the documentation. Refer to [this PR](https://github.com/OrchardCMS/OrchardCore/pull/17065/files) for an example.
-  - [ ] **Version Updates Checklist**:
+  - [ ] Update version references in the documentation. Refer to [this PR](https://github.com/OrchardCMS/OrchardCore/pull/17065/files) for an example. Version Updates Checklist:
      - **Update `OrchardCore.Commons.props`**: Set `<VersionSuffix></VersionSuffix>` to the new version you're preparing for release.
      - **Update Module Versions**: Modify `src/OrchardCore/OrchardCore.Abstractions/Modules/Manifest/ManifestConstants.cs` to reflect the new version.
      - **Release Notes**: Finalize the release notes in the documentation, including:
@@ -33,6 +32,8 @@ assignees: ''
        - [Status in the root README](https://docs.orchardcore.net/en/latest/#status)
        - CLI templates and commands.
        - Relevant guides, such as the [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/) guide.
+  - [ ] Create a **Documentation PR** titled "Release with the new version number" (e.g., `Release 2.1.1`) from the documentation branch (e.g., `release-notes/2.1.1`) into the release branch (e.g., `release/2.1`)
+  - [ ] Merge the Documentation PR.
   - [ ] In GitHub, manually run the `Preview - CI` workflow on your branch (NOT `main`). This will release a new preview version on CloudSmith for testing.
 
 ## Step 3: Validation

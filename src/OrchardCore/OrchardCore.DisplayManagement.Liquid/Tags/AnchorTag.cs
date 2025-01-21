@@ -1,6 +1,7 @@
 using System.Text.Encodings.Web;
 using Fluid;
 using Fluid.Ast;
+using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
@@ -54,11 +55,20 @@ public class AnchorTag : IAnchorTag
 
                 case "all_route_data":
 
-                    var allRouteData = (await argument.Expression.EvaluateAsync(context)).ToObjectValue();
+                    var objectValue = (await argument.Expression.EvaluateAsync(context)).ToObjectValue();
 
-                    if (allRouteData is Dictionary<string, string> allRouteValues)
+                    if (objectValue is IFluidIndexable allRouteData)
                     {
-                        routeValues = allRouteValues;
+                        // Copy all string key-value pairs to routeValues
+                        routeValues = new();
+                        foreach (var key in allRouteData.Keys)
+                        {
+                            bool success = allRouteData.TryGetValue(key, out FluidValue fluidValue);
+                            if (success && fluidValue is StringValue)
+                            {
+                                routeValues.Add(key, fluidValue.ToStringValue());
+                            }
+                        }
                     }
 
                     break;

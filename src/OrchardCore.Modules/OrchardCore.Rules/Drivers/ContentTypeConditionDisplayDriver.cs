@@ -19,7 +19,7 @@ public sealed class ContentTypeConditionDisplayDriver : DisplayDriver<Condition,
     {
         return
             CombineAsync(
-                View("ContentTypeCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                View("ContentTypeCondition_Fields_Summary", condition).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("ContentTypeCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
             );
     }

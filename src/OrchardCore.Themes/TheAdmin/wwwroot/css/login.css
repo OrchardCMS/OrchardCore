@@ -8,6 +8,10 @@ body, html {
   margin: auto;
 }
 
+.g-recaptcha {
+  margin-bottom: 1rem;
+}
+
 span.field-validation-error {
   width: 100%;
 }

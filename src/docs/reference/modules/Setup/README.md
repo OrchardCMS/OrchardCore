@@ -23,7 +23,7 @@ These parameters can be used in the recipe using a scripted value like `[js: par
 
 Custom configuration keys can also be used in the recipe, using a scripted key value like `[js: configuration('CustomConfigurationKey')]`.
 
-The key will be retrieved from the current [IShellConfiguration](../../core/Configuration/README.md).
+The key will be retrieved from the current [IShellConfiguration](../Configuration/README.md).
 
 For example to provide a key for a tenant
 

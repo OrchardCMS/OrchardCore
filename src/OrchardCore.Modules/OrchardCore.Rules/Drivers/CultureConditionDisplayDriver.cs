@@ -19,7 +19,7 @@ public sealed class CultureConditionDisplayDriver : DisplayDriver<Condition, Cul
     {
         return
             CombineAsync(
-                View("CultureCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                View("CultureCondition_Fields_Summary", condition).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("CultureCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
             );
     }
