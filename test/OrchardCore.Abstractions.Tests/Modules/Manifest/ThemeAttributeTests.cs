@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 using OrchardCore.Modules.Manifest;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace OrchardCore.DisplayManagement.Manifest;
 /// <inheritdoc/>
