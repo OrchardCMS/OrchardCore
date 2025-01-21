@@ -11,7 +11,7 @@
 
   // The variables are evaluated the first time they are accessed, and reused across steps
   "variables": {
-    "homeContentItemId": "[js:uuid()]",
+    "homeContentItemId": "[js:uuid()]"
   },
 
   "steps": [
@@ -83,26 +83,6 @@
       "name": "themes",
       "admin": "TheAdmin",
       "site": "TheBlogTheme"
-    },
-    {
-      "name": "Roles",
-      "Roles": [
-        {
-          "Name": "Administrator",
-          "Description": "A system role that grants all permissions to the assigned users.",
-          "Permissions": []
-        },
-        {
-          "Name": "Authenticated",
-          "Description": "A system role representing all authenticated users.",
-          "Permissions": []
-        },
-        {
-          "Name": "Anonymous",
-          "Description": "A system role representing all non-authenticated users.",
-          "Permissions": []
-        }
-      ]
     },
     {
       "name": "settings",

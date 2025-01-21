@@ -5,7 +5,7 @@
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="admin"></style>
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head" depends-on="admin"></style>
 
-<script asp-name="vuejs" at="Foot"></script>
+<script asp-name="vuejs" at="Foot" version="2"></script>
 <script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.js" at="Foot" depends-on="jQuery-ui"></script>
 <script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="jQuery"></script>
 
@@ -89,7 +89,7 @@
         var allItems = JConvert.SerializeObject(Model.AllItems, JOptions.CamelCase);
     }
 
-    <script asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>
+    <script asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.js" at="Foot" depends-on="vuejs:2, vue-multiselect"></script>
     <style asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.css" depends-on="vue-multiselect"></style>
 
     <label asp-for="SelectedPermissionNames" class="form-label">@T["Permissions"]</label>
@@ -113,19 +113,19 @@
         <div class="mb-3">
             <div class="w-xl-50">
                 <input asp-for="SelectedPermissionNames" type="hidden" v-model="selectedNames" />
-                <vue-multiselect v-model="value" 
-                                :options="options" 
-                                track-by="name"
-                                label="displayText" 
-                                placeholder="@T["Type to search"]"
-                                @@select="onSelect"
-                                :searchable="true" 
-                                :close-on-select="true" 
-                                :reset-after="true"
-                                :show-labels="true" 
-                                :hide-selected="false"
-                                select-label="@T["Select"]" 
-                                deselect-label="@T["Remove"]">
+                <vue-multiselect v-model="value"
+                                 :options="options"
+                                 track-by="name"
+                                 label="displayText"
+                                 placeholder="@T["Type to search"]"
+                                 @@select="onSelect"
+                                 :searchable="true"
+                                 :close-on-select="true"
+                                 :reset-after="true"
+                                 :show-labels="true"
+                                 :hide-selected="false"
+                                 select-label="@T["Select"]"
+                                 deselect-label="@T["Remove"]">
                     <template slot="option" slot-scope="props">
                         <div v-cloak><span>{{ props.option.displayText }}</span></div>
                     </template>
@@ -137,7 +137,11 @@
             </div>
         </div>
     </div>
-    <script at="Foot" depends-on="admin-menu-permission-picker">initAdminMenuPermissionsPicker(document.querySelector("#PermissionPicker"))</script>
+    <script at="Foot" depends-on="admin-menu-permission-picker">
+        document.addEventListener('DOMContentLoaded', () => {
+            initAdminMenuPermissionsPicker(document.querySelector("#PermissionPicker"));
+        });
+    </script>
 </div>
 
 <script at="Foot">

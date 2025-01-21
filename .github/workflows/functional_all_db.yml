@@ -29,15 +29,12 @@ jobs:
         github.event_name == 'push' ||
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container:
       image: cypress/included:13.17.0
     steps:
     - uses: actions/checkout@v4
-      # We need to install dotnet in the docker container.
-    - uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x'
+    - uses: ./.github/actions/setup-dotnet
     - uses: actions/setup-node@v4
       with:
         node-version: "15"
@@ -59,17 +56,14 @@ jobs:
         github.event_name == 'push' ||
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container:
       image: cypress/included:13.17.0
     env:
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@v4
-      # We need to install dotnet in the docker container.
-    - uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x'
+    - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
@@ -90,7 +84,7 @@ jobs:
         github.event_name == 'push' ||
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container:
       image: cypress/included:13.17.0
     services:
@@ -112,10 +106,7 @@ jobs:
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@v4
-      # We need to install dotnet in the docker container.
-    - uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x'
+    - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
@@ -136,7 +127,7 @@ jobs:
         github.event_name == 'push' ||
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container:
       image: cypress/included:13.17.0
     services:
@@ -154,10 +145,7 @@ jobs:
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@v4
-      # We need to install dotnet in the docker container.
-    - uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x'
+    - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
@@ -178,7 +166,7 @@ jobs:
         github.event_name == 'push' ||
         github.event.review.state == 'APPROVED' ||
         github.event.review.state == 'CHANGES_REQUESTED'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container:
       image: cypress/included:13.17.0
     services:
@@ -195,10 +183,7 @@ jobs:
       OrchardCore__OrchardCore_YesSql__EnableThreadSafetyChecks: true
     steps:
     - uses: actions/checkout@v4
-      # We need to install dotnet in the docker container.
-    - uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x'
+    - uses: ./.github/actions/setup-dotnet
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional

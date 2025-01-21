@@ -185,7 +185,7 @@ Here you can find a list of different environments with a Dockerfile example for
 
 ### Dockerfile-CI, Dockerfile-CI.gitignore
 
-Github Actions is the Continuous Integration tool we use to build and test the different branches we have in our repository. It can allow us to create Docker images and containers but building Orchard Core on them would be slower than on the actual CI. So, for that matter, we don't use an intermediate image for building on the CI. Though, it perfectly makes sense to do this locally for yourself as performance should not be limited at all.
+GitHub Actions is the Continuous Integration tool we use to build and test the different branches we have in our repository. It can allow us to create Docker images and containers but building Orchard Core on them would be slower than on the actual CI. So, for that matter, we don't use an intermediate image for building on the CI. Though, it perfectly makes sense to do this locally for yourself as performance should not be limited at all.
 
 ## Can I use different Dockerfiles for myself?
 
@@ -196,7 +196,7 @@ See :
 [Build images with BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/)  
 [What is Docker BuildKit and What can I use it for?](https://brianchristner.io/what-is-docker-buildkit/#:~:text=Docker%20BuildKit%20is%20a%20little,and%20increase%20productivity%20for%20free.)  
 
-Github Actions currently supports Buildkit under Linux only.  
+GitHub Actions currently supports Buildkit under Linux only.  
 
 See :
 

@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using OrchardCore.DisplayManagement.Manifest;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace OrchardCore.Modules.Manifest;
 

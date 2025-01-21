@@ -11,7 +11,7 @@ public sealed class UserRegistrationAdminDisplayDriver : DisplayDriver<User>
     {
         return CombineAsync(
             Initialize<SummaryAdminUserViewModel>("UserSendConfirmationActionsMenu", model => model.User = user)
-            .Location("SummaryAdmin", "ActionsMenu:15")
+            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:15")
         );
     }
 }

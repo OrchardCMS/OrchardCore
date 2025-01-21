@@ -42,14 +42,17 @@ public sealed class NotificationNavbarDisplayDriver : DisplayDriver<Navbar>
             .Processing<UserNotificationNavbarViewModel>(async model =>
             {
                 var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
                 var notifications = (await _session.Query<Notification, NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection)
                     .OrderByDescending(x => x.CreatedAtUtc)
-                    .Take(_notificationOptions.TotalUnreadNotifications + 1)
+                    .Take(_notificationOptions.TotalUnreadNotifications)
                     .ListAsync()).ToList();
 
                 model.Notifications = notifications;
                 model.MaxVisibleNotifications = _notificationOptions.TotalUnreadNotifications;
-                model.TotalUnread = notifications.Count;
+                model.TotalUnread = notifications.Count < _notificationOptions.TotalUnreadNotifications
+                ? notifications.Count
+                : await _session.QueryIndex<NotificationIndex>(x => x.UserId == userId && !x.IsRead, collection: NotificationConstants.NotificationCollection).CountAsync();
 
             }).Location("Detail", "Content:9")
             .Location("DetailAdmin", "Content:9");
