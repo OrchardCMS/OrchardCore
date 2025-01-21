@@ -10,6 +10,7 @@ import postcssRTLCSS from "postcss-rtlcss";
 import { Mode, Source } from "postcss-rtlcss/options";
 
 let action = process.argv[2];
+let mode = action === "build" ? "production" : "development";
 const config = JSON5.parse(
     Buffer.from(process.argv[3], "base64").toString("utf-8")
 );
@@ -75,24 +76,27 @@ glob(config.source).then((files) => {
 
                     if (fileInfo.ext === ".scss") {
                         const scssResult = await sass.compileAsync(file, {
-                            sourceMap: true,
+                            sourceMap: mode === "development",
                             sourceMapIncludeSources: false,
                         });
 
-                        /*                         if (scssResult.sourceMap) {
+                        if (scssResult.sourceMap) {
                             const mappedTarget = path.join(
                                 dest,
                                 path.parse(target).name + ".scss.map"
                             );
-                            fs.outputFile(mappedTarget, JSON5.stringify(scssResult.sourceMap));
+                            fs.outputFile(
+                                mappedTarget,
+                                JSON5.stringify(scssResult.sourceMap)
+                            );
                             console.log(
-                                `Mapped (${chalk.gray(
-                                    "from"
-                                )}, ${chalk.cyan("to")})`,
+                                `Mapped (${chalk.gray("from")}, ${chalk.cyan(
+                                    "to"
+                                )})`,
                                 chalk.gray(file),
                                 chalk.cyan(mappedTarget)
                             );
-                        } */
+                        }
 
                         if (scssResult.css) {
                             const normalTarget = path.join(

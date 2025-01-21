@@ -10,6 +10,8 @@ import postcssRTLCSS from "postcss-rtlcss";
 import { Mode, Source } from "postcss-rtlcss/options";
 
 let action = process.argv[2];
+let mode = action === "build" ? "production" : "development";
+
 const config = JSON5.parse(
     Buffer.from(process.argv[3], "base64").toString("utf-8")
 );
@@ -88,7 +90,7 @@ glob(config.source).then((files) => {
 
                         swc.minify(reader, {
                             compress: true,
-                            sourceMap: true,
+                            sourceMap: mode === "development",
                         }).then((output) => {
                             const minifiedTarget = path.join(
                                 dest,
@@ -103,19 +105,24 @@ glob(config.source).then((files) => {
                                 chalk.cyan(minifiedTarget)
                             );
 
-                            const mappedTarget = path.join(
-                                dest,
-                                path.parse(target).name + ".map"
-                            );
-                            const normalized = output.map.replace(/(?:\\[rn])+/g, "\\n");
-                            fs.outputFile(mappedTarget, normalized + "\n");
-                            console.log(
-                                `Mapped (${chalk.gray("from")}, ${chalk.cyan(
-                                    "to"
-                                )})`,
-                                chalk.gray(file),
-                                chalk.cyan(mappedTarget)
-                            );
+                            if (output.map) {
+                                const mappedTarget = path.join(
+                                    dest,
+                                    path.parse(target).name + ".map"
+                                );
+                                const normalized = output.map.replace(
+                                    /(?:\\[rn])+/g,
+                                    "\\n"
+                                );
+                                fs.outputFile(mappedTarget, normalized + "\n");
+                                console.log(
+                                    `Mapped (${chalk.gray(
+                                        "from"
+                                    )}, ${chalk.cyan("to")})`,
+                                    chalk.gray(file),
+                                    chalk.cyan(mappedTarget)
+                                );
+                            }
                         });
 
                         fs.copy(file, target)
@@ -174,33 +181,35 @@ glob(config.source).then((files) => {
                             path.parse(target).base
                         );
 
-                        await fs.outputFile(copyTarget, reader).then(() => {
-                            console.log(
-                                `Copied (${chalk.gray(
-                                    "from"
-                                )}, ${chalk.cyan("to")})`,
-                                chalk.gray(file),
-                                chalk.cyan(target)
-                            )
-                        })
-                        .catch((err) => {
-                            console.log(
-                                `${chalk.red(
-                                    "Error copying"
-                                )} (${chalk.gray("from")}, ${chalk.cyan(
-                                    "to"
-                                )})`,
-                                chalk.gray(file),
-                                chalk.cyan(target),
-                                chalk.red(err)
-                            );
-                            throw err;
-                        });
+                        await fs
+                            .outputFile(copyTarget, reader)
+                            .then(() => {
+                                console.log(
+                                    `Copied (${chalk.gray(
+                                        "from"
+                                    )}, ${chalk.cyan("to")})`,
+                                    chalk.gray(file),
+                                    chalk.cyan(target)
+                                );
+                            })
+                            .catch((err) => {
+                                console.log(
+                                    `${chalk.red(
+                                        "Error copying"
+                                    )} (${chalk.gray("from")}, ${chalk.cyan(
+                                        "to"
+                                    )})`,
+                                    chalk.gray(file),
+                                    chalk.cyan(target),
+                                    chalk.red(err)
+                                );
+                                throw err;
+                            });
 
                         let { code, map } = transform({
                             code: Buffer.from(reader),
                             minify: true,
-                            sourceMap: true,
+                            sourceMap: mode === "development",
                         });
 
                         if (code) {
@@ -226,8 +235,13 @@ glob(config.source).then((files) => {
                                 dest,
                                 path.parse(target).name + ".map"
                             );
-                            const normalized = map.toString().replace(/(?:\\[rn])+/g, "\\n");
-                            await fs.outputFile(mappedTarget, normalized + "\n");
+                            const normalized = map
+                                .toString()
+                                .replace(/(?:\\[rn])+/g, "\\n");
+                            await fs.outputFile(
+                                mappedTarget,
+                                normalized + "\n"
+                            );
                             console.log(
                                 `Mapped (${chalk.gray("from")}, ${chalk.cyan(
                                     "to"
