@@ -1,4 +1,5 @@
 using System.IO.Hashing;
+using System.Net;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -42,11 +43,14 @@ public static class GetSdkEndpoints
         var scriptBytes = cache.Get(scriptCacheKey) as byte[];
         if (scriptBytes == null)
         {
+            var encodedLanguage = WebUtility.UrlEncode(language.Replace('-', '_'));
+            var encodedFilename = WebUtility.UrlEncode(sdkFilename);
+
             // Note: Update script version in ResourceManagementOptionsConfiguration.cs after editing
             scriptBytes = Encoding.UTF8.GetBytes($@"(function(d){{
                 var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {{ return; }}
                 js = d.createElement('script'); js.id = id; js.async = true;
-                js.src = ""https://connect.facebook.net/{language.Replace('-', '_')}/{sdkFilename}"";
+                js.src = ""https://connect.facebook.net/{encodedLanguage}/{encodedFilename}"";
                 d.getElementsByTagName('head')[0].appendChild(js);
             }} (document));");
 
