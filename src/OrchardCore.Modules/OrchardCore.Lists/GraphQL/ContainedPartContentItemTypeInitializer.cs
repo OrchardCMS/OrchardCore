@@ -9,7 +9,7 @@ namespace OrchardCore.Lists.GraphQL;
 
 internal sealed class ContainedPartContentItemTypeInitializer : IContentItemTypeInitializer
 {
-    internal IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public ContainedPartContentItemTypeInitializer(IStringLocalizer<ContainedPartContentItemTypeInitializer> stringLocalizer)
     {
