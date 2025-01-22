@@ -49,7 +49,7 @@ public class DefaultSystemRoleProviderTests
     }
 
     [Fact]
-    public void GetAdminRole_WhenCalled_UseAdminRoleNameFromTheTenantSettings()
+    public void GetAdminRole_FromTheTenantSettings_ReturnsAdminRoleName()
     {
         // Arrange
         var adminRoleName = "Foo";
