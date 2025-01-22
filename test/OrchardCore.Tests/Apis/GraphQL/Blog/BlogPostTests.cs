@@ -207,7 +207,7 @@ public class BlogPostTests
 
         await context.InitializeAsync();
 
-        var response = await context.GraphQLClient.Client.GetAsync("api/graphql");
+        var response = await context.GraphQLClient.Client.GetAsync("api/graphql", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
