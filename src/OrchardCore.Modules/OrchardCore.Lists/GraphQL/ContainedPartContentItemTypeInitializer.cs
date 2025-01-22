@@ -18,12 +18,19 @@ internal sealed class ContainedPartContentItemTypeInitializer : IContentItemType
 
     public void Initialize(ContentItemType contentItemType, ISchema schema)
     {
-        // Get all types with a list part that can contain the current type.
-        var parentTypes = schema.AdditionalTypeInstances
-            .Where(t => t.Metadata.TryGetValue(nameof(ListPartSettings.ContainedContentTypes), out var containedTypes) && ((containedTypes as IEnumerable<string>)?.Any(ct => ct == contentItemType.Name) ?? false));
-
-        foreach (var parentType in parentTypes)
+        foreach (var type in schema.AdditionalTypeInstances)
         {
+            // Get all types with a list part that can contain the current type.
+            if (!type.Metadata.TryGetValue(nameof(ListPartSettings.ContainedContentTypes), out var containedTypes))
+            {
+                continue;
+            }
+
+            if ((containedTypes as IEnumerable<string>)?.Any(ct => ct == contentItemType.Name) != true)
+            {
+                continue;
+            }
+
             var fieldType = schema.AdditionalTypeInstances.FirstOrDefault(t => t is ContainedQueryObjectType);
 
             if (fieldType == null)
@@ -32,8 +39,8 @@ internal sealed class ContainedPartContentItemTypeInitializer : IContentItemType
                 schema.RegisterType(fieldType);
             }
 
-            contentItemType.Field<ContainedQueryObjectType>(parentType.Name.ToFieldName())
-                .Description(S["The parent content item of type {0}.", parentType.Name])
+            contentItemType.Field<ContainedQueryObjectType>(type.Name.ToFieldName())
+                .Description(S["The parent content item of type {0}.", type.Name])
                 .Type(fieldType)
                 .Resolve(context =>
                 {

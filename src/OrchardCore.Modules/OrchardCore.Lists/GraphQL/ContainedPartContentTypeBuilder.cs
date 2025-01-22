@@ -17,7 +17,7 @@ internal sealed class ContainedPartContentTypeBuilder : IContentTypeBuilder
                 continue;
             }
 
-            if (contentItemType.Metadata.TryGetValue("ContainedContentTypes", out var containedContentTypes) &&
+            if (contentItemType.Metadata.TryGetValue(nameof(ListPartSettings.ContainedContentTypes), out var containedContentTypes) &&
                 containedContentTypes is IEnumerable<string> existingContainedContentTypes)
             {
                 contentItemType.Metadata[nameof(ListPartSettings.ContainedContentTypes)] = existingContainedContentTypes.Concat(settings.ContainedContentTypes).Distinct().ToArray();
