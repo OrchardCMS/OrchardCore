@@ -23,7 +23,7 @@ You may configure the **Default Azure Communication Services** using any configu
 }
 ```
 
-For more information about configurations, please refer to [Configuration](../../core/Configuration/README.md).
+For more information about configurations, please refer to [Configuration](../Configuration/README.md).
 
 !!! note
     Configuration of the **Default Azure Communication Services** provider cannot be performed through Admin Settings. Instead, use the configuration provider for setup. Note that the provider will only appear if the configuration is present.

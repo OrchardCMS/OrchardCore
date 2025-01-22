@@ -17,7 +17,10 @@ public sealed class Startup : StartupBase
     {
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AdminMenu>();
+
+#pragma warning disable CS0618 // Type or member is obsolete
         services.AddScoped<IAdminMenuPermissionService, AdminMenuPermissionService>();
+#pragma warning restore CS0618 // Type or member is obsolete
 
         services.AddScoped<IAdminMenuService, AdminMenuService>();
         services.AddScoped<AdminMenuNavigationProvidersCoordinator>();

@@ -1,17 +1,17 @@
-using OrchardCore.AdminMenu.Services;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu.AdminNodes;
 
 public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
 {
-    private readonly IAdminMenuPermissionService _adminMenuPermissionService;
+    private readonly IPermissionService _permissionService;
 
-    public LinkAdminNodeDriver(IAdminMenuPermissionService adminMenuPermissionService)
+    public LinkAdminNodeDriver(IPermissionService permissionService)
     {
-        _adminMenuPermissionService = adminMenuPermissionService;
+        _permissionService = permissionService;
     }
 
     public override Task<IDisplayResult> DisplayAsync(LinkAdminNode treeNode, BuildDisplayContext context)
@@ -31,22 +31,23 @@ public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
             model.IconClass = treeNode.IconClass;
             model.Target = treeNode.Target;
 
-            var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
-
-            var selectedPermissions = permissions.Where(p => treeNode.PermissionNames.Contains(p.Name));
+            var selectedPermissions = await _permissionService.FindByNamesAsync(treeNode.PermissionNames);
 
             model.SelectedItems = selectedPermissions
                 .Select(p => new PermissionViewModel
                 {
                     Name = p.Name,
                     DisplayText = p.Description
-                }).ToList();
+                }).ToArray();
+
+            var permissions = await _permissionService.GetPermissionsAsync();
+
             model.AllItems = permissions
                 .Select(p => new PermissionViewModel
                 {
                     Name = p.Name,
                     DisplayText = p.Description
-                }).ToList();
+                }).ToArray();
         }).Location("Content");
     }
 
@@ -69,10 +70,8 @@ public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
             ? []
             : model.SelectedPermissionNames.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
-        var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
-        treeNode.PermissionNames = permissions
-            .Where(p => selectedPermissions.Contains(p.Name))
-            .Select(p => p.Name).ToArray();
+        var permissions = await _permissionService.FindByNamesAsync(selectedPermissions);
+        treeNode.PermissionNames = permissions.Select(p => p.Name).ToArray();
 
         return Edit(treeNode, context);
     }

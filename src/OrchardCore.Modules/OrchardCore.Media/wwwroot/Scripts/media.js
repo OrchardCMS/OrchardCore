@@ -1976,10 +1976,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
           }
         }
       });
-      $('#create-folder-name').keypress(function (e) {
-        var key = e.which;
-        if (key == 13) {
-          // the enter key code
+      $('#create-folder-name').keydown(function (e) {
+        if (e.key == 'Enter') {
           $('#modalFooterOk').click();
           return false;
         }

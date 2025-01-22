@@ -21,7 +21,7 @@ public sealed class ReCaptchaPartDisplayDriver : ContentPartDisplayDriver<ReCapt
         {
             var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
             model.SettingsAreConfigured = settings.ConfigurationExists();
-        }).Location("Detail", "Content");
+        }).Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(ReCaptchaPart part, BuildPartEditorContext context)

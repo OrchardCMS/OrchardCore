@@ -1,5 +1,5 @@
 /*!
- * Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  * Copyright 2024 Fonticons, Inc.
  */
@@ -207,7 +207,7 @@
       }
     };
 
-  var po = {
+  var ua = {
       classic: {
         "fa-brands": "fab",
         "fa-duotone": "fad",
@@ -234,7 +234,7 @@
         "fa-thin": "fasdt"
       }
     },
-    co = {
+    ga = {
       classic: {
         fab: "fa-brands",
         fad: "fa-duotone",
@@ -295,10 +295,10 @@
     duotone: 'fad'
   }), _STYLE_TO_PREFIX[s]), Et['kit']), Et['kit-duotone']);
   const STYLE_TO_PREFIX = familyProxy(_STYLE_TO_PREFIX);
-  const _PREFIX_TO_LONG_STYLE = _objectSpread2({}, co);
+  const _PREFIX_TO_LONG_STYLE = _objectSpread2({}, ga);
   _PREFIX_TO_LONG_STYLE[s] = _objectSpread2(_objectSpread2({}, _PREFIX_TO_LONG_STYLE[s]), Wt['kit']);
   const PREFIX_TO_LONG_STYLE = familyProxy(_PREFIX_TO_LONG_STYLE);
-  const _LONG_STYLE_TO_PREFIX = _objectSpread2({}, po);
+  const _LONG_STYLE_TO_PREFIX = _objectSpread2({}, ua);
   _LONG_STYLE_TO_PREFIX[s] = _objectSpread2(_objectSpread2({}, _LONG_STYLE_TO_PREFIX[s]), Ct['kit']);
   const LONG_STYLE_TO_PREFIX = familyProxy(_LONG_STYLE_TO_PREFIX);
   const _FONT_WEIGHT_TO_PREFIX = _objectSpread2({}, G);

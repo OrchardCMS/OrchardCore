@@ -1,13 +1,13 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-353-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-356-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
 
 !!! info
-    Do you want to become an Orchard Core contributor too? Awesome! Check out [our contribution guide](../../guides/contributing/README.md).
+    Do you want to become an Orchard Core contributor too? Awesome! Check out [our contribution guide](../../contributing/README.md).
 
 !!! tip
     You can add new contributors by [using the All Contributors bot](https://allcontributors.org/docs/en/bot/usage).
@@ -221,7 +221,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/Tearion"><img src="https://avatars3.githubusercontent.com/u/16781740?v=4?s=100" width="100px;" alt="tearion"/><br /><sub><b>tearion</b></sub></a><br /><a href="#translation-Tearion" title="Translation">🌍</a></td>
-      <td align="center" valign="top" width="16.66%"><a href="https://github.com/Habbni"><img src="https://avatars0.githubusercontent.com/u/13678304?v=4?s=100" width="100px;" alt="habbni"/><br /><sub><b>habbni</b></sub></a><br /><a href="#translation-Habbni" title="Translation">🌍</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/Habbni"><img src="https://avatars0.githubusercontent.com/u/13678304?v=4?s=100" width="100px;" alt="habbni"/><br /><sub><b>habbni</b></sub></a><br /><a href="#translation-Habbni" title="Translation">🌍</a> <a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Habbni" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/EternityTeam"><img src="https://avatars3.githubusercontent.com/u/14150259?v=4?s=100" width="100px;" alt="Eternity"/><br /><sub><b>Eternity</b></sub></a><br /><a href="#translation-EternityTeam" title="Translation">🌍</a> <a href="https://github.com/OrchardCMS/OrchardCore/commits?author=EternityTeam" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/nakamura2000"><img src="https://avatars1.githubusercontent.com/u/22187826?v=4?s=100" width="100px;" alt="nakamura2000"/><br /><sub><b>nakamura2000</b></sub></a><br /><a href="#translation-nakamura2000" title="Translation">🌍</a> <a href="https://github.com/OrchardCMS/OrchardCore/commits?author=nakamura2000" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://www.simplesyn.net"><img src="https://avatars0.githubusercontent.com/u/7062785?v=4?s=100" width="100px;" alt="Georg von Kries"/><br /><sub><b>Georg von Kries</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=gvkries" title="Code">💻</a></td>
@@ -489,6 +489,11 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/adamradocz"><img src="https://avatars.githubusercontent.com/u/16503773?v=4?s=100" width="100px;" alt="Adam Radocz"/><br /><sub><b>Adam Radocz</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=adamradocz" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/jbytes1027"><img src="https://avatars.githubusercontent.com/u/50090107?v=4?s=100" width="100px;" alt="James Pretorius"/><br /><sub><b>James Pretorius</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=jbytes1027" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/sparkie79"><img src="https://avatars.githubusercontent.com/u/4757890?v=4?s=100" width="100px;" alt="sparkie79"/><br /><sub><b>sparkie79</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=sparkie79" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/salmattia"><img src="https://avatars.githubusercontent.com/u/36173554?v=4?s=100" width="100px;" alt="Mattia Salvetti"/><br /><sub><b>Mattia Salvetti</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=salmattia" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/cbadger-montecitobank"><img src="https://avatars.githubusercontent.com/u/123421218?v=4?s=100" width="100px;" alt="cbadger"/><br /><sub><b>cbadger</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=cbadger-montecitobank" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/jeff-techstension"><img src="https://avatars.githubusercontent.com/u/157553534?v=4?s=100" width="100px;" alt="jeff-techstension"/><br /><sub><b>jeff-techstension</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=jeff-techstension" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
