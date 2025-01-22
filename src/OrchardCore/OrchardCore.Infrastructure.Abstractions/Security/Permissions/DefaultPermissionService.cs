@@ -49,10 +49,7 @@ public sealed class DefaultPermissionService : IPermissionService
 
             foreach (var permission in permissions)
             {
-                if (!_permissions.TryAdd(permission.Name, permission))
-                {
-                    throw new InvalidOperationException($"The permission {permission.Name} already exists. Ambiguous permission names are not allowed.");
-                }
+                _permissions[permission.Name] = permission;
             }
         }
     }

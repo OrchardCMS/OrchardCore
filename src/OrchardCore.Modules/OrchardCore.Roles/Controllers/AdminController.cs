@@ -167,11 +167,17 @@ public sealed class AdminController : Controller
             IsAdminRole = await _roleService.IsAdminRoleAsync(role.RoleName),
         };
 
+        var installedPermissions = await GetInstalledPermissionsAsync();
+        var allPermissions = installedPermissions.SelectMany(x => x.Value);
+
+        ViewData["DuplicatedPermissions"] = allPermissions
+            .GroupBy(p => p.Name.ToUpperInvariant())
+            .Where(g => g.Count() > 1)
+            .Select(g => g.First().Name)
+            .ToArray();
+
         if (!await _roleService.IsAdminRoleAsync(role.RoleName))
         {
-            var installedPermissions = await GetInstalledPermissionsAsync();
-            var allPermissions = installedPermissions.SelectMany(x => x.Value);
-
             model.EffectivePermissions = await GetEffectivePermissions(role, allPermissions);
             model.RoleCategoryPermissions = installedPermissions;
         }
@@ -263,7 +269,6 @@ public sealed class AdminController : Controller
 
     private async Task<IDictionary<PermissionGroupKey, IEnumerable<Permission>>> GetInstalledPermissionsAsync()
     {
-        var allPermissions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var installedPermissions = new Dictionary<PermissionGroupKey, IEnumerable<Permission>>();
         var enabledFeatures = await _shellFeaturesManager.GetEnabledFeaturesAsync();
 
@@ -278,11 +283,6 @@ public sealed class AdminController : Controller
 
             foreach (var permission in permissions)
             {
-                if (!allPermissions.Add(permission.Name))
-                {
-                    throw new InvalidOperationException($"The permission {permission.Name} already exists. Ambiguous permission names are not allowed.");
-                }
-
                 var groupKey = GetGroupKey(feature, permission.Category);
 
                 if (installedPermissions.TryGetValue(groupKey, out var value))
