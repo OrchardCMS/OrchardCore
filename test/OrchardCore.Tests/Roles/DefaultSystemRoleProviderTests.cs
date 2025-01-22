@@ -81,7 +81,7 @@ public class DefaultSystemRoleProviderTests
     [InlineData("TEST", false)]
     [InlineData("TesT", false)]
     [InlineData("test", false)]
-    public void IsSystemRole_WhenCalled_ReturnsTrueIfTheRoleIsSystemRole(string roleName, bool expectedResult)
+    public void IsSystemRole_IfTheRoleExists_ReturnsTrue(string roleName, bool expectedResult)
     {
         // Arrange
         var shellSettings = new ShellSettings();
