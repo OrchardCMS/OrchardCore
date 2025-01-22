@@ -26,7 +26,7 @@ public class DefaultSystemRoleProviderTests
     }
 
     [Fact]
-    public void GetAdminRole_WhenCalled_UseSystemRoleOptions()
+    public void GetAdminRole_FromOptions_ReturnAdminRoleName()
     {
         // Arrange
         var shellSettings = new ShellSettings();
