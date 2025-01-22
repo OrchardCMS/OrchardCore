@@ -1,3 +1,4 @@
+using System.IO.Hashing;
 using System.Text;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
@@ -39,17 +40,6 @@ public static class GetIntellisenseEndpoint
         return Encoding.UTF8.GetBytes(script);
     }
 
-    private static uint GetHashCode(byte[] bytes)
-    {
-        uint hash = 0;
-        foreach (byte b in bytes)
-        {
-            hash += b;
-            hash *= 17;
-        }
-        return hash;
-    }
-
     private static IResult HandleRequest(HttpContext context, IMemoryCache cache, IShellConfiguration shellConfiguration)
     {
         context.Response.Headers.CacheControl = shellConfiguration.GetValue(
@@ -76,11 +66,8 @@ public static class GetIntellisenseEndpoint
             cache.Set(scriptCacheKey, scriptBytes);
         }
 
-// False positive: No comparison is taking place here
-#pragma warning disable RS1024
-        // Uses a custom GetHashCode because Object.GetHashCode differs across processes
-        StringValues eTag = $"\"{GetHashCode(scriptBytes)}\"";
-#pragma warning restore RS1024
+        // Uses cross-processes hashing to enable revalidation after restart
+        StringValues eTag = $"\"{XxHash3.HashToUInt64(scriptBytes, 0)}\"";
 
         // Mark that the eTag corresponds to a fresh file
         cache.Set(eTag, true);
