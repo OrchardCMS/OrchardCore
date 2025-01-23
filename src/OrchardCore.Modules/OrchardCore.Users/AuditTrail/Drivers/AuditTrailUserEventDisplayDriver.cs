@@ -15,6 +15,6 @@ public sealed class AuditTrailUserEventDisplayDriver : AuditTrailEventSectionDis
         {
             m.AuditTrailEvent = auditTrailEvent;
             m.UserEvent = userEvent;
-        }).Location("DetailAdmin", "Content:10");
+        }).Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:10");
     }
 }

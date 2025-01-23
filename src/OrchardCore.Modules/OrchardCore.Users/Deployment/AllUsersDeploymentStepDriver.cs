@@ -9,7 +9,7 @@ public sealed class AllUsersDeploymentStepDriver : DisplayDriver<DeploymentStep,
     public override Task<IDisplayResult> DisplayAsync(AllUsersDeploymentStep step, BuildDisplayContext context)
     {
         return CombineAsync(
-                View("AllUsersDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("AllUsersDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("AllUsersDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content"));
     }
 

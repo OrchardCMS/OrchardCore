@@ -11,7 +11,7 @@ public sealed class ButtonPartDisplayDriver : ContentPartDisplayDriver<ButtonPar
     public override IDisplayResult Display(ButtonPart part, BuildPartDisplayContext context)
     {
         return View("ButtonPart", part)
-            .Location("Detail", "Content");
+            .Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(ButtonPart part, BuildPartEditorContext context)
