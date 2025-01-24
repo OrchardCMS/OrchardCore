@@ -265,6 +265,7 @@ nav:
               - Mini Profiler: reference/modules/MiniProfiler/README.md
               - Modules: reference/modules/Modules/README.md
               - OpenId: reference/modules/OpenId/README.md
+              - Permissions: reference/modules/Security/Permission.md
               - Razor Helpers: reference/modules/Razor/README.md
               - Recipes: reference/modules/Recipes/README.md
               - Redis: reference/modules/Redis/README.md
