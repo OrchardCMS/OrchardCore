@@ -1,5 +1,4 @@
 using System.Collections.Frozen;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Security;
@@ -13,8 +12,7 @@ public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
 
     public DefaultSystemRoleProvider(
         ShellSettings shellSettings,
-        IOptions<SystemRoleOptions> options,
-        IStringLocalizer<DefaultSystemRoleProvider> S)
+        IOptions<SystemRoleOptions> options)
     {
         var adminRoleName = shellSettings["AdminRoleName"];
         if (string.IsNullOrWhiteSpace(adminRoleName))
@@ -30,7 +28,7 @@ public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
         _adminRole = new Role
         {
             RoleName = adminRoleName,
-            RoleDescription = S["A system role that grants all permissions to the assigned users."]
+            RoleDescription = "A system role that grants all permissions to the assigned users.",
         };
 
         _systemRoles = new Dictionary<string, Role>()
@@ -40,14 +38,14 @@ public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
                 OrchardCoreConstants.Roles.Authenticated, new Role
                 {
                     RoleName = OrchardCoreConstants.Roles.Authenticated,
-                    RoleDescription = S["A system role representing all authenticated users."]
+                    RoleDescription = "A system role representing all authenticated users.",
                 }
             },
             {
                 OrchardCoreConstants.Roles.Anonymous, new Role
                 {
                     RoleName = OrchardCoreConstants.Roles.Anonymous,
-                    RoleDescription = S["A system role representing all non-authenticated users."]
+                    RoleDescription = "A system role representing all non-authenticated users.",
                 }
             }
         }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
