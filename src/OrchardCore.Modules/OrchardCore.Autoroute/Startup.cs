@@ -133,13 +133,13 @@ public sealed class WidgetAutourouteStartup : StartupBase
     {
         services.AddShapeTableProvider<WidgetAutorouteShapeTableProvider>();
     }
+}
 
-    [RequireFeatures("OrchardCore.Autoroute")]
-    public class AutoPartStartup : StartupBase
+[RequireFeatures("OrchardCore.Autoroute")]
+public class AutoPartStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
     {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IContentLocalizationHandler, AutorouteContentLocalizationHandler>();
-        }
+        services.AddScoped<IContentLocalizationHandler, AutorouteContentLocalizationHandler>();
     }
 }
