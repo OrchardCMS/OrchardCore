@@ -1,6 +1,6 @@
 name: Unit Tests - MacOS
 on:
-# manual trigger
+  # manual trigger
   workflow_dispatch:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -11,9 +11,7 @@ jobs:
     name: Unit Tests
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '9.0.x'
+    - uses: ./.github/actions/setup-dotnet
     - name: Build and test
       run: |
         dotnet build -c Release /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true

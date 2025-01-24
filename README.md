@@ -25,7 +25,7 @@ Nightly (`main`):
 [![Build status](https://github.com/OrchardCMS/OrchardCore/actions/workflows/preview_ci.yml/badge.svg)](https://github.com/OrchardCMS/OrchardCore/actions?query=workflow%3A%22Preview+-+CI%22)
 [![Cloudsmith](https://api-prd.cloudsmith.io/badges/version/orchardcore/preview/nuget/OrchardCore.Application.Cms.Targets/latest/x/?render=true&badge_token=gAAAAABey9hKFD_C-ZIpLvayS3HDsIjIorQluDs53KjIdlxoDz6Ntt1TzvMNJp7a_UWvQbsfN5nS7_0IbxCyqHZsjhmZP6cBkKforo-NqwrH5-E6QCrJ3D8%3D)](https://cloudsmith.io/~orchardcore/repos/preview/packages/detail/nuget/OrchardCore.Application.Cms.Targets/latest/)
 
-## Project Status: v2.1.2
+## Project Status: v2.1.4
 
 The software is production-ready, and capable of serving large mission-critical applications as well, and we're not aware of any fundamental bugs or missing features we deem crucial. Orchard Core continues to evolve, with each version bringing new improvements, and keeping up with the cutting-edge of .NET.
 
@@ -64,9 +64,9 @@ We're here to help you succeed with Orchard Core!
 
 ## Contributing
 
-It's great that you're thinking about contributing to Orchard Core! You'd join [our wonderful community of contributors](https://docs.orchardcore.net/en/latest/community/).
+It's great that you're thinking about contributing to Orchard Core! You'd join [our wonderful community of contributors](https://docs.orchardcore.net/en/latest/community/contributors/).
 
-Check out the docs [on contributing to Orchard Core](https://docs.orchardcore.net/en/latest/guides/contributing/).
+Check out the docs [on contributing to Orchard Core](https://docs.orchardcore.net/en/latest/contributing/).
 
 ## Preview Package Feed
 
@@ -78,7 +78,7 @@ Cloudsmith is the only fully hosted, cloud-native, universal package management 
 
 ## Code of Conduct
 
-See [our Code of Conduct](https://docs.orchardcore.net/en/latest/guides/contributing/#code-of-conduct).
+See [our Code of Conduct](https://docs.orchardcore.net/en/latest/contributing/#code-of-conduct).
 
 ## .NET Foundation
 

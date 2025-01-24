@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Contents;
 using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -27,6 +30,7 @@ public sealed class LayerFilter : IAsyncResultFilter
     private readonly IMemoryCache _memoryCache;
     private readonly IThemeManager _themeManager;
     private readonly IAdminThemeService _adminThemeService;
+    private readonly IAuthorizationService _authorizationService;
     private readonly ILayerService _layerService;
     private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
 
@@ -40,6 +44,7 @@ public sealed class LayerFilter : IAsyncResultFilter
         IMemoryCache memoryCache,
         IThemeManager themeManager,
         IAdminThemeService adminThemeService,
+        IAuthorizationService authorizationService,
         IVolatileDocumentManager<LayerState> layerStateManager)
     {
         _contentDefinitionManager = contentDefinitionManager;
@@ -51,6 +56,7 @@ public sealed class LayerFilter : IAsyncResultFilter
         _memoryCache = memoryCache;
         _themeManager = themeManager;
         _adminThemeService = adminThemeService;
+        _authorizationService = authorizationService;
         _layerStateManager = layerStateManager;
     }
 
@@ -90,7 +96,8 @@ public sealed class LayerFilter : IAsyncResultFilter
             var updater = _modelUpdaterAccessor.ModelUpdater;
 
             var layersCache = new Dictionary<string, bool>();
-            var contentDefinitions = await _contentDefinitionManager.ListTypeDefinitionsAsync();
+            var widgetDefinitions = (await _contentDefinitionManager.ListWidgetTypeDefinitionsAsync())
+                .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
 
             foreach (var widget in widgets)
             {
@@ -114,7 +121,8 @@ public sealed class LayerFilter : IAsyncResultFilter
                     continue;
                 }
 
-                if (contentDefinitions.Any(c => c.Name == widget.ContentItem.ContentType))
+                if (widgetDefinitions.TryGetValue(widget.ContentItem.ContentType, out var definition) &&
+                    (!definition.IsSecurable() || await _authorizationService.AuthorizeAsync(context.HttpContext.User, CommonPermissions.ViewContent, widget.ContentItem)))
                 {
                     var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
 

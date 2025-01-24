@@ -10,7 +10,7 @@ public sealed class IsAnonymousConditionDisplayDriver : DisplayDriver<Condition,
     {
         return
             CombineAsync(
-                View("IsAnonymousCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                View("IsAnonymousCondition_Fields_Summary", condition).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("IsAnonymousCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
             );
     }

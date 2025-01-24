@@ -20,8 +20,8 @@ public sealed class ReCaptchaPartDisplayDriver : ContentPartDisplayDriver<ReCapt
         return Initialize<ReCaptchaPartViewModel>("ReCaptchaPart", async model =>
         {
             var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
-            model.SettingsAreConfigured = settings.IsValid();
-        }).Location("Detail", "Content");
+            model.SettingsAreConfigured = settings.ConfigurationExists();
+        }).Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(ReCaptchaPart part, BuildPartEditorContext context)
@@ -29,7 +29,7 @@ public sealed class ReCaptchaPartDisplayDriver : ContentPartDisplayDriver<ReCapt
         return Initialize<ReCaptchaPartViewModel>("ReCaptchaPart_Fields_Edit", async model =>
         {
             var settings = await _siteService.GetSettingsAsync<ReCaptchaSettings>();
-            model.SettingsAreConfigured = settings.IsValid();
+            model.SettingsAreConfigured = settings.ConfigurationExists();
         });
     }
 }

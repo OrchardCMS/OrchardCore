@@ -10,7 +10,7 @@ public sealed class AllSitemapsDeploymentStepDriver : DisplayDriver<DeploymentSt
     {
         return
             CombineAsync(
-                View("AllSitemapsDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("AllSitemapsDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("AllSitemapsDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

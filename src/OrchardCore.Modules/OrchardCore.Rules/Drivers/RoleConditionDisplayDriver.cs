@@ -19,7 +19,7 @@ public sealed class RoleConditionDisplayDriver : DisplayDriver<Condition, RoleCo
     {
         return
             CombineAsync(
-                View("RoleCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                View("RoleCondition_Fields_Summary", condition).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("RoleCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
             );
     }

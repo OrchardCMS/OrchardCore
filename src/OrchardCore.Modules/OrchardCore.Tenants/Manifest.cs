@@ -26,7 +26,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Tenants.Distributed",
     Name = "Distributed Tenants",
-    Description = "Keeps in sync tenants states, needs a distributed cache e.g. 'Redis Cache' and a stateless configuration, see: https://docs.orchardcore.net/en/latest/reference/core/Shells/index.html",
+    Description = "Keeps in sync tenants states, needs a distributed cache e.g. 'Redis Cache' and a stateless configuration, see: https://docs.orchardcore.net/en/latest/reference/modules/Shells/index.html",
     Category = "Distributed",
     DefaultTenantOnly = true
 )]
