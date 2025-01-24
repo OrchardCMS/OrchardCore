@@ -13,7 +13,7 @@ public static class HttpBackgroundJob
     /// <summary>
     /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
     /// </summary>
-    public static Task ExecuteAfterEndOfRequestAsync(string jobName, Func<ShellScope, Task> job)
+    private static Task ExecuteAfterEndOfRequestInternalAsync(string jobName, Func<ShellScope, Task> job)
     {
         var scope = ShellScope.Current;
 
@@ -95,5 +95,53 @@ public static class HttpBackgroundJob
         });
 
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
+    /// </summary>
+    public static Task ExecuteAfterEndOfRequestAsync(string jobName, Func<ShellScope, Task> job)
+    {
+        return ExecuteAfterEndOfRequestInternalAsync(jobName, job);
+    }
+
+    /// <summary>
+    /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
+    /// </summary>
+    public static Task ExecuteAfterEndOfRequestAsync<T1>(string jobName, T1 item1, Func<ShellScope, T1, Task> job)
+    {
+        return ExecuteAfterEndOfRequestInternalAsync(jobName, scope => job(scope, item1));
+    }
+
+    /// <summary>
+    /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
+    /// </summary>
+    public static Task ExecuteAfterEndOfRequestAsync<T1, T2>(string jobName, T1 item1, T2 item2, Func<ShellScope, T1, T2, Task> job)
+    {
+        return ExecuteAfterEndOfRequestInternalAsync(jobName, scope => job(scope, item1, item2));
+    }
+
+    /// <summary>
+    /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
+    /// </summary>
+    public static Task ExecuteAfterEndOfRequestAsync<T1, T2, T3>(string jobName, T1 item1, T2 item2, T3 item3, Func<ShellScope, T1, T2, T3, Task> job)
+    {
+        return ExecuteAfterEndOfRequestInternalAsync(jobName, scope => job(scope, item1, item2, item3));
+    }
+
+    /// <summary>
+    /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
+    /// </summary>
+    public static Task ExecuteAfterEndOfRequestAsync<T1, T2, T3, T4>(string jobName, T1 item1, T2 item2, T3 item3, T4 item4, Func<ShellScope, T1, T2, T3, T4, Task> job)
+    {
+        return ExecuteAfterEndOfRequestInternalAsync(jobName, scope => job(scope, item1, item2, item3, item4));
+    }
+
+    /// <summary>
+    /// Executes a background job in an isolated <see cref="ShellScope"/> after the current HTTP request is completed.
+    /// </summary>
+    public static Task ExecuteAfterEndOfRequestAsync<T1, T2, T3, T4, T5>(string jobName, T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, Func<ShellScope, T1, T2, T3, T4, T5, Task> job)
+    {
+        return ExecuteAfterEndOfRequestInternalAsync(jobName, scope => job(scope, item1, item2, item3, item4, item5));
     }
 }
