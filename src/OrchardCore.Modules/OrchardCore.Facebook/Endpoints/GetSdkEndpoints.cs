@@ -21,7 +21,7 @@ public static class GetSdkEndpoints
 {
     public static IEndpointRouteBuilder AddSdkEndpoints(this IEndpointRouteBuilder builder)
     {
-        builder.MapGet("/OrchardCore.Facebook/sdk/fbsdk.js", HandleFbsdkScriptRequestAsync)
+        builder.MapGet("/OrchardCore.Facebook/sdk/init.js", HandleInitScriptRequestAsync)
             .AllowAnonymous()
             .DisableAntiforgery();
 
@@ -60,7 +60,7 @@ public static class GetSdkEndpoints
         return Results.Bytes(scriptBytes, "application/javascript");
     }
 
-    private static async Task<IResult> HandleFbScriptRequestAsync(HttpContext context, ISiteService siteService, IMemoryCache cache, IShellConfiguration shellConfiguration)
+    private static async Task<IResult> HandleInitScriptRequestAsync(HttpContext context, ISiteService siteService, IMemoryCache cache, IShellConfiguration shellConfiguration)
     {
         var settings = await siteService.GetSettingsAsync<FacebookSettings>();
 

@@ -20,7 +20,7 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
         _manifest
             .DefineScript("fb")
             .SetDependencies("fbsdk")
-            .SetUrl("~/OrchardCore.Facebook/sdk/fb.js");
+            .SetUrl("~/OrchardCore.Facebook/sdk/init.js");
     }
 
     public async void Configure(ResourceManagementOptions options)
