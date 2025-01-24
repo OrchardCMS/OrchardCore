@@ -1,5 +1,6 @@
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Media.Fields;
 
@@ -7,14 +8,14 @@ namespace OrchardCore.Media.GraphQL;
 
 public class MediaFieldQueryObjectType : ObjectGraphType<MediaField>
 {
-    public MediaFieldQueryObjectType()
+    public MediaFieldQueryObjectType(IStringLocalizer<MediaFieldQueryObjectType> S)
     {
         Name = nameof(MediaField);
 
         if (MediaAppContextSwitches.EnableLegacyMediaFields)
         {
             Field<ListGraphType<StringGraphType>, IEnumerable<string>>("paths")
-                .Description("the media paths")
+                .Description(S["the media paths"])
                 .PagingArguments()
                 .Resolve(x =>
                 {
@@ -27,7 +28,7 @@ public class MediaFieldQueryObjectType : ObjectGraphType<MediaField>
                 });
 
             Field<ListGraphType<StringGraphType>, IEnumerable<string>>("fileNames")
-                .Description("the media file names")
+                .Description(S["the media file names"])
                 .PagingArguments()
                 .Resolve(x =>
                 {
@@ -40,7 +41,7 @@ public class MediaFieldQueryObjectType : ObjectGraphType<MediaField>
                 });
 
             Field<ListGraphType<StringGraphType>, IEnumerable<string>>("urls")
-                .Description("the absolute urls of the media items")
+                .Description(S["the absolute urls of the media items"])
                 .PagingArguments()
                 .Resolve(x =>
                 {
@@ -55,7 +56,7 @@ public class MediaFieldQueryObjectType : ObjectGraphType<MediaField>
                 });
 
             Field<ListGraphType<StringGraphType>, IEnumerable<string>>("mediatexts")
-            .Description("the media texts")
+            .Description(S["the media texts"])
             .PagingArguments()
             .Resolve(x =>
             {
@@ -68,7 +69,7 @@ public class MediaFieldQueryObjectType : ObjectGraphType<MediaField>
         }
 
         Field<ListGraphType<MediaFileItemType>, IEnumerable<MediaFileItem>>("files")
-            .Description("the files of the media items")
+            .Description(S["the files of the media items"])
             .PagingArguments()
             .Resolve(x =>
             {
@@ -101,12 +102,23 @@ public class MediaFieldQueryObjectType : ObjectGraphType<MediaField>
 
 public sealed class MediaFileItemType : ObjectGraphType<MediaFileItem>
 {
-    public MediaFileItemType()
+    public MediaFileItemType(IStringLocalizer<MediaFileItemType> S)
     {
-        Field<StringGraphType>("fileName").Description("the file name of the media file item").Resolve(x => x.Source.FileName);
-        Field<StringGraphType>("path").Description("the path of the media file item").Resolve(x => x.Source.Path);
-        Field<StringGraphType>("url").Description("the url name of the media file item").Resolve(x => x.Source.Url);
-        Field<StringGraphType>("mediaText").Description("the media text of the file item").Resolve(x => x.Source.MediaText);
+        Field<StringGraphType>("fileName")
+            .Description(S["the file name of the media file item"])
+            .Resolve(x => x.Source.FileName);
+
+        Field<StringGraphType>("path")
+            .Description(S["the path of the media file item"])
+            .Resolve(x => x.Source.Path);
+
+        Field<StringGraphType>("url")
+            .Description(S["the url name of the media file item"])
+            .Resolve(x => x.Source.Url);
+
+        Field<StringGraphType>("mediaText")
+            .Description(S["the media text of the file item"])
+            .Resolve(x => x.Source.MediaText);
     }
 }
 

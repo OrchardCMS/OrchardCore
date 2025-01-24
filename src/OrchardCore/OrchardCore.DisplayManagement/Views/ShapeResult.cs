@@ -187,17 +187,14 @@ public class ShapeResult : IDisplayResult
             newShapeMetadata.Wrappers.Clear();
         }
 
-        if (placement != null)
+        if (placement.Alternates != null)
         {
-            if (placement.Alternates != null)
-            {
-                newShapeMetadata.Alternates.AddRange(placement.Alternates);
-            }
+            newShapeMetadata.Alternates.AddRange(placement.Alternates);
+        }
 
-            if (placement.Wrappers != null)
-            {
-                newShapeMetadata.Wrappers.AddRange(placement.Wrappers);
-            }
+        if (placement.Wrappers != null)
+        {
+            newShapeMetadata.Wrappers.AddRange(placement.Wrappers);
         }
 
         var parentShape = context.Shape;

@@ -293,8 +293,8 @@ public class LuceneIndexManager : IDisposable
                             doc.Add(new TextField(entry.Name, stringValue, store));
                         }
 
-                        // This is for ElasticSearch Queries compatibility since a keyword field is always indexed
-                        // by default when indexing without explicit mapping in ElasticSearch.
+                        // This is for Elasticsearch Queries compatibility since a keyword field is always indexed
+                        // by default when indexing without explicit mapping in Elasticsearch.
                         // Keyword ignore above 256 chars by default.
                         if (store == Field.Store.NO && !entry.Options.HasFlag(DocumentIndexOptions.Keyword) && stringValue.Length <= 256)
                         {

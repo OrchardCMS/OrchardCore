@@ -12,9 +12,6 @@ internal sealed class HttpRequestValue : FluidValue
 {
     public override FluidValues Type => FluidValues.Object;
 
-    /// <summary>
-    /// Creates a new instance of a <see cref="HttpRequestValue"/> for the specified HTTP request.
-    /// </summary>
     public override bool Equals(FluidValue other)
     {
         if (other is null)
@@ -32,11 +29,6 @@ internal sealed class HttpRequestValue : FluidValue
     public override object ToObjectValue() => null;
 
     public override string ToStringValue() => "Request";
-
-#pragma warning disable CS0672 // Member overrides obsolete member
-    public override void WriteTo(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
-#pragma warning restore CS0672 // Member overrides obsolete member
-        => writer.Write(ToStringValue());
 
     public override async ValueTask WriteToAsync(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
         => await writer.WriteAsync(ToStringValue());

@@ -530,16 +530,13 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        if (contentItem != null)
-        {
-            await _contentManager.DiscardDraftAsync(contentItem);
+        await _contentManager.DiscardDraftAsync(contentItem);
 
-            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+        var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-            await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
-                ? H["The draft has been removed."]
-                : H["The {0} draft has been removed.", typeDefinition.DisplayName]);
-        }
+        await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+            ? H["The draft has been removed."]
+            : H["The {0} draft has been removed.", typeDefinition.DisplayName]);
 
         return Url.IsLocalUrl(returnUrl)
             ? this.LocalRedirect(returnUrl, true)

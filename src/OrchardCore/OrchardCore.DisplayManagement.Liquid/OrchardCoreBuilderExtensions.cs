@@ -1,7 +1,6 @@
 using Fluid;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Razor.Compilation;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy;
 using OrchardCore.DisplayManagement.Liquid;
@@ -27,13 +26,9 @@ public static class OrchardCoreBuilderExtensions
 
             services.AddTransient<IConfigureOptions<TemplateOptions>, TemplateOptionsFileProviderSetup>();
 
-            services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<LiquidViewOptions>,
-                LiquidViewOptionsSetup>());
+            services.AddTransient<IConfigureOptions<LiquidViewOptions>, LiquidViewOptionsSetup>();
 
-            services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>,
-                LiquidShapeTemplateOptionsSetup>());
+            services.AddTransient<IConfigureOptions<ShapeTemplateOptions>, LiquidShapeTemplateOptionsSetup>();
 
             services.AddSingleton<IApplicationFeatureProvider<ViewsFeature>, LiquidViewsFeatureProvider>();
             services.AddScoped<IRazorViewExtensionProvider, LiquidViewExtensionProvider>();

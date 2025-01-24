@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AuditTrail.Services;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Users.AuditTrail.Models;
@@ -7,35 +6,33 @@ using OrchardCore.Users.Events;
 
 namespace OrchardCore.Users.AuditTrail.Registration;
 
-public class UserRegistrationEventHandler : IRegistrationFormEvents
+public class UserRegistrationEventHandler : RegistrationFormEventsBase
 {
     private readonly IAuditTrailManager _auditTrailManager;
-    private readonly IServiceProvider _serviceProvider;
-    private UserManager<IUser> _userManager;
+    private readonly UserManager<IUser> _userManager;
 
     public UserRegistrationEventHandler(
         IAuditTrailManager auditTrailManager,
-        IServiceProvider serviceProvider)
+        UserManager<IUser> userManager)
     {
         _auditTrailManager = auditTrailManager;
-        _serviceProvider = serviceProvider;
+        _userManager = userManager;
     }
 
-    public Task RegisteredAsync(IUser user) =>
-        RecordAuditTrailEventAsync(UserRegistrationAuditTrailEventConfiguration.Registered, user);
-
-    #region Unused events
-
-    public Task RegistrationValidationAsync(Action<string, string> reportError) => Task.CompletedTask;
-
-    #endregion
+    public override Task RegisteredAsync(IUser user)
+        => RecordAuditTrailEventAsync(UserRegistrationAuditTrailEventConfiguration.Registered, user);
 
     private async Task RecordAuditTrailEventAsync(string name, IUser user)
     {
         var userName = user.UserName;
-        _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
 
         var userId = await _userManager.GetUserIdAsync(user);
+
+        var userEvent = new AuditTrailUserEvent
+        {
+            UserName = userName,
+            UserId = userId,
+        };
 
         await _auditTrailManager.RecordEventAsync(
             new AuditTrailContext<AuditTrailUserEvent>
@@ -45,11 +42,7 @@ public class UserRegistrationEventHandler : IRegistrationFormEvents
                 userId,
                 userId,
                 userName,
-                new AuditTrailUserEvent
-                {
-                    UserId = userId,
-                    UserName = userName
-                }
+                userEvent
             ));
     }
 }

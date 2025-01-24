@@ -51,12 +51,8 @@ public sealed class Startup : StartupBase
                        .UseYesSql();
             });
 
-        // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
-        services.TryAddEnumerable(new[]
-        {
-            ServiceDescriptor.Scoped<IPermissionProvider, Permissions>(),
-            ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>(),
-        });
+        services.AddPermissionProvider<Permissions>();
+        services.AddNavigationProvider<AdminMenu>();
     }
 }
 

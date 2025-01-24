@@ -52,6 +52,7 @@ public class ScriptsMiddleware
             if (script != null)
             {
                 var bytes = Encoding.UTF8.GetBytes(script);
+                httpContext.Response.ContentType = "text/javascript";
                 await httpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(script).AsMemory(0, bytes.Length), httpContext.RequestAborted);
 
                 return;

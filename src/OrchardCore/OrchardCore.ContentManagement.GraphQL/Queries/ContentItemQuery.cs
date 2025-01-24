@@ -9,20 +9,21 @@ using OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries;
 
-public class ContentItemQuery : ISchemaBuilder
+public sealed class ContentItemQuery : ISchemaBuilder
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    protected readonly IStringLocalizer S;
+
+    internal readonly IStringLocalizer S;
 
     public ContentItemQuery(IHttpContextAccessor httpContextAccessor,
         IStringLocalizer<ContentItemQuery> localizer)
     {
         _httpContextAccessor = httpContextAccessor;
-
         S = localizer;
     }
 
-    public Task<string> GetIdentifierAsync() => Task.FromResult(string.Empty);
+    public Task<string> GetIdentifierAsync()
+        => Task.FromResult(string.Empty);
 
     public Task BuildAsync(ISchema schema)
     {
@@ -35,7 +36,7 @@ public class ContentItemQuery : ISchemaBuilder
                 new QueryArgument<NonNullGraphType<StringGraphType>>
                 {
                     Name = "contentItemId",
-                    Description = S["Content item id"]
+                    Description = S["Content item id"],
                 }
             ),
             Resolver = new FuncFieldResolver<ContentItem>(ResolveAsync)

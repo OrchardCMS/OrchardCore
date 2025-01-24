@@ -8,7 +8,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Search.Lucene.Handler;
 
-public class LuceneAuthorizationHandler(IServiceProvider serviceProvider) : AuthorizationHandler<PermissionRequirement>
+public sealed class LuceneAuthorizationHandler(IServiceProvider serviceProvider) : AuthorizationHandler<PermissionRequirement>
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 

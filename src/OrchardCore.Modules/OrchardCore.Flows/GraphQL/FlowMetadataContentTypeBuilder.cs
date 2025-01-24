@@ -18,4 +18,8 @@ public class FlowMetadataContentTypeBuilder : IContentTypeBuilder
         contentItemType.Field<FlowMetadataQueryObjectType>("metadata")
             .Resolve(context => context.Source.As<FlowMetadata>());
     }
+
+    public void Clear()
+    {
+    }
 }

@@ -1,6 +1,6 @@
 # Orchard Core
 
-Orchard Core is an open-source, modular, multi-tenant application framework and CMS for ASP.NET Core. It's a redevelopment of [Orchard CMS](https://github.com/OrchardCMS/Orchard) on [ASP.NET Core](https://docs.microsoft.com/aspnet/core/). 
+Orchard Core is an open-source, modular, multi-tenant application framework and CMS for ASP.NET Core. It's a redevelopment of [Orchard CMS](https://github.com/OrchardCMS/Orchard) on [ASP.NET Core](https://docs.microsoft.com/aspnet/core/)?
 
 Orchard Core consists of two different targets:
 
@@ -58,7 +58,7 @@ Orchard Core CMS supports all major site building strategies:
 
 ## Status
 
-The latest released version of Orchard Core is `2.0.2`. The release notes can be found under [Releases](releases/2.0.2.md).
+The latest released version of Orchard Core is `2.1.4`. The release notes can be found under [Releases](releases/2.1.4.md).
 
 ## Getting Started
 

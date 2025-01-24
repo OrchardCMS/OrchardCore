@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace OrchardCore.Mvc.RazorPages;
@@ -18,13 +17,11 @@ public static class ModularPageMvcCoreBuilderExtensions
 
     internal static IServiceCollection AddModularRazorPages(this IServiceCollection services)
     {
-        services.TryAddEnumerable(ServiceDescriptor.Singleton<MatcherPolicy, PageEndpointComparerPolicy>());
+        services.AddSingleton<MatcherPolicy, PageEndpointComparerPolicy>();
 
-        services.TryAddEnumerable(
-            ServiceDescriptor.Transient<IConfigureOptions<RazorPagesOptions>, ModularPageRazorPagesOptionsSetup>());
+        services.AddTransient<IConfigureOptions<RazorPagesOptions>, ModularPageRazorPagesOptionsSetup>();
 
-        services.TryAddEnumerable(
-            ServiceDescriptor.Singleton<IPageApplicationModelProvider, ModularPageApplicationModelProvider>());
+        services.AddSingleton<IPageApplicationModelProvider, ModularPageApplicationModelProvider>();
 
         return services;
     }

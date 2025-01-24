@@ -5,7 +5,7 @@ using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.CustomSettings.Services;
 
-public class CustomSettingsAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+public sealed class CustomSettingsAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
     private readonly IServiceProvider _serviceProvider;
 

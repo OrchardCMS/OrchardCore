@@ -22,9 +22,9 @@ public class ListQueryObjectType : ObjectGraphType<ListPart>
         Description = S["Represents a collection of content items."];
 
         Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>("contentItems")
-            .Description("the content items")
-            .Argument<IntGraphType>("first", "the first n elements (10 by default)", config => config.DefaultValue = 10)
-            .Argument<IntGraphType>("skip", "the number of elements to skip", config => config.DefaultValue = 0)
+            .Description(S["the content items"])
+            .Argument<IntGraphType>("first", S["the first n elements (10 by default)"], config => config.DefaultValue = 10)
+            .Argument<IntGraphType>("skip", S["the number of elements to skip"], config => config.DefaultValue = 0)
             // Important to use ResolveLockedAsync to prevent concurrency error on database query, when using nested content items with List part
             .ResolveLockedAsync(async g =>
             {

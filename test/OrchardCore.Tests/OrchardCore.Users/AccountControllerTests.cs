@@ -1,8 +1,6 @@
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.Deployment.Services;
-using OrchardCore.Entities;
-using OrchardCore.Recipes.Services;
-using OrchardCore.Settings;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Users;
 using OrchardCore.Users.Controllers;
@@ -30,9 +28,9 @@ public class AccountControllerTests
             ConfirmPassword = "test@OC!123",
         };
 
-        var responseFromGet = await context.Client.GetAsync("Register");
+        var responseFromGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
         responseFromGet.EnsureSuccessStatusCode();
-        var response = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromGet));
+        var response = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromGet), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
@@ -47,7 +45,7 @@ public class AccountControllerTests
             var externalClaims = new List<SerializableClaim>();
             var userRoles = await userManager.GetRolesAsync(user);
 
-            var context = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties)
+            var context = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties.DeepClone() as JsonObject)
             {
                 UserClaims = user.UserClaims,
                 UserRoles = userRoles
@@ -89,7 +87,7 @@ public class AccountControllerTests
             };
             scriptExternalLoginEventHandler.UpdateUserInternal(context, loginSettings);
 
-            if (await UserManagerHelper.UpdateUserPropertiesAsync(userManager, user, context))
+            if (await userManager.UpdateUserPropertiesAsync(user, context))
             {
                 await userManager.UpdateAsync(user);
             }
@@ -117,7 +115,7 @@ public class AccountControllerTests
             var externalClaims = new List<SerializableClaim>();
             var userRoles = await userManager.GetRolesAsync(user);
 
-            var updateContext = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties)
+            var updateContext = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties.DeepClone() as JsonObject)
             {
                 UserClaims = user.UserClaims,
                 UserRoles = userRoles,
@@ -147,7 +145,7 @@ public class AccountControllerTests
             };
             scriptExternalLoginEventHandler.UpdateUserInternal(updateContext, loginSettings);
 
-            if (await UserManagerHelper.UpdateUserPropertiesAsync(userManager, user, updateContext))
+            if (await userManager.UpdateUserPropertiesAsync(user, updateContext))
             {
                 await userManager.UpdateAsync(user);
             }
@@ -169,7 +167,7 @@ public class AccountControllerTests
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings());
 
-        var responseFromGet = await context.Client.GetAsync("Register");
+        var responseFromGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         Assert.True(responseFromGet.IsSuccessStatusCode);
 
@@ -182,7 +180,7 @@ public class AccountControllerTests
             ConfirmPassword = "test@OC!123",
         };
 
-        var response = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromGet));
+        var response = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromGet), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
@@ -206,7 +204,7 @@ public class AccountControllerTests
         var context = await GetSiteContextAsync(new RegistrationSettings(), false);
 
         // Act
-        var response = await context.Client.GetAsync("Register");
+        var response = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -219,7 +217,7 @@ public class AccountControllerTests
         var context = await GetSiteContextAsync(new RegistrationSettings(), enableRegistrationFeature: false);
 
         // Act
-        var response = await context.Client.GetAsync("Register");
+        var response = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -231,7 +229,7 @@ public class AccountControllerTests
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings());
 
-        var responseFromGet = await context.Client.GetAsync("Register");
+        var responseFromGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         Assert.True(responseFromGet.IsSuccessStatusCode);
 
@@ -246,11 +244,11 @@ public class AccountControllerTests
         }, responseFromGet);
 
         // Act
-        var responseFromPost1 = await context.Client.SendAsync(requestForPost);
+        var responseFromPost1 = await context.Client.SendAsync(requestForPost, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.Redirect, responseFromPost1.StatusCode);
 
-        var responseFromGet2 = await context.Client.GetAsync("Register");
+        var responseFromGet2 = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         Assert.True(responseFromGet2.IsSuccessStatusCode);
 
@@ -262,11 +260,11 @@ public class AccountControllerTests
             ConfirmPassword = "test2@OC!123",
         }, responseFromGet);
 
-        var responseFromPost2 = await context.Client.SendAsync(requestForPost2);
+        var responseFromPost2 = await context.Client.SendAsync(requestForPost2, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(responseFromPost2.IsSuccessStatusCode);
-        Assert.Contains("A user with the same email address already exists.", await responseFromPost2.Content.ReadAsStringAsync());
+        Assert.Contains("A user with the same email address already exists.", await responseFromPost2.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -276,7 +274,7 @@ public class AccountControllerTests
         var context = await GetSiteContextAsync(new RegistrationSettings(), enableRegistrationFeature: true, requireUniqueEmail: false);
 
         // Register First User
-        var responseFromGet = await context.Client.GetAsync("Register");
+        var responseFromGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         Assert.True(responseFromGet.IsSuccessStatusCode);
         var emailAddress = "test@orchardcore.com";
@@ -289,12 +287,12 @@ public class AccountControllerTests
             ConfirmPassword = "test1@OC!123",
         }, responseFromGet);
 
-        var responseFromPost = await context.Client.SendAsync(requestForPost);
+        var responseFromPost = await context.Client.SendAsync(requestForPost, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.Redirect, responseFromPost.StatusCode);
 
         // Register Second User
-        var responseFromGet2 = await context.Client.GetAsync("Register");
+        var responseFromGet2 = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         Assert.True(responseFromGet2.IsSuccessStatusCode);
 
@@ -306,11 +304,11 @@ public class AccountControllerTests
             ConfirmPassword = "test2@OC!123",
         }, responseFromGet);
 
-        var responseFromPost2 = await context.Client.SendAsync(requestForPost2);
+        var responseFromPost2 = await context.Client.SendAsync(requestForPost2, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.Redirect, responseFromPost2.StatusCode);
 
-        var body = await responseFromPost2.Content.ReadAsStringAsync();
+        var body = await responseFromPost2.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         Assert.DoesNotContain("A user with the same email address already exists.", body);
     }
@@ -324,7 +322,7 @@ public class AccountControllerTests
             UsersAreModerated = true,
         });
 
-        var responseFromGet = await context.Client.GetAsync("Register");
+        var responseFromGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         Assert.True(responseFromGet.IsSuccessStatusCode);
 
@@ -337,7 +335,7 @@ public class AccountControllerTests
             ConfirmPassword = "ModerateMe@OC!123",
         };
 
-        var responseFromPost = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromGet));
+        var responseFromPost = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromGet), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Redirect, responseFromPost.StatusCode);
@@ -359,12 +357,12 @@ public class AccountControllerTests
     public async Task Register_WhenRequireEmailConfirmation_RedirectToConfirmEmailSent()
     {
         // Arrange
-        var context = await GetSiteContextAsync(new RegistrationSettings()
+        var context = await GetSiteContextAsync(new RegistrationSettings
         {
             UsersMustValidateEmail = true,
-        });
+        }, true, true, false);
 
-        var responseFromGet = await context.Client.GetAsync("Register");
+        var responseFromGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         Assert.True(responseFromGet.IsSuccessStatusCode);
 
@@ -379,7 +377,7 @@ public class AccountControllerTests
 
         var requestForPost = await CreateRequestMessageAsync(model, responseFromGet);
 
-        var responseFromPost = await context.Client.SendAsync(requestForPost);
+        var responseFromPost = await context.Client.SendAsync(requestForPost, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Redirect, responseFromPost.StatusCode);
@@ -417,98 +415,90 @@ public class AccountControllerTests
 
         await context.InitializeAsync();
 
-        await context.UsingTenantScopeAsync(async scope =>
+        var recipeSteps = new JsonArray
         {
-            if (!requireUniqueEmail)
+            new JsonObject
             {
-                var recipeExecutor = scope.ServiceProvider.GetRequiredService<IRecipeExecutor>();
-                var recipeHarvesters = scope.ServiceProvider.GetRequiredService<IEnumerable<IRecipeHarvester>>();
-                var recipeCollections = await Task.WhenAll(
-                    recipeHarvesters.Select(recipe => recipe.HarvestRecipesAsync()));
-
-                var recipe = recipeCollections.SelectMany(recipeCollection => recipeCollection)
-                    .FirstOrDefault(recipe => recipe.Name == "UserSettingsTest");
-
-                var executionId = Guid.NewGuid().ToString("n");
-
-                await recipeExecutor.ExecuteAsync(
-                    executionId,
-                    recipe,
-                    new Dictionary<string, object>(),
-                    CancellationToken.None);
+                { "name", "settings" },
+                { nameof(RegistrationSettings), JsonSerializer.SerializeToNode(settings)},
+                { nameof(IdentitySettings), JsonSerializer.SerializeToNode(new IdentitySettings
+                {
+                    UserSettings = new IdentityUserSettings
+                    {
+                        RequireUniqueEmail = requireUniqueEmail,
+                    }
+                })},
             }
-
-            var siteService = scope.ServiceProvider.GetRequiredService<ISiteService>();
-
-            var site = await siteService.LoadSiteSettingsAsync();
-
-            site.Put(settings);
-
-            await siteService.UpdateSiteSettingsAsync(site);
-        });
+        };
 
         if (enableRegistrationFeature || enableExternalAuthentication)
         {
-            await context.UsingTenantScopeAsync(async scope =>
+            var featureIds = new JsonArray();
+
+            if (enableRegistrationFeature)
             {
-                var featureIds = new JsonArray();
+                featureIds.Add(UserConstants.Features.UserRegistration);
+            }
 
-                if (enableRegistrationFeature)
-                {
-                    featureIds.Add(UserConstants.Features.UserRegistration);
-                }
+            if (enableExternalAuthentication)
+            {
+                featureIds.Add(UserConstants.Features.ExternalAuthentication);
+            }
 
-                if (enableExternalAuthentication)
-                {
-                    featureIds.Add(UserConstants.Features.ExternalAuthentication);
-                }
-
-                var tempArchiveName = PathExtensions.GetTempFileName() + ".json";
-                var tempArchiveFolder = PathExtensions.GetTempFileName();
-
-                var data = new JsonObject
-                {
-                    ["steps"] = new JsonArray
-                    {
-                        new JsonObject
-                        {
-                            { "name", "feature" },
-                            { "enable", featureIds },
-                        }
-                    },
-                };
-
-                try
-                {
-                    using (var stream = new FileStream(tempArchiveName, FileMode.Create))
-                    {
-                        var bytes = Encoding.UTF8.GetBytes(data.ToString());
-
-                        await stream.WriteAsync(bytes);
-                    }
-
-                    Directory.CreateDirectory(tempArchiveFolder);
-                    File.Move(tempArchiveName, Path.Combine(tempArchiveFolder, "Recipe.json"));
-
-                    var deploymentManager = scope.ServiceProvider.GetRequiredService<IDeploymentManager>();
-
-                    await deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
-                }
-                finally
-                {
-                    if (File.Exists(tempArchiveName))
-                    {
-                        File.Delete(tempArchiveName);
-                    }
-
-                    if (Directory.Exists(tempArchiveFolder))
-                    {
-                        Directory.Delete(tempArchiveFolder, true);
-                    }
-                }
+            recipeSteps.Add(new JsonObject
+            {
+                { "name", "feature" },
+                { "enable", featureIds },
             });
         }
 
+        var recipe = new JsonObject
+        {
+            ["steps"] = recipeSteps,
+        };
+
+        var t = recipe.ToJsonString();
+
+        await RunRecipeAsync(context, recipe);
+
         return context;
+    }
+
+    private static async Task RunRecipeAsync(SiteContext context, JsonObject data)
+    {
+        await context.UsingTenantScopeAsync(async scope =>
+        {
+            var tempArchiveName = PathExtensions.GetTempFileName() + ".json";
+            var tempArchiveFolder = PathExtensions.GetTempFileName();
+
+            try
+            {
+                using (var stream = new FileStream(tempArchiveName, FileMode.Create))
+                {
+                    var bytes = Encoding.UTF8.GetBytes(data.ToJsonString());
+
+                    await stream.WriteAsync(bytes);
+                }
+
+                Directory.CreateDirectory(tempArchiveFolder);
+                File.Move(tempArchiveName, Path.Combine(tempArchiveFolder, "Recipe.json"));
+
+                var deploymentManager = scope.ServiceProvider.GetRequiredService<IDeploymentManager>();
+
+                await deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
+            }
+            finally
+            {
+                if (File.Exists(tempArchiveName))
+                {
+                    File.Delete(tempArchiveName);
+                }
+
+                if (Directory.Exists(tempArchiveFolder))
+                {
+                    Directory.Delete(tempArchiveFolder, true);
+                }
+            }
+        });
     }
 }

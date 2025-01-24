@@ -13,15 +13,15 @@ namespace OrchardCore.Roles.Recipes;
 public sealed class RolesStep : NamedRecipeStepHandler
 {
     private readonly RoleManager<IRole> _roleManager;
-    private readonly ISystemRoleNameProvider _systemRoleNameProvider;
+    private readonly ISystemRoleProvider _systemRoleProvider;
 
     public RolesStep(
         RoleManager<IRole> roleManager,
-        ISystemRoleNameProvider systemRoleNameProvider)
+        ISystemRoleProvider systemRoleProvider)
         : base("Roles")
     {
         _roleManager = roleManager;
-        _systemRoleNameProvider = systemRoleNameProvider;
+        _systemRoleProvider = systemRoleProvider;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
@@ -51,11 +51,33 @@ public sealed class RolesStep : NamedRecipeStepHandler
             if (role is Role r)
             {
                 r.RoleDescription = roleEntry.Description;
-                r.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
 
-                if (!await _systemRoleNameProvider.IsAdminRoleAsync(roleName))
+                if (roleEntry.PermissionBehavior == PermissionBehavior.Replace)
                 {
-                    r.RoleClaims.AddRange(roleEntry.Permissions.Select(RoleClaim.Create));
+                    // At this point, we know we are replacing permissions.
+                    // Remove all existing permission so we can add the replacements later.
+                    r.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
+                }
+
+                if (!_systemRoleProvider.IsAdminRole(roleName))
+                {
+                    if (roleEntry.PermissionBehavior == PermissionBehavior.Remove)
+                    {
+                        // Materialize this list to prevent an exception. 
+                        var permissions = r.RoleClaims.Where(c => c.ClaimType == Permission.ClaimType && roleEntry.Permissions.Contains(c.ClaimValue)).ToArray();
+
+                        foreach (var permission in permissions)
+                        {
+                            r.RoleClaims.Remove(permission);
+                        }
+                    }
+                    else
+                    {
+                        var permissions = roleEntry.Permissions.Select(RoleClaim.Create)
+                            .Where(newClaim => !r.RoleClaims.Exists(existingClaim => existingClaim.ClaimType == newClaim.ClaimType && existingClaim.ClaimValue == newClaim.ClaimValue));
+
+                        r.RoleClaims.AddRange(permissions);
+                    }
                 }
             }
 
@@ -83,4 +105,13 @@ public sealed class RolesStepRoleModel
     public string Description { get; set; }
 
     public string[] Permissions { get; set; }
+
+    public PermissionBehavior PermissionBehavior { get; set; }
+}
+
+public enum PermissionBehavior
+{
+    Replace,
+    Add,
+    Remove,
 }

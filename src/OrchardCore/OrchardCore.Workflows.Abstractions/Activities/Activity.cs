@@ -146,6 +146,6 @@ public abstract class Activity : Entity, IActivity
     protected virtual void SetProperty(object value, [CallerMemberName] string name = null)
     {
         // Properties[name] = JToken.FromObject(value);
-        Properties[name] = JNode.FromObject(value);
+        Properties[name] = value is JsonNode node ? node.DeepClone() : JNode.FromObject(value);
     }
 }
