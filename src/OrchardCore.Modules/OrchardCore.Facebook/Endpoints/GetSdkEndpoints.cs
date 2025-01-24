@@ -53,7 +53,7 @@ public static class GetSdkEndpoints
         }
 
         // Set the cache timeout to the maximum allowed length of one year
-        // max-age is needed because immutable is not widly supported
+        // max-age is needed because immutable is not widely supported
         context.Response.Headers.CacheControl = $"public, max-age=31536000, immutable";
 
         var scriptCacheKey = $"/OrchardCore.Facebook/sdk/fetch_{stem}.{culture}.js";
