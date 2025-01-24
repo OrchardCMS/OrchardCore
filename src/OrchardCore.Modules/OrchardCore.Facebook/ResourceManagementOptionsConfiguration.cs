@@ -1,5 +1,5 @@
-using System.Globalization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Facebook.Endpoints;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Settings;
@@ -26,12 +26,12 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
     public async void Configure(ResourceManagementOptions options)
     {
         var settings = await _siteService.GetSettingsAsync<FacebookSettings>();
-        var language = CultureInfo.CurrentUICulture.Name;
 
         _manifest
             .DefineScript("fbsdk")
+            .SetCultures(GetSdkEndpoints.ValidFacebookCultures)
             // v parameter is for cache busting
-            .SetUrl($"~/OrchardCore.Facebook/sdk/fbsdk.js?sdkf={settings.SdkJs}&lang={language}&v=1.0");
+            .SetUrl($"~/OrchardCore.Facebook/sdk/fetch_{settings.SdkJs}?v=1");
 
         options.ResourceManifests.Add(_manifest);
     }
