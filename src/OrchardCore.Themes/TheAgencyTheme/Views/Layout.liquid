@@ -22,7 +22,7 @@
         <div class="container">
             <a class="navbar-brand" href="{{ '~/#page-top' | href }}">{{ Site.SiteName }}</a>
             <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">{{ "Menu" | t }}<i class="fas fa-bars ms-1" aria-hidden="true"></i></button>
-            {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_tag: "alias:main-menu" %}
+            {% shape "menu", alias: "alias:main-menu", cache_id: "main-menu", cache_fixed_duration: "00:05:00", cache_tag: "alias:main-menu", cache_context: "user.roles" %}
         </div>
     </nav>
     {% render_section "Header", required: false %}

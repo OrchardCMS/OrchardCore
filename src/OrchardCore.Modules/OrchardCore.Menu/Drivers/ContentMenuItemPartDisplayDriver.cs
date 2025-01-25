@@ -29,6 +29,7 @@ public sealed class ContentMenuItemPartDisplayDriver : ContentPartDisplayDriver<
         return Initialize<ContentMenuItemPartEditViewModel>("ContentMenuItemPart_Edit", model =>
         {
             model.Name = part.ContentItem.DisplayText;
+            model.CheckContentPermissions = part.CheckContentPermissions;
             model.MenuItemPart = part;
         });
     }
@@ -40,6 +41,7 @@ public sealed class ContentMenuItemPartDisplayDriver : ContentPartDisplayDriver<
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
         part.ContentItem.DisplayText = model.Name;
+        part.CheckContentPermissions = model.CheckContentPermissions;
 
         return Edit(part, context);
     }

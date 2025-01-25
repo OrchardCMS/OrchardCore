@@ -13,16 +13,17 @@ namespace OrchardCore.Roles.Services;
 public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ISystemRoleNameProvider _systemRoleProvider;
+    private readonly ISystemRoleProvider _systemRoleProvider;
     private readonly IDocumentManager<RolesDocument> _documentManager;
-    protected readonly IStringLocalizer S;
     private readonly ILogger _logger;
+
+    protected readonly IStringLocalizer S;
 
     private bool _updating;
 
     public RoleStore(
         IServiceProvider serviceProvider,
-        ISystemRoleNameProvider systemRoleProvider,
+        ISystemRoleProvider systemRoleProvider,
         IDocumentManager<RolesDocument> documentManager,
         IStringLocalizer<RoleStore> stringLocalizer,
         ILogger<RoleStore> logger)
@@ -91,7 +92,7 @@ public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
             });
         }
 
-        if (await _systemRoleProvider.IsSystemRoleAsync(roleToRemove.RoleName))
+        if (_systemRoleProvider.IsSystemRole(roleToRemove.RoleName))
         {
             return IdentityResult.Failed(new IdentityError
             {

@@ -65,11 +65,6 @@
       "name": "Roles",
       "Roles": [
         {
-          "Name": "Administrator",
-          "Description": "A system role that grants all permissions to the assigned users.",
-          "Permissions": []
-        },
-        {
           "Name": "Moderator",
           "Description": "Grants users the ability to moderate content.",
           "Permissions": []
@@ -97,11 +92,6 @@
             "ExecuteGraphQL",
             "ExecuteApiAll"
           ]
-        },
-        {
-          "Name": "Anonymous",
-          "Description": "A system role representing all non-authenticated users.",
-          "Permissions": []
         }
       ]
     },

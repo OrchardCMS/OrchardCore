@@ -10,7 +10,7 @@ public sealed class AllRolesDeploymentStepDriver : DisplayDriver<DeploymentStep,
     {
         return
             CombineAsync(
-                View("AllRolesDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("AllRolesDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("AllRolesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }
