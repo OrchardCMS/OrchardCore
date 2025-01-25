@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Environment.Shell.Configuration;
-using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Resources.Liquid;
@@ -37,15 +36,5 @@ public sealed class Startup : StartupBase
         serviceCollection.Configure<ResourceOptions>(resourceConfiguration);
 
         serviceCollection.AddScoped<IResourcesTagHelperProcessor, ResourcesTagHelperProcessor>();
-    }
-}
-
-[RequireFeatures("OrchardCore.Liquid")]
-public sealed class ResourcesLiquidStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddLiquidFilter<AppendVersionFilter>("append_version")
-            .AddLiquidFilter<ResourceUrlFilter>("resource_url");
     }
 }

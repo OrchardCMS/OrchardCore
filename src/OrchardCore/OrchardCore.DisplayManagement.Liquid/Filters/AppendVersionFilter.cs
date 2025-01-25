@@ -6,7 +6,6 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters;
 
-[Obsolete("This filter is obsolete. Use OrchardCore.Resources.Liquid.AppendVersionFilter instead.")]
 public class AppendVersionFilter : ILiquidFilter
 {
     private readonly IFileVersionProvider _fileVersionProvider;
