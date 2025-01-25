@@ -23,7 +23,6 @@
     "src/Frontend/",
     "src/OrchardCore.Modules/*",
     "src/OrchardCore.Modules/*/Assets/",
-    "src/OrchardCore.Themes/*",
     "src/OrchardCore.Themes/*/Assets/"
   ],
   "devDependencies": {

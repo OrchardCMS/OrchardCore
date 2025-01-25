@@ -177,7 +177,7 @@ const buildProcesses = groups
                 );
                 break;
             case "min":
-                if (task === "copy" || task === "build" || task === "dry-run") {
+                if (task === "build" || task === "dry-run") {
                     return {
                         order: group.order,
                         name: group.name ?? "MIN",
@@ -195,7 +195,7 @@ const buildProcesses = groups
                 );
                 break;
             case "sass":
-                if (task === "copy" || task === "build" || task === "dry-run") {
+                if (task === "build" || task === "watch") {
                     return {
                         order: group.order,
                         name: group.name ?? "SASS",
