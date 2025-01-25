@@ -1,12 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
-using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.UrlRewriting.Drivers;
 using OrchardCore.UrlRewriting.Endpoints.Rules;
@@ -28,18 +26,18 @@ public sealed class Startup : StartupBase
         services.AddUrlRewritingServices()
             .AddNavigationProvider<AdminMenu>()
             .AddPermissionProvider<UrlRewritingPermissionProvider>()
-            .AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>()
-            .AddScoped<IDisplayDriver<RewriteRule>, RewriteRulesDisplayDriver>();
+            .AddResourceConfiguration<ResourceManagementOptionsConfiguration>()
+            .AddDisplayDriver<RewriteRule, RewriteRulesDisplayDriver>();
 
         // Add Apache Mod Redirect Rule.
         services.AddRewriteRuleSource<UrlRedirectRuleSource>(UrlRedirectRuleSource.SourceName)
             .AddScoped<IRewriteRuleHandler, UrlRedirectRuleHandler>()
-            .AddScoped<IDisplayDriver<RewriteRule>, UrlRedirectRuleDisplayDriver>();
+            .AddDisplayDriver<RewriteRule, UrlRedirectRuleDisplayDriver>();
 
         // Add Apache Mod Rewrite Rule.
         services.AddRewriteRuleSource<UrlRewriteRuleSource>(UrlRewriteRuleSource.SourceName)
             .AddScoped<IRewriteRuleHandler, UrlRewriteRuleHandler>()
-            .AddScoped<IDisplayDriver<RewriteRule>, UrlRewriteRuleDisplayDriver>();
+            .AddDisplayDriver<RewriteRule, UrlRewriteRuleDisplayDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

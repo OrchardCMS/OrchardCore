@@ -14,6 +14,6 @@ public sealed class AddToDeploymentPlanStartup : StartupBase
     {
         services.AddDeployment<ContentItemDeploymentSource, ContentItemDeploymentStep, ContentItemDeploymentStepDriver>();
         services.AddScoped<IContentDisplayDriver, AddToDeploymentPlanContentDriver>();
-        services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, AddToDeploymentPlanContentsAdminListDisplayDriver>();
+        services.AddDisplayDriver<ContentOptionsViewModel, AddToDeploymentPlanContentsAdminListDisplayDriver>();
     }
 }

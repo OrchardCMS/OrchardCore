@@ -45,9 +45,9 @@ internal static class ElasticsearchOptionsExtensions
         return options;
     }
 
-    internal static ElasticsearchOptions AddFilter(this ElasticsearchOptions options, IConfigurationSection configuration)
+    internal static ElasticsearchOptions AddTokenFilters(this ElasticsearchOptions options, IConfigurationSection configuration)
     {
-        var jsonNode = configuration.GetSection(nameof(options.Filter)).AsJsonNode();
+        var jsonNode = configuration.GetSection(nameof(options.TokenFilters)).AsJsonNode();
         var jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonNode);
 
         var filterObject = JsonObject.Create(jsonElement, new JsonNodeOptions()
@@ -66,7 +66,7 @@ internal static class ElasticsearchOptionsExtensions
                         continue;
                     }
 
-                    options.Filter.Add(filter.Key, jFilter);
+                    options.TokenFilters.Add(filter.Key, jFilter);
                 }
             }
         }

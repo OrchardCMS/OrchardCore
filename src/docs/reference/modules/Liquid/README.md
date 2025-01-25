@@ -559,6 +559,36 @@ Removes key from HttpContext.Items collection
 
 `{% httpcontext_remove_items "Item1" %}`
 
+### TrackingConsent
+
+Represents the tracking consent feature of the current request.
+
+The following properties are available on the `TrackingConsent` object.
+
+| Property | Example | Description |
+| --------- | ---- |------------ |
+| `CanTrack` | `true` | Indicates if tracking is allowed. |
+| `HasConsent` | `true` | Indicates if the user has given consent for tracking. |
+| `IsConsentNeeded` | `false` | Indicates if consent is needed for tracking. |
+| `CookieName` | `ConsentCookie` | The name of the consent cookie. |
+| `CookieValue` | `true` | The value of the consent cookie. |
+
+#### Usage
+
+Here is an example of how to use the `TrackingConsent` object in a Liquid template:
+
+```liquid
+{% if TrackingConsent.CanTrack %}
+    {% if TrackingConsent.HasConsent %}
+        <p>Tracking is allowed and the user has given consent.</p>
+    {% else %}
+        <p>Tracking is allowed but the user has not given consent.</p>
+    {% endif %}
+{% else %}
+    <p>Tracking is not allowed.</p>
+{% endif %}
+```
+
 ## Shape Filters
 
 These filters let you create and filter shapes.

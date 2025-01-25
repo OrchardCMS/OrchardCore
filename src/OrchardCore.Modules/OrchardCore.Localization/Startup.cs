@@ -91,7 +91,7 @@ public sealed class CulturePickerStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<Navbar>, AdminCulturePickerNavbarDisplayDriver>();
+        services.AddDisplayDriver<Navbar, AdminCulturePickerNavbarDisplayDriver>();
 
         services.Configure<RequestLocalizationOptions>(options =>
             options.AddInitialRequestCultureProvider(new AdminCookieCultureProvider(_shellSettings, _adminOptions)));

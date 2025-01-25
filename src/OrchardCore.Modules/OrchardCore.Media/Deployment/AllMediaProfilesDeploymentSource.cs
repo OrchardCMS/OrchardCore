@@ -4,7 +4,7 @@ using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Deployment;
 
-public class AllMediaProfilesDeploymentSource
+public sealed class AllMediaProfilesDeploymentSource
     : DeploymentSourceBase<AllMediaProfilesDeploymentStep>
 {
     private readonly MediaProfilesManager _mediaProfilesManager;

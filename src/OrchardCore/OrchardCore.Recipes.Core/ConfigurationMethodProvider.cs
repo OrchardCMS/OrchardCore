@@ -4,7 +4,7 @@ using OrchardCore.Scripting;
 
 namespace OrchardCore.Recipes;
 
-public class ConfigurationMethodProvider : IGlobalMethodProvider
+public sealed class ConfigurationMethodProvider : IGlobalMethodProvider
 {
     private readonly GlobalMethod _globalMethod;
 

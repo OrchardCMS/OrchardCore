@@ -32,7 +32,7 @@ First thing to do to use this package is to add the credentials to be used to in
 
 ### Orchard default tenant 
 
-This library assumes that you will be testing OrchardCore by leveraging the [Tenants](https://docs.orchardcore.net/en/latest/glossary/#tenant) feature. You **must** create a test that runs first and sets up the Default tenant using the [Software as a service](https://docs.orchardcore.net/en/latest/getting-started/starter-recipes/#saas-recipe-with-thetheme) setup recipe.
+This library assumes that you will be testing OrchardCore by leveraging the [Tenants](https://docs.orchardcore.net/en/latest/reference/glossary/#tenant) feature. You **must** create a test that runs first and sets up the Default tenant using the [Software as a service](https://docs.orchardcore.net/en/latest/getting-started/starter-recipes/#saas-recipe-with-thetheme) setup recipe.
 
 To do so we suggest you create a test named `integration\000-setup-saas-site.js` with the following contents.
 

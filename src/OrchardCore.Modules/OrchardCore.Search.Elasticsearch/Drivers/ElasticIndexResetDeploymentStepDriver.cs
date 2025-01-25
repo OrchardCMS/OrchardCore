@@ -6,25 +6,25 @@ using OrchardCore.Search.Elasticsearch.ViewModels;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Deployment;
 
-public sealed class ElasticIndexResetDeploymentStepDriver : DisplayDriver<DeploymentStep, ElasticIndexResetDeploymentStep>
+public sealed class ElasticIndexResetDeploymentStepDriver : DisplayDriver<DeploymentStep, ElasticsearchIndexResetDeploymentStep>
 {
-    private readonly ElasticIndexSettingsService _elasticIndexSettingsService;
+    private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
 
-    public ElasticIndexResetDeploymentStepDriver(ElasticIndexSettingsService elasticIndexSettingsService)
+    public ElasticIndexResetDeploymentStepDriver(ElasticsearchIndexSettingsService elasticIndexSettingsService)
     {
         _elasticIndexSettingsService = elasticIndexSettingsService;
     }
 
-    public override Task<IDisplayResult> DisplayAsync(ElasticIndexResetDeploymentStep step, BuildDisplayContext context)
+    public override Task<IDisplayResult> DisplayAsync(ElasticsearchIndexResetDeploymentStep step, BuildDisplayContext context)
     {
         return
             CombineAsync(
-                View("ElasticIndexResetDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("ElasticIndexResetDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("ElasticIndexResetDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }
 
-    public override IDisplayResult Edit(ElasticIndexResetDeploymentStep step, BuildEditorContext context)
+    public override IDisplayResult Edit(ElasticsearchIndexResetDeploymentStep step, BuildEditorContext context)
     {
         return Initialize<ElasticIndexResetDeploymentStepViewModel>("ElasticIndexResetDeploymentStep_Fields_Edit", async model =>
         {
@@ -34,7 +34,7 @@ public sealed class ElasticIndexResetDeploymentStepDriver : DisplayDriver<Deploy
         }).Location("Content");
     }
 
-    public override async Task<IDisplayResult> UpdateAsync(ElasticIndexResetDeploymentStep resetIndexStep, UpdateEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ElasticsearchIndexResetDeploymentStep resetIndexStep, UpdateEditorContext context)
     {
         resetIndexStep.Indices = [];
 

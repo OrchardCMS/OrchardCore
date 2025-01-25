@@ -3,7 +3,7 @@ using OrchardCore.Scripting;
 
 namespace OrchardCore.Queries;
 
-public class QueryGlobalMethodProvider : IGlobalMethodProvider
+public sealed class QueryGlobalMethodProvider : IGlobalMethodProvider
 {
     private readonly GlobalMethod _executeQuery;
 

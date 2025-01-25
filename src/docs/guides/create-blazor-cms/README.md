@@ -157,7 +157,7 @@ In this section, we will create a .NET Blazor application, as Razor Class librar
 - You can run the following commands to create a new Razor class library project.
 
 ```dotnetcli
-dotnet new razorclasslib -f net8.0 -o OCBlazorLib
+dotnet new razorclasslib -f net9.0 -o OCBlazorLib
 dotnet sln add ./OCBlazorLib
 dotnet add ./BlazorCms/BlazorCms.csproj reference ./OCBlazorLib/OCBlazorLib.csproj
 ```
@@ -632,7 +632,7 @@ In our `OCBlazorLib` blazor Library project, Let's enrich our `/content` page to
 - In `OCBlazorLib.csproj` Add a NuGet package reference to `OrchardCore.ContentManagement`
 
 ```dotnetcli
-dotnet add ./OCBlazorLib/OCBlazorLib.csproj package OrchardCore.ContentManagement --version 2.0.2
+dotnet add ./OCBlazorLib/OCBlazorLib.csproj package OrchardCore.ContentManagement --version 2.1.4
 ```
 
 - Add the following `using` statements in `_Imports.razor`

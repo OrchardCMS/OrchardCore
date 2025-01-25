@@ -5,7 +5,7 @@ using OrchardCore.Microsoft.Authentication.Settings;
 
 namespace OrchardCore.Microsoft.Authentication.Deployment;
 
-public class AzureADDeploymentSource
+public sealed class AzureADDeploymentSource
     : DeploymentSourceBase<AzureADDeploymentStep>
 {
     private readonly IAzureADService _azureADService;

@@ -33,11 +33,11 @@ public sealed class TwoFactorAuthenticationStartup : StartupBase
             options.Filters.Add<TwoFactorAuthenticationAuthorizationFilter>();
         });
 
-        services.AddScoped<IDisplayDriver<User>, UserTwoFactorDisplayDriver>();
+        services.AddDisplayDriver<User, UserTwoFactorDisplayDriver>();
         services.AddScoped<IUserClaimsProvider, TwoFactorAuthenticationClaimsProvider>();
-        services.AddScoped<IDisplayDriver<UserMenu>, TwoFactorUserMenuDisplayDriver>();
+        services.AddDisplayDriver<UserMenu, TwoFactorUserMenuDisplayDriver>();
         services.AddSiteDisplayDriver<TwoFactorLoginSettingsDisplayDriver>();
-        services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodDisplayDriver>();
+        services.AddDisplayDriver<TwoFactorMethod, TwoFactorMethodDisplayDriver>();
         services.AddPermissionProvider<TwoFactorPermissionProvider>();
     }
 
@@ -140,7 +140,7 @@ public sealed class AuthenticatorAppStartup : StartupBase
 
         services.AddTransient<IConfigureOptions<TwoFactorOptions>, AuthenticatorAppProviderTwoFactorOptionsConfiguration>();
         services.AddSiteDisplayDriver<AuthenticatorAppLoginSettingsDisplayDriver>();
-        services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginAuthenticationAppDisplayDriver>();
+        services.AddDisplayDriver<TwoFactorMethod, TwoFactorMethodLoginAuthenticationAppDisplayDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -184,7 +184,7 @@ public sealed class EmailAuthenticatorStartup : StartupBase
                 options.Tokens.ProviderMap[TokenOptions.DefaultEmailProvider] = new TokenProviderDescriptor(emailProviderType);
             });
 
-        services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginEmailDisplayDriver>();
+        services.AddDisplayDriver<TwoFactorMethod, TwoFactorMethodLoginEmailDisplayDriver>();
         services.AddSiteDisplayDriver<EmailAuthenticatorLoginSettingsDisplayDriver>();
     }
 
@@ -208,7 +208,7 @@ public sealed class SmsAuthenticatorStartup : StartupBase
         });
 
         services.AddTransient<IConfigureOptions<TwoFactorOptions>, PhoneProviderTwoFactorOptionsConfiguration>();
-        services.AddScoped<IDisplayDriver<TwoFactorMethod>, TwoFactorMethodLoginSmsDisplayDriver>();
+        services.AddDisplayDriver<TwoFactorMethod, TwoFactorMethodLoginSmsDisplayDriver>();
         services.AddSiteDisplayDriver<SmsAuthenticatorLoginSettingsDisplayDriver>();
     }
 

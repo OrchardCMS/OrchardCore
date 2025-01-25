@@ -7,7 +7,7 @@ using OrchardCore.Json;
 
 namespace OrchardCore.AdminMenu.Deployment;
 
-public class AdminMenuDeploymentSource
+public sealed class AdminMenuDeploymentSource
     : DeploymentSourceBase<AdminMenuDeploymentStep>
 {
     private readonly IAdminMenuService _adminMenuService;

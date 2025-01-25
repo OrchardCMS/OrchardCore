@@ -88,11 +88,6 @@
       "name": "Roles",
       "Roles": [
         {
-          "Name": "Administrator",
-          "Description": "A system role that grants all permissions to the assigned users.",
-          "Permissions": []
-        },
-        {
           "Name": "Moderator",
           "Description": "Grants users the ability to moderate content.",
           "Permissions": []
@@ -110,16 +105,6 @@
         {
           "Name": "Contributor",
           "Description": "Grants users the ability to contribute content.",
-          "Permissions": []
-        },
-        {
-          "Name": "Authenticated",
-          "Description": "A system role representing all authenticated users.",
-          "Permissions": []
-        },
-        {
-          "Name": "Anonymous",
-          "Description": "A system role representing all non-authenticated users.",
           "Permissions": []
         }
       ]
@@ -1100,7 +1085,7 @@
         {
           "ContentItemId": "[js: uuid()]",
           "ContentType": "RawHtml",
-          "Displaytext": "Footer",
+          "DisplayText": "Footer",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUserId')]",

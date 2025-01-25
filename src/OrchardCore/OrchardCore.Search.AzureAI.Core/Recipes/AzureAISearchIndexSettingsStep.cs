@@ -19,7 +19,7 @@ public sealed class AzureAISearchIndexSettingsStep : NamedRecipeStepHandler
     private readonly AzureAIIndexDocumentManager _azureAIIndexDocumentManager;
     private readonly AzureAISearchIndexSettingsService _azureAISearchIndexSettingsService;
 
-    internal IStringLocalizer S;
+    internal readonly IStringLocalizer S;
 
     public AzureAISearchIndexSettingsStep(
         AzureAISearchIndexManager indexManager,

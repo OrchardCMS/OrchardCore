@@ -166,24 +166,19 @@ public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, ICo
 
         var field = contentPart.GetOrCreate<TField>(partFieldDefinition.Name);
 
-        if (field != null)
-        {
-            BuildPrefix(typePartDefinition, partFieldDefinition, context.HtmlFieldPrefix);
+        BuildPrefix(typePartDefinition, partFieldDefinition, context.HtmlFieldPrefix);
 
-            var fieldEditorContext = new BuildFieldEditorContext(contentPart, typePartDefinition, partFieldDefinition, context);
+        var fieldEditorContext = new BuildFieldEditorContext(contentPart, typePartDefinition, partFieldDefinition, context);
 
-            _typePartDefinition = typePartDefinition;
-            _partFieldDefinition = partFieldDefinition;
+        _typePartDefinition = typePartDefinition;
+        _partFieldDefinition = partFieldDefinition;
 
-            var result = EditAsync(field, fieldEditorContext);
+        var result = EditAsync(field, fieldEditorContext);
 
-            _typePartDefinition = null;
-            _partFieldDefinition = null;
+        _typePartDefinition = null;
+        _partFieldDefinition = null;
 
-            return result;
-        }
-
-        return Task.FromResult(default(IDisplayResult));
+        return result;
     }
 
     async Task<IDisplayResult> IContentFieldDisplayDriver.UpdateEditorAsync(ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)

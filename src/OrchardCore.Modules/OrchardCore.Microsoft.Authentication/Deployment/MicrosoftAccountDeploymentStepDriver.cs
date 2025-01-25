@@ -9,7 +9,7 @@ public sealed class MicrosoftAccountDeploymentStepDriver : DisplayDriver<Deploym
     public override Task<IDisplayResult> DisplayAsync(MicrosoftAccountDeploymentStep step, BuildDisplayContext context)
     {
         return CombineAsync(
-            View("MicrosoftAccountDeploymentStep_Summary", step).Location("Summary", "Content"),
+            View("MicrosoftAccountDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
             View("MicrosoftAccountDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
         );
     }

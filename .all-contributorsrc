@@ -1444,7 +1444,8 @@
       "avatar_url": "https://avatars0.githubusercontent.com/u/13678304?v=4",
       "profile": "https://github.com/Habbni",
       "contributions": [
-        "translation"
+        "translation",
+        "code"
       ]
     },
     {
@@ -3228,6 +3229,69 @@
       "name": "Mohit Naroliya",
       "avatar_url": "https://avatars.githubusercontent.com/u/151342309?v=4",
       "profile": "https://github.com/mohit-naroliya",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "kursataktas",
+      "name": "Kursat Aktas",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17837825?v=4",
+      "profile": "https://github.com/kursataktas",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "adamradocz",
+      "name": "Adam Radocz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16503773?v=4",
+      "profile": "https://github.com/adamradocz",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "jbytes1027",
+      "name": "James Pretorius",
+      "avatar_url": "https://avatars.githubusercontent.com/u/50090107?v=4",
+      "profile": "https://github.com/jbytes1027",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "sparkie79",
+      "name": "sparkie79",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4757890?v=4",
+      "profile": "https://github.com/sparkie79",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "salmattia",
+      "name": "Mattia Salvetti",
+      "avatar_url": "https://avatars.githubusercontent.com/u/36173554?v=4",
+      "profile": "https://github.com/salmattia",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "cbadger-montecitobank",
+      "name": "cbadger",
+      "avatar_url": "https://avatars.githubusercontent.com/u/123421218?v=4",
+      "profile": "https://github.com/cbadger-montecitobank",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "jeff-techstension",
+      "name": "jeff-techstension",
+      "avatar_url": "https://avatars.githubusercontent.com/u/157553534?v=4",
+      "profile": "https://github.com/jeff-techstension",
       "contributions": [
         "code"
       ]

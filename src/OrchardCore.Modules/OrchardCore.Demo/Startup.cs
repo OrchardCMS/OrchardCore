@@ -94,7 +94,7 @@ public sealed class Startup : StartupBase
         services.AddContentPart<TestContentPartA>();
         services.AddScoped<IUserClaimsProvider, UserProfileClaimsProvider>();
 
-        services.AddScoped<IDisplayDriver<User>, UserProfileDisplayDriver>();
+        services.AddDisplayDriver<User, UserProfileDisplayDriver>();
 
         services.Configure<RazorPagesOptions>(options =>
         {
