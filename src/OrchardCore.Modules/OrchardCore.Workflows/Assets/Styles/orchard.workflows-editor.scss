@@ -12,7 +12,6 @@
 }
 
 .workflow-canvas {
-
     .activity {
         max-width: 280px;
         cursor: move;
@@ -36,7 +35,8 @@
             }
         }
 
-        span, em {
+        span,
+        em {
             /* Add an ellipsis on the workflow activity boxes. This makes the activities much easier to move when they have long text */
             white-space: nowrap;
             overflow: hidden;
@@ -57,7 +57,8 @@
         user-select: none;
     }
 
-    path, .jtk-endpoint {
+    path,
+    .jtk-endpoint {
         cursor: pointer;
     }
 }
