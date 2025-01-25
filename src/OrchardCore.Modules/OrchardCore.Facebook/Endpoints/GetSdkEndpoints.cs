@@ -1,16 +1,12 @@
 using System.IO.Hashing;
-using System.Net;
 using System.Text;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Primitives;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.Settings;
 
@@ -79,7 +75,7 @@ public static class GetSdkEndpoints
         return Results.Bytes(scriptBytes, "application/javascript");
     }
 
-    private static async Task<IResult> HandleInitScriptRequestAsync(HttpContext context, ISiteService siteService, IMemoryCache cache, IShellConfiguration shellConfiguration)
+    private static async Task<IResult> HandleInitScriptRequestAsync(HttpContext context, ISiteService siteService)
     {
         var settings = await siteService.GetSettingsAsync<FacebookSettings>();
 
@@ -88,45 +84,27 @@ public static class GetSdkEndpoints
             return Results.Forbid();
         }
 
-        context.Response.Headers.CacheControl = shellConfiguration.GetValue(
-                "StaticFileOptions:CacheControl",
-                // Fallback value
-                $"public, max-age={TimeSpan.FromDays(30).TotalSeconds}");
-
-        // Assumes IfNoneMatch has only one ETag for performance
-        var requestETag = context.Request.Headers.IfNoneMatch;
-        if (!StringValues.IsNullOrEmpty(requestETag) && cache.Get(requestETag) != null)
+        string options = $"{{ appId:'{settings.AppId}',version:'{settings.Version}'";
+        if (!string.IsNullOrWhiteSpace(settings.FBInitParams))
         {
-            context.Response.Headers.ETag = requestETag;
-
-            return Results.StatusCode(304);
+            options += "," + settings.FBInitParams;
         }
+        options += "}";
 
-        string scriptCacheKey = $"/OrchardCore.Facebook/sdk/fb.js.{settings.AppId}.{settings.Version}";
-
-        var scriptBytes = (byte[]?)cache.Get(scriptCacheKey);
-        if (scriptBytes == null)
-        {
-            // Generate script
-            var options = $"{{ appId:'{settings.AppId}',version:'{settings.Version}'";
-            options = string.IsNullOrWhiteSpace(settings.FBInitParams)
-                ? string.Concat(options, "}")
-                : string.Concat(options, ",", settings.FBInitParams, "}");
-            scriptBytes = Encoding.UTF8.GetBytes($"window.fbAsyncInit = function(){{ FB.init({options});}};");
-
-            cache.Set(scriptCacheKey, scriptBytes);
-        }
+        var scriptBytes = (new byte[][] {
+                "window.fbAsyncInit = function(){ FB.init("u8.ToArray(),
+                Encoding.UTF8.GetBytes(options),
+                ");};"u8.ToArray(),
+            }).SelectMany(x => x).ToArray();
 
         // Uses cross-processes hashing to enable revalidation after restart
         StringValues eTag = $"\"{XxHash3.HashToUInt64(scriptBytes, 0)}\"";
 
-        // Mark that the eTag corresponds to a fresh file
-        cache.Set(eTag, true);
-
+        context.Response.Headers.CacheControl = "no-cache";
         context.Response.Headers.ETag = eTag;
 
-        // Can be true if the cache was reset after the last client request
-        if (requestETag.Equals(eTag))
+        // Assumes IfNoneMatch has only one ETag for performance
+        if (context.Request.Headers.IfNoneMatch.Equals(eTag))
         {
             return Results.StatusCode(304);
         }
