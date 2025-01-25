@@ -4,7 +4,7 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.ContentLocalization.Handlers;
 
-public class AutorouteContentLocalizationHandler : IContentLocalizationHandler
+internal sealed class AutorouteContentLocalizationHandler : IContentLocalizationHandler
 {
     public Task LocalizedAsync(LocalizationContentContext context) => Task.CompletedTask;
 
@@ -13,7 +13,7 @@ public class AutorouteContentLocalizationHandler : IContentLocalizationHandler
         if (context.ContentItem.Has<AutoroutePart>())
         {
             // Clearing the AutoroutePart path to regenerate the permalink automatically.
-            context.ContentItem.Content.AutoroutePart.Path = null;
+            context.ContentItem.Alter<AutoroutePart>(p => p.Path = null);
         }
 
         return Task.CompletedTask;
