@@ -86,7 +86,9 @@ public sealed class Startup : StartupBase
 public sealed class LiquidStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
-        => services.AddLiquidCoreServices();
+    {
+        services.AddLiquidCoreServices();
+    }
 }
 
 [RequireFeatures("OrchardCore.Contents")]
@@ -119,8 +121,8 @@ public sealed class ResourcesStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddLiquidFilter<AppendVersionFilter>("append_version")
-            .AddLiquidFilter<ResourceUrlFilter>("resource_url");
+        services.AddLiquidFilter<AppendVersionFilter>("append_version");
+        services.AddLiquidFilter<ResourceUrlFilter>("resource_url");
     }
 }
 
@@ -128,7 +130,9 @@ public sealed class ResourcesStartup : StartupBase
 public sealed class HtmlStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
-        => services.AddLiquidFilter<SanitizeHtmlFilter>("sanitize_html");
+    {
+        services.AddLiquidFilter<SanitizeHtmlFilter>("sanitize_html");
+    }
 }
 
 [RequireFeatures("OrchardCore.Localization")]
