@@ -104,7 +104,7 @@
             mode: { name: "liquid" },
         });
 
-        $('select').onchange(function () {
+        $('select').on('change', function () {
             var selectedValue = $(this).val();
             switch (selectedValue) {
                 case '@MailMessageFormat.Text':
