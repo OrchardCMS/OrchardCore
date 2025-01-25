@@ -60,9 +60,9 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | bootstrap-select      | Style  | 1.14.0-beta3  | -              |
 | codemirror            | Script | 5.65.7        | -              |
 | codemirror            | Style  | 5.65.7        | -              |
-| font-awesome          | Style  | 6.6.0, 6.7.1  | -              |
-| font-awesome          | Script | 6.6.0, 6.7.1  | -              |
-| font-awesome-v4-shims | Script | 6.6.0, 6.7.1  | -              |
+| font-awesome          | Style  | 6.6.0, 6.7.2  | -              |
+| font-awesome          | Script | 6.6.0, 6.7.2  | -              |
+| font-awesome-v4-shims | Script | 6.6.0, 6.7.2  | -              |
 | Sortable              | Script | 1.10.2        | -              |
 | trumbowyg             | Style  | 2.28.0        | -              |
 | trumbowyg             | Script | 2.28.0        | -              |
@@ -142,7 +142,7 @@ In this example, we define a style that depends on Bootstrap version 4. In this 
 
 !!! note "Registration"
     Make sure to register this `IConfigureOptions<ResourceManagementOptions>` in the `Startup` or your theme or module.
-    `serviceCollection.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();`
+    `services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();`
   
 ## Usage
 

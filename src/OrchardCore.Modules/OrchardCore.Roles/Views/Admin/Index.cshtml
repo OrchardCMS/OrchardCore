@@ -68,8 +68,8 @@
         var searchBox = $('#search-box');
 
         // On Enter, edit the role if there is a single one
-        searchBox.keypress(function (event) {
-            if (event.which == 13) {
+        searchBox.keydown(function (e) {
+            if (e.key == 'Enter') {
 
                 // Edit the role if there is a single filtered element
                 var visible = $('.roles > ul > li:visible');

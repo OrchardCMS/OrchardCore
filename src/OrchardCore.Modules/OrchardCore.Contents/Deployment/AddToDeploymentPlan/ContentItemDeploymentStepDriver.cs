@@ -24,7 +24,7 @@ public sealed class ContentItemDeploymentStepDriver : DisplayDriver<DeploymentSt
     {
         return
             CombineAsync(
-                View("ContentItemDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("ContentItemDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("ContentItemDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

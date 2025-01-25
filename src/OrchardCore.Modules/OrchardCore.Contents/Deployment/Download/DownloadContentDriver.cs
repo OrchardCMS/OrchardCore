@@ -27,7 +27,7 @@ public sealed class DownloadContentDriver : ContentDisplayDriver
         var user = _httpContextAccessor.HttpContext.User;
 
         return Shape("Download_SummaryAdmin__Button__Actions", new ContentItemViewModel(contentItem))
-            .Location("SummaryAdmin", "ActionsMenu:20")
-            .RenderWhen(() => _authorizationService.AuthorizeAsync(user, DeploymentPermissions.ExportData, contentItem));
+            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:20")
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(user, OrchardCore.Deployment.CommonPermissions.Export, contentItem));
     }
 }

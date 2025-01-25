@@ -28,8 +28,7 @@ Then exit any WSL instance, `wsl --shutdown`, and restart.
 vm.max_map_count = 262144
 ```
 
-Elasticsearch v7.17.5 Docker Compose file :
-[docker-compose.yml](docker-compose.yml)
+Elasticsearch Docker Compose file (check the current Elasticsearch version in the file if you need to run a specific version): [docker-compose.yml](docker-compose.yml)
 
 - Copy this file in a folder named Elasticsearch somewhere safe.
 - Open up a Terminal or Command Shell in this folder.
@@ -192,7 +191,7 @@ Verbs: `POST` and `GET`
 | Parameter | Example | Description |
 | --------- | ---- |------------ |
 | `indexName` | `search` | The name of the index to query. |
-| `query` | `{ "query": { "match_all": {} } }` | A JSON object representing the query. |
+| `query` | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query. |
 | `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
 
 ### `api/elasticsearch/documents`
@@ -204,7 +203,7 @@ Verbs: `POST` and `GET`
 | Parameter | Example | Description |
 | --------- | ---- |------------ |
 | `indexName` | `search` | The name of the index to query. |
-| `query` | `{ "query": { "match_all": {} } }` | A JSON object representing the query. |
+| `query` | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query. |
 | `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
 
 ## Elasticsearch Queries
@@ -244,7 +243,7 @@ The connection types documentation and examples can be found at this url:
 
 ## Elasticsearch Analyzers
 
-As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) and custom analyzers are supported. By default, only `standard` analyzer is available. You may update the Elasticsearch configurations to enable any of the built-in and any custom analyzers. For example, to enable the built in `stop` and `standard` analyzers, you may add the following to the [appsettings.json](../../core/Configuration/README.md) file
+As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) and custom analyzers are supported. By default, only `standard` analyzer is available. You may update the Elasticsearch configurations to enable any of the built-in and any custom analyzers. For example, to enable the built in `stop` and `standard` analyzers, you may add the following to the [appsettings.json](../Configuration/README.md) file
 
 ```json
 "OrchardCore_Elasticsearch": {
@@ -259,7 +258,7 @@ As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/refe
 }
 ```
 
-At the same time, you may define custom analyzers using the [appsettings.json](../../core/Configuration/README.md) file as well. In the following example, we are enabling the [standard](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-standard-analyzer.html) analyzer, customizing the [stop](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-stop-analyzer.html) analyzer and creating a [custom analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-custom-analyzer.html) named `english_analyzer`.
+At the same time, you may define custom analyzers using the [appsettings.json](../Configuration/README.md) file as well. In the following example, we are enabling the [standard](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-standard-analyzer.html) analyzer, customizing the [stop](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-stop-analyzer.html) analyzer and creating a [custom analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-custom-analyzer.html) named `english_analyzer`.
 
 ```json
 "OrchardCore_Elasticsearch": {

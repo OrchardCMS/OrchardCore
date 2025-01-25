@@ -10,7 +10,7 @@ public sealed class ExportContentToDeploymentTargetDeploymentStepDriver : Displa
     {
         return
             CombineAsync(
-                View("ExportContentToDeploymentTargetDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("ExportContentToDeploymentTargetDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("ExportContentToDeploymentTargetDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

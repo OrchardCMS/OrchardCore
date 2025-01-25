@@ -2,10 +2,12 @@
 @using OrchardCore.ContentManagement.Metadata.Settings
 @using OrchardCore.Layers.Drivers
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentManagement.Metadata
+
 @model OrchardCore.Layers.ViewModels.LayersIndexViewModel
 
 @inject IContentManager ContentManager
-@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+@inject IContentDefinitionManager ContentDefinitionManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
 <script asp-name="jquery-ui" at="Foot"></script>
@@ -66,11 +68,9 @@
 
                             @if (Model.Layers.Count > 0)
                             {
-                                var widgetContentTypes = (await ContentDefinitionManager.ListTypeDefinitionsAsync())
-                                .Where(t => t.StereotypeEquals("Widget"))
-                                .ToList();
+                                var widgetContentTypes = await ContentDefinitionManager.ListWidgetTypeDefinitionsAsync();
 
-                                if (widgetContentTypes.Count > 0)
+                                if (widgetContentTypes.Any())
                                 {
                                     var htmlId = Guid.NewGuid().ToString("n");
 

@@ -11,7 +11,7 @@ public sealed class FormElementLabelPartDisplayDriver : ContentPartDisplayDriver
     public override IDisplayResult Display(FormElementLabelPart part, BuildPartDisplayContext context)
     {
         return View("FormElementLabelPart", part)
-            .Location("Detail", "Content:before");
+            .Location(OrchardCoreConstants.DisplayType.Detail, "Content:before");
     }
 
     public override IDisplayResult Edit(FormElementLabelPart part, BuildPartEditorContext context)

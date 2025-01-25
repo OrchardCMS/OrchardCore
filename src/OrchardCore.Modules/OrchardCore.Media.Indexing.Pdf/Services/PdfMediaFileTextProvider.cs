@@ -16,7 +16,7 @@ public class PdfMediaFileTextProvider : IMediaFileTextProvider
         {
             if (!fileStream.CanSeek)
             {
-                seekableStream = new FileStream(Path.GetTempFileName(), FileMode.OpenOrCreate, FileAccess.Write, FileShare.None, 4096, FileOptions.DeleteOnClose);
+                seekableStream = new FileStream(Path.GetTempFileName(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
 
                 await fileStream.CopyToAsync(seekableStream);
 

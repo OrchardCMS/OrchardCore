@@ -172,7 +172,7 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
                         Name = partFieldName,
                         Description = S["Represents a {0}.", part.PartDefinition.Name],
                         Type = typeof(DynamicPartWhereInputGraphType),
-                        ResolvedType = new DynamicPartWhereInputGraphType(part, serviceProvider.GetRequiredService<IStringLocalizer<DynamicPartWhereInputGraphType>>())
+                        ResolvedType = new DynamicPartWhereInputGraphType(part, schema, contentFieldProviders, serviceProvider.GetRequiredService<IStringLocalizer<DynamicPartWhereInputGraphType>>())
                     };
 
                     inputGraphType.AddField(field);

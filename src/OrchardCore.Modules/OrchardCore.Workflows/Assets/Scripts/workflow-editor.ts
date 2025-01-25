@@ -39,7 +39,7 @@ class WorkflowEditor extends WorkflowCanvas {
                     const outcome1 = outcomes1[i];
                     const outcome2 = outcomes2[i];
 
-                    if (outcome1.name != outcome2.displayName || outcome1.displayName != outcome2.displayName) {
+                    if (outcome1.name != outcome2.name || outcome1.displayName != outcome2.displayName) {
                         return false;
                     }
                 }

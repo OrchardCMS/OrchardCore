@@ -118,7 +118,7 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
             {
                 var extension = Path.GetExtension(field.Paths[i]);
 
-                if (!settings.AllowedExtensions.Contains(extension))
+                if (!settings.AllowedExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase))
                 {
                     context.Updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["Media extension is not allowed. Only media with '{0}' extensions are allowed.", string.Join(", ", settings.AllowedExtensions)]);
                 }

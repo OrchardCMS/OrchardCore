@@ -11,7 +11,7 @@ public sealed class HomepageConditionDisplayDriver : DisplayDriver<Condition, Ho
     {
         return
             CombineAsync(
-                View("HomepageCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                View("HomepageCondition_Fields_Summary", condition).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("HomepageCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
             );
     }

@@ -17,19 +17,19 @@ public sealed class TwoFactorMethodDisplayDriver : DisplayDriver<TwoFactorMethod
         {
             vm.Provider = model.Provider;
             vm.IsEnabled = model.IsEnabled;
-        }).Location("SummaryAdmin", "Icon");
+        }).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Icon");
 
         var content = Initialize<TwoFactorMethod>($"TwoFactorMethod_{model.Provider}_Content", vm =>
         {
             vm.Provider = model.Provider;
             vm.IsEnabled = model.IsEnabled;
-        }).Location("SummaryAdmin", "Content");
+        }).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Content");
 
         var actions = Initialize<TwoFactorMethod>($"TwoFactorMethod_{model.Provider}_Actions", vm =>
         {
             vm.Provider = model.Provider;
             vm.IsEnabled = model.IsEnabled;
-        }).Location("SummaryAdmin", "Actions");
+        }).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions");
 
         return Combine(icon, content, actions);
     }

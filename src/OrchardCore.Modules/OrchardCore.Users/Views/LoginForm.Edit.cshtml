@@ -1,7 +1,4 @@
-
-<form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="auth-form no-multisubmit">
-    <h1 class="fs-4">@T["Log in"]</h1>
-    <hr />
+<form asp-controller="Account" asp-action="Login" asp-area="OrchardCore.Users" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="auth-form no-multisubmit">
 
     @if (Model.Content != null)
     {

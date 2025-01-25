@@ -12,9 +12,6 @@ internal sealed class HttpRequestValue : FluidValue
 {
     public override FluidValues Type => FluidValues.Object;
 
-    /// <summary>
-    /// Creates a new instance of a <see cref="HttpRequestValue"/> for the specified HTTP request.
-    /// </summary>
     public override bool Equals(FluidValue other)
     {
         if (other is null)

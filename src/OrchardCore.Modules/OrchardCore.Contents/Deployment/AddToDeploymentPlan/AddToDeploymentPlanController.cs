@@ -95,7 +95,7 @@ public sealed class AddToDeploymentPlanController : Controller
     [HttpPost]
     public async Task<IActionResult> AddContentItems(long deploymentPlanId, string returnUrl, IEnumerable<long> itemIds)
     {
-        if (itemIds?.Count() == 0)
+        if (itemIds is null || !itemIds.Any())
         {
             return this.LocalRedirect(returnUrl, true);
         }

@@ -11,7 +11,7 @@ public sealed class ValidationSummaryPartDisplayDriver : ContentPartDisplayDrive
     public override IDisplayResult Display(ValidationSummaryPart part, BuildPartDisplayContext context)
     {
         return View("ValidationSummaryPart", part)
-            .Location("Detail", "Content");
+            .Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(ValidationSummaryPart part, BuildPartEditorContext context)
