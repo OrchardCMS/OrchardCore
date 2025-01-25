@@ -1,22 +1,24 @@
 [
   {
-    "inputs": [
-      "Assets/js/*.js"
-    ],
-    "watch": [
-      "Assets/js/*.js"
-    ],
-    "output": "wwwroot/js/TheAdmin.js"
+    "action": "sass",
+    "name": "theme-theadmin",
+    "source": "Assets/scss/TheAdmin.scss",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
   },
   {
-    "inputs": [
-      "Assets/js/header/global/*.js",
-      "Assets/js/header/main/*.js"
-    ],
-    "watch": [
-      "Assets/js/header/global/*.js",
-      "Assets/js/header/main/*.js"
-    ],
-    "output": "wwwroot/js/TheAdmin-main.js"
+    "action": "sass",
+    "generateRTL": true,
+    "name": "theme-theadmin-layout",
+    "source": "Assets/scss/admin-layout.scss",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
+  },
+  {
+    "action": "sass",
+    "name": "theme-theadmin-login",
+    "source": "Assets/scss/login.scss",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
   }
 ]

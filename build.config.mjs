@@ -1,4 +1,4 @@
-export const assetsLookupGlob = "src/{OrchardCore.Themes,OrchardCore.Modules}/**/Assets2.json";
+export const assetsLookupGlob = "src/{OrchardCore.Themes,OrchardCore.Modules}/**/Assets.json";
 export const parcelBundleOutput = "src/OrchardCore.Modules/OrchardCore.Resources/wwwroot/Scripts/bundle"
 
 export function parcel() {

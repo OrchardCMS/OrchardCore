@@ -8,7 +8,6 @@ import * as sass from "sass";
 import postcss from "postcss";
 import postcssRTLCSS from "postcss-rtlcss";
 import { Mode } from "postcss-rtlcss/options";
-import { fileURLToPath } from "url";
 import chokidar from "chokidar";
 
 let action = process.argv[2];
