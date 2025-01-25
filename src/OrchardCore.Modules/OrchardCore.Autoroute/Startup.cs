@@ -135,8 +135,8 @@ public sealed class WidgetAutourouteStartup : StartupBase
     }
 }
 
-[RequireFeatures("OrchardCore.Autoroute")]
-public class AutoPartStartup : StartupBase
+[RequireFeatures("OrchardCore.ContentLocalization")]
+public class ContentLocalizationStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
