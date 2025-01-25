@@ -1,20 +1,14 @@
 @using Microsoft.AspNetCore.Identity
-@using OrchardCore.DisplayManagement.ModelBinding
-@using OrchardCore.Entities
-@using OrchardCore.Settings
-@using OrchardCore.Users
 @using OrchardCore.Users.Models
 
 @inject SignInManager<IUser> SignInManager
-@inject UserManager<IUser> UserManager
-@inject IDisplayManager<LoginForm> LoginFormDisplayManager
-@inject IUpdateModelAccessor UpdateModelAccessor
 
 @{
     ViewLayout = "Layout__Login";
 
-    var loginProviders = (await SignInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+    var loginProviders = await SignInManager.GetExternalAuthenticationSchemesAsync();
     var disableLocalLogin = Site.As<LoginSettings>().DisableLocalLogin;
+    var hasExternalProviders = loginProviders.Any();
 }
 
 <script asp-name="font-awesome" at="Foot" version="6"></script>
@@ -29,12 +23,15 @@
 
     @if (!disableLocalLogin)
     {
-        <div class="col-md-6 @(loginProviders.Count == 0 ? "offset-md-3" : string.Empty)">
+        <div class="col-md-6 @(!hasExternalProviders ? "offset-md-3" : string.Empty)">
+            <h1 class="fs-4">@T["Log in"]</h1>
+            <hr />
+
             @await DisplayAsync(Model)
         </div>
     }
 
-    @if (loginProviders.Count > 0)
+    @if (hasExternalProviders)
     {
         <div class="col-md-6 @(disableLocalLogin ? "offset-md-3" : string.Empty)">
             <section>
