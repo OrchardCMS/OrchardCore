@@ -21,5 +21,6 @@ using OrchardCore.Modules.Manifest;
     Name = "Liquid Core Services",
     Description = "Provides liquid core services.",
     EnabledByDependencyOnly = true,
+    IsAlwaysEnabled = true,
     Category = "Content Management"
 )]
