@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-356-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-357-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -494,6 +494,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/cbadger-montecitobank"><img src="https://avatars.githubusercontent.com/u/123421218?v=4?s=100" width="100px;" alt="cbadger"/><br /><sub><b>cbadger</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=cbadger-montecitobank" title="Code">💻</a></td>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/jeff-techstension"><img src="https://avatars.githubusercontent.com/u/157553534?v=4?s=100" width="100px;" alt="jeff-techstension"/><br /><sub><b>jeff-techstension</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=jeff-techstension" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://www.iamdavidfox.com"><img src="https://avatars.githubusercontent.com/u/5315855?v=4?s=100" width="100px;" alt="David L. Fox"/><br /><sub><b>David L. Fox</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=davidlfox" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
