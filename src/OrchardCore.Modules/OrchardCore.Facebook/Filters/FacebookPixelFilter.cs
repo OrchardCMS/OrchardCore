@@ -39,7 +39,7 @@ public sealed class FacebookPixelFilter : IAsyncResultFilter
             {
                 var settings = await _siteService.GetSettingsAsync<FacebookPixelSettings>();
 
-                if (settings is not null)
+                if (!string.IsNullOrEmpty(settings?.PixelId))
                 {
                     _resourceManager.RegisterHeadScript(new HtmlContentBuilder([_preamble, _jsEncoder.Encode(settings.PixelId), _end]));
                 }
