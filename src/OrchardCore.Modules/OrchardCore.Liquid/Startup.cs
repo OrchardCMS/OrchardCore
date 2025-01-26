@@ -31,8 +31,6 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
-
         services.Configure<TemplateOptions>(options =>
         {
             options.Filters.AddFilter("t", LiquidViewFilters.Localize);
@@ -87,6 +85,8 @@ public sealed class LiquidStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
+
         services.AddLiquidCoreServices();
     }
 }
