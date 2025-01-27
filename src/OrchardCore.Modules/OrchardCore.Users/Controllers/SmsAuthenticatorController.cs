@@ -121,13 +121,7 @@ public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseCont
         var code = await UserManager.GenerateChangePhoneNumberTokenAsync(user, phoneNumber);
         var smsSettings = await SiteService.GetSettingsAsync<SmsAuthenticatorLoginSettings>();
 
-        var message = new SmsMessage()
-        {
-            To = phoneNumber,
-            Body = await GetBodyAsync(smsSettings, user, code),
-        };
-
-        var result = await _smsService.SendAsync(message);
+        var result = await _smsService.SendAsync(phoneNumber, await GetBodyAsync(smsSettings, user, code));
 
         if (!result.Succeeded)
         {

@@ -52,6 +52,7 @@ public sealed class Startup : StartupBase
 public sealed class ContentPickerStartup : StartupBase
 {
     private readonly IShellConfiguration _shellConfiguration;
+
     public ContentPickerStartup(IShellConfiguration shellConfiguration)
     {
         _shellConfiguration = shellConfiguration;
@@ -61,10 +62,12 @@ public sealed class ContentPickerStartup : StartupBase
     {
         services.AddDisplayDriver<Navbar, ContentCulturePickerNavbarDisplayDriver>();
         services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
+
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentCulturePickerService, ContentCulturePickerService>();
         services.AddSiteDisplayDriver<ContentCulturePickerSettingsDriver>();
         services.AddSiteDisplayDriver<ContentRequestCultureProviderSettingsDriver>();
+
         services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider()));
         services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
     }
