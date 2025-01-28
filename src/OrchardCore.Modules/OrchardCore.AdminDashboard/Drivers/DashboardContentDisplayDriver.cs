@@ -97,7 +97,7 @@ public sealed class DashboardContentDisplayDriver : ContentDisplayDriver
         var shapeTag = Initialize<ContentItemViewModel>("DashboardWidget_DetailAdmin__ContentsTags", m =>
         {
             m.ContentItem = model;
-        }).Location("DetailAdmin", "Tags:10");
+        }).Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Tags:10");
         results.Add(shapeTag);
 
         return Combine(results.ToArray());

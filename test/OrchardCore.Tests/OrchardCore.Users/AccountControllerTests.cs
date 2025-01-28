@@ -28,9 +28,9 @@ public class AccountControllerTests
             ConfirmPassword = "test@OC!123",
         };
 
-        var responseFromGet = await context.Client.GetAsync("Register");
+        var responseFromGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
         responseFromGet.EnsureSuccessStatusCode();
-        var response = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromGet));
+        var response = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromGet), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
@@ -167,7 +167,7 @@ public class AccountControllerTests
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings());
 
-        var responseFromGet = await context.Client.GetAsync("Register");
+        var responseFromGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         Assert.True(responseFromGet.IsSuccessStatusCode);
 
@@ -180,7 +180,7 @@ public class AccountControllerTests
             ConfirmPassword = "test@OC!123",
         };
 
-        var response = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromGet));
+        var response = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromGet), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
@@ -204,7 +204,7 @@ public class AccountControllerTests
         var context = await GetSiteContextAsync(new RegistrationSettings(), false);
 
         // Act
-        var response = await context.Client.GetAsync("Register");
+        var response = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -217,7 +217,7 @@ public class AccountControllerTests
         var context = await GetSiteContextAsync(new RegistrationSettings(), enableRegistrationFeature: false);
 
         // Act
-        var response = await context.Client.GetAsync("Register");
+        var response = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
@@ -229,7 +229,7 @@ public class AccountControllerTests
         // Arrange
         var context = await GetSiteContextAsync(new RegistrationSettings());
 
-        var responseFromGet = await context.Client.GetAsync("Register");
+        var responseFromGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         Assert.True(responseFromGet.IsSuccessStatusCode);
 
@@ -244,11 +244,11 @@ public class AccountControllerTests
         }, responseFromGet);
 
         // Act
-        var responseFromPost1 = await context.Client.SendAsync(requestForPost);
+        var responseFromPost1 = await context.Client.SendAsync(requestForPost, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.Redirect, responseFromPost1.StatusCode);
 
-        var responseFromGet2 = await context.Client.GetAsync("Register");
+        var responseFromGet2 = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         Assert.True(responseFromGet2.IsSuccessStatusCode);
 
@@ -260,11 +260,11 @@ public class AccountControllerTests
             ConfirmPassword = "test2@OC!123",
         }, responseFromGet);
 
-        var responseFromPost2 = await context.Client.SendAsync(requestForPost2);
+        var responseFromPost2 = await context.Client.SendAsync(requestForPost2, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(responseFromPost2.IsSuccessStatusCode);
-        Assert.Contains("A user with the same email address already exists.", await responseFromPost2.Content.ReadAsStringAsync());
+        Assert.Contains("A user with the same email address already exists.", await responseFromPost2.Content.ReadAsStringAsync(TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -274,7 +274,7 @@ public class AccountControllerTests
         var context = await GetSiteContextAsync(new RegistrationSettings(), enableRegistrationFeature: true, requireUniqueEmail: false);
 
         // Register First User
-        var responseFromGet = await context.Client.GetAsync("Register");
+        var responseFromGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         Assert.True(responseFromGet.IsSuccessStatusCode);
         var emailAddress = "test@orchardcore.com";
@@ -287,12 +287,12 @@ public class AccountControllerTests
             ConfirmPassword = "test1@OC!123",
         }, responseFromGet);
 
-        var responseFromPost = await context.Client.SendAsync(requestForPost);
+        var responseFromPost = await context.Client.SendAsync(requestForPost, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.Redirect, responseFromPost.StatusCode);
 
         // Register Second User
-        var responseFromGet2 = await context.Client.GetAsync("Register");
+        var responseFromGet2 = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         Assert.True(responseFromGet2.IsSuccessStatusCode);
 
@@ -304,11 +304,11 @@ public class AccountControllerTests
             ConfirmPassword = "test2@OC!123",
         }, responseFromGet);
 
-        var responseFromPost2 = await context.Client.SendAsync(requestForPost2);
+        var responseFromPost2 = await context.Client.SendAsync(requestForPost2, TestContext.Current.CancellationToken);
 
         Assert.Equal(HttpStatusCode.Redirect, responseFromPost2.StatusCode);
 
-        var body = await responseFromPost2.Content.ReadAsStringAsync();
+        var body = await responseFromPost2.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         Assert.DoesNotContain("A user with the same email address already exists.", body);
     }
@@ -322,7 +322,7 @@ public class AccountControllerTests
             UsersAreModerated = true,
         });
 
-        var responseFromGet = await context.Client.GetAsync("Register");
+        var responseFromGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         Assert.True(responseFromGet.IsSuccessStatusCode);
 
@@ -335,7 +335,7 @@ public class AccountControllerTests
             ConfirmPassword = "ModerateMe@OC!123",
         };
 
-        var responseFromPost = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromGet));
+        var responseFromPost = await context.Client.SendAsync(await CreateRequestMessageAsync(model, responseFromGet), TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Redirect, responseFromPost.StatusCode);
@@ -362,7 +362,7 @@ public class AccountControllerTests
             UsersMustValidateEmail = true,
         }, true, true, false);
 
-        var responseFromGet = await context.Client.GetAsync("Register");
+        var responseFromGet = await context.Client.GetAsync("Register", TestContext.Current.CancellationToken);
 
         Assert.True(responseFromGet.IsSuccessStatusCode);
 
@@ -377,7 +377,7 @@ public class AccountControllerTests
 
         var requestForPost = await CreateRequestMessageAsync(model, responseFromGet);
 
-        var responseFromPost = await context.Client.SendAsync(requestForPost);
+        var responseFromPost = await context.Client.SendAsync(requestForPost, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(HttpStatusCode.Redirect, responseFromPost.StatusCode);

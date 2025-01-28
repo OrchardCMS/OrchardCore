@@ -10,7 +10,7 @@ public sealed class AllQueriesDeploymentStepDriver : DisplayDriver<DeploymentSte
     {
         return
             CombineAsync(
-                View("AllQueriesDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("AllQueriesDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("AllQueriesDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

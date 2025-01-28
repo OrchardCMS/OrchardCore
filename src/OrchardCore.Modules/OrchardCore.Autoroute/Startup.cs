@@ -14,6 +14,7 @@ using OrchardCore.Autoroute.Services;
 using OrchardCore.Autoroute.Settings;
 using OrchardCore.Autoroute.Sitemaps;
 using OrchardCore.Autoroute.ViewModels;
+using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.GraphQL.Options;
@@ -131,5 +132,14 @@ public sealed class WidgetAutourouteStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddShapeTableProvider<WidgetAutorouteShapeTableProvider>();
+    }
+}
+
+[RequireFeatures("OrchardCore.ContentLocalization")]
+public class ContentLocalizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IContentLocalizationHandler, AutorouteContentLocalizationHandler>();
     }
 }

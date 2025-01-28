@@ -102,7 +102,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
 
             if (part.GetType() == typeof(ContentPart) && partTypeName != contentTypePartDefinition.ContentTypeDefinition.Name)
             {
-                var shapeType = context.DisplayType != "Detail" ? "ContentPart_" + context.DisplayType : "ContentPart";
+                var shapeType = context.DisplayType != OrchardCoreConstants.DisplayType.Detail ? "ContentPart_" + context.DisplayType : "ContentPart";
 
                 var shapeResult = new ShapeResult(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, () => ValueTask.FromResult<IShape>(new ZoneHolding(() => ctx.ShapeFactory.CreateAsync("Zone")))));
                 shapeResult.Differentiator(partName);
