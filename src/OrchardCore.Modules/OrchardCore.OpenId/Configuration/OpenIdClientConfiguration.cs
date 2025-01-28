@@ -1,10 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using OpenIddict.Client;
+using OpenIddict.Client.AspNetCore;
 using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -13,21 +17,25 @@ namespace OrchardCore.OpenId.Configuration;
 
 public sealed class OpenIdClientConfiguration :
     IConfigureOptions<AuthenticationOptions>,
-    IConfigureNamedOptions<OpenIdConnectOptions>
+    IConfigureOptions<OpenIddictClientOptions>,
+    IConfigureNamedOptions<OpenIddictClientAspNetCoreOptions>
 {
     private readonly IOpenIdClientService _clientService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
     public OpenIdClientConfiguration(
         IOpenIdClientService clientService,
         IDataProtectionProvider dataProtectionProvider,
+        IServiceProvider serviceProvider,
         ShellSettings shellSettings,
         ILogger<OpenIdClientConfiguration> logger)
     {
         _clientService = clientService;
         _dataProtectionProvider = dataProtectionProvider;
+        _serviceProvider = serviceProvider;
         _shellSettings = shellSettings;
         _logger = logger;
     }
@@ -40,42 +48,53 @@ public sealed class OpenIdClientConfiguration :
             return;
         }
 
-        // Register the OpenID Connect client handler in the authentication handlers collection.
-        options.AddScheme<OpenIdConnectHandler>(OpenIdConnectDefaults.AuthenticationScheme, settings.DisplayName);
+        options.AddScheme<OpenIddictClientAspNetCoreHandler>(
+            OpenIddictClientAspNetCoreDefaults.AuthenticationScheme, displayName: null);
+
+        foreach (var scheme in _serviceProvider.GetRequiredService<IOptionsMonitor<OpenIddictClientAspNetCoreOptions>>()
+            .CurrentValue.ForwardedAuthenticationSchemes)
+        {
+            options.AddScheme<OpenIddictClientAspNetCoreForwarder>(scheme.Name, scheme.DisplayName);
+        }
     }
 
-    public void Configure(string name, OpenIdConnectOptions options)
+    public void Configure(OpenIddictClientOptions options)
     {
-        // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-        if (!string.Equals(name, OpenIdConnectDefaults.AuthenticationScheme, StringComparison.Ordinal))
-        {
-            return;
-        }
-
         var settings = GetClientSettingsAsync().GetAwaiter().GetResult();
         if (settings == null)
         {
             return;
         }
 
-        options.Authority = settings.Authority.AbsoluteUri;
-        options.ClientId = settings.ClientId;
-        options.SignedOutRedirectUri = settings.SignedOutRedirectUri ?? options.SignedOutRedirectUri;
-        options.SignedOutCallbackPath = settings.SignedOutCallbackPath ?? options.SignedOutCallbackPath;
-        options.RequireHttpsMetadata = string.Equals(settings.Authority.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
-        options.GetClaimsFromUserInfoEndpoint = true;
-        options.ResponseMode = settings.ResponseMode;
-        options.ResponseType = settings.ResponseType;
-        options.SaveTokens = settings.StoreExternalTokens;
+        // Note: the provider name, redirect URI and post-logout redirect URI use the same default
+        // values as the Microsoft ASP.NET Core OpenID Connect handler, for compatibility reasons.
+        var registration = new OpenIddictClientRegistration
+        {
+            Issuer = settings.Authority,
+            ClientId = settings.ClientId,
+            RedirectUri = new Uri(settings.CallbackPath ?? "signin-oidc", UriKind.RelativeOrAbsolute),
+            PostLogoutRedirectUri = new Uri(settings.SignedOutCallbackPath ?? "signout-callback-oidc", UriKind.RelativeOrAbsolute),
+            ProviderName = "OpenIdConnect",
+            ProviderDisplayName = settings.DisplayName,
+            Properties =
+            {
+                [nameof(OpenIdClientSettings)] = settings
+            }
+        };
 
-        options.CallbackPath = settings.CallbackPath ?? options.CallbackPath;
+        if (!string.IsNullOrEmpty(settings.ResponseMode))
+        {
+            registration.ResponseModes.Add(settings.ResponseMode);
+        }
+
+        if (!string.IsNullOrEmpty(settings.ResponseType))
+        {
+            registration.ResponseTypes.Add(settings.ResponseType);
+        }
 
         if (settings.Scopes != null)
         {
-            foreach (var scope in settings.Scopes)
-            {
-                options.Scope.Add(scope);
-            }
+            registration.Scopes.UnionWith(settings.Scopes);
         }
 
         if (!string.IsNullOrEmpty(settings.ClientSecret))
@@ -84,7 +103,7 @@ public sealed class OpenIdClientConfiguration :
 
             try
             {
-                options.ClientSecret = protector.Unprotect(settings.ClientSecret);
+                registration.ClientSecret = protector.Unprotect(settings.ClientSecret);
             }
             catch
             {
@@ -92,22 +111,38 @@ public sealed class OpenIdClientConfiguration :
             }
         }
 
-        if (settings.Parameters != null && settings.Parameters.Length > 0)
-        {
-            var parameters = settings.Parameters;
-            options.Events.OnRedirectToIdentityProvider = (context) =>
-            {
-                foreach (var parameter in parameters)
-                {
-                    context.ProtocolMessage.SetParameter(parameter.Name, parameter.Value);
-                }
+        options.Registrations.Add(registration);
 
-                return Task.CompletedTask;
-            };
-        }
+        // Note: claims are mapped by CallbackController, so the built-in mapping feature is unnecessary.
+        options.DisableWebServicesFederationClaimMapping = true;
+
+        // TODO: use proper encryption/signing credentials, similar to what's used for the server feature.
+        options.EncryptionCredentials.Add(new EncryptingCredentials(new SymmetricSecurityKey(
+            RandomNumberGenerator.GetBytes(256 / 8)), SecurityAlgorithms.Aes256KW, SecurityAlgorithms.Aes256CbcHmacSha512));
+
+        options.SigningCredentials.Add(new SigningCredentials(new SymmetricSecurityKey(
+            RandomNumberGenerator.GetBytes(256 / 8)), SecurityAlgorithms.HmacSha256));
     }
 
-    public void Configure(OpenIdConnectOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
+    public void Configure(string name, OpenIddictClientAspNetCoreOptions options)
+    {
+        // Note: the OpenID module handles the redirection requests in its dedicated
+        // ASP.NET Core MVC controller, which requires enabling the pass-through mode.
+        options.EnableRedirectionEndpointPassthrough = true;
+        options.EnablePostLogoutRedirectionEndpointPassthrough = true;
+
+        // Note: error pass-through is enabled to allow the actions of the MVC callback controller
+        // to handle the errors returned by the interactive endpoints without relying on the generic
+        // status code pages middleware to rewrite the response later in the request processing.
+        options.EnableErrorPassthrough = true;
+
+        // Note: in Orchard, transport security is usually configured via the dedicated HTTPS module.
+        // To make configuration easier and avoid having to configure it in two different features,
+        // the transport security requirement enforced by OpenIddict by default is always turned off.
+        options.DisableTransportSecurityRequirement = true;
+    }
+
+    public void Configure(OpenIddictClientAspNetCoreOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
     private async Task<OpenIdClientSettings> GetClientSettingsAsync()
     {
