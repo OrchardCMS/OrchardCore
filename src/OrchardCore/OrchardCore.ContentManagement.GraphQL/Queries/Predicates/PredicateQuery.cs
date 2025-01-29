@@ -1,4 +1,8 @@
 using YesSql;
+using YesSql.Provider.MySql;
+using YesSql.Provider.PostgreSql;
+using YesSql.Provider.Sqlite;
+using YesSql.Provider.SqlServer;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates;
 
@@ -21,7 +25,6 @@ public class PredicateQuery : IPredicateQuery
     public ISqlDialect Dialect { get; set; }
 
     public IDictionary<string, object> Parameters { get; } = new Dictionary<string, object>();
-
 
     public string NewQueryParameter(object value)
     {
@@ -54,7 +57,6 @@ public class PredicateQuery : IPredicateQuery
         _tableAliases[path] = tableAlias;
     }
 
-
     public void SearchUsedAlias(string propertyPath)
     {
         ArgumentNullException.ThrowIfNull(propertyPath);
@@ -67,10 +69,10 @@ public class PredicateQuery : IPredicateQuery
             return;
         }
 
-        var values = propertyPath.Split('.', 2);
+        var index = IndexOfUnquoted(propertyPath, '.');
 
         // if empty prefix, use default (empty alias)
-        var aliasPath = values.Length == 1 ? string.Empty : values[0];
+        var aliasPath = index == -1 ? string.Empty : propertyPath[..index];
 
         // get the actual index from the alias
         if (_aliases.TryGetValue(aliasPath, out alias))
@@ -80,21 +82,17 @@ public class PredicateQuery : IPredicateQuery
 
             if (propertyProvider != null)
             {
-                if (propertyProvider.TryGetValue(values.Last(), out var columnName))
+                if (propertyProvider.TryGetValue(propertyPath[(index + 1)..], out var columnName))
                 {
                     _usedAliases.Add(alias.alias);
-                    return;
                 }
             }
             else
             {
                 _usedAliases.Add(alias.alias);
-                return;
             }
         }
-
-        // No aliases registered for this path, return the formatted path.
-        return;
+        // else: No aliases registered for this path, return the formatted path.
     }
 
     public string GetColumnName(string propertyPath)
@@ -116,35 +114,39 @@ public class PredicateQuery : IPredicateQuery
                 {
                     if (propertyProvider.TryGetValue(propertyPath, out var columnName))
                     {
-                        return $"{Dialect.QuoteForAliasName(tableAlias)}.{Dialect.QuoteForColumnName(columnName)}";
+                        return EnsureQuotes(tableAlias, columnName);
                     }
                 }
 
-                return $"{Dialect.QuoteForAliasName(tableAlias)}.{Dialect.QuoteForColumnName(alias.alias)}";
+                return EnsureQuotes(tableAlias, alias.alias);
             }
 
-            return Dialect.QuoteForColumnName(alias.alias);
+            return EnsureQuotes(alias.alias);
         }
 
-        var values = propertyPath.Split('.', 2);
+        var index = IndexOfUnquoted(propertyPath, '.');
 
         // if empty prefix, use default (empty alias)
-        var aliasPath = values.Length == 1 ? string.Empty : values[0];
+        var aliasPath = index == -1 ? string.Empty : propertyPath[..index];
 
         // get the actual index from the alias
         if (_aliases.TryGetValue(aliasPath, out alias))
         {
-            var tableAlias = _tableAliases[alias.alias];
+            if (!_tableAliases.TryGetValue(alias.alias, out var tableAlias))
+            {
+                throw new InvalidOperationException($"Missing table alias for path {alias.alias}.");
+            }
+
             // get the index property provider fore the alias
             var propertyProvider = _propertyProviders.FirstOrDefault(x => x.IndexName.Equals(alias.alias, StringComparison.OrdinalIgnoreCase));
 
             if (propertyProvider != null)
             {
-                if (propertyProvider.TryGetValue(values.Last(), out var columnName))
+                if (propertyProvider.TryGetValue(propertyPath[(index + 1)..], out var columnName))
                 {
                     // Switch the given alias in the path with the mapped alias.
                     // aliasPart.alias -> AliasPartIndex.Alias
-                    return $"{Dialect.QuoteForAliasName(tableAlias)}.{Dialect.QuoteForColumnName(columnName)}";
+                    return EnsureQuotes(tableAlias, columnName);
                 }
             }
             else
@@ -152,16 +154,97 @@ public class PredicateQuery : IPredicateQuery
                 // no property provider exists; hope sql is case-insensitive (will break postgres; property providers must be supplied for postgres)
                 // Switch the given alias in the path with the mapped alias.
                 // aliasPart.Alias -> AliasPartIndex.alias
-                return $"{Dialect.QuoteForAliasName(tableAlias)}.{Dialect.QuoteForColumnName(values.Last())}";
+                return EnsureQuotes(tableAlias, propertyPath[(index + 1)..]);
             }
         }
 
         // No aliases registered for this path, return the formatted path.
-        return Dialect.QuoteForColumnName(propertyPath);
+        return EnsureQuotes(propertyPath);
     }
 
     public IEnumerable<string> GetUsedAliases()
     {
         return _usedAliases;
+    }
+
+    private string EnsureQuotes(string alias)
+    {
+        var index = IndexOfUnquoted(alias, '.');
+        return index == -1
+            ? (IsQuoted(alias) ? alias : Dialect.QuoteForColumnName(alias))
+            : EnsureQuotes(alias[..index], alias[(index + 1)..]);
+    }
+
+    private string EnsureQuotes(string tableAlias, string columnName)
+    {
+        if (!IsQuoted(tableAlias))
+        {
+            tableAlias = Dialect.QuoteForAliasName(tableAlias);
+        }
+
+        if (!IsQuoted(columnName))
+        {
+            columnName = Dialect.QuoteForColumnName(columnName);
+        }
+
+        return $"{tableAlias}.{columnName}";
+    }
+
+    private bool IsQuoted(string value)
+    {
+        if (value.Length >= 2)
+        {
+            var (startQuote, endQuote) = GetQuoteChars(Dialect);
+            return value[0] == startQuote && value[^1] == endQuote;
+        }
+
+        return false;
+    }
+
+    private int IndexOfUnquoted(string value, char c)
+    {
+        var startIndex = 0;
+
+        while (true)
+        {
+            var index = value.IndexOf(c, startIndex);
+
+            if (index < 0)
+            {
+                return -1;
+            }
+
+            var (startQuote, endQuote) = GetQuoteChars(Dialect);
+            var startQuoteIndex = value.IndexOf(startQuote, startIndex);
+
+            if (startQuoteIndex >= 0 && startQuoteIndex < index)
+            {
+                var endQuoteIndex = value.IndexOf(endQuote, startQuoteIndex + 1);
+
+                if (endQuoteIndex >= index)
+                {
+                    startIndex = endQuoteIndex + 1;
+                    continue;
+                }
+            }
+
+            return index;
+        }
+    }
+
+    private static (char startQuote, char endQuote) GetQuoteChars(ISqlDialect dialect)
+        => dialect switch
+        {
+            MySqlDialect => ('`', '`'),
+            PostgreSqlDialect => ('"', '"'),
+            SqliteDialect or
+            SqlServerDialect => ('[', ']'),
+            _ => ExtractQuoteChars(dialect)
+        };
+
+    private static (char startQuote, char endQuote) ExtractQuoteChars(ISqlDialect dialect)
+    {
+        var quoted = dialect.QuoteForColumnName("alias");
+        return (quoted[0], quoted[^1]);
     }
 }
