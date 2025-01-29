@@ -8,11 +8,11 @@ namespace OrchardCore.Roles.Services;
 public class RoleService : IRoleService
 {
     private readonly RoleManager<IRole> _roleManager;
-    private readonly ISystemRoleNameProvider _systemRoleProvider;
+    private readonly ISystemRoleProvider _systemRoleProvider;
 
     public RoleService(
         RoleManager<IRole> roleManager,
-        ISystemRoleNameProvider systemRoleProvider)
+        ISystemRoleProvider systemRoleProvider)
     {
         _roleManager = roleManager;
         _systemRoleProvider = systemRoleProvider;
@@ -50,8 +50,8 @@ public class RoleService : IRoleService
     }
 
     public ValueTask<bool> IsAdminRoleAsync(string role)
-        => _systemRoleProvider.IsAdminRoleAsync(role);
+        => ValueTask.FromResult(_systemRoleProvider.IsAdminRole(role));
 
     public ValueTask<bool> IsSystemRoleAsync(string role)
-         => _systemRoleProvider.IsSystemRoleAsync(role);
+         => ValueTask.FromResult(_systemRoleProvider.IsSystemRole(role));
 }

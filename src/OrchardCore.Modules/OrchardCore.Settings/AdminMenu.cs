@@ -22,20 +22,43 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+
+        if (NavigationHelper.UseLegacyFormat())
+        {
+            builder
+                .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, configuration => configuration
+                    .AddClass("menu-configuration")
+                    .Id("configuration")
+                    .Add(S["Settings"], "1", settings => settings
+                        .Add(S["General"], "1", entry => entry
+                            .AddClass("general")
+                            .Id("general")
+                            .Action("Index", "Admin", _routeValues)
+                            .Permission(Permissions.ManageGroupSettings)
+                            .LocalNav()
+                        ),
+                    priority: 1)
+                );
+
+            return ValueTask.CompletedTask;
+        }
+
         builder
-            .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, configuration => configuration
-                .AddClass("menu-configuration")
-                .Id("configuration")
-                .Add(S["Settings"], "1", settings => settings
-                    .Add(S["General"], "1", entry => entry
-                        .AddClass("general")
-                        .Id("general")
-                        .Action("Index", "Admin", _routeValues)
-                        .Permission(Permissions.ManageGroupSettings)
-                        .LocalNav()
-                    ),
-                priority: 1)
-            );
+            .Add(S["Tools"], "after.50", tools => tools
+                .Id("tools")
+                .AddClass("tools")
+            , priority: 1)
+            .Add(S["Settings"], "after.100", settings => settings
+                .Id("settings")
+                .AddClass("settings")
+                .Add(S["General"], "before", general => general
+                    .AddClass("general")
+                    .Id("general")
+                    .Action("Index", "Admin", _routeValues)
+                    .Permission(Permissions.ManageGroupSettings)
+                    .LocalNav()
+                )
+            , priority: 1);
 
         return ValueTask.CompletedTask;
     }

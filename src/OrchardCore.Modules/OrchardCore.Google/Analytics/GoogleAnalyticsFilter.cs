@@ -43,7 +43,7 @@ public sealed class GoogleAnalyticsFilter : IAsyncResultFilter
             {
                 var settings = await _siteService.GetSettingsAsync<GoogleAnalyticsSettings>();
 
-                if (settings is not null)
+                if (!string.IsNullOrEmpty(settings?.TrackingID))
                 {
                     _resourceManager.RegisterHeadScript(new HtmlContentBuilder([_preamble, _urlEncoder.Encode(settings.TrackingID), _middle, _jsEncoder.Encode(settings.TrackingID), _end]));
                 }
