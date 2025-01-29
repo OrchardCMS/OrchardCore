@@ -1,1 +1,14 @@
-<span class="icon"><i class="fa-solid fa-sync" aria-hidden="true"></i></span><span class="title">@T["Reverse Proxy"]</span>
+@using OrchardCore.Navigation
+@if (NavigationHelper.UseLegacyFormat())
+{
+    <span class="icon">
+        <i class="fa-solid fa-sync" aria-hidden="true"></i>
+    </span>
+    <span class="title">@Model.Text</span>
+
+    return;
+}
+
+<span class="icon icon-none">
+</span>
+<span class="title">@Model.Text</span>

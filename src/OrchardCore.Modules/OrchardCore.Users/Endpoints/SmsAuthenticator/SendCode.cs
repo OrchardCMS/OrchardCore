@@ -52,13 +52,9 @@ public static class SendCode
         var settings = await siteService.GetSettingsAsync<SmsAuthenticatorLoginSettings>();
         var code = await userManager.GenerateTwoFactorTokenAsync(user, identityOptions.Value.Tokens.ChangePhoneNumberTokenProvider);
 
-        var message = new SmsMessage()
-        {
-            To = await userManager.GetPhoneNumberAsync(user),
-            Body = await GetBodyAsync(settings, user, code, liquidTemplateManager, htmlEncoder),
-        };
-
-        var result = await smsService.SendAsync(message);
+        var result = await smsService.SendAsync(
+            await userManager.GetPhoneNumberAsync(user),
+            await GetBodyAsync(settings, user, code, liquidTemplateManager, htmlEncoder));
 
         return TypedResults.Ok(new
         {
