@@ -22,18 +22,39 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        builder
-            .Add(S["Design"], design => design
-                .Add(S["Settings"], settings => settings
-                    .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
-                        .Action("Index", "Admin", _routeValues)
+        if (NavigationHelper.UseLegacyFormat())
+        {
+            builder
+                .Add(S["Design"], design => design
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
+                            .Action("Index", "Admin", _routeValues)
+                            .Permission(Permissions.ManageLayers)
+                            .LocalNav()
+                        )
+                    )
+                    .Add(S["Widgets"], S["Widgets"].PrefixPosition(), widgets => widgets
                         .Permission(Permissions.ManageLayers)
+                        .Action("Index", "Admin", "OrchardCore.Layers")
                         .LocalNav()
                     )
-                )
+                );
+
+            return ValueTask.CompletedTask;
+        }
+
+        builder
+            .Add(S["Design"], design => design
                 .Add(S["Widgets"], S["Widgets"].PrefixPosition(), widgets => widgets
                     .Permission(Permissions.ManageLayers)
                     .Action("Index", "Admin", "OrchardCore.Layers")
+                    .LocalNav()
+                )
+            )
+            .Add(S["Settings"], settings => settings
+                .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
+                    .Action("Index", "Admin", _routeValues)
+                    .Permission(Permissions.ManageLayers)
                     .LocalNav()
                 )
             );

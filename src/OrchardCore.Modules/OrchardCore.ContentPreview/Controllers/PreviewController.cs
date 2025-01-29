@@ -109,7 +109,7 @@ public sealed class PreviewController : Controller
             return Ok();
         }
 
-        var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "Detail");
+        var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.Detail);
 
         return View(model);
     }

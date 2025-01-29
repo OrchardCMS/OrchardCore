@@ -72,7 +72,7 @@ public sealed class DashboardController : Controller
                 wrappers.Add(new DashboardWrapper
                 {
                     Dashboard = widget,
-                    Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, _updateModelAccessor.ModelUpdater, "DetailAdmin")
+                    Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.DetailAdmin)
                 });
             }
 
@@ -124,7 +124,7 @@ public sealed class DashboardController : Controller
             var wrapper = new DashboardWrapper
             {
                 Dashboard = widget,
-                Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, _updateModelAccessor.ModelUpdater, "DetailAdmin")
+                Content = await _contentItemDisplayManager.BuildDisplayAsync(widget, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.DetailAdmin)
             };
 
             wrappers.Add(wrapper);

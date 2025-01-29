@@ -208,14 +208,14 @@
                     $(this).find('li').filter(":not(.d-none)").first().addClass("first-child-visible");
                     $(this).find('li').filter(":not(.d-none)").last().addClass("last-child-visible");
                 });
+            }
 
-                var visible = $('.list-group > li:visible');
-                if (visible.length == 0) {
-                    $('#list-alert').removeClass("d-none");
-                }
-                else {
-                    $('#list-alert').addClass("d-none");
-                }
+            var visible = $('.list-group > li:visible');
+            if (visible.length == 0) {
+                $('#list-alert').removeClass("d-none");
+            }
+            else {
+                $('#list-alert').addClass("d-none");
             }
         });
 

@@ -29,7 +29,7 @@ public sealed class ArchiveLaterPartDisplayDriver : ContentPartDisplayDriver<Arc
     public override IDisplayResult Display(ArchiveLaterPart part, BuildPartDisplayContext context)
         => Initialize<ArchiveLaterPartViewModel>(
             $"{nameof(ArchiveLaterPart)}_SummaryAdmin",
-            model => PopulateViewModel(part, model)).Location("SummaryAdmin", "Meta:25");
+            model => PopulateViewModel(part, model)).Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Meta:25");
 
     public override IDisplayResult Edit(ArchiveLaterPart part, BuildPartEditorContext context)
         => Initialize<ArchiveLaterPartViewModel>(
