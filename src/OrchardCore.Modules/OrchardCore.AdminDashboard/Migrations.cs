@@ -1,6 +1,5 @@
 using OrchardCore.AdminDashboard.Indexes;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using OrchardCore.Recipes;
 using OrchardCore.Recipes.Services;
@@ -33,15 +32,10 @@ public sealed class Migrations : DataMigration
                 "Position")
         );
 
-        await _contentDefinitionManager.AlterPartDefinitionAsync("DashboardPart", builder => builder
-            .Attachable()
-            .WithDescription("Provides a way to add widgets to a dashboard.")
-            );
-
         await _recipeMigrator.ExecuteAsync($"dashboard-widgets{RecipesConstants.RecipeExtension}", this);
 
         // Shortcut other migration steps on new content definition schemas.
-        return 3;
+        return 4;
     }
 
     public async Task<int> UpdateFrom1Async()
@@ -61,5 +55,12 @@ public sealed class Migrations : DataMigration
         );
 
         return 3;
+    }
+
+    public async Task<int> UpdateFrom3Async()
+    {
+        await _contentDefinitionManager.DeletePartDefinitionAsync("DashboardPart");
+
+        return 4;
     }
 }

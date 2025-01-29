@@ -13,7 +13,7 @@ namespace OrchardCore.Media.Services;
 /// <summary>
 /// Checks if the user has related permission to view media in the path resource which is passed from AuthorizationHandler.
 /// </summary>
-public class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
+public sealed class ViewMediaFolderAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
 {
     private const char PathSeparator = '/';
 

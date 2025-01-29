@@ -10,7 +10,7 @@ public sealed class ValidationPartDisplayDriver : ContentPartDisplayDriver<Valid
 {
     public override IDisplayResult Display(ValidationPart part, BuildPartDisplayContext context)
     {
-        return View("ValidationPart", part).Location("Detail", "Content");
+        return View("ValidationPart", part).Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(ValidationPart part, BuildPartEditorContext context)
@@ -21,7 +21,7 @@ public sealed class ValidationPartDisplayDriver : ContentPartDisplayDriver<Valid
         });
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(ValidationPart part, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ValidationPart part, UpdatePartEditorContext context)
     {
         var viewModel = new ValidationPartEditViewModel();
 

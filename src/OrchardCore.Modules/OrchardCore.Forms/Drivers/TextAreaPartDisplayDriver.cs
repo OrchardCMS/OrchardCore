@@ -10,7 +10,7 @@ public sealed class TextAreaPartDisplayDriver : ContentPartDisplayDriver<TextAre
 {
     public override IDisplayResult Display(TextAreaPart part, BuildPartDisplayContext context)
     {
-        return View("TextAreaPart", part).Location("Detail", "Content");
+        return View("TextAreaPart", part).Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(TextAreaPart part, BuildPartEditorContext context)
@@ -22,7 +22,7 @@ public sealed class TextAreaPartDisplayDriver : ContentPartDisplayDriver<TextAre
         });
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(TextAreaPart part, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(TextAreaPart part, UpdatePartEditorContext context)
     {
         var viewModel = new InputPartEditViewModel();
 

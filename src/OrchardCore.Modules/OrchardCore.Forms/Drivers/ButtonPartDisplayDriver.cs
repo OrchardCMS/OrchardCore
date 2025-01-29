@@ -11,7 +11,7 @@ public sealed class ButtonPartDisplayDriver : ContentPartDisplayDriver<ButtonPar
     public override IDisplayResult Display(ButtonPart part, BuildPartDisplayContext context)
     {
         return View("ButtonPart", part)
-            .Location("Detail", "Content");
+            .Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(ButtonPart part, BuildPartEditorContext context)
@@ -23,7 +23,7 @@ public sealed class ButtonPartDisplayDriver : ContentPartDisplayDriver<ButtonPar
         });
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(ButtonPart part, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(ButtonPart part, UpdatePartEditorContext context)
     {
         var viewModel = new ButtonPartEditViewModel();
 

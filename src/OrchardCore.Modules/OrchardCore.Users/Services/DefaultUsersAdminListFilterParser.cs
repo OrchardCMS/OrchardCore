@@ -3,7 +3,7 @@ using YesSql.Filters.Query;
 
 namespace OrchardCore.Users.Services;
 
-public class DefaultUsersAdminListFilterParser : IUsersAdminListFilterParser
+public sealed class DefaultUsersAdminListFilterParser : IUsersAdminListFilterParser
 {
     private readonly IQueryParser<User> _parser;
 

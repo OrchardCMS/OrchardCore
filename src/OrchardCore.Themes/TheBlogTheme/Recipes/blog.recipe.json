@@ -88,38 +88,23 @@
       "name": "Roles",
       "Roles": [
         {
-          "Name": "Administrator",
-          "Description": "Administrator",
-          "Permissions": []
-        },
-        {
           "Name": "Moderator",
-          "Description": "Moderator",
+          "Description": "Grants users the ability to moderate content.",
           "Permissions": []
         },
         {
           "Name": "Editor",
-          "Description": "Editor",
+          "Description": "Grants users the ability to edit existing content.",
           "Permissions": []
         },
         {
           "Name": "Author",
-          "Description": "Author",
+          "Description": "Grants users the ability to create content.",
           "Permissions": []
         },
         {
           "Name": "Contributor",
-          "Description": "Contributor",
-          "Permissions": []
-        },
-        {
-          "Name": "Authenticated",
-          "Description": "Authenticated",
-          "Permissions": []
-        },
-        {
-          "Name": "Anonymous",
-          "Description": "Anonymous",
+          "Description": "Grants users the ability to contribute content.",
           "Permissions": []
         }
       ]
@@ -1100,7 +1085,7 @@
         {
           "ContentItemId": "[js: uuid()]",
           "ContentType": "RawHtml",
-          "Displaytext": "Footer",
+          "DisplayText": "Footer",
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUserId')]",
@@ -1118,6 +1103,19 @@
           }
         }
       ]
+    },
+    {
+      "name": "MediaProfiles",
+      "MediaProfiles": {
+        "banner": {
+          "Hint": "A banner image (2048px x 600px, cropped)",
+          "Width": 2048,
+          "Height": 600,
+          "Mode": 2,
+          "Format": 0,
+          "Quality": 100
+        }
+      }
     },
     {
       "name": "media",
@@ -1264,62 +1262,37 @@
                   "Classes": []
                 },
                 {
-                  "$type": "OrchardCore.AdminMenu.AdminNodes.PlaceholderAdminNode, OrchardCore.AdminMenu",
-                  "LinkText": "Content Types",
-                  "IconClass": null,
-                  "PermissionNames": [],
-                  "UniqueId": "2f1fc33133334a1abf7d1a0516ee8b4e",
+                  "$type": "OrchardCore.Contents.AdminNodes.ContentTypesAdminNode, OrchardCore.Contents",
+                  "ShowAll": false,
+                  "ContentTypes": [
+                    {
+                      "ContentTypeId": "Article"
+                    },
+                    {
+                      "ContentTypeId": "Page"
+                    },
+                    {
+                      "ContentTypeId": "Taxonomy"
+                    }
+                  ],
+                  "UniqueId": "ee18224e1b814c638b0732678b74cfd9",
                   "Enabled": true,
                   "Text": null,
                   "Id": null,
                   "Href": null,
                   "Url": null,
-                  "Position": "1",
-                  "Priority": 50,
+                  "Position": null,
                   "LinkToFirstChild": true,
                   "LocalNav": false,
                   "Culture": null,
-                  "Items": [
-                    {
-                      "$type": "OrchardCore.Contents.AdminNodes.ContentTypesAdminNode, OrchardCore.Contents",
-                      "ShowAll": true,
-                      "IconClass": null,
-                      "ContentTypes": [],
-                      "UniqueId": "ee18224e1b814c638b0732678b74cfd9",
-                      "Enabled": true,
-                      "Text": null,
-                      "Id": null,
-                      "Href": null,
-                      "Url": null,
-                      "Position": null,
-                      "LinkToFirstChild": true,
-                      "LocalNav": false,
-                      "Culture": null,
-                      "Items": [],
-                      "Classes": []
-                    }
-                  ],
+                  "Items": [],
                   "Classes": []
                 }
-              ],
-              "Classes": []
+              ]
             }
           ]
         }
       ]
-    },
-    {
-      "name": "MediaProfiles",
-      "MediaProfiles": {
-        "banner": {
-          "Hint": "A banner image (2048px x 600px, cropped)",
-          "Width": 2048,
-          "Height": 600,
-          "Mode": 2,
-          "Format": 0,
-          "Quality": 100
-        }
-      }
     }
   ]
 }

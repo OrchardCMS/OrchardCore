@@ -11,7 +11,7 @@ public sealed class BooleanConditionDisplayDriver : DisplayDriver<Condition, Boo
     {
         return
             CombineAsync(
-                View("BooleanCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                View("BooleanCondition_Fields_Summary", condition).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("BooleanCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content")
             );
     }

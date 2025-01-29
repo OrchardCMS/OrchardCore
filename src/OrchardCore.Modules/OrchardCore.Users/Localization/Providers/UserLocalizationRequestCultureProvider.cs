@@ -10,7 +10,7 @@ public class UserLocalizationRequestCultureProvider : RequestCultureProvider
     {
         ArgumentNullException.ThrowIfNull(httpContext);
 
-        if (httpContext?.User?.Identity?.IsAuthenticated == false)
+        if ((httpContext?.User.Identity?.IsAuthenticated ?? false) == false)
         {
             return NullProviderCultureResult;
         }

@@ -5,11 +5,10 @@ using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Liquid.Filters;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid.Drivers;
@@ -20,7 +19,6 @@ using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.Services;
 using OrchardCore.Liquid.ViewModels;
 using OrchardCore.Modules;
-using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Liquid;
 
@@ -33,8 +31,6 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
-
         services.Configure<TemplateOptions>(options =>
         {
             options.Filters.AddFilter("t", LiquidViewFilters.Localize);
@@ -49,6 +45,9 @@ public sealed class Startup : StartupBase
             // When a property of a 'JsonObject' value is accessed, try to look into its properties.
             options.MemberAccessStrategy.Register<JsonObject, object>((source, name) => source[name]);
 
+            // When a property of a 'JsonDynamicObject' value is accessed, try to look into its properties.
+            options.MemberAccessStrategy.Register<JsonDynamicObject, object>((json, name) => json[name]);
+
             // Convert JToken to FluidValue
             options.ValueConverters.Add(x =>
             {
@@ -57,8 +56,10 @@ public sealed class Startup : StartupBase
                     JsonObject o => new ObjectValue(o),
                     JsonDynamicObject o => new ObjectValue((JsonObject)o),
                     JsonValue o => o.GetObjectValue(),
+                    JsonDynamicValue o => ((JsonValue)(o.Node)).GetObjectValue(),
                     DateTime d => new ObjectValue(d),
                     _ => null
+
                 };
             });
 
@@ -75,7 +76,18 @@ public sealed class Startup : StartupBase
         .AddLiquidFilter<ShapeRenderFilter>("shape_render")
         .AddLiquidFilter<ShapeStringifyFilter>("shape_stringify");
 
-        services.AddTransient<IConfigureOptions<ResourceManagementOptions>, ResourceManagementOptionsConfiguration>();
+        services.AddResourceConfiguration<ResourceManagementOptionsConfiguration>();
+    }
+}
+
+[Feature("OrchardCore.Liquid.Core")]
+public sealed class LiquidStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
+
+        services.AddLiquidCoreServices();
     }
 }
 
@@ -85,7 +97,7 @@ public sealed class LiquidPartStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         // Liquid Part
-        services.AddScoped<IShapeTableProvider, LiquidShapes>();
+        services.AddShapeTableProvider<LiquidShapes>();
         services.AddContentPart<LiquidPart>()
             .UseDisplayDriver<LiquidPartDisplayDriver>()
             .AddHandler<LiquidPartHandler>();
@@ -101,5 +113,36 @@ public sealed class ShortcodesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddLiquidFilter<ShortcodeFilter>("shortcode");
+    }
+}
+
+[RequireFeatures("OrchardCore.Resources")]
+public sealed class ResourcesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddLiquidFilter<AppendVersionFilter>("append_version");
+        services.AddLiquidFilter<ResourceUrlFilter>("resource_url");
+    }
+}
+
+[RequireFeatures("OrchardCore.Html")]
+public sealed class HtmlStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddLiquidFilter<SanitizeHtmlFilter>("sanitize_html");
+    }
+}
+
+[RequireFeatures("OrchardCore.Localization")]
+public sealed class localizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+#pragma warning disable CS0618 // Type or member is obsolete
+        // Deprecated, remove in a future version.
+        services.AddLiquidFilter<SupportedCulturesFilter>("supported_cultures");
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 }

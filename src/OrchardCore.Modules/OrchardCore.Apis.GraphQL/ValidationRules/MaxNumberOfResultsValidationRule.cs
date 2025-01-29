@@ -25,7 +25,7 @@ public class MaxNumberOfResultsValidationRule : IValidationRule
         _logger = logger;
     }
 
-    public ValueTask<INodeVisitor> ValidateAsync(ValidationContext validationContext)
+    public ValueTask<INodeVisitor> GetPreNodeVisitorAsync(ValidationContext validationContext)
     {
         return ValueTask.FromResult((INodeVisitor)new NodeVisitors(
         new MatchingNodeVisitor<GraphQLArgument>((arg, visitorContext) =>
@@ -60,7 +60,7 @@ public class MaxNumberOfResultsValidationRule : IValidationRule
                     }
                     else
                     {
-                        _logger.LogInformation("'{value}' exceeds the maximum number of results for '{name}' ({total})", value.Value, arg.Name, _maxNumberOfResults);
+                        _logger.LogInformation("'{Value}' exceeds the maximum number of results for '{Name}' ({Total})", value.Value, arg.Name, _maxNumberOfResults);
 
                         arg = new GraphQLArgument(arg.Name, new GraphQLIntValue(_maxNumberOfResults)); // if disabled mode we just log info and override the arg to be maxvalue
                     }
@@ -68,4 +68,10 @@ public class MaxNumberOfResultsValidationRule : IValidationRule
             }
         })));
     }
+
+    public ValueTask<IVariableVisitor> GetVariableVisitorAsync(ValidationContext context)
+        => ValueTask.FromResult<IVariableVisitor>(null);
+
+    public ValueTask<INodeVisitor> GetPostNodeVisitorAsync(ValidationContext context)
+        => ValueTask.FromResult<INodeVisitor>(null);
 }

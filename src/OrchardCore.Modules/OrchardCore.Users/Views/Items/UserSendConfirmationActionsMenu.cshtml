@@ -1,0 +1,21 @@
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Options
+@using OrchardCore.Users.Models
+
+@model SummaryAdminUserViewModel
+
+@inject UserManager<IUser> UserManager
+@inject IAuthorizationService AuthorizationService
+@inject IOptions<RegistrationOptions> RegistrationOptions
+
+@if (!Model.User.EmailConfirmed &&
+RegistrationOptions.Value.UsersMustValidateEmail &&
+await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, Model.User))
+{
+    <li>
+        <form method="post" class="d-inline-block" class="no-multisubmit">
+            <input name="id" type="hidden" value="@Model.User.UserId" />
+            <button asp-action="SendVerificationEmail" asp-controller="EmailConfirmation" class="dropdown-item">@T["Send verification email"]</button>
+        </form>
+    </li>
+}

@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using OpenIddict.Abstractions;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell.Scope;

@@ -9,7 +9,7 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
@@ -46,7 +46,7 @@ public sealed class Startup : StartupBase
         .AddLiquidFilter<TaxonomyTermsFilter>("taxonomy_terms");
 
         services.AddDataMigration<Migrations>();
-        services.AddScoped<IShapeTableProvider, TermShapes>();
+        services.AddShapeTableProvider<TermShapes>();
         services.AddPermissionProvider<Permissions>();
 
         // Taxonomy Part
@@ -83,7 +83,7 @@ public sealed class ContentsAdminListStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddScoped<IContentsAdminListFilter, TaxonomyContentsAdminListFilter>();
-        services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, TaxonomyContentsAdminListDisplayDriver>();
+        services.AddDisplayDriver<ContentOptionsViewModel, TaxonomyContentsAdminListDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
         services.AddSiteDisplayDriver<TaxonomyContentsAdminListSettingsDisplayDriver>();
     }

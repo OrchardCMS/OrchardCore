@@ -1,6 +1,6 @@
 # Search
 
-Orchard Core allows you to define the information to [index](../../glossary/README.md#indexing) and to [query](../../glossary/README.md#query) them to provide an integrated Search experience.
+Orchard Core allows you to define the information to [index](../../reference/glossary/README.md#indexing) and to [query](../../reference/glossary/README.md#query) them to provide an integrated Search experience.
 
 ## Query and Search
 

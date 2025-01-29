@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Navigation;
@@ -8,6 +9,12 @@ namespace OrchardCore.Search.AzureAI;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
+    private static readonly RouteValueDictionary _routeValues = new()
+    {
+        { "area", "OrchardCore.Settings" },
+        { "groupId", AzureAISearchDefaultSettingsDisplayDriver.GroupId},
+    };
+
     private readonly AzureAISearchDefaultOptions _azureAISearchSettings;
 
     internal readonly IStringLocalizer S;
@@ -37,21 +44,39 @@ public sealed class AdminMenu : AdminNavigationProvider
                 )
             );
 
-        if (!_azureAISearchSettings.DisableUIConfiguration)
+        if (_azureAISearchSettings.DisableUIConfiguration)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        if (NavigationHelper.UseLegacyFormat())
         {
             builder
-                .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Settings"], settings => settings
-                        .Add(S["Azure AI Search"], S["Azure AI Search"].PrefixPosition(), azureAISearch => azureAISearch
-                        .AddClass("azure-ai-search")
-                            .Id("azureaisearch")
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AzureAISearchDefaultSettingsDisplayDriver.GroupId })
-                            .Permission(AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes)
-                            .LocalNav()
-                        )
-                    )
-                );
+               .Add(S["Configuration"], configuration => configuration
+                   .Add(S["Settings"], settings => settings
+                       .Add(S["Azure AI Search"], S["Azure AI Search"].PrefixPosition(), azureAISearch => azureAISearch
+                       .AddClass("azure-ai-search")
+                           .Id("azureaisearch")
+                           .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AzureAISearchDefaultSettingsDisplayDriver.GroupId })
+                           .Permission(AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes)
+                           .LocalNav()
+                       )
+                   )
+               );
+
+            return ValueTask.CompletedTask;
         }
+
+        builder
+            .Add(S["Settings"], settings => settings
+                .Add(S["Azure AI Search"], S["Azure AI Search"].PrefixPosition(), azureAISearch => azureAISearch
+                .AddClass("azure-ai-search")
+                    .Id("azureaisearch")
+                    .Action("Index", "Admin", _routeValues)
+                    .Permission(AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes)
+                    .LocalNav()
+                )
+            );
 
         return ValueTask.CompletedTask;
     }

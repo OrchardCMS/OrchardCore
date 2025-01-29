@@ -51,6 +51,42 @@ For instance, when a content item is displayed in a list, the `Summary` display 
 | `Content_Summary__BlogPost` | `Content-BlogPost.Summary.cshtml` |
 | `Content_Summary__Article` | `Content-Article.Summary.cshtml` |
 
+### `Content__Alias__[Alias]`
+
+This template is called when displaying a content item with a specific alias. It needs to have the `AliasPart` attached to it.
+
+#### Content with Alias Examples
+
+| Template                   | Filename                       |
+|----------------------------|--------------------------------|
+| `Content__Alias__example`  | `Content-Alias-example.cshtml` |
+| `Content__Alias__my__page` | `Content-Alias-my-page.cshtml` |
+
+#### Content with Alias and Display Type Examples
+
+| Template                           | Filename                               |
+|------------------------------------|----------------------------------------|
+| `Content_Summary__Alias__example`  | `Content-Alias-example.Summary.cshtml` |
+| `Content_Summary__Alias__my__page` | `Content-Alias-my-page.Summary.cshtml` |
+
+### `Content__Slug__[Slug]`
+
+This template is called when displaying a content item with a specific slug (i.e., a path is assigned to the item). It needs to have the `AutoroutePart` attached to it.
+
+#### Content with Slug Examples
+
+| Template                        | Filename                           |
+|---------------------------------|------------------------------------|
+| `Content__Slug__example`        | `Content-Slug-example.cshtml`      |
+| `Content__Slug__blog__my__post` | `Content-Slug-blog-my-post.cshtml` |
+
+#### Content with Slug and Display Type Examples
+
+| Template                          | Filename                               |
+|-----------------------------------|----------------------------------------|
+| `Content_Summary__Slug__example`  | `Content-Slug-example.Summary.cshtml` |
+| `Content_Summary__Slug__blog__my__post` | `Content-Slug-blog-my-post.Summary.cshtml` |
+
 ## Widget templates
 
 ### `Widget__[ContentType]`
@@ -72,6 +108,42 @@ This template is called when a widget is rendered on a page.
 | `Model.ContentItem` | Represents the current content item being rendered by the template. |
 | `Model.ContentItem.Content` | A JSON object containing all the data of the content item. |
 | `Model.Classes` | An array of all the classes attached to the widget. |
+
+### `Widget__Alias__[Alias]`
+
+This template is called when displaying a widget content item with a specific alias. It needs to have the `AliasPart` attached to it.
+
+#### Widget with Alias Examples
+
+| Template                   | Filename                       |
+|----------------------------|--------------------------------|
+| `Widget__Alias__example`  | `Widget-Alias-example.cshtml` |
+| `Widget__Alias__my__page` | `Widget-Alias-my-page.cshtml` |
+
+#### Widget with Alias and Display Type Examples
+
+| Template                           | Filename                               |
+|------------------------------------|----------------------------------------|
+| `Widget_Summary__Alias__example`  | `Widget-Alias-example.Summary.cshtml` |
+| `Widget_Summary__Alias__my__page` | `Widget-Alias-my-page.Summary.cshtml` |
+
+### `Widget__Slug__[Slug]`
+
+This template is called when displaying a widget content item with a specific slug (i.e., a path is assigned to the item). It needs to have the `AutoroutePart` attached to it.
+
+#### Widget with Slug Examples
+
+| Template                        | Filename                           |
+|---------------------------------|------------------------------------|
+| `Widget__Slug__example`        | `Widget-Slug-example.cshtml`      |
+| `Widget__Slug__blog__my__post` | `Widget-Slug-blog-my-post.cshtml` |
+
+#### Widget with Slug and Display Type Examples
+
+| Template                          | Filename                               |
+|-----------------------------------|----------------------------------------|
+| `Widget_Summary__Slug__example`  | `Widget-Slug-example.Summary.cshtml` |
+| `Widget_Summary__Slug__blog__my__post` | `Widget-Slug-blog-my-post.Summary.cshtml` |
 
 ## Content Part templates
 
@@ -488,7 +560,7 @@ This template is called when a content field shape type is rendered for a given 
 The differentiator uniquely identifies a shape in a zone. When rendering a content item, the shape has a `Content` property that contains
 all the shapes provided by content display drivers, including the ones for content parts and content fields.
 
-Differentiators can be used to configure the placement information (c.f. [Placement documentation page](../../core/Placement/README.md)), or to access specific shapes in a zone using these template helpers:
+Differentiators can be used to configure the placement information (c.f. [Placement documentation page](../../modules/Placement/README.md)), or to access specific shapes in a zone using these template helpers:
 
 ### Content Part differentiator
 

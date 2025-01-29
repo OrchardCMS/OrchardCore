@@ -49,6 +49,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
                 InitializeDisplayListPartDisplayShape(listPart, context),
                 InitializeDisplayListPartDetailAdminShape(listPart, context),
                 InitializeDisplayListPartNavigationAdminShape(listPart, context, settings),
+                InitializeDisplayListPartDetailAdminSearchPanelShape(),
                 InitializeDisplayListPartHeaderAdminShape(listPart, settings),
                 InitializeDisplayListPartSummaryAdmin(listPart)
             );
@@ -81,7 +82,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
     private ShapeResult InitializeDisplayListPartSummaryAdmin(ListPart listPart)
     {
         return Initialize<ContentItemViewModel>("ListPartSummaryAdmin", model => model.ContentItem = listPart.ContentItem)
-            .Location("SummaryAdmin", "Actions:4");
+            .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "Actions:4");
     }
 
     private ShapeResult InitializeDisplayListPartHeaderAdminShape(ListPart listPart, ListPartSettings settings)
@@ -91,7 +92,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             model.ContainerContentItem = listPart.ContentItem;
             model.ContainedContentTypeDefinitions = (await GetContainedContentTypesAsync(settings)).ToArray();
             model.EnableOrdering = settings.EnableOrdering;
-        }).Location("DetailAdmin", "Content:1")
+        }).Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:1")
         .RenderWhen(() => Task.FromResult(settings.ShowHeader));
     }
 
@@ -103,7 +104,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             model.Container = listPart.ContentItem;
             model.EnableOrdering = settings.EnableOrdering;
             model.ContainerContentTypeDefinition = context.TypePartDefinition.ContentTypeDefinition;
-        }).Location("DetailAdmin", "Content:1.5");
+        }).Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:1.5");
     }
 
     private ShapeResult InitializeDisplayListPartDetailAdminShape(ListPart listPart, BuildPartDisplayContext context)
@@ -132,7 +133,18 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             model.EnableOrdering = settings.EnableOrdering;
             model.Pager = await context.New.PagerSlim(pager);
         }))
-            .Location("DetailAdmin", "Content:10");
+            .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:10");
+    }
+    private ShapeResult InitializeDisplayListPartDetailAdminSearchPanelShape()
+    {
+        return Initialize<ListPartViewModel>("ListPartDetailAdminSearchPanel", async model =>
+        {
+            var listPartFilterViewModel = new ListPartFilterViewModel();
+            await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listPartFilterViewModel, Prefix);
+
+            model.ListPartFilterViewModel = listPartFilterViewModel;
+
+        }).Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:5");
     }
 
     private ShapeResult InitializeDisplayListPartDisplayShape(ListPart listPart, BuildPartDisplayContext context)
@@ -153,7 +165,7 @@ public sealed class ListPartDisplayDriver : ContentPartDisplayDriver<ListPart>
             model.Pager = await context.New.PagerSlim(pager);
             model.ListPart = listPart;
         })
-            .Location("Detail", "Content:10");
+            .Location(OrchardCoreConstants.DisplayType.Detail, "Content:10");
     }
 
     private static async Task<PagerSlim> GetPagerSlimAsync(BuildPartDisplayContext context)

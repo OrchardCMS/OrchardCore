@@ -33,7 +33,7 @@ public sealed class Startup : StartupBase
         services.AddScoped<IAuditTrailEventHandler, ContentAuditTrailEventHandler>();
         services.AddSiteDisplayDriver<ContentAuditTrailSettingsDisplayDriver>();
 
-        services.AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailContentEventDisplayDriver>();
+        services.AddDisplayDriver<AuditTrailEvent, AuditTrailContentEventDisplayDriver>();
 
         services.AddScoped<IContentHandler, AuditTrailContentHandler>();
     }

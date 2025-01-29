@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using OrchardCore.Environment.Shell;
@@ -64,7 +65,7 @@ public sealed class AccessController : Controller
         // Retrieve the claims stored in the authentication cookie.
         // If they can't be extracted, redirect the user to the login page.
         var result = await HttpContext.AuthenticateAsync();
-        if (result == null || !result.Succeeded || request.HasPrompt(Prompts.Login))
+        if (result == null || !result.Succeeded || request.HasPromptValue(PromptValues.Login))
         {
             return RedirectToLoginPage(request);
         }
@@ -99,7 +100,7 @@ public sealed class AccessController : Controller
 
             case ConsentTypes.Implicit:
             case ConsentTypes.External when authorizations.Count > 0:
-            case ConsentTypes.Explicit when authorizations.Count > 0 && !request.HasPrompt(Prompts.Consent):
+            case ConsentTypes.Explicit when authorizations.Count > 0 && !request.HasPromptValue(PromptValues.Consent):
                 var identity = new ClaimsIdentity(result.Principal.Claims, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
                 identity.AddClaim(new Claim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User));
 
@@ -123,7 +124,7 @@ public sealed class AccessController : Controller
 
                 return SignIn(new ClaimsPrincipal(identity), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
 
-            case ConsentTypes.Explicit when request.HasPrompt(Prompts.None):
+            case ConsentTypes.Explicit when request.HasPromptValue(PromptValues.None):
                 return Forbid(new AuthenticationProperties(new Dictionary<string, string>
                 {
                     [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.ConsentRequired,
@@ -144,7 +145,7 @@ public sealed class AccessController : Controller
         {
             // If the client application requested promptless authentication,
             // return an error indicating that the user is not logged in.
-            if (request.HasPrompt(Prompts.None))
+            if (request.HasPromptValue(PromptValues.None))
             {
                 return Forbid(new AuthenticationProperties(new Dictionary<string, string>
                 {
@@ -155,9 +156,15 @@ public sealed class AccessController : Controller
 
             string GetRedirectUrl()
             {
-                // Override the prompt parameter to prevent infinite authentication/authorization loops.
-                var parameters = Request.Query.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-                parameters[Parameters.Prompt] = "continue";
+                // To avoid endless login -> authorization redirects, the prompt=login flag
+                // is removed from the authorization request payload before redirecting the user.
+                var prompt = string.Join(" ", request.GetPromptValues().Remove(PromptValues.Login));
+
+                var parameters = Request.HasFormContentType ?
+                    Request.Form.Where(parameter => parameter.Key != Parameters.Prompt).ToList() :
+                    Request.Query.Where(parameter => parameter.Key != Parameters.Prompt).ToList();
+
+                parameters.Add(new(Parameters.Prompt, new StringValues(prompt)));
 
                 return Request.PathBase + Request.Path + QueryString.Create(parameters);
             }

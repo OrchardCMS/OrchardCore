@@ -10,7 +10,7 @@ public sealed class OpenIdValidationDeploymentStepDriver : DisplayDriver<Deploym
     {
         return
             CombineAsync(
-                View("OpenIdValidationDeploymentStep_Summary", step).Location("Summary", "Content"),
+                View("OpenIdValidationDeploymentStep_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("OpenIdValidationDeploymentStep_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

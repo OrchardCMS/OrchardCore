@@ -271,8 +271,9 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var menuItems = menuContentAsJson[nameof(MenuItemsListPart)]?[nameof(MenuItemsListPart.MenuItems)] as JsonArray;
-        menuItems?.Remove(menuItem);
+        var menuItems = menuContentAsJson.SelectNode(menuItem.Parent.GetPath()) as JsonArray;
+
+        menuItems.Remove(menuItem);
 
         await _contentManager.SaveDraftAsync(menu);
 

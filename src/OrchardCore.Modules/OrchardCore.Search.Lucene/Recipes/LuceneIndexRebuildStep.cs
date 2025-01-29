@@ -9,15 +9,15 @@ namespace OrchardCore.Search.Lucene.Recipes;
 /// <summary>
 /// This recipe step rebuilds a Lucene index.
 /// </summary>
-public sealed class LuceneIndexRebuildStep : IRecipeStepHandler
+public sealed class LuceneIndexRebuildStep : NamedRecipeStepHandler
 {
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    public LuceneIndexRebuildStep()
+        : base("lucene-index-rebuild")
     {
-        if (!string.Equals(context.Name, "lucene-index-rebuild", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
+    }
 
+    protected override async Task HandleAsync(RecipeExecutionContext context)
+    {
         var model = context.Step.ToObject<LuceneIndexRebuildStepModel>();
 
         if (model.IncludeAll || model.Indices.Length > 0)

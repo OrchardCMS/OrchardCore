@@ -1,5 +1,5 @@
 using GraphQL.Types;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement.Metadata.Models;
 
@@ -7,38 +7,27 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types;
 
 public sealed class DynamicPartWhereInputGraphType : WhereInputObjectGraphType<ContentPart>
 {
-    private ContentTypePartDefinition _part;
-
-    public DynamicPartWhereInputGraphType(ContentTypePartDefinition part)
+    public DynamicPartWhereInputGraphType(
+        ContentTypePartDefinition part,
+        ISchema schema,
+        IEnumerable<IContentFieldProvider> contentFieldProviders,
+        IStringLocalizer<DynamicPartWhereInputGraphType> stringLocalizer)
+        : base(stringLocalizer)
     {
         Name = $"{part.Name}WhereInput";
-        _part = part;
-    }
 
-    public override void Initialize(ISchema schema)
-    {
-        if (schema is IServiceProvider serviceProvider)
+        foreach (var field in part.PartDefinition.Fields)
         {
-            var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
-
-            foreach (var field in _part.PartDefinition.Fields)
+            foreach (var fieldProvider in contentFieldProviders)
             {
-                foreach (var fieldProvider in contentFieldProviders)
-                {
-                    var fieldType = fieldProvider.GetField(schema, field, _part.Name);
+                var fieldType = fieldProvider.GetField(schema, field, part.Name);
 
-                    if (fieldType != null)
-                    {
-                        AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description);
-                        break;
-                    }
+                if (fieldType != null)
+                {
+                    AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description);
+                    break;
                 }
             }
         }
-
-        // Part is not required here anymore, do not keep it alive.
-        _part = null;
-
-        base.Initialize(schema);
     }
 }

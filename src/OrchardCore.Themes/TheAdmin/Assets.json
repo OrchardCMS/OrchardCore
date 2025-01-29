@@ -37,6 +37,7 @@
       "Assets/scss/login.scss"
     ],
     "watch": [
+      "Assets/scss/componenets/_recaptcha.scss",
       "Assets/scss/componenets/_validations.scss"
     ],
     "output": "wwwroot/css/login.css"

@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using OrchardCore.Roles;
 using OrchardCore.Security;
 
 namespace OrchardCore.Settings.Services;
@@ -10,15 +11,35 @@ namespace OrchardCore.Settings.Services;
 public class SuperUserHandler : IAuthorizationHandler
 {
     private readonly ISiteService _siteService;
+    private readonly ISystemRoleProvider _systemRoleProvider;
 
-    public SuperUserHandler(ISiteService siteService)
+    public SuperUserHandler(
+        ISiteService siteService,
+        ISystemRoleProvider systemRoleProvider)
     {
         _siteService = siteService;
+        _systemRoleProvider = systemRoleProvider;
     }
 
     public async Task HandleAsync(AuthorizationHandlerContext context)
     {
-        var userId = context?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = context?.User;
+
+        if (user == null)
+        {
+            return;
+        }
+
+        var adminRole = _systemRoleProvider.GetAdminRole();
+
+        if (user.IsInRole(adminRole.RoleName))
+        {
+            SucceedAllRequirements(context);
+
+            return;
+        }
+
+        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null)
         {
             return;

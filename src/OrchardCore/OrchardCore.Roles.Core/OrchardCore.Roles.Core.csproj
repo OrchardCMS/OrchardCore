@@ -4,9 +4,11 @@
     <RootNamespace>OrchardCore.Roles</RootNamespace>
     <!-- NuGet properties-->
     <Title>OrchardCore Roles Core</Title>
-    <Description>$(OCCMSDescription)
-    
-    Core implementation for Roles module.</Description>
+    <Description>
+      $(OCCMSDescription)
+
+      Core implementation for Roles module.
+    </Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
@@ -15,7 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="OrchardCore.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Roles.Abstractions\OrchardCore.Roles.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

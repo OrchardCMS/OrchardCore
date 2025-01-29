@@ -67,7 +67,7 @@ public class BlogPostDeploymentContext : SiteContext
 
     public async Task<HttpResponseMessage> PostRecipeAsync(JsonObject recipe, bool ensureSuccess = true)
     {
-        using var zipStream = new MemoryStream();
+        await using var zipStream = MemoryStreamFactory.GetStream();
         using (var zip = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
         {
             var entry = zip.CreateEntry("Recipe.json");
@@ -75,7 +75,7 @@ public class BlogPostDeploymentContext : SiteContext
             recipe.WriteTo(streamWriter);
         }
 
-        zipStream.Position = 0;
+        zipStream.Seek(0, SeekOrigin.Begin);
 
         using var requestContent = new MultipartFormDataContent
         {

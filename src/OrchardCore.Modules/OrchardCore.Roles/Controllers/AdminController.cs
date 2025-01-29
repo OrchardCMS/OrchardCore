@@ -65,10 +65,20 @@ public sealed class AdminController : Controller
 
         var roles = await _roleService.GetRolesAsync();
 
-        var model = new RolesViewModel
+        var model = new RolesViewModel()
         {
-            RoleEntries = roles.Select(BuildRoleEntry).ToList()
+            RoleEntries = [],
         };
+
+        foreach (var role in roles.OrderBy(r => r.RoleName))
+        {
+            model.RoleEntries.Add(new RoleEntry
+            {
+                Name = role.RoleName,
+                Description = role.RoleDescription,
+                IsSystemRole = await _roleService.IsSystemRoleAsync(role.RoleName),
+            });
+        }
 
         return View(model);
     }
@@ -102,7 +112,7 @@ public sealed class AdminController : Controller
                 ModelState.AddModelError(string.Empty, S["Invalid role name."]);
             }
 
-            if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(model.RoleName)) != null)
+            if (await _roleManager.FindByNameAsync(model.RoleName) != null)
             {
                 ModelState.AddModelError(string.Empty, S["The role is already used."]);
             }
@@ -110,11 +120,18 @@ public sealed class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            var role = new Role { RoleName = model.RoleName, RoleDescription = model.RoleDescription };
+            var role = new Role
+            {
+                RoleName = model.RoleName,
+                RoleDescription = model.RoleDescription,
+            };
+
             var result = await _roleManager.CreateAsync(role);
+
             if (result.Succeeded)
             {
                 await _notifier.SuccessAsync(H["Role created successfully."]);
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -126,8 +143,85 @@ public sealed class AdminController : Controller
             }
         }
 
-        // If we got this far, something failed, redisplay form
+        // If we got this far, something failed, redisplay form.
         return View(model);
+    }
+
+    public async Task<IActionResult> Edit(string id)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
+        {
+            return Forbid();
+        }
+
+        if (await _roleManager.FindByIdAsync(id) is not Role role)
+        {
+            return NotFound();
+        }
+
+        var model = new EditRoleViewModel
+        {
+            Role = role,
+            Name = role.RoleName,
+            RoleDescription = role.RoleDescription,
+            IsAdminRole = await _roleService.IsAdminRoleAsync(role.RoleName),
+        };
+
+        var installedPermissions = await GetInstalledPermissionsAsync();
+        var allPermissions = installedPermissions.SelectMany(x => x.Value);
+
+        ViewData["DuplicatedPermissions"] = allPermissions
+            .GroupBy(p => p.Name.ToUpperInvariant())
+            .Where(g => g.Count() > 1)
+            .Select(g => g.First().Name)
+            .ToArray();
+
+        if (!await _roleService.IsAdminRoleAsync(role.RoleName))
+        {
+            model.EffectivePermissions = await GetEffectivePermissions(role, allPermissions);
+            model.RoleCategoryPermissions = installedPermissions;
+        }
+
+        return View(model);
+    }
+
+    [HttpPost, ActionName(nameof(Edit))]
+    public async Task<IActionResult> EditPost(string id, string roleDescription)
+    {
+        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
+        {
+            return Forbid();
+        }
+
+        if (await _roleManager.FindByIdAsync(id) is not Role role)
+        {
+            return NotFound();
+        }
+
+        role.RoleDescription = roleDescription;
+
+        if (!await _roleService.IsAdminRoleAsync(role.RoleName))
+        {
+            var rolePermissions = new List<RoleClaim>();
+
+            foreach (var key in Request.Form.Keys)
+            {
+                if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
+                {
+                    var permissionName = key["Checkbox.".Length..];
+                    rolePermissions.Add(RoleClaim.Create(permissionName));
+                }
+            }
+
+            role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
+            role.RoleClaims.AddRange(rolePermissions);
+        }
+
+        await _roleManager.UpdateAsync(role);
+
+        await _notifier.SuccessAsync(H["Role updated successfully."]);
+
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
@@ -138,14 +232,21 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var currentRole = await _roleManager.FindByIdAsync(id);
+        var role = await _roleManager.FindByIdAsync(id);
 
-        if (currentRole == null)
+        if (role == null)
         {
             return NotFound();
         }
 
-        var result = await _roleManager.DeleteAsync(currentRole);
+        if (await _roleService.IsSystemRoleAsync(role.RoleName))
+        {
+            await _notifier.ErrorAsync(H["System roles cannot be deleted."]);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        var result = await _roleManager.DeleteAsync(role);
 
         if (result.Succeeded)
         {
@@ -159,84 +260,11 @@ public sealed class AdminController : Controller
 
             foreach (var error in result.Errors)
             {
-                await _notifier.ErrorAsync(H[error.Description]);
+                await _notifier.ErrorAsync(new LocalizedHtmlString(error.Description, error.Description));
             }
         }
 
         return RedirectToAction(nameof(Index));
-    }
-
-    public async Task<IActionResult> Edit(string id)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
-        {
-            return Forbid();
-        }
-
-        if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id)) is not Role role)
-        {
-            return NotFound();
-        }
-
-        var installedPermissions = await GetInstalledPermissionsAsync();
-        var allPermissions = installedPermissions.SelectMany(x => x.Value);
-
-        var model = new EditRoleViewModel
-        {
-            Role = role,
-            Name = role.RoleName,
-            RoleDescription = role.RoleDescription,
-            EffectivePermissions = await GetEffectivePermissions(role, allPermissions),
-            RoleCategoryPermissions = installedPermissions
-        };
-
-        return View(model);
-    }
-
-    [HttpPost, ActionName(nameof(Edit))]
-    public async Task<IActionResult> EditPost(string id, string roleDescription)
-    {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageRoles))
-        {
-            return Forbid();
-        }
-
-        if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(id)) is not Role role)
-        {
-            return NotFound();
-        }
-
-        role.RoleDescription = roleDescription;
-
-        // Save.
-        var rolePermissions = new List<RoleClaim>();
-        foreach (var key in Request.Form.Keys)
-        {
-            if (key.StartsWith("Checkbox.", StringComparison.Ordinal) && Request.Form[key] == "true")
-            {
-                var permissionName = key["Checkbox.".Length..];
-                rolePermissions.Add(new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = permissionName });
-            }
-        }
-
-        role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
-        role.RoleClaims.AddRange(rolePermissions);
-
-        await _roleManager.UpdateAsync(role);
-
-        await _notifier.SuccessAsync(H["Role updated successfully."]);
-
-        return RedirectToAction(nameof(Index));
-    }
-
-    private RoleEntry BuildRoleEntry(IRole role)
-    {
-        return new RoleEntry
-        {
-            Name = role.RoleName,
-            Description = role.RoleDescription,
-            Selected = false
-        };
     }
 
     private async Task<IDictionary<PermissionGroupKey, IEnumerable<Permission>>> GetInstalledPermissionsAsync()

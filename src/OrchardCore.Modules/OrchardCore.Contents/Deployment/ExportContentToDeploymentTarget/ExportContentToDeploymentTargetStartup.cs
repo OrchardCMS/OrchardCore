@@ -23,7 +23,7 @@ public sealed class ExportContentToDeploymentTargetStartup : StartupBase
 
         services.AddDataMigration<ExportContentToDeploymentTargetMigrations>();
         services.AddScoped<IContentDisplayDriver, ExportContentToDeploymentTargetContentDriver>();
-        services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ExportContentToDeploymentTargetContentsAdminListDisplayDriver>();
+        services.AddDisplayDriver<ContentOptionsViewModel, ExportContentToDeploymentTargetContentsAdminListDisplayDriver>();
 
         services.AddSiteSettingsPropertyDeploymentStep<ExportContentToDeploymentTargetSettings, ExportContentToDeploymentTargetStartup>(S => S["Export Content To Deployment Target settings"], S => S["Exports the Export Content To Deployment Target settings."]);
     }

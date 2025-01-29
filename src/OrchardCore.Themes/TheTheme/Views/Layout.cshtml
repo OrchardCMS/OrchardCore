@@ -9,7 +9,6 @@
 @inject IUpdateModelAccessor UpdateModelAccessor
 @inject ThemeTogglerService ThemeTogglerService
 @{
-    var adminSettings = Site.As<AdminSettings>();
     // Navbar is pre-rendered to allow resource injection.
     var navbar = await DisplayAsync(await DisplayManager.BuildDisplayAsync(UpdateModelAccessor.ModelUpdater));
 }
@@ -51,7 +50,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbar">
                 <div class="d-flex w-100 align-items-end justify-content-end justify-content-md-between flex-column flex-md-row">
-                    <menu alias="alias:main-menu" cache-id="main-menu" cache-fixed-duration="00:05:00" cache-tag="alias:main-menu" />
+                    <menu alias="alias:main-menu" cache-id="main-menu" cache-fixed-duration="00:05:00" cache-tag="alias:main-menu" cache-context="user.roles" />
                     @navbar
                 </div>
             </div>

@@ -7,22 +7,18 @@ namespace OrchardCore.CustomSettings.Recipes;
 /// <summary>
 /// This recipe step updates the site settings.
 /// </summary>
-public sealed class CustomSettingsStep : IRecipeStepHandler
+public sealed class CustomSettingsStep : NamedRecipeStepHandler
 {
     private readonly ISiteService _siteService;
 
     public CustomSettingsStep(ISiteService siteService)
+        : base("custom-settings")
     {
         _siteService = siteService;
     }
 
-    public async Task ExecuteAsync(RecipeExecutionContext context)
+    protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (!string.Equals(context.Name, "custom-settings", StringComparison.OrdinalIgnoreCase))
-        {
-            return;
-        }
-
         var siteSettings = await _siteService.LoadSiteSettingsAsync();
 
         var model = context.Step;

@@ -19,7 +19,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 .AddClass("search")
                 .Id("search")
                 .Add(S["Queries"], S["Queries"].PrefixPosition(), queries => queries
-                    .Add(S["All queries"], "1", allQueries => allQueries
+                    .Add(S["All Queries"], "1", allQueries => allQueries
                         .Action("Index", "Admin", "OrchardCore.Queries")
                         .AddClass("searchallqueries")
                         .Id("searchallqueries")

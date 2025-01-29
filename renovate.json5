@@ -1,0 +1,102 @@
+{
+    // As a GitHub organization admin, you can access the Renovate dashboard at
+    // https://developer.mend.io/github/OrchardCMS/OrchardCore and manage the GitHub app at
+    // https://github.com/organizations/OrchardCMS/settings/installations/57088442.
+    $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+    extends: [
+        'config:recommended',
+    ],
+    // See https://docs.renovatebot.com/configuration-options/#configmigration.
+    configMigration: true,
+    packageRules: [
+        // Disable certain updates.
+        {
+            // The .NET 8 versions of these packages need to stay on 8.x. We maintain a separate reference to the 
+            // .NET 9 versions in Directory.Packages.props, only active when building for .NET 9.
+            matchPackageNames: [
+                '/^Microsoft\\.AspNetCore.*$/',
+                '/^Microsoft\\.Extensions.*$/',
+                'Serilog.AspNetCore',
+                'System.Text.Json',
+            ],
+            allowedVersions: '<9.0.0',
+            matchCurrentVersion: '<9.0.0',
+        },
+        {
+            // See the corresponding comment in Directory.Packages.props.
+            matchPackageNames: [
+                'System.Drawing.Common',
+            ],
+            enabled: false,
+        },
+        {
+            // See https://github.com/OrchardCMS/OrchardCore/issues/16318 on why we have NPM updates disabled.
+            matchManagers: [
+                'npm',
+            ],
+            enabled: false,
+        },
+        // Groups of packages that we want to update together.
+        {
+            groupName: 'Azure.Communication packages',
+            matchPackageNames: [
+                '/^Azure\\.Communication.*$/',
+            ],
+        },
+        {
+            groupName: 'Elastic Docker images',
+            matchPackageNames: [
+                '/^docker\\.elastic\\.co.*$/',
+            ],
+        },
+        {
+            groupName: 'GraphQL packages',
+            matchPackageNames: [
+                '/^GraphQL.*$/',
+            ],
+        },
+        {
+            // Microsoft.AspNetCore.Authentication.OpenIdConnect depends on Microsoft.IdentityModel.* packages, just as
+            // Microsoft.Identity.Web and the OpenIddict packages do. Additionally, we also reference
+            // Microsoft.IdentityModel.Protocols.OpenIdConnect directly. So, we need to update them together.
+            groupName: 'Identity packages',
+            matchPackageNames: [
+                'Microsoft.AspNetCore.Authentication.OpenIdConnect',
+                'Microsoft.IdentityModel.Protocols.OpenIdConnect',
+                'Microsoft.Identity.Web',
+                '/^OpenIddict.*$/',
+            ],
+        },
+        {
+            groupName: 'Lucene.NET packages',
+            matchPackageNames: [
+                '/^Lucene\\.Net.*$/',
+            ],
+        },
+        {
+            // MailKit depends on MimeKit (what we also use directly), so we need to keep the two in sync.
+            groupName: 'MailKit and MimeKit packages',
+            matchPackageNames: [
+                'MailKit',
+                'MimeKit',
+            ],
+        },
+        {
+            groupName: 'SixLabors.ImageSharp.Web packages',
+            matchPackageNames: [
+                '/^SixLabors\\.ImageSharp\\.Web.*$/',
+            ],
+        },
+        {
+            groupName: 'YesSql packages',
+            matchPackageNames: [
+                '/^YesSql.*$/',
+            ],
+        },
+    ],
+    // We only need updates once a week.
+    schedule: [
+        'before 5am on Sunday',
+    ],
+    addLabels: ['dependencies'],
+}

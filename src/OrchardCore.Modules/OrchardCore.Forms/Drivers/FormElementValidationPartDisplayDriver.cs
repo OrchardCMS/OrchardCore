@@ -11,7 +11,7 @@ public sealed class FormElementValidationPartDisplayDriver : ContentPartDisplayD
     public override IDisplayResult Display(FormElementValidationPart part, BuildPartDisplayContext context)
     {
         return View("FormElementValidationPart", part)
-            .Location("Detail", "Content:after");
+            .Location(OrchardCoreConstants.DisplayType.Detail, "Content:after");
     }
 
     public override IDisplayResult Edit(FormElementValidationPart part, BuildPartEditorContext context)
@@ -22,7 +22,7 @@ public sealed class FormElementValidationPartDisplayDriver : ContentPartDisplayD
         });
     }
 
-    public async override Task<IDisplayResult> UpdateAsync(FormElementValidationPart part, UpdatePartEditorContext context)
+    public override async Task<IDisplayResult> UpdateAsync(FormElementValidationPart part, UpdatePartEditorContext context)
     {
         var viewModel = new FormElementValidationPartViewModel();
 

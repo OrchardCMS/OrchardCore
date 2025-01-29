@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
@@ -65,17 +64,15 @@ public sealed class TwitterSigninStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddNavigationProvider<AdminMenuSignin>();
+        services.AddNavigationProvider<AdminMenuSignIn>();
         services.AddSingleton<ITwitterSigninService, TwitterSigninService>();
         services.AddSiteDisplayDriver<TwitterSigninSettingsDisplayDriver>();
+
         // Register the options initializers required by the Twitter Handler.
-        services.TryAddEnumerable(new[]
-        {
-            // Orchard-specific initializers:
-            ServiceDescriptor.Transient<IConfigureOptions<AuthenticationOptions>, TwitterOptionsConfiguration>(),
-            ServiceDescriptor.Transient<IConfigureOptions<TwitterOptions>, TwitterOptionsConfiguration>(),
-            // Built-in initializers:
-            ServiceDescriptor.Transient<IPostConfigureOptions<TwitterOptions>, TwitterPostConfigureOptions>()
-        });
+        // Orchard-specific initializers:
+        services.AddTransient<IConfigureOptions<AuthenticationOptions>, TwitterOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<TwitterOptions>, TwitterOptionsConfiguration>();
+        // Built-in initializers:
+        services.AddTransient<IPostConfigureOptions<TwitterOptions>, TwitterPostConfigureOptions>();
     }
 }

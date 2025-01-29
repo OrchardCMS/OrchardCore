@@ -44,7 +44,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IContentsAdminListFilter, LocalizationPartContentsAdminListFilter>();
         services.AddTransient<IContentsAdminListFilterProvider, LocalizationPartContentsAdminListFilterProvider>();
-        services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, LocalizationContentsAdminListDisplayDriver>();
+        services.AddDisplayDriver<ContentOptionsViewModel, LocalizationContentsAdminListDisplayDriver>();
     }
 }
 
@@ -52,6 +52,7 @@ public sealed class Startup : StartupBase
 public sealed class ContentPickerStartup : StartupBase
 {
     private readonly IShellConfiguration _shellConfiguration;
+
     public ContentPickerStartup(IShellConfiguration shellConfiguration)
     {
         _shellConfiguration = shellConfiguration;
@@ -59,12 +60,14 @@ public sealed class ContentPickerStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IDisplayDriver<Navbar>, ContentCulturePickerNavbarDisplayDriver>();
+        services.AddDisplayDriver<Navbar, ContentCulturePickerNavbarDisplayDriver>();
         services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
+
         services.AddNavigationProvider<AdminMenu>();
         services.AddScoped<IContentCulturePickerService, ContentCulturePickerService>();
         services.AddSiteDisplayDriver<ContentCulturePickerSettingsDriver>();
         services.AddSiteDisplayDriver<ContentRequestCultureProviderSettingsDriver>();
+
         services.Configure<RequestLocalizationOptions>(options => options.AddInitialRequestCultureProvider(new ContentRequestCultureProvider()));
         services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
     }

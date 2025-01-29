@@ -31,8 +31,7 @@ public sealed class Startup : StartupBase
 
         services.AddScoped<IAuditTrailManager, AuditTrailManager>();
 
-        services
-            .AddScoped<IDisplayDriver<AuditTrailEvent>, AuditTrailEventDisplayDriver>();
+        services.AddDisplayDriver<AuditTrailEvent, AuditTrailEventDisplayDriver>();
 
         services.AddSingleton<IAuditTrailIdGenerator, AuditTrailIdGenerator>();
 
@@ -44,12 +43,11 @@ public sealed class Startup : StartupBase
 
         services.AddPermissionProvider<Permissions>();
         services.AddNavigationProvider<AuditTrailAdminMenu>();
-        services.AddNavigationProvider<AuditTrailSettingsAdminMenu>();
 
         services.AddSiteDisplayDriver<AuditTrailSettingsDisplayDriver>();
         services.AddSiteDisplayDriver<AuditTrailTrimmingSettingsDisplayDriver>();
 
-        services.AddScoped<IDisplayDriver<AuditTrailIndexOptions>, AuditTrailOptionsDisplayDriver>();
+        services.AddDisplayDriver<AuditTrailIndexOptions, AuditTrailOptionsDisplayDriver>();
 
         services.AddScoped<IAuditTrailAdminListQueryService, DefaultAuditTrailAdminListQueryService>();
 
