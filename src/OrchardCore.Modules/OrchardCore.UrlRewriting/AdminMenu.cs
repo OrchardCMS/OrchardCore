@@ -32,7 +32,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 
         builder
             .Add(S["Tools"], tools => tools
-                .Add(S["URL rewriting"], S["URL rewriting"].PrefixPosition(), rewriting => rewriting
+                .Add(S["URL rewriting"], S["URL Rewriting"].PrefixPosition(), rewriting => rewriting
                     .AddClass("url-rewriting")
                     .Id("urlRewriting")
                     .Permission(UrlRewritingPermissions.ManageUrlRewritingRules)
