@@ -65,7 +65,7 @@ public sealed class TagController : Controller, IUpdateModel
         contentItem.Weld<TermPart>();
         contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
-        await _contentManager.CreateAsync(contentItem, contentTypeDefinition.IsDraftable() ? VersionOptions.DraftRequired : VersionOptions.Latest);
+        await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
 
         if (!ModelState.IsValid)
         {
