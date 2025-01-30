@@ -46,7 +46,7 @@ public static class GetSdkEndpoints
 
         var scriptBytes = await cache.GetOrCreateAsync(scriptCacheKey, async entry =>
         {
-            entry.SetSlidingExpiration(TimeSpan.FromDays(1));
+            entry.SetSlidingExpiration(TimeSpan.FromHours(1));
 
             var encodedCulture = urlEncoder.Encode(culture.Replace('-', '_'));
 
