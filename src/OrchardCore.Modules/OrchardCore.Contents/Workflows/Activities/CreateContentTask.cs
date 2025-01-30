@@ -95,16 +95,12 @@ public class CreateContentTask : ContentTask
             contentItem.Merge(JObject.Parse(contentProperties));
         }
 
-        await ContentManager.UpdateAsync(contentItem);
         var result = await ContentManager.ValidateAsync(contentItem);
 
         if (result.Succeeded)
         {
             await ContentManager.CreateAsync(contentItem, VersionOptions.Draft);
-        }
 
-        if (result.Succeeded)
-        {
             if (Publish)
             {
                 await ContentManager.PublishAsync(contentItem);
