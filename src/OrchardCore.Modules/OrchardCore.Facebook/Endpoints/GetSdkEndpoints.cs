@@ -26,7 +26,7 @@ public static class GetSdkEndpoints
             .AllowAnonymous()
             .DisableAntiforgery();
 
-        builder.MapGet("/OrchardCore.Facebook/sdk/{hash}/sdk_{culture:length(2,6)}.js", HandleFetchScriptRequestAsync)
+        builder.MapGet("/OrchardCore.Facebook/sdk/{hash}/sdk.{culture:length(2,6)}.js", HandleFetchScriptRequestAsync)
             .AllowAnonymous()
             .DisableAntiforgery();
 
