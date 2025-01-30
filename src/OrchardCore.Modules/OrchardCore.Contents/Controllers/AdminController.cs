@@ -340,7 +340,7 @@ public sealed class AdminController : Controller, IUpdateModel
         string returnUrl)
     {
         var stayOnSamePage = submitSave == "submit.SaveAndContinue";
-        return CreatePostAsync(id, returnUrl, stayOnSamePage, async contentItem =>
+        return CreateInternalAsync(id, returnUrl, stayOnSamePage, async contentItem =>
         {
             await _contentManager.SaveDraftAsync(contentItem);
 
@@ -372,7 +372,7 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        return await CreatePostAsync(id, returnUrl, stayOnSamePage, async contentItem =>
+        return await CreateInternalAsync(id, returnUrl, stayOnSamePage, async contentItem =>
         {
             await _contentManager.PublishAsync(contentItem);
 
@@ -433,7 +433,7 @@ public sealed class AdminController : Controller, IUpdateModel
         string returnUrl)
     {
         var stayOnSamePage = submitSave == "submit.SaveAndContinue";
-        return EditPostAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
+        return EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
         {
             await _contentManager.UpdateAsync(contentItem);
             await _contentManager.SaveDraftAsync(contentItem);
@@ -468,7 +468,7 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        return await EditPostAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
+        return await EditInternalAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
         {
             await _contentManager.UpdateAsync(contentItem);
             await _contentManager.PublishAsync(contentItem);
@@ -638,7 +638,7 @@ public sealed class AdminController : Controller, IUpdateModel
             : RedirectToAction(nameof(List));
     }
 
-    private async Task<IActionResult> CreatePostAsync(
+    private async Task<IActionResult> CreateInternalAsync(
         string id,
         string returnUrl,
         bool stayOnSamePage,
@@ -681,7 +681,7 @@ public sealed class AdminController : Controller, IUpdateModel
         return RedirectToRoute(adminRouteValues);
     }
 
-    private async Task<IActionResult> EditPostAsync(
+    private async Task<IActionResult> EditInternalAsync(
         string contentItemId,
         string returnUrl,
         bool stayOnSamePage,
