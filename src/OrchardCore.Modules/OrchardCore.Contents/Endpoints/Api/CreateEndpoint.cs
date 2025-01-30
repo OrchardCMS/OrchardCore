@@ -69,10 +69,14 @@ public static class CreateEndpoint
             {
                 return httpContext.ChallengeOrForbid("Api");
             }
-
             contentItem.Merge(model);
 
-            var result = await contentManager.UpdateValidateAndCreateAsync(contentItem, VersionOptions.Draft);
+            var result = await contentManager.ValidateAsync(contentItem);
+
+            if (result.Succeeded)
+            {
+                await contentManager.CreateAsync(contentItem, VersionOptions.Draft);
+            }
 
             if (!result.Succeeded)
             {

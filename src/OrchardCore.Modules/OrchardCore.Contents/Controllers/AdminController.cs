@@ -433,8 +433,9 @@ public sealed class AdminController : Controller, IUpdateModel
         string returnUrl)
     {
         var stayOnSamePage = submitSave == "submit.SaveAndContinue";
-        return EditPOST(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
+        return EditPostAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
         {
+            await _contentManager.UpdateAsync(contentItem);
             await _contentManager.SaveDraftAsync(contentItem);
 
             var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
@@ -467,8 +468,9 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        return await EditPOST(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
+        return await EditPostAsync(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
         {
+            await _contentManager.UpdateAsync(contentItem);
             await _contentManager.PublishAsync(contentItem);
 
             var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
@@ -679,7 +681,7 @@ public sealed class AdminController : Controller, IUpdateModel
         return RedirectToRoute(adminRouteValues);
     }
 
-    private async Task<IActionResult> EditPOST(
+    private async Task<IActionResult> EditPostAsync(
         string contentItemId,
         string returnUrl,
         bool stayOnSamePage,
