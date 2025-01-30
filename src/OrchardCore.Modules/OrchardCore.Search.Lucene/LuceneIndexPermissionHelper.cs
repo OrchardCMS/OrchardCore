@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search.Lucene;
@@ -6,7 +7,7 @@ public static class LuceneIndexPermissionHelper
 {
     private static readonly Permission _indexPermissionTemplate = new("QueryLucene{0}Index", "Query Lucene {0} Index", new[] { LuceneSearchPermissions.ManageLuceneIndexes });
 
-    private static readonly Dictionary<string, Permission> _permissions = [];
+    private static readonly ConcurrentDictionary<string, Permission> _permissions = [];
 
     public static Permission GetLuceneIndexPermission(string indexName)
     {
@@ -15,17 +16,9 @@ public static class LuceneIndexPermissionHelper
             throw new ArgumentException($"{nameof(indexName)} cannot be null or empty");
         }
 
-        if (!_permissions.TryGetValue(indexName, out var permission))
-        {
-            permission = new Permission(
+        return _permissions.GetOrAdd(indexName, indexName => new Permission(
                 string.Format(_indexPermissionTemplate.Name, indexName),
                 string.Format(_indexPermissionTemplate.Description, indexName),
-                _indexPermissionTemplate.ImpliedBy
-            );
-
-            _permissions.Add(indexName, permission);
-        }
-
-        return permission;
+                _indexPermissionTemplate.ImpliedBy));
     }
 }

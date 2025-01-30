@@ -16,13 +16,14 @@ public sealed class AdminMenu : AdminNavigationProvider
     {
         builder
             .Add(S["Design"], NavigationConstants.AdminMenuDesignPosition, design => design
-                .AddClass("themes").Id("themes")
+                .AddClass("design")
+                .Id("design")
                 .Add(S["Themes"], S["Themes"].PrefixPosition(), themes => themes
                     .Action("Index", "Admin", "OrchardCore.Themes")
                     .Permission(Permissions.ApplyTheme)
                     .LocalNav()
                 )
-            );
+            , priority: 1);
 
         return ValueTask.CompletedTask;
     }

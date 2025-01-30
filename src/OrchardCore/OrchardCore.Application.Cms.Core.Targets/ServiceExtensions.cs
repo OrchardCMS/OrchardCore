@@ -28,7 +28,7 @@ public static class ServiceExtensions
             .AddScripting()
 
             .AddTheming()
-            .AddLiquidViews()
+            .AddGlobalFeatures("OrchardCore.Liquid.Core")
             .AddCaching();
 
         // OrchardCoreBuilder is not available in OrchardCore.ResourceManagement as it has to

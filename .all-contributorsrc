@@ -3295,6 +3295,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "davidlfox",
+      "name": "David L. Fox",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5315855?v=4",
+      "profile": "https://www.iamdavidfox.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

@@ -65,7 +65,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         await builder.AddAsync(S["Content"], NavigationConstants.AdminMenuContentPosition, async content =>
         {
             content.AddClass("content").Id("content");
-            await content.AddAsync(S["Content Items"], S["Content Items"].PrefixPosition(), async contentItems =>
+            await content.AddAsync(S["Content Items"], "before", async contentItems =>
             {
                 if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(context.User, CommonPermissions.ListContent, listableContentTypes, _contentManager))
                 {
@@ -75,7 +75,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 contentItems.Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), _routeValues);
                 contentItems.LocalNav();
             });
-        });
+        }, priority: 1);
 
         var adminSettings = await _siteService.GetSettingsAsync<AdminSettings>();
 

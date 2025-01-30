@@ -30,19 +30,39 @@ public sealed class AdminMenu : AdminNavigationProvider
     /// <inheritdocs />
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+        if (NavigationHelper.UseLegacyFormat())
+        {
+            builder
+               .Add(S["Configuration"], configuration => configuration
+                   .Add(S["Settings"], settings => settings
+                       .Add(S["Localization"], localization => localization
+                           .AddClass("localization")
+                           .Id("localization")
+                           .Add(S["Cultures"], S["Cultures"].PrefixPosition(), cultures => cultures
+                               .AddClass("cultures")
+                               .Id("cultures")
+                               .Action("Index", "Admin", _routeValues)
+                               .Permission(Permissions.ManageCultures)
+                               .LocalNav()
+                           )
+                       )
+                   )
+               );
+
+            return ValueTask.CompletedTask;
+        }
+
         builder
-            .Add(S["Configuration"], configuration => configuration
-                .Add(S["Settings"], settings => settings
-                    .Add(S["Localization"], localization => localization
-                        .AddClass("localization")
-                        .Id("localization")
-                        .Add(S["Cultures"], S["Cultures"].PrefixPosition(), cultures => cultures
-                            .AddClass("cultures")
-                            .Id("cultures")
-                            .Action("Index", "Admin", _routeValues)
-                            .Permission(LocalizationPermissions.ManageCultures)
-                            .LocalNav()
-                        )
+            .Add(S["Settings"], settings => settings
+                .Add(S["Localization"], S["Localization"].PrefixPosition(), localization => localization
+                    .AddClass("localization")
+                    .Id("localization")
+                    .Add(S["Cultures"], S["Cultures"].PrefixPosition(), cultures => cultures
+                        .AddClass("cultures")
+                        .Id("cultures")
+                        .Action("Index", "Admin", _routeValues)
+                        .Permission(Permissions.ManageCultures)
+                        .LocalNav()
                     )
                 )
             );
