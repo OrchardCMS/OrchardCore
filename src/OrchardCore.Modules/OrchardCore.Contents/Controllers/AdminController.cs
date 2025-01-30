@@ -340,7 +340,7 @@ public sealed class AdminController : Controller, IUpdateModel
         string returnUrl)
     {
         var stayOnSamePage = submitSave == "submit.SaveAndContinue";
-        return CreatePOST(id, returnUrl, stayOnSamePage, async contentItem =>
+        return CreatePostAsync(id, returnUrl, stayOnSamePage, async contentItem =>
         {
             await _contentManager.SaveDraftAsync(contentItem);
 
@@ -372,7 +372,7 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        return await CreatePOST(id, returnUrl, stayOnSamePage, async contentItem =>
+        return await CreatePostAsync(id, returnUrl, stayOnSamePage, async contentItem =>
         {
             await _contentManager.PublishAsync(contentItem);
 
@@ -638,7 +638,7 @@ public sealed class AdminController : Controller, IUpdateModel
             : RedirectToAction(nameof(List));
     }
 
-    private async Task<IActionResult> CreatePOST(
+    private async Task<IActionResult> CreatePostAsync(
         string id,
         string returnUrl,
         bool stayOnSamePage,
