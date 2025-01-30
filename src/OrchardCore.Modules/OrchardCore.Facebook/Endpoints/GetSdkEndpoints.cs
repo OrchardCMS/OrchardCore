@@ -35,10 +35,6 @@ public static class GetSdkEndpoints
 
     private static async Task<IResult> HandleFetchScriptRequestAsync(string hash, string culture, HttpContext context, IMemoryCache cache, UrlEncoder urlEncoder, ISiteService siteService)
     {
-        // Set the cache timeout to the maximum allowed length of one year
-        // max-age is needed because immutable is not widely supported
-        context.Response.Headers.CacheControl = $"public, max-age=31536000, immutable";
-
         var settings = await siteService.GetSettingsAsync<FacebookSettings>();
 
         if (hash != settings.GetHash().ToString())
@@ -69,16 +65,15 @@ public static class GetSdkEndpoints
             return Results.NotFound();
         }
 
+        // Set the cache timeout to the maximum allowed length of one year
+        // max-age is needed because immutable is not widely supported
+        context.Response.Headers.CacheControl = $"public, max-age=31536000, immutable";
+
         return Results.Bytes(scriptBytes, "application/javascript");
     }
 
     private static async Task<IResult> HandleInitScriptRequestAsync(string hash, HttpContext context, ISiteService siteService, IMemoryCache cache, IShellConfiguration shellConfiguration)
     {
-        // If we always revalidate, what is the point of the hash in the url, we want the client to ask us
-        // In case we change the script that we own
-
-        var scriptCacheKey = $"/OrchardCore.Facebook/sdk/fb.js/{hash}/init.js";
-
         var settings = await siteService.GetSettingsAsync<FacebookSettings>();
 
         if (hash != settings.GetHash().ToString())
@@ -86,21 +81,20 @@ public static class GetSdkEndpoints
             return Results.NotFound();
         }
 
+        var scriptCacheKey = $"/OrchardCore.Facebook/sdk/fb.js/{hash}/init.js";
+
         var scriptBytes = cache.GetOrCreate(scriptCacheKey, entry =>
         {
             entry.SetSlidingExpiration(TimeSpan.FromHours(1));
 
-            // Generate script
-            var options = $@"""
+            return Encoding.UTF8.GetBytes($@"
                 window.fbAsyncInit = function() {{
                     FB.init({{
                         appId:'{settings.AppId}',
                         version:'{settings.Version}',
                         {settings.FBInitParams}
                     }});
-                }};
-            """;
-            return Encoding.UTF8.GetBytes(options);
+                }};");
         });
 
         if (scriptBytes == null)
@@ -108,10 +102,10 @@ public static class GetSdkEndpoints
             return Results.NotFound();
         }
 
-        // Use an infinite cache because the hash varies even if we change our script
+        // Set the cache timeout to the maximum allowed length of one year
+        // max-age is needed because immutable is not widely supported
         context.Response.Headers.CacheControl = $"public, max-age=31536000, immutable";
 
         return Results.Bytes(scriptBytes, "application/javascript");
-                
     }
 }

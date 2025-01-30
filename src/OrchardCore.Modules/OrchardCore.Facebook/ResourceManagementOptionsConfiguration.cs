@@ -29,7 +29,6 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
         manifest
             .DefineScript("fbsdk")
             .SetCultures(GetSdkEndpoints.ValidFacebookCultures)
-            // v parameter is for cache busting
             .SetUrl($"~/OrchardCore.Facebook/sdk/{settings.GetHash()}/sdk.js");
 
         options.ResourceManifests.Add(manifest);
