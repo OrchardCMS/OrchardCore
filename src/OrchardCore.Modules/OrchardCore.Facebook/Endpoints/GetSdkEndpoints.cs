@@ -39,6 +39,13 @@ public static class GetSdkEndpoints
         // max-age is needed because immutable is not widely supported
         context.Response.Headers.CacheControl = $"public, max-age=31536000, immutable";
 
+        var settings = await siteService.GetSettingsAsync<FacebookSettings>();
+
+        if (hash != settings.GetHash().ToString())
+        {
+            return Results.NotFound();
+        }
+
         var scriptCacheKey = $"/OrchardCore.Facebook/sdk/{hash}/sdk.{culture}.js";
 
         var scriptBytes = await cache.GetOrCreateAsync(scriptCacheKey, async entry =>
@@ -46,8 +53,6 @@ public static class GetSdkEndpoints
             entry.SetSlidingExpiration(TimeSpan.FromDays(1));
 
             var encodedCulture = urlEncoder.Encode(culture.Replace('-', '_'));
-
-            var settings = await siteService.GetSettingsAsync<FacebookSettings>();
 
             // Note: If a culture is not found, facebook will use en_US
             // Note: Update Version constant when the script changes
