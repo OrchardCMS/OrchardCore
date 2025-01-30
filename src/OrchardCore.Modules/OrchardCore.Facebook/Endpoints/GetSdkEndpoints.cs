@@ -44,7 +44,7 @@ public static class GetSdkEndpoints
 
         var scriptCacheKey = $"/OrchardCore.Facebook/sdk/{hash}/sdk.{culture}.js";
 
-        var scriptBytes = await cache.GetOrCreateAsync(scriptCacheKey, async entry =>
+        var scriptBytes = await cache.GetOrCreateAsync(scriptCacheKey, entry =>
         {
             entry.SetSlidingExpiration(TimeSpan.FromHours(1));
 
@@ -52,12 +52,12 @@ public static class GetSdkEndpoints
 
             // Note: If a culture is not found, facebook will use en_US
             // Note: Update Version constant when the script changes
-            return Encoding.UTF8.GetBytes($@"(function(d){{
+            return Task.FromResult(Encoding.UTF8.GetBytes($@"(function(d){{
                 var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {{ return; }}
                 js = d.createElement('script'); js.id = id; js.async = true;
                 js.src = ""https://connect.facebook.net/{encodedCulture}/{settings.SdkJs}"";
                 d.getElementsByTagName('head')[0].appendChild(js);
-            }} (document));");
+            }} (document));"));
         });
 
         if (scriptBytes == null)
