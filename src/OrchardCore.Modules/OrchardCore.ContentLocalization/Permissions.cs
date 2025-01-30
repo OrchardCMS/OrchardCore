@@ -16,6 +16,15 @@ public sealed class Permissions : IPermissionProvider
         ContentLocalizationPermissions.LocalizeOwnContent,
     ];
 
+    [Obsolete("This will be removed in a future release. Instead use 'ContentLocalizationPermissions.LocalizeContent'.")]
+    public static readonly Permission LocalizeContent = new("LocalizeContent", "Localize content for others");
+
+    [Obsolete("This will be removed in a future release. Instead use 'ContentLocalizationPermissions.LocalizeOwnContent'.")]
+    public static readonly Permission LocalizeOwnContent = new("LocalizeOwnContent", "Localize own content", new[] { LocalizeContent });
+
+    [Obsolete("This will be removed in a future release. Instead use 'ContentLocalizationPermissions.ManageContentCulturePicker'.")]
+    public static readonly Permission ManageContentCulturePicker = new("ManageContentCulturePicker", "Manage ContentCulturePicker settings");
+
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
 

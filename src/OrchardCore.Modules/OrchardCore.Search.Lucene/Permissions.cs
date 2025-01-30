@@ -6,6 +6,12 @@ public sealed class Permissions : IPermissionProvider
 {
     private readonly LuceneIndexSettingsService _luceneIndexSettingsService;
 
+    [Obsolete("This will be removed in a future release. Instead use 'LuceneSearchPermissions.ManageLuceneIndexes'.")]
+    public static readonly Permission ManageLuceneIndexes = LuceneIndexPermissionHelper.ManageLuceneIndexes;
+
+    [Obsolete("This will be removed in a future release. Instead use 'LuceneSearchPermissions.QueryLuceneApi'.")]
+    public static readonly Permission QueryLuceneApi = new("QueryLuceneApi", "Query Lucene Api", new[] { ManageLuceneIndexes });
+
     public Permissions(LuceneIndexSettingsService luceneIndexSettingsService)
     {
         _luceneIndexSettingsService = luceneIndexSettingsService;
