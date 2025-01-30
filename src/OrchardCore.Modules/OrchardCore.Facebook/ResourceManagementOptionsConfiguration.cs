@@ -8,31 +8,30 @@ namespace OrchardCore.Facebook;
 
 public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
 {
-    private readonly ResourceManifest _manifest;
     private readonly ISiteService _siteService;
 
     public ResourceManagementOptionsConfiguration(ISiteService siteService)
     {
         _siteService = siteService;
-
-        _manifest = new ResourceManifest();
-
-        _manifest
-            .DefineScript("fb")
-            .SetDependencies("fbsdk")
-            .SetUrl("~/OrchardCore.Facebook/sdk/init.js");
     }
 
     public async void Configure(ResourceManagementOptions options)
     {
         var settings = await _siteService.GetSettingsAsync<FacebookSettings>();
 
-        _manifest
+        var manifest = new ResourceManifest();
+
+        manifest
+            .DefineScript("fb")
+            .SetDependencies("fbsdk")
+            .SetUrl($"~/OrchardCore.Facebook/sdk/{settings.GetHash()}/init.js");
+
+        manifest
             .DefineScript("fbsdk")
             .SetCultures(GetSdkEndpoints.ValidFacebookCultures)
             // v parameter is for cache busting
-            .SetUrl($"~/OrchardCore.Facebook/sdk/fetch_{settings.SdkJs}?v=1");
+            .SetUrl($"~/OrchardCore.Facebook/sdk/fetch/{settings.GetHash()}/sdk.js");
 
-        options.ResourceManifests.Add(_manifest);
+        options.ResourceManifests.Add(manifest);
     }
 }
