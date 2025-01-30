@@ -77,8 +77,7 @@ public static class CreateEndpoint
             {
                 await contentManager.CreateAsync(contentItem, VersionOptions.Draft);
             }
-
-            if (!result.Succeeded)
+            else
             {
                 // Add the validation results to the ModelState to present the errors as part of the response.
                 AddValidationErrorsToModelState(result, modelState);

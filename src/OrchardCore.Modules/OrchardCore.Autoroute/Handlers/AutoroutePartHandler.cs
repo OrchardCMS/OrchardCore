@@ -67,8 +67,8 @@ public class AutoroutePartHandler : ContentPartHandler<AutoroutePart>
             if (part.RouteContainedItems)
             {
                 _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
-                var containedAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(context.PublishingItem);
-                await CheckContainedHomeRouteAsync(part.ContentItem.ContentItemId, containedAspect, (JsonObject)context.PublishingItem.Content);
+                var containedAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(context.ContentItem);
+                await CheckContainedHomeRouteAsync(part.ContentItem.ContentItemId, containedAspect, (JsonObject)context.ContentItem.Content);
             }
 
             // Update entries from the index table after the session is committed.

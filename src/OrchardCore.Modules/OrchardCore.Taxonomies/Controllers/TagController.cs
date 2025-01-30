@@ -65,7 +65,29 @@ public sealed class TagController : Controller, IUpdateModel
         contentItem.Weld<TermPart>();
         contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
-        await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
+        var result = await _contentManager.ValidateAsync(contentItem);
+
+        if (result.Succeeded)
+        {
+            await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
+        }
+        else
+        {
+            foreach (var error in result.Errors)
+            {
+                if (error.MemberNames != null && error.MemberNames.Any())
+                {
+                    foreach (var memberName in error.MemberNames)
+                    {
+                        ModelState.AddModelError(memberName, error.ErrorMessage);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, error.ErrorMessage);
+                }
+            }
+        }
 
         if (!ModelState.IsValid)
         {
