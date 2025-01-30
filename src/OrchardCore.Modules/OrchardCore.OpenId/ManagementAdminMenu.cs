@@ -40,7 +40,7 @@ public sealed class ManagementAdminMenu : AdminNavigationProvider
         }
 
         builder
-            .Add(S["Access control"], accessControl => accessControl
+            .Add(S["Access Control"], accessControl => accessControl
                 .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), openId => openId
                     .AddClass("openid")
                     .Id("openid")
