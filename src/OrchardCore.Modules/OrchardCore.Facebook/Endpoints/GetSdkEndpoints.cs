@@ -39,7 +39,7 @@ public static class GetSdkEndpoints
         // max-age is needed because immutable is not widely supported
         context.Response.Headers.CacheControl = $"public, max-age=31536000, immutable";
 
-        var scriptCacheKey = $"/OrchardCore.Facebook/sdk/{hash}";
+        var scriptCacheKey = $"/OrchardCore.Facebook/sdk/{hash}/sdk.{culture}.js";
 
         var scriptBytes = await cache.GetOrCreateAsync(scriptCacheKey, async entry =>
         {
@@ -72,7 +72,7 @@ public static class GetSdkEndpoints
         // If we always revalidate, what is the point of the hash in the url, we want the client to ask us
         // In case we change the script that we own
 
-        var scriptCacheKey = $"/OrchardCore.Facebook/sdk/fb.js/{hash}";
+        var scriptCacheKey = $"/OrchardCore.Facebook/sdk/fb.js/{hash}/init.js";
 
         var settings = await siteService.GetSettingsAsync<FacebookSettings>();
 
