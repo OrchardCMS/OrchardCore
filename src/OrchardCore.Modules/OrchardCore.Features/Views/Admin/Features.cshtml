@@ -230,6 +230,11 @@
 
         // this function will be executed on click of X (clear button)
         searchBox.on('search', function () {
+            var search = $(this).val();
+            if (search != '') {
+                return;
+            }
+
             var e = $.Event('keyup');
             e.key= EscapeKey;
             
