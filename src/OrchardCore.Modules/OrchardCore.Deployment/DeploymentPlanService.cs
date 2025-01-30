@@ -40,7 +40,7 @@ public class DeploymentPlanService : IDeploymentPlanService
         var user = _httpContextAccessor.HttpContext.User;
 
         var result = await _authorizationService.AuthorizeAsync(user, DeploymentPermissions.ManageDeploymentPlan) &&
-                     await _authorizationService.AuthorizeAsync(user, DeploymentPermissions.ExportData);
+                     await _authorizationService.AuthorizeAsync(user, DeploymentPermissions.Export);
 
         return result;
     }
@@ -49,7 +49,7 @@ public class DeploymentPlanService : IDeploymentPlanService
     {
         var user = _httpContextAccessor.HttpContext.User;
 
-        var result = await _authorizationService.AuthorizeAsync(user, DeploymentPermissions.ExportData);
+        var result = await _authorizationService.AuthorizeAsync(user, DeploymentPermissions.Export);
 
         return result;
     }

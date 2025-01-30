@@ -27,7 +27,7 @@ public sealed class DownloadController : Controller
     [HttpGet]
     public async Task<IActionResult> Display(string contentItemId, bool latest = false)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ExportData))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export))
         {
             return Forbid();
         }
@@ -58,7 +58,7 @@ public sealed class DownloadController : Controller
     [HttpPost]
     public async Task<IActionResult> Download(string contentItemId, bool latest = false)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ExportData))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export))
         {
             return Forbid();
         }

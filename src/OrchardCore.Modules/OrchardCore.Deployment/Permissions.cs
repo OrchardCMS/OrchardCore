@@ -6,8 +6,8 @@ public sealed class Permissions : IPermissionProvider
 {
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        DeploymentPermissions.ImportData,
-        DeploymentPermissions.ExportData,
+        DeploymentPermissions.Import,
+        DeploymentPermissions.Export,
         DeploymentPermissions.ManageDeploymentPlan,
     ];
 

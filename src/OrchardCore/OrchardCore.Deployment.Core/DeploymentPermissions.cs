@@ -6,9 +6,9 @@ public static class DeploymentPermissions
 {
     public static readonly Permission ManageDeploymentPlan = new("ManageDeploymentPlan", "Manage deployment plans");
 
-    public static readonly Permission ExportData = new("Export", "Export Data");
+    public static readonly Permission Export = new("Export", "Export Data");
 
-    public static readonly Permission ImportData = new("Import", "Import Data", isSecurityCritical: true);
+    public static readonly Permission Import = new("Import", "Import Data", isSecurityCritical: true);
 
     public static readonly Permission ManageRemoteInstances = new("ManageRemoteInstances", "Manage remote instances");
 

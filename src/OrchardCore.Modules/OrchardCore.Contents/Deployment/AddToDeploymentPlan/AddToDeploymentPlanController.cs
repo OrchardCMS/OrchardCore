@@ -45,7 +45,7 @@ public sealed class AddToDeploymentPlanController : Controller
     public async Task<IActionResult> AddContentItem(long deploymentPlanId, string returnUrl, string contentItemId)
     {
         if (!(await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan) &&
-            await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ExportData)
+            await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export)
             ))
         {
             return Forbid();
@@ -101,7 +101,7 @@ public sealed class AddToDeploymentPlanController : Controller
         }
 
         if (!(await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ManageDeploymentPlan) &&
-            await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ExportData)
+            await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export)
             ))
         {
             return Forbid();

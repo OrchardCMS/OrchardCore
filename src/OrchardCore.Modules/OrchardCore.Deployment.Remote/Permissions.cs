@@ -8,7 +8,7 @@ public sealed class Permissions : IPermissionProvider
     [
         DeploymentPermissions.ManageRemoteInstances,
         DeploymentPermissions.ManageRemoteClients,
-        DeploymentPermissions.ExportData,
+        DeploymentPermissions.Export,
     ];
 
     [Obsolete("This will be removed in a future release. Instead use 'DeploymentPermissions.ManageRemoteInstances'.")]

@@ -66,7 +66,7 @@ public sealed class DeploymentPlanController : Controller
             return Forbid();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.ExportData))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export))
         {
             return Forbid();
         }

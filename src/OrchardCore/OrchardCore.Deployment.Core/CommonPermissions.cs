@@ -11,7 +11,7 @@ public static class CommonPermissions
 {
     public static readonly Permission ManageDeploymentPlan = DeploymentPermissions.ManageDeploymentPlan;
 
-    public static readonly Permission Export = DeploymentPermissions.ExportData;
+    public static readonly Permission Export = DeploymentPermissions.Export;
 
-    public static readonly Permission Import = DeploymentPermissions.ImportData;
+    public static readonly Permission Import = DeploymentPermissions.Import;
 }
