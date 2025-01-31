@@ -49,7 +49,7 @@ public static class GetSdkEndpoints
             // Regenerate hash: Don't trust passed hash because it could cause cache issues
             string expectedHash = HashCacheBustingValues(settings).ToString();
 
-            var scriptCacheKey = $"/OrchardCore.Facebook/sdk/{expectedHash}/init.js";
+            var scriptCacheKey = $"/OrchardCore.Facebook/sdk/{expectedHash}/init.js.bytes";
 
             var scriptBytes = cache.GetOrCreate(scriptCacheKey, entry =>
             {
@@ -103,7 +103,7 @@ public static class GetSdkEndpoints
             // Regenerate hash: Don't trust passed hash because it could cause cache issues
             string expectedHash = HashCacheBustingValues(settings).ToString();
 
-            var scriptCacheKey = $"/OrchardCore.Facebook/sdk/{expectedHash}/sdk.{culture}.js";
+            var scriptCacheKey = $"/OrchardCore.Facebook/sdk/{expectedHash}/sdk.{culture}.js.bytes";
 
             var scriptBytes = await cache.GetOrCreateAsync(scriptCacheKey, entry =>
             {
