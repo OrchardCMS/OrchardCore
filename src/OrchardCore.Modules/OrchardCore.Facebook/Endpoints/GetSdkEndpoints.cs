@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.IO.Hashing;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -33,6 +32,8 @@ public static class GetSdkEndpoints
         // Update this version when the script changes to invalidate client caches
         private static readonly int ScriptVersion = 1;
 
+        private static readonly string CacheKey = "Facebook.GetInitScriptEndpoint";
+
         public static ulong HashCacheBustingValues(FacebookSettings settings)
         {
             var hash = new XxHash3(ScriptVersion);
@@ -44,17 +45,17 @@ public static class GetSdkEndpoints
 
         public static async Task<IResult> HandleRequestAsync(HttpContext context, ISiteService siteService, IMemoryCache cache)
         {
+            byte[] scriptBytes;
             var settings = await siteService.GetSettingsAsync<FacebookSettings>();
+            // Regenerate hash: Don't trust url hash because it could cause cache issues
+            var expectedHash = HashCacheBustingValues(settings);
 
-            var cacheKey = new CacheEntry(ScriptVersion, settings.AppId, settings.Version, settings.FBInitParams);
-
-            var scriptBytes = cache.GetOrCreate(cacheKey, entry =>
+            var cachedScript = cache.Get(CacheKey) as KeyValuePair<ulong, byte[]>?;
+            if (cachedScript == null || cachedScript.Value.Key != expectedHash)
             {
-                entry.SetSlidingExpiration(TimeSpan.FromHours(1));
-
-                // Note: All injected values except those in url must be used in HashCacheBustingValues
                 // Note: Update ScriptVersion constant when the script changes
-                return Encoding.UTF8.GetBytes($@"
+                // Note: All injected values except those in url must be used in HashCacheBustingValues
+                scriptBytes = Encoding.UTF8.GetBytes($@"
                     window.fbAsyncInit = function() {{
                         FB.init({{
                             appId:'{settings.AppId}',
@@ -62,11 +63,14 @@ public static class GetSdkEndpoints
                             {settings.FBInitParams}
                         }});
                     }};");
-            });
 
-            if (scriptBytes == null)
+                cache.Set(CacheKey,
+                        new KeyValuePair<ulong, byte[]> (expectedHash, scriptBytes),
+                        new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromHours(1)));
+            }
+            else
             {
-                return Results.InternalServerError();
+                scriptBytes = cachedScript.Value.Value;
             }
 
             // Set the cache timeout to the maximum allowed length of one year
@@ -75,14 +79,14 @@ public static class GetSdkEndpoints
 
             return Results.Bytes(scriptBytes, "application/javascript");
         }
-
-        private record class CacheEntry(int ScriptVersion, string AppId, string Version, string FBInitParams);
     }
 
     public static class GetFetchScriptEndpoint
     {
         // Update this version when the script changes to invalidate client caches
         private static readonly int ScriptVersion = 1;
+
+        private static readonly string CacheKey = "Facebook.GetFetchScriptEndpoint";
 
         // Scraped from facebook.com
         public static readonly string[] ValidFacebookCultures = { "en-US", "es-LA", "pt-BR", "fr-FR", "de-DE", "so-SO", "af-ZA", "az-AZ", "id-ID", "ms-MY", "jv-ID", "cx-PH", "bs-BA", "br-FR", "ca-ES", "cs-CZ", "co-FR", "cy-GB", "da-DK", "de-DE", "et-EE", "en-GB", "en-US", "es-LA", "es-ES", "eo-EO", "eu-ES", "tl-PH", "fo-FO", "fr-CA", "fr-FR", "fy-NL", "ff-NG", "fn-IT", "ga-IE", "gl-ES", "gn-PY", "ha-NG", "hr-HR", "rw-RW", "iu-CA", "ik-US", "is-IS", "it-IT", "sw-KE", "ht-HT", "ku-TR", "lv-LV", "lt-LT", "hu-HU", "mg-MG", "mt-MT", "nl-NL", "nb-NO", "nn-NO", "uz-UZ", "pl-PL", "pt-BR", "pt-PT", "ro-RO", "sc-IT", "sn-ZW", "sq-AL", "sz-PL", "sk-SK", "sl-SI", "fi-FI", "sv-SE", "vi-VN", "tr-TR", "nl-BE", "zz-TR", "el-GR", "be-BY", "bg-BG", "ky-KG", "kk-KZ", "mk-MK", "mn-MN", "ru-RU", "sr-RS", "tt-RU", "tg-TJ", "uk-UA", "ka-GE", "hy-AM", "he-IL", "ur-PK", "ar-AR", "ps-AF", "fa-IR", "cb-IQ", "sy-SY", "tz-MA", "am-ET", "ne-NP", "mr-IN", "hi-IN", "as-IN", "bn-IN", "pa-IN", "gu-IN", "or-IN", "ta-IN", "te-IN", "kn-IN", "ml-IN", "si-LK", "th-TH", "lo-LA", "my-MM", "km-KH", "ko-KR", "zh-TW", "zh-CN", "zh-HK", "ja-JP", "ja-KS" };
@@ -96,33 +100,33 @@ public static class GetSdkEndpoints
 
         public static async Task<IResult> HandleRequestAsync(string culture, HttpContext context, IMemoryCache cache, UrlEncoder urlEncoder, ISiteService siteService)
         {
+            byte[] scriptBytes;
             var settings = await siteService.GetSettingsAsync<FacebookSettings>();
+            // Regenerate hash: Don't trust url hash because it could cause cache issues
+            var expectedHash = HashCacheBustingValues(settings);
 
-            // Regenerate hash: Don't trust passed hash because it could cause cache issues
-            string expectedHash = HashCacheBustingValues(settings).ToString(CultureInfo.InvariantCulture);
-
-            var scriptCacheKey = $"/OrchardCore.Facebook/sdk/{expectedHash}/sdk.{culture}.js.bytes";
-
-            var scriptBytes = await cache.GetOrCreateAsync(scriptCacheKey, entry =>
+            var cachedScript = cache.Get(CacheKey) as KeyValuePair<ulong, byte[]>?;
+            if (cachedScript == null || cachedScript.Value.Key != expectedHash)
             {
-                entry.SetSlidingExpiration(TimeSpan.FromHours(1));
-
                 var encodedCulture = urlEncoder.Encode(culture.Replace('-', '_'));
 
                 // Note: If a culture is not found, facebook will use en_US
                 // Note: Update ScriptVersion constant when the script changes
                 // Note: All injected values except those in url must be used in HashCacheBustingValues
-                return Task.FromResult(Encoding.UTF8.GetBytes($@"(function(d){{
+                scriptBytes = Encoding.UTF8.GetBytes($@"(function(d){{
                     var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {{ return; }}
                     js = d.createElement('script'); js.id = id; js.async = true;
                     js.src = ""https://connect.facebook.net/{encodedCulture}/{settings.SdkJs}"";
                     d.getElementsByTagName('head')[0].appendChild(js);
-                }} (document));"));
-            });
+                }} (document));");
 
-            if (scriptBytes == null)
+                cache.Set(CacheKey,
+                        new KeyValuePair<ulong, byte[]> (expectedHash, scriptBytes),
+                        new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromHours(1)));
+            }
+            else
             {
-                return Results.InternalServerError();
+                scriptBytes = cachedScript.Value.Value;
             }
 
             // Set the cache timeout to the maximum allowed length of one year
