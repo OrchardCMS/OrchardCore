@@ -14,13 +14,29 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+        if (NavigationHelper.UseLegacyFormat())
+        {
+            builder
+                .Add(S["Workflows"], NavigationConstants.AdminMenuWorkflowsPosition, workflow => workflow
+                    .AddClass("workflows")
+                    .Id("workflows")
+                    .Action("Index", "WorkflowType", "OrchardCore.Workflows")
+                    .Permission(Permissions.ManageWorkflows)
+                    .LocalNav()
+                );
+
+            return ValueTask.CompletedTask;
+        }
+
         builder
-            .Add(S["Workflows"], NavigationConstants.AdminMenuWorkflowsPosition, workflow => workflow
-                .AddClass("workflows")
-                .Id("workflows")
-                .Action("Index", "WorkflowType", "OrchardCore.Workflows")
-                .Permission(Permissions.ManageWorkflows)
-                .LocalNav()
+            .Add(S["Tools"], tools => tools
+                .Add(S["Workflows"], S["Workflows"].PrefixPosition(), workflow => workflow
+                    .AddClass("workflows")
+                    .Id("workflows")
+                    .Action("Index", "WorkflowType", "OrchardCore.Workflows")
+                    .Permission(Permissions.ManageWorkflows)
+                    .LocalNav()
+                )
             );
 
         return ValueTask.CompletedTask;
