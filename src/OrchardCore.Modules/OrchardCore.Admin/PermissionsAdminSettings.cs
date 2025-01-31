@@ -10,7 +10,7 @@ public sealed class PermissionsAdminSettings : IPermissionProvider
     ];
 
     [Obsolete("This will be removed in a future release. Instead use 'AdminPermissions.ManageAdminSettings'.")]
-    public static readonly Permission ManageAdminSettings = new("ManageAdminSettings", "Manage Admin Settings");
+    public static readonly Permission ManageAdminSettings = AdminPermissions.ManageAdminSettings;
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [

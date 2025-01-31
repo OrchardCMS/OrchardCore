@@ -11,7 +11,7 @@ public sealed class Permissions : IPermissionProvider
     ];
 
     [Obsolete("This will be removed in a future release. Instead use 'QueriesPermissions.ManageSqlQueries'.")]
-    public static readonly Permission ManageSqlQueries = new("ManageSqlQueries", "Manage SQL Queries");
+    public static readonly Permission ManageSqlQueries = QueriesPermissions.ManageSqlQueries;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);

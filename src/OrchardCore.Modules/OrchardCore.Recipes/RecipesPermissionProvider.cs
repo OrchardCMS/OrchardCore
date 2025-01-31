@@ -10,7 +10,7 @@ public sealed class RecipesPermissionProvider : IPermissionProvider
     ];
 
     [Obsolete("This will be removed in a future release. Instead use 'RecipePermissions.ManageRecipes'.")]
-    public static readonly Permission ManageReCaptchaSettings = new("ManageReCaptchaSettings", "Manage ReCaptcha Settings");
+    public static readonly Permission ManageReCaptchaSettings = RecipePermissions.ManageRecipes;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);

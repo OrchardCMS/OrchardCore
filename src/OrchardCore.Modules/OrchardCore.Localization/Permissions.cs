@@ -13,7 +13,7 @@ public sealed class Permissions : IPermissionProvider
     ];
 
     [Obsolete("This will be removed in a future release. Instead use 'LocalizationPermissions.ManageCultures'.")]
-    public static readonly Permission ManageCultures = new("ManageCultures", "Manage supported culture");
+    public static readonly Permission ManageCultures = LocalizationPermissions.ManageCultures;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
        => Task.FromResult(_allPermissions);

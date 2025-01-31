@@ -10,10 +10,10 @@ public sealed class Permissions : IPermissionProvider
     ];
 
     [Obsolete("This will be removed in a future release. Instead use 'SettingsPermissions.ManageSettings'.")]
-    public static readonly Permission ManageSettings = new("ManageSettings", "Manage settings");
+    public static readonly Permission ManageSettings = SettingsPermissions.ManageSettings;
 
     [Obsolete("This will be removed in a future release. Instead use 'SettingsPermissions.ManageGroupSettings'.")]
-    public static readonly Permission ManageGroupSettings = new("ManageResourceSettings", "Manage settings", new[] { ManageSettings });
+    public static readonly Permission ManageGroupSettings = SettingsPermissions.ManageGroupSettings;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);

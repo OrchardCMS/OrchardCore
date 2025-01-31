@@ -10,7 +10,7 @@ public sealed class MediaCachePermissions : IPermissionProvider
     ];
 
     [Obsolete("This will be removed in a future release. Instead use 'MediaPermissions.ManageAssetCache'.")]
-    public static readonly Permission ManageAssetCache = new("ManageAssetCache", "Manage Asset Cache Folder");
+    public static readonly Permission ManageAssetCache = MediaPermissions.ManageAssetCache;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
        => Task.FromResult(_allPermissions);

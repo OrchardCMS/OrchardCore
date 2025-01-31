@@ -26,16 +26,16 @@ public sealed class SecureMediaPermissions : IPermissionProvider
 
 
     [Obsolete("This will be removed in a future release. Instead use 'MediaPermissions.ViewMedia'.")]
-    public static readonly Permission ViewMedia = new("ViewMediaContent", "View media content in all folders", new[] { Permissions.ManageMediaFolder });
+    public static readonly Permission ViewMedia = MediaPermissions.ViewMedia;
 
     [Obsolete("This will be removed in a future release. Instead use 'MediaPermissions.ViewRootMedia'.")]
-    public static readonly Permission ViewRootMedia = new("ViewRootMediaContent", "View media content in the root folder", new[] { ViewMedia });
+    public static readonly Permission ViewRootMedia = MediaPermissions.ViewRootMedia;
 
     [Obsolete("This will be removed in a future release. Instead use 'MediaPermissions.ViewOthersMedia'.")]
-    public static readonly Permission ViewOthersMedia = new("ViewOthersMediaContent", "View others media content", new[] { Permissions.ManageMediaFolder });
+    public static readonly Permission ViewOthersMedia = MediaPermissions.ViewOthersMedia;
 
     [Obsolete("This will be removed in a future release. Instead use 'MediaPermissions.ViewOwnMedia'.")]
-    public static readonly Permission ViewOwnMedia = new("ViewOwnMediaContent", "View own media content", new[] { ViewOthersMedia });
+    public static readonly Permission ViewOwnMedia = MediaPermissions.ViewOwnMedia;
 
     public SecureMediaPermissions(
         IOptions<MediaOptions> options,

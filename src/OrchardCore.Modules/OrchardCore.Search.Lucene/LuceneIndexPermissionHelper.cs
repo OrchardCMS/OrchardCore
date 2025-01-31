@@ -10,7 +10,7 @@ public static class LuceneIndexPermissionHelper
     private static readonly ConcurrentDictionary<string, Permission> _permissions = [];
 
     [Obsolete("This will be removed in a future release. Instead use 'LuceneSearchPermissions.ManageLuceneIndexes'.")]
-    public static readonly Permission ManageLuceneIndexes = new("ManageLuceneIndexes", "Manage Lucene Indexes");
+    public static readonly Permission ManageLuceneIndexes = LuceneSearchPermissions.ManageLuceneIndexes;
 
     public static Permission GetLuceneIndexPermission(string indexName)
     {

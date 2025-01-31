@@ -10,7 +10,7 @@ public sealed class SeoPermissionProvider : IPermissionProvider
     ];
 
     [Obsolete("This will be removed in a future release. Instead use 'SeoPermissions.ManageSeoSettings'.")]
-    public static readonly Permission ManageSeoSettings = SeoConstants.ManageSeoSettings;
+    public static readonly Permission ManageSeoSettings = SeoPermissions.ManageSeoSettings;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);

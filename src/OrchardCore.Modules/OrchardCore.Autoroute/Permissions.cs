@@ -10,7 +10,7 @@ public sealed class Permissions : IPermissionProvider
     ];
 
     [Obsolete("This will be removed in a future release. Instead use 'AutoroutePermissions.SetHomepage'.")]
-    public static readonly Permission SetHomepage = new("SetHomepage", "Set homepage.");
+    public static readonly Permission SetHomepage = AutoroutePermissions.SetHomepage;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);

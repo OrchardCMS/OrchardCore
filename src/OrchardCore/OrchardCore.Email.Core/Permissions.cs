@@ -10,7 +10,7 @@ public sealed class Permissions : IPermissionProvider
     ];
 
     [Obsolete("This will be removed in a future release. Instead use 'EmailPermissions.ManageEmailSettings'.")]
-    public static readonly Permission ManageEmailSettings = new("ManageEmailSettings", "Manage Email Settings");
+    public static readonly Permission ManageEmailSettings = EmailPermissions.ManageEmailSettings;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);

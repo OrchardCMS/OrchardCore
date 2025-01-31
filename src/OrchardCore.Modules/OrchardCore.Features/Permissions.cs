@@ -10,7 +10,7 @@ public sealed class Permissions : IPermissionProvider
     ];
 
     [Obsolete("This will be removed in a future release. Instead use 'FeaturesPermissions.ManageFeatures'.")]
-    public static readonly Permission ManageFeatures = new("ManageFeatures", "Manage Features");
+    public static readonly Permission ManageFeatures = FeaturesPermissions.ManageFeatures;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);

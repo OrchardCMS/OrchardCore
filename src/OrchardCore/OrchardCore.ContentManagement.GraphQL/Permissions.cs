@@ -11,7 +11,7 @@ public sealed class Permissions : IPermissionProvider
     ];
 
     [Obsolete("This will be removed in a future release. Instead use 'GraphQLPermissions.ApiViewContent'.")]
-    public static readonly Permission ApiViewContent = new("ApiViewContent", "Access view content endpoints");
+    public static readonly Permission ApiViewContent = GraphQLPermissions.ApiViewContent;
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
