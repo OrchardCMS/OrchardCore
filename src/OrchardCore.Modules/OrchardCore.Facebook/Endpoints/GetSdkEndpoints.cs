@@ -74,7 +74,7 @@ public static class GetSdkEndpoints
 
             // Set the cache timeout to the maximum allowed length of one year
             // max-age is needed because immutable is not widely supported
-            context.Response.Headers.CacheControl = $"public, max-age=31536000, immutable";
+            context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
 
             return Results.Bytes(scriptBytes, "application/javascript");
         }
@@ -129,7 +129,7 @@ public static class GetSdkEndpoints
 
             // Set the cache timeout to the maximum allowed length of one year
             // max-age is needed because immutable is not widely supported
-            context.Response.Headers.CacheControl = $"public, max-age=31536000, immutable";
+            context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
 
             return Results.Bytes(scriptBytes, "application/javascript");
         }
