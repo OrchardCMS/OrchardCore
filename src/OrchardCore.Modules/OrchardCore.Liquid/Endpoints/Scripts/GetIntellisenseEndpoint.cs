@@ -25,6 +25,7 @@ public static class GetIntellisenseEndpoint
 
         return builder;
     }
+
     public static ulong HashCacheBustingValues(LiquidViewParser liquidViewParser, TemplateOptions templateOptions)
     {
         var hash = new XxHash3(ScriptVersion);
@@ -80,6 +81,7 @@ public static class GetIntellisenseEndpoint
                 Encoding.UTF8.GetBytes(tags),
                 "].forEach(value=>{if(!liquidTags.includes(value)){ liquidTags.push(value);}});"u8.ToArray()
             }).SelectMany(x => x).ToArray();
+
         return scriptBytes;
     }
 }
