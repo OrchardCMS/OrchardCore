@@ -34,6 +34,6 @@ public sealed class AdminCulturePickerNavbarDisplayDriver : DisplayDriver<Navbar
             .Get<IRequestCultureFeature>()?.RequestCulture?.Culture ?? CultureInfo.CurrentUICulture;
 
         }).RenderWhen(() => Task.FromResult(supportedCultures.Count() > 1))
-        .Location("DetailAdmin", "Content:5");
+        .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:5");
     }
 }

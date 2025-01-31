@@ -22,10 +22,26 @@ public sealed class ResetPasswordAdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+        if (NavigationHelper.UseLegacyFormat())
+        {
+            builder
+                .Add(S["Security"], security => security
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["User Reset Password"], S["User Reset Password"].PrefixPosition(), password => password
+                            .Permission(CommonPermissions.ManageUsers)
+                            .Action("Index", "Admin", _routeValues)
+                            .LocalNav()
+                        )
+                    )
+                );
+
+            return ValueTask.CompletedTask;
+        }
+
         builder
-            .Add(S["Security"], security => security
-                .Add(S["Settings"], settings => settings
-                    .Add(S["User Reset password"], S["User Reset password"].PrefixPosition(), password => password
+            .Add(S["Settings"], settings => settings
+                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
+                    .Add(S["Reset Password"], S["Reset Password"].PrefixPosition(), password => password
                         .Permission(CommonPermissions.ManageUsers)
                         .Action("Index", "Admin", _routeValues)
                         .LocalNav()

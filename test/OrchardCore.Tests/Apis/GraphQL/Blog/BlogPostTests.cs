@@ -207,7 +207,7 @@ public class BlogPostTests
 
         await context.InitializeAsync();
 
-        var response = await context.GraphQLClient.Client.GetAsync("api/graphql");
+        var response = await context.GraphQLClient.Client.GetAsync("api/graphql", TestContext.Current.CancellationToken);
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
@@ -283,5 +283,21 @@ public class BlogPostTests
             });
 
         Assert.Equal(GraphQLApi.ValidationRules.RequiresPermissionValidationRule.ErrorCode, result["errors"][0]["extensions"]["number"].ToString());
+    }
+
+    [Fact]
+    public async Task ShouldQueryContainedPart()
+    {
+        using var context = new BlogContext();
+        await context.InitializeAsync();
+
+        var result = await context
+            .GraphQLClient
+            .Content
+            .Query("blogPost { blog { listContentItem { ... on Blog { displayText } } } }");
+
+        Assert.Equal(
+            "Blog",
+            result["data"]["blogPost"][0]["blog"]["listContentItem"]["displayText"].ToString());
     }
 }

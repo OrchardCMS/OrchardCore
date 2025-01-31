@@ -18,6 +18,6 @@ public sealed class ToggleThemeNavbarDisplayDriver : DisplayDriver<Navbar>
     {
         return View("ToggleTheme", model)
             .RenderWhen(async () => (await _siteService.GetSettingsAsync<AdminSettings>()).DisplayThemeToggler)
-            .Location("DetailAdmin", "Content:10");
+            .Location(OrchardCoreConstants.DisplayType.DetailAdmin, "Content:10");
     }
 }

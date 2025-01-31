@@ -13,7 +13,7 @@ public sealed class ListPartFeedDisplayDriver : ContentPartDisplayDriver<ListPar
         {
             shape.ContentItem = listPart.ContentItem;
         })
-        .Location("Detail", "Content");
+        .Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(ListPart part, BuildPartEditorContext context)

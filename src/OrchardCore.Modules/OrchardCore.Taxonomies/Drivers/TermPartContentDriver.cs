@@ -42,7 +42,7 @@ public sealed class TermPartContentDriver : ContentDisplayDriver
                 m.ContentItem = part.ContentItem;
                 m.ContentItems = (await QueryTermItemsAsync(part, pager)).ToArray();
                 m.Pager = await context.New.PagerSlim(pager);
-            }).Location("Detail", "Content:5");
+            }).Location(OrchardCoreConstants.DisplayType.Detail, "Content:5");
         }
 
         return null;

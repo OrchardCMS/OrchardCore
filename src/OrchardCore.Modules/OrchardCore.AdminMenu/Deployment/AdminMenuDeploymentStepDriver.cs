@@ -10,7 +10,7 @@ public sealed class AdminMenuDeploymentStepDriver : DisplayDriver<DeploymentStep
     {
         return
             CombineAsync(
-                View("AdminMenuDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("AdminMenuDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("AdminMenuDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

@@ -11,7 +11,7 @@ public sealed class SearchFormPartDisplayDriver : ContentPartDisplayDriver<Searc
     public override IDisplayResult Display(SearchFormPart part, BuildPartDisplayContext context)
     {
         return View(GetDisplayShapeType(context), part)
-            .Location("Detail", "Content");
+            .Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(SearchFormPart part, BuildPartEditorContext context)

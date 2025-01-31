@@ -52,7 +52,7 @@ public sealed class Startup : StartupBase
             });
 
         services.AddPermissionProvider<Permissions>();
-        services.AddNavigationProvider<AdminMenu>();
+        services.AddNavigationProvider<ManagementAdminMenu>();
     }
 }
 
@@ -61,6 +61,8 @@ public sealed class ClientStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddNavigationProvider<ClientAdminMenu>();
+
         services.TryAddSingleton<IOpenIdClientService, OpenIdClientService>();
 
         // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
@@ -88,6 +90,8 @@ public sealed class ServerStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddNavigationProvider<ServerAdminMenu>();
+
         services.AddOpenIddict()
             .AddServer(options =>
             {
@@ -206,6 +210,8 @@ public sealed class ValidationStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddNavigationProvider<ValidationAdminMenu>();
+
         services.AddOpenIddict()
             .AddValidation(options =>
             {
