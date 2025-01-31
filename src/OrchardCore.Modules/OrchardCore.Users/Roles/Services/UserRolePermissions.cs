@@ -16,7 +16,7 @@ public sealed class UserRolePermissions : IPermissionProvider
     {
         var permissions = new List<Permission>()
         {
-            CommonPermissions.AssignRoleToUsers,
+            UsersPermissions.AssignRoleToUsers,
         };
 
         var roleNames = (await _roleService.GetAssignableRolesAsync())
@@ -25,18 +25,18 @@ public sealed class UserRolePermissions : IPermissionProvider
 
         foreach (var roleName in roleNames)
         {
-            permissions.Add(CommonPermissions.CreateListUsersInRolePermission(roleName));
-            permissions.Add(CommonPermissions.CreateEditUsersInRolePermission(roleName));
+            permissions.Add(UsersPermissions.CreateListUsersInRolePermission(roleName));
+            permissions.Add(UsersPermissions.CreateEditUsersInRolePermission(roleName));
 
             if (!await _roleService.IsAdminRoleAsync(roleName))
             {
                 // Do not create permissions for deleting or creating admins.
                 // These operations are restricted to admin users only.
-                permissions.Add(CommonPermissions.CreateDeleteUsersInRolePermission(roleName));
-                permissions.Add(CommonPermissions.CreateAssignRoleToUsersPermission(roleName));
+                permissions.Add(UsersPermissions.CreateDeleteUsersInRolePermission(roleName));
+                permissions.Add(UsersPermissions.CreateAssignRoleToUsersPermission(roleName));
             }
 
-            permissions.Add(CommonPermissions.CreatePermissionForManageUsersInRole(roleName));
+            permissions.Add(UsersPermissions.CreatePermissionForManageUsersInRole(roleName));
         }
 
         return permissions;
@@ -49,7 +49,7 @@ public sealed class UserRolePermissions : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
-                CommonPermissions.AssignRoleToUsers,
+                UsersPermissions.AssignRoleToUsers,
             ],
         },
     ];

@@ -7,7 +7,7 @@
 
 @{
     var isCurrentUser = Model.User.UserName == User.Identity.Name;
-    var canEdit = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, Model.User);
+    var canEdit = await AuthorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, Model.User);
     var isLockedOut = await UserManager.IsLockedOutAsync(Model.User);
 }
 
@@ -24,7 +24,7 @@
     }
 }
 
-@if (!isCurrentUser && await AuthorizationService.AuthorizeAsync(User, CommonPermissions.DeleteUsers, Model.User))
+@if (!isCurrentUser && await AuthorizationService.AuthorizeAsync(User, UsersPermissions.DeleteUsers, Model.User))
 {
     <li>
         <a asp-action="Delete" asp-route-id="@Model.User.UserId" class="dropdown-item text-danger" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>

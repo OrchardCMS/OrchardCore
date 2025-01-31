@@ -96,7 +96,7 @@ public sealed class EmailConfirmationController : Controller
         }
 
         // Allow users to verify their own email without the 'ManageUsers' permission.
-        if (id != currentUserId && !await _authorizationService.AuthorizeAsync(User, CommonPermissions.ManageUsers))
+        if (id != currentUserId && !await _authorizationService.AuthorizeAsync(User, UsersPermissions.ManageUsers))
         {
             return Forbid();
         }
