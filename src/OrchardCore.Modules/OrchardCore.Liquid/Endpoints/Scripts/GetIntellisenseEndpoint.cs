@@ -59,7 +59,7 @@ public static class GetIntellisenseEndpoint
 
         if (scriptBytes == null)
         {
-            return Results.InternalServerError();
+            return Results.StatusCode(500);
         }
 
         // Set the cache timeout to the maximum allowed length of one year
