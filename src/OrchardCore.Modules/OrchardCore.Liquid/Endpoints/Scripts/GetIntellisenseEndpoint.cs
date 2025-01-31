@@ -19,7 +19,7 @@ public static class GetIntellisenseEndpoint
 
     public static IEndpointRouteBuilder AddGetIntellisenseScriptEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapGet("OrchardCore.Liquid/Scripts/{hash}/liquid-intellisense.js", HandleRequest)
+        builder.MapGet("OrchardCore.Liquid/Scripts/liquid-intellisense.js", HandleRequest)
             .AllowAnonymous()
             .DisableAntiforgery();
 

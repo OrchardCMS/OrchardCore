@@ -40,7 +40,7 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
         manifest
             .DefineScript("liquid-intellisense")
             .SetDependencies("monaco-liquid-intellisense")
-            .SetUrl($"~/OrchardCore.Liquid/Scripts/{hash}/liquid-intellisense.js");
+            .SetUrl($"~/OrchardCore.Liquid/Scripts/liquid-intellisense.js?v={hash}");
 
         options.ResourceManifests.Add(_manifest);
         options.ResourceManifests.Add(manifest);

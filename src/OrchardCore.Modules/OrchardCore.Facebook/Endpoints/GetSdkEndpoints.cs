@@ -17,11 +17,11 @@ public static class GetSdkEndpoints
 {
     public static IEndpointRouteBuilder AddSdkEndpoints(this IEndpointRouteBuilder builder)
     {
-        builder.MapGet("/OrchardCore.Facebook/sdk/{hash}/init.js", GetInitScriptEndpoint.HandleRequestAsync)
+        builder.MapGet("/OrchardCore.Facebook/sdk/init.js", GetInitScriptEndpoint.HandleRequestAsync)
             .AllowAnonymous()
             .DisableAntiforgery();
 
-        builder.MapGet("/OrchardCore.Facebook/sdk/{hash}/sdk.{culture:length(2,6)}.js", GetFetchScriptEndpoint.HandleRequestAsync)
+        builder.MapGet("/OrchardCore.Facebook/sdk/sdk.{culture:length(2,6)}.js", GetFetchScriptEndpoint.HandleRequestAsync)
             .AllowAnonymous()
             .DisableAntiforgery();
 

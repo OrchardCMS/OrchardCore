@@ -24,12 +24,12 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
         manifest
             .DefineScript("fb")
             .SetDependencies("fbsdk")
-            .SetUrl($"~/OrchardCore.Facebook/sdk/{GetSdkEndpoints.GetInitScriptEndpoint.HashCacheBustingValues(settings)}/init.js");
+            .SetUrl($"~/OrchardCore.Facebook/sdk/init.js?v={GetSdkEndpoints.GetInitScriptEndpoint.HashCacheBustingValues(settings)}");
 
         manifest
             .DefineScript("fbsdk")
             .SetCultures(GetSdkEndpoints.GetFetchScriptEndpoint.ValidFacebookCultures)
-            .SetUrl($"~/OrchardCore.Facebook/sdk/{GetSdkEndpoints.GetFetchScriptEndpoint.HashCacheBustingValues(settings)}/sdk.js");
+            .SetUrl($"~/OrchardCore.Facebook/sdk/sdk.js?v={GetSdkEndpoints.GetInitScriptEndpoint.HashCacheBustingValues(settings)}");
 
         options.ResourceManifests.Add(manifest);
     }
