@@ -36,13 +36,13 @@ public sealed class ExternalLoginSettingsDisplayDriver : SiteDisplayDriver<Exter
             model.UseScriptToSyncProperties = settings.UseScriptToSyncProperties;
             model.SyncPropertiesScript = settings.SyncPropertiesScript;
         }).Location("Content:5#External Login;10")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ManageUsers))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.ManageUsers))
         .OnGroup(SettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, ExternalLoginSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
         {
             return null;
         }

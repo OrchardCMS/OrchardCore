@@ -85,7 +85,7 @@ public sealed class AdminController : Controller
     public async Task<ActionResult> Index([ModelBinder(BinderType = typeof(UserFilterEngineModelBinder), Name = "q")] QueryFilterResult<User> queryFilterResult, PagerParameters pagerParameters)
     {
         // Check a dummy user account to see if the current user has permission to view users.
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ListUsers, new User()))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.ListUsers, new User()))
         {
             return Forbid();
         }
@@ -154,7 +154,7 @@ public sealed class AdminController : Controller
 
         foreach (var roleName in await _roleService.GetRoleNamesAsync())
         {
-            var permission = CommonPermissions.CreateListUsersInRolePermission(roleName);
+            var permission = UsersPermissions.CreateListUsersInRolePermission(roleName);
 
             if (!await _authorizationService.AuthorizeAsync(User, permission))
             {
@@ -222,7 +222,7 @@ public sealed class AdminController : Controller
     public async Task<ActionResult> IndexPOST(UserIndexOptions options, IEnumerable<string> itemIds)
     {
         // Check a dummy user account to see if the current user has permission to manage it.
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ListUsers, new User()))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.ListUsers, new User()))
         {
             return Forbid();
         }
@@ -235,7 +235,7 @@ public sealed class AdminController : Controller
             // To prevent html injection we authorize each user before performing any operations.
             foreach (var user in checkedUsers)
             {
-                var canEditUser = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user);
+                var canEditUser = await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user);
                 var isSameUser = user.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 switch (options.BulkAction)
@@ -250,7 +250,7 @@ public sealed class AdminController : Controller
                         }
                         break;
                     case UsersBulkAction.Delete:
-                        if (!isSameUser && await _authorizationService.AuthorizeAsync(User, CommonPermissions.DeleteUsers, user))
+                        if (!isSameUser && await _authorizationService.AuthorizeAsync(User, UsersPermissions.DeleteUsers, user))
                         {
                             await _userManager.DeleteAsync(user);
                             await _notifier.SuccessAsync(H["User {0} successfully deleted.", user.UserName]);
@@ -285,7 +285,7 @@ public sealed class AdminController : Controller
     {
         var user = new User();
 
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
         {
             return Forbid();
         }
@@ -301,7 +301,7 @@ public sealed class AdminController : Controller
     {
         var user = new User();
 
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
         {
             return Forbid();
         }
@@ -332,7 +332,7 @@ public sealed class AdminController : Controller
         if (string.IsNullOrEmpty(id))
         {
             id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditOwnUser))
+            if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditOwnUser))
             {
                 return Forbid();
             }
@@ -344,7 +344,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
         {
             return Forbid();
         }
@@ -366,7 +366,7 @@ public sealed class AdminController : Controller
         {
             editingOwnUser = true;
             id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditOwnUser))
+            if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditOwnUser))
             {
                 return Forbid();
             }
@@ -377,7 +377,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
         {
             return Forbid();
         }
@@ -428,7 +428,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.ViewUsers, user))
         {
             return Forbid();
         }
@@ -446,7 +446,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.DeleteUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.DeleteUsers, user))
         {
             return Forbid();
         }
@@ -479,7 +479,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
         {
             return Forbid();
         }
@@ -497,7 +497,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
         {
             return Forbid();
         }
@@ -525,7 +525,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
         {
             return Forbid();
         }

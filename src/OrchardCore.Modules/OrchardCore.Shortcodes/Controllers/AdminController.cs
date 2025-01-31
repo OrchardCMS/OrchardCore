@@ -63,7 +63,7 @@ public sealed class AdminController : Controller
     [Admin("Shortcodes", "Shortcodes.Index")]
     public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
+        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
             return Forbid();
         }
@@ -120,7 +120,7 @@ public sealed class AdminController : Controller
     [Admin("Shortcodes/Create", "Shortcodes.Create")]
     public async Task<IActionResult> Create()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
+        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
             return Forbid();
         }
@@ -131,7 +131,7 @@ public sealed class AdminController : Controller
     [HttpPost, ActionName(nameof(Create))]
     public async Task<IActionResult> CreatePost(ShortcodeTemplateViewModel model, string submit)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
+        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
             return Forbid();
         }
@@ -194,7 +194,7 @@ public sealed class AdminController : Controller
     [Admin("Shortcodes/Edit/{name}", "Shortcodes.Edit")]
     public async Task<IActionResult> Edit(string name)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
+        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
             return Forbid();
         }
@@ -222,7 +222,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(string sourceName, ShortcodeTemplateViewModel model, string submit)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
+        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
             return Forbid();
         }
@@ -294,7 +294,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string name)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
+        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
             return Forbid();
         }
@@ -317,7 +317,7 @@ public sealed class AdminController : Controller
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
+        if (!await _authorizationService.AuthorizeAsync(User, ShortcodesPermissions.ManageShortcodeTemplates))
         {
             return Forbid();
         }

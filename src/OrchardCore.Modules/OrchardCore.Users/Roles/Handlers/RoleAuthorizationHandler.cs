@@ -53,9 +53,9 @@ public sealed class RoleAuthorizationHandler : AuthorizationHandler<PermissionRe
         {
             var currentUserId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (requirement.Permission.Name == CommonPermissions.EditUsers.Name
+            if (requirement.Permission.Name == UsersPermissions.EditUsers.Name
                 && user.UserId == currentUserId
-                && await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditOwnUser))
+                && await _authorizationService.AuthorizeAsync(context.User, UsersPermissions.EditOwnUser))
             {
                 context.Succeed(requirement);
 
@@ -95,29 +95,29 @@ public sealed class RoleAuthorizationHandler : AuthorizationHandler<PermissionRe
 
     private static Permission GetPermissionVariation(Permission permission, string roleName)
     {
-        if (permission.Name == CommonPermissions.ListUsers.Name)
+        if (permission.Name == UsersPermissions.ListUsers.Name)
         {
-            return CommonPermissions.CreateListUsersInRolePermission(roleName);
+            return UsersPermissions.CreateListUsersInRolePermission(roleName);
         }
 
-        if (permission.Name == CommonPermissions.EditUsers.Name)
+        if (permission.Name == UsersPermissions.EditUsers.Name)
         {
-            return CommonPermissions.CreateEditUsersInRolePermission(roleName);
+            return UsersPermissions.CreateEditUsersInRolePermission(roleName);
         }
 
-        if (permission.Name == CommonPermissions.DeleteUsers.Name)
+        if (permission.Name == UsersPermissions.DeleteUsers.Name)
         {
-            return CommonPermissions.CreateDeleteUsersInRolePermission(roleName);
+            return UsersPermissions.CreateDeleteUsersInRolePermission(roleName);
         }
 
-        if (permission.Name == CommonPermissions.AssignRoleToUsers.Name)
+        if (permission.Name == UsersPermissions.AssignRoleToUsers.Name)
         {
-            return CommonPermissions.CreateAssignRoleToUsersPermission(roleName);
+            return UsersPermissions.CreateAssignRoleToUsersPermission(roleName);
         }
 
-        if (permission.Name == CommonPermissions.ManageUsers.Name)
+        if (permission.Name == UsersPermissions.ManageUsers.Name)
         {
-            return CommonPermissions.CreatePermissionForManageUsersInRole(roleName);
+            return UsersPermissions.CreatePermissionForManageUsersInRole(roleName);
         }
 
         return null;
