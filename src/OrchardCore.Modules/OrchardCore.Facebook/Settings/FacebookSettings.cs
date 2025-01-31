@@ -1,7 +1,3 @@
-using System.IO.Hashing;
-using System.Text;
-using OrchardCore.Facebook.Endpoints;
-
 namespace OrchardCore.Facebook.Settings;
 
 public class FacebookSettings
@@ -18,9 +14,4 @@ public class FacebookSettings
 
     public string SdkJs { get; set; } = "sdk.js";
     public string Version { get; set; } = "v3.2";
-
-    public ulong GetHash()
-    {
-        return XxHash3.HashToUInt64(Encoding.UTF8.GetBytes(string.Concat(AppId, FBInit, FBInitParams, SdkJs, Version, GetSdkEndpoints.Version.ToString())));
-    }
 }
