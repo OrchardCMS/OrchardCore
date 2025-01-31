@@ -43,7 +43,7 @@ public class JavaScriptWorkflowScriptEvaluator : IWorkflowScriptEvaluator
             // Some types cannot be cast (e.g., null to bool), so we need to catch the exception and return the default value.
             return (T)_scriptingManager.Evaluate(directive, null, null, methodProviders);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while evaluating the expression: {Expression}", expression.Expression);
         }
