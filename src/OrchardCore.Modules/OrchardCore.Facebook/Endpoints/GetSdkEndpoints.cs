@@ -29,7 +29,7 @@ public static class GetSdkEndpoints
 
     public static class GetInitScriptEndpoint
     {
-        // Update this version when the init script changes to invalidate client caches
+        // Update this version when the script changes to invalidate client caches
         private static readonly int ScriptVersion = 1;
 
         public static ulong HashCacheBustingValues(FacebookSettings settings)
@@ -56,7 +56,7 @@ public static class GetSdkEndpoints
                 entry.SetSlidingExpiration(TimeSpan.FromHours(1));
 
                 // Note: All injected values except those in url must be used in HashCacheBustingValues
-                // Note: Update InitScriptVersion constant when the script changes
+                // Note: Update ScriptVersion constant when the script changes
                 return Encoding.UTF8.GetBytes($@"
                     window.fbAsyncInit = function() {{
                         FB.init({{
@@ -82,7 +82,7 @@ public static class GetSdkEndpoints
 
     public static class GetFetchScriptEndpoint
     {
-        // Update this version when the fetch script changes to invalidate client caches
+        // Update this version when the script changes to invalidate client caches
         private static readonly int ScriptVersion = 1;
 
         // Scraped from facebook.com
@@ -112,7 +112,7 @@ public static class GetSdkEndpoints
                 var encodedCulture = urlEncoder.Encode(culture.Replace('-', '_'));
 
                 // Note: If a culture is not found, facebook will use en_US
-                // Note: Update FetchScriptVersion constant when the script changes
+                // Note: Update ScriptVersion constant when the script changes
                 // Note: All injected values except those in url must be used in HashCacheBustingValues
                 return Task.FromResult(Encoding.UTF8.GetBytes($@"(function(d){{
                     var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {{ return; }}
