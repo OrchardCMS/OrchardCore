@@ -26,6 +26,15 @@ public interface IPredicateQuery
     void CreateAlias(string path, string alias);
 
     /// <summary>
+    /// Creates an alias for a specified path.
+    /// </summary>
+    /// <param name="path">The path of the property.</param>
+    /// <param name="alias">The alias name.</param>
+    /// <param name="isPartial">Whether the table alias must be added to the current alias when used.</param>
+    void CreateAlias(string path, string alias, bool isPartial)
+        => CreateAlias(path, alias);
+
+    /// <summary>
     /// Creates an actual sql table alias for a specified path.
     /// </summary>
     /// <param name="path">The path of the property.</param>
