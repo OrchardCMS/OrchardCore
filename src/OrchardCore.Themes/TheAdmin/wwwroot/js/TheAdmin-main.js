@@ -4,6 +4,9 @@
 */
 
 themeStoreKeySuffix = 'admintheme';
+var getTenantName = function getTenantName() {
+  return document.documentElement.getAttribute("data-tenant") || "default";
+};
 var getAdminPreferenceKey = function getAdminPreferenceKey() {
   return getTenantName() + '-adminPreferences';
 };

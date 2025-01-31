@@ -526,12 +526,13 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 });
             });
 
-            if (displayMediaApplication) {
-                document.getElementById('mediaApp').style.display = "";
-            }
-
             $(document).trigger('mediaApp:ready');
 
+            if (displayMediaApplication) {
+                setTimeout(function () {
+                    document.getElementById("mediaApp").classList.remove("d-none");
+                }, 100)              
+            }
         },
         error: function (error) {
             console.error(error.responseText);

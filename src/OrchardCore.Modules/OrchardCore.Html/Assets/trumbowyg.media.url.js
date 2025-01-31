@@ -14,7 +14,7 @@
                         fn: function () {
                             trumbowyg.saveRange();
                             $("#mediaApp").detach().appendTo('#mediaModalBody .modal-body');
-                            $("#mediaApp").show();
+                            document.getElementById("mediaApp").classList.remove("d-none");
                             mediaApp.selectedMedias = [];
                             var modal = new bootstrap.Modal($("#mediaModalBody"));
                             modal.show();

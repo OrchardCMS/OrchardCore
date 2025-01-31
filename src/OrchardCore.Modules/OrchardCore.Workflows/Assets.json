@@ -1,48 +1,47 @@
 [
   {
-    "inputs": [
-      "node_modules/jsplumb/css/jsplumbtoolkit-defaults.css"
-    ],
-    "output": "wwwroot/Styles/jsplumbtoolkit-defaults.css"
+    "action": "min",
+    "name": "workflow-jsplumbtoolkit-defaults.css",
+    "source": "../../../node_modules/jsplumb/css/jsplumbtoolkit-defaults.css",
+    "tags": ["workflows", "css"]
   },
   {
-    "inputs": [
-      "node_modules/jsplumb/dist/js/jsplumb.js"
-    ],
-    "output": "wwwroot/Scripts/jsplumb.js"
+    "action": "sass",
+    "name": "workflow-editor-css",
+    "source": "Assets/Styles/orchard.workflows-editor.scss",
+    "tags": ["workflows", "css"]
   },
   {
-    "inputs": [
-      "Assets/Styles/workflow-editor.scss"
-    ],
-    "output": "wwwroot/Styles/orchard.workflows-editor.css"
+    "action": "sass",
+    "name": "workflow-viewer-css",
+    "source": "Assets/Styles/orchard.workflows-viewer.scss",
+    "tags": ["workflows", "css"]
   },
   {
-    "inputs": [
-      "Assets/Styles/workflow-viewer.scss"
-    ],
-    "output": "wwwroot/Styles/orchard.workflows-viewer.css"
+    "action": "min",
+    "name": "workflow-jsplumb",
+    "source": "../../../node_modules/jsplumb/dist/js/jsplumb.js",
+    "tags": ["workflows", "js"]
   },
   {
-    "inputs": [
-      "Assets/Scripts/activity-picker.ts",
-      "Http/Assets/Scripts/workflow-url-generator.ts",
-      "Assets/Scripts/workflow-canvas.ts",
-      "Assets/Scripts/workflow-editor.ts"
-    ],
-    "output": "wwwroot/Scripts/orchard.workflows-editor.js"
+    "action": "parcel",
+    "name": "workflow-editor-js",
+    "source": "Assets/Scripts/workflow-editor.ts",
+    "dest": "wwwroot/Scripts/Workflows/",
+    "tags": ["workflows", "js"]
   },
   {
-    "inputs": [
-      "Http/Assets/Scripts/workflow-url-generator.ts"
-    ],
-    "output": "wwwroot/Scripts/orchard.http-request-event-editor.js"
+    "action": "parcel",
+    "name": "workflow-viewer-js",
+    "source": "Assets/Scripts/workflow-viewer.ts",
+    "dest": "wwwroot/Scripts/Workflows/",
+    "tags": ["workflows", "js"]
   },
   {
-    "inputs": [
-      "Assets/Scripts/workflow-canvas.ts",
-      "Assets/Scripts/workflow-viewer.ts"
-    ],
-    "output": "wwwroot/Scripts/orchard.workflows-viewer.js"
+    "action": "parcel",
+    "name": "workflow-url-generator-js",
+    "source": "Assets/Scripts/workflow-url-generator.ts",
+    "dest": "wwwroot/Scripts/Workflows/",
+    "tags": ["workflows", "js"]
   }
 ]
