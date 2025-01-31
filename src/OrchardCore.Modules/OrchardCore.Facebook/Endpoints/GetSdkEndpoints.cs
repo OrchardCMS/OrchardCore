@@ -89,10 +89,9 @@ public static class GetSdkEndpoints
 
         public static ulong HashCacheBustingValues(FacebookSettings settings)
         {
-            return XxHash3.HashToUInt64(Encoding.UTF8.GetBytes(
-                        String.Concat(
-                            ScriptVersion.ToString(CultureInfo.InvariantCulture),
-                            settings.SdkJs)));
+            var hash = new XxHash3(ScriptVersion);
+            hash.Append(Encoding.UTF8.GetBytes(settings.SdkJs ?? ""));
+            return hash.GetCurrentHashAsUInt64();
         }
 
         public static async Task<IResult> HandleRequestAsync(string culture, HttpContext context, IMemoryCache cache, UrlEncoder urlEncoder, ISiteService siteService)
