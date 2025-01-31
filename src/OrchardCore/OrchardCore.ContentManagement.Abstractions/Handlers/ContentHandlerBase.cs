@@ -26,6 +26,7 @@ public abstract class ContentHandlerBase : IContentHandler
     {
         return Task.CompletedTask;
     }
+
     public virtual Task CreatedAsync(CreateContentContext context)
     {
         return Task.CompletedTask;

@@ -50,6 +50,7 @@ public static class ContentManagerExtensions
         }
     }
 
+    [Obsolete("This method is obsolete and will be removed in future releases.")]
     public static async Task<ContentValidateResult> UpdateValidateAndCreateAsync(this IContentManager contentManager, ContentItem contentItem, VersionOptions options)
     {
         await contentManager.UpdateAsync(contentItem);

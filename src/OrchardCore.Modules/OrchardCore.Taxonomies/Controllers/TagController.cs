@@ -1,13 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Modules;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.ViewModels;
 using YesSql;
@@ -20,24 +17,18 @@ public sealed class TagController : Controller, IUpdateModel
     private readonly IContentManager _contentManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    private readonly IEnumerable<IContentHandler> _contentHandlers;
     private readonly ISession _session;
-    private readonly ILogger _logger;
 
     public TagController(
         IContentManager contentManager,
         IAuthorizationService authorizationService,
         IContentDefinitionManager contentDefinitionManager,
-        IEnumerable<IContentHandler> contentHandlers,
-        ISession session,
-        ILogger<TagController> logger)
+        ISession session)
     {
         _contentManager = contentManager;
         _authorizationService = authorizationService;
         _contentDefinitionManager = contentDefinitionManager;
-        _contentHandlers = contentHandlers;
         _session = session;
-        _logger = logger;
     }
 
     [HttpPost]
@@ -74,13 +65,34 @@ public sealed class TagController : Controller, IUpdateModel
         contentItem.Weld<TermPart>();
         contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
-        var updateContentContext = new UpdateContentContext(contentItem);
+        var result = await _contentManager.ValidateAsync(contentItem);
 
-        await _contentHandlers.InvokeAsync((handler, updateContentContext) => handler.UpdatingAsync(updateContentContext), updateContentContext, _logger);
-        await _contentHandlers.Reverse().InvokeAsync((handler, updateContentContext) => handler.UpdatedAsync(updateContentContext), updateContentContext, _logger);
+        if (result.Succeeded)
+        {
+            await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
+        }
+        else
+        {
+            foreach (var error in result.Errors)
+            {
+                if (error.MemberNames != null && error.MemberNames.Any())
+                {
+                    foreach (var memberName in error.MemberNames)
+                    {
+                        ModelState.AddModelError(memberName, error.ErrorMessage);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, error.ErrorMessage);
+                }
+            }
+        }
 
         if (!ModelState.IsValid)
         {
+            await _session.CancelAsync();
+
             return BadRequest();
         }
 
