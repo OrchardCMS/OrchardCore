@@ -45,7 +45,7 @@ public class JavaScriptWorkflowScriptEvaluator : IWorkflowScriptEvaluator
         }
         catch (Exception e)
         {
-            _logger.LogError(ex, "An error occurred while evaluating the expression: {expression.Expression}", expression.Expression);
+            _logger.LogError(ex, "An error occurred while evaluating the expression: {Expression}", expression.Expression);
         }
 
         return default;
