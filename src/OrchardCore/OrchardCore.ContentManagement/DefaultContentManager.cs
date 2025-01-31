@@ -433,7 +433,9 @@ public class DefaultContentManager : IContentManager
         // should take this null check into account
         var context = new PublishContentContext(contentItem, publishedItem)
         {
-            PublishingItem = null
+#pragma warning disable CS0618 // Type or member is obsolete
+            PublishingItem = null,
+#pragma warning restore CS0618 // Type or member is obsolete
         };
 
         await Handlers.InvokeAsync((handler, context) => handler.UnpublishingAsync(context), context, _logger);
