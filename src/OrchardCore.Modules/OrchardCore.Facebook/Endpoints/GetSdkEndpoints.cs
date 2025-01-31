@@ -35,24 +35,20 @@ public static class GetSdkEndpoints
 
         public static ulong HashCacheBustingValues(FacebookSettings settings)
         {
-            return XxHash3.HashToUInt64(Encoding.UTF8.GetBytes(
-                        String.Concat(
-                            ScriptVersion.ToString(CultureInfo.InvariantCulture),
-                            settings.AppId,
-                            settings.Version,
-                            settings.FBInitParams)));
+            var hash = new XxHash3(ScriptVersion);
+            hash.Append(Encoding.UTF8.GetBytes(settings.AppId ?? ""));
+            hash.Append(Encoding.UTF8.GetBytes(settings.Version ?? ""));
+            hash.Append(Encoding.UTF8.GetBytes(settings.FBInitParams ?? ""));
+            return hash.GetCurrentHashAsUInt64();
         }
 
         public static async Task<IResult> HandleRequestAsync(HttpContext context, ISiteService siteService, IMemoryCache cache)
         {
             var settings = await siteService.GetSettingsAsync<FacebookSettings>();
 
-            // Regenerate hash: Don't trust passed hash because it could cause cache issues
-            string expectedHash = HashCacheBustingValues(settings).ToString(CultureInfo.InvariantCulture);
+            var cacheKey = new CacheEntry(ScriptVersion, settings.AppId, settings.Version, settings.FBInitParams);
 
-            var scriptCacheKey = $"/OrchardCore.Facebook/sdk/{expectedHash}/init.js.bytes";
-
-            var scriptBytes = cache.GetOrCreate(scriptCacheKey, entry =>
+            var scriptBytes = cache.GetOrCreate(cacheKey, entry =>
             {
                 entry.SetSlidingExpiration(TimeSpan.FromHours(1));
 
@@ -79,6 +75,8 @@ public static class GetSdkEndpoints
 
             return Results.Bytes(scriptBytes, "application/javascript");
         }
+
+        private record class CacheEntry(int ScriptVersion, string AppId, string Version, string FBInitParams);
     }
 
     public static class GetFetchScriptEndpoint

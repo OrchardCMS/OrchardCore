@@ -4,8 +4,8 @@ using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.DisplayManagement.Liquid;
 
 #nullable enable
@@ -14,16 +14,63 @@ namespace OrchardCore.Liquid.Endpoints.Scripts;
 
 public static class GetIntellisenseEndpoint
 {
+    // Update this version when the script changes to invalidate client caches
+    private static readonly int ScriptVersion = 1;
+
+    private const string CacheKey = "LiquidIntellisenseScript";
+
     public static IEndpointRouteBuilder AddGetIntellisenseScriptEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapGet("OrchardCore.Liquid/Scripts/liquid-intellisense.js", HandleRequest)
+        builder.MapGet("OrchardCore.Liquid/Scripts/{hash}/liquid-intellisense.js", HandleRequest)
             .AllowAnonymous()
             .DisableAntiforgery();
 
         return builder;
     }
+    public static ulong HashCacheBustingValues(LiquidViewParser liquidViewParser, TemplateOptions templateOptions)
+    {
+        var hash = new XxHash3(ScriptVersion);
 
-    private static IResult HandleRequest(HttpContext context, LiquidViewParser liquidViewParser, IOptions<TemplateOptions> templateOptions)
+        foreach (var filter in templateOptions.Filters)
+        {
+            hash.Append(Encoding.UTF8.GetBytes(filter.Key ?? ""));
+        }
+
+        foreach (var tag in liquidViewParser.RegisteredTags)
+        {
+            hash.Append(Encoding.UTF8.GetBytes(tag.Key ?? ""));
+        }
+
+        return hash.GetCurrentHashAsUInt64();
+    }
+
+    private static IResult HandleRequest(HttpContext context, IMemoryCache memoryCache, LiquidViewParser liquidViewParser, IOptions<TemplateOptions> templateOptions)
+    {
+        // We could check that the current cache entry matches the requested hash, but instead we always return the actual content that
+        // the client should have. The hash is only used for cache busting on the client.
+
+        // The cache entry will be busted whenever the filters or tags change, i.e. when some features are enabled or disabled.
+
+        var scriptBytes = memoryCache.GetOrCreate(CacheKey, entry =>
+        {
+            entry.SetSlidingExpiration(TimeSpan.FromHours(1));
+
+            return GenerateScriptBytes(liquidViewParser, templateOptions);
+        });
+
+        if (scriptBytes == null)
+        {
+            return Results.NotFound();
+        }
+
+        // Set the cache timeout to the maximum allowed length of one year
+        // max-age is needed because immutable is not widely supported
+        context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
+
+        return Results.Bytes(scriptBytes, "application/javascript");
+    }
+
+    private static byte[] GenerateScriptBytes(LiquidViewParser liquidViewParser, IOptions<TemplateOptions> templateOptions)
     {
         var filters = string.Join(',', templateOptions.Value.Filters.Select(x => $"'{x.Key}'"));
         var tags = string.Join(',', liquidViewParser.RegisteredTags.Select(x => $"'{x.Key}'"));
@@ -35,19 +82,6 @@ public static class GetIntellisenseEndpoint
                 Encoding.UTF8.GetBytes(tags),
                 "].forEach(value=>{if(!liquidTags.includes(value)){ liquidTags.push(value);}});"u8.ToArray()
             }).SelectMany(x => x).ToArray();
-
-        // Uses cross-processes hashing to enable revalidation after restart
-        StringValues eTag = $"\"{XxHash3.HashToUInt64(scriptBytes, 0)}\"";
-
-        context.Response.Headers.CacheControl = "no-cache";
-        context.Response.Headers.ETag = eTag;
-
-        // Assumes IfNoneMatch has only one ETag for performance
-        if (context.Request.Headers.IfNoneMatch.Equals(eTag))
-        {
-            return Results.StatusCode(304);
-        }
-
-        return Results.Bytes(scriptBytes, "application/javascript");
+        return scriptBytes;
     }
 }
