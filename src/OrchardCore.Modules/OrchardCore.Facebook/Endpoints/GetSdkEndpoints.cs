@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Caching.Memory;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.Settings;
 
@@ -32,7 +31,7 @@ public static class GetSdkEndpoints
         // Update this version when the init script changes to invalidate client caches
         private static readonly int ScriptVersion = 1;
 
-        public static async Task<IResult> HandleRequestAsync(string hash, HttpContext context, ISiteService siteService, IMemoryCache cache, IShellConfiguration shellConfiguration)
+        public static async Task<IResult> HandleRequestAsync(string hash, HttpContext context, ISiteService siteService, IMemoryCache cache)
         {
             var settings = await siteService.GetSettingsAsync<FacebookSettings>();
 
