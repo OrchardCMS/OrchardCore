@@ -1,4 +1,3 @@
-using System.Globalization;
 using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Localization;
@@ -49,8 +48,4 @@ public class NullStringLocalizer : IStringLocalizer
 
     /// <inheritdoc/>
     public LocalizedString GetString(string name, params object[] arguments) => this[name, arguments];
-
-    /// <inheritdoc/>
-    [Obsolete("This method will be removed in the upcoming ASP.NET Core major release.")]
-    public IStringLocalizer WithCulture(CultureInfo culture) => Instance;
 }

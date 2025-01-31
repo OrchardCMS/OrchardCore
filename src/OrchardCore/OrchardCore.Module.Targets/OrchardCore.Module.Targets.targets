@@ -87,16 +87,6 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="UpdateModuleAssets"
-          AfterTargets="CreateManifestResourceNames">
-    <ItemGroup>
-      <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.WithCulture)' == 'true'">
-        <WithCulture>false</WithCulture>
-        <Culture></Culture>
-      </EmbeddedResource>
-    </ItemGroup>
-  </Target>
-
   <Target Name="GetModuleProjectName" Returns="@(ModuleProjectName)">
     <ItemGroup>
       <ModuleProjectName Include="$(AssemblyName)" />
