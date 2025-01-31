@@ -28,7 +28,7 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
         manifest
             .DefineScript("fbsdk")
-            .SetCultures(GetSdkEndpoints.ValidFacebookCultures)
+            .SetCultures(GetSdkEndpoints.GetFetchScriptEndpoint.ValidFacebookCultures)
             .SetUrl($"~/OrchardCore.Facebook/sdk/{settings.GetHash()}/sdk.js");
 
         options.ResourceManifests.Add(manifest);
