@@ -74,6 +74,8 @@ public static class GetIntellisenseEndpoint
         var filters = string.Join(',', templateOptions.Value.Filters.Select(x => $"'{x.Key}'"));
         var tags = string.Join(',', liquidViewParser.RegisteredTags.Select(x => $"'{x.Key}'"));
 
+        // Note: Update ScriptVersion when the script changes
+        // Note: All injected values except those in url must be used in HashCacheBustingValues
         var scriptBytes = (new byte[][] {
                 "["u8.ToArray(),
                 Encoding.UTF8.GetBytes(filters),
