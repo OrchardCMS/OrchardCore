@@ -11,8 +11,6 @@ public sealed class Permissions : IPermissionProvider
 
     [Obsolete("This will be removed in a future release. Instead use 'ReCaptchaPermissions.ManageReCaptchaSettings'.")]
     public static readonly Permission ManageReCaptchaSettings = ReCaptchaPermissions.ManageReCaptchaSettings;
-
-
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
 
