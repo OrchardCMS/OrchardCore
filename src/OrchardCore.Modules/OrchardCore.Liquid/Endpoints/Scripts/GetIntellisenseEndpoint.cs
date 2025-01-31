@@ -17,8 +17,6 @@ public static class GetIntellisenseEndpoint
     // Update this version when the script changes to invalidate client caches
     private static readonly int ScriptVersion = 1;
 
-    private const string CacheKey = "LiquidIntellisenseScript";
-
     public static IEndpointRouteBuilder AddGetIntellisenseScriptEndpoint(this IEndpointRouteBuilder builder)
     {
         builder.MapGet("OrchardCore.Liquid/Scripts/{hash}/liquid-intellisense.js", HandleRequest)
@@ -51,7 +49,7 @@ public static class GetIntellisenseEndpoint
 
         // The cache entry will be busted whenever the filters or tags change, i.e. when some features are enabled or disabled.
 
-        var scriptBytes = memoryCache.GetOrCreate(CacheKey, entry =>
+        var scriptBytes = memoryCache.GetOrCreate("LiquidIntellisenseScript", entry =>
         {
             entry.SetSlidingExpiration(TimeSpan.FromHours(1));
 
