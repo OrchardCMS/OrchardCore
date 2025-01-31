@@ -75,7 +75,7 @@ public sealed class SecureMediaPermissions : IPermissionProvider
                 Permissions = new[]
                 {
                     MediaPermissions.ViewMedia,
-                    MediaPermissions.ViewOthersMedia
+                    MediaPermissions.ViewOthersMedia,
                 }
             },
             new PermissionStereotype
@@ -83,7 +83,7 @@ public sealed class SecureMediaPermissions : IPermissionProvider
                 Name = "Authenticated",
                 Permissions = new[]
                 {
-                    MediaPermissions.ViewOwnMedia
+                    MediaPermissions.ViewOwnMedia,
                 }
             },
             new PermissionStereotype
@@ -91,7 +91,7 @@ public sealed class SecureMediaPermissions : IPermissionProvider
                 Name = "Anonymous",
                 Permissions = new[]
                 {
-                    MediaPermissions.ViewMedia
+                    MediaPermissions.ViewMedia,
                 }
             }
         };
