@@ -36,7 +36,7 @@ public static class GetSdkEndpoints
         {
             return XxHash3.HashToUInt64(Encoding.UTF8.GetBytes(
                         String.Concat(
-                            ScriptVersion.ToString(),
+                            ScriptVersion.ToString(CultureInfo.InvariantCulture),
                             settings.AppId,
                             settings.Version,
                             settings.FBInitParams)));
@@ -47,7 +47,7 @@ public static class GetSdkEndpoints
             var settings = await siteService.GetSettingsAsync<FacebookSettings>();
 
             // Regenerate hash: Don't trust passed hash because it could cause cache issues
-            string expectedHash = HashCacheBustingValues(settings).ToString();
+            string expectedHash = HashCacheBustingValues(settings).ToString(CultureInfo.InvariantCulture);
 
             var scriptCacheKey = $"/OrchardCore.Facebook/sdk/{expectedHash}/init.js.bytes";
 
@@ -92,7 +92,7 @@ public static class GetSdkEndpoints
         {
             return XxHash3.HashToUInt64(Encoding.UTF8.GetBytes(
                         String.Concat(
-                            ScriptVersion.ToString(),
+                            ScriptVersion.ToString(CultureInfo.InvariantCulture),
                             settings.SdkJs)));
         }
 
@@ -101,7 +101,7 @@ public static class GetSdkEndpoints
             var settings = await siteService.GetSettingsAsync<FacebookSettings>();
 
             // Regenerate hash: Don't trust passed hash because it could cause cache issues
-            string expectedHash = HashCacheBustingValues(settings).ToString();
+            string expectedHash = HashCacheBustingValues(settings).ToString(CultureInfo.InvariantCulture);
 
             var scriptCacheKey = $"/OrchardCore.Facebook/sdk/{expectedHash}/sdk.{culture}.js.bytes";
 
