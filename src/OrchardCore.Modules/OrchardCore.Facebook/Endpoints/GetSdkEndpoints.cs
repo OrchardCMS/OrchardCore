@@ -40,7 +40,7 @@ public static class GetSdkEndpoints
                 return Results.NotFound();
             }
 
-            var scriptCacheKey = $"/OrchardCore.Facebook/sdk/fb.js/{hash}/init.js";
+            var scriptCacheKey = $"/OrchardCore.Facebook/sdk/{hash}/init.js";
 
             var scriptBytes = cache.GetOrCreate(scriptCacheKey, entry =>
             {
