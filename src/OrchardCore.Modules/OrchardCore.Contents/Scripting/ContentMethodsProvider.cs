@@ -36,22 +36,17 @@ public sealed class ContentMethodsProvider : IGlobalMethodProvider
                 var contentManager = serviceProvider.GetRequiredService<IContentManager>();
                 var contentItem = contentManager.NewAsync(contentType).GetAwaiter().GetResult();
                 contentItem.Merge(properties);
-                contentManager.UpdateAsync(contentItem).GetAwaiter().GetResult();
+
                 var result = contentManager.ValidateAsync(contentItem).GetAwaiter().GetResult();
 
                 if (result.Succeeded)
                 {
                     contentManager.CreateAsync(contentItem, publish == true ? VersionOptions.Published : VersionOptions.Draft).GetAwaiter().GetResult();
-                }
 
-                if (result.Succeeded)
-                {
                     return contentItem;
                 }
-                else
-                {
-                    throw new ValidationException(string.Join(", ", result.Errors));
-                }
+
+                throw new ValidationException(string.Join(", ", result.Errors));
             }),
         };
 
