@@ -1,11 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using YesSql;
 
-namespace OrchardCore;
-
+#pragma warning disable CA1050 // Declare types in namespaces
 public static class ContentRazorHelperExtensions
+#pragma warning restore CA1050 // Declare types in namespaces
 {
     /// <summary>
     /// Returns a content item id by its handle.
