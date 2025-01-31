@@ -74,15 +74,49 @@ public class EmailTask : TaskActivity<EmailTask>
         set => SetProperty(value);
     }
 
-    public WorkflowExpression<string> TextBody
+    [Obsolete("This property is deprecated, please use TextBody & HtmlBody instead.")]
+    public WorkflowExpression<string> Body
     {
         get => GetProperty(() => new WorkflowExpression<string>());
         set => SetProperty(value);
     }
 
+    [Obsolete("This property is deprecated, please use TextBody & HtmlBody instead.")]
+    public bool IsHtmlBody
+    {
+        get => GetProperty(() => true);
+        set => SetProperty(value);
+    }
+
+    public WorkflowExpression<string> TextBody
+    {
+        get
+        {
+            var textBody = GetProperty<WorkflowExpression<string>>();
+
+            if (textBody == null && !GetProperty(() => true, "IsHtmlBody"))
+            {
+                textBody = GetProperty(() => new WorkflowExpression<string>(), "Body");
+            }
+
+            return textBody ?? new WorkflowExpression<string>();
+        }
+        set => SetProperty(value);
+    }
+
     public WorkflowExpression<string> HtmlBody
     {
-        get => GetProperty(() => new WorkflowExpression<string>());
+        get
+        {
+            var htmlBody = GetProperty<WorkflowExpression<string>>();
+
+            if (htmlBody == null && GetProperty(() => true, "IsHtmlBody"))
+            {
+                htmlBody = GetProperty(() => new WorkflowExpression<string>(), "Body");
+            }
+
+            return htmlBody ?? new WorkflowExpression<string>();
+        }
         set => SetProperty(value);
     }
 
