@@ -42,16 +42,14 @@ public static class GetSdkEndpoints
                             settings.FBInitParams)));
         }
 
-        public static async Task<IResult> HandleRequestAsync(string hash, HttpContext context, ISiteService siteService, IMemoryCache cache)
+        public static async Task<IResult> HandleRequestAsync(HttpContext context, ISiteService siteService, IMemoryCache cache)
         {
             var settings = await siteService.GetSettingsAsync<FacebookSettings>();
 
-            if (hash != settings.GetHash().ToString())
-            {
-                return Results.NotFound();
-            }
+            // Regenerate hash: Don't trust passed hash because it could cause cache issues
+            string expectedHash = HashCacheBustingValues(settings).ToString();
 
-            var scriptCacheKey = $"/OrchardCore.Facebook/sdk/{hash}/init.js";
+            var scriptCacheKey = $"/OrchardCore.Facebook/sdk/{expectedHash}/init.js";
 
             var scriptBytes = cache.GetOrCreate(scriptCacheKey, entry =>
             {
@@ -98,16 +96,14 @@ public static class GetSdkEndpoints
                             settings.SdkJs)));
         }
 
-        public static async Task<IResult> HandleRequestAsync(string hash, string culture, HttpContext context, IMemoryCache cache, UrlEncoder urlEncoder, ISiteService siteService)
+        public static async Task<IResult> HandleRequestAsync(string culture, HttpContext context, IMemoryCache cache, UrlEncoder urlEncoder, ISiteService siteService)
         {
             var settings = await siteService.GetSettingsAsync<FacebookSettings>();
 
-            if (hash != settings.GetHash().ToString())
-            {
-                return Results.NotFound();
-            }
+            // Regenerate hash: Don't trust passed hash because it could cause cache issues
+            string expectedHash = HashCacheBustingValues(settings).ToString();
 
-            var scriptCacheKey = $"/OrchardCore.Facebook/sdk/{hash}/sdk.{culture}.js";
+            var scriptCacheKey = $"/OrchardCore.Facebook/sdk/{expectedHash}/sdk.{culture}.js";
 
             var scriptBytes = await cache.GetOrCreateAsync(scriptCacheKey, entry =>
             {
