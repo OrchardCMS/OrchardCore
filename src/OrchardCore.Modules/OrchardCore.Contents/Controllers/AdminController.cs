@@ -484,7 +484,6 @@ public sealed class AdminController : Controller, IUpdateModel
                 await _notifier.ErrorAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
                 ? H["Your content could not be published."]
                 : H["Your {0} could not be published.", typeDefinition.DisplayName]);
-
             }
         });
     }
