@@ -96,6 +96,7 @@
       </EmbeddedResource>
     </ItemGroup>
   </Target>
+
   <Target Name="GetModuleProjectName" Returns="@(ModuleProjectName)">
     <ItemGroup>
       <ModuleProjectName Include="$(AssemblyName)" />
