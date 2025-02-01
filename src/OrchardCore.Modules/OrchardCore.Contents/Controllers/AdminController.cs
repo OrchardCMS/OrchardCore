@@ -469,13 +469,23 @@ public sealed class AdminController : Controller, IUpdateModel
 
         return await EditPOST(contentItemId, returnUrl, stayOnSamePage, async contentItem =>
         {
-            await _contentManager.PublishAsync(contentItem);
+            var published = await _contentManager.PublishAsync(contentItem);
 
             var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-            await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+            if (published)
+            {
+                await _notifier.SuccessAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
                 ? H["Your content has been published."]
                 : H["Your {0} has been published.", typeDefinition.DisplayName]);
+            }
+            else
+            {
+                await _notifier.ErrorAsync(string.IsNullOrWhiteSpace(typeDefinition?.DisplayName)
+                ? H["Your content could not be published."]
+                : H["Your {0} could not be published.", typeDefinition.DisplayName]);
+
+            }
         });
     }
 
@@ -585,17 +595,32 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        await _contentManager.PublishAsync(contentItem);
+        var published = await _contentManager.PublishAsync(contentItem);
 
         var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-        if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+        if (published)
         {
-            await _notifier.SuccessAsync(H["That content has been published."]);
+            if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+            {
+                await _notifier.SuccessAsync(H["That content has been published."]);
+            }
+            else
+            {
+                await _notifier.SuccessAsync(H["That {0} has been published.", typeDefinition.DisplayName]);
+            }
         }
         else
         {
-            await _notifier.SuccessAsync(H["That {0} has been published.", typeDefinition.DisplayName]);
+            if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+            {
+                await _notifier.ErrorAsync(H["That content could not be published."]);
+            }
+            else
+            {
+                await _notifier.ErrorAsync(H["That {0} could not be published.", typeDefinition.DisplayName]);
+            }
+
         }
 
         return Url.IsLocalUrl(returnUrl)
@@ -618,17 +643,32 @@ public sealed class AdminController : Controller, IUpdateModel
             return Forbid();
         }
 
-        await _contentManager.UnpublishAsync(contentItem);
+        var unpublished = await _contentManager.UnpublishAsync(contentItem);
 
         var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-        if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+        if (unpublished)
         {
-            await _notifier.SuccessAsync(H["The content has been unpublished."]);
+            if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+            {
+                await _notifier.SuccessAsync(H["The content has been unpublished."]);
+            }
+            else
+            {
+                await _notifier.SuccessAsync(H["The {0} has been unpublished.", typeDefinition.DisplayName]);
+            }
         }
         else
         {
-            await _notifier.SuccessAsync(H["The {0} has been unpublished.", typeDefinition.DisplayName]);
+            if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+            {
+                await _notifier.ErrorAsync(H["The content could not be unpublished."]);
+            }
+            else
+            {
+                await _notifier.ErrorAsync(H["The {0} could not be unpublished.", typeDefinition.DisplayName]);
+            }
+
         }
 
         return Url.IsLocalUrl(returnUrl)

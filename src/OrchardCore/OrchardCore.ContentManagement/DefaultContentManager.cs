@@ -361,13 +361,13 @@ public class DefaultContentManager : IContentManager
         await ReversedHandlers.InvokeAsync((handler, context) => handler.DraftSavedAsync(context), context, _logger);
     }
 
-    public async Task PublishAsync(ContentItem contentItem)
+    public async Task<bool> PublishAsync(ContentItem contentItem)
     {
         ArgumentNullException.ThrowIfNull(contentItem);
 
         if (contentItem.Published)
         {
-            return;
+            return true;
         }
 
         // Create a context for the item and it's previous published record
@@ -385,7 +385,7 @@ public class DefaultContentManager : IContentManager
 
         if (context.Cancel)
         {
-            return;
+            return false;
         }
 
         if (previous != null)
@@ -398,9 +398,11 @@ public class DefaultContentManager : IContentManager
         await _session.SaveAsync(contentItem, checkConcurrency: true);
 
         await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), context, _logger);
+
+        return true;
     }
 
-    public async Task UnpublishAsync(ContentItem contentItem)
+    public async Task<bool> UnpublishAsync(ContentItem contentItem)
     {
         ArgumentNullException.ThrowIfNull(contentItem);
 
@@ -425,7 +427,7 @@ public class DefaultContentManager : IContentManager
         if (publishedItem == null)
         {
             // No published version exists. no work to perform.
-            return;
+            return true;
         }
 
         // Create a context for the item. the publishing version is null in this case
@@ -438,11 +440,18 @@ public class DefaultContentManager : IContentManager
 
         await Handlers.InvokeAsync((handler, context) => handler.UnpublishingAsync(context), context, _logger);
 
+        if (context.Cancel)
+        {
+            return false;
+        }
+
         publishedItem.Published = false;
         publishedItem.ModifiedUtc = _clock.UtcNow;
         await _session.SaveAsync(publishedItem, checkConcurrency: true);
 
         await ReversedHandlers.InvokeAsync((handler, context) => handler.UnpublishedAsync(context), context, _logger);
+
+        return true;
     }
 
     protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem)
