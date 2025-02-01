@@ -49,7 +49,7 @@ public sealed class ServerConfigurationController : Controller
     [Admin("OpenId/ServerConfiguration", "OpenIdServerConfiguration")]
     public async Task<IActionResult> Index()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageServerSettings))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageServerSettings))
         {
             return Forbid();
         }
@@ -64,7 +64,7 @@ public sealed class ServerConfigurationController : Controller
     [ActionName(nameof(Index))]
     public async Task<IActionResult> IndexPost()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageServerSettings))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageServerSettings))
         {
             return Forbid();
         }

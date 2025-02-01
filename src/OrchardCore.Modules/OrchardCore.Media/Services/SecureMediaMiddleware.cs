@@ -40,7 +40,7 @@ public class SecureMediaMiddleware
             }
         }
 
-        if (await authorizationService.AuthorizeAsync(context.User, SecureMediaPermissions.ViewMedia, (object)subPath.ToString()))
+        if (await authorizationService.AuthorizeAsync(context.User, MediaPermissions.ViewMedia, (object)subPath.ToString()))
         {
             await _next(context);
         }

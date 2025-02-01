@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -82,9 +83,10 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
 
                             if (graphType is IFilterInputObjectGraphType curInputGraphType)
                             {
-                                if (fieldProvider.HasFieldIndex(field))
+                                var index = fieldProvider.GetFieldIndex(field);
+                                if (index != null)
                                 {
-                                    curInputGraphType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description);
+                                    curInputGraphType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description, index.AliasName, part.Name, field.Name);
                                 }
                             }
                             else if (graphType is IObjectGraphType curObjectGraphType)
@@ -130,9 +132,10 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
 
                                 if (partContentItemType is IFilterInputObjectGraphType partInputContentItemType)
                                 {
-                                    if (fieldProvider.HasFieldIndex(field))
+                                    var index = fieldProvider.GetFieldIndex(field);
+                                    if (index != null)
                                     {
-                                        partInputContentItemType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description);
+                                        partInputContentItemType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description, index.AliasName, part.Name, field.Name);
                                     }
                                 }
                                 else if (partContentItemType is IObjectGraphType partContentItemObjectType)
@@ -153,7 +156,7 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
             {
                 if (graphType is IFilterInputObjectGraphType curInputGraphType)
                 {
-                    curInputGraphType.AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description);
+                    curInputGraphType.AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description, null, null, null);
                 }
                 else if (graphType is IObjectGraphType curObjectGraphType)
                 {

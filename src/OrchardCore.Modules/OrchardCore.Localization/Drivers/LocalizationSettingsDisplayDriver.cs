@@ -58,7 +58,7 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCultures))
+        if (!await _authorizationService.AuthorizeAsync(user, LocalizationPermissions.ManageCultures))
         {
             return null;
         }
@@ -91,7 +91,7 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCultures))
+        if (!await _authorizationService.AuthorizeAsync(user, LocalizationPermissions.ManageCultures))
         {
             return null;
         }

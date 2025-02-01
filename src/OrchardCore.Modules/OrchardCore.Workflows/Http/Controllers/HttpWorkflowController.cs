@@ -52,7 +52,7 @@ public sealed class HttpWorkflowController : Controller
     [Admin]
     public async Task<IActionResult> GenerateUrl(long workflowTypeId, string activityId, int tokenLifeSpan)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
             return Forbid();
         }

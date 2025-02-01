@@ -1,4 +1,5 @@
-﻿using OrchardCore.Search.Elasticsearch.Core.Services;
+using OrchardCore.Search.Elasticsearch.Core;
+using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Search.Elasticsearch;
@@ -16,8 +17,8 @@ public sealed class PermissionProvider : IPermissionProvider
     {
         var permissions = new List<Permission>()
         {
-            Permissions.ManageElasticIndexes,
-            Permissions.QueryElasticApi,
+            ElasticsearchPermissions.ManageElasticIndexes,
+            ElasticsearchPermissions.QueryElasticApi,
         };
 
         var elasticIndexSettings = await _elasticIndexSettingsService.GetSettingsAsync();
@@ -37,7 +38,7 @@ public sealed class PermissionProvider : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
-                Permissions.ManageElasticIndexes,
+                ElasticsearchPermissions.ManageElasticIndexes,
             ],
         },
         new PermissionStereotype
@@ -45,7 +46,7 @@ public sealed class PermissionProvider : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Editor,
             Permissions =
             [
-                Permissions.QueryElasticApi,
+                ElasticsearchPermissions.QueryElasticApi,
             ],
         },
     ];
