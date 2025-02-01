@@ -666,7 +666,6 @@ public sealed class AdminController : Controller, IUpdateModel
             {
                 await _notifier.ErrorAsync(H["The {0} could not be unpublished.", typeDefinition.DisplayName]);
             }
-
         }
 
         return Url.IsLocalUrl(returnUrl)
