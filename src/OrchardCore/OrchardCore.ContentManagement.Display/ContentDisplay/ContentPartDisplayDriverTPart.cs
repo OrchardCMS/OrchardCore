@@ -2,7 +2,6 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -251,14 +250,6 @@ public abstract class ContentPartDisplayDriver<TPart> : DisplayDriverBase, ICont
 
     public virtual IDisplayResult Display(TPart part, BuildPartDisplayContext context)
     {
-#pragma warning disable CS0618 // Type or member is obsolete
-        return Display(part);
-#pragma warning restore CS0618 // Type or member is obsolete
-    }
-
-    [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the DisplayAsync(TPart part, BuildPartDisplayContext context) or Display(TPart part, BuildPartDisplayContext context) method.")]
-    public virtual IDisplayResult Display(TPart part)
-    {
         return null;
     }
 
@@ -269,26 +260,10 @@ public abstract class ContentPartDisplayDriver<TPart> : DisplayDriverBase, ICont
 
     public virtual IDisplayResult Edit(TPart part, BuildPartEditorContext context)
     {
-#pragma warning disable CS0618 // Type or member is obsolete
-        return Edit(part);
-#pragma warning restore CS0618 // Type or member is obsolete
-    }
-
-    [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the EditAsync(TPart part, BuildPartEditorContext context) or Edit(TPart part, BuildPartEditorContext context) method.")]
-    public virtual IDisplayResult Edit(TPart part)
-    {
         return null;
     }
 
     public virtual Task<IDisplayResult> UpdateAsync(TPart part, UpdatePartEditorContext context)
-    {
-#pragma warning disable CS0618 // Type or member is obsolete
-        return UpdateAsync(part, context.Updater);
-#pragma warning restore CS0618 // Type or member is obsolete
-    }
-
-    [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the UpdateAsync(TPart part, UpdatePartEditorContext context) method.")]
-    public virtual Task<IDisplayResult> UpdateAsync(TPart part, IUpdateModel updater)
     {
         return Task.FromResult<IDisplayResult>(null);
     }
