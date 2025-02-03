@@ -11,5 +11,6 @@ export default defineConfig({
   plugins: [vue()],
   build: {
     outDir: path.resolve(__dirname, '../wwwroot/Scripts/Media2/'),
+    watch: {}, // We can add a build watcher here.
   },
 })
