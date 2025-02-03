@@ -126,6 +126,17 @@ const buildProcesses = groups
           name: group.name ?? "WEBPACK",
           command: `node ${path.join(__dirname, "webpack.mjs")} ${task} ${encodedGroup}`,
         };
+      case "vite":
+        // parcel only handles build and watch
+        if (!(task === "build" || task === "watch")) {
+          console.log(chalk.yellow(`Vite action does not handle build type: ${task} for ${group.name}`));
+          break;
+        }
+        return {
+          order: group.order,
+          name: group.name ?? "VITE",
+          command: `node ${path.join(__dirname, "vite.mjs")} ${task} ${encodedGroup}`,
+        };
       case "run":
         const script = group?.scripts[task]; //get's the script that matches the current type of command (build/watch or others)
         if (script) {

@@ -22,8 +22,8 @@
     ".scripts/assets-build-tool",
     "src/Frontend/",
     "src/OrchardCore.Modules/*",
-    "src/OrchardCore.Modules/*/Assets/",
-    "src/OrchardCore.Themes/*/Assets/"
+    "src/OrchardCore.Modules/*/Assets/**",
+    "src/OrchardCore.Themes/*/Assets/**"
   ],
   "devDependencies": {
     "@babel/core": "^7.22.11",

@@ -14,6 +14,9 @@ if (action === "build") {
     compiler.close((closeErr) => {});
   });
 }
+
+// TODO: add watcher
+
 // watch webpack
 /* const watching = compiler.watch(
   {
