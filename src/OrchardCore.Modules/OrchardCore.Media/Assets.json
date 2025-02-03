@@ -1,0 +1,8 @@
+[
+  {
+    "action": "vite",
+    "name": "my-vue-app",
+    "source": "Assets/vite/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]
