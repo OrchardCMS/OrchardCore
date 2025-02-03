@@ -34,7 +34,7 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageValidationSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageValidationSettings))
         {
             return null;
         }
@@ -55,7 +55,7 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageValidationSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageValidationSettings))
         {
             return null;
         }

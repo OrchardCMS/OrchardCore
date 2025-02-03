@@ -51,7 +51,7 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
     public override async Task<IDisplayResult> EditAsync(ISite site, OpenIdClientSettings settings, BuildEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageClientSettings))
         {
             return null;
         }
@@ -104,7 +104,7 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
     public override async Task<IDisplayResult> UpdateAsync(ISite site, OpenIdClientSettings settings, UpdateEditorContext context)
     {
         var user = _httpContextAccessor.HttpContext?.User;
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageClientSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageClientSettings))
         {
             return null;
         }

@@ -21,7 +21,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .AddClass("workflows")
                     .Id("workflows")
                     .Action("Index", "WorkflowType", "OrchardCore.Workflows")
-                    .Permission(Permissions.ManageWorkflows)
+                    .Permission(WorkflowsPermissions.ManageWorkflows)
                     .LocalNav()
                 );
 
@@ -34,7 +34,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                     .AddClass("workflows")
                     .Id("workflows")
                     .Action("Index", "WorkflowType", "OrchardCore.Workflows")
-                    .Permission(Permissions.ManageWorkflows)
+                    .Permission(WorkflowsPermissions.ManageWorkflows)
                     .LocalNav()
                 )
             );

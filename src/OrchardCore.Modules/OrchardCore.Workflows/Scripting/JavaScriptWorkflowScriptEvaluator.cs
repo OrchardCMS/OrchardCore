@@ -30,13 +30,24 @@ public class JavaScriptWorkflowScriptEvaluator : IWorkflowScriptEvaluator
             return default;
         }
 
-        var workflowType = workflowContext.WorkflowType;
-        var directive = $"js:{expression}";
-        var expressionContext = new WorkflowExecutionScriptContext(workflowContext);
+        try
+        {
+            var workflowType = workflowContext.WorkflowType;
+            var directive = $"js:{expression}";
+            var expressionContext = new WorkflowExecutionScriptContext(workflowContext);
 
-        await _workflowContextHandlers.InvokeAsync((h, expressionContext) => h.EvaluatingScriptAsync(expressionContext), expressionContext, _logger);
+            await _workflowContextHandlers.InvokeAsync((h, expressionContext) => h.EvaluatingScriptAsync(expressionContext), expressionContext, _logger);
 
-        var methodProviders = scopedMethodProviders.Concat(expressionContext.ScopedMethodProviders);
-        return (T)_scriptingManager.Evaluate(directive, null, null, methodProviders);
+            var methodProviders = scopedMethodProviders.Concat(expressionContext.ScopedMethodProviders);
+        
+            // Some types cannot be cast (e.g., null to bool), so we need to catch the exception and return the default value.
+            return (T)_scriptingManager.Evaluate(directive, null, null, methodProviders);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while evaluating the expression: {Expression}", expression.Expression);
+        }
+
+        return default;
     }
 }

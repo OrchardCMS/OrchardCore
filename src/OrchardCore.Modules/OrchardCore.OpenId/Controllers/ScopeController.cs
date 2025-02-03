@@ -48,7 +48,7 @@ public sealed class ScopeController : Controller
     [Admin("OpenId/Scope", "OpenIdScope")]
     public async Task<ActionResult> Index(PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageScopes))
         {
             return Forbid();
         }
@@ -78,7 +78,7 @@ public sealed class ScopeController : Controller
     [HttpGet]
     public async Task<IActionResult> Create(string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageScopes))
         {
             return Forbid();
         }
@@ -93,7 +93,7 @@ public sealed class ScopeController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(CreateOpenIdScopeViewModel model, string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageScopes))
         {
             return Forbid();
         }
@@ -143,7 +143,7 @@ public sealed class ScopeController : Controller
 
     public async Task<IActionResult> Edit(string id, string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageScopes))
         {
             return Forbid();
         }
@@ -176,7 +176,7 @@ public sealed class ScopeController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(EditOpenIdScopeViewModel model, string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageScopes))
         {
             return Forbid();
         }
@@ -241,7 +241,7 @@ public sealed class ScopeController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageScopes))
         {
             return Forbid();
         }

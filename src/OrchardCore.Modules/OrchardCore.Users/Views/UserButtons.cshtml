@@ -6,12 +6,12 @@
     var isCurrentUser = Model.User.UserName == User.Identity.Name;
 }
 
-@if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, Model.User))
+@if (await AuthorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, Model.User))
 {
     <a asp-action="Edit" asp-route-id="@Model.User.UserId" class="btn btn-primary btn-sm">@T["Edit"]</a>
 }
 
-@if (!isCurrentUser && await AuthorizationService.AuthorizeAsync(User, CommonPermissions.ViewUsers, Model.User))
+@if (!isCurrentUser && await AuthorizationService.AuthorizeAsync(User, UsersPermissions.ViewUsers, Model.User))
 {
     <a asp-action="Display" asp-route-id="@Model.User.UserId" class="btn btn-success btn-sm">@T["View"]</a>
 }

@@ -5,13 +5,13 @@ namespace OrchardCore.Search.AzureAI;
 
 public static class AzureAISearchIndexPermissionHelper
 {
-    public static readonly Permission ManageAzureAISearchIndexes =
-        new("ManageAzureAISearchIndexes", "Manage Azure AI Search Indexes");
-
     private static readonly Permission _indexPermissionTemplate =
-        new("QueryAzureAISearchIndex_{0}", "Query Azure AI Search '{0}' Index", [ManageAzureAISearchIndexes]);
+        new("QueryAzureAISearchIndex_{0}", "Query Azure AI Search '{0}' Index", [AzureAISearchPermissions.ManageAzureAISearchIndexes]);
 
     private static readonly ConcurrentDictionary<string, Permission> _permissions = [];
+
+    [Obsolete("This will be removed in a future release. Instead use 'AzureAISearchPermissions.ManageAzureAISearchIndexes'.")]
+    public static readonly Permission ManageAzureAISearchIndexes = AzureAISearchPermissions.ManageAzureAISearchIndexes;
 
     public static Permission GetPermission(string indexName)
     {
