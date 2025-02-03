@@ -27,6 +27,7 @@
     "@swc/core": "1.10.4",
     "@vitejs/plugin-vue": "^5.2.1",
     "chalk": "^5.2.0",
+    "chokidar": "^4.0.3",
     "concurrently": "9.1.2",
     "fs-extra": "^11.2.0",
     "glob": "^11.0.0",
@@ -42,10 +43,8 @@
     "sass": "^1.83.1",
     "vite": "^6.0.11",
     "vue": "^3.5.13",
-    "vue-hot-reload-api": "^2.3.4"
-  },
-  "devDependencies": {
-    "chokidar": "^4.0.3"
+    "vue-hot-reload-api": "^2.3.4",
+    "webpack": "^5.97.1"
   },
   "eslintConfig": {
     "parserOptions": {
