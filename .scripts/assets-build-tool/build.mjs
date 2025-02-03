@@ -64,7 +64,7 @@ if (task === "clean") {
   process.exit(returnCode);
 }
 
-if (task === "build" || task === "watch") {
+if (task === "build" || task === "watch" || task === "host") {
   // Group the parcel groups by bundle
   const parcelGroupsByBundle = _.groupBy(
     groups.filter((g) => g.bundleEntrypoint),
@@ -128,7 +128,7 @@ const buildProcesses = groups
         };
       case "vite":
         // parcel only handles build and watch
-        if (!(task === "build" || task === "watch")) {
+        if (!(task === "build" || task === "watch" || task === "host")) {
           console.log(chalk.yellow(`Vite action does not handle build type: ${task} for ${group.name}`));
           break;
         }

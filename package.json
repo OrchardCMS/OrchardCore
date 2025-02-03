@@ -12,6 +12,7 @@
     "update-project": "node .scripts/project.js update",
     "cleanup": "node .scripts/cleanup.js",
     "build": "asset-bundler build",
+    "host": "asset-bundler host",
     "copy": "asset-bundler copy",
     "watch": "asset-bundler watch",
     "dry-run": "asset-bundler dry-run",

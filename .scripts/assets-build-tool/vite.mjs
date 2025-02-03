@@ -4,9 +4,15 @@ import JSON5 from "json5";
 async function runVite(command, assetConfig) {
   if (command === "build") {
     await build({
-      root: assetConfig.source
+      root: assetConfig.source,
     });
-  } else if (command === "watch") { // Could be changed to "serve" command
+  } else if (command === "watch") {
+    await build({
+      root: assetConfig.source,
+      build: { watch: {} },
+    });
+  } else if (command === "host") {
+    // Could be changed to "serve" command
     const server = await createServer({
       root: assetConfig.source,
     });
