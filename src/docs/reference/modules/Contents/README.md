@@ -8,12 +8,12 @@ Attach this part to your content items to edit the common properties like `Creat
 
 The following properties are available on `CommonPart`:
 
-| Name | Type | Description |
-| -----| ---- |------------ |
-| `CreatedUtc` | `DateTime` | The HTML content in the body. |
-| `Owner` | `string` | The HTML content in the body. |
-| `Content` | | The raw content of the part. |
-| `ContentItem` | | The content item containing this part. |
+| Name          | Type       | Description                            |
+|---------------|------------|----------------------------------------|
+| `CreatedUtc`  | `DateTime` | The HTML content in the body.          |
+| `Owner`       | `string`   | The HTML content in the body.          |
+| `Content`     |            | The raw content of the part.           |
+| `ContentItem` |            | The content item containing this part. |
 
 ## Liquid
 
@@ -98,14 +98,14 @@ Well known properties include
 
 The following methods are available from the Razor helper.
 
-| Method | Parameters | Description |
-| --------- | ---- |------------ |
-| `GetContentItemIdByHandleAsync` | `string name` | Returns the content item id from its handle. Ex: `alias:carousel`, `slug:myblog/my-blog-post` |
-| `GetContentItemByHandleAsync` | `string handle, bool latest = false` | Loads a content item from its handle, seeking the latest version or not. |
-| `GetContentItemByIdAsync` | `string contentItemId, bool latest = false` | Loads a content item from its id, seeking the latest version or not. |
-| `GetContentItemsByIdAsync` | `IEnumerable<string> contentItemIds, bool latest = false` | Loads a list of content items by ids, seeking the latest version or not. |
-| `GetContentItemByVersionIdAsync` | `string contentItemVersionId` | Loads a content item from its version id. |
-| `ConsoleLog` | `object content` | Logs content to the browser console |
+| Method                           | Parameters                                                | Description                                                                                   |
+|----------------------------------|-----------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| `GetContentItemIdByHandleAsync`  | `string name`                                             | Returns the content item id from its handle. Ex: `alias:carousel`, `slug:myblog/my-blog-post` |
+| `GetContentItemByHandleAsync`    | `string handle, bool latest = false`                      | Loads a content item from its handle, seeking the latest version or not.                      |
+| `GetContentItemByIdAsync`        | `string contentItemId, bool latest = false`               | Loads a content item from its id, seeking the latest version or not.                          |
+| `GetContentItemsByIdAsync`       | `IEnumerable<string> contentItemIds, bool latest = false` | Loads a list of content items by ids, seeking the latest version or not.                      |
+| `GetContentItemByVersionIdAsync` | `string contentItemVersionId`                             | Loads a content item from its version id.                                                     |
+| `ConsoleLog`                     | `object content`                                          | Logs content to the browser console                                                           |
 
 > The Razor Helper is accessible on the `Orchard` property if the view is using Orchard Core's Razor base class, or by injecting `OrchardCore.IOrchardHelper` in all other cases.
 
@@ -157,15 +157,15 @@ It is usually better to **create a dedicated user for performing API calls**, ma
 
 ##### Parameters
 
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| contentItemId | path | The ID of the Content Item to be retrieved. | Yes | string |
+| Name          | Located in | Description                                 | Required | Schema |
+|---------------|------------|---------------------------------------------|----------|--------|
+| contentItemId | path       | The ID of the Content Item to be retrieved. | Yes      | string |
 
 ##### Responses
 
 | Code | Description |
-| ---- | ----------- |
-| 200 | Success |
+|------|-------------|
+| 200  | Success     |
 
 ***
 
@@ -173,9 +173,9 @@ It is usually better to **create a dedicated user for performing API calls**, ma
 
 ##### Parameters
 
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-|  | payload | The content item model to be updated | Yes | Json |
+| Name | Located in | Description                          | Required | Schema |
+|------|------------|--------------------------------------|----------|--------|
+|      | payload    | The content item model to be updated | Yes      | Json   |
 
 ##### Body payload example
 
@@ -202,8 +202,8 @@ It is usually better to **create a dedicated user for performing API calls**, ma
 ##### Responses
 
 | Code | Description |
-| ---- | ----------- |
-| 200 | Success |
+|------|-------------|
+| 200  | Success     |
 
 ***
 
@@ -211,15 +211,15 @@ It is usually better to **create a dedicated user for performing API calls**, ma
 
 ##### Parameters
 
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| contentItemId | path | The ID of the Content Item to be deleted. | Yes | string |
+| Name          | Located in | Description                               | Required | Schema |
+|---------------|------------|-------------------------------------------|----------|--------|
+| contentItemId | path       | The ID of the Content Item to be deleted. | Yes      | string |
 
 ##### Responses
 
 | Code | Description |
-| ---- | ----------- |
-| 200 | Success |
+|------|-------------|
+| 200  | Success     |
 
 ## GraphQL
 
@@ -259,19 +259,19 @@ query {
 
 These fields are available at the content item level:
 
-| Property |
-| -------- |
-| `contentItemId` |
+| Property               |
+|------------------------|
+| `contentItemId`        |
 | `contentItemVersionId` |
-| `contentType` |
-| `displayText` |
-| `published` |
-| `latest` |
-| `modifiedUtc` |
-| `publishedUtc` |
-| `createdUtc` |
-| `owner` |
-| `author` |
+| `contentType`          |
+| `displayText`          |
+| `published`            |
+| `latest`               |
+| `modifiedUtc`          |
+| `publishedUtc`         |
+| `createdUtc`           |
+| `owner`                |
+| `author`               |
 
 In addition, all the content parts can also be retrieved like this:
 
