@@ -1,13 +1,13 @@
 using System.Collections.Immutable;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Autoroute.Core.Indexes;
-using OrchardCore.Autoroute.Core.Model;
+using OrchardCore.Autoroute.Indexes;
+using OrchardCore.Autoroute.Model;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Documents;
 using OrchardCore.Environment.Shell.Scope;
 using YesSql;
 
-namespace OrchardCore.Autoroute.Core.Services;
+namespace OrchardCore.Autoroute.Services;
 
 public class AutorouteEntries : IAutorouteEntries
 {

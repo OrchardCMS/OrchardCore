@@ -1,4 +1,4 @@
-using OrchardCore.Autoroute.Core.Indexes;
+using OrchardCore.Autoroute.Indexes;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 
 namespace OrchardCore.Autoroute.GraphQL;
