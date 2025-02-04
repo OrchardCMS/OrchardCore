@@ -56,14 +56,4 @@ public abstract class SiteDisplayDriver<TSettings> : SectionDisplayDriverBase<IS
 
     protected sealed override string PropertyName
         => base.PropertyName;
-
-#pragma warning disable CS0672 // Member overrides obsolete member
-#pragma warning disable CS0618 // Type or member is obsolete
-    public sealed override IDisplayResult Display(ISite site)
-        => base.Display(site);
-
-    public sealed override IDisplayResult Edit(ISite site)
-        => base.Edit(site);
-#pragma warning restore CS0672 // Member overrides obsolete member
-#pragma warning restore CS0618 // Type or member is obsolete
 }
