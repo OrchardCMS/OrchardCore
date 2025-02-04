@@ -9,8 +9,11 @@ import buildConfig from "./config.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const parcelConfig = path.join(__dirname, ".parcelrc");
+const action = process.argv[2];
+const config = JSON5.parse(Buffer.from(process.argv[3], "base64").toString("utf-8"));
+const isWatching = action === "watch";
+const isHosting = action === "host";
 
 async function runParcel(command, assetConfig) {
   //console.log(`parcel ${command}`, assetConfig);
@@ -29,9 +32,7 @@ async function runParcel(command, assetConfig) {
     ...options,
   });
 
-  const isWatching = command === "watch";
-
-  if (isWatching) {
+  if (isWatching || isHosting) {
     const parcelCacheFolder = options.cacheDir;
     fs.rmSync(parcelCacheFolder, { recursive: true, force: true });
 
@@ -87,7 +88,8 @@ function buildParcelOptions(command, assetConfig) {
     cacheDir: path.join(".parcel-cache", assetConfig.name + "-" + hashCode(JSON.stringify(assetConfig))),
     mode,
     shouldContentHash: mode === "production",
-    serveOptions: false,
+    serveOptions: isHosting ? { port: 3000 } : false,
+    hmrOptions: isHosting ? { port: 3000 } : false,
     shouldAutoInstall: false,
     logLevel: null,
     shouldProfile: false,
@@ -121,9 +123,6 @@ function buildParcelOptions(command, assetConfig) {
 }
 
 // run the process
-const action = process.argv[2];
-const config = JSON5.parse(Buffer.from(process.argv[3], "base64").toString("utf-8"));
-
 await runParcel(action, config);
 
 function hashCode(str) {

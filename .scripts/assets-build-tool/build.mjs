@@ -106,7 +106,7 @@ const buildProcesses = groups
     switch (group.action) {
       case "parcel":
         // parcel only handles build and watch
-        if (!(task === "build" || task === "watch")) {
+        if (!(task === "build" || task === "watch" || task === "host")) {
           console.log(chalk.yellow(`Parcel action does not handle build type: ${task} for ${group.name}`));
           break;
         }
