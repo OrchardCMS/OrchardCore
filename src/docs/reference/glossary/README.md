@@ -102,7 +102,7 @@ See [Liquid](../modules/Liquid/README.md)
 ### Alternate
 
 An override of content type or part or field using a file in a Theme.  
-See [Alternates](../modules/Templates//README.md#shape-differentiators)
+See [Alternates](../modules/Templates/README.md#shape-differentiators)
 
 ### Placement
 
