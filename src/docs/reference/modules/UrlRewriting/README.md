@@ -6,9 +6,9 @@ Once enabled, you can manage your rewrite rules by navigating to **Configuration
 
 ## Available Rule Sources
 
-| Rule Type     | Description     | Example     |
-|---------------|---------------|---------------|
-| **Redirect Rule** | The **Redirect Rule** is utilized to send users from one URL to another, which is particularly beneficial for maintaining SEO integrity when URLs change. | Permanently redirect users from `/about-us` to `/about`. |
+| Rule Type         | Description                                                                                                                                                         | Example                                                    |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|
+| **Redirect Rule** | The **Redirect Rule** is utilized to send users from one URL to another, which is particularly beneficial for maintaining SEO integrity when URLs change.           | Permanently redirect users from `/about-us` to `/about`.   |
 | **Rewrite Rule**  | The **Rewrite Rule** allows you to modify the incoming request URL without changing the URL displayed in the browser's address bar, aiding in content organization. | Change requests for media files from `/img/` to `/media/`. |
 
 ## Creating Additional Rule Sources

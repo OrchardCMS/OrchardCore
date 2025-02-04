@@ -6,10 +6,10 @@ This feature provides SMS providers for sending SMS through [Azure Communication
 
 Enabling this feature will introduce a new tab labeled **Azure Communication Services** within the SMS settings, allowing you to configure the service. To access these settings from the admin dashboard, navigate to `Configuration` → `Settings` → `Sms` and click on the **Azure Communication Services** tab. The following are the available settings.
 
-| Provider | Description |
-| --- | --- |
-| `Azure` | This provider enables tenant-specific Azure Communication Services for sending SMS. Configure the SMS settings to activate this provider. |
-| `DefaultAzure` | This provider sets default Azure Communication Service configurations for all tenants.|
+| Provider       | Description                                                                                                                               |
+|----------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| `Azure`        | This provider enables tenant-specific Azure Communication Services for sending SMS. Configure the SMS settings to activate this provider. |
+| `DefaultAzure` | This provider sets default Azure Communication Service configurations for all tenants.                                                    |
 
 
 ## **Default Azure Communication Services** Provider Configuration
