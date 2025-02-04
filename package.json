@@ -7,10 +7,6 @@
     "gulp-build": "gulp build",
     "gulp-watch": "gulp watch",
     "gulp-rebuild": "gulp rebuild",
-    "update-projects": "node .scripts/update.js",
-    "install-project": "node .scripts/project.js install",
-    "update-project": "node .scripts/project.js update",
-    "cleanup": "node .scripts/cleanup.js",
     "build": "asset-bundler build",
     "host": "asset-bundler host",
     "copy": "asset-bundler copy",
@@ -22,7 +18,6 @@
   "workspaces": [
     ".scripts/assets-build-tool",
     "src/Frontend/",
-    "src/OrchardCore.Modules/*",
     "src/OrchardCore.Modules/*/Assets/**",
     "src/OrchardCore.Themes/*/Assets/**"
   ],
