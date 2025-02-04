@@ -9,7 +9,7 @@ export default {
     entry: path.resolve(__dirname, "./js/App.tsx"),
     output: {
         path: path.resolve(__dirname, "../wwwroot/Scripts"),
-        filename: "graphiql-orchard.js"
+        filename: "diffviewer.js"
     },
     resolve: {
         // Add `.ts` and `.tsx` as a resolvable extension.
@@ -28,8 +28,8 @@ export default {
                 }
             },
             {
-                test: /\.css$/,
-                use: ['style-loader', 'css-loader']
+                test: /\.s?css$/,
+                use: ['style-loader', 'css-loader', 'sass-loader']
             },
             {
                 test: /\.mjs$/,

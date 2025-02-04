@@ -13,7 +13,7 @@
     "esModuleInterop": true
   },
   "include": [
-    "./Assets/js/**/*"
+    "./js/**/*"
   ],
   "exclude": [
     "node_modules"

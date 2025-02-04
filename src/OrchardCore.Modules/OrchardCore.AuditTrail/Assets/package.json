@@ -1,6 +1,7 @@
 {
   "name": "@orchardcore/audittrail",
   "version": "1.0.0",
+  "type": "module",
   "private": true,
   "license": "MIT",
   "description": "A diff module for OrchardCore.",
