@@ -3,6 +3,4 @@ using YesSql.Filters.Query;
 
 namespace OrchardCore.AuditTrail.Services;
 
-public interface IAuditTrailAdminListFilterParser : IQueryParser<AuditTrailEvent>
-{
-}
+public interface IAuditTrailAdminListFilterParser : IQueryParser<AuditTrailEvent>;
