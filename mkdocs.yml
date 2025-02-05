@@ -265,6 +265,7 @@ nav:
               - Mini Profiler: reference/modules/MiniProfiler/README.md
               - Modules: reference/modules/Modules/README.md
               - OpenId: reference/modules/OpenId/README.md
+              - Permissions: reference/modules/Security/Permissions.md
               - Razor Helpers: reference/modules/Razor/README.md
               - Recipes: reference/modules/Recipes/README.md
               - Redis: reference/modules/Redis/README.md
@@ -286,6 +287,7 @@ nav:
       - Libraries: reference/libraries/README.md
       - Glossary: reference/glossary/README.md
   - Releases Notes:
+      - 2.1.5: releases/2.1.5.md
       - 2.1.4: releases/2.1.4.md
       - 2.1.3: releases/2.1.3.md
       - 2.1.2: releases/2.1.2.md

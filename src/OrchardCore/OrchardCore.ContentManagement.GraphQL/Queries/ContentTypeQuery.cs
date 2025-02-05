@@ -66,7 +66,7 @@ public sealed class ContentTypeQuery : ISchemaBuilder
                 ResolvedType = new ListGraphType(typeType),
             };
 
-            query.RequirePermission(CommonPermissions.ExecuteGraphQL);
+            query.RequirePermission(GraphQLPermissions.ExecuteGraphQL);
             query.RequirePermission(Contents.CommonPermissions.ViewOwnContent, typeDefinition.Name);
 
             foreach (var builder in contentTypeBuilders)
@@ -79,11 +79,9 @@ public sealed class ContentTypeQuery : ISchemaBuilder
             {
                 schema.Query.AddField(query);
             }
-            else
-            {
-                // Register the content item type explicitly since it won't be discovered from the root 'query' type.
-                schema.RegisterType(typeType);
-            }
+
+            // Register the content item type explicitly to make it easier to find it.
+            schema.RegisterType(typeType);
 
             if (!string.IsNullOrEmpty(stereotype))
             {

@@ -29,7 +29,7 @@ public sealed class ElasticsearchApiController : ControllerBase
     [Route("content")]
     public async Task<IActionResult> Content([FromQuery] ElasticApiQueryViewModel queryModel)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.QueryElasticApi))
         {
             return this.ChallengeOrForbid("Api");
         }
@@ -43,7 +43,7 @@ public sealed class ElasticsearchApiController : ControllerBase
     [Route("content")]
     public async Task<IActionResult> ContentPost(ElasticApiQueryViewModel queryModel)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.QueryElasticApi))
         {
             return this.ChallengeOrForbid();
         }
@@ -57,7 +57,7 @@ public sealed class ElasticsearchApiController : ControllerBase
     [Route("documents")]
     public async Task<IActionResult> Documents([FromQuery] ElasticApiQueryViewModel queryModel)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.QueryElasticApi))
         {
             return this.ChallengeOrForbid();
         }
@@ -71,7 +71,7 @@ public sealed class ElasticsearchApiController : ControllerBase
     [Route("documents")]
     public async Task<IActionResult> DocumentsPost(ElasticApiQueryViewModel queryModel)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryElasticApi))
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.QueryElasticApi))
         {
             return this.ChallengeOrForbid("Api");
         }

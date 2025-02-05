@@ -30,7 +30,7 @@ public sealed class ResetPasswordSettingsDisplayDriver : SiteDisplayDriver<Reset
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers))
         {
             return null;
         }
@@ -47,7 +47,7 @@ public sealed class ResetPasswordSettingsDisplayDriver : SiteDisplayDriver<Reset
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers))
         {
             return null;
         }

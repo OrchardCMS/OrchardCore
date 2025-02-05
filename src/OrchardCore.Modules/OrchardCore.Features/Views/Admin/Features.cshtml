@@ -180,6 +180,7 @@
 </form>
 <script at="Foot">
     $(function () {
+        const EscapeKey = 'Escape';
         var searchBox = $('#search-box');
 
         // On each keypress filter the list of features
@@ -188,7 +189,7 @@
             var elementsToFilter = $("[data-filter-value]");
 
             // On ESC, clear the search box and display all features
-            if (e.keyCode == 27 || search == '') {
+            if (e.key == EscapeKey || search == '') {
                 searchBox.val('');
                 elementsToFilter.removeClass("d-none first-child-visible last-child-visible");
             } else {
@@ -208,14 +209,14 @@
                     $(this).find('li').filter(":not(.d-none)").first().addClass("first-child-visible");
                     $(this).find('li').filter(":not(.d-none)").last().addClass("last-child-visible");
                 });
+            }
 
-                var visible = $('.list-group > li:visible');
-                if (visible.length == 0) {
-                    $('#list-alert').removeClass("d-none");
-                }
-                else {
-                    $('#list-alert').addClass("d-none");
-                }
+            var visible = $('.list-group > li:visible');
+            if (visible.length == 0) {
+                $('#list-alert').removeClass("d-none");
+            }
+            else {
+                $('#list-alert').addClass("d-none");
             }
         });
 
@@ -224,6 +225,19 @@
             if (e.key == 'Enter') {
                 return false;
             }
+        });
+
+        // this function will be executed on click of X (clear button)
+        searchBox.on('search', function () {
+            var search = $(this).val();
+            if (search != '') {
+                return;
+            }
+
+            var e = $.Event('keyup');
+            e.key= EscapeKey;
+            
+            searchBox.trigger(e);
         });
 
         $(".dropdown-menu a").filter(function () {

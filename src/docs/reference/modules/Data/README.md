@@ -28,15 +28,15 @@ See the [`Microsoft.Data.Sqlite` documentation](https://docs.microsoft.com/en-us
 
 OrchardCore uses the `YesSql` library to interact with the configured database provider. `YesSql` is shipped with configuration that is suitable for most use cases. However, you can change these settings by configuring `YesSqlOptions`. `YesSqlOptions` provides the following configurable options.
 
-| Setting | Description |
-| --- | --- |
-| `CommandsPageSize` | Gets or sets the command page size. If you have to many queries in one command, `YesSql` will split the large command into multiple commands. |
-| `QueryGatingEnabled` | Gets or sets the `QueryGatingEnabled` option in `YesSql`. |
-| `IdGenerator` | You can provide your own implementation for generating ids. |
-| `IdentifierAccessorFactory` | You can provide your own value accessor factory. |
-| `VersionAccessorFactory` | You can provide your own version accessor factory. |
-| `ContentSerializer` | You can provide your own content serializer. |
-| `EnableThreadSafetyChecks` | Gets or sets the `EnableThreadSafetyChecks` option in YesSql, which aids in diagnosing concurrency or race condition issues. |
+| Setting                     | Description                                                                                                                                   |
+|-----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| `CommandsPageSize`          | Gets or sets the command page size. If you have to many queries in one command, `YesSql` will split the large command into multiple commands. |
+| `QueryGatingEnabled`        | Gets or sets the `QueryGatingEnabled` option in `YesSql`.                                                                                     |
+| `IdGenerator`               | You can provide your own implementation for generating ids.                                                                                   |
+| `IdentifierAccessorFactory` | You can provide your own value accessor factory.                                                                                              |
+| `VersionAccessorFactory`    | You can provide your own version accessor factory.                                                                                            |
+| `ContentSerializer`         | You can provide your own content serializer.                                                                                                  |
+| `EnableThreadSafetyChecks`  | Gets or sets the `EnableThreadSafetyChecks` option in YesSql, which aids in diagnosing concurrency or race condition issues.                  |
 
 For example, you can change the default command-page-size from `500` to `1000` by adding the following code to your startup code.
 

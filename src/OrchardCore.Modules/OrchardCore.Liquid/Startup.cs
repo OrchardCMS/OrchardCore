@@ -31,8 +31,6 @@ public sealed class Startup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
-
         services.Configure<TemplateOptions>(options =>
         {
             options.Filters.AddFilter("t", LiquidViewFilters.Localize);
@@ -82,6 +80,17 @@ public sealed class Startup : StartupBase
     }
 }
 
+[Feature("OrchardCore.Liquid.Core")]
+public sealed class LiquidStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
+
+        services.AddLiquidCoreServices();
+    }
+}
+
 [RequireFeatures("OrchardCore.Contents")]
 public sealed class LiquidPartStartup : StartupBase
 {
@@ -104,5 +113,36 @@ public sealed class ShortcodesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddLiquidFilter<ShortcodeFilter>("shortcode");
+    }
+}
+
+[RequireFeatures("OrchardCore.Resources")]
+public sealed class ResourcesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddLiquidFilter<AppendVersionFilter>("append_version");
+        services.AddLiquidFilter<ResourceUrlFilter>("resource_url");
+    }
+}
+
+[RequireFeatures("OrchardCore.Html")]
+public sealed class HtmlStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddLiquidFilter<SanitizeHtmlFilter>("sanitize_html");
+    }
+}
+
+[RequireFeatures("OrchardCore.Localization")]
+public sealed class localizationStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+#pragma warning disable CS0618 // Type or member is obsolete
+        // Deprecated, remove in a future version.
+        services.AddLiquidFilter<SupportedCulturesFilter>("supported_cultures");
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 }

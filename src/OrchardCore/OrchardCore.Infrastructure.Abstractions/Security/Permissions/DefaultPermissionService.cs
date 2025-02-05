@@ -41,7 +41,7 @@ public sealed class DefaultPermissionService : IPermissionService
 
     private async Task LoadPermissionsAsync()
     {
-        _permissions = [];
+        _permissions = new Dictionary<string, Permission>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var permissionProvider in _permissionProviders)
         {

@@ -58,28 +58,12 @@ public abstract class DisplayDriver<TModel, TDisplayContext, TEditorContext, TUp
         => Task.FromResult(Display(model, context));
 
     public virtual IDisplayResult Display(TModel model, TDisplayContext context)
-    {
-#pragma warning disable CS0618 // Type or member is obsolete
-        return Display(model);
-#pragma warning restore CS0618 // Type or member is obsolete
-    }
-
-    [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the DisplayAsync(TModel model, TDisplayContext context) or Display(TModel model, TDisplayContext context) method.")]
-    public virtual IDisplayResult Display(TModel model)
         => NullShapeResult();
 
     public virtual Task<IDisplayResult> EditAsync(TModel model, TEditorContext context)
         => Task.FromResult(Edit(model, context));
 
     public virtual IDisplayResult Edit(TModel model, TEditorContext context)
-    {
-#pragma warning disable CS0618 // Type or member is obsolete
-        return Edit(model);
-#pragma warning restore CS0618 // Type or member is obsolete
-    }
-
-    [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the EditAsync(TModel model, TEditorContext context) or Edit(TModel model, TEditorContext context) method.")]
-    public virtual IDisplayResult Edit(TModel model)
         => NullShapeResult();
 
     protected static IDisplayResult NullShapeResult()

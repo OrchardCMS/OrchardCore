@@ -22,11 +22,27 @@ public sealed class ChangeEmailAdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+        if (NavigationHelper.UseLegacyFormat())
+        {
+            builder
+                .Add(S["Security"], security => security
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["User Change Email"], S["User Change Email"].PrefixPosition(), email => email
+                            .Permission(UsersPermissions.ManageUsers)
+                            .Action("Index", "Admin", _routeValues)
+                            .LocalNav()
+                        )
+                    )
+                );
+
+            return ValueTask.CompletedTask;
+        }
+
         builder
-            .Add(S["Security"], security => security
-                .Add(S["Settings"], settings => settings
-                    .Add(S["User Change email"], S["User Change email"].PrefixPosition(), email => email
-                        .Permission(CommonPermissions.ManageUsers)
+            .Add(S["Settings"], settings => settings
+                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
+                    .Add(S["Change Email"], S["Change Email"].PrefixPosition(), email => email
+                        .Permission(UsersPermissions.ManageUsers)
                         .Action("Index", "Admin", _routeValues)
                         .LocalNav()
                     )
