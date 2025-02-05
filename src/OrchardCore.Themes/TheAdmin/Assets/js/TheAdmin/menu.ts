@@ -1,3 +1,5 @@
+import { isCompactExplicit, setCompactExplicit } from '../constants';
+import { persistAdminPreferences } from './userPreferencesPersistor';
 // When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
 // UserPreferencesLoader has already added the needed class.
 $(function () {
@@ -9,7 +11,7 @@ $(function () {
     //
     if ($('body').hasClass('left-sidebar-compact')
         || (($('body').hasClass('no-admin-preferences') && $(window).width() < 768))) {
-        setCompactStatus();
+        setCompactStatus(false);
     }
 });
 
@@ -35,7 +37,7 @@ $(document).on("click", function (event) {
 
 var subMenuArray = new Array();
 
-function setCompactStatus(explicit) {
+const setCompactStatus = (explicit) => {
     // This if is to avoid that when sliding from expanded to compact the 
     // underliyng ul is visible while shrinking. It is ugly.    
     if (!$('body').hasClass('left-sidebar-compact')) {
@@ -63,12 +65,12 @@ function setCompactStatus(explicit) {
     }, 200);
 
     if (explicit == true) {
-        isCompactExplicit = true;
+        setCompactExplicit(true);
     }
     persistAdminPreferences();
 }
 
-function unSetCompactStatus() {
+const unSetCompactStatus = () => {
     $('body').removeClass('left-sidebar-compact');
 
     // resetting what we disabled for compact state
@@ -77,7 +79,7 @@ function unSetCompactStatus() {
     $('#left-nav li.has-items').removeClass("visible");
     $('#left-nav > ul > li').css("transition", "");
 
-    isCompactExplicit = false;
+    setCompactExplicit(false);
     persistAdminPreferences();
 }
 
@@ -86,7 +88,7 @@ var leftNav = document.getElementById("left-nav");
 // create an Observer instance
 const resizeObserver = new ResizeObserver(entries => {
     if (isCompactExplicit) {
-        if (leftNav.scrollHeight > leftNav.clientHeight) {
+        if (leftNav && (leftNav.scrollHeight > leftNav.clientHeight)) {
             document.body.classList.add("scroll");
         }
         else {
@@ -101,4 +103,9 @@ const resizeObserver = new ResizeObserver(entries => {
 // start observing a DOM node
 if (leftNav != null) {
     resizeObserver.observe(leftNav)
+}
+
+export {
+    setCompactStatus,
+    unSetCompactStatus,
 }

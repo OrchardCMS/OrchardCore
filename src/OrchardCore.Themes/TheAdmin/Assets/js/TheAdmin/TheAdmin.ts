@@ -1,3 +1,7 @@
+import removeDiacritics from "./removeDiacritics";
+import "./menu";
+import "./resizeDetector";
+
 function confirmDialog({ callback, ...options }) {
     const defaultOptions = $('#confirmRemoveModalMetadata').data();
     const { title, message, okText, cancelText, okClass, cancelClass } = $.extend({}, defaultOptions, options);

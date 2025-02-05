@@ -20,5 +20,19 @@
     "source": "Assets/scss/login.scss",
     "dest": "wwwroot/css/",
     "tags": ["theme", "css"]
+  },
+  {
+    "action": "parcel",
+    "name": "TheAdmin-main",
+    "source": "Assets/js/TheAdmin-main/TheAdmin-main.ts",
+    "dest": "wwwroot/js/",
+    "tags": ["theme", "css"]
+  },
+  {
+    "action": "parcel",
+    "name": "TheAdmin",
+    "source": "Assets/js/TheAdmin/TheAdmin.ts",
+    "dest": "wwwroot/js/",
+    "tags": ["theme", "css"]
   }
 ]

@@ -1,7 +1,9 @@
+import { setCompactStatus, unSetCompactStatus } from './menu';
+import { isCompactExplicit } from '../constants';
+
 // System to detect when the window's size reaches a given breakpoint
 // Right now it is only used to compact the lefbar when resizing under 768px
 // In the future maybe this is useful to do other things on resizing.
-
 (function () {
     const breakPoint = 768;
     let lastDirection = '';
@@ -21,7 +23,7 @@
         if (breakpointChangeManaged == false && direction != lastDirectionManaged) {
             if (direction == 'reducing' && width < breakPoint) {
                 // breakpoint reached while going down
-                setCompactStatus();
+                setCompactStatus(isCompactExplicit);
                 lastDirectionManaged = direction;
                 breakpointChangeManaged = true;
             }

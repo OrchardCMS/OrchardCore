@@ -2405,9 +2405,12 @@ __metadata:
   resolution: "@orchardcore/theadmin@workspace:src/OrchardCore.Themes/TheAdmin/Assets"
   dependencies:
     "@popperjs/core": "npm:2.11.8"
+    "@types/jquery": "npm:3.5.32"
+    "@types/js-cookie": "npm:^3.0.6"
     bootstrap: "npm:5.3.3"
     bootstrap-select: "npm:1.14.0-beta3"
     jquery: "npm:3.7.1"
+    js-cookie: "npm:^3.0.5"
     nouislider: "npm:15.7.0"
   languageName: unknown
   linkType: soft
@@ -4030,12 +4033,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/jquery@npm:3.5.32":
+  version: 3.5.32
+  resolution: "@types/jquery@npm:3.5.32"
+  dependencies:
+    "@types/sizzle": "npm:*"
+  checksum: 10/2c67cac338828870ead5c5e608f5fa5ab8101598ed4572cf49b58c342adffe8918d2e2fc94d7954e6b98a889cef8c3f4e6f44b8fecb75e80854b0f9cf9dd18a1
+  languageName: node
+  linkType: hard
+
 "@types/jquery@npm:3.5.5":
   version: 3.5.5
   resolution: "@types/jquery@npm:3.5.5"
   dependencies:
     "@types/sizzle": "npm:*"
   checksum: 10/d26f4ce1cdc30d9d21783cd7402eb7608e1c89502b2bf30f812d9b396326748ec4d4f0782cd0754e5958cd0c7c5aab0ff30ee741b4915a2360bc74ad8d7bcfb0
+  languageName: node
+  linkType: hard
+
+"@types/js-cookie@npm:^3.0.6":
+  version: 3.0.6
+  resolution: "@types/js-cookie@npm:3.0.6"
+  checksum: 10/272d551687547445cb210213c73e72e0e5d58ad73e2e444a65d688b8ff9425529779ee0cd6492aaa1f070161916d4254ef2b1a76d64179100437f60749d094ef
   languageName: node
   linkType: hard
 
@@ -10067,7 +10086,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-cookie@npm:3.0.5":
+"js-cookie@npm:3.0.5, js-cookie@npm:^3.0.5":
   version: 3.0.5
   resolution: "js-cookie@npm:3.0.5"
   checksum: 10/366494b1630b9fb8abaef3659748db5dfd52c58c6fc3459b9f0a03b492593bc1b01c6dfcc066b46f6413c28edb3a00cc68fb61ea8cdf6991bedf1f100f8a389d
