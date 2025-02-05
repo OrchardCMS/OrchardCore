@@ -9,7 +9,8 @@ You can customize the default notification options through the configuration pro
 "OrchardCore_Notifications": {
     "TotalUnreadNotifications": 10,
     "DisableNotificationHtmlBodySanitizer": false,
-    "TotalUnreadNotifications": 3600
+    "AbsoluteCacheExpirationSeconds": 3600,
+    "SlidingCacheExpirationSeconds": 0
 }
 ```
 
