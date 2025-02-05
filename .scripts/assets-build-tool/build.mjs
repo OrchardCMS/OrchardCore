@@ -117,7 +117,7 @@ const buildProcesses = groups
         };
       case "webpack":
         // parcel only handles build and watch
-        if (!(task === "build" || task === "watch")) {
+        if (!(task === "build" || task === "watch" || task === "host")) {
           console.log(chalk.yellow(`Webpack action does not handle build type: ${task} for ${group.name}`));
           break;
         }
