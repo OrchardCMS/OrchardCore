@@ -2079,9 +2079,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@orchardcore/asset-build-tool@workspace:.scripts/assets-build-tool, @orchardcore/asset-build-tool@workspace:^":
+"@orchardcore/assets-manager@workspace:.scripts/assets-manager, @orchardcore/assets-manager@workspace:^":
   version: 0.0.0-use.local
-  resolution: "@orchardcore/asset-build-tool@workspace:.scripts/assets-build-tool"
+  resolution: "@orchardcore/assets-manager@workspace:.scripts/assets-manager"
   dependencies:
     "@parcel/config-default": "npm:2.13.3"
     "@parcel/core": "npm:2.13.3"
@@ -2123,7 +2123,7 @@ __metadata:
     webpack: "npm:^5.97.1"
     webpack-dev-server: "npm:^5.2.0"
   bin:
-    asset-bundler: ./build.mjs
+    assets-manager: ./build.mjs
   languageName: unknown
   linkType: soft
 
@@ -2312,7 +2312,7 @@ __metadata:
     "@babel/core": "npm:^7.22.11"
     "@babel/preset-env": "npm:^7.22.10"
     "@babel/preset-flow": "npm:7.22.5"
-    "@orchardcore/asset-build-tool": "workspace:^"
+    "@orchardcore/assets-manager": "workspace:^"
     "@popperjs/core": "npm:2.11.8"
     all-contributors-cli: "npm:^6.26.1"
     bootstrap: "npm:5.3.3"

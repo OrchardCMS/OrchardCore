@@ -1,4 +1,4 @@
-# Assets build tools
+# Assets manager
 
 Assets build scripts. The process uses a `Assets.json` file that defines actions to take relating to static assets.
 

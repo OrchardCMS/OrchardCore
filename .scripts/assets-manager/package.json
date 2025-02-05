@@ -1,11 +1,9 @@
 {
-  "name": "@orchardcore/asset-build-tool",
+  "name": "@orchardcore/assets-manager",
   "version": "1.0.0",
   "main": "build.js",
   "type": "module",
-  "bin": {
-    "asset-bundler": "./build.mjs"
-  },
+  "bin": "./build.mjs",
   "dependencies": {
     "@parcel/config-default": "2.13.3",
     "@parcel/core": "2.13.3",
