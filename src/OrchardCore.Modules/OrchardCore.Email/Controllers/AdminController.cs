@@ -130,7 +130,7 @@ public sealed class AdminController : Controller
 
         if (!string.IsNullOrWhiteSpace(testSettings.Body))
         {
-            message.Body = testSettings.Body;
+            message.Body = new MailMessageBody { PlainText = testSettings.Body };
         }
 
         return message;
