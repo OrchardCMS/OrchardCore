@@ -10,5 +10,5 @@ public interface ITranslationProvider
     /// </summary>
     /// <param name="cultureName">The culture name.</param>
     /// <param name="dictionary">The <see cref="CultureDictionary"/> that will contains all loaded translations.</param>
-    void LoadTranslations(string cultureName, CultureDictionary dictionary);
+    Task LoadTranslationsAsync(string cultureName, CultureDictionary dictionary);
 }
