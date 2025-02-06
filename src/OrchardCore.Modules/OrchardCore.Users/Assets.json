@@ -1,14 +1,14 @@
 [
   {
-    "inputs": [
-      "Assets/js/password-generator.js"
-    ],
-    "output": "wwwroot/Scripts/password-generator.js"
+    "action": "min",
+    "name": "users-password-generator",
+    "source": "Assets/js/password-generator.js",
+    "tags": ["admin", "dashboard", "js"]
   },
   {
-    "inputs": [
-      "node_modules/qrcodejs/qrcode.js"
-    ],
-    "output": "wwwroot/Scripts/qrcode.js"
+    "action": "min",
+    "name": "users-qrcode",
+    "source": "../../../node_modules/qrcodejs/qrcode.js",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

@@ -1,28 +1,22 @@
 [
   {
-    "inputs": [
-      "Assets/scss/admin.scss"
-    ],
-    "output": "wwwroot/Styles/themes.admin.css"
+    "action": "sass",
+    "name": "themes-admin",
+    "source": "Assets/scss/themes.admin.scss",
+    "tags": ["themes", "css"]
   },
   {
-    "inputs": [
-      "Assets/js/constants.js",
-      "Assets/js/theme-loader.js"
-    ],
-    "watch": [
-      "Assets/js/constants.js",
-      "Assets/js/theme-loader.js"
-    ],
-    "output": "wwwroot/Scripts/theme-head.js"
+    "action": "parcel",
+    "name": "themes-theme-manager",
+    "source": "Assets/ts/theme-manager.ts",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["themes", "js"]
   },
   {
-    "inputs": [
-      "Assets/js/theme-toggler.js"
-    ],
-    "watch": [
-      "Assets/js/theme-toggler.js"
-    ],
-    "output": "wwwroot/Scripts/theme-manager.js"
+    "action": "parcel",
+    "name": "themes-theme-head",
+    "source": "Assets/ts/theme-head.ts",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["themes", "js"]
   }
 ]
