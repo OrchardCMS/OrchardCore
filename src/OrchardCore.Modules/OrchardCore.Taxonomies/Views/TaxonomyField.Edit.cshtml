@@ -24,7 +24,7 @@
                 @T["The taxonomy could not be found. Please check the settings for this field."]
             </div>
         }
-        <div>
+        <div class="term-entries-area" asp-validation-class-for="TermEntries">
             @for (var i = 0; i < Model.TermEntries.Count; i++)
             {
                 var entry = Model.TermEntries[i];
