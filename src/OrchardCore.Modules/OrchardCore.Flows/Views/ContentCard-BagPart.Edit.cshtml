@@ -13,7 +13,7 @@
     }
 }
 
-<div class="widget widget-editor card@(collapsed ? " collapsed" : string.Empty)">
+<div class="widget widget-editor card@(collapsed ? " collapsed" : string.Empty)" data-content-type="@Model.ContentItem.ContentType">
     <div class="widget-editor-header card-header text-muted py-1 ps-2 pe-1">
         @if (Model.CanMove)
         {
