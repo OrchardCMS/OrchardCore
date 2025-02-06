@@ -18,6 +18,7 @@ using OrchardCore.Liquid.Indexing;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.Services;
 using OrchardCore.Liquid.ViewModels;
+using OrchardCore.Liquid.Endpoints.Scripts;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Liquid;
@@ -26,11 +27,13 @@ public sealed class Startup : StartupBase
 {
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        app.UseMiddleware<ScriptsMiddleware>();
+        routes.AddGetIntellisenseScriptEndpoint();
     }
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
+
         services.Configure<TemplateOptions>(options =>
         {
             options.Filters.AddFilter("t", LiquidViewFilters.Localize);
