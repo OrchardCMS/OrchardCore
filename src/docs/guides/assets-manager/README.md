@@ -84,6 +84,32 @@ The `tags` property can be a string or an array of strings.
 
 You can also pass an `options` object that override parcel options.  
 
+### Parcel Bundling
+
+It is possible to bundle apps together when using Parcel by using the "bundleEntrypoint" param in the Assets.json file. This allows to bundle different apps together in your app even though they are not standing in the same directory. These files will be compiled in the folder set in your build.config.mjs file standing at the root of the solution. When using bundleEntrypoint parameter there is no need to set the `dest` param.
+
+#### Examples
+
+Parcel bundle output folder:
+
+```javascript
+export const parcelBundleOutput = "src/OrchardCore.Modules/OrchardCore.Resources/wwwroot/Scripts/bundle"
+```
+
+Parcel bundleEntrypoint parameter:
+
+```json
+[
+  {
+    "action": "parcel",
+    "name": "module-microsoft-datasource-wrapper",
+    "source": "Assets/Scripts/datasource-wrapper.js",
+    "bundleEntrypoint": "bundle-name",
+    "tags":["vue3"]
+  }
+]
+```
+
 ### Vite
 
 Vite bundler action will support any configuration. From bundling a vue app to compiling a simple library. It is working by configuration file. The asset management tool simply loads a vite.config.ts file based on the source folder that we instruct it to use from the Assets.json file.
@@ -301,6 +327,7 @@ The destination should always be a folder as we do not support renaming files.
 
 You can use the dry-run task to log to the console where the files will be copied to.
 
+
 ### Sass
 
 Allows to transpile scss files.
@@ -321,6 +348,7 @@ The source field can be a file, or a glob.
 The destination should always be a folder as we do not support renaming files.
 
 You can use the dry-run task to log to the console where the files will be copied to.
+
 
 ## build.config.mjs
 
