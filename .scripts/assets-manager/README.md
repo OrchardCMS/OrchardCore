@@ -9,11 +9,28 @@ Based on [Concurrently](https://github.com/open-cli-tools/concurrently) the Orch
 
 Old assets are not compiled as ES6 modules so they don't need these bundlers. For that matter we kept the old gulpfile.js which will be now triggered by `Concurrently` when doing `yarn build -gr`.
 
-Concurrently uses an `Assets.json` file that defines actions to take relating to static assets.
+Concurrently uses an `Assets.json` file that defines actions to execute.
 
-Gulp uses a GulpAssets.json file that defines actions to take relation to static assets.
+Gulp uses a GulpAssets.json file that defines actions to execute.
 
-# Features
+## Requirements
+
+Nodejs v22.12.0  
+Yarn 4.6.0  
+Corepack https://nodejs.org/api/corepack.html  
+
+## Getting started
+
+Clone Orchard Core repository.
+From the root folder of that repository execute:
+
+```cmd
+corepack enable
+yarn
+yarn build
+```
+
+## Features
 
 - Build everything: `yarn build`
 - Build module by name: `yarn build -n module-name`
@@ -78,6 +95,40 @@ The `dest` property must be a folder. This is because parcel will usually output
 The `tags` property can be a string or an array of strings.
 
 You can also pass an `options` object that override parcel options.  
+
+### Vite
+
+Vite bundler action will support any configuration. From bundling a vue app to compiling a simple library. It is working by configuration file. The asset management tool simply loads a vite.config.ts file based on the source folder that we instruct it to use from the Assets.json file.
+
+Example of Assets.json config file:
+
+```json
+[
+  {
+    "action": "vite",
+    "name": "my-vue-app",
+    "source": "Assets/vite/",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]
+```
+
+### Webpack
+
+Webpack bundler action will support any configuration. From bundling a vue app to compiling a simple library. It is working by configuration file. The asset management tool simply loads a given webpack.config.js file that we instruct to use from the Assets.json file.
+
+Example of Assets.json config file:
+
+```json
+[
+  {
+    "action": "webpack",
+    "name": "graphiql",
+    "config": "/Assets/webpack.config.js",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]
+```
 
 ### Run
 
@@ -156,6 +207,7 @@ The source field can be a file, or a glob of files.
 The destination should always be a folder as we do not support renaming files.
 
 You can use the dry-run task to log to the console where the files will be copied to.
+
 ### Min  
 
 Allows to minify files.
@@ -199,6 +251,7 @@ The source field can be a file, or a glob of files.
 The destination should always be a folder as we do not support renaming files.
 
 You can use the dry-run task to log to the console where the files will be copied to.
+
 ### Sass
 
 Allows to transpile scss files.
