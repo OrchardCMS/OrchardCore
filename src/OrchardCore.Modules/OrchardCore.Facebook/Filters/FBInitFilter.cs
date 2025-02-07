@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using OrchardCore.Admin;
 using OrchardCore.Facebook.Settings;
@@ -31,6 +32,7 @@ public sealed class FBInitFilter : IAsyncResultFilter
                 if (settings.FBInit)
                 {
                     var setting = _resourceManager.RegisterResource("script", "fb");
+                    setting.Culture = CultureInfo.CurrentUICulture.Name;
                     setting.AtLocation(ResourceLocation.Foot);
                 }
             }
