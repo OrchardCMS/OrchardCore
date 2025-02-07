@@ -57,7 +57,7 @@ const resolveImports = (filePath, fileContent, resolvedFiles = new Set()) => {
 if (isWatching) {
     glob(config.source).then((files) => {
         const watchFiles = new Set();
-        watchFiles.add(config.source);
+        watchFiles.add(path.dirname(config.source));
 
         files.forEach((file) => {
             const content = fs.readFileSync(file, "utf8");
