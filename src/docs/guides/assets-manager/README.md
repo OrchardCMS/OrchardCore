@@ -350,7 +350,7 @@ You can also specify the glob pattern used to harvest the `Assets.json` files in
 export const assetsLookupGlob = "src/{OrchardCore.Modules,OrchardCore.Themes}/*/Assets.json";
 ```
 
-## ECMAScript vs CommonJS (Parcel and Vite)
+## ECMAScript vs CommonJS (Bundlers)
 
 The ECMAScript module (ESM) format is the standardized way of loading JavaScript packages. CommonJS is a legacy implementation of modules that is not standardized. ESM is asynchronously loaded, while CommonJS is synchronous. We should favorize building as ESM modules. 
 
