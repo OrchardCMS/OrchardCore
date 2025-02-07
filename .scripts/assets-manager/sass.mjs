@@ -73,7 +73,7 @@ if (isWatching) {
                     stats?.isFile() && !path.endsWith(".scss"),
                 persistent: true,
             })
-            .on("all", (event, path) => {
+            .on("change", (event, path) => {
                 runSass(config);
             });
     });
