@@ -125,24 +125,3 @@ public sealed class ResourcesStartup : StartupBase
         services.AddLiquidFilter<ResourceUrlFilter>("resource_url");
     }
 }
-
-[RequireFeatures("OrchardCore.Html")]
-public sealed class HtmlStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddLiquidFilter<SanitizeHtmlFilter>("sanitize_html");
-    }
-}
-
-[RequireFeatures("OrchardCore.Localization")]
-public sealed class localizationStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
-#pragma warning disable CS0618 // Type or member is obsolete
-        // Deprecated, remove in a future version.
-        services.AddLiquidFilter<SupportedCulturesFilter>("supported_cultures");
-#pragma warning restore CS0618 // Type or member is obsolete
-    }
-}
