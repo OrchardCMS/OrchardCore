@@ -185,7 +185,7 @@
 
         <div class="row connectionString" asp-validation-class-for="ConnectionString">
             <div class="mb-3 col-md-12">
-                <label asp-for="ConnectionString" class="form-label">@T["Connection string"]</label>
+                <label asp-for="ConnectionString" class="form-label">@T["Connection String"]</label>
                 <div class="input-group mb-2 mb-sm-0">
                     <input asp-for="ConnectionString" class="form-control pwd" type="password" required />
                     <button type="button" id="toggleConnectionString" class="btn btn-secondary" tabindex="-1" aria-hidden="true" title="@T["Show/hide connection string"]"><i class="icon fa fa-eye"></i></button>
@@ -209,7 +209,7 @@
         <span class="text-muted form-text small">@T["The super user has all the rights. It should be used only during Setup and for disaster recovery."]</span>
         <div class="row">
             <div class="mb-3 col-md-6" asp-validation-class-for="UserName">
-                <label asp-for="UserName" class="form-label">@T["User name"]</label>
+                <label asp-for="UserName" class="form-label">@T["User Name"]</label>
                 <input asp-for="UserName" class="form-control" required />
                 <span asp-validation-for="UserName" class="text-danger"></span>
             </div>

@@ -25,7 +25,7 @@ public class NullStringLocalizer : IStringLocalizer
         {
             var translation = name;
 
-            if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
+            if (arguments is [PluralizationArgument pluralArgument])
             {
                 translation = pluralArgument.Forms[_defaultPluralRule(pluralArgument.Count)];
 
