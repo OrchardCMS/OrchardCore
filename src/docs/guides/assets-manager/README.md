@@ -13,9 +13,11 @@ Concurrently uses an `Assets.json` file that defines actions to execute.
 
 Gulp uses a `GulpAssets.json` file that defines actions to execute.
 
+Parcel is the easiest way to build assets so far as it doesn't require any configuration. It is a zero file configuration bundler which means we use the same configuration for all assets. It is the recommended builder for those who want to easily start with a bundler. Though, Vite is more suited for Vue apps.
+
 ## Requirements
 
-Nodejs v22.12.0  
+Nodejs v22.12.0  (a version that supports corepack)
 Yarn 4.6.0  
 Corepack https://nodejs.org/api/corepack.html  
 
@@ -32,15 +34,15 @@ yarn build
 
 ## Features
 
-- Build everything: `yarn build`
+- Build everything (including gulp rebuild): `yarn build -gr`
+- Build assets manager assets only: `yarn build`
+- Build with gulp: `yarn build -g`
 - Build module by name: `yarn build -n module-name`
 - Build assets by tag: `yarn build -t tagname`
 - Watch module by name: `yarn watch -n module-name`.
-- Build with gulp: `yarn build -g`
-- Rebuild with gulp: `yarn build -gr`
-- Host with dev server: `yarn host -n module-name`.
+- Host with bundler dev server: `yarn host -n module-name`.
 - Clean folders with `yarn clean`. Will also clean parcel-cache folder.
-- Makes uses of latest yarn version 4.6.0. OC is currently on version 1.something
+- Makes uses of latest yarn version 4.6.0.
 - Makes use of yarn workspaces which allows to import files from different locations in the app for sharing ES6 modules.
 - VS Code launcher debug option added as "Asset Bundler Tool Debug"
 - Gulp pipeline moved using GulpAssets.json file
@@ -51,7 +53,7 @@ yarn build
 
 - The copy task does not watch for file changes and the watch commands do not copy files. The build command will copy files.
 - Use dry-run to see a log of which files are being copied and which asset files we have in the solution.
-- Parcel seems a bit picky with transpiling some libraries (azure-maps-control for example)  
+- Parcel seems a bit picky with transpiling some libraries.
 
 ## Supported actions
 
@@ -93,7 +95,7 @@ Example of Assets.json config file:
   {
     "action": "vite",
     "name": "my-vue-app",
-    "source": "Assets/vite/",
+    "source": "Assets/vite-project/",
     "tags": ["admin", "dashboard", "js"]
   }
 ]
@@ -130,7 +132,7 @@ Here is an example of a Vue app using Typescript:
 √ Select a framework: » Vue
 √ Select a variant: » TypeScript
 
-Scaffolding project in F:\Repositories\OrchardCore\src\OrchardCore.Modules\OrchardCore.Media\Assets\vite-project...
+Scaffolding project in C:\repo\OrchardCore\src\OrchardCore.Modules\OrchardCore.Media\Assets\vite-project...
 
 Done. Now run:
 
@@ -152,6 +154,30 @@ Create an Assets.json file at the root of your new module. For example: "src/Orc
     "tags": ["admin", "dashboard", "js"]
   }
 ]
+```
+
+This `Assets.json` file will instruct the asset manager tool to execute the Vite bundler and to look at the source folder for a `vite.config.ts` or `.js` file. But we need to define where we want these assets to be compiled. For that matter we will need to modify the `vite.config.ts` file.
+
+Here is an example of a configuration file that the asset bundler will be able to work with in the context of a Vue app. Notice that we are using `path.resolve()` so that this configuration file always returns the appropriate relative path to the asset bundler. Also, it is required that you set an `outDir` so that the assets be compiled to that directory.
+
+For more details; these configurations are well documented on Rollup.js and Vite.js websites.
+
+```javascript
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import path from 'path';
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [vue()],
+  build: {
+    outDir: path.resolve(__dirname, '../wwwroot/Scripts/Media2/'),
+  },
+})
 ```
 
 Execute Vite dev server from the asset manager tool:
