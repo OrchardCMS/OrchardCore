@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.CompiledQueries;
 using OrchardCore.ContentManagement.Handlers;
@@ -8,6 +10,8 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 using YesSql;
 using YesSql.Services;
@@ -29,6 +33,9 @@ public class DefaultContentManager : IContentManager
     private readonly IContentManagerSession _contentManagerSession;
     private readonly IContentItemIdGenerator _idGenerator;
     private readonly IClock _clock;
+    private readonly INotifier _notifier;
+    protected readonly IHtmlLocalizer H;
+
 
     public DefaultContentManager(
         IContentDefinitionManager contentDefinitionManager,
@@ -37,7 +44,9 @@ public class DefaultContentManager : IContentManager
         ISession session,
         IContentItemIdGenerator idGenerator,
         ILogger<DefaultContentManager> logger,
-        IClock clock)
+        IClock clock,
+        INotifier notifier,
+        IHtmlLocalizer<DefaultContentManager> localizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
         Handlers = handlers;
@@ -46,6 +55,8 @@ public class DefaultContentManager : IContentManager
         _contentManagerSession = contentManagerSession;
         _logger = logger;
         _clock = clock;
+        _notifier = notifier;
+        H = localizer;
     }
 
     public IEnumerable<IContentHandler> Handlers { get; private set; }
@@ -382,9 +393,18 @@ public class DefaultContentManager : IContentManager
 
         // Invoke handlers to acquire state, or at least establish lazy loading callbacks.
         await Handlers.InvokeAsync((handler, context) => handler.PublishingAsync(context), context, _logger);
-
+        
         if (context.Cancel)
         {
+            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+            if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+            {
+                await _notifier.ErrorAsync(H["Publishing '{0}' was cancelled.", contentItem.DisplayText]);
+            }
+            else
+            {
+                await _notifier.ErrorAsync(H["Publishing {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+            }
             return false;
         }
 
@@ -444,6 +464,15 @@ public class DefaultContentManager : IContentManager
 
         if (context.Cancel)
         {
+            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+            if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+            {
+                await _notifier.ErrorAsync(H["Unpublishing '{0}' was cancelled.", contentItem.DisplayText]);
+            }
+            else
+            {
+                await _notifier.ErrorAsync(H["Unpublishing {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+            }
             return false;
         }
 
