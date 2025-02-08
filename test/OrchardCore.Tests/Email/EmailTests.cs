@@ -217,6 +217,28 @@ public class EmailTests
         Assert.Null(result.Response);
     }
 
+    [Fact]
+    public async Task SendEmail_WithTextAndHtmlFormats()
+    {
+        // Arrange
+        var message = new MailMessage
+        {
+            To = "info@oc.com",
+            Subject = "Test",
+            TextBody = "Plain text Message",
+            HtmlBody = "<p>HTML Message</p>"
+        };
+
+        // Act
+        var content = await SendEmailAsync(message);
+
+        // Assert
+        Assert.Contains("Content-Type: text/plain; charset=utf-8", content);
+        Assert.Contains("Plain text Message", content);
+        Assert.Contains("Content-Type: text/html; charset=utf-8", content);
+        Assert.Contains("<p>HTML Message</p>", content);
+    }
+
     private static async Task<string> SendEmailAsync(MailMessage message, string defaultSender = null)
     {
         var pickupDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Email");
