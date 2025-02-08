@@ -43,10 +43,21 @@ public class MailMessage
     /// </summary>
     public string Subject { get; set; }
 
+    [Obsolete("This property has been deprecated, please use the HtmlBody or TextBody property instead.")]
+    public bool IsHtmlBody { get; set; }
+
+    [Obsolete("This property has been deprecated, please use the HtmlBody or TextBody property instead.")]
+    public string Body { get; set; }
+
     /// <summary>
-    /// Gets or sets the message content aka body.
+    /// Gets or sets the message content in HTML format.
     /// </summary>
-    public MailMessageBody Body { get; set; }
+    public string HtmlBody { get; set; }
+
+    /// <summary>
+    /// Gets or sets the message content in plain text format.
+    /// </summary>
+    public string TextBody { get; set; }
 
     /// <summary>
     /// The collection of message attachments.

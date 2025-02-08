@@ -14,7 +14,7 @@ public class EmailTests
         {
             To = "info@oc.com",
             Subject = "Test",
-            Body = "Test Message"
+            TextBody = "Test Message"
         };
 
         // Act
@@ -32,7 +32,7 @@ public class EmailTests
         {
             Cc = "info@oc.com",
             Subject = "Test",
-            Body = "Test Message"
+            TextBody = "Test Message"
         };
 
         // Act
@@ -50,7 +50,7 @@ public class EmailTests
         {
             Bcc = "info@oc.com",
             Subject = "Test",
-            Body = "Test Message"
+            TextBody = "Test Message"
         };
 
         // Act
@@ -67,7 +67,7 @@ public class EmailTests
         {
             To = "info@oc.com",
             Subject = "Test",
-            Body = "Test Message"
+            TextBody = "Test Message"
         };
 
         await SendEmailAsync(message, "Your Name <youraddress@host.com>");
@@ -80,7 +80,7 @@ public class EmailTests
         {
             To = "info@oc.com",
             Subject = "Test",
-            Body = "Test Message",
+            TextBody = "Test Message",
             From = "My Name <youraddress@host.com>",
         };
         var content = await SendEmailAsync(message, "Your Name <youraddress@host.com>");
@@ -96,7 +96,7 @@ public class EmailTests
         {
             To = "info@oc.com",
             Subject = "Test",
-            Body = "Test Message",
+            TextBody = "Test Message",
             Sender = "Hisham Bin Ateya <hishamco_2007@hotmail.com>",
         };
         var content = await SendEmailAsync(message, "Sebastien Ros <sebastienros@gmail.com>");
@@ -112,7 +112,7 @@ public class EmailTests
         {
             To = "info@oc.com",
             Subject = "Test",
-            Body = "Test Message",
+            TextBody = "Test Message",
             From = "sebastienros@gmail.com,hishamco_2007@hotmail.com"
         };
         var content = await SendEmailAsync(message, "Hisham Bin Ateya <hishamco_2007@hotmail.com>");
@@ -128,7 +128,7 @@ public class EmailTests
         {
             To = "Hisham Bin Ateya <hishamco_2007@hotmail.com>",
             Subject = "Test",
-            Body = "Test Message",
+            TextBody = "Test Message",
             From = "Hisham Bin Ateya <hishamco_2007@hotmail.com>",
             ReplyTo = "Hisham Bin Ateya <hishamco_2007@yahoo.com>",
         };
@@ -145,7 +145,7 @@ public class EmailTests
         {
             To = "info@oc.com",
             Subject = "Test",
-            Body = "Test Message",
+            TextBody = "Test Message",
             From = "Sebastien Ros <sebastienros@gmail.com>"
         };
         var content = await SendEmailAsync(message, "Your Name <youraddress@host.com>");
@@ -176,7 +176,7 @@ public class EmailTests
         var message = new MailMessage
         {
             Subject = "Test",
-            Body = "Test Message"
+            TextBody = "Test Message"
         };
 
         var options = new SmtpOptions
@@ -201,7 +201,7 @@ public class EmailTests
         {
             To = "info@oc.com",
             Subject = "Test",
-            Body = "Test Message"
+            TextBody = "Test Message"
         };
         var settings = new SmtpOptions
         {

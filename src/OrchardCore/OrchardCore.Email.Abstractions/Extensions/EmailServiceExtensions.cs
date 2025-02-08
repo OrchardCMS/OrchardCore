@@ -20,11 +20,8 @@ public static class EmailServiceExtensions
         {
             To = to,
             Subject = subject,
-            Body = new MailMessageBody
-            {
-                Html = htmlBody,
-                PlainText = textBody
-            }
+            HtmlBody = htmlBody,
+            TextBody = textBody
         };
 
         return emailService.SendAsync(message);
