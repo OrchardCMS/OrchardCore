@@ -1,5 +1,5 @@
-@import '../../../node_modules/bootstrap/scss/mixins/_breakpoints';
-@import '../../../node_modules/bootstrap/scss/_variables';
+@import '../../../../../../node_modules/bootstrap/scss/mixins/_breakpoints';
+@import '../../../../../../node_modules/bootstrap/scss/_variables';
 
 $sizes: () !default;
 $sizes: map-merge( ( 25: 25%, 50: 50%, 75: 75%, 100: 100%, auto: auto ), $sizes );

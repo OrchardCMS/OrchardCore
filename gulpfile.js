@@ -96,7 +96,7 @@ gulp.task('default', gulp.series(['build']));
 */
 
 function getAssetGroups() {
-    var assetManifestPaths = glob.sync("./src/OrchardCore.{Modules,Themes}/*/Assets.json", {});
+    var assetManifestPaths = glob.sync("./src/OrchardCore.{Modules,Themes}/*/GulpAssets.json", {});
     var assetGroups = [];
     assetManifestPaths.forEach(function (assetManifestPath) {
         var assetManifest = require("./" + assetManifestPath);

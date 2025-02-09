@@ -1,8 +1,8 @@
 [
   {
-    "inputs": [
-      "Assets/js/list-items-filter.js"
-    ],
-    "output": "wwwroot/Scripts/list-items-filter.js"
+    "action": "min",
+    "name": "content-types",
+    "source": "Assets/js/list-items-filter.js",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

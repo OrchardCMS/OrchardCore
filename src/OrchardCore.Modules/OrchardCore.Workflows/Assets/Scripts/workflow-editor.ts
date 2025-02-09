@@ -1,7 +1,10 @@
 ///<reference path='../Lib/jquery/typings.d.ts' />
 ///<reference path='../Lib/jsplumb/typings.d.ts' />
-///<reference path='./workflow-models.ts' />
-///<reference path='./workflow-canvas.ts' />
+
+import './workflow-models';
+import './activity-picker';
+import './workflow-url-generator';
+import WorkflowCanvas from './workflow-canvas';
 
 // TODO: Re-implement this using a MVVM approach.
 class WorkflowEditor extends WorkflowCanvas {

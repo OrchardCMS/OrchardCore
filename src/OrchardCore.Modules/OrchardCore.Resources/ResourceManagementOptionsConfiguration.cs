@@ -532,6 +532,13 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
             .SetDependencies("monaco-loader")
             .SetVersion(MonacoEditorVersion);
 
+        manifest
+            .DefineScript("jquery-nestedSortable")
+            .SetUrl("~/OrchardCore.Resources/Scripts/jquery.mjs.nestedSortable.js")
+            .SetCdn("https://cdn.jsdelivr.net/npm/nestedSortable@1.3.4/jquery.mjs.nestedSortable.js")
+            .SetCdnIntegrity("sha384-drmLwsDDXGEHmNZHoxS1StHzAllg9a/CKXv31Oe4wYiN9wqJNn+QQjAr6Cin+wyH")
+            .SetVersion("1.3.4");
+
         return manifest;
     }
 
