@@ -163,9 +163,9 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         {
             _logger.LogInformation("Found external user using email. Attempt to link them to existing user.");
 
-            foreach (var accountEvent in _loginFormEvents)
+            foreach (var loginFormEvent in _loginFormEvents)
             {
-                var loginResult = await accountEvent.ValidatingLoginAsync(iUser);
+                var loginResult = await loginFormEvent.ValidatingLoginAsync(iUser);
 
                 if (loginResult != null)
                 {
@@ -234,9 +234,9 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                 // The login info must be linked before we consider a redirect, or the login info is lost.
                 if (iUser is User user)
                 {
-                    foreach (var accountEvent in _loginFormEvents)
+                    foreach (var loginFormEvent in _loginFormEvents)
                     {
-                        var loginResult = await accountEvent.ValidatingLoginAsync(user);
+                        var loginResult = await loginFormEvent.ValidatingLoginAsync(user);
 
                         if (loginResult != null)
                         {
@@ -321,9 +321,9 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
                 {
                     _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);
 
-                    foreach (var accountEvent in _loginFormEvents)
+                    foreach (var loginFormEvent in _loginFormEvents)
                     {
-                        var loginResult = await accountEvent.ValidatingLoginAsync(iUser);
+                        var loginResult = await loginFormEvent.ValidatingLoginAsync(iUser);
 
                         if (loginResult != null)
                         {
