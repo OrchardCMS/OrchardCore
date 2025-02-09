@@ -33,8 +33,8 @@ public class DefaultContentManager : IContentManager
     private readonly IContentManagerSession _contentManagerSession;
     private readonly IContentItemIdGenerator _idGenerator;
     private readonly IClock _clock;
-    private readonly INotifier _notifier;
-    protected readonly IHtmlLocalizer H;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
+    protected readonly IStringLocalizer S;
 
 
     public DefaultContentManager(
@@ -45,8 +45,8 @@ public class DefaultContentManager : IContentManager
         IContentItemIdGenerator idGenerator,
         ILogger<DefaultContentManager> logger,
         IClock clock,
-        INotifier notifier,
-        IHtmlLocalizer<DefaultContentManager> localizer)
+        IUpdateModelAccessor updateModelAccessor,
+        IStringLocalizer<DefaultContentManager> localizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
         Handlers = handlers;
@@ -55,8 +55,8 @@ public class DefaultContentManager : IContentManager
         _contentManagerSession = contentManagerSession;
         _logger = logger;
         _clock = clock;
-        _notifier = notifier;
-        H = localizer;
+        _updateModelAccessor = updateModelAccessor;
+        S = localizer;
     }
 
     public IEnumerable<IContentHandler> Handlers { get; private set; }
@@ -393,17 +393,20 @@ public class DefaultContentManager : IContentManager
 
         // Invoke handlers to acquire state, or at least establish lazy loading callbacks.
         await Handlers.InvokeAsync((handler, context) => handler.PublishingAsync(context), context, _logger);
-        
+
         if (context.Cancel)
         {
-            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-            if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+            if (_updateModelAccessor.ModelUpdater is not null)
             {
-                await _notifier.ErrorAsync(H["Publishing '{0}' was cancelled.", contentItem.DisplayText]);
-            }
-            else
-            {
-                await _notifier.ErrorAsync(H["Publishing {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+                {
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Publishing '{0}' was cancelled.", contentItem.DisplayText]);
+                }
+                else
+                {
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Publishing {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+                }
             }
             return false;
         }
@@ -464,17 +467,20 @@ public class DefaultContentManager : IContentManager
 
         if (context.Cancel)
         {
-            var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-            if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+            if (_updateModelAccessor.ModelUpdater is not null)
             {
-                await _notifier.ErrorAsync(H["Unpublishing '{0}' was cancelled.", contentItem.DisplayText]);
-            }
-            else
-            {
-                await _notifier.ErrorAsync(H["Unpublishing {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+                {
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Unpublishing '{0}' was cancelled.", contentItem.DisplayText]);
+                }
+                else
+                {
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Unpublishing {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+                }
             }
             return false;
-        }
+         }
 
         publishedItem.Published = false;
         publishedItem.ModifiedUtc = _clock.UtcNow;

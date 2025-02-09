@@ -1,9 +1,12 @@
 using System.Security.Claims;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
@@ -219,6 +222,21 @@ public sealed class AdminController : Controller, IUpdateModel
             viewModel.Header = header;
         });
 
+        if (TempData.TryGetValue(nameof(ModelState), out var modelStateJson) && modelStateJson is string)
+        {
+            var errors = JsonSerializer.Deserialize<Dictionary<string, string[]>>((string)modelStateJson);
+            if (errors != null)
+            {
+                foreach (var error in errors)
+                {
+                    foreach (var errorMessage in error.Value)
+                    {
+                        ModelState.AddModelError(error.Key, errorMessage);
+                    }
+                }
+            }
+        }
+
         return View(shapeViewModel);
     }
 
@@ -268,7 +286,8 @@ public sealed class AdminController : Controller, IUpdateModel
                         {
                             await _notifier.WarningAsync(H["Couldn't publish selected content."]);
                             await _session.CancelAsync();
-                            return authorized ? RedirectToAction(nameof(List)) : Forbid();
+
+                            return authorized ? RedirectToListActionWithModelState() : Forbid();
                         }
                     }
                     await _notifier.SuccessAsync(H["Content published successfully."]);
@@ -280,7 +299,7 @@ public sealed class AdminController : Controller, IUpdateModel
                         {
                             await _notifier.WarningAsync(H["Couldn't unpublish selected content."]);
                             await _session.CancelAsync();
-                            return authorized ? RedirectToAction(nameof(List)) : Forbid();
+                            return authorized ? RedirectToListActionWithModelState() : Forbid();
                         }
                     }
                     await _notifier.SuccessAsync(H["Content unpublished successfully."]);
@@ -303,7 +322,6 @@ public sealed class AdminController : Controller, IUpdateModel
                     return BadRequest();
             }
         }
-
         return RedirectToAction(nameof(List));
     }
 
@@ -611,10 +629,14 @@ public sealed class AdminController : Controller, IUpdateModel
                 await _notifier.SuccessAsync(H["That {0} has been published.", typeDefinition.DisplayName]);
             }
         }
+        else if (Url.IsLocalUrl(returnUrl))
+        {
+            await _notifier.ErrorAsync(H["The operation was canceled."]);
+        }
 
         return Url.IsLocalUrl(returnUrl)
             ? this.LocalRedirect(returnUrl, true)
-            : RedirectToAction(nameof(List));
+            : RedirectToListActionWithModelState();
     }
 
     [HttpPost]
@@ -647,10 +669,15 @@ public sealed class AdminController : Controller, IUpdateModel
                 await _notifier.SuccessAsync(H["The {0} has been unpublished.", typeDefinition.DisplayName]);
             }
         }
+        else if (Url.IsLocalUrl(returnUrl))
+        {
+            await _notifier.ErrorAsync(H["The operation was canceled."]);
+        }
+
 
         return Url.IsLocalUrl(returnUrl)
             ? this.LocalRedirect(returnUrl, true)
-            : RedirectToAction(nameof(List));
+            : RedirectToListActionWithModelState();
     }
 
     private async Task<IActionResult> CreateInternalAsync(
@@ -714,7 +741,7 @@ public sealed class AdminController : Controller, IUpdateModel
 
         var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
 
-        if (!ModelState.IsValid || !await conditionallyPublish(contentItem))
+        if (!ModelState.IsValid || !(await conditionallyPublish(contentItem)))
         {
             await _session.CancelAsync();
             return View(nameof(Edit), model);
@@ -807,4 +834,17 @@ public sealed class AdminController : Controller, IUpdateModel
 
     private async Task<bool> IsAuthorizedAsync(Permission permission, object resource)
         => await _authorizationService.AuthorizeAsync(User, permission, resource);
+
+    private RedirectToActionResult RedirectToListActionWithModelState()
+    {
+        var errors = ModelState
+            .Where(ms => ms.Value.Errors.Any())
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+            );
+
+        TempData[nameof(ModelState)] = JsonSerializer.Serialize(errors);
+        return RedirectToAction(nameof(List));
+    }
 }
