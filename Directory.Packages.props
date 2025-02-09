@@ -48,7 +48,7 @@
     <PackageVersion Include="ncrontab" Version="3.3.3" />
     <PackageVersion Include="NJsonSchema" Version="11.1.0" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="5.3.15" />
-    <PackageVersion Include="NodaTime" Version="3.2.0" />
+    <PackageVersion Include="NodaTime" Version="3.2.1" />
     <PackageVersion Include="OpenIddict.Core" Version="6.0.0" />
     <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="6.0.0" />
     <PackageVersion Include="OpenIddict.Server.DataProtection" Version="6.0.0" />
