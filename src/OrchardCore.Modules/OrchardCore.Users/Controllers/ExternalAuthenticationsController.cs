@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -30,7 +29,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
     private readonly UserManager<IUser> _userManager;
     private readonly ILogger _logger;
     private readonly IDataProtectionProvider _dataProtectionProvider;
-    private readonly IDistributedCache _distributedCache;
     private readonly ISiteService _siteService;
     private readonly IEnumerable<ILoginFormEvent> _loginFormEvents;
     private readonly IShellFeaturesManager _shellFeaturesManager;
@@ -49,7 +47,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         UserManager<IUser> userManager,
         ILogger<ExternalAuthenticationsController> logger,
         IDataProtectionProvider dataProtectionProvider,
-        IDistributedCache distributedCache,
         ISiteService siteService,
         IHtmlLocalizer<ExternalAuthenticationsController> htmlLocalizer,
         IStringLocalizer<ExternalAuthenticationsController> stringLocalizer,
@@ -66,7 +63,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         _userManager = userManager;
         _logger = logger;
         _dataProtectionProvider = dataProtectionProvider;
-        _distributedCache = distributedCache;
         _siteService = siteService;
         _loginFormEvents = loginFormEvents;
         _shellFeaturesManager = shellFeaturesManager;
