@@ -14,7 +14,7 @@
         {
             @T["Azure AI Search is not configured."]
 
-            if (await AuthorizationService.AuthorizeAsync(User, AzureAISearchIndexPermissionHelper.ManageAzureAISearchIndexes))
+            if (await AuthorizationService.AuthorizeAsync(User, AzureAISearchPermissions.ManageAzureAISearchIndexes))
             {
                 <text>&nbsp;</text> @T["<a href=\"{0}\">Click here</a> to configure Azure AI Search service.", Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = AzureAISearchDefaultSettingsDisplayDriver.GroupId })]
             }

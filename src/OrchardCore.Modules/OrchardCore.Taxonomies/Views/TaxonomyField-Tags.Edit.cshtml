@@ -48,7 +48,7 @@
                 <div class="w-100">
                     <input asp-for="TermContentItemIds" type="hidden" v-model="selectedTagTermsIds" />
 
-                    <vue-multiselect v-model="selectedTagTerms"
+                    <vue-multiselect asp-validation-class-for="TermContentItemIds" v-model="selectedTagTerms"
                                  placeholder="@T["Type to search"]"
                                  select-label="@T["Select"]"
                                  deselect-label="@T["Remove"]"

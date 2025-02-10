@@ -11,7 +11,7 @@ public class PredicateQuery : IPredicateQuery
     private readonly IEnumerable<IIndexPropertyProvider> _propertyProviders;
 
     private readonly HashSet<string> _usedAliases = [];
-    private readonly Dictionary<string, string> _aliases = [];
+    private readonly Dictionary<string, (string alias, bool isPartial)> _aliases = [];
     private readonly Dictionary<string, string> _tableAliases = [];
 
     public PredicateQuery(
@@ -37,12 +37,15 @@ public class PredicateQuery : IPredicateQuery
     }
 
     public void CreateAlias(string path, string alias)
+        => CreateAlias(path, alias, false);
+
+    public void CreateAlias(string path, string alias, bool isPartial)
     {
         ArgumentNullException.ThrowIfNull(path);
 
         ArgumentNullException.ThrowIfNull(alias);
 
-        _aliases[path] = alias;
+        _aliases[path] = (alias, isPartial);
     }
 
     public void CreateTableAlias(string path, string tableAlias)
@@ -62,7 +65,7 @@ public class PredicateQuery : IPredicateQuery
         // aliasPart.Alias -> AliasFieldIndex.Alias
         if (_aliases.TryGetValue(propertyPath, out var alias))
         {
-            _usedAliases.Add(alias);
+            _usedAliases.Add(alias.alias);
             return;
         }
 
@@ -75,18 +78,18 @@ public class PredicateQuery : IPredicateQuery
         if (_aliases.TryGetValue(aliasPath, out alias))
         {
             // get the index property provider fore the alias
-            var propertyProvider = _propertyProviders.FirstOrDefault(x => x.IndexName.Equals(alias, StringComparison.OrdinalIgnoreCase));
+            var propertyProvider = _propertyProviders.FirstOrDefault(x => x.IndexName.Equals(alias.alias, StringComparison.OrdinalIgnoreCase));
 
             if (propertyProvider != null)
             {
                 if (propertyProvider.TryGetValue(propertyPath[(index + 1)..], out var columnName))
                 {
-                    _usedAliases.Add(alias);
+                    _usedAliases.Add(alias.alias);
                 }
             }
             else
             {
-                _usedAliases.Add(alias);
+                _usedAliases.Add(alias.alias);
             }
         }
         // else: No aliases registered for this path, return the formatted path.
@@ -100,7 +103,25 @@ public class PredicateQuery : IPredicateQuery
         // aliasPart.Alias -> AliasFieldIndex.Alias
         if (_aliases.TryGetValue(propertyPath, out var alias))
         {
-            return EnsureQuotes(alias);
+            if (alias.isPartial)
+            {
+                var tableAlias = _tableAliases[alias.alias];
+
+                var propertyProvider = _propertyProviders.FirstOrDefault(x => x.IndexName.Equals(alias.alias, StringComparison.OrdinalIgnoreCase)) ??
+                                       _propertyProviders.FirstOrDefault(x => string.IsNullOrEmpty(x.IndexName));
+
+                if (propertyProvider != null)
+                {
+                    if (propertyProvider.TryGetValue(propertyPath, out var columnName))
+                    {
+                        return EnsureQuotes(tableAlias, columnName);
+                    }
+                }
+
+                return EnsureQuotes(tableAlias, alias.alias);
+            }
+
+            return EnsureQuotes(alias.alias);
         }
 
         var index = IndexOfUnquoted(propertyPath, '.');
@@ -111,13 +132,13 @@ public class PredicateQuery : IPredicateQuery
         // get the actual index from the alias
         if (_aliases.TryGetValue(aliasPath, out alias))
         {
-            if (!_tableAliases.TryGetValue(alias, out var tableAlias))
+            if (!_tableAliases.TryGetValue(alias.alias, out var tableAlias))
             {
-                throw new InvalidOperationException($"Missing table alias for path {alias}.");
+                throw new InvalidOperationException($"Missing table alias for path {alias.alias}.");
             }
 
             // get the index property provider fore the alias
-            var propertyProvider = _propertyProviders.FirstOrDefault(x => x.IndexName.Equals(alias, StringComparison.OrdinalIgnoreCase));
+            var propertyProvider = _propertyProviders.FirstOrDefault(x => x.IndexName.Equals(alias.alias, StringComparison.OrdinalIgnoreCase));
 
             if (propertyProvider != null)
             {

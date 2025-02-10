@@ -19,9 +19,10 @@ public sealed class AdminMenu : AdminNavigationProvider
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Roles"], S["Roles"].PrefixPosition(), roles => roles
-                        .AddClass("roles").Id("roles")
+                        .AddClass("roles")
+                        .Id("roles")
                         .Action("Index", "Admin", "OrchardCore.Roles")
-                        .Permission(CommonPermissions.ManageRoles)
+                        .Permission(RolesPermissions.ManageRoles)
                         .LocalNav()
                     )
                 );
@@ -30,11 +31,12 @@ public sealed class AdminMenu : AdminNavigationProvider
         }
 
         builder
-            .Add(S["Access control"], accessControl => accessControl
+            .Add(S["Access Control"], accessControl => accessControl
                 .Add(S["Roles"], S["Roles"].PrefixPosition(), roles => roles
-                    .AddClass("roles").Id("roles")
+                    .AddClass("roles")
+                    .Id("roles")
                     .Action("Index", "Admin", "OrchardCore.Roles")
-                    .Permission(CommonPermissions.ManageRoles)
+                    .Permission(RolesPermissions.ManageRoles)
                     .LocalNav()
                 )
             );

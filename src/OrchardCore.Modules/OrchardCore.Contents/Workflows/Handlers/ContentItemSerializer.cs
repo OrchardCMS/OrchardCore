@@ -15,14 +15,13 @@ public class ContentItemSerializer : IWorkflowValueSerializer
 
     public async Task DeserializeValueAsync(SerializeWorkflowValueContext context)
     {
-        if (context.Input is JsonObject jObject)
+        if (context.Input is IDictionary<string, object> input)
         {
-            var type = jObject.Value<string>("Type");
-
-            if (type == "Content")
+            if (input.TryGetValue("Type", out var type) && string.Equals(type as string, "Content", StringComparison.Ordinal))
             {
-                var contentId = jObject.Value<string>("ContentId");
-                context.Output = contentId != null ? await _contentManager.GetAsync(contentId, VersionOptions.Latest) : default(IContent);
+                context.Output = input.TryGetValue("ContentId", out var contentIdObj) && contentIdObj is string contentId
+                    ? await _contentManager.GetAsync(contentId, VersionOptions.Latest)
+                    : default(IContent);
             }
         }
     }

@@ -82,7 +82,7 @@ public sealed class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<T
         if (settings.Required && field.TermContentItemIds.Length == 0)
         {
             context.Updater.ModelState.AddModelError(
-                nameof(EditTagTaxonomyFieldViewModel.TermContentItemIds),
+                $"{Prefix}.{nameof(EditTagTaxonomyFieldViewModel.TermContentItemIds)}",
                 S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
         }
 

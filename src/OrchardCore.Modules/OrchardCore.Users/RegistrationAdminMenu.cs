@@ -28,7 +28,7 @@ public sealed class RegistrationAdminMenu : AdminNavigationProvider
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
                         .Add(S["User Registration"], S["User Registration"].PrefixPosition(), registration => registration
-                            .Permission(CommonPermissions.ManageUsers)
+                            .Permission(UsersPermissions.ManageUsers)
                             .Action("Index", "Admin", _routeValues)
                             .LocalNav()
                         )
@@ -42,7 +42,7 @@ public sealed class RegistrationAdminMenu : AdminNavigationProvider
             .Add(S["Settings"], settings => settings
                 .Add(S["Security"], S["Security"].PrefixPosition(), security => security
                     .Add(S["Registration"], S["Registration"].PrefixPosition(), registration => registration
-                        .Permission(CommonPermissions.ManageUsers)
+                        .Permission(UsersPermissions.ManageUsers)
                         .Action("Index", "Admin", _routeValues)
                         .LocalNav()
                     )

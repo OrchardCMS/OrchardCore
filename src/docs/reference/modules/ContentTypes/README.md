@@ -10,11 +10,11 @@ The editor returns the selection as a `string[]` on the model.
 
 #### Parameters
 
-| Parameter | Type | Description |
-| --------- | ---- | ----------- |
-| `selectedContentTypes` | `string[]` | The list of content types that should be marked as selected when rendering the editor. |
-| `htmlName` | `string` | The name of the model property to bind the result to.
-| `stereotype` (optional) | `string` | A stereotype name to filter the list of content types available to select. |
+| Parameter               | Type       | Description                                                                            |
+|-------------------------|------------|----------------------------------------------------------------------------------------|
+| `selectedContentTypes`  | `string[]` | The list of content types that should be marked as selected when rendering the editor. |
+| `htmlName`              | `string`   | The name of the model property to bind the result to.                                  |
+| `stereotype` (optional) | `string`   | A stereotype name to filter the list of content types available to select.             |
 
 #### Sample
 

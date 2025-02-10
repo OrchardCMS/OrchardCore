@@ -6,18 +6,18 @@ public sealed class PermissionProvider : IPermissionProvider
 {
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        Permissions.ManageMedia,
-        Permissions.ManageMediaFolder,
-        Permissions.ManageOthersMedia,
-        Permissions.ManageOwnMedia,
-        Permissions.ManageAttachedMediaFieldsFolder,
-        Permissions.ManageMediaProfiles,
-        Permissions.ViewMediaOptions,
+        MediaPermissions.ManageMedia,
+        MediaPermissions.ManageMediaFolder,
+        MediaPermissions.ManageOthersMedia,
+        MediaPermissions.ManageOwnMedia,
+        MediaPermissions.ManageAttachedMediaFieldsFolder,
+        MediaPermissions.ManageMediaProfiles,
+        MediaPermissions.ViewMediaOptions,
     ];
 
     private readonly IEnumerable<Permission> _generalPermissions =
     [
-        Permissions.ManageOwnMedia,
+        MediaPermissions.ManageOwnMedia,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
@@ -30,9 +30,9 @@ public sealed class PermissionProvider : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
-                Permissions.ManageMediaFolder,
-                Permissions.ManageMediaProfiles,
-                Permissions.ViewMediaOptions,
+                MediaPermissions.ManageMediaFolder,
+                MediaPermissions.ManageMediaProfiles,
+                MediaPermissions.ViewMediaOptions,
             ],
         },
         new PermissionStereotype
@@ -40,8 +40,8 @@ public sealed class PermissionProvider : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Editor,
             Permissions =
             [
-                Permissions.ManageMedia,
-                Permissions.ManageOwnMedia,
+                MediaPermissions.ManageMedia,
+                MediaPermissions.ManageOwnMedia,
             ],
         },
         new PermissionStereotype

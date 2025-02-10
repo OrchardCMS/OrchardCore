@@ -55,11 +55,11 @@ Executes a query with the specified name and returns the corresponding content i
 
 Verbs: `POST` and `GET`
 
-| Parameter | Example | Description |
-| --------- | ---- |------------ |
-| `indexName` | `search` | The name of the index to query. |
-| `query` | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query. |
-| `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
+| Parameter    | Example                                        | Description                                             |
+|--------------|------------------------------------------------|---------------------------------------------------------|
+| `indexName`  | `search`                                       | The name of the index to query.                         |
+| `query`      | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query.                   |
+| `parameters` | `{ size: 3}`                                   | A JSON object representing the parameters of the query. |
 
 ### `api/lucene/documents`
 
@@ -68,11 +68,11 @@ Only the stored fields are returned.
 
 Verbs: `POST` and `GET`
 
-| Parameter | Example | Description |
-| --------- | ---- |------------ |
-| `indexName` | `search` | The name of the index to query. |
-| `query` | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query. |
-| `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
+| Parameter    | Example                                        | Description                                             |
+|--------------|------------------------------------------------|---------------------------------------------------------|
+| `indexName`  | `search`                                       | The name of the index to query.                         |
+| `query`      | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query.                   |
+| `parameters` | `{ size: 3}`                                   | A JSON object representing the parameters of the query. |
 
 ## Lucene Worker (`OrchardCore.Search.Lucene.Worker`)
 

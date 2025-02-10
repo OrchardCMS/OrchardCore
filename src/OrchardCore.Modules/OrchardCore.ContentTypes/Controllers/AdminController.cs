@@ -7,6 +7,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Utilities;
+using OrchardCore.Contents;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
@@ -63,7 +64,7 @@ public sealed class AdminController : Controller
     [Admin("ContentTypes/List", "ListContentTypes")]
     public async Task<ActionResult> List()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.ViewContentTypes))
         {
             return Forbid();
         }
@@ -77,7 +78,7 @@ public sealed class AdminController : Controller
     [Admin("ContentTypes/Create", "CreateType")]
     public async Task<ActionResult> Create(string suggestion)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -88,7 +89,7 @@ public sealed class AdminController : Controller
     [HttpPost, ActionName("Create")]
     public async Task<ActionResult> CreatePOST(CreateTypeViewModel viewModel)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -150,7 +151,7 @@ public sealed class AdminController : Controller
     [Admin("ContentTypes/Edit/{id}", "EditType")]
     public async Task<ActionResult> Edit(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -171,7 +172,7 @@ public sealed class AdminController : Controller
     [FormValueRequired("submit.Save")]
     public async Task<ActionResult> EditPOST(string id, EditTypeViewModel viewModel)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -212,7 +213,7 @@ public sealed class AdminController : Controller
     [FormValueRequired("submit.Delete")]
     public async Task<ActionResult> Delete(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -234,7 +235,7 @@ public sealed class AdminController : Controller
     [Admin("ContentTypes/AddPartsTo/{id}", "AddPartsTo")]
     public async Task<ActionResult> AddPartsTo(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -263,7 +264,7 @@ public sealed class AdminController : Controller
     [Admin("ContentTypes/AddReusablePartTo/{id}", "AddReusablePartTo")]
     public async Task<ActionResult> AddReusablePartTo(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -295,7 +296,7 @@ public sealed class AdminController : Controller
     [HttpPost, ActionName("AddPartsTo")]
     public async Task<ActionResult> AddPartsToPOST(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -332,7 +333,7 @@ public sealed class AdminController : Controller
     [HttpPost, ActionName("AddReusablePartTo")]
     public async Task<ActionResult> AddReusablePartToPOST(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -407,7 +408,7 @@ public sealed class AdminController : Controller
     [Admin("ContentTypes/{id}/ContentParts/{name}/Remove", "RemovePart")]
     public async Task<ActionResult> RemovePart(string id, string name)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -440,7 +441,7 @@ public sealed class AdminController : Controller
     [Admin("ContentTypes/ListParts", "ListContentParts")]
     public async Task<ActionResult> ListParts()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.ViewContentTypes))
         {
             return Forbid();
         }
@@ -455,7 +456,7 @@ public sealed class AdminController : Controller
     [Admin("ContentParts/Create", "CreatePart")]
     public async Task<ActionResult> CreatePart(string suggestion)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -466,7 +467,7 @@ public sealed class AdminController : Controller
     [HttpPost, ActionName("CreatePart")]
     public async Task<ActionResult> CreatePartPOST(CreatePartViewModel viewModel)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -519,7 +520,7 @@ public sealed class AdminController : Controller
     [Admin("ContentParts/Edit/{id}", "EditPart")]
     public async Task<ActionResult> EditPart(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -543,7 +544,7 @@ public sealed class AdminController : Controller
     [FormValueRequired("submit.Save")]
     public async Task<ActionResult> EditPartPOST(string id, string[] orderedFieldNames)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -578,7 +579,7 @@ public sealed class AdminController : Controller
     [FormValueRequired("submit.Delete")]
     public async Task<ActionResult> DeletePart(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -600,7 +601,7 @@ public sealed class AdminController : Controller
     [Admin("ContentTypes/AddFieldsTo/{id}", "AddFieldsTo")]
     public async Task<ActionResult> AddFieldTo(string id, string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -634,7 +635,7 @@ public sealed class AdminController : Controller
     [HttpPost, ActionName("AddFieldTo")]
     public async Task<ActionResult> AddFieldToPOST(AddFieldViewModel viewModel, string id, string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -716,7 +717,7 @@ public sealed class AdminController : Controller
     [Admin("ContentParts/{id}/Fields/{name}/Edit", "EditField")]
     public async Task<ActionResult> EditField(string id, string name, string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -754,7 +755,7 @@ public sealed class AdminController : Controller
     [FormValueRequired("submit.Save")]
     public async Task<ActionResult> EditFieldPOST(string id, EditFieldViewModel viewModel, string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -847,7 +848,7 @@ public sealed class AdminController : Controller
     [HttpPost, ActionName("RemoveFieldFrom")]
     public async Task<ActionResult> RemoveFieldFromPOST(string id, string name)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -885,7 +886,7 @@ public sealed class AdminController : Controller
     [Admin("ContentTypes/{id}/ContentParts/{name}/Edit", "EditTypePart")]
     public async Task<ActionResult> EditTypePart(string id, string name)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }
@@ -922,7 +923,7 @@ public sealed class AdminController : Controller
     [FormValueRequired("submit.Save")]
     public async Task<ActionResult> EditTypePartPOST(string id, EditTypePartViewModel viewModel)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
+        if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
         }

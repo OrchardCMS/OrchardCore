@@ -188,11 +188,11 @@ Executes a query with the specified name and returns the corresponding content i
 
 Verbs: `POST` and `GET`
 
-| Parameter | Example | Description |
-| --------- | ---- |------------ |
-| `indexName` | `search` | The name of the index to query. |
-| `query` | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query. |
-| `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
+| Parameter    | Example                                        | Description                                             |
+|--------------|------------------------------------------------|---------------------------------------------------------|
+| `indexName`  | `search`                                       | The name of the index to query.                         |
+| `query`      | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query.                   |
+| `parameters` | `{ size: 3}`                                   | A JSON object representing the parameters of the query. |
 
 ### `api/elasticsearch/documents`
 
@@ -200,11 +200,11 @@ Executes a query with the specified name and returns the corresponding Elasticse
 
 Verbs: `POST` and `GET`
 
-| Parameter | Example | Description |
-| --------- | ---- |------------ |
-| `indexName` | `search` | The name of the index to query. |
-| `query` | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query. |
-| `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
+| Parameter    | Example                                        | Description                                             |
+|--------------|------------------------------------------------|---------------------------------------------------------|
+| `indexName`  | `search`                                       | The name of the index to query.                         |
+| `query`      | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query.                   |
+| `parameters` | `{ size: 3}`                                   | A JSON object representing the parameters of the query. |
 
 ## Elasticsearch Queries
 
@@ -361,11 +361,11 @@ The equivalent of a `StringField` that will behave the same way as a `keyword` i
 
 Here is a small table to compare Lucene and Elasticsearch (string) types:
 
-| Lucene | Elasticsearch | Description |  When Stored  | Search Query type |
-|--------|---------------|---------------------------|-----------------|------------------|
-| StringField | Keyword  | A field that is indexed but not tokenized: the entire value is indexed as a single token     | original value AND indexed | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html) because indexed as a single token.  |
-| TextField   | Text     | A field that is indexed and tokenized, without term vectors | original value AND indexed  | [analyzed fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/full-text-queries.html). Also known as full-text search |
-| StoredField | stored in _source by mapping configuration | A field containing original value (not analyzed) | original value | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html) |
+| Lucene      | Elasticsearch                              | Description                                                                              | When Stored                | Search Query type                                                                                                                           |
+|-------------|--------------------------------------------|------------------------------------------------------------------------------------------|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| StringField | Keyword                                    | A field that is indexed but not tokenized: the entire value is indexed as a single token | original value AND indexed | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html) because indexed as a single token. |
+| TextField   | Text                                       | A field that is indexed and tokenized, without term vectors                              | original value AND indexed | [analyzed fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/full-text-queries.html). Also known as full-text search   |
+| StoredField | stored in _source by mapping configuration | A field containing original value (not analyzed)                                         | original value             | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html)                                    |
 
 ## Video
 

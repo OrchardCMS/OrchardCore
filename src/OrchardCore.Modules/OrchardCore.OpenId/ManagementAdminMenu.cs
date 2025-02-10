@@ -24,12 +24,12 @@ public sealed class ManagementAdminMenu : AdminNavigationProvider
                     .Add(S["Management"], S["Management"].PrefixPosition(), management => management
                         .Add(S["Applications"], S["Applications"].PrefixPosition(), applications => applications
                             .Action("Index", "Application", "OrchardCore.OpenId")
-                            .Permission(Permissions.ManageApplications)
+                            .Permission(OpenIdPermissions.ManageApplications)
                             .LocalNav()
                         )
                         .Add(S["Scopes"], S["Scopes"].PrefixPosition(), applications => applications
                             .Action("Index", "Scope", "OrchardCore.OpenId")
-                            .Permission(Permissions.ManageScopes)
+                            .Permission(OpenIdPermissions.ManageScopes)
                             .LocalNav()
                         )
                     )
@@ -40,18 +40,18 @@ public sealed class ManagementAdminMenu : AdminNavigationProvider
         }
 
         builder
-            .Add(S["Access control"], accessControl => accessControl
+            .Add(S["Access Control"], accessControl => accessControl
                 .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), openId => openId
                     .AddClass("openid")
                     .Id("openid")
                     .Add(S["Applications"], S["Applications"].PrefixPosition(), applications => applications
                         .Action("Index", "Application", "OrchardCore.OpenId")
-                        .Permission(Permissions.ManageApplications)
+                        .Permission(OpenIdPermissions.ManageApplications)
                         .LocalNav()
                     )
                     .Add(S["Scopes"], S["Scopes"].PrefixPosition(), applications => applications
                         .Action("Index", "Scope", "OrchardCore.OpenId")
-                        .Permission(Permissions.ManageScopes)
+                        .Permission(OpenIdPermissions.ManageScopes)
                         .LocalNav()
                     )
                 )

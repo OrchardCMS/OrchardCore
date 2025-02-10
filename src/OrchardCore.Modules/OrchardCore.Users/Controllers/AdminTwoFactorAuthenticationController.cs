@@ -24,7 +24,7 @@ public sealed class AdminTwoFactorAuthenticationController : Controller
 
     public async Task<IActionResult> Disable(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.DisableTwoFactorAuthenticationForUsers))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.DisableTwoFactorAuthenticationForUsers))
         {
             return Forbid();
         }
