@@ -23,7 +23,8 @@ namespace OrchardCore.OpenId.Controllers;
 
 // Note: the error descriptions used in this controller are deliberately not localized as
 // the OAuth 2.0 specification only allows select US-ASCII characters in error_description.
-[Authorize, Feature(OpenIdConstants.Features.Server)]
+[Authorize]
+[Feature(OpenIdConstants.Features.Server)]
 public sealed class AccessController : Controller
 {
     private readonly IOpenIdApplicationManager _applicationManager;
@@ -43,7 +44,11 @@ public sealed class AccessController : Controller
         _shellSettings = shellSettings;
     }
 
-    [AllowAnonymous, DisableCors, HttpGet, HttpPost, IgnoreAntiforgeryToken]
+    [AllowAnonymous]
+    [DisableCors]
+    [HttpGet]
+    [HttpPost]
+    [IgnoreAntiforgeryToken]
     public async Task<IActionResult> Authorize()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
@@ -143,7 +148,7 @@ public sealed class AccessController : Controller
 
         IActionResult RedirectToLoginPage(OpenIddictRequest request)
         {
-            // If the client application requested promptless authentication,
+            // If the client application requested prompt-less authentication,
             // return an error indicating that the user is not logged in.
             if (request.HasPromptValue(PromptValues.None))
             {
@@ -176,32 +181,11 @@ public sealed class AccessController : Controller
         }
     }
 
-    private static void PopulateIdentityClaims(ClaimsPrincipal principal, ClaimsIdentity identity)
-    {
-        // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
-        // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
-        // subject claim is correctly populated (and avoid an InvalidOperationException), it's manually added here.
-        if (!principal.HasClaim(static claim => claim.Type is Claims.Subject))
-        {
-            identity.AddClaim(new Claim(Claims.Subject, principal.GetUserIdentifier()));
-        }
-
-        if (!principal.HasClaim(static claim => claim.Type is Claims.Name))
-        {
-            identity.AddClaim(new Claim(Claims.Name, principal.GetUserName()));
-        }
-
-        if (!principal.HasClaim(static claim => claim.Type is Claims.Role))
-        {
-            foreach (var role in principal.GetRoles())
-            {
-                identity.AddClaim(new Claim(Claims.Role, role));
-            }
-        }
-    }
-
-    [ActionName(nameof(Authorize)), DisableCors]
-    [FormValueRequired("submit.Accept"), HttpPost]
+    [DisableCors]
+    [Route("connect/authorize/accept")]
+    [HttpPost]
+    [FormValueRequired("submit.Accept")]
+    [ActionName(nameof(Authorize))]
     public async Task<IActionResult> AuthorizeAccept()
     {
         // Warning: unlike the main Authorize method, this method MUST NOT be decorated with
@@ -274,8 +258,11 @@ public sealed class AccessController : Controller
         }
     }
 
-    [ActionName(nameof(Authorize)), DisableCors]
-    [FormValueRequired("submit.Deny"), HttpPost]
+    [DisableCors]
+    [Route("connect/authorize/deny")]
+    [FormValueRequired("submit.Deny")]
+    [HttpPost]
+    [ActionName(nameof(Authorize))]
     public IActionResult AuthorizeDeny()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
@@ -297,7 +284,11 @@ public sealed class AccessController : Controller
         return Forbid(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 
-    [AllowAnonymous, DisableCors, HttpGet, HttpPost, IgnoreAntiforgeryToken]
+    [AllowAnonymous]
+    [DisableCors]
+    [HttpGet]
+    [HttpPost]
+    [IgnoreAntiforgeryToken]
     public async Task<IActionResult> Logout()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
@@ -333,8 +324,12 @@ public sealed class AccessController : Controller
         });
     }
 
-    [ActionName(nameof(Logout)), AllowAnonymous, DisableCors]
-    [FormValueRequired("submit.Accept"), HttpPost]
+    [AllowAnonymous]
+    [DisableCors]
+    [HttpPost]
+    [Route("connect/logout/accept")]
+    [ActionName(nameof(Logout))]
+    [FormValueRequired("submit.Accept")]
     public async Task<IActionResult> LogoutAccept()
     {
         var response = HttpContext.GetOpenIddictServerResponse();
@@ -370,7 +365,10 @@ public sealed class AccessController : Controller
         return SignOut(OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
     }
 
-    [ActionName(nameof(Logout)), AllowAnonymous, DisableCors]
+    [AllowAnonymous]
+    [DisableCors]
+    [Route("connect/logout/deny")]
+    [ActionName(nameof(Logout))]
     [FormValueRequired("submit.Deny"), HttpPost]
     public IActionResult LogoutDeny()
     {
@@ -393,7 +391,8 @@ public sealed class AccessController : Controller
         return Redirect("~/");
     }
 
-    [AllowAnonymous, HttpPost]
+    [AllowAnonymous]
+    [HttpPost]
     [IgnoreAntiforgeryToken]
     [Produces("application/json")]
     public Task<IActionResult> Token()
@@ -656,4 +655,29 @@ public sealed class AccessController : Controller
 
         return resources;
     }
+
+    private static void PopulateIdentityClaims(ClaimsPrincipal principal, ClaimsIdentity identity)
+    {
+        // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
+        // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
+        // subject claim is correctly populated (and avoid an InvalidOperationException), it's manually added here.
+        if (!principal.HasClaim(static claim => claim.Type is Claims.Subject))
+        {
+            identity.AddClaim(new Claim(Claims.Subject, principal.GetUserIdentifier()));
+        }
+
+        if (!principal.HasClaim(static claim => claim.Type is Claims.Name))
+        {
+            identity.AddClaim(new Claim(Claims.Name, principal.GetUserName()));
+        }
+
+        if (!principal.HasClaim(static claim => claim.Type is Claims.Role))
+        {
+            foreach (var role in principal.GetRoles())
+            {
+                identity.AddClaim(new Claim(Claims.Role, role));
+            }
+        }
+    }
+
 }
