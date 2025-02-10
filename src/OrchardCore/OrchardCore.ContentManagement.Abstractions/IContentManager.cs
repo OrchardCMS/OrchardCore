@@ -120,9 +120,9 @@ public interface IContentManager
     /// <param name="contentItem"></param>
     Task SaveDraftAsync(ContentItem contentItem);
 
-    Task PublishAsync(ContentItem contentItem);
+    Task<bool> PublishAsync(ContentItem contentItem);
 
-    Task UnpublishAsync(ContentItem contentItem);
+    Task<bool> UnpublishAsync(ContentItem contentItem);
 
     Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect);
 

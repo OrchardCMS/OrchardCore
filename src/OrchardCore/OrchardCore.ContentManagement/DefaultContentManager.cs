@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.CompiledQueries;
 using OrchardCore.ContentManagement.Handlers;
@@ -8,6 +10,8 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 using YesSql;
 using YesSql.Services;
@@ -29,6 +33,8 @@ public class DefaultContentManager : IContentManager
     private readonly IContentManagerSession _contentManagerSession;
     private readonly IContentItemIdGenerator _idGenerator;
     private readonly IClock _clock;
+    private readonly IUpdateModelAccessor _updateModelAccessor;
+    protected readonly IStringLocalizer S;
 
     public DefaultContentManager(
         IContentDefinitionManager contentDefinitionManager,
@@ -37,7 +43,9 @@ public class DefaultContentManager : IContentManager
         ISession session,
         IContentItemIdGenerator idGenerator,
         ILogger<DefaultContentManager> logger,
-        IClock clock)
+        IClock clock,
+        IUpdateModelAccessor updateModelAccessor,
+        IStringLocalizer<DefaultContentManager> localizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
         Handlers = handlers;
@@ -46,6 +54,8 @@ public class DefaultContentManager : IContentManager
         _contentManagerSession = contentManagerSession;
         _logger = logger;
         _clock = clock;
+        _updateModelAccessor = updateModelAccessor;
+        S = localizer;
     }
 
     public IEnumerable<IContentHandler> Handlers { get; private set; }
@@ -361,13 +371,13 @@ public class DefaultContentManager : IContentManager
         await ReversedHandlers.InvokeAsync((handler, context) => handler.DraftSavedAsync(context), context, _logger);
     }
 
-    public async Task PublishAsync(ContentItem contentItem)
+    public async Task<bool> PublishAsync(ContentItem contentItem)
     {
         ArgumentNullException.ThrowIfNull(contentItem);
 
         if (contentItem.Published)
         {
-            return;
+            return true;
         }
 
         // Create a context for the item and it's previous published record
@@ -385,7 +395,20 @@ public class DefaultContentManager : IContentManager
 
         if (context.Cancel)
         {
-            return;
+            if (_updateModelAccessor.ModelUpdater is not null)
+            {
+                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+                {
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Publishing '{0}' was cancelled.", contentItem.DisplayText]);
+                }
+                else
+                {
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Publishing {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+                }
+            }
+            
+            return false;
         }
 
         if (previous != null)
@@ -398,9 +421,11 @@ public class DefaultContentManager : IContentManager
         await _session.SaveAsync(contentItem, checkConcurrency: true);
 
         await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), context, _logger);
+
+        return true;
     }
 
-    public async Task UnpublishAsync(ContentItem contentItem)
+    public async Task<bool> UnpublishAsync(ContentItem contentItem)
     {
         ArgumentNullException.ThrowIfNull(contentItem);
 
@@ -425,7 +450,7 @@ public class DefaultContentManager : IContentManager
         if (publishedItem == null)
         {
             // No published version exists. no work to perform.
-            return;
+            return true;
         }
 
         // Create a context for the item. the publishing version is null in this case
@@ -440,11 +465,31 @@ public class DefaultContentManager : IContentManager
 
         await Handlers.InvokeAsync((handler, context) => handler.UnpublishingAsync(context), context, _logger);
 
+        if (context.Cancel)
+        {
+            if (_updateModelAccessor.ModelUpdater is not null)
+            {
+                var typeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+                if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
+                {
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Unpublishing '{0}' was cancelled.", contentItem.DisplayText]);
+                }
+                else
+                {
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Unpublishing {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
+                }
+            }
+            
+            return false;
+         }
+
         publishedItem.Published = false;
         publishedItem.ModifiedUtc = _clock.UtcNow;
         await _session.SaveAsync(publishedItem, checkConcurrency: true);
 
         await ReversedHandlers.InvokeAsync((handler, context) => handler.UnpublishedAsync(context), context, _logger);
+
+        return true;
     }
 
     protected async Task<ContentItem> BuildNewVersionAsync(ContentItem existingContentItem)
