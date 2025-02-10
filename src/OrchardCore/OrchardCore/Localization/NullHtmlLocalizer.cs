@@ -1,4 +1,3 @@
-using System.Globalization;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 
@@ -58,8 +57,4 @@ public class NullHtmlLocalizer : IHtmlLocalizer
     /// <inheritdoc/>
     public LocalizedString GetString(string name, params object[] arguments)
         => NullStringLocalizer.Instance.GetString(name, arguments);
-
-    /// <inheritdoc/>
-    [Obsolete("This method will be removed in the upcoming ASP.NET Core major release.")]
-    public IHtmlLocalizer WithCulture(CultureInfo culture) => Instance;
 }
