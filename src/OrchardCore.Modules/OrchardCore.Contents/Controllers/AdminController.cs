@@ -225,14 +225,11 @@ public sealed class AdminController : Controller, IUpdateModel
         if (TempData.TryGetValue(nameof(ModelState), out var modelStateJson) && modelStateJson is string)
         {
             var errors = JsonSerializer.Deserialize<Dictionary<string, string[]>>((string)modelStateJson);
-            if (errors != null)
+            if (errors is not null)
             {
-                foreach (var error in errors)
+                foreach (var errorMessage in errors.SelectMany(e => e.Value))
                 {
-                    foreach (var errorMessage in error.Value)
-                    {
-                        ModelState.AddModelError(error.Key, errorMessage);
-                    }
+                    ModelState.AddModelError(error.Key, errorMessage);
                 }
             }
         }
@@ -274,7 +271,7 @@ public sealed class AdminController : Controller, IUpdateModel
             var checkedContentItems = await _session.Query<ContentItem, ContentItemIndex>()
                 .Where(x => x.DocumentId.IsIn(itemIds) && x.Latest)
                 .ListAsync(_contentManager);
-            bool authorized = false;
+            var isAuthorized = false;
             switch (options.BulkAction)
             {
                 case ContentsBulkAction.None:
@@ -299,7 +296,10 @@ public sealed class AdminController : Controller, IUpdateModel
                         {
                             await _notifier.WarningAsync(H["Couldn't unpublish selected content."]);
                             await _session.CancelAsync();
-                            return authorized ? RedirectToListActionWithModelState() : Forbid();
+
+                            return authorized
+                                ? RedirectToListActionWithModelState() 
+                                : Forbid();
                         }
                     }
                     await _notifier.SuccessAsync(H["Content unpublished successfully."]);
@@ -400,6 +400,7 @@ public sealed class AdminController : Controller, IUpdateModel
 
                 return true;
             }
+
             return false;
         });
     }
@@ -620,6 +621,7 @@ public sealed class AdminController : Controller, IUpdateModel
 
         if (published)
         {
+
             if (string.IsNullOrEmpty(typeDefinition?.DisplayName))
             {
                 await _notifier.SuccessAsync(H["That content has been published."]);
@@ -845,6 +847,7 @@ public sealed class AdminController : Controller, IUpdateModel
             );
 
         TempData[nameof(ModelState)] = JsonSerializer.Serialize(errors);
+
         return RedirectToAction(nameof(List));
     }
 }

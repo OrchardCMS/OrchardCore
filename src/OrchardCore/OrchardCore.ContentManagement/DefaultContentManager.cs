@@ -36,7 +36,6 @@ public class DefaultContentManager : IContentManager
     private readonly IUpdateModelAccessor _updateModelAccessor;
     protected readonly IStringLocalizer S;
 
-
     public DefaultContentManager(
         IContentDefinitionManager contentDefinitionManager,
         IContentManagerSession contentManagerSession,
@@ -408,6 +407,7 @@ public class DefaultContentManager : IContentManager
                     _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Publishing {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
                 }
             }
+            
             return false;
         }
 
@@ -479,6 +479,7 @@ public class DefaultContentManager : IContentManager
                     _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Unpublishing {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
                 }
             }
+            
             return false;
          }
 
