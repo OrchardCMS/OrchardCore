@@ -49,7 +49,7 @@ public sealed class Startup : StartupBase
 }
 
 [RequireFeatures("OrchardCore.Contents")]
-public sealed class DeploymentStartup : StartupBase
+public sealed class ContentsStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
