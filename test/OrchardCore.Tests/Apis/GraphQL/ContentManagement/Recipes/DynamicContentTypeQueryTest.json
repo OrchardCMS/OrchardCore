@@ -150,6 +150,7 @@
           "DisplayText": "Product 1",
           "Latest": true,
           "Published": true,
+          "CreatedUtc": "2024-04-07T00:00:00Z",
           "PricePart": {
             "Amount": {
               "Value": 10
@@ -175,6 +176,7 @@
           "DisplayText": "Product 2",
           "Latest": true,
           "Published": true,
+          "CreatedUtc": "2024-05-18T00:00:00Z",
           "PricePart": {
             "Amount": {
               "Value": 22
