@@ -274,7 +274,7 @@ public sealed class AdminController : Controller, IUpdateModel
             var checkedContentItems = await _session.Query<ContentItem, ContentItemIndex>()
                 .Where(x => x.DocumentId.IsIn(itemIds) && x.Latest)
                 .ListAsync(_contentManager);
-            var isAuthorized = false;
+
             switch (options.BulkAction)
             {
                 case ContentsBulkAction.None:
@@ -282,14 +282,15 @@ public sealed class AdminController : Controller, IUpdateModel
                 case ContentsBulkAction.PublishNow:
                     foreach (var item in checkedContentItems)
                     {
-                        if (!(isAuthorized = await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, item)) || !await _contentManager.PublishAsync(item))
+                        if (await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, item) is var authorized
+                            && !(authorized && await _contentManager.PublishAsync(item)))
                         {
                             await _notifier.WarningAsync(H["Couldn't publish selected content."]);
                             await _session.CancelAsync();
 
-                            return isAuthorized
-                                    ? RedirectToListActionWithModelState()
-                                    : Forbid();
+                            return authorized
+                                ? RedirectToListActionWithModelState()
+                                : Forbid();
                         }
                     }
                     await _notifier.SuccessAsync(H["Content published successfully."]);
@@ -297,13 +298,14 @@ public sealed class AdminController : Controller, IUpdateModel
                 case ContentsBulkAction.Unpublish:
                     foreach (var item in checkedContentItems)
                     {
-                        if (!(isAuthorized = await IsAuthorizedAsync(CommonPermissions.PublishContent, item)) || !await _contentManager.UnpublishAsync(item))
+                        if (await IsAuthorizedAsync(CommonPermissions.PublishContent, item) is var authorized
+                            && !(authorized && await _contentManager.UnpublishAsync(item)))
                         {
                             await _notifier.WarningAsync(H["Couldn't unpublish selected content."]);
                             await _session.CancelAsync();
 
-                            return isAuthorized
-                                ? RedirectToListActionWithModelState() 
+                            return authorized
+                                ? RedirectToListActionWithModelState()
                                 : Forbid();
                         }
                     }
