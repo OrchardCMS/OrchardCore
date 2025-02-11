@@ -12,7 +12,7 @@
     var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "ContentPickerAdmin", action = "SearchContentItems", part = partName, field = fieldName });
     var vueElementId = $"ContentPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
-    var isValidationRequired = settings.Required && !Model.SelectedItems.Any();
+    var isValidationRequired = settings.Required && !Model.SelectedItems.Any() && !ViewData.ModelState.IsValid;
 }
 
 <script asp-name="vue-multiselect-wrapper" asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-wrapper.js" at="Foot" depends-on="vuejs:2,vue-multiselect,sortable,vuedraggable"></script>
@@ -43,7 +43,7 @@
                 </draggable>
             </ul>
 
-            <div class="w-lg-75 w-xxl-50 @(IsValidationRequired ? "Content-Picker-Required" : string.Empty)">
+            <div class="w-lg-75 w-xxl-50 @(isValidationRequired ? "Content-Picker-Required" : string.Empty)">
                 <input asp-for="ContentItemIds" type="hidden" v-model="selectedIds" />
                 <vue-multiselect v-model="value" :options="options" track-by="id"
                                  label="displayText" placeholder="@T["Type to search"]"
