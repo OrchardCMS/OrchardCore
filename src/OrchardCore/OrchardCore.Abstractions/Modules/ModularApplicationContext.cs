@@ -36,21 +36,24 @@ public class ModularApplicationContext : IApplicationContext
         }
     }
 
-    private ConcurrentBag<Module> GetModules()
+    private List<Module> GetModules()
     {
-        var modules = new ConcurrentBag<Module>
-        {
-            new(_environment.ApplicationName, true),
-        };
-
+        var modules = new List<Module> { new(_environment.ApplicationName, true) };
         var names = _moduleNamesProviders
             .SelectMany(p => p.GetModuleNames())
             .Where(n => n != _environment.ApplicationName)
-            .Distinct();
+            .Distinct()
+            .ToList();
+
+        object lockObj = new object();
 
         Parallel.ForEach(names, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (name) =>
         {
-            modules.Add(new Module(name, false));
+            var module = new Module(name, false);
+            lock (lockObj) // Ensures thread-safe addition
+            {
+                modules.Add(module);
+            }
         });
 
         return modules;
