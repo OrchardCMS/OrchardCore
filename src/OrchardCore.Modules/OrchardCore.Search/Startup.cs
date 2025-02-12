@@ -32,9 +32,6 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
         services.AddSiteDisplayDriver<SearchSettingsDisplayDriver>();
-
-        services.AddContentPart<SearchFormPart>()
-                .UseDisplayDriver<SearchFormPartDisplayDriver>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -54,6 +51,10 @@ public sealed class ContentsStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDataMigration<SearchMigrations>();
+
+        services
+            .AddContentPart<SearchFormPart>()
+            .UseDisplayDriver<SearchFormPartDisplayDriver>();
     }
 }
 
