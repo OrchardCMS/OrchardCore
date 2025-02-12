@@ -2318,7 +2318,6 @@ __metadata:
     bootstrap: "npm:5.3.3"
     child_process: "npm:^1.0.2"
     es6-promise: "npm:4.2.8"
-    fontawesome-iconpicker: "npm:3.2.0"
     glob: "npm:^10.3.12"
     graceful-fs: "npm:4.2.11"
     gulp: "npm:^4.0.2"
