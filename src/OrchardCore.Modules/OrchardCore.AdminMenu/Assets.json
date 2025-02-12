@@ -34,12 +34,5 @@
     "name": "admin-menu",
     "source": "Assets/js/admin-menu.js",
     "tags": ["admin", "dashboard", "js"]
-  },
-  {
-    "action": "parcel",
-    "name": "admin-menu-icon-picker",
-    "source": "Assets/js/admin-menu-icon-picker.ts",
-    "dest": "wwwroot/Scripts/",
-    "tags": ["admin", "dashboard", "js"]
   }
 ]
