@@ -13,29 +13,34 @@ public static class TaxonomyFieldDriverHelper
     /// </summary>
     public static void PopulateTermEntries(List<TermEntry> termEntries, TaxonomyField field, IEnumerable<ContentItem> contentItems, int level)
     {
-        foreach (var contentItem in contentItems)
+        foreach (var selectedTermContentItemId in field.TermContentItemIds)
         {
-            var children = Array.Empty<ContentItem>();
-
-            if (((JsonObject)contentItem.Content)["Terms"] is JsonArray termsArray)
+            if (contentItems.Any(x => x.ContentItemId == selectedTermContentItemId))
             {
-                children = termsArray.ToObject<ContentItem[]>();
-            }
+                var contentItem = contentItems.First(x => x.ContentItemId == selectedTermContentItemId);
 
-            var termEntry = new TermEntry
-            {
-                Term = contentItem,
-                ContentItemId = contentItem.ContentItemId,
-                Selected = field.TermContentItemIds.Contains(contentItem.ContentItemId),
-                Level = level,
-                IsLeaf = children.Length == 0
-            };
+                var children = Array.Empty<ContentItem>();
 
-            termEntries.Add(termEntry);
+                if (((JsonObject)contentItem.Content)["Terms"] is JsonArray termsArray)
+                {
+                    children = termsArray.ToObject<ContentItem[]>();
+                }
 
-            if (children.Length > 0)
-            {
-                PopulateTermEntries(termEntries, field, children, level + 1);
+                var termEntry = new TermEntry
+                {
+                    Term = contentItem,
+                    ContentItemId = contentItem.ContentItemId,
+                    Selected = field.TermContentItemIds.Contains(contentItem.ContentItemId),
+                    Level = level,
+                    IsLeaf = children.Length == 0
+                };
+
+                termEntries.Add(termEntry);
+
+                if (children.Length > 0)
+                {
+                    PopulateTermEntries(termEntries, field, children, level + 1);
+                }
             }
         }
     }
