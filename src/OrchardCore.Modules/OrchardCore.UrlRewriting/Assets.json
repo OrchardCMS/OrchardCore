@@ -1,14 +1,15 @@
+
 [
   {
-    "inputs": [
-      "Assets/js/sortable-rules.js"
-    ],
-    "output": "wwwroot/Scripts/sortable-rules.js"
+    "action": "min",
+    "name": "url-rewriting",
+    "source": "Assets/js/sortable-rules.js",
+    "tags": ["admin", "dashboard", "js"]
   },
   {
-    "inputs": [
-      "Assets/js/admin-ui.js"
-    ],
-    "output": "wwwroot/Scripts/admin-ui.js"
+    "action": "min",
+    "name": "url-rewriting",
+    "source": "Assets/js/admin-ui.js",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]

@@ -1,32 +1,32 @@
 [
   {
-    "inputs": [
-      "Assets/scss/menu.scss"
-    ],
-    "output": "wwwroot/Styles/menu.css"
+    "action": "sass",
+    "name": "taxonomies-menu",
+    "source": "Assets/scss/menu.scss",
+    "tags": ["admin", "dashboard", "css"]
   },
   {
-    "inputs": [
-      "Assets/scss/tags-editor.scss"
-    ],
-    "output": "wwwroot/Styles/tags-editor.css"
+    "action": "sass",
+    "name": "taxonomies-tags-editor",
+    "source": "Assets/scss/tags-editor.scss",
+    "tags": ["admin", "dashboard", "css"]
   },
   {
-    "inputs": [
-      "Assets/js/jquery.mjs.nestedSortable.js"
-    ],
-    "output": "wwwroot/Scripts/menu.js"
+    "action": "min",
+    "name": "taxonomies-menu",
+    "source": "Assets/js/menu.js",
+    "tags": ["admin", "dashboard", "js"]
   },
   {
-    "inputs": [
-      "Assets/js/activate-links.js"
-    ],
-    "output": "wwwroot/Scripts/activate-links.js"
+    "action": "min",
+    "name": "taxonomies-activate-links",
+    "source": "Assets/js/activate-links.js",
+    "tags": ["admin", "dashboard", "js"]
   },
   {
-    "inputs": [
-      "Assets/js/tags-editor.js"
-    ],
-    "output": "wwwroot/Scripts/tags-editor.js"
+    "action": "min",
+    "name": "taxonomies-tags-editor",
+    "source": "Assets/js/tags-editor.js",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]
