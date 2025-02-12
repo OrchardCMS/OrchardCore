@@ -12,7 +12,7 @@
     var editorId = "contentEditor_" + Model.PrefixValue;
 }
 
-<div class="widget widget-editor card my-1@(Model.Inline ? " collapsed" : string.Empty)">
+<div class="widget widget-editor card my-1@(!Model.Inline ? " collapsed" : string.Empty)">
     <div class="widget-editor-header card-header text-muted py-1 ps-2 pe-1">
         @if (Model.CanMove != false)
         {
