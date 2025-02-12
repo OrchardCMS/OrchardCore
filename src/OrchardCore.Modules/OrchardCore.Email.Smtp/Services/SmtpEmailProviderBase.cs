@@ -108,16 +108,11 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
 
         mimeMessage.Subject = message.Subject;
 
-        var body = new BodyBuilder();
-
-        if (message.IsHtmlBody)
+        var body = new BodyBuilder
         {
-            body.HtmlBody = message.Body;
-        }
-        else
-        {
-            body.TextBody = message.Body;
-        }
+            TextBody = message.TextBody,
+            HtmlBody = message.HtmlBody
+        };
 
         foreach (var attachment in message.Attachments)
         {

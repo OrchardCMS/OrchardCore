@@ -198,15 +198,11 @@ public abstract class AzureEmailProviderBase : IEmailProvider
             }
         }
 
-        var content = new EmailContent(message.Subject);
-        if (message.IsHtmlBody)
+        var content = new EmailContent(message.Subject)
         {
-            content.Html = message.Body;
-        }
-        else
-        {
-            content.PlainText = message.Body;
-        }
+            PlainText = message.TextBody,
+            Html = message.HtmlBody
+        };
 
         var emailMessage = new EmailMessage(
             message.From,
