@@ -31,6 +31,7 @@
     "bootstrap": "5.3.3",
     "child_process": "^1.0.2",
     "es6-promise": "4.2.8",
+    "fontawesome-iconpicker": "3.2.0",
     "glob": "^10.3.12",
     "graceful-fs": "4.2.11",
     "gulp": "^4.0.2",
