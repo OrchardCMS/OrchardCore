@@ -33,9 +33,9 @@ public class LocalizationManager : ILocalizationManager
     }
 
     /// <inheritdoc />
-    public CultureDictionary GetDictionary(CultureInfo culture)
+    public async Task<CultureDictionary> GetDictionaryAsync(CultureInfo culture)
     {
-        var cachedDictionary = _cache.GetOrCreate(CacheKeyPrefix + culture.Name, k => new Lazy<CultureDictionary>(() =>
+        var cachedDictionary = await _cache.GetOrCreateAsync(CacheKeyPrefix + culture.Name, async (e) =>
         {
             var rule = _defaultPluralRule;
 
@@ -50,12 +50,12 @@ public class LocalizationManager : ILocalizationManager
             var dictionary = new CultureDictionary(culture.Name, rule ?? _defaultPluralRule);
             foreach (var translationProvider in _translationProviders)
             {
-                translationProvider.LoadTranslations(culture.Name, dictionary);
+                await translationProvider.LoadTranslationsAsync(culture.Name, dictionary);
             }
 
             return dictionary;
-        }, LazyThreadSafetyMode.ExecutionAndPublication));
+        });
 
-        return cachedDictionary.Value;
+        return cachedDictionary;
     }
 }
