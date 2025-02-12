@@ -8,7 +8,7 @@ using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Data;
 using YesSql.Indexes;
 
-namespace OrchardCore.Autoroute.Core.Indexes;
+namespace OrchardCore.Autoroute.Indexes;
 
 public class AutoroutePartIndex : MapIndex
 {
