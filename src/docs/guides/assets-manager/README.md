@@ -201,7 +201,7 @@ const __dirname = path.dirname(__filename);
 export default defineConfig({
   plugins: [vue()],
   build: {
-    outDir: path.resolve(__dirname, '../wwwroot/Scripts/Media2/'),
+    outDir: path.resolve(__dirname, '../../wwwroot/Scripts/Media2/'),
   },
 })
 ```
@@ -210,7 +210,7 @@ Execute Vite dev server from the asset manager tool:
 
 ```sh
 # Move to Orchard Core src folder
-cd ../../../../../
+cd C:/repo/OrchardCore/src
 
 # Install dependencies
 yarn 

@@ -145,7 +145,7 @@ const init = () => {
             const popover = document.createElement("div");
             popover.className = "popover bs-popover-top";
             popover.role = "tooltip";
-            popover.innerHTML = `<div class="popover-header">Password requirements: </div><div class="popover-body"><ul><li>Minimum length: ${
+            popover.innerHTML = `<div class="popover-arrow" style="position: absolute; left: 0px; transform: translate(119px, 0px);"></div><div class="popover-header">Password requirements: </div><div class="popover-body"><ul><li>Minimum length: ${
                 options.requiredLength
             }</li><li>Unique Chars: ${
                 options.requiredUniqueChars
@@ -161,7 +161,7 @@ const init = () => {
 
             const rect = passwordElement.getBoundingClientRect();
             popover.style.position = "absolute";
-            popover.style.top = `${rect.top + 53}px`;
+            popover.style.top = `${rect.top - 228}px`;
             popover.style.left = `${rect.left}px`;
             document.body.appendChild(popover);
 
