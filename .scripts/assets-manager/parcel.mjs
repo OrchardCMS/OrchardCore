@@ -68,7 +68,7 @@ async function runParcel(command, assetConfig) {
   }
 }
 
-// builds the options to pass to the parcel constructor.
+// Builds the options to pass to the parcel constructor.
 function buildParcelOptions(command, assetConfig) {
   let nodeEnv;
   if (command === "build") {

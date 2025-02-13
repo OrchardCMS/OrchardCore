@@ -223,7 +223,7 @@ const { result } = concurrently(
 
 result.then(
   () => {
-    console.log(chalk.bold.green("Success !"));
+    console.log(chalk.bold.green("Success!"));
     process.exit(0);
   },
   (closeEvents) => {

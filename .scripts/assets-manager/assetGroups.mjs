@@ -5,7 +5,7 @@ import path from "path";
 
 import buildConfig from "./config.mjs";
 
-// get's an object representation of all Assets.json in the solution
+// Gets an object representation of all Assets.json in the solution.
 export default function getAllAssetGroups() {
   var assetGroups = [];
   getAssetsJsonPaths().forEach(function (assetManifestPath) {
