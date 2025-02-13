@@ -6,31 +6,31 @@
 
 The following shapes are rendered when the `HtmlBodyPart` is attached to a content type:
 
-| Name | Display Type | Default Location | Model Type |
-| ------| ------------ |----------------- | ---------- |
-| `HtmlBodyPart` | `Detail` | `Content:5` | `HtmlBodyPartViewModel` |
-| `HtmlBodyPart` | `Summary` | `Content:10` | `HtmlBodyPartViewModel` |
+| Name           | Display Type | Default Location | Model Type              |
+|----------------|--------------|------------------|-------------------------|
+| `HtmlBodyPart` | `Detail`     | `Content:5`      | `HtmlBodyPartViewModel` |
+| `HtmlBodyPart` | `Summary`    | `Content:10`     | `HtmlBodyPartViewModel` |
 
 ### HtmlBodyPartViewModel
 
 The following properties are available on the `HtmlBodyPartViewModel` class:
 
-| Property | Type | Description |
-| --------- | ---- |------------ |
-| `Body` | `string` | The content that was edited. It might contain tokens. |
-| `Html` | `string` | The HTML content once all tokens have been processed. |
-| `ContentItem` | `ContentItem` | The content item of the part. |
-| `HtmlBodyPart` | `HtmlBodyPart` | The `HtmlBodyPart` instance. |
-| `TypePartSettings` | `HtmlBodyPartSettings` | The settings of the part. |
+| Property           | Type                   | Description                                           |
+|--------------------|------------------------|-------------------------------------------------------|
+| `Body`             | `string`               | The content that was edited. It might contain tokens. |
+| `Html`             | `string`               | The HTML content once all tokens have been processed. |
+| `ContentItem`      | `ContentItem`          | The content item of the part.                         |
+| `HtmlBodyPart`     | `HtmlBodyPart`         | The `HtmlBodyPart` instance.                          |
+| `TypePartSettings` | `HtmlBodyPartSettings` | The settings of the part.                             |
 
 ### HtmlBodyPart
 
 The following properties are available on `HtmlBodyPart`:
 
-| Name | Type | Description |
-| -----| ---- |------------ |
-| `Body` | `string` | The HTML content in the body. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `HtmlBodyPart` shape instead. |
-| `Content` | The raw content of the part. |
+| Name          | Type                                   | Description                                                                                                                                                          |
+|---------------|----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Body`        | `string`                               | The HTML content in the body. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `HtmlBodyPart` shape instead. |
+| `Content`     | The raw content of the part.           |
 | `ContentItem` | The content item containing this part. |
 
 ## Sanitization

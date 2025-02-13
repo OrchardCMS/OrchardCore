@@ -17,11 +17,11 @@ Please note that users lacking the `ManageAdminDashboard` permission will requir
 
 Each widget has the following customizable settings:
 
-| Option    | Description                                                   |
-| --------- | ------------------------------------------------------------- |
-| `Position`| A numeric value indicating the widget's order on the page.    |
-| `Width`   | An integer value between 1 and 6, representing the widget's width on the screen. Please note that 1 indicates (1/6) of the screen, while 6 signifies full screen width. |
-| `Height`  | An integer value between 1 and 6, representing the widget's height on the screen. Please note that 1 indicates (1/6) of the screen, while 6 signifies full screen height. |
+| Option     | Description                                                                                                                                                               |
+|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Position` | A numeric value indicating the widget's order on the page.                                                                                                                |
+| `Width`    | An integer value between 1 and 6, representing the widget's width on the screen. Please note that 1 indicates (1/6) of the screen, while 6 signifies full screen width.   |
+| `Height`   | An integer value between 1 and 6, representing the widget's height on the screen. Please note that 1 indicates (1/6) of the screen, while 6 signifies full screen height. |
 
 ### Styling
 

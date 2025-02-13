@@ -28,19 +28,19 @@ _There can be multiple Rules in place for one Layer._
 
 Here are some available conditions:
 
-| Condition | Description |
-| -------- | ----------- |
-| `Homepage` | Whether the current page is the site homepage |
-| `Is anonymous` | Whether the current user is anonymous, i.e. not authenticated. |
-| `Is authenticated` | Whether the current user is authenticated. |
-| `Role` | A role condition evaluates the current users roles against a value. |
-| `Url` | A url condition evaluates the current url against a value. |
-| `Culture` | A culture condition evaluates the current ui culture against a value. |
-| `Content Type` | A content type condition evaluates the currently displayed content types against a value. |
-| `Javascript` | A script condition written in JavaScript. |
-| `All` | An all condition group contains other conditions which are all required to be true. |
-| `Any` | An any condition group contains other conditions but only requires any condition to be true. |
-| `Boolean` | A boolean condition evaluating to `true` or `false`. |
+| Condition          | Description                                                                                  |
+|--------------------|----------------------------------------------------------------------------------------------|
+| `Homepage`         | Whether the current page is the site homepage                                                |
+| `Is anonymous`     | Whether the current user is anonymous, i.e. not authenticated.                               |
+| `Is authenticated` | Whether the current user is authenticated.                                                   |
+| `Role`             | A role condition evaluates the current users roles against a value.                          |
+| `Url`              | A url condition evaluates the current url against a value.                                   |
+| `Culture`          | A culture condition evaluates the current ui culture against a value.                        |
+| `Content Type`     | A content type condition evaluates the currently displayed content types against a value.    |
+| `Javascript`       | A script condition written in JavaScript.                                                    |
+| `All`              | An all condition group contains other conditions which are all required to be true.          |
+| `Any`              | An any condition group contains other conditions but only requires any condition to be true. |
+| `Boolean`          | A boolean condition evaluating to `true` or `false`.                                         |
 
 Ex: The `Always` Layer has a `Boolean Condition` set to `true`, so widgets on this Layer will always be shown.
 
