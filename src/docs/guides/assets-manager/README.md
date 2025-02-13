@@ -1,8 +1,5 @@
 # Assets Manager
 
-Created originally by @jptissot  
-Contributed by @skrypt
-
 Based on [Concurrently](https://github.com/open-cli-tools/concurrently) the Orchard Core assets management tool is used for building, watching, hosting assets. It allows to use bundlers as [Parcel](https://parceljs.org/) [Vite](https://vite.dev/) and [Webpack](https://webpack.js.org/). This is a non-opiniated tool which allows to be extended for any asset compiler/bundler that someone may require in the future. Everything is written as ES6 modules (.mjs files).
 
 `Concurrently`, is a concurrent shell runner which allows to trigger any possible shell command.
