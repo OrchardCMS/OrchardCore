@@ -25,13 +25,17 @@
     "@babel/core": "^7.22.11",
     "@babel/preset-env": "^7.22.10",
     "@babel/preset-flow": "7.22.5",
+    "@eslint/js": "^9.20.0",
     "@orchardcore/assets-manager": "workspace:^",
     "@popperjs/core": "2.11.8",
     "all-contributors-cli": "^6.26.1",
     "bootstrap": "5.3.3",
     "child_process": "^1.0.2",
     "es6-promise": "4.2.8",
+    "eslint": "^9.20.1",
+    "eslint-plugin-vue": "^9.32.0",
     "glob": "^10.3.12",
+    "globals": "^15.15.0",
     "graceful-fs": "4.2.11",
     "gulp": "^4.0.2",
     "gulp-babel": "8.0.0",
@@ -58,6 +62,7 @@
     "postcss-rtl": "^2.0.0",
     "rtlcss": "4.1.0",
     "source-map": "^0.7.4",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "typescript-eslint": "^8.24.0"
   }
 }
