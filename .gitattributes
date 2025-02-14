@@ -1,3 +1,3 @@
 * text=auto
-
+*.map text eol=lf
 **/wwwroot/Scripts/* linguist-vendored

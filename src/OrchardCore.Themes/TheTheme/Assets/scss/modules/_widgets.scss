@@ -1,8 +1,8 @@
 @use 'sass:math';
 @import '../_variables';
-@import "../../../node_modules/bootstrap/scss/mixins/_breakpoints";
-@import "../../../node_modules/bootstrap/scss/mixins/_grid";
-@import "../../../node_modules/bootstrap/scss/mixins/_container";
+@import "../../../../../../node_modules/bootstrap/scss/mixins/_breakpoints";
+@import "../../../../../../node_modules/bootstrap/scss/mixins/_grid";
+@import "../../../../../../node_modules/bootstrap/scss/mixins/_container";
 
 .widget-container {
     @include make-container;
