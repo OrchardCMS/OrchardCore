@@ -42,7 +42,7 @@
                 </draggable>
             </ul>
 
-            <div class="w-lg-75 w-xxl-50" >
+            <div class="w-lg-75 w-xxl-50">
                 <input asp-for="ContentItemIds" type="hidden" v-model="selectedIds" />
                 <vue-multiselect asp-validation-class-for="ContentItemIds" v-model="value" :options="options" track-by="id"
                                  label="displayText" placeholder="@T["Type to search"]"
