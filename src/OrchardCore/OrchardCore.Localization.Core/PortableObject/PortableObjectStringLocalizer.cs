@@ -66,10 +66,11 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
     public virtual IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
     {
         var culture = CultureInfo.CurrentUICulture;
+        var localizedStrings = includeParentCultures
+            ? GetAllStringsFromCultureHierarchyAsync(culture)
+            : GetAllStringsAsync(culture);
 
-        return includeParentCultures
-            ? GetAllStringsFromCultureHierarchy(culture)
-            : GetAllStrings(culture);
+        return localizedStrings.ToEnumerable();
     }
 
     /// <inheritdocs />
@@ -106,9 +107,9 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
         }
     }
 
-    private IEnumerable<LocalizedString> GetAllStrings(CultureInfo culture)
+    private async IAsyncEnumerable<LocalizedString> GetAllStringsAsync(CultureInfo culture)
     {
-        var dictionary = _localizationManager.GetDictionary(culture);
+        var dictionary = await _localizationManager.GetDictionaryAsync(culture);
 
         foreach (var translation in dictionary.Translations)
         {
@@ -116,35 +117,35 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
         }
     }
 
-    private List<LocalizedString> GetAllStringsFromCultureHierarchy(CultureInfo culture)
+    private async IAsyncEnumerable<LocalizedString> GetAllStringsFromCultureHierarchyAsync(CultureInfo culture)
     {
         var currentCulture = culture;
-        var allLocalizedStrings = new List<LocalizedString>();
+        var resourcesNames = new HashSet<string>();
 
         do
         {
-            var localizedStrings = GetAllStrings(currentCulture);
+            var localizedStrings = await GetAllStringsAsync(currentCulture).ToListAsync();
 
             if (localizedStrings != null)
             {
                 foreach (var localizedString in localizedStrings)
                 {
-                    if (!allLocalizedStrings.Any(ls => ls.Name == localizedString.Name))
+                    if (!resourcesNames.Contains(localizedString.Name))
                     {
-                        allLocalizedStrings.Add(localizedString);
+                        resourcesNames.Add(localizedString.Name);
+
+                        yield return localizedString;
                     }
                 }
             }
 
             currentCulture = currentCulture.Parent;
         } while (currentCulture != currentCulture.Parent);
-
-        return allLocalizedStrings;
     }
 
     protected string GetTranslation(string[] pluralForms, CultureInfo culture, int? count)
     {
-        var dictionary = _localizationManager.GetDictionary(culture);
+        var dictionary = _localizationManager.GetDictionaryAsync(culture).GetAwaiter().GetResult();
 
         var pluralForm = count.HasValue ? dictionary.PluralRule(count.Value) : 0;
 
@@ -187,7 +188,7 @@ public class PortableObjectStringLocalizer : IPluralStringLocalizer
 
             string ExtractTranslation()
             {
-                var dictionary = _localizationManager.GetDictionary(culture);
+                var dictionary = _localizationManager.GetDictionaryAsync(culture).GetAwaiter().GetResult();
 
                 if (dictionary != null)
                 {
