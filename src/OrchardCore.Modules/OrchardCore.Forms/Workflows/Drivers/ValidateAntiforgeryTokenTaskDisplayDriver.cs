@@ -3,6 +3,4 @@ using OrchardCore.Workflows.Display;
 
 namespace OrchardCore.Forms.Workflows.Drivers;
 
-public sealed class ValidateAntiforgeryTokenTaskDisplayDriver : ActivityDisplayDriver<ValidateAntiforgeryTokenTask>
-{
-}
+public sealed class ValidateAntiforgeryTokenTaskDisplayDriver : ActivityDisplayDriver<ValidateAntiforgeryTokenTask>;

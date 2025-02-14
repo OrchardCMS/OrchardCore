@@ -9,6 +9,7 @@
 
 @{
     var widgetContentTypes = Model.ContainedContentTypeDefinitions;
+    var widgetTypesStringified = string.Join(";", widgetContentTypes);
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
     var parentContentType = Model.FlowPart.ContentItem.ContentType;
@@ -17,7 +18,7 @@
 
 <script asp-name="jQuery-ui" at="Foot"></script>
 <div>
-    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart flowpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart flowpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" data-widget-types="@widgetTypesStringified">
         @{
             var index = 0;
             foreach (var widget in Model.FlowPart.Widgets)
@@ -121,7 +122,7 @@
         }
 
         @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
-                    if ($('#@widgetTemplatePlaceholderId').length == 1) {
+                           if ($('#@widgetTemplatePlaceholderId').length == 1) {
             $("#@widgetTemplatePlaceholderId").sortable({
                 handle: ".widget-editor-handle",
                 cursor: "move",
@@ -140,10 +141,12 @@
                 start: function (event, ui) {
 
                     widgetDragItem = ui.item;
+                    originalContainer = ui.item.parent();
                     lastContainer = ui.item.parent();
                     lastContainer.toggleClass('widget-dropzone-hint');
 
-                    widgetDragItem.find('.card').first().toggleClass('border-primary')
+                    draggedWidget = widgetDragItem.find('.card').first()
+                    draggedWidget.toggleClass('border-primary')
 
                     widgetItemSourceId = widgetDragItem.parent().attr('id');
 
@@ -158,58 +161,64 @@
                     lastContainer.toggleClass('widget-dropzone-hint');
                     widgetDragItem.find('.card').first().toggleClass('border-primary');
 
-                    widgetItemDestId = widgetDragItem.parent().attr('id');
+                    if (lastContainer[0] != this && this.dataset.widgetTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) >= 0) {
 
-                    if (widgetItemDestId !== widgetItemSourceId) {
+                        widgetItemDestId = widgetDragItem.parent().attr('id');
 
-                        var inputs = widgetDragItem.children("input[name*='FlowPart']");
+                        if (widgetItemDestId !== widgetItemSourceId) {
 
-                        var destination = $('#' + widgetItemDestId);
-                        var source = $('#' + widgetItemSourceId);
+                            var inputs = widgetDragItem.children("input[name*='FlowPart']");
 
-                        var sourceGuid = widgetItemSourceId.substring(0, widgetItemSourceId.lastIndexOf('_') + 1);
-                        sourceNameGuid = sourceGuid.replaceAll('_', '.');
+                            var destination = $('#' + widgetItemDestId);
+                            var source = $('#' + widgetItemSourceId);
 
-                        if (destination.length > 0) {
+                            var sourceGuid = widgetItemSourceId.substring(0, widgetItemSourceId.lastIndexOf('_') + 1);
+                            sourceNameGuid = sourceGuid.replaceAll('_', '.');
 
-                            var destGuid = widgetItemDestId.substring(0, widgetItemDestId.lastIndexOf('_') + 1);
-                            destNameGuid = destGuid.replaceAll('_', '.');
+                            if (destination.length > 0) {
 
-                            if (source.length > 0) {
+                                var destGuid = widgetItemDestId.substring(0, widgetItemDestId.lastIndexOf('_') + 1);
+                                destNameGuid = destGuid.replaceAll('_', '.');
+
+                                if (source.length > 0) {
+                                    inputs.each(function (index, item) {
+                                        $(this).attr('id', $(this).attr('id').replace(sourceGuid, destGuid));
+                                        $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, destNameGuid));
+                                    });
+
+                                } else {
+
+                                    inputs.each(function (index, item) {
+                                        $(this).attr('id', destGuid + $(this).attr('id'));
+                                        $(this).attr('name', destNameGuid + $(this).attr('name'));
+                                    });
+                                }
+
+                            }
+                            else if (source.length > 0) {
                                 inputs.each(function (index, item) {
-                                    $(this).attr('id', $(this).attr('id').replace(sourceGuid, destGuid));
-                                    $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, destNameGuid));
-                                });
-
-                            } else {
-
-                                inputs.each(function (index, item) {
-                                    $(this).attr('id', destGuid + $(this).attr('id'));
-                                    $(this).attr('name', destNameGuid + $(this).attr('name'));
+                                    $(this).attr('id', $(this).attr('id').replace(sourceGuid, ''));
+                                    $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, ''));
                                 });
                             }
 
                         }
-                        else if (source.length > 0) {
-                            inputs.each(function (index, item) {
-                                $(this).attr('id', $(this).attr('id').replace(sourceGuid, ''));
-                                $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, ''));
-                            });
-                        }
 
+                        $(document).trigger('contentpreview:render');
+                        widgetItemDestId = null;
                     }
-
-                    $(document).trigger('contentpreview:render');
+                    else {
+                        event.preventDefault();
+                    }
 
                     //clear the global variables
                     widgetDragItem = null;
                     lastContainer = null;
                     widgetItemSourceId = null;
-                    widgetItemDestId = null;
                 },
                 over: function (event, ui) {
                     var $self = $(this);
-                    if (lastContainer[0] != this) {
+                    if (lastContainer[0] != this && this.dataset.widgetTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) >= 0) {
                         lastContainer.toggleClass('widget-dropzone-hint');
                         lastContainer = $self;
                         $self.toggleClass('widget-dropzone-hint');
