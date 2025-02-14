@@ -88,9 +88,7 @@ public abstract class DisplayDriver<TModel, TDisplayContext, TEditorContext, TUp
 public abstract class DisplayDriver<TModel> :
     DisplayDriver<TModel, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>,
     IDisplayDriver<TModel>
-    where TModel : class
-{
-}
+    where TModel : class;
 
 public abstract class DisplayDriver<TModel, TConcrete, TDisplayContext, TEditorContext, TUpdateContext> :
     DisplayDriver<TConcrete, TDisplayContext, TEditorContext, TUpdateContext>,
@@ -157,6 +155,4 @@ public abstract class DisplayDriver<TModel, TConcrete> :
     DisplayDriver<TModel, TConcrete, BuildDisplayContext, BuildEditorContext, UpdateEditorContext>,
     IDisplayDriver<TModel>
     where TConcrete : class, TModel
-    where TModel : class
-{
-}
+    where TModel : class;

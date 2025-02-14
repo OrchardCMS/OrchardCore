@@ -15,6 +15,4 @@ public abstract class ContentFieldIndex : MapIndex
     public bool Latest { get; set; }
 }
 
-public abstract class ContentFieldIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
-{
-}
+public abstract class ContentFieldIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider;

@@ -3304,6 +3304,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "yqzhen1990",
+      "name": "Magic Yang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/14266657?v=4",
+      "profile": "https://github.com/yqzhen1990",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,

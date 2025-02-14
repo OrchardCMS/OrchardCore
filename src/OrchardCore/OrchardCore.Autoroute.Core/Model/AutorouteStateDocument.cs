@@ -2,6 +2,4 @@ using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Autoroute.Core.Model;
 
-public class AutorouteStateDocument : Document
-{
-}
+public class AutorouteStateDocument : Document;

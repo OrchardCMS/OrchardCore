@@ -1,5 +1,3 @@
 namespace OrchardCore.Locking;
 
-public interface ILocalLock : ILock
-{
-}
+public interface ILocalLock : ILock;

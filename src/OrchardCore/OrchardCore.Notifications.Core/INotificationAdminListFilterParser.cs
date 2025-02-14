@@ -2,6 +2,4 @@ using YesSql.Filters.Query;
 
 namespace OrchardCore.Notifications;
 
-public interface INotificationAdminListFilterParser : IQueryParser<Notification>
-{
-}
+public interface INotificationAdminListFilterParser : IQueryParser<Notification>;
