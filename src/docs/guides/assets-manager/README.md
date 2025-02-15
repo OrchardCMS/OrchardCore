@@ -45,6 +45,7 @@ yarn build
 - Gulp pipeline moved using GulpAssets.json file
 - New Assets.json file definitions for building with new tool.
 - Concurrently will retry building up to 3 times making CI build less prone to fail.
+- All tasks can be run from within Visual Studio with the [Task Runner Explorer extension](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.TaskRunnerExplorer).
 
 ## Random Notes
 
