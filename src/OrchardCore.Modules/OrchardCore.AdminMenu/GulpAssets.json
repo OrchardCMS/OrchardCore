@@ -1,9 +1,0 @@
-[
-  {
-    "inputs": [
-      "Assets/js/fontawesome-iconpicker.js",
-      "Assets/js/admin-menu-icon-picker.js"
-    ],
-    "output": "wwwroot/Scripts/admin-menu-icon-picker.js"
-  }
-]

@@ -383,5 +383,17 @@
     "name": "bootstrap-select-css",
     "source": "../../../node_modules/bootstrap-select/dist/css/bootstrap-select.css",
     "tags": ["resources", "css"]
-  }
+  },
+  {
+    "action": "copy",
+    "name": "fontawesome-iconpicker",
+    "source": "node_modules/fontawesome-iconpicker/dist/js/fontawesome-iconpicker.min.js",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "fontawesome-iconpicker",
+    "source": "node_modules/fontawesome-iconpicker/dist/js/fontawesome-iconpicker.js",
+    "tags": ["admin", "dashboard", "js"]
+  },
 ]

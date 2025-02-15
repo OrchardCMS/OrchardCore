@@ -539,6 +539,13 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
             .SetCdnIntegrity("sha384-drmLwsDDXGEHmNZHoxS1StHzAllg9a/CKXv31Oe4wYiN9wqJNn+QQjAr6Cin+wyH")
             .SetVersion("1.3.4");
 
+        manifest
+            .DefineScript("fontawesome-iconpicker")
+            .SetUrl("~/OrchardCore.Resources/Scripts/fontawesome-iconpicker.min.js", "~/OrchardCore.Resources/Scripts/fontawesome-iconpicker.js")
+            .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/fontawesome-iconpicker/3.2.0/js/fontawesome-iconpicker.min.js", "https://cdnjs.cloudflare.com/ajax/libs/fontawesome-iconpicker/3.2.0/js/fontawesome-iconpicker.js")
+            .SetCdnIntegrity("sha512-7dlzSK4Ulfm85ypS8/ya0xLf3NpXiML3s6HTLu4qDq7WiJWtLLyrXb9putdP3/1umwTmzIvhuu9EW7gHYSVtCQ==", "sha512-ARPApqjym7fPaYMaezrx4XTD8mGd0JAvugmK2JDkjb/WTog2b33SwzcSlAnnwFTq9PiTas0U2VqCMzuhpzKREA==")
+            .SetVersion("3.2.0");
+
         return manifest;
     }
 
