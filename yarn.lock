@@ -2442,6 +2442,7 @@ __metadata:
     bootstrap: "npm:5.3.3"
     bootstrap-select: "npm:1.14.0-beta3"
     codemirror: "npm:5.65.7"
+    fontawesome-iconpicker: "npm:3.2.0"
     jquery: "npm:3.7.1"
     jquery-resizable-dom: "npm:0.35.0"
     jquery.easing: "npm:1.4.1"
