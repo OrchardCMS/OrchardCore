@@ -4,32 +4,29 @@ Based on [Concurrently](https://github.com/open-cli-tools/concurrently) the Orch
 
 `Concurrently`, is a concurrent shell runner which allows to trigger any possible shell command.
 
-Old assets are not compiled as ES6 modules so they don't need these bundlers. For that matter we kept the old gulpfile.js which will be now triggered by `Concurrently` when doing `yarn build -gr`.
+Old assets are not compiled as ES6 modules so they don't need these bundlers. For that matter we kept the old `gulpfile.js` which will be now triggered by `Concurrently` when doing `yarn build -gr`.
 
-Concurrently uses an `Assets.json` file that defines actions to execute.
-
-Gulp uses a `GulpAssets.json` file that defines actions to execute.
+Concurrently uses an `Assets.json` file that defines actions to execute. The old Gulp pipline uses a `GulpAssets.json` file that defines actions to execute.
 
 Parcel is the easiest way to build assets so far as it doesn't require any configuration. It is a zero file configuration bundler which means we use the same configuration for all assets. It is the recommended builder for those who want to easily start with a bundler. Though, Vite is more suited for Vue apps.
 
-## Requirements
+## Prerequisites
 
-Nodejs v22.12.0  (a version that supports corepack)
-Yarn 4.6.0  
-Corepack https://nodejs.org/api/corepack.html  
+1. Install the current 22.x version of [Node.js](https://nodejs.org/en/download). If you are already using a different version of Node.js for other projects, we recommend using Node Version Manager (see [here](https://github.com/nvm-sh/nvm) for the original project for *nix systems, and [here](https://github.com/coreybutler/nvm-windows) for Windows).
+2. From the root of the repository, run the following commands:
+    ```cmd
+    corepack enable
+    yarn
+    ```
 
-## Getting started
+## Building assets if you change an SCSS, JS, or TS/TSX file
 
-Clone Orchard Core repository.
-From the root folder of that repository execute:
+What to do if you change an SCSS, JS, or TS/TSX file in any of Orchard Core's projects, and want to update the output files (that go into the `wwwroot` folders)?
 
-```cmd
-corepack enable
-yarn
-yarn build
-```
+1. Make sure you completed the above "Prerequisites" steps.
+2. Run `yarn build -gr` from the command line in the root of the repository. This will build all changed assets.
 
-## Features
+## All features
 
 - Build everything (including gulp rebuild): `yarn build -gr`
 - Build assets manager assets only: `yarn build`
