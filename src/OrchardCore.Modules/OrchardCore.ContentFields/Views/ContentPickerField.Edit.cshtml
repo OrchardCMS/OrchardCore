@@ -20,7 +20,7 @@
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.ContentItemIds)_FieldWrapper">
     <label asp-for="ContentItemIds" class="@Orchard.GetLabelClasses(inputRequired: settings.Required)">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
-        <div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-edit-url="@editUrl" data-view-url="@viewUrl" data-search-url="@searchUrl" data-multiple="@multiple">
+        <div id="@vueElementId" class="vue-multiselect" asp-validation-class-for="ContentItemIds" data-part="@partName" data-field="@fieldName" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-edit-url="@editUrl" data-view-url="@viewUrl" data-search-url="@searchUrl" data-multiple="@multiple">
 
             <ul class="mb-1 list-group w-lg-75 w-xxl-50 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>
                 <draggable v-model="arrayOfItems">
@@ -44,7 +44,7 @@
 
             <div class="w-lg-75 w-xxl-50">
                 <input asp-for="ContentItemIds" type="hidden" v-model="selectedIds" />
-                <vue-multiselect asp-validation-class-for="ContentItemIds" v-model="value" :options="options" track-by="id"
+                <vue-multiselect v-model="value" :options="options" track-by="id"
                                  label="displayText" placeholder="@T["Type to search"]"
                                  @@search-change="asyncFind" @@select="onSelect"
                                  :searchable="true" :close-on-select="true" :reset-after="true"
