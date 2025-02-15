@@ -14,6 +14,7 @@ public sealed class EmailTaskDisplayDriver : ActivityDisplayDriver<EmailTask, Em
         model.RecipientsExpression = activity.Recipients.Expression;
         model.ReplyToExpression = activity.ReplyTo.Expression;
         model.SubjectExpression = activity.Subject.Expression;
+        model.BodyFormat = activity.BodyFormat;
         model.TextBody = activity.TextBody.Expression;
         model.HtmlBody = activity.HtmlBody.Expression;
         model.BccExpression = activity.Bcc.Expression;
@@ -27,6 +28,7 @@ public sealed class EmailTaskDisplayDriver : ActivityDisplayDriver<EmailTask, Em
         activity.Recipients = new WorkflowExpression<string>(model.RecipientsExpression);
         activity.ReplyTo = new WorkflowExpression<string>(model.ReplyToExpression);
         activity.Subject = new WorkflowExpression<string>(model.SubjectExpression);
+        activity.BodyFormat = model.BodyFormat;
         activity.TextBody = new WorkflowExpression<string>(model.TextBody);
         activity.HtmlBody = new WorkflowExpression<string>(model.HtmlBody);
         activity.Bcc = new WorkflowExpression<string>(model.BccExpression);

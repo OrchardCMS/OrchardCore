@@ -88,6 +88,12 @@ public class EmailTask : TaskActivity<EmailTask>
         set => SetProperty(value);
     }
 
+    public MailMessageBodyFormat BodyFormat
+    {
+        get => GetProperty(() => MailMessageBodyFormat.All);
+        set => SetProperty(value);
+    }
+
     public WorkflowExpression<string> TextBody
     {
         get

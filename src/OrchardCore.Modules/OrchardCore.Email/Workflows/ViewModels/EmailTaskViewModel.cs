@@ -16,6 +16,8 @@ public class EmailTaskViewModel
 
     public string SubjectExpression { get; set; }
 
+    public MailMessageBodyFormat BodyFormat { get; set; }
+
     public string TextBody { get; set; }
 
     public string HtmlBody { get; set; }
