@@ -25,18 +25,6 @@
   },
   {
     "action": "min",
-    "name": "admin-menu",
-    "source": "Assets/js/admin-menu.js",
-    "tags": ["admin", "dashboard", "js"]
-  },
-  {
-    "action": "min",
-    "name": "admin-menu",
-    "source": "Assets/js/admin-menu.js",
-    "tags": ["admin", "dashboard", "js"]
-  },
-  {
-    "action": "min",
     "name": "admin-menu-icon-picker",
     "source": "Assets/js/admin-menu-icon-picker.js",
     "dest": "wwwroot/Scripts/",
