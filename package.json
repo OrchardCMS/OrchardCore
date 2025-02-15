@@ -18,6 +18,7 @@
   },
   "workspaces": [
     ".scripts/assets-manager",
+    ".scripts/bloom",
     "src/Frontend/",
     "src/OrchardCore.Modules/*/Assets/**",
     "src/OrchardCore.Themes/*/Assets/**"

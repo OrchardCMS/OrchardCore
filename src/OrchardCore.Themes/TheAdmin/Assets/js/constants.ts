@@ -1,4 +1,4 @@
-import { getTenantName } from '@orchardcore/frontend/helpers/globals';
+import { getTenantName } from '@orchardcore/bloom/helpers/globals';
 import Cookies from 'js-cookie';
 
 let isCompactExplicit = false;

@@ -534,23 +534,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.UrlRewriting.Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Roles.Abstractions", "src\OrchardCore\OrchardCore.Roles.Abstractions\OrchardCore.Roles.Abstractions.csproj", "{F5E7DCC3-12C2-4363-9702-639561A8101C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets Manager", "Assets Manager", "{55E466FD-7931-4816-9E3F-D7544E37E9FE}"
-	ProjectSection(SolutionItems) = preProject
-		.scripts\assets-manager\.gitignore = .scripts\assets-manager\.gitignore
-		.scripts\assets-manager\.parcelrc = .scripts\assets-manager\.parcelrc
-		.scripts\assets-manager\assetGroups.mjs = .scripts\assets-manager\assetGroups.mjs
-		.scripts\assets-manager\build.mjs = .scripts\assets-manager\build.mjs
-		.scripts\assets-manager\clean.mjs = .scripts\assets-manager\clean.mjs
-		.scripts\assets-manager\config.mjs = .scripts\assets-manager\config.mjs
-		.scripts\assets-manager\copy.mjs = .scripts\assets-manager\copy.mjs
-		.scripts\assets-manager\min.mjs = .scripts\assets-manager\min.mjs
-		.scripts\assets-manager\package.json = .scripts\assets-manager\package.json
-		.scripts\assets-manager\parcel.mjs = .scripts\assets-manager\parcel.mjs
-		.scripts\assets-manager\README.md = .scripts\assets-manager\README.md
-		.scripts\assets-manager\sass.mjs = .scripts\assets-manager\sass.mjs
-		.scripts\assets-manager\vite.mjs = .scripts\assets-manager\vite.mjs
-		.scripts\assets-manager\webpack.mjs = .scripts\assets-manager\webpack.mjs
-	EndProjectSection
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{77554EA8-DA53-4C8F-81D2-3DDEE7B57FC3}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Bloom", ".scripts\Bloom\Bloom.esproj", "{3D27FC21-F28E-4B9A-9764-4119DD1207F6}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "AssetsManager", ".scripts\assets-manager\AssetsManager.esproj", "{4C4D7CC5-2AD9-463E-A358-D7B24933EF8C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1432,6 +1420,18 @@ Global
 		{F5E7DCC3-12C2-4363-9702-639561A8101C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5E7DCC3-12C2-4363-9702-639561A8101C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5E7DCC3-12C2-4363-9702-639561A8101C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D27FC21-F28E-4B9A-9764-4119DD1207F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D27FC21-F28E-4B9A-9764-4119DD1207F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D27FC21-F28E-4B9A-9764-4119DD1207F6}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{3D27FC21-F28E-4B9A-9764-4119DD1207F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D27FC21-F28E-4B9A-9764-4119DD1207F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D27FC21-F28E-4B9A-9764-4119DD1207F6}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{4C4D7CC5-2AD9-463E-A358-D7B24933EF8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C4D7CC5-2AD9-463E-A358-D7B24933EF8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C4D7CC5-2AD9-463E-A358-D7B24933EF8C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{4C4D7CC5-2AD9-463E-A358-D7B24933EF8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C4D7CC5-2AD9-463E-A358-D7B24933EF8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C4D7CC5-2AD9-463E-A358-D7B24933EF8C}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1676,7 +1676,8 @@ Global
 		{675C8A76-C64F-47EC-B4F5-06D4F2D9662A} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{7B18DD99-A7BB-4297-8679-D87289758756} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{F5E7DCC3-12C2-4363-9702-639561A8101C} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
-		{55E466FD-7931-4816-9E3F-D7544E37E9FE} = {68F6113F-2F08-4412-B5E7-41B7164A0C7F}
+		{3D27FC21-F28E-4B9A-9764-4119DD1207F6} = {77554EA8-DA53-4C8F-81D2-3DDEE7B57FC3}
+		{4C4D7CC5-2AD9-463E-A358-D7B24933EF8C} = {77554EA8-DA53-4C8F-81D2-3DDEE7B57FC3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}
