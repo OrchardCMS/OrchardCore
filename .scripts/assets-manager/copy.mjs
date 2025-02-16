@@ -5,9 +5,7 @@ import chalk from "chalk";
 import path from "path";
 
 let action = process.argv[2];
-const config = JSON5.parse(
-    Buffer.from(process.argv[3], "base64").toString("utf-8")
-);
+const config = JSON5.parse(Buffer.from(process.argv[3], "base64").toString("utf-8"));
 
 let dest = config.dest;
 let fileExtension = config.source.split(".").pop();
@@ -42,11 +40,7 @@ glob(config.source).then((files) => {
             console.log("Destination:", dest);
             return;
         }
-        console.log(
-            chalk.yellow(
-                `Destination ${dest} already exists, files may be overwritten`
-            )
-        );
+        console.log(chalk.yellow(`Destination ${dest} already exists, files may be overwritten`));
     }
 
     let baseFolder;
@@ -67,33 +61,14 @@ glob(config.source).then((files) => {
         const target = path.join(dest, relativePath);
 
         if (action === "dry-run") {
-            console.log(
-                `Dry run (${chalk.gray("from")}, ${chalk.cyan("to")})`,
-                chalk.gray(file),
-                chalk.cyan(target)
-            );
+            console.log(`Dry run (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target));
         } else {
             fs.stat(file).then((stat) => {
                 if (!stat.isDirectory()) {
                     fs.copy(file, target)
-                        .then(() =>
-                            console.log(
-                                `Copied (${chalk.gray("from")}, ${chalk.cyan(
-                                    "to"
-                                )})`,
-                                chalk.gray(file),
-                                chalk.cyan(target)
-                            )
-                        )
+                        .then(() => console.log(`Copied (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target)))
                         .catch((err) => {
-                            console.log(
-                                `${chalk.red("Error copying")} (${chalk.gray(
-                                    "from"
-                                )}, ${chalk.cyan("to")})`,
-                                chalk.gray(file),
-                                chalk.cyan(target),
-                                chalk.red(err)
-                            );
+                            console.log(`${chalk.red("Error copying")} (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target), chalk.red(err));
                             throw err;
                         });
                 }

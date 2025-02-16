@@ -12,9 +12,7 @@ import { Mode, Source } from "postcss-rtlcss/options";
 let action = process.argv[2];
 let mode = action === "build" ? "production" : "development";
 
-const config = JSON5.parse(
-    Buffer.from(process.argv[3], "base64").toString("utf-8")
-);
+const config = JSON5.parse(Buffer.from(process.argv[3], "base64").toString("utf-8"));
 
 let dest = config.dest;
 let fileExtension = config.source.split(".").pop();
@@ -49,11 +47,7 @@ glob(config.source).then((files) => {
             console.log("Destination:", dest);
             return;
         }
-        console.log(
-            chalk.yellow(
-                `Destination ${dest} already exists, files may be overwritten`
-            )
-        );
+        console.log(chalk.yellow(`Destination ${dest} already exists, files may be overwritten`));
     }
 
     let baseFolder;
@@ -75,11 +69,7 @@ glob(config.source).then((files) => {
         const target = path.join(dest, relativePath);
 
         if (action === "dry-run") {
-            console.log(
-                `Dry run (${chalk.gray("from")}, ${chalk.cyan("to")})`,
-                chalk.gray(file),
-                chalk.cyan(target)
-            );
+            console.log(`Dry run (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target));
         } else {
             fs.stat(file).then(async (stat) => {
                 if (!stat.isDirectory()) {
@@ -92,117 +82,50 @@ glob(config.source).then((files) => {
                             compress: true,
                             sourceMap: mode === "development",
                         }).then((output) => {
-                            const minifiedTarget = path.join(
-                                dest,
-                                path.parse(target).name + ".min.js"
-                            );
+                            const minifiedTarget = path.join(dest, path.parse(target).name + ".min.js");
                             fs.outputFile(minifiedTarget, output.code);
-                            console.log(
-                                `Minified (${chalk.gray("from")}, ${chalk.cyan(
-                                    "to"
-                                )})`,
-                                chalk.gray(file),
-                                chalk.cyan(minifiedTarget)
-                            );
+                            console.log(`Minified (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(minifiedTarget));
 
                             if (mode === "development" && output.map) {
-                                const mappedTarget = path.join(
-                                    dest,
-                                    path.parse(target).name + ".map"
-                                );
-                                const normalized = output.map.replace(
-                                    /(?:\\[rn])+/g,
-                                    "\\n"
-                                );
+                                const mappedTarget = path.join(dest, path.parse(target).name + ".map");
+                                const normalized = output.map.replace(/(?:\\[rn])+/g, "\\n");
                                 fs.outputFile(mappedTarget, normalized + "\n");
-                                console.log(
-                                    `Mapped (${chalk.gray(
-                                        "from"
-                                    )}, ${chalk.cyan("to")})`,
-                                    chalk.gray(file),
-                                    chalk.cyan(mappedTarget)
-                                );
+                                console.log(`Mapped (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(mappedTarget));
                             }
                         });
 
                         fs.copy(file, target)
-                            .then(() =>
-                                console.log(
-                                    `Copied (${chalk.gray(
-                                        "from"
-                                    )}, ${chalk.cyan("to")})`,
-                                    chalk.gray(file),
-                                    chalk.cyan(target)
-                                )
-                            )
+                            .then(() => console.log(`Copied (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target)))
                             .catch((err) => {
-                                console.log(
-                                    `${chalk.red(
-                                        "Error copying"
-                                    )} (${chalk.gray("from")}, ${chalk.cyan(
-                                        "to"
-                                    )})`,
-                                    chalk.gray(file),
-                                    chalk.cyan(target),
-                                    chalk.red(err)
-                                );
+                                console.log(`${chalk.red("Error copying")} (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target), chalk.red(err));
                                 throw err;
                             });
                     } else if (fileInfo.ext === ".css") {
                         let reader = await fs.readFile(file, "utf8");
 
                         if (config.generateRTL) {
-                            const rtlTarget = path.join(
-                                dest,
-                                path.parse(target).name + ".css"
-                            );
+                            const rtlTarget = path.join(dest, path.parse(target).name + ".css");
 
                             const options = {
                                 mode: Mode.combined,
                                 from: Source.css,
                             };
 
-                            const result = await postcss([
-                                postcssRTLCSS(options),
-                            ]).process(reader);
+                            const result = await postcss([postcssRTLCSS(options)]).process(reader);
                             reader = result.css;
 
-                            console.log(
-                                `RTL (${chalk.gray("from")}, ${chalk.cyan(
-                                    "to"
-                                )})`,
-                                chalk.gray(rtlTarget),
-                                chalk.cyan(rtlTarget)
-                            );
+                            console.log(`RTL (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(rtlTarget), chalk.cyan(rtlTarget));
                         }
 
-                        const copyTarget = path.join(
-                            dest,
-                            path.parse(target).base
-                        );
+                        const copyTarget = path.join(dest, path.parse(target).base);
 
                         await fs
                             .outputFile(copyTarget, reader)
                             .then(() => {
-                                console.log(
-                                    `Copied (${chalk.gray(
-                                        "from"
-                                    )}, ${chalk.cyan("to")})`,
-                                    chalk.gray(file),
-                                    chalk.cyan(target)
-                                );
+                                console.log(`Copied (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target));
                             })
                             .catch((err) => {
-                                console.log(
-                                    `${chalk.red(
-                                        "Error copying"
-                                    )} (${chalk.gray("from")}, ${chalk.cyan(
-                                        "to"
-                                    )})`,
-                                    chalk.gray(file),
-                                    chalk.cyan(target),
-                                    chalk.red(err)
-                                );
+                                console.log(`${chalk.red("Error copying")} (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target), chalk.red(err));
                                 throw err;
                             });
 
@@ -213,47 +136,19 @@ glob(config.source).then((files) => {
                         });
 
                         if (code) {
-                            const minifiedTarget = path.join(
-                                dest,
-                                path.parse(target).name + ".min.css"
-                            );
-                            await fs.outputFile(
-                                minifiedTarget,
-                                code.toString()
-                            );
-                            console.log(
-                                `Minified (${chalk.gray("from")}, ${chalk.cyan(
-                                    "to"
-                                )})`,
-                                chalk.gray(file),
-                                chalk.cyan(minifiedTarget)
-                            );
+                            const minifiedTarget = path.join(dest, path.parse(target).name + ".min.css");
+                            await fs.outputFile(minifiedTarget, code.toString());
+                            console.log(`Minified (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(minifiedTarget));
                         }
 
                         if (mode === "development" && map) {
-                            const mappedTarget = path.join(
-                                dest,
-                                path.parse(target).name + ".map"
-                            );
-                            const normalized = map
-                                .toString()
-                                .replace(/(?:\\[rn])+/g, "\\n");
-                            await fs.outputFile(
-                                mappedTarget,
-                                normalized + "\n"
-                            );
-                            console.log(
-                                `Mapped (${chalk.gray("from")}, ${chalk.cyan(
-                                    "to"
-                                )})`,
-                                chalk.gray(file),
-                                chalk.cyan(mappedTarget)
-                            );
+                            const mappedTarget = path.join(dest, path.parse(target).name + ".map");
+                            const normalized = map.toString().replace(/(?:\\[rn])+/g, "\\n");
+                            await fs.outputFile(mappedTarget, normalized + "\n");
+                            console.log(`Mapped (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(mappedTarget));
                         }
                     } else {
-                        console.log(
-                            "Trying to minify a file with an extension that is not allowed."
-                        );
+                        console.log("Trying to minify a file with an extension that is not allowed.");
                     }
                 }
             });

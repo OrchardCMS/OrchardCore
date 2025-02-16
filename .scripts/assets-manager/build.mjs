@@ -123,6 +123,8 @@ const buildProcesses = groups
     .map((group) => {
         //b64 encode the command group for the next process. Was easier to pass the group json to the subprocess
         const encodedGroup = Buffer.from(JSON5.stringify(group)).toString("base64");
+        let script = "";
+
         switch (group.action) {
             case "parcel":
                 // parcel only handles build and watch
@@ -158,7 +160,8 @@ const buildProcesses = groups
                     command: `node ${path.join(__dirname, "vite.mjs")} ${task} ${encodedGroup}`,
                 };
             case "run":
-                const script = group?.scripts[task]; //get's the script that matches the current type of command (build/watch or others)
+                script = group?.scripts[task]; //get's the script that matches the current type of command (build/watch or others)
+
                 if (script) {
                     const cmd = {
                         order: group.order,

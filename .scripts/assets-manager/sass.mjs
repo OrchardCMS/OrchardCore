@@ -12,9 +12,7 @@ import chokidar from "chokidar";
 
 let action = process.argv[2];
 let mode = action === "build" ? "production" : "development";
-const config = JSON5.parse(
-    Buffer.from(process.argv[3], "base64").toString("utf-8")
-);
+const config = JSON5.parse(Buffer.from(process.argv[3], "base64").toString("utf-8"));
 const dest = config.dest ?? config.basePath + "/wwwroot/Styles/";
 
 if (config.dryRun) {
@@ -37,9 +35,9 @@ const resolveImports = (filePath, fileContent, resolvedFiles = new Set()) => {
             let content;
             try {
                 content = fs.readFileSync(importPath, "utf8");
-            } catch (err) {
+            } catch {
                 // Try with file name starting with '_'
-                const altImportPath = path.join(path.dirname(importPath), '_' + path.basename(importPath));
+                const altImportPath = path.join(path.dirname(importPath), "_" + path.basename(importPath));
                 try {
                     content = fs.readFileSync(altImportPath, "utf8");
                     importPath = altImportPath; // Update to the underscore-prefixed path
@@ -62,18 +60,15 @@ if (isWatching) {
         files.forEach((file) => {
             const content = fs.readFileSync(file, "utf8");
             const resolvedFiles = resolveImports(file, content);
-            resolvedFiles.forEach((resolvedFile) =>
-                watchFiles.add(resolvedFile)
-            );
+            resolvedFiles.forEach((resolvedFile) => watchFiles.add(resolvedFile));
         });
 
         chokidar
             .watch([...watchFiles], {
-                ignored: (path, stats) =>
-                    stats?.isFile() && !path.endsWith(".scss"),
+                ignored: (path, stats) => stats?.isFile() && !path.endsWith(".scss"),
                 persistent: true,
             })
-            .on("change", (event, path) => {
+            .on("change", () => {
                 runSass(config);
             });
     });
@@ -98,20 +93,13 @@ function runSass(config) {
                 console.log("Destination:", dest);
                 return;
             }
-            console.log(
-                chalk.yellow(
-                    `Destination ${dest} already exists, files may be overwritten`
-                )
-            );
+            console.log(chalk.yellow(`Destination ${dest} already exists, files may be overwritten`));
         }
 
         let baseFolder;
 
         if (config.source.indexOf("**") > 0) {
-            baseFolder = config.source.substring(
-                0,
-                config.source.indexOf("**")
-            );
+            baseFolder = config.source.substring(0, config.source.indexOf("**"));
         }
 
         files.forEach((file) => {
@@ -127,11 +115,7 @@ function runSass(config) {
             const target = path.join(dest, relativePath);
 
             if (action === "dry-run") {
-                console.log(
-                    `Dry run (${chalk.gray("from")}, ${chalk.cyan("to")})`,
-                    chalk.gray(file),
-                    chalk.cyan(target)
-                );
+                console.log(`Dry run (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target));
             } else {
                 fs.stat(file).then(async (stat) => {
                     if (!stat.isDirectory()) {
@@ -143,65 +127,27 @@ function runSass(config) {
                                 sourceMapIncludeSources: false,
                             });
 
-                            if (
-                                mode === "development" &&
-                                scssResult.sourceMap
-                            ) {
-                                const mappedTarget = path.join(
-                                    dest,
-                                    path.parse(target).name + ".scss.map"
-                                );
-                                fs.outputFile(
-                                    mappedTarget,
-                                    JSON5.stringify(scssResult.sourceMap)
-                                );
-                                console.log(
-                                    `Mapped (${chalk.gray(
-                                        "from"
-                                    )}, ${chalk.cyan("to")})`,
-                                    chalk.gray(file),
-                                    chalk.cyan(mappedTarget)
-                                );
+                            if (mode === "development" && scssResult.sourceMap) {
+                                const mappedTarget = path.join(dest, path.parse(target).name + ".scss.map");
+                                fs.outputFile(mappedTarget, JSON5.stringify(scssResult.sourceMap));
+                                console.log(`Mapped (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(mappedTarget));
                             }
 
                             if (scssResult.css) {
-                                const normalTarget = path.join(
-                                    dest,
-                                    path.parse(target).name + ".css"
-                                );
-                                await fs.outputFile(
-                                    normalTarget,
-                                    scssResult.css
-                                );
-                                console.log(
-                                    `Tranpiled (${chalk.gray(
-                                        "from"
-                                    )}, ${chalk.cyan("to")})`,
-                                    chalk.gray(file),
-                                    chalk.cyan(normalTarget)
-                                );
+                                const normalTarget = path.join(dest, path.parse(target).name + ".css");
+                                await fs.outputFile(normalTarget, scssResult.css);
+                                console.log(`Tranpiled (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(normalTarget));
 
                                 if (config.generateRTL) {
                                     const options = {
                                         mode: Mode.combined,
                                     };
 
-                                    const result = await postcss([
-                                        postcssRTLCSS(options),
-                                    ]).process(scssResult.css, { from: file });
+                                    const result = await postcss([postcssRTLCSS(options)]).process(scssResult.css, { from: file });
 
-                                    await fs.outputFile(
-                                        normalTarget,
-                                        result.css
-                                    );
+                                    await fs.outputFile(normalTarget, result.css);
                                     scssResult.css = result.css;
-                                    console.log(
-                                        `RTL (${chalk.gray(
-                                            "from"
-                                        )}, ${chalk.cyan("to")})`,
-                                        chalk.gray(normalTarget),
-                                        chalk.cyan(normalTarget)
-                                    );
+                                    console.log(`RTL (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(normalTarget), chalk.cyan(normalTarget));
                                 }
 
                                 let { code, map } = transform({
@@ -211,39 +157,19 @@ function runSass(config) {
                                 });
 
                                 if (code) {
-                                    const minifiedTarget = path.join(
-                                        dest,
-                                        path.parse(target).name + ".min.css"
-                                    );
+                                    const minifiedTarget = path.join(dest, path.parse(target).name + ".min.css");
                                     fs.outputFile(minifiedTarget, code);
-                                    console.log(
-                                        `Minified (${chalk.gray(
-                                            "from"
-                                        )}, ${chalk.cyan("to")})`,
-                                        chalk.gray(normalTarget),
-                                        chalk.cyan(minifiedTarget)
-                                    );
+                                    console.log(`Minified (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(normalTarget), chalk.cyan(minifiedTarget));
                                 }
 
                                 if (mode === "development" && map) {
-                                    const mappedTarget = path.join(
-                                        dest,
-                                        path.parse(target).name + ".css.map"
-                                    );
+                                    const mappedTarget = path.join(dest, path.parse(target).name + ".css.map");
                                     fs.outputFile(mappedTarget, map);
-                                    console.log(
-                                        `Mapped (${chalk.gray(
-                                            "from"
-                                        )}, ${chalk.cyan("to")})`,
-                                        chalk.gray(normalTarget),
-                                        chalk.cyan(mappedTarget)
-                                    );
+                                    console.log(`Mapped (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(normalTarget), chalk.cyan(mappedTarget));
                                 }
                             }
                         } else {
-                            console.log(
-                                "Trying to transpile a SASS file with an extension that is not allowed."
-                            );
+                            console.log("Trying to transpile a SASS file with an extension that is not allowed.");
                         }
                     }
                 });

@@ -9,39 +9,39 @@ const webpackConfig = await import("../../" + assetConfig.basePath + assetConfig
 const compiler = webpack(webpackConfig.default);
 
 if (action === "build") {
-  // run webpack
-  compiler.run((err, stats) => {
-    compiler.close((closeErr) => {});
-  });
+    // run webpack
+    compiler.run(() => {
+        compiler.close(() => {});
+    });
 } else if (action === "watch") {
-  // watch webpack
-  const watching = compiler.watch(
-    {
-      // Example
-      aggregateTimeout: 300,
-      poll: undefined,
-    },
-    (err, stats) => {
-      // Print watch/build result here...
-      console.log(
-        stats.toString({
-          colors: true,
-          chunks: false,
-          modules: false,
-          children: false,
-          entrypoints: false,
-        }),
-      );
-    },
-  );
+    // watch webpack
+    compiler.watch(
+        {
+            // Example
+            aggregateTimeout: 300,
+            poll: undefined,
+        },
+        (err, stats) => {
+            // Print watch/build result here...
+            console.log(
+                stats.toString({
+                    colors: true,
+                    chunks: false,
+                    modules: false,
+                    children: false,
+                    entrypoints: false,
+                }),
+            );
+        },
+    );
 } else if (action === "host") {
-  const devServerOptions = { ...webpackConfig.default.devServer, open: true };
-  const server = new WebpackDevServer(devServerOptions, compiler);
+    const devServerOptions = { ...webpackConfig.default.devServer, open: true };
+    const server = new WebpackDevServer(devServerOptions, compiler);
 
-  const runServer = async () => {
-    console.log("Starting server...");
-    await server.start();
-  };
+    const runServer = async () => {
+        console.log("Starting server...");
+        await server.start();
+    };
 
-  runServer();
+    runServer();
 }
