@@ -52,13 +52,13 @@ if (tagsStr != undefined) {
     }
 }
 
-if (task === "watch" && packagesStr == undefined) {
-    console.log(chalk.yellow("Specify packages to watch with -n cli flag"));
+if (task === "watch" && tagsStr != undefined) {
+    console.log(chalk.yellow("Cannot watch based on tags, Specify packages to watch with -n cli flag"));
     process.exit(0);
 }
 
-if (task === "watch" && tagsStr != undefined) {
-    console.log(chalk.yellow("Cannot watch based on tags, Specify packages to watch with -n cli flag"));
+if (task === "watch" && packagesStr == undefined) {
+    console.log(chalk.yellow("Specify packages to watch with -n cli flag"));
     process.exit(0);
 }
 
