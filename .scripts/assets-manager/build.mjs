@@ -36,11 +36,6 @@ if (packagesStr != undefined) {
     }
 }
 
-if (task === "watch" && packagesStr == undefined) {
-    console.log(chalk.yellow("Specify packages to watch with -n cli flag"));
-    process.exit(0);
-}
-
 // Filter the tags if the user passes the -t cli flag
 let tagsStr = parsedArgs.t;
 if (tagsStr != undefined) {
@@ -55,6 +50,16 @@ if (tagsStr != undefined) {
             }
         });
     }
+}
+
+if (task === "watch" && packagesStr == undefined) {
+    console.log(chalk.yellow("Specify packages to watch with -n cli flag"));
+    process.exit(0);
+}
+
+if (task === "watch" && tagsStr != undefined) {
+    console.log(chalk.yellow("Cannot watch based on tags, Specify packages to watch with -n cli flag"));
+    process.exit(0);
 }
 
 // Filter the tags if the user passes the -b cli flag
