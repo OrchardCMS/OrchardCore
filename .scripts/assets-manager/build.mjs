@@ -62,6 +62,16 @@ if (task === "watch" && packagesStr == undefined) {
     process.exit(0);
 }
 
+if (task === "host" && tagsStr != undefined) {
+    console.log(chalk.yellow("Cannot host based on tags, Specify packages to host with -n cli flag"));
+    process.exit(0);
+}
+
+if (task === "host" && packagesStr == undefined) {
+    console.log(chalk.yellow("Specify packages to host with -n cli flag"));
+    process.exit(0);
+}
+
 // Filter the tags if the user passes the -b cli flag
 let bundleStr = parsedArgs.b;
 if (bundleStr != undefined) {
