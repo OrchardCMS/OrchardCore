@@ -1,4 +1,3 @@
-const getTenantName = () =>
-    document.documentElement.getAttribute("data-tenant") || "default";
+const getTenantName = () => document.documentElement.getAttribute("data-tenant") || "default";
 
 export { getTenantName };

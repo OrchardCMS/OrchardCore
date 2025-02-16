@@ -15,16 +15,18 @@
  * @param {string} options.style - CSS style string for the progress bar.
  */
 export default (element: HTMLInputElement, options: any) => {
-
-    const settings = Object.assign({
-        requiredLength: 8,
-        requireUppercase: false,
-        requireLowercase: false,
-        requireDigit: false,
-        requireNonAlphanumeric: false,
-        target: '#passwordStrength',
-        style: "margin-top: 7px; height: 7px; border-radius: 5px"
-    }, options);
+    const settings = Object.assign(
+        {
+            requiredLength: 8,
+            requireUppercase: false,
+            requireLowercase: false,
+            requireDigit: false,
+            requireNonAlphanumeric: false,
+            target: "#passwordStrength",
+            style: "margin-top: 7px; height: 7px; border-radius: 5px",
+        },
+        options,
+    );
 
     let capitalletters = 0;
     let lowerletters = 0;
@@ -50,14 +52,13 @@ export default (element: HTMLInputElement, options: any) => {
         }
 
         if (value == 0) {
-            return ''; // grayed
+            return ""; // grayed
         }
 
         return "bg-danger";
     };
 
     const checkStrength = (value: string) => {
-
         const minLength = value.length >= settings.requiredLength ? 1 : 0;
         capitalletters = !settings.requireUppercase || value.match(upperCase) ? 1 : 0;
         lowerletters = !settings.requireLowercase || value.match(lowerCase) ? 1 : 0;
@@ -102,4 +103,4 @@ export default (element: HTMLInputElement, options: any) => {
             event.preventDefault();
         }
     });
-}
+};
