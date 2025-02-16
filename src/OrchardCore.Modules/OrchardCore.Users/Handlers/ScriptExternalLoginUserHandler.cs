@@ -8,7 +8,7 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Handlers;
 
-public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
+public class ScriptExternalLoginUserHandler : IExternalLoginUserHandler
 {
     private readonly ILogger _logger;
     private readonly IScriptingManager _scriptingManager;
@@ -19,10 +19,10 @@ public class ScriptExternalLoginEventHandler : IExternalLoginEventHandler
         MergeNullValueHandling = MergeNullValueHandling.Merge
     };
 
-    public ScriptExternalLoginEventHandler(
+    public ScriptExternalLoginUserHandler(
         ISiteService siteService,
         IScriptingManager scriptingManager,
-        ILogger<ScriptExternalLoginEventHandler> logger
+        ILogger<ScriptExternalLoginUserHandler> logger
     )
     {
         _siteService = siteService;

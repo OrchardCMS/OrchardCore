@@ -1,9 +1,9 @@
 namespace OrchardCore.Users.Handlers;
 
 /// <summary>
-/// Contract for external login events, this occurs when a tenant is set up.
+/// Contract for external login user operations.
 /// </summary>
-public interface IExternalLoginEventHandler
+public interface IExternalLoginUserHandler
 {
     /// <summary>
     /// Occurs when the username is generated.

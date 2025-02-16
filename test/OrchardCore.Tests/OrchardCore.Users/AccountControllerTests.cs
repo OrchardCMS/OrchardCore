@@ -54,8 +54,8 @@ public class AccountControllerTests
             context.UserProperties["Test"] = 111;
             Assert.NotEqual(user.Properties["Test"], context.UserProperties["Test"]);
 
-            var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginEventHandler>()
-                        .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginEventHandler)) as ScriptExternalLoginEventHandler;
+            var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginUserHandler>()
+                        .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginUserHandler)) as ScriptExternalLoginUserHandler;
             var loginSettings = new ExternalLoginSettings
             {
                 UseScriptToSyncProperties = true,
@@ -121,8 +121,8 @@ public class AccountControllerTests
                 UserRoles = userRoles,
             };
 
-            var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginEventHandler>()
-                      .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginEventHandler)) as ScriptExternalLoginEventHandler;
+            var scriptExternalLoginEventHandler = scope.ServiceProvider.GetServices<IExternalLoginUserHandler>()
+                      .FirstOrDefault(x => x.GetType() == typeof(ScriptExternalLoginUserHandler)) as ScriptExternalLoginUserHandler;
             var loginSettings = new ExternalLoginSettings
             {
                 UseScriptToSyncProperties = true,

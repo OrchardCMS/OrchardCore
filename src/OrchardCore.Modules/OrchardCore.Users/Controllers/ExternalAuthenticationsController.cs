@@ -35,7 +35,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
     private readonly IEmailAddressValidator _emailAddressValidator;
     private readonly IUserService _userService;
     private readonly INotifier _notifier;
-    private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
+    private readonly IEnumerable<IExternalLoginUserHandler> _externalLoginUserHandlers;
     private readonly ExternalLoginOptions _externalLoginOption;
     private readonly IdentityOptions _identityOptions;
 
@@ -55,7 +55,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         IEmailAddressValidator emailAddressValidator,
         IUserService userService,
         INotifier notifier,
-        IEnumerable<IExternalLoginEventHandler> externalLoginHandlers,
+        IEnumerable<IExternalLoginUserHandler> externalLoginUserHandlers,
         IOptions<ExternalLoginOptions> externalLoginOption,
         IOptions<IdentityOptions> identityOptions)
     {
@@ -69,7 +69,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         _emailAddressValidator = emailAddressValidator;
         _userService = userService;
         _notifier = notifier;
-        _externalLoginHandlers = externalLoginHandlers;
+        _externalLoginUserHandlers = externalLoginUserHandlers;
         _externalLoginOption = externalLoginOption.Value;
         _identityOptions = identityOptions.Value;
 
@@ -600,7 +600,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
             UserRoles = userRoles,
         };
 
-        foreach (var externalLoginHandlers in _externalLoginHandlers)
+        foreach (var externalLoginHandlers in _externalLoginUserHandlers)
         {
             try
             {
@@ -682,7 +682,7 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         var externalClaims = info?.Principal.GetSerializableClaims();
         var userNames = new Dictionary<Type, string>();
 
-        foreach (var item in _externalLoginHandlers)
+        foreach (var item in _externalLoginUserHandlers)
         {
             try
             {
