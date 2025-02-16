@@ -2,6 +2,4 @@ using OrchardCore.Entities;
 
 namespace OrchardCore.Users.Models;
 
-public class UserMenu : Entity
-{
-}
+public class UserMenu : Entity;

@@ -1,5 +1,3 @@
 namespace OrchardCore.Rules.Models;
 
-public class IsAuthenticatedCondition : Condition
-{
-}
+public class IsAuthenticatedCondition : Condition;

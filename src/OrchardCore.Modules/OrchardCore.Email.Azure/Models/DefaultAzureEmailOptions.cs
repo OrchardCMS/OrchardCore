@@ -1,5 +1,3 @@
 namespace OrchardCore.Email.Azure.Models;
 
-public class DefaultAzureEmailOptions : AzureEmailOptions
-{
-}
+public class DefaultAzureEmailOptions : AzureEmailOptions;
