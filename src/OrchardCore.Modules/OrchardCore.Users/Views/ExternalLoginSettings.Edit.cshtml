@@ -18,7 +18,7 @@
         <span asp-validation-for="UseScriptToSyncProperties"></span>
         <label class="form-check-label" asp-for="UseScriptToSyncProperties">@T["Use a script to set user roles, user claims and user properties based on external provider claims"]</label>
         <span class="hint dashed">
-            @T["If selected, none of the implemented {0}, if any, will be triggered.", nameof(IExternalLoginUserHandler)]
+            @T["If selected, none of the implemented {0}, if any, will be triggered.", nameof(IExternalLoginEventHandler)]
         </span>
     </div>
     <div class="mb-3 form-control" id="doc_editor" asp-for="Text" style="min-height: 500px;max-width:750px"></div>
