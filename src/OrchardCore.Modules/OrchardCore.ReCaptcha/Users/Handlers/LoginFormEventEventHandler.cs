@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using OrchardCore.ReCaptcha.Services;
 using OrchardCore.Users;
 using OrchardCore.Users.Events;
@@ -8,12 +8,12 @@ namespace OrchardCore.ReCaptcha.Users.Handlers;
 public class LoginFormEventEventHandler : ILoginFormEvent
 {
     private readonly ReCaptchaService _reCaptchaService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly SignInManager<IUser> _signInManager;
 
-    public LoginFormEventEventHandler(ReCaptchaService reCaptchaService, IHttpContextAccessor httpContextAccessor)
+    public LoginFormEventEventHandler(ReCaptchaService reCaptchaService, SignInManager<IUser> signInManager)
     {
         _reCaptchaService = reCaptchaService;
-        _httpContextAccessor = httpContextAccessor;
+        _signInManager = signInManager;
     }
 
     public Task IsLockedOutAsync(IUser user)
@@ -26,20 +26,12 @@ public class LoginFormEventEventHandler : ILoginFormEvent
         return Task.CompletedTask;
     }
 
-    public Task LoggingInAsync(string userName, Action<string, string> reportError)
+    public async Task LoggingInAsync(string userName, Action<string, string> reportError)
     {
-        // This is only a temporary fix for https://github.com/OrchardCMS/OrchardCore/issues/17422, to be used in a patch release.
-        if (_httpContextAccessor.HttpContext?.Items.ContainsKey("IsExternalLogin") == true)
+        if (_reCaptchaService.IsThisARobot() && await _signInManager.GetExternalLoginInfoAsync() == null)
         {
-            return Task.CompletedTask;
+            await _reCaptchaService.ValidateCaptchaAsync(reportError);
         }
-
-        if (_reCaptchaService.IsThisARobot())
-        {
-            return _reCaptchaService.ValidateCaptchaAsync(reportError);
-        }
-
-        return Task.CompletedTask;
     }
 
     public Task LoggingInFailedAsync(string userName)

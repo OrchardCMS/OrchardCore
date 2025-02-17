@@ -116,7 +116,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         {
             if (!await AddConfirmEmailErrorAsync(iUser) && !AddUserEnabledError(iUser, S))
             {
-                SetMarkerHttpContextItem();
                 await _accountEvents.InvokeAsync((e, user, modelState) => e.LoggingInAsync(user.UserName, (key, message) => modelState.AddModelError(key, message)), iUser, ModelState, _logger);
 
                 var signInResult = await ExternalLoginSignInAsync(iUser, info);
@@ -302,8 +301,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         if (TryValidateModel(model) && ModelState.IsValid)
         {
-            SetMarkerHttpContextItem();
-
             var iUser = await this.RegisterUser(
                 new RegisterUserForm()
                 {
@@ -391,7 +388,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
         if (ModelState.IsValid)
         {
-            SetMarkerHttpContextItem();
             await _accountEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(user.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
 
             var signInResult = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
@@ -658,11 +654,5 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
         }
 
         return ret;
-    }
-
-    private void SetMarkerHttpContextItem()
-    {
-        // This is only a temporary fix for https://github.com/OrchardCMS/OrchardCore/issues/17422, to be used in a patch release.
-        HttpContext.Items["IsExternalLogin"] = true;
     }
 }
