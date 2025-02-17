@@ -153,8 +153,12 @@ public class EmailTask : TaskActivity<EmailTask>
             // Email reply-to header https://tools.ietf.org/html/rfc4021#section-2.1.4
             ReplyTo = replyTo?.Trim(),
             Subject = subject?.Trim(),
-            HtmlBody = htmlBody?.Trim(),
-            TextBody = textBody?.Trim()
+            HtmlBody = BodyFormat == MailMessageBodyFormat.Text
+                ? null
+                : htmlBody?.Trim(),
+            TextBody = BodyFormat == MailMessageBodyFormat.Html
+                ? null
+                : textBody?.Trim()
         };
 
         if (!string.IsNullOrWhiteSpace(sender))
