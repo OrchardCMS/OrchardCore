@@ -10,7 +10,9 @@ public sealed class RegistrationFormEventHandler : RegistrationFormEventsBase
     private readonly ReCaptchaService _reCaptchaService;
     private readonly SignInManager<IUser> _signInManager;
 
-    public RegistrationFormEventHandler(ReCaptchaService reCaptchaService, SignInManager<IUser> signInManager)
+    public RegistrationFormEventHandler(
+        ReCaptchaService reCaptchaService,
+        SignInManager<IUser> signInManager)
     {
         _reCaptchaService = reCaptchaService;
         _signInManager = signInManager;
