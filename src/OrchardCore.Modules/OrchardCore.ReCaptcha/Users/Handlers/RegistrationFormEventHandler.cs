@@ -23,9 +23,13 @@ public class RegistrationFormEventHandler : IRegistrationFormEvents
 
     public async Task RegistrationValidationAsync(Action<string, string> reportError)
     {
-        if (await _signInManager.GetExternalLoginInfoAsync() == null)
+        // When logging in via an external provider, authentication security is already handled by the provider.
+        // Therefore, using a CAPTCHA is unnecessary and impractical, as users wouldn't be able to complete it anyway.
+        if (await _signInManager.GetExternalLoginInfoAsync() != null)
         {
-            await _reCaptchaService.ValidateCaptchaAsync(reportError);
+            return;
         }
+
+        await _reCaptchaService.ValidateCaptchaAsync(reportError);
     }
 }
