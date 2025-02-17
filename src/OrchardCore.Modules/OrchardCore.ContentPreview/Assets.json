@@ -1,8 +1,8 @@
 [
-    {
-        "inputs": [
-            "Assets/js/contentpreview.edit.js"
-        ],
-        "output": "wwwroot/Scripts/contentpreview.edit.js"
-    }
+  {
+    "action": "min",
+    "name": "contentfields",
+    "source": "Assets/js/contentpreview.edit.js",
+    "tags": ["admin", "dashboard", "js"]
+  }
 ]

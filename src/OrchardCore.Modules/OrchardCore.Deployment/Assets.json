@@ -1,8 +1,8 @@
 [
-    {
-        "inputs": [
-            "Assets/js/steporder.js"
-        ],
-        "output": "wwwroot/Scripts/steporder.js"
-    }
+  {
+    "action": "min",
+    "name": "deployment",
+    "source": "Assets/js/steporder.js",
+    "tags": ["admin", "dashboard", "js"]
+  }
 ]

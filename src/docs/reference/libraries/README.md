@@ -87,6 +87,9 @@ The below table lists the different Client side libraries:
 | [Vue](https://github.com/vuejs/vue) | JavaScript framework for building UI on the web. | [MIT](https://github.com/vuejs/vue/blob/dev/LICENSE) |
 | [Webpack](https://github.com/webpack/webpack) | A bundler for javascript and friends. | [MIT](https://github.com/webpack/webpack/blob/master/LICENSE) |
 | [Webpack CLI](https://github.com/webpack/webpack-cli) | Webpack's Command Line Interface | [MIT](https://github.com/webpack/webpack-cli/blob/master/LICENSE) |
+| [Vite](https://vite.dev/) | Vite bundler/compiler | [MIT](https://github.com/vitejs/vite?tab=MIT-1-ov-file#readme) |
+| [Parcel](https://parceljs.org/) | Parcel bundler/compiler | [MIT](https://github.com/parcel-bundler/parcel?tab=MIT-1-ov-file#readme) |
+| [Concurrently](https://github.com/open-cli-tools/concurrently) | Run multiple commands concurrently | [MIT](https://github.com/open-cli-tools/concurrently?tab=MIT-1-ov-file#readme) |
 
 The below table lists the different Tests libraries:
 
