@@ -27,7 +27,7 @@ public sealed class AccountController : AccountBaseController
     private readonly UserManager<IUser> _userManager;
     private readonly ILogger _logger;
     private readonly ISiteService _siteService;
-    private readonly IEnumerable<ILoginFormEvent> _accountEvents;
+    private readonly IEnumerable<ILoginFormEvent> _loginFormEvents;
     private readonly RegistrationOptions _registrationOptions;
     private readonly IDisplayManager<LoginForm> _loginFormDisplayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -44,7 +44,7 @@ public sealed class AccountController : AccountBaseController
         ISiteService siteService,
         IHtmlLocalizer<AccountController> htmlLocalizer,
         IStringLocalizer<AccountController> stringLocalizer,
-        IEnumerable<ILoginFormEvent> accountEvents,
+        IEnumerable<ILoginFormEvent> loginFormEvents,
         IOptions<RegistrationOptions> registrationOptions,
         INotifier notifier,
         IDisplayManager<LoginForm> loginFormDisplayManager,
@@ -55,7 +55,7 @@ public sealed class AccountController : AccountBaseController
         _userService = userService;
         _logger = logger;
         _siteService = siteService;
-        _accountEvents = accountEvents;
+        _loginFormEvents = loginFormEvents;
         _registrationOptions = registrationOptions.Value;
         _notifier = notifier;
         _loginFormDisplayManager = loginFormDisplayManager;
@@ -76,9 +76,9 @@ public sealed class AccountController : AccountBaseController
         // Clear the existing external cookie to ensure a clean login process.
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-        foreach (var accountEvent in _accountEvents)
+        foreach (var loginFormEvent in _loginFormEvents)
         {
-            var result = await accountEvent.LoggingInAsync();
+            var result = await loginFormEvent.LoggingInAsync();
 
             if (result != null)
             {
@@ -116,7 +116,7 @@ public sealed class AccountController : AccountBaseController
 
         var formShape = await _loginFormDisplayManager.UpdateEditorAsync(model, _updateModelAccessor.ModelUpdater, false);
 
-        await _accountEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(model.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
+        await _loginFormEvents.InvokeAsync((e, model, modelState) => e.LoggingInAsync(model.UserName, (key, message) => modelState.AddModelError(key, message)), model, ModelState, _logger);
 
         IUser user = null;
 
@@ -130,9 +130,9 @@ public sealed class AccountController : AccountBaseController
 
                 if (result.Succeeded)
                 {
-                    foreach (var accountEvent in _accountEvents)
+                    foreach (var loginFormEvent in _loginFormEvents)
                     {
-                        var loginResult = await accountEvent.ValidatingLoginAsync(user);
+                        var loginResult = await loginFormEvent.ValidatingLoginAsync(user);
 
                         if (loginResult != null)
                         {
@@ -146,7 +146,7 @@ public sealed class AccountController : AccountBaseController
                     {
                         _logger.LogInformation(1, "User logged in.");
 
-                        await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
+                        await _loginFormEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
                         return await LoggedInActionResultAsync(user, returnUrl);
                     }
@@ -168,7 +168,7 @@ public sealed class AccountController : AccountBaseController
                 if (result.IsLockedOut)
                 {
                     ModelState.AddModelError(string.Empty, S["The account is locked out"]);
-                    await _accountEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
+                    await _loginFormEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
 
                     return View();
                 }
@@ -180,12 +180,12 @@ public sealed class AccountController : AccountBaseController
         if (user == null)
         {
             // Login failed unknown user.
-            await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
+            await _loginFormEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
         }
         else
         {
             // Login failed with a known user.
-            await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
+            await _loginFormEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
         }
 
         // If we got this far, something failed, redisplay form.
