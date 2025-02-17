@@ -20,8 +20,8 @@ public sealed class LoginFormEventEventHandler : LoginFormEventBase
 
     public override async Task LoggingInAsync(string userName, Action<string, string> reportError)
     {
-        // When the login is using an external provider, then we offload authentication security to it already, so no
-        // point in using a captcha (and currently users wouldn't be able to fill it out anyway).
+        // When logging in via an external provider, authentication security is already handled by the provider.
+        // Therefore, using a CAPTCHA is unnecessary and impractical, as users wouldn't be able to complete it anyway.
         if (await _signInManager.GetExternalLoginInfoAsync() != null)
         {
             return;
