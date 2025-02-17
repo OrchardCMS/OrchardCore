@@ -21,21 +21,21 @@ public class PoFilesTranslationsProvider : ITranslationProvider
     }
 
     /// <inheritdocs />
-    public void LoadTranslations(string cultureName, CultureDictionary dictionary)
+    public async Task LoadTranslationsAsync(string cultureName, CultureDictionary dictionary)
     {
         foreach (var fileInfo in _poFilesLocationProvider.GetLocations(cultureName))
         {
-            LoadFileToDictionary(fileInfo, dictionary);
+            await LoadFileToDictionaryAsync(fileInfo, dictionary);
         }
     }
 
-    private void LoadFileToDictionary(IFileInfo fileInfo, CultureDictionary dictionary)
+    private async Task LoadFileToDictionaryAsync(IFileInfo fileInfo, CultureDictionary dictionary)
     {
         if (fileInfo.Exists && !fileInfo.IsDirectory)
         {
             using var stream = fileInfo.CreateReadStream();
             using var reader = new StreamReader(stream);
-            dictionary.MergeTranslations(_parser.Parse(reader));
+            dictionary.MergeTranslations(await _parser.ParseAsync(reader).ToListAsync());
         }
     }
 }
