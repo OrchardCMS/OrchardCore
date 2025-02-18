@@ -27,7 +27,7 @@ public class EmailTaskTests
             HtmlEncoder.Default)
         {
             Subject = new WorkflowExpression<string>("Test"),
-            Body = new WorkflowExpression<string>("Test message!!")
+            TextBody = new WorkflowExpression<string>("Test message!!")
         };
 
         var executionContext = new WorkflowExecutionContext(
