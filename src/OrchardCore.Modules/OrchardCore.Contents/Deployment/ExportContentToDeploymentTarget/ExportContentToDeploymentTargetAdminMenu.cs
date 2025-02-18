@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Deployment;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
@@ -29,7 +30,7 @@ public sealed class ExportContentToDeploymentTargetAdminMenu : AdminNavigationPr
                     .Add(S["Settings"], settings => settings
                         .Add(S["Export target"], S["Export target"].PrefixPosition(), targetSettings => targetSettings
                             .Action("Index", "Admin", _routeValues)
-                            .Permission(OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan)
+                            .Permission(DeploymentPermissions.ManageDeploymentPlan)
                             .LocalNav()
                         )
                     )
@@ -43,7 +44,7 @@ public sealed class ExportContentToDeploymentTargetAdminMenu : AdminNavigationPr
             .Add(S["Settings"], settings => settings
                 .Add(S["Deployment Targets"], S["Deployment Targets"].PrefixPosition(), targetSettings => targetSettings
                     .Action("Index", "Admin", _routeValues)
-                    .Permission(OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan)
+                    .Permission(DeploymentPermissions.ManageDeploymentPlan)
                     .LocalNav()
                 )
             );

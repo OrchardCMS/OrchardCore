@@ -48,7 +48,7 @@ public sealed class AdminController : Controller
     [Admin("Settings/{groupId}", "AdminSettings")]
     public async Task<IActionResult> Index(string groupId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageGroupSettings, (object)groupId))
+        if (!await _authorizationService.AuthorizeAsync(User, SettingsPermissions.ManageGroupSettings, (object)groupId))
         {
             return Forbid();
         }
@@ -68,7 +68,7 @@ public sealed class AdminController : Controller
     [ActionName(nameof(Index))]
     public async Task<IActionResult> IndexPost(string groupId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageGroupSettings, (object)groupId))
+        if (!await _authorizationService.AuthorizeAsync(User, SettingsPermissions.ManageGroupSettings, (object)groupId))
         {
             return Forbid();
         }

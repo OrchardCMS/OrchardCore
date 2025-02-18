@@ -28,7 +28,7 @@ public sealed class AdminMenu : AdminNavigationProvider
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Features"], S["Features"].PrefixPosition(), deployment => deployment
                         .Action("Features", "Admin", _routeValues)
-                        .Permission(Permissions.ManageFeatures)
+                        .Permission(FeaturesPermissions.ManageFeatures)
                         .LocalNav()
                     )
                 );
@@ -40,7 +40,7 @@ public sealed class AdminMenu : AdminNavigationProvider
             .Add(S["Tools"], tools => tools
                 .Add(S["Features"], S["Features"].PrefixPosition(), deployment => deployment
                     .Action("Features", "Admin", _routeValues)
-                    .Permission(Permissions.ManageFeatures)
+                    .Permission(FeaturesPermissions.ManageFeatures)
                     .LocalNav()
                 )
             );

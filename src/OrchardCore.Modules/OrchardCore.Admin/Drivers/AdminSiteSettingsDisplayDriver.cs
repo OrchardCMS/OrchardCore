@@ -31,7 +31,7 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, PermissionsAdminSettings.ManageAdminSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, AdminPermissions.ManageAdminSettings))
         {
             return null;
         }
@@ -50,7 +50,7 @@ public sealed class AdminSiteSettingsDisplayDriver : SiteDisplayDriver<AdminSett
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, PermissionsAdminSettings.ManageAdminSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, AdminPermissions.ManageAdminSettings))
         {
             return null;
         }

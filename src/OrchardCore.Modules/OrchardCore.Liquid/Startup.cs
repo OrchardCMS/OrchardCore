@@ -18,6 +18,7 @@ using OrchardCore.Liquid.Indexing;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.Services;
 using OrchardCore.Liquid.ViewModels;
+using OrchardCore.Liquid.Endpoints.Scripts;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Liquid;
@@ -26,11 +27,13 @@ public sealed class Startup : StartupBase
 {
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        app.UseMiddleware<ScriptsMiddleware>();
+        routes.AddGetIntellisenseScriptEndpoint();
     }
 
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
+
         services.Configure<TemplateOptions>(options =>
         {
             options.Filters.AddFilter("t", LiquidViewFilters.Localize);
@@ -123,26 +126,5 @@ public sealed class ResourcesStartup : StartupBase
     {
         services.AddLiquidFilter<AppendVersionFilter>("append_version");
         services.AddLiquidFilter<ResourceUrlFilter>("resource_url");
-    }
-}
-
-[RequireFeatures("OrchardCore.Html")]
-public sealed class HtmlStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
-        services.AddLiquidFilter<SanitizeHtmlFilter>("sanitize_html");
-    }
-}
-
-[RequireFeatures("OrchardCore.Localization")]
-public sealed class localizationStartup : StartupBase
-{
-    public override void ConfigureServices(IServiceCollection services)
-    {
-#pragma warning disable CS0618 // Type or member is obsolete
-        // Deprecated, remove in a future version.
-        services.AddLiquidFilter<SupportedCulturesFilter>("supported_cultures");
-#pragma warning restore CS0618 // Type or member is obsolete
     }
 }

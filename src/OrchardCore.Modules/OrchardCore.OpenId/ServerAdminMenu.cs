@@ -24,7 +24,7 @@ public sealed class ServerAdminMenu : AdminNavigationProvider
                        .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
                             .Add(S["Authorization Server"], S["Authorization Server"].PrefixPosition(), server => server
                                 .Action("Index", "ServerConfiguration", "OrchardCore.OpenId")
-                                .Permission(Permissions.ManageServerSettings)
+                                .Permission(OpenIdPermissions.ManageServerSettings)
                                 .LocalNav()
                             )
                        )
@@ -42,7 +42,7 @@ public sealed class ServerAdminMenu : AdminNavigationProvider
                         .Id("openid")
                         .Add(S["Authorization Server"], S["Authorization Server"].PrefixPosition(), server => server
                             .Action("Index", "ServerConfiguration", "OrchardCore.OpenId")
-                            .Permission(Permissions.ManageServerSettings)
+                            .Permission(OpenIdPermissions.ManageServerSettings)
                             .LocalNav()
                         )
                     )

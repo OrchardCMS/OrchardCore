@@ -14,8 +14,9 @@ public class TitlePartHandler : ContentPartHandler<TitlePart>
 {
     private readonly ILiquidTemplateManager _liquidTemplateManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
-    protected readonly IStringLocalizer S;
     private readonly HashSet<ContentItem> _contentItems = [];
+
+    protected readonly IStringLocalizer S;
 
     public TitlePartHandler(
         ILiquidTemplateManager liquidTemplateManager,

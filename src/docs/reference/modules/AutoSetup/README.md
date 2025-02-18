@@ -43,25 +43,25 @@ Auto-Setup parameters are defined in appsettings.json. Example excerpt:
 }
 ```
 
-| Parameter | Description |
-| --- | --- |
+| Parameter       | Description                                                                                                                         |
+|-----------------|-------------------------------------------------------------------------------------------------------------------------------------|
 | `AutoSetupPath` | The URL To Trigger AutoSetup For Each Tenant. If empty, auto-setup will be triggered on first tenant request e.g: /, /tenant-prefix |
-| `Tenants` | The list of the tenants to install. |
+| `Tenants`       | The list of the tenants to install.                                                                                                 |
 
-| Parameter | Description |
-| --- | --- |
-| `ShellName` | The technical shell / tenant name. It can not be empty and must contain characters only. Use "Default" for the default tenant. |
-| `SiteName` | The name of the site. |
-| `AdminUsername` | The tenant username of the super user. |
-| `AdminEmail` | The email of the tenant super user. |
-| `AdminPassword` | The password of the tenant super user. |
-| `DatabaseProvider` | The database provider. |
-| `DatabaseConnectionString` | The connection string. |
-| `DatabaseTablePrefix` | The database table prefix. Can be used to install a tenant on the same database. |
-| `RecipeName` | The tenant installation Recipe name. |
-| `RequestUrlHost` | The tenant host url. |
-| `RequestUrlPrefix` | The tenant url prefix. |
-| `FeatureProfile` | Optionally, the name of the feature profile used by default. Only applicable if the "Feature Profiles" feature is used. See the [documentation of the Tenants module](../Tenants/README.md#feature-profiles) for details. |
+| Parameter                  | Description                                                                                                                                                                                                               |
+|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ShellName`                | The technical shell / tenant name. It can not be empty and must contain characters only. Use "Default" for the default tenant.                                                                                            |
+| `SiteName`                 | The name of the site.                                                                                                                                                                                                     |
+| `AdminUsername`            | The tenant username of the super user.                                                                                                                                                                                    |
+| `AdminEmail`               | The email of the tenant super user.                                                                                                                                                                                       |
+| `AdminPassword`            | The password of the tenant super user.                                                                                                                                                                                    |
+| `DatabaseProvider`         | The database provider.                                                                                                                                                                                                    |
+| `DatabaseConnectionString` | The connection string.                                                                                                                                                                                                    |
+| `DatabaseTablePrefix`      | The database table prefix. Can be used to install a tenant on the same database.                                                                                                                                          |
+| `RecipeName`               | The tenant installation Recipe name.                                                                                                                                                                                      |
+| `RequestUrlHost`           | The tenant host url.                                                                                                                                                                                                      |
+| `RequestUrlPrefix`         | The tenant url prefix.                                                                                                                                                                                                    |
+| `FeatureProfile`           | Optionally, the name of the feature profile used by default. Only applicable if the "Feature Profiles" feature is used. See the [documentation of the Tenants module](../Tenants/README.md#feature-profiles) for details. |
 
 !!! note
     Tenants array must contain the root tenant with `ShellName` equals to `Default`.  

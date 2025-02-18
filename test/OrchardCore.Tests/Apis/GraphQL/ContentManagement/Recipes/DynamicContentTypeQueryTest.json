@@ -78,6 +78,69 @@
               }
             }
           ]
+        },
+        {
+          "Name": "NumberType",
+          "DisplayName": "NumberType",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Listable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "NumberType",
+              "Name": "NumberType",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "StringType",
+          "DisplayName": "StringType",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Listable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "StringType",
+              "Name": "StringType",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "TwoNumbersType",
+          "DisplayName": "TwoNumbersType",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Creatable": true,
+              "Listable": true
+            }
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TwoNumbersType",
+              "Name": "TwoNumbersType",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
         }
       ],
       "ContentParts": [
@@ -138,6 +201,64 @@
               }
             }
           ]
+        },
+        {
+          "Name": "NumberType",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "NumericField",
+              "Name": "Value",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Value",
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "StringType",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Value",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Value",
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "Name": "TwoNumbersType",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "NumericField",
+              "Name": "Field1",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Field1",
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "FieldName": "NumericField",
+              "Name": "Field2",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Field2",
+                  "Position": "0"
+                }
+              }
+            }
+          ]
         }
       ]
     },
@@ -150,6 +271,7 @@
           "DisplayText": "Product 1",
           "Latest": true,
           "Published": true,
+          "CreatedUtc": "2024-04-07T00:00:00Z",
           "PricePart": {
             "Amount": {
               "Value": 10
@@ -175,6 +297,7 @@
           "DisplayText": "Product 2",
           "Latest": true,
           "Published": true,
+          "CreatedUtc": "2024-05-18T00:00:00Z",
           "PricePart": {
             "Amount": {
               "Value": 22
@@ -191,6 +314,45 @@
             },
             "AvailabilityDate": {
               "Value": "2024-05-18"
+            }
+          }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentType": "NumberType",
+          "DisplayText": null,
+          "Latest": true,
+          "Published": true,
+          "NumberType": {
+            "Value": {
+              "Value": 123
+            }
+          }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentType": "StringType",
+          "DisplayText": null,
+          "Latest": true,
+          "Published": true,
+          "StringType": {
+            "Value": {
+              "Text": "Text123"
+            }
+          }
+        },
+        {
+          "ContentItemId": "[js:uuid()]",
+          "ContentType": "TwoNumbersType",
+          "DisplayText": null,
+          "Latest": true,
+          "Published": true,
+          "TwoNumbersType": {
+            "Field1": {
+              "Value": 100
+            },
+            "Field2": {
+              "Value": 200
             }
           }
         }

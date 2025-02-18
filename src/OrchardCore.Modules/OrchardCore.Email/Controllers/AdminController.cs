@@ -47,7 +47,7 @@ public sealed class AdminController : Controller
     [Admin("Email/Test", "EmailTest")]
     public async Task<IActionResult> Test()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
+        if (!await _authorizationService.AuthorizeAsync(User, EmailPermissions.ManageEmailSettings))
         {
             return Forbid();
         }
@@ -65,7 +65,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Test(EmailTestViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageEmailSettings))
+        if (!await _authorizationService.AuthorizeAsync(User, EmailPermissions.ManageEmailSettings))
         {
             return Forbid();
         }
