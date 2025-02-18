@@ -1,0 +1,148 @@
+@using OrchardCore
+@using OrchardCore.Forms.ViewModels
+
+@model FormInputElementVisibilityViewModel
+
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Action" class="@Orchard.GetLabelClasses()">@T["Action"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <select asp-for="Action" asp-items="Model.Actions" class="form-select"></select>
+        <span class="hint">@T["The action to take when the condition is met."]</span>
+    </div>
+</div>
+
+<ul class="list-group mb-3">
+    <li class="list-group-item">
+        <div class="d-flex justify-content-end">
+            <div class="btn btn-sm btn-primary">
+                <i class="fa-solid fa-circle-plus"></i> @T["New Group"]
+            </div>
+        </div>
+    </li>
+    @for (var i = 0; i < Model.Groups.Count; i++)
+    {
+        var group = Model.Groups[i];
+
+        <li class="list-group-item">
+            <div class="d-flex justify-content-end mb-2">
+                <div class="btn btn-sm btn-secondary">
+                    <i class="fa-solid fa-plus"></i> @T["New Rule"]
+                </div>
+            </div>
+
+            <ul class="list-group mb-3">
+                <li class="list-group-item">
+                    @Html.HiddenFor(m => m.Groups[i].IsRemoved)
+                    <div class="btn btn-sm btn-danger remove-group">
+                        <i class="fa-solid fa-trash"></i>
+                    </div>
+                </li>
+                @for (var x = 0; x < group.Rules.Count; x++)
+                {
+                    var rule = group.Rules[x];
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col">
+                                @{
+                                    var options = rule.Fields.Select(x => new SelectListItem { Text = x.Name, Value = x.Value });
+                                }
+                                @Html.DropDownListFor(m => m.Groups[i].Rules[x].Field, options, new { @class = "form-select" })
+
+                            </div>
+
+                            <div class="col">
+                                @Html.DropDownListFor(m => m.Groups[i].Rules[x].Operator, rule.Operators, new { @class = "form-select" })
+                            </div>
+
+                            <div class="col">
+                                @Html.TextBoxFor(m => m.Groups[i].Rules[x].Value)
+                            </div>
+
+                            <div class="col-auto">
+                                @Html.HiddenFor(m => m.Groups[i].Rules[x].IsRemoved)
+                                <div class="btn btn-sm btn-danger remove-rule">
+                                    <i class="fa-solid fa-trash"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ul>
+
+        </li>
+    }
+</ul>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const fields = [];
+
+        const tabEl = document.querySelector('button[data-bs-toggle="tab"]')
+        tabEl.addEventListener('shown.bs.tab', event => {
+            // event.target // newly activated tab
+            // event.relatedTarget // previous active tab
+
+            console.log(event.target);
+
+            var fieldElements = event.target.querySelectorAll('select[name$="FormInputElementVisibilityPart.Groups[\\d+].Rules[\\d+].Field"]');
+
+            var inputs = getInputs();
+
+            fieldElements.forEach(fieldElement => {
+
+                [...fieldElement.options].forEach(option => {
+                    if (option.value) {
+                        option.remove();
+                    }
+                });
+
+                inputs.forEach(input => {
+                    let option = document.createElement('option');
+                    option.value = input.htmlId;
+                    option.textContent = input.htmlId;
+                    option.selected = fieldElement.value === input.htmlId;
+                    option.setAttribute('data-input-type', input.htmlInputType);
+
+                    fieldElement.appendChild(option);
+                });
+            });
+        });
+
+        function getInputs() {
+            // Find all elements with the class 'widget-template'
+            const widgetElements = document.querySelectorAll('.widget-template');
+
+            // Initialize an array to store the results
+            const results = [];
+
+            // Loop through each widget element
+            widgetElements.forEach(widget => {
+                // Find the input element where the name ends with 'FormElementPart.Id'
+                const formElementInput = widget.querySelector('input[name$="FormElementPart.Id"]');
+
+                // Find the select element where the name ends with 'InputPart.Type'
+                const inputTypeSelect = widget.querySelector('select[name$="InputPart.Type"]');
+
+                if (formElementInput && inputTypeSelect) {
+                    // Get the value from 'FormElementPart.Id' input and the selected option from 'InputPart.Type'
+                    const htmlId = formElementInput.value;
+                    const selectedOption = inputTypeSelect.options[inputTypeSelect.selectedIndex].value;
+
+                    if (!formElementInput.value || !selectedOption) {
+                        return;
+                    }
+
+                    // Push the result to the results array
+                    results.push({
+                        htmlId: htmlId,
+                        htmlInputType: selectedOption
+                    });
+                }
+            });
+
+            // Return the results
+            return results;
+        }
+
+    });
+</script>
