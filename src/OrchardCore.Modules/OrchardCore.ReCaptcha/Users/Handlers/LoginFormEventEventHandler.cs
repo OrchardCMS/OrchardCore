@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using OrchardCore.ReCaptcha.Services;
 using OrchardCore.Users;
 using OrchardCore.Users.Events;
@@ -7,10 +8,12 @@ namespace OrchardCore.ReCaptcha.Users.Handlers;
 public class LoginFormEventEventHandler : ILoginFormEvent
 {
     private readonly ReCaptchaService _reCaptchaService;
+    private readonly SignInManager<IUser> _signInManager;
 
-    public LoginFormEventEventHandler(ReCaptchaService reCaptchaService)
+    public LoginFormEventEventHandler(ReCaptchaService reCaptchaService, SignInManager<IUser> signInManager)
     {
         _reCaptchaService = reCaptchaService;
+        _signInManager = signInManager;
     }
 
     public Task IsLockedOutAsync(IUser user)
@@ -23,14 +26,16 @@ public class LoginFormEventEventHandler : ILoginFormEvent
         return Task.CompletedTask;
     }
 
-    public Task LoggingInAsync(string userName, Action<string, string> reportError)
+    public async Task LoggingInAsync(string userName, Action<string, string> reportError)
     {
-        if (_reCaptchaService.IsThisARobot())
+        // When logging in via an external provider, authentication security is already handled by the provider.
+        // Therefore, using a CAPTCHA is unnecessary and impractical, as users wouldn't be able to complete it anyway.
+        if (!_reCaptchaService.IsThisARobot() || await _signInManager.GetExternalLoginInfoAsync() != null)
         {
-            return _reCaptchaService.ValidateCaptchaAsync(reportError);
+            return;
         }
 
-        return Task.CompletedTask;
+        await _reCaptchaService.ValidateCaptchaAsync(reportError);
     }
 
     public Task LoggingInFailedAsync(string userName)
