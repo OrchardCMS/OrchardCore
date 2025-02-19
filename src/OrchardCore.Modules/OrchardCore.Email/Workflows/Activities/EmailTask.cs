@@ -153,8 +153,6 @@ public class EmailTask : TaskActivity<EmailTask>
             // Email reply-to header https://tools.ietf.org/html/rfc4021#section-2.1.4
             ReplyTo = replyTo?.Trim(),
             Subject = subject?.Trim(),
-            HtmlBody = null,
-            TextBody = null
         };
 
         switch (BodyFormat)
