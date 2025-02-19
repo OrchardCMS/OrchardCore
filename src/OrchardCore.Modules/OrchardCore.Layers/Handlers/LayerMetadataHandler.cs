@@ -35,6 +35,4 @@ public class LayerMetadataHandler : ContentHandlerBase
     }
 }
 
-public class LayerState : Document
-{
-}
+public class LayerState : Document;

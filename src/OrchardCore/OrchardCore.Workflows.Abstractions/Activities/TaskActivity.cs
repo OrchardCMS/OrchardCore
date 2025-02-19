@@ -1,8 +1,6 @@
 namespace OrchardCore.Workflows.Activities;
 
-public abstract class TaskActivity : Activity, ITask
-{
-}
+public abstract class TaskActivity : Activity, ITask;
 
 public abstract class TaskActivity<TActivity> : TaskActivity where TActivity : ITask
 {

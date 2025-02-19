@@ -27,7 +27,7 @@ public sealed class RegistrationController : Controller
     private readonly IDisplayManager<RegisterUserForm> _registerUserDisplayManager;
     private readonly RegistrationOptions _registrationOptions;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly IEnumerable<ILoginFormEvent> _accountEvents;
+    private readonly IEnumerable<ILoginFormEvent> _loginFormEvents;
     private readonly IUserService _userService;
 
     internal readonly IStringLocalizer S;
@@ -42,7 +42,7 @@ public sealed class RegistrationController : Controller
         IDisplayManager<RegisterUserForm> registerUserDisplayManager,
         IOptions<RegistrationOptions> registrationOptions,
         IUpdateModelAccessor updateModelAccessor,
-        IEnumerable<ILoginFormEvent> accountEvents,
+        IEnumerable<ILoginFormEvent> loginFormEvents,
         IUserService userService,
         IHtmlLocalizer<RegistrationController> htmlLocalizer,
         IStringLocalizer<RegistrationController> stringLocalizer)
@@ -55,7 +55,7 @@ public sealed class RegistrationController : Controller
         _registerUserDisplayManager = registerUserDisplayManager;
         _registrationOptions = registrationOptions.Value;
         _updateModelAccessor = updateModelAccessor;
-        _accountEvents = accountEvents;
+        _loginFormEvents = loginFormEvents;
         _userService = userService;
         H = htmlLocalizer;
         S = stringLocalizer;
@@ -90,9 +90,9 @@ public sealed class RegistrationController : Controller
             // If we get a user, redirect to returnUrl.
             if (iUser is User user)
             {
-                foreach (var accountEvent in _accountEvents)
+                foreach (var loginFormEvent in _loginFormEvents)
                 {
-                    var loginResult = await accountEvent.ValidatingLoginAsync(user);
+                    var loginResult = await loginFormEvent.ValidatingLoginAsync(user);
 
                     if (loginResult != null)
                     {
