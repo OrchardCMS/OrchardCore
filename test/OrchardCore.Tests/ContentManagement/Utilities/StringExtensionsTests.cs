@@ -175,4 +175,50 @@ public class StringExtensionsTests
         // Assert
         Assert.Equal(expected, result);
     }
+
+    [Theory]
+    [InlineData("Hisham Bin Ateya", "HishamBinAteya")]
+    [InlineData("Sébastien Ros", "SebastienRos")]
+    [InlineData("Zoltán Lehóczky", "ZoltanLehoczky")]
+    public void ToSafeName_ShouldRemoveUnsafeChars(string text, string expected)
+    {
+        // Arrange & Act
+        var result = StringExtensions.ToSafeName(text);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData("abc  ", "abc")]
+    [InlineData("   abc  ", "abc")]
+    [InlineData("   abc", "abc")]
+    [InlineData("", "")]
+    [InlineData(" ", "")]
+    [InlineData("  ", "")]
+    [InlineData(null, "")]
+    public void ToSafeName_ShouldStripWhiteSpaces(string text, string expected)
+    {
+        // Arrange & Act
+        var result = StringExtensions.ToSafeName(text);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
+
+    [Theory]
+    [InlineData("1abc", "abc")]
+    [InlineData("12abc", "abc")]
+    [InlineData("123abc", "abc")]
+    [InlineData("1abc123", "abc123")]
+    [InlineData("12abc123", "abc123")]
+    [InlineData("123abc123", "abc123")]
+    public void ToSafeName_ShouldRemoveLeadingDigits(string text, string expected)
+    {
+        // Arrange & Act
+        var result = StringExtensions.ToSafeName(text);
+
+        // Assert
+        Assert.Equal(expected, result);
+    }
 }

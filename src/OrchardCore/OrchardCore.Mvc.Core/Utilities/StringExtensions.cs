@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Net;
@@ -12,6 +13,13 @@ namespace OrchardCore.Mvc.Utilities;
 
 public static class StringExtensions
 {
+    private const string Letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private const string Digits = "0123456789";
+
+    private static readonly SearchValues<char> _alphanumeric = SearchValues.Create(Digits + Letters);
+    private static readonly SearchValues<char> _digits = SearchValues.Create(Digits);
+    private static readonly SearchValues<char> _letters = SearchValues.Create(Letters);
+
     public static string CamelFriendly(this string camel)
     {
         // Optimize common cases.
@@ -198,26 +206,39 @@ public static class StringExtensions
             return string.Empty;
         }
 
+        // If the name is already valid, return it.
+        if (name.AsSpan().IndexOfAnyExcept(_alphanumeric) < 0)
+        {
+            return "";
+        }
+
         name = RemoveDiacritics(name);
-        name = name.Strip(c =>
-            !c.IsLetter()
-            && !char.IsDigit(c)
-            );
+        name = name.Strip(c => !_alphanumeric.Contains(c));
 
-        name = name.Trim();
-
-        // Don't allow non A-Z chars as first letter, as they are not allowed in prefixes.
-        while (name.Length > 0 && !IsLetter(name[0]))
+        if (string.IsNullOrEmpty(name))
         {
-            name = name[1..];
+            return "";
         }
 
-        if (name.Length > 128)
+        // Don't allow digits as first letter, as they are not allowed in prefixes.
+        var span = name.AsSpan();
+
+        // Seek first letter
+        var index = span.IndexOfAnyExcept(_digits);
+
+        if (index == -1)
         {
-            name = name[..128];
+            return "";
         }
 
-        return name;
+        span = span[index..];
+
+        if (span.Length > 128)
+        {
+            span = span[..128];
+        }
+
+        return span.ToString();
     }
 
     /// <summary>
@@ -225,7 +246,7 @@ public static class StringExtensions
     /// </summary>
     public static bool IsLetter(this char c)
     {
-        return ('A' <= c && c <= 'Z') || ('a' <= c && c <= 'z');
+        return _letters.Contains(c);
     }
 
     public static bool IsSpace(this char c)
@@ -236,7 +257,7 @@ public static class StringExtensions
     public static string RemoveDiacritics(this string name)
     {
         var stFormD = name.Normalize(NormalizationForm.FormD);
-        var sb = new StringBuilder();
+        using var sb = ZString.CreateStringBuilder();
 
         foreach (var t in stFormD)
         {
@@ -257,7 +278,7 @@ public static class StringExtensions
     /// <returns></returns>
     public static string ReplaceDiacritics(this string s)
     {
-        var stringBuilder = new StringBuilder();
+        using var sb = ZString.CreateStringBuilder();
         var normalizedString = s.Normalize(NormalizationForm.FormD);
 
         for (var i = 0; i <= normalizedString.Length - 1; i++)
@@ -265,11 +286,11 @@ public static class StringExtensions
             var c = normalizedString[i];
             if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
             {
-                stringBuilder.Append(c);
+                sb.Append(c);
             }
         }
 
-        return stringBuilder.ToString();
+        return sb.ToString();
     }
 
     public static string Strip(this string subject, params char[] stripped)

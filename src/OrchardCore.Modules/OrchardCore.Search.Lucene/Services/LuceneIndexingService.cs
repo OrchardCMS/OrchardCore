@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Settings;
 
@@ -73,6 +74,8 @@ public class LuceneIndexingService
         }
         else
         {
+            EnsureSafeIndexName(indexName);
+
             var settings = await _luceneIndexSettingsService.GetSettingsAsync(indexName);
 
             if (settings == null)
@@ -259,6 +262,8 @@ public class LuceneIndexingService
     /// <returns></returns>
     public Task DeleteIndexAsync(string indexName)
     {
+        EnsureSafeIndexName(indexName);
+
         if (_indexManager.Exists(indexName))
         {
             _indexManager.DeleteIndex(indexName);
@@ -273,6 +278,8 @@ public class LuceneIndexingService
     /// </summary>
     public void ResetIndexAsync(string indexName)
     {
+        EnsureSafeIndexName(indexName);
+
         _indexingState.SetLastTaskId(indexName, 0);
         _indexingState.Update();
     }
@@ -282,6 +289,8 @@ public class LuceneIndexingService
     /// </summary>
     public async Task RebuildIndexAsync(string indexName)
     {
+        EnsureSafeIndexName(indexName);
+
         if (_indexManager.Exists(indexName))
         {
             _indexManager.DeleteIndex(indexName);
@@ -294,4 +303,12 @@ public class LuceneIndexingService
 
     public async Task<LuceneSettings> GetLuceneSettingsAsync()
         => await _siteService.GetSettingsAsync<LuceneSettings>() ?? new LuceneSettings();
+
+    private static void EnsureSafeIndexName(string indexName)
+    {
+        if (indexName.ToSafeName() != indexName)
+        {
+            throw new ArgumentException("Invalid chars found in index name", nameof(indexName));
+        }
+    }
 }

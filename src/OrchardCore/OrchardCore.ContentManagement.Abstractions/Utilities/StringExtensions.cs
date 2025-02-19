@@ -205,7 +205,7 @@ public static class StringExtensions
     public static string RemoveDiacritics(this string name)
     {
         var stFormD = name.Normalize(NormalizationForm.FormD);
-        var sb = new StringBuilder();
+        using var sb = ZString.CreateStringBuilder();
 
         foreach (var t in stFormD)
         {
