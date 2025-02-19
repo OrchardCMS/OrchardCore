@@ -1,7 +1,7 @@
 import path from "path";
 import chalk from "chalk";
 
-let userProvidedConfig = await import(path.join("file://", process.cwd(), "build.config.mjs"));
+let userProvidedConfig = await import(path.join("file://", process.cwd(), "build.config.mjs").replace(/\\/g,'/'));
 
 export default function getConfig(key) {
     switch (key) {
