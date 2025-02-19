@@ -89,7 +89,12 @@
             matchBrackets: true,
             mode: { name: "liquid" },
         });
-
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.TextBody)'), {
+            lineNumbers: true,
+            styleActiveLine: true,
+            matchBrackets: true,
+            mode: { name: "liquid" },
+        });
         changeBodyFormat();
 
         $('select').on('change', function () {
