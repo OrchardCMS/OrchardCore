@@ -18,7 +18,7 @@ assignees: ''
 ## Step 2: Code and Documentation Updates
 
 - [ ] **Create Release Branch**: Create a new release branch named `release/<version-name-with-patch-placeholder>` (e.g., `release/3.0`) from the `main` branch. This branch will serve as the foundation for upcoming patch releases and facilitate versioned updates.
-- [ ] From the release branch (e.g., `release/3.0.x`), create a new temporary branch for the version (e.g., `release/3.0.0`).
+- [ ] From the release branch (e.g., `release/3.0`), create a new temporary branch for the version (e.g., `release/3.0.0`).
 - [ ] Update version references in the documentation and code. Refer to [this PR](https://github.com/OrchardCMS/OrchardCore/pull/17065/files) for an example. The easiest is to start with a search & replace on the previous version. Version Updates Checklist:
   - **Update `OrchardCore.Commons.props`**: Set `<VersionPrefix></VersionPrefix>` to the new version you're preparing for release.
   - **Update Module Versions**: Modify `src/OrchardCore/OrchardCore.Abstractions/Modules/Manifest/ManifestConstants.cs` to reflect the new version.
@@ -32,7 +32,7 @@ assignees: ''
     - CLI templates and commands.
     - Relevant guides, such as the [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/) guide.
 - [ ] **Check CI Workflow**: Verify that the [release_ci](https://github.com/OrchardCMS/OrchardCore/blob/main/.github/workflows/release_ci.yml) workflow is using the correct .NET version for the release, and change it in the version branch if necessary.
-- [ ] Create a **version PR** titled `Release <version number` (e.g., `Release 3.0.0) from the version branch (e.g., `release/3.0.0`) into the release branch (e.g., `release/3.0.x`)
+- [ ] Create a **version PR** titled `Release <version number` (e.g., `Release 3.0.0) from the version branch (e.g., `release/3.0.0`) into the release branch (e.g., `release/3.0`)
 - [ ] In GitHub, manually run the `Preview - CI` workflow on your branch (NOT `main`). This will release a new preview version on Cloudsmith for testing.
 
 ## Step 3: Translation Updates
@@ -60,9 +60,9 @@ assignees: ''
 
 1. Navigate to the [GitHub Releases page](https://github.com/OrchardCMS/OrchardCore/releases/new).
 2. In the "**Choose a tag**" menu, enter the new version number (e.g., `v3.0.0`) and select "**+ Create tag: v... on publish**."
-3. Change the target branch from `main` to your release branch (e.g., `release/3.0.x`).
+3. Change the target branch from `main` to your release branch (e.g., `release/3.0`).
 4. Enter the version number in the Title field (e.g., `3.0.0`).
-5. Click **Generate release notes** to automatically create release notes based on the changes.
+5. Click **Generate release notes** to automatically create release notes based  on the changes.
 6. Add a link to the release notes on the docs site: `Check out the full release notes [here](https://docs.orchardcore.net/en/latest/releases/3.0.0/).`
 7. Ensure the "Set as the latest release" checkbox is checked, then click **Publish release**.
 
@@ -70,12 +70,12 @@ assignees: ''
 
 **Merge to `main`**: After releasing the new version, merge the release branch into the main branch to ensure `main` contains all administrative changes.
 
-- [ ] Create a pull request from the release branch (e.g., `release/3.0.x`) into `main`.
+- [ ] Create a pull request from the release branch (e.g., `release/3.0`) into `main`.
 - [ ] Resolve any merge conflicts using external tools (e.g., Fork) to avoid auto-merging `main` into the release branch. **Important**: DO NOT resolve conflicts using GitHub's interface; that will automatically merge `main` into the release branch, which must be avoided.
 - [ ] Merge the PR if all checks pass. If there are merge conflicts, then you'll need to merge to `main` manually using the following steps:
   1. Fetch the latest changes from the Git repository.
   2. Checkout the `main` branch.
-  3. Merge the release branch (e.g., `release/3.0.x`) into `main` with a merge commit (NOT a squash merge). Use the commit message pattern `Merge release/3.0.0 to main`.
+  3. Merge the release branch (e.g., `release/3.0`) into `main` with a merge commit (NOT a squash merge). Use the commit message pattern `Merge release/3.0.0 to main`.
   4. Resolve any conflicts.
   5. Push the changes to `main`. This action requires a user with the ability to force-push into `main`, as it is protected by default.
   6. GitHub will automatically delete the release branch; go back to the new merged PR to restore it.
