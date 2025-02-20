@@ -12,8 +12,8 @@ assignees: ''
 ## Step 1: Backporting Pull Requests
 
 1. **Identify Pull Requests**: Review any pull requests (PRs) that need to be backported to the release branch. These should be PRs that contain strictly bug fixes and nothing else.
-2. **Backport Pull Requests**: For PRs merged into the `main` branch that need to be applied to the release branch (e.g., `release/2.1.x`), comment on the merged PR with `/backport to release/2.1.x`. This comment will trigger a GitHub Action to create a new PR with the same changes for the `release/2.1.x` branch.
-3. **Merge PRs**: Once all necessary PRs are created, merge them into the `release/2.1.x` branch.
+2. **Backport Pull Requests**: For PRs merged into the `main` branch that need to be applied to the release branch (e.g., `release/2.1`), comment on the merged PR with `/backport to release/2.1`. This comment will trigger a GitHub Action to create a new PR with the same changes for the `release/2.1` branch.
+3. **Merge PRs**: Once all necessary PRs are created, merge them into the `release/2.1` branch.
 
 ## Step 2: Code and Documentation Updates
 
@@ -46,7 +46,7 @@ assignees: ''
 
 1. Navigate to the [GitHub Releases page](https://github.com/OrchardCMS/OrchardCore/releases/new).
 2. In the "**Choose a tag**" menu, enter the new version number, including `v` (e.g., `v2.1.1`), and select "**+ Create tag: v... on publish**."
-3. Change the target branch from `main` to the release branch (e.g., `release/2.1.x`).
+3. Change the target branch from `main` to the release branch (e.g., `release/2.1`).
 4. Enter the version number in the Title field (e.g., `2.1.1`).
 5. Click **Generate release notes** to auto-generate release notes.
 6. Add a link to the release notes on the docs site: `Check out the full release notes [here](https://docs.orchardcore.net/en/latest/releases/2.1.1/).`
