@@ -49,7 +49,7 @@ public sealed class TaxonomyFieldDisplayDriver : ContentFieldDisplayDriver<Taxon
 
                 var terms = model.Taxonomy.As<TaxonomyPart>().Terms;
 
-                // Keep the order as it is listed in the fields. Then the other content items
+                // Maintain the listed order in the field, then concatenate the remaining content items.
                 var sortedTerms = terms
                     .Where(x => field.TermContentItemIds.Contains(x.ContentItemId))
                     .OrderBy(x => Array.IndexOf(field.TermContentItemIds, x.ContentItemId))
