@@ -29,7 +29,7 @@ What to do if you change an SCSS, JS, or TS/TSX file in any of Orchard Core's pr
 1. Make sure you completed the above "Prerequisites" steps.
 2. Run `yarn build -gr` from the command line in the root of the repository. This will build all changed assets.
 
-Alternatively, if you make a lot of changes during development that you want to test quickly, you don't need to run the full build every time. Instead, use `yarn watch` to automatically build assets when you save a file. For this, run `yarn watch -n module-name`, where `module-name` is the `name` property you can find for the given file in the `Assets.json` file of the given project's root folder. E.g., for the Audit Trail module's `audittrailui.scss` file it's `audittrail`.
+Alternatively, if you make a lot of changes during development that you want to test quickly, you don't need to run the full build every time. Instead, use `yarn watch` to automatically build assets when you save a file. For this, run `yarn watch -n module-name`, where `module-name` is the `name` property you can find for the given file in the `Assets.json` file of the given project's root folder. E.g., for the Audit Trail module's `audittrailui.scss` file it's `audittrail`, so the command is `yarn watch -n audittrail`.
 
 ## All features
 
