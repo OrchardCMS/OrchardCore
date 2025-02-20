@@ -7,7 +7,6 @@
 @{
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
     var htmlFieldPrefix = ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
-    var contentTypesStringified = string.Join(";", Model.ContainedContentTypeDefinitions);
     var parentContentType = Model.BagPart.ContentItem.ContentType;
     string partName = ((dynamic)Model).Metadata.Name;
     var totalItems = Model.ContainedContentTypeDefinitions.Count();
@@ -15,7 +14,7 @@
 <script asp-name="jQuery-ui" at="Foot"></script>
 
 <div>
-    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart bagpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" data-content-types="@contentTypesStringified">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart bagpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
         @{
             var index = 0;
             foreach (var widget in Model.AccessibleWidgets)
@@ -146,10 +145,6 @@
                     });
                 },
                 stop: function (event, ui) {
-                    if (lastContainer[0] == this && this.dataset.contentTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) < 0) {
-                        event.preventDefault();
-                    }
-
                     lastContainer.toggleClass('widget-dropzone-hint');
                     widgetDragItem.find('.card').first().toggleClass('border-primary');
                     //clear the global variables
@@ -161,7 +156,7 @@
                 },
                 over: function (event, ui) {
                     var $self = $(this);
-                    if (lastContainer[0] != this && this.dataset.contentTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) >= 0) {
+                    if (lastContainer[0] != this) {
                         lastContainer.toggleClass('widget-dropzone-hint');
                         lastContainer = $self;
                         $self.toggleClass('widget-dropzone-hint');
