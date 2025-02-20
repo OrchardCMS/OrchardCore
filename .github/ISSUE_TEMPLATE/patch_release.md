@@ -59,11 +59,11 @@ assignees: ''
 - [ ] Create a pull request from the release branch (e.g., `release/2.1.x`) into `main`.
 - [ ] Resolve any merge conflicts using external tools (e.g., Fork) to avoid auto-merging `main` into the release branch. **Important**: DO NOT resolve conflicts using GitHub's interface; that will automatically merge `main` into the release branch, which must be avoided.
 - [ ] Merge the PR if all checks pass. If there are merge conflicts, then you'll need to merge to `main` manually using the following steps:
-  - Fetch the latest changes from the Git repository.
-  - Checkout the `main` branch.
-  - Merge the release branch (e.g., `release/2.1`) into `main` with a merge commit (NOT a squash merge).
-  - Resolve any conflicts.
-  - Push the changes to `main`. This action requires a user with the ability to force-push into `main`, as it is protected by default.
+  1. Fetch the latest changes from the Git repository.
+  2. Checkout the `main` branch.
+  3. Merge the release branch (e.g., `release/2.1.x`) into `main` with a merge commit (NOT a squash merge).
+  4. Resolve any conflicts.
+  5. Push the changes to `main`. This action requires a user with the ability to force-push into `main`, as it is protected by default.
 
 ## Step 6: Housekeeping
 
