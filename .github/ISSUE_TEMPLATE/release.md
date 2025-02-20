@@ -75,9 +75,10 @@ assignees: ''
 - [ ] Merge the PR if all checks pass. If there are merge conflicts, then you'll need to merge to `main` manually using the following steps:
   1. Fetch the latest changes from the Git repository.
   2. Checkout the `main` branch.
-  3. Merge the release branch (e.g., `release/3.0.x`) into `main` with a merge commit (NOT a squash merge).
+  3. Merge the release branch (e.g., `release/3.0.x`) into `main` with a merge commit (NOT a squash merge). Use the commit message pattern `Merge release/3.0.0 to main`.
   4. Resolve any conflicts.
   5. Push the changes to `main`. This action requires a user with the ability to force-push into `main`, as it is protected by default.
+  6. GitHub will automatically delete the release branch; go back to the new merged PR to restore it.
 
 ## Step 7: Post-Release Tasks
 
