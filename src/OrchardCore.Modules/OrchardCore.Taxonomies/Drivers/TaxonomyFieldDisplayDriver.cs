@@ -46,7 +46,17 @@ public sealed class TaxonomyFieldDisplayDriver : ContentFieldDisplayDriver<Taxon
             if (model.Taxonomy != null)
             {
                 var termEntries = new List<TermEntry>();
-                TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
+
+                var terms = model.Taxonomy.As<TaxonomyPart>().Terms;
+
+                // Keep the order as it is listed in the fields. Then the other content items
+                var sortedTerms = terms
+                    .Where(x => field.TermContentItemIds.Contains(x.ContentItemId))
+                    .OrderBy(x => Array.IndexOf(field.TermContentItemIds, x.ContentItemId))
+                    .Concat(terms.Where(x => !field.TermContentItemIds.Contains(x.ContentItemId)))
+                    .ToArray();
+
+                TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, sortedTerms, 0);
 
                 model.TermEntries = termEntries;
                 model.UniqueValue = termEntries.FirstOrDefault(x => x.Selected)?.ContentItemId;
