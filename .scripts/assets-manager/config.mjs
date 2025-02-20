@@ -1,7 +1,9 @@
 import path from "path";
 import chalk from "chalk";
+import { pathToFileURL } from 'url';
 
-let userProvidedConfig = await import(path.join("file://", process.cwd(), "build.config.mjs").replace(/\\/g,'/'));
+console.log(chalk.blue("Loading build.config.mjs..."), pathToFileURL(path.join(process.cwd(), "build.config.mjs")).href);
+let userProvidedConfig = await import(pathToFileURL(path.join(process.cwd(), "build.config.mjs")).href);
 
 export default function getConfig(key) {
     switch (key) {
