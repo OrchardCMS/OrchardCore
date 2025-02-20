@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.AutoSetup.Options;
+using OrchardCore.AutoSetup.Services;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Modules;
@@ -67,6 +68,8 @@ public sealed class Startup : StartupBase
         {
             services.Configure<AutoSetupOptions>(o => o.ConfigurationExists = true);
         }
+
+        services.AddScoped<IAutoSetupService, AutoSetupService>();
     }
 
     /// <summary>

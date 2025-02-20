@@ -60,7 +60,7 @@ public sealed class ApplicationController : Controller
     [Admin("OpenId/Application", "OpenIdApplication")]
     public async Task<ActionResult> Index(PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageApplications))
         {
             return Forbid();
         }
@@ -93,7 +93,7 @@ public sealed class ApplicationController : Controller
     [HttpGet]
     public async Task<IActionResult> Create(string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageApplications))
         {
             return Forbid();
         }
@@ -132,7 +132,7 @@ public sealed class ApplicationController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(CreateOpenIdApplicationViewModel model, string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageApplications))
         {
             return Forbid();
         }
@@ -195,7 +195,7 @@ public sealed class ApplicationController : Controller
 
     public async Task<IActionResult> Edit(string id, string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageApplications))
         {
             return Forbid();
         }
@@ -284,7 +284,7 @@ public sealed class ApplicationController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(EditOpenIdApplicationViewModel model, string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageApplications))
         {
             return Forbid();
         }
@@ -363,7 +363,7 @@ public sealed class ApplicationController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageApplications))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageApplications))
         {
             return Forbid();
         }

@@ -15,11 +15,11 @@ public sealed class AdminMenu : AdminNavigationProvider
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
         builder
-            .Add(S["Search"], search => search
+            .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
                 .Add(S["Queries"], S["Queries"].PrefixPosition(), queries => queries
                     .Add(S["Run SQL Query"], S["Run SQL Query"].PrefixPosition(), sql => sql
                          .Action("Query", "Admin", "OrchardCore.Queries")
-                         .Permission(Permissions.ManageSqlQueries)
+                         .Permission(QueriesPermissions.ManageSqlQueries)
                          .LocalNav()
                     )
                 )

@@ -85,6 +85,13 @@
                         </div>
                     </div>
 
+                    <div class="form-check" asp-validation-class-for="AutoSelectEncryption">
+                        <input type="checkbox" class="form-check-input" asp-for="AutoSelectEncryption">
+                        <span asp-validation-for="AutoSelectEncryption"></span>
+                        <label class="form-check-label" asp-for="AutoSelectEncryption">@T["Auto Select Encryption method"]</label>
+                        <span class="hint dashed">@T["Check to let the system select the encryption method based on port."]</span>
+                    </div>
+
                     <div id="@Html.Id("SelectEncryptionMethod")" class="mb-3" asp-validation-class-for="EncryptionMethod">
                         <label asp-for="EncryptionMethod" class="form-label">@T["Encryption method to use"]</label>
                         <select asp-for="EncryptionMethod" class="form-select" disabled="@Model.AutoSelectEncryption">
@@ -100,13 +107,6 @@
                         </select>
                         <span asp-validation-for="EncryptionMethod"></span>
                         <span class="hint">@T["The encryption method used when connecting to mail server."]</span>
-                    </div>
-
-                    <div class="form-check" asp-validation-class-for="AutoSelectEncryption">
-                        <input type="checkbox" class="form-check-input" asp-for="AutoSelectEncryption">
-                        <span asp-validation-for="AutoSelectEncryption"></span>
-                        <label class="form-check-label" asp-for="AutoSelectEncryption">@T["Auto Select Encryption method"]</label>
-                        <span class="hint dashed">@T["Check to let the system select the encryption method based on port."]</span>
                     </div>
 
                     <div class="form-check clearfix" asp-validation-class-for="RequireCredentials">

@@ -21,9 +21,26 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        builder
+        if (NavigationHelper.UseLegacyFormat())
+        {
+            builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Settings"], settings => settings
+                    .Add(S["X (Twitter)"], S["X (Twitter)"].PrefixPosition(), twitter => twitter
+                        .AddClass("twitter").Id("twitter")
+                        .Action("Index", "Admin", _routeValues)
+                        .Permission(Permissions.ManageTwitter)
+                        .LocalNav()
+                    )
+                )
+            );
+
+            return ValueTask.CompletedTask;
+        }
+
+        builder
+            .Add(S["Settings"], settings => settings
+                .Add(S["Integrations"], S["Integrations"].PrefixPosition(), integrations => integrations
                     .Add(S["X (Twitter)"], S["X (Twitter)"].PrefixPosition(), twitter => twitter
                         .AddClass("twitter").Id("twitter")
                         .Action("Index", "Admin", _routeValues)

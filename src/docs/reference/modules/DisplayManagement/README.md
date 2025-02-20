@@ -108,10 +108,10 @@ This is the same as `<shape type="MyShape" pro-foo="1" prop-bar="a" prop-content
 
 Renders a `Date` and `Time` value using the TimeZone of the request.
 
-| Parameter | Type | Description |
-| --------- | ---- |------------ |
-| `Utc` | `DateTime?` | The date and time to render. If not specified, the current time will be used. |
-| `Format` | `string` | The .NET format string. If not specified the long format `dddd, MMMM d, yyyy h:mm:ss tt` will be used. The accepted format can be found at <https://msdn.microsoft.com/en-us/library/8kb3ddd4(v=vs.110).aspx> |
+| Parameter | Type        | Description                                                                                                                                                                                                   |
+|-----------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `Utc`     | `DateTime?` | The date and time to render. If not specified, the current time will be used.                                                                                                                                 |
+| `Format`  | `string`    | The .NET format string. If not specified the long format `dddd, MMMM d, yyyy h:mm:ss tt` will be used. The accepted format can be found at <https://msdn.microsoft.com/en-us/library/8kb3ddd4(v=vs.110).aspx> |
 
 Tag helper example:
 
@@ -123,10 +123,10 @@ Tag helper example:
 
 Renders a relative textual representation of a `Date` and `Time` interval.
 
-| Parameter | Type | Description |
-| --------- | ---- |------------ |
-| `Utc` | `DateTime?` | The initial date and time. If not specified, the current time will be used. |
-| `Origin` | `DateTime?` | The current date and time. If not specified, the current time will be used. |
+| Parameter | Type        | Description                                                                 |
+|-----------|-------------|-----------------------------------------------------------------------------|
+| `Utc`     | `DateTime?` | The initial date and time. If not specified, the current time will be used. |
+| `Origin`  | `DateTime?` | The current date and time. If not specified, the current time will be used. |
 
 Tag helper example:
 
@@ -144,8 +144,8 @@ Result:
 
 Renders a duration value using the given TimeSpan.
 
-| Parameter | Type | Description |
-| --------- | ---- |------------ |
+| Parameter  | Type        | Description              |
+|------------|-------------|--------------------------|
 | `timeSpan` | `TimeSpan?` | The time span to render. |
 
 Tag helper example:

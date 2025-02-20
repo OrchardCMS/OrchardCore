@@ -37,7 +37,7 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
 
     public override async Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditUsers, user))
         {
             return null;
         }
@@ -74,7 +74,7 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
 
     public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditUsers, user))
         {
             return null;
         }
@@ -145,7 +145,7 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
 
     private async Task<bool> CanEditUserInfoAsync(User user)
     {
-        return !IsCurrentUser(user) || await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.EditOwnUser);
+        return !IsCurrentUser(user) || await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.EditOwnUser);
     }
 
     private bool IsCurrentUser(User user)

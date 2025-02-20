@@ -1,7 +1,5 @@
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.UrlRewriting.Models;
@@ -13,25 +11,22 @@ namespace OrchardCore.UrlRewriting.Recipes;
 /// </summary>
 public sealed class UrlRewritingStep : NamedRecipeStepHandler
 {
-    private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly IRewriteRulesManager _rewriteRulesManager;
 
     internal readonly IStringLocalizer S;
 
     public UrlRewritingStep(
         IRewriteRulesManager rewriteRulesManager,
-        IOptions<JsonSerializerOptions> jsonSerializerOptions,
         IStringLocalizer<UrlRewritingStep> stringLocalizer)
         : base("UrlRewriting")
     {
         _rewriteRulesManager = rewriteRulesManager;
-        _jsonSerializerOptions = jsonSerializerOptions.Value;
         S = stringLocalizer;
     }
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        var model = context.Step.ToObject<UrlRewritingStepModel>(_jsonSerializerOptions);
+        var model = context.Step.ToObject<UrlRewritingStepModel>();
         var tokens = model.Rules.Cast<JsonObject>() ?? [];
 
         foreach (var token in tokens)

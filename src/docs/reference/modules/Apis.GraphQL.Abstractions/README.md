@@ -365,6 +365,26 @@ The following query gives us the results we want:
 }
 ```
 
+### Retrieve the parent content item using the List Part
+
+When utilizing the List Part, you can also access the parent list content item. The following query demonstrates how to retrieve the parent blog content item for a blog post:
+
+```json
+{
+  blogPost {
+    blog {
+      listContentItem {
+        ... on Blog {
+          displayText
+        }
+      }
+    }
+  }
+}
+```
+
+This query will return the displayText of the parent blog content item associated with a specific blog post.
+
 ## More Info
 
 For more information on GraphQL you can visit the following links:

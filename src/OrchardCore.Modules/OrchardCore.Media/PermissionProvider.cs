@@ -6,45 +6,52 @@ public sealed class PermissionProvider : IPermissionProvider
 {
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        Permissions.ManageMedia,
-        Permissions.ManageMediaFolder,
-        Permissions.ManageOthersMedia,
-        Permissions.ManageOwnMedia,
-        Permissions.ManageAttachedMediaFieldsFolder,
-        Permissions.ManageMediaProfiles,
-        Permissions.ViewMediaOptions,
+        MediaPermissions.ManageMedia,
+        MediaPermissions.ManageMediaFolder,
+        MediaPermissions.ManageOthersMedia,
+        MediaPermissions.ManageOwnMedia,
+        MediaPermissions.ManageAttachedMediaFieldsFolder,
+        MediaPermissions.ManageMediaProfiles,
+        MediaPermissions.ViewMediaOptions,
     ];
 
-    private readonly IEnumerable<Permission> _generalPermissions = [Permissions.ManageOwnMedia,];
+    private readonly IEnumerable<Permission> _generalPermissions =
+    [
+        MediaPermissions.ManageOwnMedia,
+    ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync() => Task.FromResult(_allPermissions);
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
-        [
-            new PermissionStereotype
-            {
-                Name = OrchardCoreConstants.Roles.Administrator,
-                Permissions =
-                [
-                    Permissions.ManageMediaFolder,
-                    Permissions.ManageMediaProfiles,
-                    Permissions.ViewMediaOptions,
-                ],
-            },
-            new PermissionStereotype
-            {
-                Name = OrchardCoreConstants.Roles.Editor,
-                Permissions = [Permissions.ManageMedia, Permissions.ManageOwnMedia,],
-            },
-            new PermissionStereotype
-            {
-                Name = OrchardCoreConstants.Roles.Author,
-                Permissions = _generalPermissions,
-            },
-            new PermissionStereotype
-            {
-                Name = OrchardCoreConstants.Roles.Contributor,
-                Permissions = _generalPermissions,
-            },
-        ];
+    [
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Administrator,
+            Permissions =
+            [
+                MediaPermissions.ManageMediaFolder,
+                MediaPermissions.ManageMediaProfiles,
+                MediaPermissions.ViewMediaOptions,
+            ],
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Editor,
+            Permissions =
+            [
+                MediaPermissions.ManageMedia,
+                MediaPermissions.ManageOwnMedia,
+            ],
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Author,
+            Permissions = _generalPermissions,
+        },
+        new PermissionStereotype
+        {
+            Name = OrchardCoreConstants.Roles.Contributor,
+            Permissions = _generalPermissions,
+        },
+    ];
 }

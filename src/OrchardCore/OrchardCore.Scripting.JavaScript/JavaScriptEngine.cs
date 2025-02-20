@@ -4,6 +4,7 @@ using Jint;
 using Jint.Runtime.Interop;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Scripting.JavaScript;
 
@@ -39,8 +40,15 @@ public sealed class JavaScriptEngine : IScriptingEngine
                     return ObjectWrapper.Create(e, (JsonValue)dynamicValue, type);
                 }
 
+                if (target is StringValues stringValues)
+                {
+                    return ObjectWrapper.Create(e, stringValues.Count <= 1 ? stringValues.ToString() : stringValues.ToArray(), type);
+                }
+
                 return ObjectWrapper.Create(e, target, type);
             });
+
+
         });
 
         foreach (var method in methods)

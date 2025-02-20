@@ -38,13 +38,13 @@ public sealed class SmsAuthenticatorLoginSettingsDisplayDriver : SiteDisplayDriv
             ? EmailAuthenticatorLoginSettings.DefaultBody
             : settings.Body;
         }).Location("Content:15#Two-Factor Authentication")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
         .OnGroup(SettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, SmsAuthenticatorLoginSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
         {
             return null;
         }

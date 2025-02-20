@@ -115,7 +115,11 @@
             </div>
         </div>
     </div>
-    <script at="Foot" depends-on="admin-menu-permission-picker">initAdminMenuPermissionsPicker(document.querySelector("#PermissionPicker"))</script>
+    <script at="Foot" depends-on="admin-menu-permission-picker">
+        document.addEventListener('DOMContentLoaded', () => {
+            initAdminMenuPermissionsPicker(document.querySelector("#PermissionPicker"))
+        });
+    </script>
 </div>
 
 <script at="Foot">

@@ -215,11 +215,6 @@ The final workflow should look like this:
 
 ![Contact Form Workflow](./assets/contact-form-workflow-1.png)
 
-## Future Improvements
-
-Implementing a workflow that handles form submissions is easy, but the workflow becomes big quite quickly as soon as you start adding validation logic to the mix. In the next version of the Forms module, there will be an easier way to validate Form submissions in combination with the Form widget. The Form widget will contain all of the validation settings, and there will be a single workflow activity that validates the submitted values against those settings.  
-The low-level validation activities will remain part of the toolbox to support workflow validation for forms that are not built with the Form widget, but implemented as raw HTML for example.
-
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/Sd-aYy5DblI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

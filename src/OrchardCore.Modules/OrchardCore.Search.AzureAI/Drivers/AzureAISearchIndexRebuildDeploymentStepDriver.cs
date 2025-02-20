@@ -14,7 +14,7 @@ public sealed class AzureAISearchIndexRebuildDeploymentStepDriver(AzureAISearchI
 
     public override Task<IDisplayResult> DisplayAsync(AzureAISearchIndexRebuildDeploymentStep step, BuildDisplayContext context)
         => CombineAsync(
-            View("AzureAISearchIndexRebuildDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+            View("AzureAISearchIndexRebuildDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
             View("AzureAISearchIndexRebuildDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
         );
 

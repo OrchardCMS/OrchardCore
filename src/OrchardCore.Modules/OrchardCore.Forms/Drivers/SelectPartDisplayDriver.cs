@@ -19,7 +19,7 @@ public sealed class SelectPartDisplayDriver : ContentPartDisplayDriver<SelectPar
 
     public override IDisplayResult Display(SelectPart part, BuildPartDisplayContext context)
     {
-        return View("SelectPart", part).Location("Detail", "Content");
+        return View("SelectPart", part).Location(OrchardCoreConstants.DisplayType.Detail, "Content");
     }
 
     public override IDisplayResult Edit(SelectPart part, BuildPartEditorContext context)

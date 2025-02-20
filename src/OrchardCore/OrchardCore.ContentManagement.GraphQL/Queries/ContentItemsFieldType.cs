@@ -147,22 +147,32 @@ public class ContentItemsFieldType : FieldType
         // Add all provided table alias to the current predicate query.
         var providers = fieldContext.RequestServices.GetServices<IIndexAliasProvider>();
         var indexes = new Dictionary<string, IndexAlias>(StringComparer.OrdinalIgnoreCase);
-        var indexAliases = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var indexAliases = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
         foreach (var aliasProvider in providers)
         {
             foreach (var alias in await aliasProvider.GetAliasesAsync())
             {
-                predicateQuery.CreateAlias(alias.Alias, alias.Index);
-                if (indexAliases.TryAdd(alias.Alias, alias.Alias))
+                predicateQuery.CreateAlias(alias.Alias, alias.Index, alias.IsPartial);
+                if (indexAliases.Add(alias.Alias))
                 {
-                    indexes.TryAdd(alias.Index, alias);
+                    if (!indexes.TryAdd(alias.Index, alias))
+                    {
+                        if (indexes[alias.Index].IndexType != alias.IndexType)
+                        {
+                            throw new InvalidOperationException("An ambiguous index has been found.");
+                        }
+                    }
                 }
             }
         }
 
         var expressions = Expression.Conjunction();
-        BuildWhereExpressions(where, expressions, null, fieldContext, indexAliases);
+
+        var whereInput = (IFilterInputObjectGraphType)fieldContext.FieldDefinition.Arguments.FirstOrDefault(x => x.Name == "where")?.ResolvedType;
+
+        BuildWhereExpressions(where, expressions, null, whereInput, indexAliases);
+
         expressions.SearchUsedAlias(predicateQuery);
 
         // Add all Indexes that were used in the predicate query.
@@ -249,7 +259,7 @@ public class ContentItemsFieldType : FieldType
         return query;
     }
 
-    private void BuildWhereExpressions(JsonNode where, Junction expressions, string tableAlias, IResolveFieldContext fieldContext, IDictionary<string, string> indexAliases)
+    private void BuildWhereExpressions(JsonNode where, Junction expressions, string tableAlias, IFilterInputObjectGraphType filterInputGraphType, HashSet<string> indexAliases)
     {
         if (where is JsonArray array)
         {
@@ -257,17 +267,17 @@ public class ContentItemsFieldType : FieldType
             {
                 if (child is JsonObject whereObject)
                 {
-                    BuildExpressionsInternal(whereObject, expressions, tableAlias, fieldContext, indexAliases);
+                    BuildExpressionsInternal(whereObject, expressions, tableAlias, filterInputGraphType, indexAliases);
                 }
             }
         }
         else if (where is JsonObject whereObject)
         {
-            BuildExpressionsInternal(whereObject, expressions, tableAlias, fieldContext, indexAliases);
+            BuildExpressionsInternal(whereObject, expressions, tableAlias, filterInputGraphType, indexAliases);
         }
     }
 
-    private void BuildExpressionsInternal(JsonObject where, Junction expressions, string tableAlias, IResolveFieldContext fieldContext, IDictionary<string, string> indexAliases)
+    private void BuildExpressionsInternal(JsonObject where, Junction expressions, string tableAlias, IFilterInputObjectGraphType filterInputGraphType, HashSet<string> indexAliases)
     {
         foreach (var entry in where)
         {
@@ -279,36 +289,43 @@ public class ContentItemsFieldType : FieldType
 
             IPredicate expression = null;
 
-            var values = entry.Key.Split('_', 2);
-
             // Gets the full path name without the comparison e.g. aliasPart.alias, not aliasPart.alias_contains.
-            var property = values[0];
+            var values = entry.Key.Split('_', 2);
+            var fieldName = values[0];
 
-            // Figure out table aliases for collapsed parts and ones with the part suffix removed by the dsl.
-            if (tableAlias == null || !tableAlias.EndsWith("Part", StringComparison.OrdinalIgnoreCase))
+            // Get the actual field used, to get the alias name and additional required expressions for indexed content fields.
+            var currentField = filterInputGraphType?.Fields.Where(field => field.Name.Equals(fieldName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+
+            var aliasName = currentField?.GetMetadata<string>("AliasName");
+            var property = aliasName;
+
+            if (string.IsNullOrEmpty(property))
             {
-                var whereArgument = fieldContext?.FieldDefinition.Arguments.FirstOrDefault(x => x.Name == "where");
+                property = fieldName;
 
-                if (whereArgument != null)
+                // Figure out table aliases for collapsed parts and ones with the part suffix removed by the dsl.
+                if (tableAlias == null || !tableAlias.EndsWith("Part", StringComparison.OrdinalIgnoreCase))
                 {
-                    var whereInput = (WhereInputObjectGraphType)whereArgument.ResolvedType;
-
-                    foreach (var field in whereInput.Fields.Where(x => x.GetMetadata<string>("PartName") != null))
+                    if (filterInputGraphType != null)
                     {
-                        var partName = field.GetMetadata<string>("PartName");
-                        if ((tableAlias == null && field.GetMetadata<bool>("PartCollapsed") && field.Name.Equals(property, StringComparison.OrdinalIgnoreCase)) ||
-                            (tableAlias != null && partName.ToFieldName().Equals(tableAlias, StringComparison.OrdinalIgnoreCase)))
+                        foreach (var field in filterInputGraphType.Fields.Where(x => x.GetMetadata<string>("PartName") != null))
                         {
-                            tableAlias = indexAliases.TryGetValue(partName, out var indexTableAlias) ? indexTableAlias : tableAlias;
-                            break;
+                            var partName = field.GetMetadata<string>("PartName");
+                            if ((tableAlias == null && field.GetMetadata<bool>("PartCollapsed") && field.Name.Equals(property, StringComparison.OrdinalIgnoreCase)) ||
+                                (tableAlias != null && partName.ToFieldName().Equals(tableAlias, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                tableAlias = indexAliases.TryGetValue(partName, out var indexTableAlias) ? indexTableAlias : tableAlias;
+
+                                break;
+                            }
                         }
                     }
                 }
-            }
 
-            if (tableAlias != null)
-            {
-                property = $"{tableAlias}.{property}";
+                if (tableAlias != null)
+                {
+                    property = $"{tableAlias}.{property}";
+                }
             }
 
             if (values.Length == 1)
@@ -316,24 +333,24 @@ public class ContentItemsFieldType : FieldType
                 if (string.Equals(values[0], "or", StringComparison.OrdinalIgnoreCase))
                 {
                     expression = Expression.Disjunction();
-                    BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias, fieldContext, indexAliases);
+                    BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias, currentField?.ResolvedType as IFilterInputObjectGraphType ?? filterInputGraphType, indexAliases);
                 }
                 else if (string.Equals(values[0], "and", StringComparison.OrdinalIgnoreCase))
                 {
                     expression = Expression.Conjunction();
-                    BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias, fieldContext, indexAliases);
+                    BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias, currentField?.ResolvedType as IFilterInputObjectGraphType ?? filterInputGraphType, indexAliases);
                 }
                 else if (string.Equals(values[0], "not", StringComparison.OrdinalIgnoreCase))
                 {
                     expression = Expression.Conjunction();
-                    BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias, fieldContext, indexAliases);
+                    BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias, currentField?.ResolvedType as IFilterInputObjectGraphType ?? filterInputGraphType, indexAliases);
                     expression = Expression.Not(expression);
                 }
                 else if (entry.Value.HasValues() && entry.Value.GetValueKind() == JsonValueKind.Object)
                 {
                     // Loop through the part's properties, passing the name of the part as the table tableAlias.
                     // This tableAlias can then be used with the table alias to index mappings to join with the correct table.
-                    BuildWhereExpressions(entry.Value, expressions, values[0], fieldContext, indexAliases);
+                    BuildWhereExpressions(entry.Value, expressions, values[0], currentField?.ResolvedType as IFilterInputObjectGraphType ?? filterInputGraphType, indexAliases);
                 }
                 else
                 {
@@ -366,6 +383,32 @@ public class ContentItemsFieldType : FieldType
 
             if (expression != null)
             {
+                // For indexed content fields, add the additionally required columns.
+                if (!string.IsNullOrEmpty(aliasName))
+                {
+                    var contentPart = currentField.GetMetadata<string>("ContentPart");
+                    var contentField = currentField.GetMetadata<string>("ContentField");
+
+                    if (!string.IsNullOrEmpty(contentPart) || !string.IsNullOrEmpty(contentField))
+                    {
+                        var andExpression = Expression.Conjunction();
+
+                        if (!string.IsNullOrEmpty(contentPart))
+                        {
+                            andExpression.Add(Expression.Equal($"{aliasName}:ContentPart", contentPart));
+                        }
+
+                        if (!string.IsNullOrEmpty(contentField))
+                        {
+                            andExpression.Add(Expression.Equal($"{aliasName}:ContentField", contentField));
+                        }
+
+                        andExpression.Add(expression);
+
+                        expression = andExpression;
+                    }
+                }
+
                 expressions.Add(expression);
             }
         }
@@ -384,7 +427,7 @@ public class ContentItemsFieldType : FieldType
 
                 foreach (var property in orderByArguments)
                 {
-                    var direction = (OrderByDirection)property.Value.Value<int>();
+                    var direction = property.Value.GetEnumValue<OrderByDirection>();
 
                     Expression<Func<ContentItemIndex, object>> selector = null;
 

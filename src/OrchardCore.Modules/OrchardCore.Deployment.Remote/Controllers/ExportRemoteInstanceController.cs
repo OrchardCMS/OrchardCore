@@ -47,7 +47,7 @@ public sealed class ExportRemoteInstanceController : Controller
     [HttpPost]
     public async Task<IActionResult> Execute(long id, string remoteInstanceId, string returnUrl)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Export))
         {
             return Forbid();
         }

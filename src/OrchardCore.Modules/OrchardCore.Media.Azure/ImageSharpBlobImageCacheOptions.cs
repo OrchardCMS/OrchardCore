@@ -1,5 +1,3 @@
 namespace OrchardCore.Media.Azure;
 
-public class ImageSharpBlobImageCacheOptions : MediaBlobStorageOptionsBase
-{
-}
+public class ImageSharpBlobImageCacheOptions : MediaBlobStorageOptionsBase;
