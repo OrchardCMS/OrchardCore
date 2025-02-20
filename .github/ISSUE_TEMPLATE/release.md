@@ -20,7 +20,7 @@ assignees: ''
 - [ ] **Create Release Branch**: Create a new release branch named `release/<version-name-with-patch-placeholder>` (e.g., `release/3.0.x`) from the `main` branch. This branch will serve as the foundation for upcoming patch releases and facilitate versioned updates.
 - [ ] From the release branch (e.g., `release/3.0.x`), create a new temporary branch for the version (e.g., `release/3.0.0`).
 - [ ] Update version references in the documentation and code. Refer to [this PR](https://github.com/OrchardCMS/OrchardCore/pull/17065/files) for an example. The easiest is to start with a search & replace on the previous version. Version Updates Checklist:
-  - **Update `OrchardCore.Commons.props`**: Set `<VersionSuffix></VersionSuffix>` to the new version you're preparing for release.
+  - **Update `OrchardCore.Commons.props`**: Set `<VersionPrefix></VersionPrefix>` to the new version you're preparing for release.
   - **Update Module Versions**: Modify `src/OrchardCore/OrchardCore.Abstractions/Modules/Manifest/ManifestConstants.cs` to reflect the new version.
   - **Release Notes**: Finalize the release notes in the documentation, including:
       - Highlights and goals of the release.
@@ -83,7 +83,7 @@ assignees: ''
 
 - [ ] **Create New Milestone**: Set up a new milestone for the next release and close the previous one.
 - [ ] **Prepare Documentation for Next Version**: Create a new release notes file for the next version in the `OrchardCore.Docs` project (e.g., `/releases/4.0.0.md`). Exclude it from navigation and validation under `not_in_nav` in `mkdocs.yml`.
-- [ ] **Update Commons.props for Next Release**: Modify `OrchardCore.Commons.props` with the next release number and set `<VersionSuffix>preview</VersionSuffix>` for preview builds.
+- [ ] **Update `OrchardCore.Commons.props` for Next Release**: Set `<VersionPrefix></VersionPrefix>` to the next planned release number, but at least a minor one.
 - [ ] **Reassign Issues**: Reassign all still open, postponed issues from the current version milestone to the upcoming version milestone.
 - [ ] Update [`OrchardCore.Samples`](https://github.com/OrchardCMS/OrchardCore.Samples) to the new released version (just change the `OrchardCoreVersion` property in the root `Directory.Build.props` file).
 
