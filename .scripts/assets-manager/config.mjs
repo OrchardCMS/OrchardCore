@@ -1,9 +1,19 @@
 import path from "path";
 import chalk from "chalk";
-import { pathToFileURL } from 'url';
+import { pathToFileURL } from "url";
 
-console.log(chalk.blue("Loading build.config.mjs..."), pathToFileURL(path.join(process.cwd(), "build.config.mjs")).href);
-let userProvidedConfig = await import(pathToFileURL(path.join(process.cwd(), "build.config.mjs")).href);
+const isWin = process.platform === "win32";
+let pathToFile = path.join(process.cwd(), "build.config.mjs");
+let userProvidedConfig = await import(pathToFileURL(pathToFile).href);
+
+if (isWin) {
+    console.log(chalk.blue("Loading build.config.mjs..."), pathToFileURL(pathToFile).href);
+    userProvidedConfig = await import(pathToFileURL(path.join(process.cwd(), "build.config.mjs")).href);
+}
+else {
+    console.log(chalk.blue("Loading build.config.mjs..."), pathToFile);
+    userProvidedConfig = await import(pathToFile);
+}
 
 export default function getConfig(key) {
     switch (key) {
