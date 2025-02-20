@@ -12,6 +12,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/setup-dotnet
+      with:
+        dotnet-version: '10.0.x'
     - name: Build and test
       run: |
         dotnet build -c Release /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true

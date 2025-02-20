@@ -28,6 +28,8 @@ jobs:
       with:
         node-version: "15"
     - uses: ./.github/actions/setup-dotnet
+      with:
+        dotnet-version: '10.0.x'
     - name: Build
       # See pr_ci.yml for the reason why we disable NuGet audit warnings.
       run: |

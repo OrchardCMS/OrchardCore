@@ -35,6 +35,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/setup-dotnet
+      with:
+        dotnet-version: '10.0.x'
     - uses: actions/setup-node@v4
       with:
         node-version: "15"
@@ -64,6 +66,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/setup-dotnet
+      with:
+        dotnet-version: '10.0.x'
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
@@ -107,6 +111,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/setup-dotnet
+      with:
+        dotnet-version: '10.0.x'
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
@@ -146,6 +152,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/setup-dotnet
+      with:
+        dotnet-version: '10.0.x'
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional
@@ -184,6 +192,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/setup-dotnet
+      with:
+        dotnet-version: '10.0.x'
     - name: Functional Tests
       run: |
         cd test/OrchardCore.Tests.Functional

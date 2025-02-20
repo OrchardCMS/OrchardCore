@@ -26,6 +26,8 @@ jobs:
       with:
         node-version: "15"
     - uses: ./.github/actions/setup-dotnet
+      with:
+        dotnet-version: '10.0.x'
       if: steps.check-publish.outputs.should-publish == 'true'
     - name: Set build number
       if: steps.check-publish.outputs.should-publish == 'true'
