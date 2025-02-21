@@ -30,7 +30,7 @@ assignees: ''
     - [Status in the root README](https://docs.orchardcore.net/en/latest/#status)
     - CLI templates and commands.
     - Relevant guides, such as the [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/latest/guides/decoupled-cms/) guide.
-- [ ] Create a **version PR** titled `Release <version number` (e.g., `Release 2.1.1`) from the version branch (e.g., `release/2.1.1`) into the release branch (e.g., `release/2.1`)
+- [ ] Create a **version PR** titled `Release <version number>` (e.g., `Release 2.1.1`) from the version branch (e.g., `release/2.1.1`) into the release branch (e.g., `release/2.1`)
 - [ ] In GitHub, manually run the `Preview - CI` workflow on your branch (NOT `main`). This will release a new preview version on Cloudsmith for testing.
 
 ## Step 3: Validation
