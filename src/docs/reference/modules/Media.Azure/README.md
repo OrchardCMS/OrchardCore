@@ -36,7 +36,7 @@ The following configuration values are used by default and can be customized:
 }
 ```
 
-Refer also to the [Configuration Section](../../core/Configuration/README.md),
+Refer also to the [Configuration Section](../Configuration/README.md),
 and the [Media Section](../Media/README.md) for other Media related configuration settings.
 
 If the `CreateContainer` option is set to `true` an activating event will check on `Startup` for a

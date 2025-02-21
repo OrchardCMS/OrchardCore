@@ -18,6 +18,7 @@ using OrchardCore.Liquid.Indexing;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.Services;
 using OrchardCore.Liquid.ViewModels;
+using OrchardCore.Liquid.Endpoints.Scripts;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Liquid;
@@ -26,7 +27,7 @@ public sealed class Startup : StartupBase
 {
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        app.UseMiddleware<ScriptsMiddleware>();
+        routes.AddGetIntellisenseScriptEndpoint();
     }
 
     public override void ConfigureServices(IServiceCollection services)
@@ -82,6 +83,17 @@ public sealed class Startup : StartupBase
     }
 }
 
+[Feature("OrchardCore.Liquid.Core")]
+public sealed class LiquidStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<ILiquidTemplateManager, LiquidTemplateManager>();
+
+        services.AddLiquidCoreServices();
+    }
+}
+
 [RequireFeatures("OrchardCore.Contents")]
 public sealed class LiquidPartStartup : StartupBase
 {
@@ -104,5 +116,15 @@ public sealed class ShortcodesStartup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddLiquidFilter<ShortcodeFilter>("shortcode");
+    }
+}
+
+[RequireFeatures("OrchardCore.Resources")]
+public sealed class ResourcesStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddLiquidFilter<AppendVersionFilter>("append_version");
+        services.AddLiquidFilter<ResourceUrlFilter>("resource_url");
     }
 }

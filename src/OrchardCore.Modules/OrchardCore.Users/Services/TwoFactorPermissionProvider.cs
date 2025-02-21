@@ -6,7 +6,7 @@ public sealed class TwoFactorPermissionProvider : IPermissionProvider
 {
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        CommonPermissions.DisableTwoFactorAuthenticationForUsers,
+        UsersPermissions.DisableTwoFactorAuthenticationForUsers,
     ];
 
     public Task<IEnumerable<Permission>> GetPermissionsAsync()

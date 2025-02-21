@@ -6,16 +6,16 @@ When you begin with an empty site, a start screen allows you to setup the differ
 
 During setup, all recipes have access to the setup screen values using these parameters:
 
-| Parameter | Description |
-| --- | --- |
-| `SiteName` | The name of the site. |
-| `AdminUserId` | The user id of the super user. |
-| `AdminUsername` | The username of the super user. |
-| `AdminEmail` | The email of the super user. |
-| `AdminPassword` | The password of the super user. |
-| `DatabaseProvider` | The database provider. |
-| `DatabaseConnectionString` | The connection string. |
-| `DatabaseTablePrefix` | The database table prefix. |
+| Parameter                  | Description                     |
+|----------------------------|---------------------------------|
+| `SiteName`                 | The name of the site.           |
+| `AdminUserId`              | The user id of the super user.  |
+| `AdminUsername`            | The username of the super user. |
+| `AdminEmail`               | The email of the super user.    |
+| `AdminPassword`            | The password of the super user. |
+| `DatabaseProvider`         | The database provider.          |
+| `DatabaseConnectionString` | The connection string.          |
+| `DatabaseTablePrefix`      | The database table prefix.      |
 
 These parameters can be used in the recipe using a scripted value like `[js: parameters('AdminUserId')]`.
 
@@ -23,7 +23,7 @@ These parameters can be used in the recipe using a scripted value like `[js: par
 
 Custom configuration keys can also be used in the recipe, using a scripted key value like `[js: configuration('CustomConfigurationKey')]`.
 
-The key will be retrieved from the current [IShellConfiguration](../../core/Configuration/README.md).
+The key will be retrieved from the current [IShellConfiguration](../Configuration/README.md).
 
 For example to provide a key for a tenant
 
@@ -95,10 +95,10 @@ The following configuration values are used by default and can be customized:
     }
 ```
 
-| Key | Description |
-| --- | --- |
-| `DefaultCulture` | The default culture that will be used for the setup screen. |
-| `SupportedCultures` | The list of the supported cultures for the setup screen. |
+| Key                 | Description                                                 |
+|---------------------|-------------------------------------------------------------|
+| `DefaultCulture`    | The default culture that will be used for the setup screen. |
+| `SupportedCultures` | The list of the supported cultures for the setup screen.    |
 
 ## CDN disabled by default
 

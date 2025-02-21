@@ -23,21 +23,50 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+        if (NavigationHelper.UseLegacyFormat())
+        {
+            builder
+                .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
+                    .AddClass("security")
+                    .Id("security")
+                    .Add(S["Users"], S["Users"].PrefixPosition(), users => users
+                        .AddClass("users")
+                        .Id("users")
+                        .Action("Index", "Admin", UserConstants.Features.Users)
+                        .Permission(UsersPermissions.ListUsers)
+                        .Resource(new User())
+                        .LocalNav()
+                    )
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["User Login"], S["User Login"].PrefixPosition(), login => login
+                            .Permission(UsersPermissions.ManageUsers)
+                            .Action("Index", "Admin", _routeValues)
+                            .LocalNav()
+                        )
+                    )
+                );
+
+            return ValueTask.CompletedTask;
+        }
+
         builder
-            .Add(S["Security"], NavigationConstants.AdminMenuSecurityPosition, security => security
-                .AddClass("security")
-                .Id("security")
+            .Add(S["Access Control"], NavigationConstants.AdminMenuAccessControlPosition, accessControl => accessControl
+                .AddClass("accessControl")
+                .Id("accessControl")
                 .Add(S["Users"], S["Users"].PrefixPosition(), users => users
                     .AddClass("users")
                     .Id("users")
                     .Action("Index", "Admin", UserConstants.Features.Users)
-                    .Permission(CommonPermissions.ListUsers)
+                    .Permission(UsersPermissions.ListUsers)
                     .Resource(new User())
                     .LocalNav()
                 )
-                .Add(S["Settings"], settings => settings
+            , priority: 1)
+
+            .Add(S["Settings"], settings => settings
+                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
                     .Add(S["User Login"], S["User Login"].PrefixPosition(), login => login
-                        .Permission(CommonPermissions.ManageUsers)
+                        .Permission(UsersPermissions.ManageUsers)
                         .Action("Index", "Admin", _routeValues)
                         .LocalNav()
                     )

@@ -25,7 +25,7 @@ public sealed class ExportContentToDeploymentTargetContentDriver : ContentDispla
     {
         return CombineAsync(
             Dynamic("ExportContentToDeploymentTarget_Modal__ActionDeploymentTarget")
-                .Location("SummaryAdmin", "ActionsMenu:30")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:30")
                 .RenderWhen(async () =>
                 {
                     if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
@@ -41,7 +41,7 @@ public sealed class ExportContentToDeploymentTargetContentDriver : ContentDispla
                     return false;
                 }),
             Shape("ExportContentToDeploymentTarget_SummaryAdmin__Button__Actions", new ContentItemViewModel(model))
-                .Location("SummaryAdmin", "ActionsMenu:40")
+                .Location(OrchardCoreConstants.DisplayType.SummaryAdmin, "ActionsMenu:40")
                 .RenderWhen(async () =>
                 {
                     if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())

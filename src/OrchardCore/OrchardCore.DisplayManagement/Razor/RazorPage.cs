@@ -325,6 +325,4 @@ public abstract class RazorPage<TModel> : Microsoft.AspNetCore.Mvc.Razor.RazorPa
     public ISite Site => _site ??= Context.Features.Get<RazorViewFeature>()?.Site;
 }
 
-public abstract class RazorPage : RazorPage<dynamic>
-{
-}
+public abstract class RazorPage : RazorPage<dynamic>;

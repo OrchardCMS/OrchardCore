@@ -4,18 +4,19 @@ using OrchardCore.Apis.GraphQL.Queries.Types;
 
 namespace OrchardCore.Apis.GraphQL.Queries;
 
-public class WhereInputObjectGraphType : WhereInputObjectGraphType<object>, IFilterInputObjectGraphType
+public abstract class WhereInputObjectGraphType : WhereInputObjectGraphType<object>
 {
-    public WhereInputObjectGraphType(IStringLocalizer<WhereInputObjectGraphType<object>> stringLocalizer) : base(stringLocalizer)
+    protected WhereInputObjectGraphType(IStringLocalizer stringLocalizer)
+        : base(stringLocalizer)
     {
     }
 }
 
-public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSourceType>, IFilterInputObjectGraphType
+public abstract class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSourceType>, IFilterInputObjectGraphType
 {
     protected readonly IStringLocalizer S;
 
-    public WhereInputObjectGraphType(IStringLocalizer<WhereInputObjectGraphType<TSourceType>> stringLocalizer)
+    protected WhereInputObjectGraphType(IStringLocalizer stringLocalizer)
     {
         S = stringLocalizer;
     }
@@ -61,12 +62,18 @@ public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSour
         { "_not_ends_with", (S, description) => S["{0} does not end with the string", description] },
     };
 
-    public virtual void AddScalarFilterFields<TGraphType>(string fieldName, string description)
+    public void AddScalarFilterFields<TGraphType>(string fieldName, string description)
+        => AddScalarFilterFields<TGraphType>(fieldName, description, null, null, null);
+
+    public virtual void AddScalarFilterFields<TGraphType>(string fieldName, string description, string aliasName, string contentPart, string contentField)
     {
-        AddScalarFilterFields(typeof(TGraphType), fieldName, description);
+        AddScalarFilterFields(typeof(TGraphType), fieldName, description, aliasName, contentPart, contentField);
     }
 
-    public virtual void AddScalarFilterFields(Type graphType, string fieldName, string description)
+    public void AddScalarFilterFields(Type graphType, string fieldName, string description)
+        => AddScalarFilterFields(graphType, fieldName, description, null, null, null);
+
+    public virtual void AddScalarFilterFields(Type graphType, string fieldName, string description, string aliasName, string contentPart, string contentField)
     {
         if (!typeof(ScalarGraphType).IsAssignableFrom(graphType) &&
             !typeof(IInputObjectGraphType).IsAssignableFrom(graphType))
@@ -74,12 +81,12 @@ public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSour
             return;
         }
 
-        AddEqualityFilters(graphType, fieldName, description);
+        AddEqualityFilters(graphType, fieldName, description, aliasName, contentPart, contentField);
 
         if (graphType == typeof(StringGraphType))
         {
-            AddMultiValueFilters(graphType, fieldName, description);
-            AddStringFilters(graphType, fieldName, description);
+            AddMultiValueFilters(graphType, fieldName, description, aliasName, contentPart, contentField);
+            AddStringFilters(graphType, fieldName, description, aliasName, contentPart, contentField);
         }
         else if (graphType == typeof(DateTimeGraphType) ||
             graphType == typeof(DateGraphType) ||
@@ -91,36 +98,39 @@ public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSour
             graphType == typeof(FloatGraphType) ||
             graphType == typeof(BigIntGraphType))
         {
-            AddMultiValueFilters(graphType, fieldName, description);
-            AddNonStringFilters(graphType, fieldName, description);
+            AddMultiValueFilters(graphType, fieldName, description, aliasName, contentPart, contentField);
+            AddNonStringFilters(graphType, fieldName, description, aliasName, contentPart, contentField);
         }
     }
 
-    private void AddEqualityFilters(Type graphType, string fieldName, string description)
+    private void AddEqualityFilters(Type graphType, string fieldName, string description, string aliasName, string contentPart, string contentField)
     {
-        AddFilterFields(CreateGraphType(graphType), EqualityOperators, fieldName, description);
+        AddFilterFields(graphType, EqualityOperators, fieldName, description, aliasName, contentPart, contentField);
     }
 
-    private void AddStringFilters(Type graphType, string fieldName, string description)
+    private void AddStringFilters(Type graphType, string fieldName, string description, string aliasName, string contentPart, string contentField)
     {
-        AddFilterFields(CreateGraphType(graphType), StringComparisonOperators, fieldName, description);
+        AddFilterFields(graphType, StringComparisonOperators, fieldName, description, aliasName, contentPart, contentField);
     }
 
-    private void AddNonStringFilters(Type graphType, string fieldName, string description)
+    private void AddNonStringFilters(Type graphType, string fieldName, string description, string aliasName, string contentPart, string contentField)
     {
-        AddFilterFields(CreateGraphType(graphType), NonStringValueComparisonOperators, fieldName, description);
+        AddFilterFields(graphType, NonStringValueComparisonOperators, fieldName, description, aliasName, contentPart, contentField);
     }
 
-    private void AddMultiValueFilters(Type graphType, string fieldName, string description)
+    private void AddMultiValueFilters(Type graphType, string fieldName, string description, string aliasName, string contentPart, string contentField)
     {
-        AddFilterFields(CreateGraphType(graphType), MultiValueComparisonOperators, fieldName, description);
+        AddFilterFields(graphType, MultiValueComparisonOperators, fieldName, description, aliasName, contentPart, contentField);
     }
 
     private void AddFilterFields(
-        IGraphType resolvedType,
+        Type graphType,
         IDictionary<string, Func<IStringLocalizer, string, string>> filters,
         string fieldName,
-        string description)
+        string description,
+        string aliasName,
+        string contentPart,
+        string contentField)
     {
         foreach (var filter in filters)
         {
@@ -128,45 +138,10 @@ public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSour
             {
                 Name = fieldName + filter.Key,
                 Description = filter.Value(S, description),
-                ResolvedType = resolvedType,
-            });
+                Type = graphType,
+            }.WithAliasNameMetaData(aliasName)
+             .WithContentPartMetaData(contentPart)
+             .WithContentFieldMetaData(contentField));
         }
-    }
-
-    private readonly Dictionary<Type, IGraphType> graphTypes = new();
-
-    private IGraphType CreateGraphType(Type type)
-    {
-        if (type.IsGenericType)
-        {
-            var genericDef = type.GetGenericTypeDefinition();
-            if (genericDef == typeof(ListGraphType<>))
-            {
-                var innerType = type.GetGenericArguments()[0];
-
-                return new ListGraphType(CreateGraphType(innerType));
-            }
-
-            if (genericDef == typeof(NonNullGraphType<>))
-            {
-                var innerType = type.GetGenericArguments()[0];
-
-                return new NonNullGraphType(CreateGraphType(innerType));
-            }
-        }
-
-        if (typeof(ScalarGraphType).IsAssignableFrom(type))
-        {
-            if (!graphTypes.TryGetValue(type, out var graphType))
-            {
-                graphType = (IGraphType)Activator.CreateInstance(type);
-
-                graphTypes[type] = graphType;
-            }
-
-            return graphType;
-        }
-
-        throw new InvalidOperationException($"{type.Name} is not a valid {nameof(ScalarGraphType)}.");
     }
 }

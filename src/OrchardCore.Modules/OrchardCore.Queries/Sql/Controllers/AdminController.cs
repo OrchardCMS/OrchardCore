@@ -59,7 +59,7 @@ public sealed class AdminController : Controller
     {
         model.FactoryName = _store.Configuration.ConnectionFactory.GetType().FullName;
 
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSqlQueries))
+        if (!await _authorizationService.AuthorizeAsync(User, QueriesPermissions.ManageSqlQueries))
         {
             return Forbid();
         }

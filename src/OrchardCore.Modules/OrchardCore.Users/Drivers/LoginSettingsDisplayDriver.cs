@@ -36,13 +36,13 @@ public sealed class LoginSettingsDisplayDriver : SiteDisplayDriver<LoginSettings
             model.AllowChangingUsername = settings.AllowChangingUsername;
             model.AllowChangingPhoneNumber = settings.AllowChangingPhoneNumber;
         }).Location("Content:5#General")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ManageUsers))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, UsersPermissions.ManageUsers))
         .OnGroup(SettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, LoginSettings section, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
         {
             return null;
         }

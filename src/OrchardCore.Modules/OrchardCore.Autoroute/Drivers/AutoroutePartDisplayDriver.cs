@@ -108,7 +108,7 @@ public sealed class AutoroutePartDisplayDriver : ContentPartDisplayDriver<Autoro
 
             var httpContext = _httpContextAccessor.HttpContext;
 
-            if (httpContext != null && await _authorizationService.AuthorizeAsync(httpContext.User, Permissions.SetHomepage))
+            if (httpContext != null && await _authorizationService.AuthorizeAsync(httpContext.User, AutoroutePermissions.SetHomepage))
             {
                 await context.Updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);
             }

@@ -29,7 +29,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
     protected string _prefix;
     protected string _tempFilename;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var connectionStringTemplate = @"Data Source={0};Cache=Shared";
 
@@ -61,7 +61,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
         await CreateTablesAsync(_prefixedStore);
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
         _store.Dispose();
         _store = null;
@@ -95,7 +95,7 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
             }
         }
 
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 
     private static async Task CreateTablesAsync(IStore store)

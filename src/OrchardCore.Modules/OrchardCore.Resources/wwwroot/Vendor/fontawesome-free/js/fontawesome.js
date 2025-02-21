@@ -1,5 +1,5 @@
 /*!
- * Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  * Copyright 2024 Fonticons, Inc.
  */
@@ -375,7 +375,7 @@
         normal: "fakd"
       }
     };
-  var po = {
+  var ua = {
       classic: {
         "fa-brands": "fab",
         "fa-duotone": "fad",
@@ -408,7 +408,7 @@
       sharp: ["fass", "fasr", "fasl", "fast"],
       "sharp-duotone": ["fasds", "fasdr", "fasdl", "fasdt"]
     },
-    co = {
+    ga = {
       classic: {
         fab: "fa-brands",
         fad: "fa-duotone",
@@ -436,12 +436,12 @@
       }
     },
     x = ["fa-solid", "fa-regular", "fa-light", "fa-thin", "fa-duotone", "fa-brands"],
-    xo = ["fa", "fas", "far", "fal", "fat", "fad", "fadr", "fadl", "fadt", "fab", "fass", "fasr", "fasl", "fast", "fasds", "fasdr", "fasdl", "fasdt", ...r$1, ...x],
+    Ia = ["fa", "fas", "far", "fal", "fat", "fad", "fadr", "fadl", "fadt", "fab", "fass", "fasr", "fasl", "fast", "fasds", "fasdr", "fasdl", "fasdt", ...r$1, ...x],
     m$1 = ["solid", "regular", "light", "thin", "duotone", "brands"],
     c$1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     F$1 = c$1.concat([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]),
-    Fo = [...Object.keys(I$1), ...m$1, "2xs", "xs", "sm", "lg", "xl", "2xl", "beat", "border", "fade", "beat-fade", "bounce", "flip-both", "flip-horizontal", "flip-vertical", "flip", "fw", "inverse", "layers-counter", "layers-text", "layers", "li", "pull-left", "pull-right", "pulse", "rotate-180", "rotate-270", "rotate-90", "rotate-by", "shake", "spin-pulse", "spin-reverse", "spin", "stack-1x", "stack-2x", "stack", "ul", t$1.GROUP, t$1.SWAP_OPACITY, t$1.PRIMARY, t$1.SECONDARY].concat(c$1.map(o => "".concat(o, "x"))).concat(F$1.map(o => "w-".concat(o)));
-  var ko = {
+    ma = [...Object.keys(I$1), ...m$1, "2xs", "xs", "sm", "lg", "xl", "2xl", "beat", "border", "fade", "beat-fade", "bounce", "flip-both", "flip-horizontal", "flip-vertical", "flip", "fw", "inverse", "layers-counter", "layers-text", "layers", "li", "pull-left", "pull-right", "pulse", "rotate-180", "rotate-270", "rotate-90", "rotate-by", "shake", "spin-pulse", "spin-reverse", "spin", "stack-1x", "stack-2x", "stack", "ul", t$1.GROUP, t$1.SWAP_OPACITY, t$1.PRIMARY, t$1.SECONDARY].concat(c$1.map(a => "".concat(a, "x"))).concat(F$1.map(a => "w-".concat(a)));
+  var wa = {
       "Font Awesome 5 Free": {
         900: "fas",
         400: "far"
@@ -505,10 +505,10 @@
     duotone: 'fad'
   }), _STYLE_TO_PREFIX[s]), Et['kit']), Et['kit-duotone']);
   const STYLE_TO_PREFIX = familyProxy(_STYLE_TO_PREFIX);
-  const _PREFIX_TO_LONG_STYLE = _objectSpread2({}, co);
+  const _PREFIX_TO_LONG_STYLE = _objectSpread2({}, ga);
   _PREFIX_TO_LONG_STYLE[s] = _objectSpread2(_objectSpread2({}, _PREFIX_TO_LONG_STYLE[s]), Wt['kit']);
   const PREFIX_TO_LONG_STYLE = familyProxy(_PREFIX_TO_LONG_STYLE);
-  const _LONG_STYLE_TO_PREFIX = _objectSpread2({}, po);
+  const _LONG_STYLE_TO_PREFIX = _objectSpread2({}, ua);
   _LONG_STYLE_TO_PREFIX[s] = _objectSpread2(_objectSpread2({}, _LONG_STYLE_TO_PREFIX[s]), Ct['kit']);
   const LONG_STYLE_TO_PREFIX = familyProxy(_LONG_STYLE_TO_PREFIX);
   const ICON_SELECTION_SYNTAX_PATTERN = p; // eslint-disable-line no-useless-escape
@@ -519,7 +519,7 @@
   const FONT_WEIGHT_TO_PREFIX = familyProxy(_FONT_WEIGHT_TO_PREFIX);
   const ATTRIBUTES_WATCHED_FOR_MUTATION = ['class', 'data-prefix', 'data-icon', 'data-fa-transform', 'data-fa-mask'];
   const DUOTONE_CLASSES = A;
-  const RESERVED_CLASSES = [...At, ...Fo];
+  const RESERVED_CLASSES = [...At, ...ma];
 
   const initial = WINDOW.FontAwesomeConfig || {};
   function getAttrConfig(attr) {
@@ -1169,9 +1169,9 @@
       skipLookups = false
     } = params;
     let givenPrefix = null;
-    const faCombinedClasses = xo.concat(bt$1);
+    const faCombinedClasses = Ia.concat(bt$1);
     const faStyleOrFamilyClasses = sortedUniqueValues(values.filter(cls => faCombinedClasses.includes(cls)));
-    const nonStyleOrFamilyClasses = sortedUniqueValues(values.filter(cls => !xo.includes(cls)));
+    const nonStyleOrFamilyClasses = sortedUniqueValues(values.filter(cls => !Ia.includes(cls)));
     const faStyles = faStyleOrFamilyClasses.filter(cls => {
       givenPrefix = cls;
       return !P.includes(cls);
@@ -1220,7 +1220,7 @@
   const newCanonicalFamilies = L.filter(familyId => {
     return familyId !== s || familyId !== t;
   });
-  const newCanonicalStyles = Object.keys(co).filter(key => key !== s).map(key => Object.keys(co[key])).flat();
+  const newCanonicalStyles = Object.keys(ga).filter(key => key !== s).map(key => Object.keys(ga[key])).flat();
   function getDefaultCanonicalPrefix(prefixOptions) {
     const {
       values,
@@ -1822,7 +1822,7 @@
     mark: noop$1,
     measure: noop$1
   };
-  const preamble = "FA \"6.7.1\"";
+  const preamble = "FA \"6.7.2\"";
   const begin = name => {
     p$2.mark("".concat(preamble, " ").concat(name, " begins"));
     return () => end(name);
@@ -1967,7 +1967,7 @@
   function enableObservation() {
     disabled = false;
   }
-  let mo$1 = null;
+  let mo = null;
   function observe(options) {
     if (!MUTATION_OBSERVER) {
       return;
@@ -1981,7 +1981,7 @@
       pseudoElementsCallback = noop$2,
       observeMutationsRoot = DOCUMENT
     } = options;
-    mo$1 = new MUTATION_OBSERVER(objects => {
+    mo = new MUTATION_OBSERVER(objects => {
       if (disabled) return;
       const defaultPrefix = getDefaultUsablePrefix();
       toArray(objects).forEach(mutationRecord => {
@@ -2009,7 +2009,7 @@
       });
     });
     if (!IS_DOM) return;
-    mo$1.observe(observeMutationsRoot, {
+    mo.observe(observeMutationsRoot, {
       childList: true,
       attributes: true,
       characterData: true,
@@ -2017,8 +2017,8 @@
     });
   }
   function disconnect() {
-    if (!mo$1) return;
-    mo$1.disconnect();
+    if (!mo) return;
+    mo.disconnect();
   }
 
   function styleParser (node) {
@@ -2150,7 +2150,7 @@
     }
   }
   function getKnownPrefixes() {
-    return [...Ft, ...xo];
+    return [...Ft, ...Ia];
   }
   function onTree(root) {
     let callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
@@ -2523,7 +2523,7 @@
       normal: 'fas',
       400: 'fas'
     }
-  }), lt), ko), Yt);
+  }), lt), wa), Yt);
   const FONT_FAMILY_WEIGHT_TO_PREFIX = Object.keys(_FONT_FAMILY_WEIGHT_TO_PREFIX).reduce((acc, key) => {
     acc[key.toLowerCase()] = _FONT_FAMILY_WEIGHT_TO_PREFIX[key];
     return acc;

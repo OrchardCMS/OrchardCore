@@ -21,18 +21,18 @@ for Widgets will treat this content item accordingly. This is how the `Layers` m
 Because `Widget` is a stereotype, all Widget content items are rendered from a main shape named `Widget`.
 This main shape's template has access to these properties:
 
-| Property | Description |
-| --------- | ------------ |
-| `Model.ContentItem` | The Widget content item. |
-| `Model.Content` | A list of inner shapes to display. It's populated by all the fields and parts the widget is composed of. |
+| Property            | Description                                                                                              |
+|---------------------|----------------------------------------------------------------------------------------------------------|
+| `Model.ContentItem` | The Widget content item.                                                                                 |
+| `Model.Content`     | A list of inner shapes to display. It's populated by all the fields and parts the widget is composed of. |
 
 It also contains these specific zones, which are not used most of the time and can be ignored when creating custom templates for the website front-end.
 
-| Property | Description |
-| --------- | ------------ |
-| `Model.Header` | The shapes to render in the widget's header. |
-| `Model.Meta` | The shapes to render in the widget's metadata zone. |
-| `Model.Footer` | The shapes to render in the widget's footer. |
+| Property       | Description                                         |
+|----------------|-----------------------------------------------------|
+| `Model.Header` | The shapes to render in the widget's header.        |
+| `Model.Meta`   | The shapes to render in the widget's metadata zone. |
+| `Model.Footer` | The shapes to render in the widget's footer.        |
 
 The shape also contains all the properties common to all shapes like `Classes`, `Id` and `Attributes`.
 
@@ -80,8 +80,8 @@ The actual template for the `Widget` shape can be found in `src/OrchardCore.Modu
 
 Alternates are available per Content Type.
 
-| Definition | Template | Filename|
-| ---------- | --------- | ------------ |
+| Definition              | Template            | Filename                  |
+|-------------------------|---------------------|---------------------------|
 | `Widget__[ContentType]` | `Widget__Paragraph` | `Widget-Paragraph.cshtml` |
 
 ### Customizing the `Widget_Wrapper` template
@@ -106,9 +106,9 @@ A common requirement is to remove these tags, which can be done by creating this
 
 Optionally, you can change these alternates:
 
-| Definition | Template | Filename|
-| ---------- | --------- | ------------ |
-| `Widget_Wrapper__[ContentType]` | `Widget_Wrapper__Paragraph` | `Widget-Paragraph.Wrapper.cshtml` |
+| Definition                            | Template                       | Filename                            |
+|---------------------------------------|--------------------------------|-------------------------------------|
+| `Widget_Wrapper__[ContentType]`       | `Widget_Wrapper__Paragraph`    | `Widget-Paragraph.Wrapper.cshtml`   |
 | `Widget_Wrapper__Zone__[ContentZone]` | `Widget_Wrapper__Zone__Footer` | `Widget-Zone-Footer.Wrapper.cshtml` |
 
 ## Videos

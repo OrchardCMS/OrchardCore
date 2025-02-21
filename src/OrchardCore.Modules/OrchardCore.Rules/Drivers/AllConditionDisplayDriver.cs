@@ -11,13 +11,13 @@ public sealed class AllConditionDisplayDriver : DisplayDriver<Condition, AllCond
     {
         return
             CombineAsync(
-                View("AllCondition_Fields_Summary", condition).Location("Summary", "Content"),
+                View("AllCondition_Fields_Summary", condition).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("AllCondition_Fields_Thumbnail", condition).Location("Thumbnail", "Content"),
                 Initialize<ConditionGroupViewModel>("ConditionGroup_Fields_Summary", m =>
                 {
                     m.Entries = condition.Conditions.Select(x => new ConditionEntry { Condition = x }).ToArray();
                     m.Condition = condition;
-                }).Location("Summary", "Content")
+                }).Location(OrchardCoreConstants.DisplayType.Summary, "Content")
             );
     }
 

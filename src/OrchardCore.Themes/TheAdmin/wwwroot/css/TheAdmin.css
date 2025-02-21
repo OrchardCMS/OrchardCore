@@ -8461,6 +8461,10 @@ ul.pager {
   justify-content: center;
 }
 
+.g-recaptcha {
+  margin-bottom: 1rem;
+}
+
 /* 
     IMPORTANT: Never import Bootstrap directly into the theme. 
     TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
@@ -8747,6 +8751,19 @@ textarea.form-control.input-validation-error {
 .input-group > .form-select:not(:focus).input-validation-error,
 .input-group > .form-floating:not(:focus-within).input-validation-error {
   z-index: 4;
+}
+
+.has-validation-error.is-invalid.multiselect {
+  border: var(--bs-border-width) solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  border-color: var(--bs-form-invalid-border-color);
+}
+
+.has-validation-error.is-invalid.term-entries-area {
+  border: var(--bs-border-width) solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  border-color: var(--bs-form-invalid-border-color);
+  padding: 0.375rem 0.75rem;
 }
 
 .vue-multiselect {

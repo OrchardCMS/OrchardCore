@@ -34,7 +34,7 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageValidationSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageValidationSettings))
         {
             return null;
         }
@@ -55,7 +55,7 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageValidationSettings))
+        if (!await _authorizationService.AuthorizeAsync(user, OpenIdPermissions.ManageValidationSettings))
         {
             return null;
         }
@@ -64,19 +64,22 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
+        var hasAuthority = !string.IsNullOrEmpty(model.Authority);
+
+        settings.Authority = hasAuthority ? new Uri(model.Authority, UriKind.Absolute) : null;
         settings.MetadataAddress = !string.IsNullOrEmpty(model.MetadataAddress) ? new Uri(model.MetadataAddress, UriKind.Absolute) : null;
         settings.Audience = model.Audience?.Trim();
         settings.DisableTokenTypeValidation = model.DisableTokenTypeValidation;
         settings.Tenant = model.Tenant;
 
-        if (string.IsNullOrWhiteSpace(model.Tenant))
-        {
-            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Tenant), S["tenant is a required value"]);
-        }
-        else if (!_shellHost.TryGetShellContext(model.Tenant, out var shellContext) || !shellContext.Settings.IsRunning())
+        if (!string.IsNullOrEmpty(model.Tenant) && 
+        (!_shellHost.TryGetShellContext(model.Tenant, out var shellContext) || !shellContext.Settings.IsRunning()))
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(model.Tenant), S["Invalid tenant value."]);
+        } 
+        else if (!hasAuthority)
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.Authority), S["A tenant or authority value is required."]);
         }
 
         return await EditAsync(settings, context);
