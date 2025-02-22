@@ -68,7 +68,7 @@ assignees: ''
 
 ## Step 6: Aligning Branches
 
-**Merge to `main`**: After releasing the new version, merge the release branch into the main branch to ensure `main` contains all administrative changes.
+**Merge to `main`**: After releasing the new version, merge the release branch into the main branch to ensure that `main` contains all administrative changes.
 
 - [ ] Create a pull request from the release branch (e.g., `release/3.0`) into `main`.
 - [ ] Resolve any merge conflicts using external tools (e.g., Fork) to avoid auto-merging `main` into the release branch. **Important**: DO NOT resolve conflicts using GitHub's interface; that will automatically merge `main` into the release branch, which must be avoided.
