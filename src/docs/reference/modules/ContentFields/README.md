@@ -153,7 +153,7 @@ Field used to display a link.
 | Text     | The text to display                     |
 | Target   | The target attribute for the anchor tag, [Target](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#target) |
 
-!!! Note: By default the http and https are the only URIs permitted. In order to use other URIs like mailto and tel you must configure the [HTML Sanitizer](../Sanitizer/README.md). 
+!!! Note: By default the http and https are the only URIs permitted. To use other URIs like mailto and tel you must configure the [HTML Sanitizer](../Sanitizer/README.md). 
 ### `LocalizationSetContentPickerField`
 
 This field allows you to store the `LocalizationSet` of a `ContentItem`, when a reference shouldn't point to a specific culture of a content item.  
