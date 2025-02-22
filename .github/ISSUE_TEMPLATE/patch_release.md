@@ -11,7 +11,7 @@ assignees: ''
 
 ## Step 1: Backporting Pull Requests
 
-1. **Identify Pull Requests**: Review any pull requests (PRs) that need to be backported to the release branch. These should be PRs that contain strictly bug fixes and nothing else.
+1. **Identify Pull Requests**: Review any pull requests (PRs) that need to be backported to the release branch. These should be PRs that strictly contain bug fixes and nothing else.
 2. **Backport Pull Requests**: For PRs merged into the `main` branch that need to be applied to the release branch (e.g., `release/2.1`), comment on the merged PR with `/backport to release/2.1`. This comment will trigger a GitHub Action to create a new PR with the same changes for the `release/2.1` branch.
 3. **Merge PRs**: Once all necessary PRs are created, merge them into the `release/2.1` branch.
 
