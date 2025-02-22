@@ -1,25 +1,30 @@
 [
   {
-    "copy": true,
-    "inputs": [
-      "Assets/dist/assets/*"
-    ],
-    "output": "wwwroot/assets/@"
+    "action": "copy",
+    "name": "theme-thecomingsoontheme",
+    "source": "Assets/TheComingSoonTheme/dist/assets/**",
+    "dest": "wwwroot/assets/",
+    "tags": ["theme", "images"]
   },
   {
-    "inputs": [
-      "Assets/dist/css/styles.css"
-    ],
-    "output": "wwwroot/css/styles.css"
+    "action": "min",
+    "name": "theme-thecomingsoontheme",
+    "source": "Assets/TheComingSoonTheme/dist/css/styles.css",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
   },
   {
-    "inputs": [ "Assets/src/scss/bootstrap-oc.scss" ],
-    "output": "wwwroot/css/bootstrap-oc.css"
+    "action": "sass",
+    "name": "theme-thecomingsoontheme",
+    "source": "Assets/TheComingSoonTheme/src/scss/bootstrap-oc.scss",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
   },
   {
-    "inputs": [
-      "Assets/dist/js/scripts.js"
-    ],
-    "output": "wwwroot/js/scripts.js"
+    "action": "min",
+    "name": "theme-thecomingsoontheme",
+    "source": "Assets/TheComingSoonTheme/dist/js/scripts.js",
+    "dest": "wwwroot/js/",
+    "tags": ["theme", "js"]
   }
 ]
