@@ -6,10 +6,12 @@ import concurrently from "concurrently";
 import { fileURLToPath } from "url";
 import parseArgs from "minimist";
 import _ from "lodash";
-
+import prettyMilliseconds from 'pretty-ms';
 import buildConfig from "./config.mjs";
 import clean from "./clean.mjs";
 import getAllAssetGroups from "./assetGroups.mjs";
+
+const startTime = performance.now();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -246,6 +248,8 @@ const { result } = concurrently(
 
 result.then(
     () => {
+        const endTime = performance.now();
+        console.log(chalk.green("Build time: ", prettyMilliseconds(endTime - startTime))); // TODO: display in minutes or hours if it's a long build
         console.log(chalk.bold.green("Success!"));
         process.exit(0);
     },
