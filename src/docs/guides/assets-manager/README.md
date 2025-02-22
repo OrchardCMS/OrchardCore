@@ -6,7 +6,7 @@ Based on [Concurrently](https://github.com/open-cli-tools/concurrently) the Orch
 
 Old assets are not compiled as ES6 modules so they don't need these bundlers. For that matter we kept the old `gulpfile.js` which will be now triggered by `Concurrently` when doing `yarn build -gr`.
 
-Concurrently uses an `Assets.json` file that defines actions to execute. The old Gulp pipline uses a `GulpAssets.json` file that defines actions to execute.
+Concurrently uses an `Assets.json` file that defines actions to execute. The old Gulp pipeline uses a `GulpAssets.json` file that defines actions to execute.
 
 Parcel is the easiest way to build assets so far as it doesn't require any configuration. It is a zero file configuration bundler which means we use the same configuration for all assets. It is the recommended builder for those who want to easily start with a bundler. Though, Vite is more suited for Vue apps.
 
