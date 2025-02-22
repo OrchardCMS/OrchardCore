@@ -154,15 +154,8 @@ Field used to display a link.
 | Target   | The target attribute for the anchor tag, [Target](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#target) |
 
 !!! Note: By default the http and https are the only URIs permitted. In order to use other URIs like mailto and tel you must configure the [HTML Sanitizer](../Sanitizer/README.md). 
-### `LocalizationSetContentPickerField`
 
-This field allows you to store the `LocalizationSet` of a `ContentItem`, when a reference shouldn't point to a specific culture of a content item.  
-This simplifies getting a content item of the correct culture on the frontend.
-
-The following example uses the `localization_set` liquid filter which returns a single ContentItem
-per set based on the request culture, if no culture is specified.
-
-### Link Field Example 
+#### Link Field Example 
 
 === "Liquid"
 
@@ -175,6 +168,14 @@ per set based on the request culture, if no culture is specified.
 ```html
 <a href="@Model.Url" target="@Model.Target">@Model.Text</a>
 ```
+
+### `LocalizationSetContentPickerField`
+
+This field allows you to store the `LocalizationSet` of a `ContentItem`, when a reference shouldn't point to a specific culture of a content item.  
+This simplifies getting a content item of the correct culture on the frontend.
+
+The following example uses the `localization_set` liquid filter which returns a single ContentItem
+per set based on the request culture, if no culture is specified.
 
 #### LocalizationSet ContentPicker Field Example
 
