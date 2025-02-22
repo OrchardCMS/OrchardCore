@@ -1,6 +1,7 @@
 ///<reference path='../Lib/jquery/typings.d.ts' />
 ///<reference path='../Lib/jsplumb/typings.d.ts' />
-///<reference path='./workflow-models.ts' />
+
+import './workflow-models';
 
 abstract class WorkflowCanvas {
     private minCanvasHeight: number = 400;
@@ -141,3 +142,5 @@ abstract class WorkflowCanvas {
         $container.height(Math.max(this.minCanvasHeight, newCanvasHeight));
     };
 }
+
+export default WorkflowCanvas;

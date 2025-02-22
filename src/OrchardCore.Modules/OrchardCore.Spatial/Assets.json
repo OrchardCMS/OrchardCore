@@ -1,30 +1,35 @@
 [
   {
-    "generateRTL": true,
-    "inputs": [
-      "Assets/js/coordinate-leaflet-field.js"
-    ],
-    "output": "wwwroot/Scripts/coordinate-leaflet-field.js"
+    "action": "copy",
+    "name": "spatial-leaflet-js",
+    "source": "../../../node_modules/leaflet/dist/*.js",
+    "dest": "wwwroot/Scripts/leaflet/",
+    "tags": ["admin", "js"]
   },
   {
-    "copy": true,
-    "inputs": [
-      "./node_modules/leaflet/dist/*.js",
-      "./node_modules/leaflet/dist/*.map"
-    ],
-    "output": "wwwroot/Scripts/leaflet/@"
+    "action": "min",
+    "name": "spatial-leaflet-js",
+    "source": "Assets/js/coordinate-leaflet-field.js",
+    "tags": ["admin", "js"]
   },
   {
-    "copy": true,
-    "inputs": [
-      "./node_modules/leaflet/dist/images/*"
-    ],
-    "output": "wwwroot/Styles/images/@"
+    "action": "copy",
+    "name": "spatial-leaflet-js-map",
+    "source": "../../../node_modules/leaflet/dist/*.map",
+    "dest": "wwwroot/Scripts/leaflet/",
+    "tags": ["admin", "js"]
   },
   {
-    "inputs": [
-      "./node_modules/leaflet/dist/leaflet.css"
-    ],
-    "output": "wwwroot/Styles/leaflet.css"
+    "action": "copy",
+    "name": "spatial-leaflet-images",
+    "source": "../../../node_modules/leaflet/dist/images/*",
+    "dest": "wwwroot/Styles/images/",
+    "tags": ["admin", "images"]
+  },
+  {
+    "action": "min",
+    "name": "spatial-leaflet-css",
+    "source": "../../../node_modules/leaflet/dist/leaflet.css",
+    "tags": ["admin", "css"]
   }
 ]

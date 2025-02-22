@@ -1,5 +1,6 @@
 @charset "UTF-8";
-/* Import variables first */ /* 
+/* Import variables first */
+/* 
     IMPORTANT: Never import Bootstrap directly into the theme. 
     TheAdmin.css will depend on Bootstrap, but we never want to compile it. 
 */
@@ -8572,7 +8573,7 @@ ul.ui-sortable:not(:has(> li)) {
   }
 }
 .nav-tabs .nav-link:hover {
-  background-color: #5a6268;
+  background-color: rgb(90.2703862661, 97.7929184549, 104.4796137339);
 }
 .nav-tabs .nav-link.active {
   border-left: var(--bs-border-width) solid var(--bs-border-color);

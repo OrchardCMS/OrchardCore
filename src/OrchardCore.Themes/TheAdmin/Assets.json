@@ -1,56 +1,38 @@
 [
   {
-    "generateRTL": false,
-    "inputs": [
-      "Assets/scss/index.scss"
-    ],
-    "watch": [
-      "Assets/scss/components/**/*.scss",
-      "Assets/scss/main/**/*.scss",
-      "Assets/scss/mixins/**/*.scss",
-      "Assets/scss/themes/**/*.scss"
-    ],
-    "output": "wwwroot/css/TheAdmin.css"
+    "action": "sass",
+    "name": "theme-theadmin",
+    "source": "Assets/scss/TheAdmin.scss",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
   },
   {
+    "action": "sass",
     "generateRTL": true,
-    "inputs": [
-      "Assets/scss/admin-layout.scss"
-    ],
-    "watch": [
-      "Assets/scss/admin/**/*.scss"
-    ],
-    "output": "wwwroot/css/admin-layout.css"
+    "name": "theme-theadmin-layout",
+    "source": "Assets/scss/admin-layout.scss",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
   },
   {
-    "inputs": [
-      "Assets/js/*.js"
-    ],
-    "watch": [
-      "Assets/js/*.js"
-    ],
-    "output": "wwwroot/js/TheAdmin.js"
+    "action": "sass",
+    "name": "theme-theadmin-login",
+    "source": "Assets/scss/login.scss",
+    "dest": "wwwroot/css/",
+    "tags": ["theme", "css"]
   },
   {
-    "generateRTL": false,
-    "inputs": [
-      "Assets/scss/login.scss"
-    ],
-    "watch": [
-      "Assets/scss/componenets/_recaptcha.scss",
-      "Assets/scss/componenets/_validations.scss"
-    ],
-    "output": "wwwroot/css/login.css"
+    "action": "parcel",
+    "name": "TheAdmin-main",
+    "source": "Assets/js/TheAdmin-main/TheAdmin-main.ts",
+    "dest": "wwwroot/js/",
+    "tags": ["theme", "css"]
   },
   {
-    "inputs": [
-      "Assets/js/header/global/*.js",
-      "Assets/js/header/main/*.js"
-    ],
-    "watch": [
-      "Assets/js/header/global/*.js",
-      "Assets/js/header/main/*.js"
-    ],
-    "output": "wwwroot/js/TheAdmin-main.js"
+    "action": "parcel",
+    "name": "TheAdmin",
+    "source": "Assets/js/TheAdmin/TheAdmin.ts",
+    "dest": "wwwroot/js/",
+    "tags": ["theme", "css"]
   }
 ]
