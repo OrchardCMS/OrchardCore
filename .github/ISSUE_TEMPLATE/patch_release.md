@@ -25,7 +25,7 @@ assignees: ''
       - Highlights and goals of the release.
       - Prerequisites for running the new version.
       - Upgrade steps and any breaking changes.
-  - **Update Documentation Navigation**: Add the release notes page to `mkdocs.yml` navigation and remove it from `not_in_nav`.
+  - **Update Documentation Navigation**: Add the release notes page to the `mkdocs.yml` navigation and remove it from `not_in_nav`.
   - **Version Mentions**: Update all references to the new version throughout the documentation, including:
     - [Status in the root README](https://docs.orchardcore.net/en/latest/#status)
     - CLI templates and commands.
