@@ -86,7 +86,7 @@ assignees: ''
 - [ ] **Prepare Documentation for Next Version**: Create a new release notes file for the next version in the `OrchardCore.Docs` project (e.g., `/releases/4.0.0.md`). Exclude it from navigation and validation under `not_in_nav` in `mkdocs.yml`.
 - [ ] **Update `OrchardCore.Commons.props` for Next Release**: Set `<VersionPrefix></VersionPrefix>` to the next planned release number, but at least a minor one.
 - [ ] **Reassign Issues**: Reassign all still open, postponed issues from the current version milestone to the upcoming version milestone.
-- [ ] Update [`OrchardCore.Samples`](https://github.com/OrchardCMS/OrchardCore.Samples) to the new released version (just change the `OrchardCoreVersion` property in the root `Directory.Build.props` file).
+- [ ] Update [`OrchardCore.Samples`](https://github.com/OrchardCMS/OrchardCore.Samples) to the newly released version (just change the `OrchardCoreVersion` property in the root `Directory.Build.props` file).
 
 ## Step 8: Publicizing the Release
 

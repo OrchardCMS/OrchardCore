@@ -71,7 +71,7 @@ assignees: ''
 - [ ] Assign the milestone for the release version to this issue. Create one if it doesn't exist.
 - [ ] Assign the milestone to the issues that were released in the version.
 - [ ] Close the milestone.
-- [ ] Update [`OrchardCore.Samples`](https://github.com/OrchardCMS/OrchardCore.Samples) to the new released version (just change the `OrchardCoreVersion` property in the root `Directory.Build.props` file).
+- [ ] Update [`OrchardCore.Samples`](https://github.com/OrchardCMS/OrchardCore.Samples) to the newly released version (just change the `OrchardCoreVersion` property in the root `Directory.Build.props` file).
 
 ## Step 7: Publicizing the Release
 
