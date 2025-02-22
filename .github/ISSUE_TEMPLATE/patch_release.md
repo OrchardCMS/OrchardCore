@@ -18,7 +18,7 @@ assignees: ''
 ## Step 2: Code and Documentation Updates
 
 - [ ] From the release branch (e.g., `release/2.1`), create a new temporary branch for the version (e.g., `release/2.1.1`).
-- [ ] Update version references in the documentation and code. Refer to [this PR](https://github.com/OrchardCMS/OrchardCore/pull/17065/files) for an example. The easiest is to start with a search & replace on the previous version. Version Updates Checklist:
+- [ ] Update version references in the documentation and code. Refer to [this PR](https://github.com/OrchardCMS/OrchardCore/pull/17065/files) for an example. The easiest way is to start with a search & replace on the previous version. Version Updates Checklist:
   - **Update `OrchardCore.Commons.props`**: Set `<VersionPrefix></VersionPrefix>` to the new version you're preparing for release.
   - **Update Module Versions**: Modify `src/OrchardCore/OrchardCore.Abstractions/Modules/Manifest/ManifestConstants.cs` to reflect the new version.
   - **Release Notes**: Finalize the release notes in the documentation, including:
