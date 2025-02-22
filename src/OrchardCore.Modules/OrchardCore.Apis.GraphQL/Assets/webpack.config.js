@@ -1,5 +1,6 @@
 import path from 'path';
 import { fileURLToPath } from "url";
+import webpack from 'webpack';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,6 +19,11 @@ export default {
     performance: {
         hints: false,
     },
+    plugins: [
+        new webpack.optimize.LimitChunkCountPlugin({
+          maxChunks: 1,
+        }),
+    ],
     module: {
         rules: [
             {
