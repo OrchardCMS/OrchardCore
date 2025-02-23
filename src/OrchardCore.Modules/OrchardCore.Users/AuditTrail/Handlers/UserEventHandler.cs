@@ -54,19 +54,19 @@ public class UserEventHandler : ILoginFormEvent, IUserEventHandler
         => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.LogInFailed, user);
 
     public Task DisabledAsync(UserContext context)
-        => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Disabled, context.User, _httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier), _httpContextAccessor.HttpContext.User?.Identity?.Name);
+        => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Disabled, context, _httpContextAccessor);
 
     public Task EnabledAsync(UserContext context)
-         => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Enabled, context.User, _httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier), _httpContextAccessor.HttpContext.User?.Identity?.Name);
+         => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Enabled, context, _httpContextAccessor);
 
     public Task CreatedAsync(UserCreateContext context)
-         => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Created, context.User, _httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier), _httpContextAccessor.HttpContext.User?.Identity?.Name);
+         => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Created, context, _httpContextAccessor);
 
     public Task UpdatedAsync(UserUpdateContext context)
-         => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Updated, context.User, _httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier), _httpContextAccessor.HttpContext.User?.Identity?.Name);
+         => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Updated, context, _httpContextAccessor);
 
     public Task DeletedAsync(UserDeleteContext context)
-         => RecordAuditTrailEventAsync(UserAuditTrailEventConfiguration.Deleted, context.User, _httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier), _httpContextAccessor.HttpContext.User?.Identity?.Name);
+         => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Deleted, context, _httpContextAccessor);
 
     #region Unused user events
 
@@ -83,7 +83,11 @@ public class UserEventHandler : ILoginFormEvent, IUserEventHandler
 
     #endregion
 
-    private async Task RecordAuditTrailEventAsync(string name, IUser user, string userIdActual = "", string userNameActual = "")
+    private async Task RecordAuditTrailEventAsync(
+        string name,
+        IUser user,
+        string userIdActual = "",
+        string userNameActual = "")
     {
         var userName = user.UserName;
         _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
@@ -115,4 +119,11 @@ public class UserEventHandler : ILoginFormEvent, IUserEventHandler
                 }
             ));
     }
+    
+    private Task RecordAuditTrailUserEventAsync(string name, UserContextBase context, IHttpContextAccessor accessor)
+        => RecordAuditTrailEventAsync(
+            name,
+            context.User,
+            accessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier),
+            accessor.HttpContext?.User?.Identity?.Name);
 }
