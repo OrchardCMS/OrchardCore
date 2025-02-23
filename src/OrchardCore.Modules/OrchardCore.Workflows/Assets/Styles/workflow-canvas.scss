@@ -1,6 +1,7 @@
 .workflow-container {
     .workflow-canvas-container {
-        border: var(--bs-border-width, 1px) var(--bs-border-style, solid) var(--bs-border-color, #e4e5e6);
+        border: var(--bs-border-width, 1px) var(--bs-border-style, solid)
+            var(--bs-border-color, #e4e5e6);
         border-radius: var(--bs-border-radius, 2px);
         padding: 15px;
     }
@@ -22,7 +23,8 @@
 
     .activity {
         display: none;
-        border: var(--bs-border-width, 1px) var(--bs-border-style, solid) var(--bs-border-color, #346789);
+        border: var(--bs-border-width, 1px) var(--bs-border-style, solid)
+            var(--bs-border-color, #346789);
         box-shadow: 2px 2px 19px #aaa;
         -webkit-box-shadow: 2px 2px 9px #aaa;
         -moz-box-shadow: 2px 2px 9px #aaa;
@@ -43,17 +45,21 @@
         transition: box-shadow 0.15s ease-in;
 
         &.activity-task {
-            border: var(--bs-border-width, 1px) var(--bs-border-style, solid) #7ab02c;
+            border: var(--bs-border-width, 1px) var(--bs-border-style, solid)
+                #7ab02c;
         }
 
         &.activity-event {
-            border: var(--bs-border-width, 1px) var(--bs-border-style, solid) #3a8acd;
+            border: var(--bs-border-width, 1px) var(--bs-border-style, solid)
+                #3a8acd;
         }
 
-        &.activity-start, &.activity-blocking {
+        &.activity-start,
+        &.activity-blocking {
             background-color: #7ab02c;
             color: var(--bs-white, #ffffff);
-            border: var(--bs-border-width, 1px) var(--bs-border-style, solid) #507b11;
+            border: var(--bs-border-width, 1px) var(--bs-border-style, solid)
+                #507b11;
         }
 
         header {
@@ -71,12 +77,15 @@
         z-index: 4;
     }
 
-    .jtk-endpoint, .endpointTargetLabel, .endpointSourceLabel {
+    .jtk-endpoint,
+    .endpointTargetLabel,
+    .endpointSourceLabel {
         z-index: 21;
         cursor: pointer;
     }
 
-    .endpointTargetLabel, .endpointSourceLabel {
+    .endpointTargetLabel,
+    .endpointSourceLabel {
         font-size: 8px;
     }
 
@@ -86,7 +95,8 @@
 
     .connection-label {
         z-index: 31;
-        border: var(--bs-border-width, 1px) var(--bs-border-style, solid) var(--bs-border-color, #e4e5e6);
+        border: var(--bs-border-width, 1px) var(--bs-border-style, solid)
+            var(--bs-border-color, #e4e5e6);
         padding: 0 0.5rem;
         -moz-border-radius: var(--bs-border-radius, 2px);
         -webkit-border-radius: var(--bs-border-radius, 2px);

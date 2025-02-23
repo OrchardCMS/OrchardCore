@@ -1,15 +1,20 @@
 [
   {
-    "inputs": [
-      "node_modules/diff/dist/diff.js"
-    ],
-    "output": "wwwroot/Scripts/diff.js"
-  },  
+    "action": "min",
+    "name": "audittrail",
+    "source": "../../../node_modules/diff/dist/diff.js",
+    "tags": ["admin", "dashboard", "js"]
+  },
   {
-    "generateRTL": true,
-    "inputs": [
-      "Assets/scss/audittrailui.scss"
-    ],
-    "output": "wwwroot/Styles/audittrailui.css"
+    "action": "sass",
+    "name": "audittrail",
+    "source": "Assets/scss/audittrailui.scss",
+    "tags": [ "admin", "dashboard", "css" ]
+  },
+  {
+    "action": "webpack",
+    "name": "audit-trail-diff-viewer",
+    "config": "/Assets/webpack.config.js",
+    "tags": [ "admin", "dashboard", "css" ]
   }
 ]
