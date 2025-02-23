@@ -8,6 +8,7 @@ using OrchardCore.Users.AuditTrail.Models;
 using OrchardCore.Users.AuditTrail.Services;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
+using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.AuditTrail.Handlers;
 
@@ -89,7 +90,8 @@ public class UserEventHandler : ILoginFormEvent, IUserEventHandler
         string name,
         IUser user,
         string userIdActual = "",
-        string userNameActual = "")
+        string userNameActual = "",
+        bool storeSnapshot = false)
     {
         var userName = user.UserName;
         _userManager ??= _serviceProvider.GetRequiredService<UserManager<IUser>>();
@@ -117,7 +119,8 @@ public class UserEventHandler : ILoginFormEvent, IUserEventHandler
                 new AuditTrailUserEvent
                 {
                     UserId = userId,
-                    UserName = userName
+                    UserName = userName,
+                    User = storeSnapshot ? user as User : null,
                 }
             ));
     }
@@ -127,5 +130,6 @@ public class UserEventHandler : ILoginFormEvent, IUserEventHandler
             name,
             context.User,
             accessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier),
-            accessor.HttpContext?.User?.Identity?.Name);
+            accessor.HttpContext?.User?.Identity?.Name,
+            storeSnapshot: true);
 }
