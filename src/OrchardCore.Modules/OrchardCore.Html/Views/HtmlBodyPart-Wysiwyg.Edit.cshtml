@@ -59,6 +59,7 @@
         if (defaultButtons[6] !== "insertShortcode") {
             defaultButtons.splice(6, 0, "insertShortcode");
         }
+
         defaultButtons.forEach(group => {
             if (group.includes("undo") && group.includes("redo")) {
                 group[group.indexOf("undo")] = "historyUndo";
