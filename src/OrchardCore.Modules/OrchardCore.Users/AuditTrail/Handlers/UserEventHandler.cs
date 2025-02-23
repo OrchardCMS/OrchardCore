@@ -67,13 +67,15 @@ public class UserEventHandler : ILoginFormEvent, IUserEventHandler
 
     public Task DeletedAsync(UserDeleteContext context)
          => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Deleted, context, _httpContextAccessor);
+    
+    public Task ConfirmedAsync(UserConfirmContext context)
+        => RecordAuditTrailUserEventAsync(UserAuditTrailEventConfiguration.Confirmed, context, _httpContextAccessor);
 
     #region Unused user events
 
     public Task CreatingAsync(UserCreateContext context) => Task.CompletedTask;
     public Task UpdatingAsync(UserUpdateContext context) => Task.CompletedTask;
     public Task DeletingAsync(UserDeleteContext context) => Task.CompletedTask;
-    public Task ConfirmedAsync(UserConfirmContext context) => Task.CompletedTask;
 
     #endregion
 

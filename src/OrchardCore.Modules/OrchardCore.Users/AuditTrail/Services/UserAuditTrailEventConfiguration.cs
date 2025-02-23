@@ -15,6 +15,7 @@ public sealed class UserAuditTrailEventConfiguration : IConfigureOptions<AuditTr
     public const string Created = nameof(Created);
     public const string Updated = nameof(Updated);
     public const string Deleted = nameof(Deleted);
+    public const string Confirmed = nameof(Confirmed);
 
     public void Configure(AuditTrailOptions options)
     {
@@ -26,6 +27,7 @@ public sealed class UserAuditTrailEventConfiguration : IConfigureOptions<AuditTr
             .WithEvent(Disabled, S => S["Disabled"], S => S["A user was disabled."], true)
             .WithEvent(Created, S => S["Created"], S => S["A user was created."], true)
             .WithEvent(Updated, S => S["Updated"], S => S["A user was updated."], true)
-            .WithEvent(Deleted, S => S["Deleted"], S => S["A user was deleted."], true);
+            .WithEvent(Deleted, S => S["Deleted"], S => S["A user was deleted."], true)
+            .WithEvent(Confirmed, S => S["Confirmed"], S => S["A user was confirmed."], true);
     }
 }
