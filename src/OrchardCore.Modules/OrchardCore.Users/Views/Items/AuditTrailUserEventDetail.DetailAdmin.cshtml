@@ -1,3 +1,5 @@
+@using System.Text.Json
+@using System.Text.Json.Nodes
 @model AuditTrailUserEventDetailViewModel
 
 <table class="table table-sm table-hover mb-0">
@@ -6,9 +8,16 @@
             <th class="border-top-0 w-25">@T["User Id"]</th>
             <td class="border-top-0">@Model.UserId</td>
         </tr>
+    <tr>
+        <th>@T["User Name"]</th>
+        <td>@Model.UserName</td>
+    </tr>
+    @if (Model.UserEvent.User is { } user && JObject.FromObject(user) is { } userJson)
+    {
         <tr>
-            <th>@T["User Name"]</th>
-            <td>@Model.UserName</td>
+            <th>@T["User Snapshot"]</th>
+            <td><code>@userJson.ToJsonString(JOptions.Indented)</code></td>
         </tr>
+    }
     </tbody>
 </table>

@@ -20,6 +20,7 @@ public sealed class AuditTrailUserEventDisplayDriver : AuditTrailEventSectionDis
     private static void BuildViewModel(AuditTrailUserEventViewModel m, AuditTrailEvent auditTrailEvent, AuditTrailUserEvent userEvent)
     {
         m.AuditTrailEvent = auditTrailEvent;
+        m.UserEvent = userEvent;
         m.Name = userEvent.Name;
         m.UserId = userEvent.UserId;
         m.UserName = userEvent.UserName;
