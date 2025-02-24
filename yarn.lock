@@ -2493,7 +2493,7 @@ __metadata:
     "@popperjs/core": "npm:2.11.8"
     bootstrap: "npm:5.3.3"
     fontawesome-iconpicker: "npm:3.2.0"
-    vue: "npm:^2.6.14"
+    vue: "npm:2.6.14"
   languageName: unknown
   linkType: soft
 
@@ -2704,7 +2704,7 @@ __metadata:
     blueimp-file-upload: "npm:10.32.0"
     bootstrap: "npm:5.3.3"
     jquery: "npm:3.7.1"
-    vue: "npm:^2.6.14"
+    vue: "npm:2.6.14"
   languageName: unknown
   linkType: soft
 
@@ -2749,7 +2749,7 @@ __metadata:
     trumbowyg: "npm:2.28.0"
     typescript-json-schema: "npm:^0.51.0"
     vue: "npm:3.5.13"
-    vue-multiselect: "npm:^3.0.0-beta.2"
+    vue-multiselect: "npm:3.2.0"
     vuedraggable: "npm:^4.1.0"
   languageName: unknown
   linkType: soft
@@ -24596,7 +24596,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue-multiselect@npm:^3.0.0-beta.2":
+"vue-multiselect@npm:3.2.0":
   version: 3.2.0
   resolution: "vue-multiselect@npm:3.2.0"
   checksum: 10/10ee08664d3006dacd7a5c4b3227ffdad7793ed84c386b57c8f752b2ebbae29e77d6caf2605243c7277ad8dd858bc54c88a0421e61928e27aa7e04261dcb8e5d
@@ -24649,35 +24649,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue@npm:3.5.13":
-  version: 3.5.13
-  resolution: "vue@npm:3.5.13"
-  dependencies:
-    "@vue/compiler-dom": "npm:3.5.13"
-    "@vue/compiler-sfc": "npm:3.5.13"
-    "@vue/runtime-dom": "npm:3.5.13"
-    "@vue/server-renderer": "npm:3.5.13"
-    "@vue/shared": "npm:3.5.13"
-  peerDependencies:
-    typescript: "*"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10/bcab4ca74c4a37a2bd3f892d6783f8b01748281cd5aedc2f5dd16521b97a3ba0303cf56df5e217eaa712d38ed2a14b75a92d875cf2596973ac985ca806f44e79
-  languageName: node
-  linkType: hard
-
-"vue@npm:^2.6.14":
-  version: 2.7.16
-  resolution: "vue@npm:2.7.16"
-  dependencies:
-    "@vue/compiler-sfc": "npm:2.7.16"
-    csstype: "npm:^3.1.0"
-  checksum: 10/0371f7bfafd9c6f58ffee6f291fc4ca045033f163e090d8afdfb7550fb9ba71770fe673941083038c88b4a45effe45bb8560c235dc3953c1ff8596f0ad4e4d88
-  languageName: node
-  linkType: hard
-
-"vue@workspace:src/OrchardCore.Modules/OrchardCore.Resources/Assets/Vendor/vue-2.6.14":
+"vue@npm:2.6.14, vue@workspace:src/OrchardCore.Modules/OrchardCore.Resources/Assets/Vendor/vue-2.6.14":
   version: 0.0.0-use.local
   resolution: "vue@workspace:src/OrchardCore.Modules/OrchardCore.Resources/Assets/Vendor/vue-2.6.14"
   dependencies:
@@ -24757,6 +24729,34 @@ __metadata:
     yorkie: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
+
+"vue@npm:3.5.13":
+  version: 3.5.13
+  resolution: "vue@npm:3.5.13"
+  dependencies:
+    "@vue/compiler-dom": "npm:3.5.13"
+    "@vue/compiler-sfc": "npm:3.5.13"
+    "@vue/runtime-dom": "npm:3.5.13"
+    "@vue/server-renderer": "npm:3.5.13"
+    "@vue/shared": "npm:3.5.13"
+  peerDependencies:
+    typescript: "*"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10/bcab4ca74c4a37a2bd3f892d6783f8b01748281cd5aedc2f5dd16521b97a3ba0303cf56df5e217eaa712d38ed2a14b75a92d875cf2596973ac985ca806f44e79
+  languageName: node
+  linkType: hard
+
+"vue@npm:^2.6.14":
+  version: 2.7.16
+  resolution: "vue@npm:2.7.16"
+  dependencies:
+    "@vue/compiler-sfc": "npm:2.7.16"
+    csstype: "npm:^3.1.0"
+  checksum: 10/0371f7bfafd9c6f58ffee6f291fc4ca045033f163e090d8afdfb7550fb9ba71770fe673941083038c88b4a45effe45bb8560c235dc3953c1ff8596f0ad4e4d88
+  languageName: node
+  linkType: hard
 
 "vuedraggable@npm:^4.1.0":
   version: 4.1.0
