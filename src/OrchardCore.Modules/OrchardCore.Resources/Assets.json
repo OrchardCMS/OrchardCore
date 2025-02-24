@@ -284,7 +284,7 @@
     "action": "copy",
     "name": "vue2",
     "source": "Assets/Vendor/vue-2.6.14/dist/*.js",
-    "dest": "wwwroot/Scripts/vue-2.6.14/",
+    "dest": "wwwroot/Vendor/vue-2.6.14/",
     "tags": ["resources", "js"]
   },
   {

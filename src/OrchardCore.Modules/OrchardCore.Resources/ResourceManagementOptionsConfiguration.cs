@@ -995,8 +995,8 @@ public sealed class ResourceManagementOptionsConfiguration
         manifest
             .DefineScript("vuejs")
             .SetUrl(
-                "~/OrchardCore.Resources/Scripts/vue-2.6.14/vue.min.js",
-                "~/OrchardCore.Resources/Scripts/vue-2.6.14/vue.js"
+                "~/OrchardCore.Resources/Vendor/vue-2.6.14/vue.min.js",
+                "~/OrchardCore.Resources/Vendor/vue-2.6.14/vue.js"
             )
             .SetCdn(
                 "https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js",
