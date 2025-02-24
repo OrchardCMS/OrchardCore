@@ -11,17 +11,17 @@ public class AuditTrailUserEvent
     /// Gets the event name.
     /// </summary>
     public string Name => "User";
-    
+
     /// <summary>
     /// Gets or sets a snapshot of the <see cref="Users.Models.User"/> object, if the event modified it somehow.
     /// </summary>
     public User User { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the related user's <see cref="Users.Models.User.UserName"/>.
     /// </summary>
     public string UserName { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the related user's <see cref="Users.Models.User.UserId"/>.
     /// </summary>
