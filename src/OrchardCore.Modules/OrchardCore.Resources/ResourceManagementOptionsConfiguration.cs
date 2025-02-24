@@ -1015,14 +1015,14 @@ public sealed class ResourceManagementOptionsConfiguration
                 "~/OrchardCore.Resources/Scripts/vue.global.js"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/vue@3.4.19/dist/vue.global.prod.js",
-                "https://cdn.jsdelivr.net/npm/vue@3.4.19/dist/vue.global.js"
+                "https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.prod.js",
+                "https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.js"
             )
             .SetCdnIntegrity(
-                "sha384-WZZj7qk4v/+9eNJl4Yf8GLEydI6DBrdbCd2a+8yYNrDo6Badw06X3KfVhRtujcos",
-                "sha384-0iD0gBXHDCbr6i0rOCn2habGxMGj9NcokM7/T2CFDHMXQG+75NUL0/4scPuXUQ4s"
+                "sha256-xFm6fMjbZcmCWJ+l1kx/9HiHfo5bD9dWgyB87GpOieg=",
+                "sha256-Nw0E5oMsQLilVXzUCx00vxQTGV+x1C83EG8rUPawe8A="
             )
-            .SetVersion("3.4.19");
+            .SetVersion("3.5.13");
 
         manifest
             .DefineScript("vue-multiselect")
