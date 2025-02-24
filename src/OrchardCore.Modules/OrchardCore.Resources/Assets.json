@@ -296,13 +296,13 @@
   {
     "action": "copy",
     "name": "vue-multiselect",
-    "source": "node_modules/vue-multiselect/dist/vue-multiselect.min.js",
+    "source": "node_modules/vue-multiselect/dist/*.js",
     "tags": ["resources", "js"]
   },
   {
     "action": "copy",
     "name": "vue-multiselect",
-    "source": "node_modules/vue-multiselect/dist/vue-multiselect.min.css*",
+    "source": "node_modules/vue-multiselect/dist/*.css",
     "tags": ["resources", "css"]
   },
   {

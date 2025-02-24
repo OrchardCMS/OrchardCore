@@ -1049,14 +1049,14 @@ public sealed class ResourceManagementOptionsConfiguration
                 "~/OrchardCore.Resources/Scripts/vue-multiselect.umd.js"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/vue-multiselect@3.0.0-alpha.2/dist/vue-multiselect.umd.min.js",
-                "https://cdn.jsdelivr.net/npm/vue-multiselect@3.0.0-alpha.2/dist/vue-multiselect.umd.js"
+                "https://cdn.jsdelivr.net/npm/vue-multiselect@3.2.0/dist/vue-multiselect.umd.min.js",
+                "https://cdn.jsdelivr.net/npm/vue-multiselect@3.2.0/dist/vue-multiselect.umd.js"
             )
             .SetCdnIntegrity(
-                "sha384-0MajIK6LOklxyFg2ZqUDAMWf1Dfq1I4CnFU7y0dMp+PXxRmYwzV+GmuKdkUtZxub",
-                "sha384-EbrrLK99/FwRZrAFC6SArMCXEVLvsnzeuvmRbesTEbx+sZj1W5XrTKAm2bXo0w0L"
+                "sha256-WPNu0JAREY1Irusgtihcuzati2fLtA70vyK1TDs55PY=",
+                "sha256-bgP1jhSlmX0vEY01VGFi6FMuUzU5Vbd1AdXKm9o0i4Q="
             )
-            .SetVersion("3.0.0");
+            .SetVersion("3.2.0");
 
         //TODO add vendor folder
         manifest
@@ -1079,17 +1079,17 @@ public sealed class ResourceManagementOptionsConfiguration
             .DefineStyle("vue-multiselect")
             .SetUrl(
                 "~/OrchardCore.Resources/Styles/vue-multiselect.min.css",
-                "~/OrchardCore.Resources/Styles/vue-multiselect.min.css"
+                "~/OrchardCore.Resources/Styles/vue-multiselect.css"
             )
             .SetCdn(
-                "https://cdn.jsdelivr.net/npm/vue-multiselect@3.0.0-alpha.2/dist/vue-multiselect.css",
-                "https://cdn.jsdelivr.net/npm/vue-multiselect@3.0.0-alpha.2/dist/vue-multiselect.css"
+                "https://cdn.jsdelivr.net/npm/vue-multiselect@3.2.0/dist/vue-multiselect.min.css",
+                "https://cdn.jsdelivr.net/npm/vue-multiselect@3.2.0/dist/vue-multiselect.css"
             )
             .SetCdnIntegrity(
                 "sha256-Rk36exDVuC4nmPvTICbIZCCh4MAYJ5eh2I6cen3EBww=",
                 "sha256-Rk36exDVuC4nmPvTICbIZCCh4MAYJ5eh2I6cen3EBww="
             )
-            .SetVersion("3.0.0");
+            .SetVersion("3.2.0");
 
         manifest
             .DefineScript("Sortable")
