@@ -130,12 +130,6 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
         => Task.FromResult<IActionResult>(null);
     #endregion
 
-    private string GetCurrentUserName()
-        => _httpContextAccessor.HttpContext.User?.Identity?.Name;
-
-    private string GetCurrentUserId()
-        => _httpContextAccessor.HttpContext.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-
     private Task RecordAuditTrailUserEventAsync(string name, UserContextBase context, IHttpContextAccessor accessor)
         => RecordAuditTrailEventAsync(
             name,
