@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -14,10 +15,13 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
 {
     protected readonly IHttpContextAccessor _httpContextAccessor;
     protected readonly GraphQLContentOptions _contentOptions;
+
     protected readonly IStringLocalizer S;
+
     private readonly Dictionary<string, FieldType> _dynamicPartFields;
 
-    protected DynamicContentTypeBuilder(IHttpContextAccessor httpContextAccessor,
+    protected DynamicContentTypeBuilder(
+        IHttpContextAccessor httpContextAccessor,
         IOptions<GraphQLContentOptions> contentOptionsAccessor,
         IStringLocalizer<DynamicContentTypeBuilder> localizer)
     {
@@ -36,9 +40,8 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
         {
             return;
         }
-
         var serviceProvider = _httpContextAccessor.HttpContext.RequestServices;
-        var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToList();
+        var contentFieldProviders = serviceProvider.GetServices<IContentFieldProvider>().ToArray();
 
         foreach (var part in contentTypeDefinition.Parts)
         {
@@ -80,9 +83,10 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
 
                             if (graphType is IFilterInputObjectGraphType curInputGraphType)
                             {
-                                if (fieldProvider.HasFieldIndex(field))
+                                var index = fieldProvider.GetFieldIndex(field);
+                                if (index != null)
                                 {
-                                    curInputGraphType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description);
+                                    curInputGraphType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description, index.AliasName, part.Name, field.Name);
                                 }
                             }
                             else if (graphType is IObjectGraphType curObjectGraphType)
@@ -128,9 +132,10 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
 
                                 if (partContentItemType is IFilterInputObjectGraphType partInputContentItemType)
                                 {
-                                    if (fieldProvider.HasFieldIndex(field))
+                                    var index = fieldProvider.GetFieldIndex(field);
+                                    if (index != null)
                                     {
-                                        partInputContentItemType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description);
+                                        partInputContentItemType.AddScalarFilterFields(contentFieldType.Type, contentFieldType.Name, contentFieldType.Description, index.AliasName, part.Name, field.Name);
                                     }
                                 }
                                 else if (partContentItemType is IObjectGraphType partContentItemObjectType)
@@ -151,7 +156,7 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
             {
                 if (graphType is IFilterInputObjectGraphType curInputGraphType)
                 {
-                    curInputGraphType.AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description);
+                    curInputGraphType.AddScalarFilterFields(fieldType.Type, fieldType.Name, fieldType.Description, null, null, null);
                 }
                 else if (graphType is IObjectGraphType curObjectGraphType)
                 {
@@ -170,7 +175,7 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
                         Name = partFieldName,
                         Description = S["Represents a {0}.", part.PartDefinition.Name],
                         Type = typeof(DynamicPartWhereInputGraphType),
-                        ResolvedType = new DynamicPartWhereInputGraphType(part)
+                        ResolvedType = new DynamicPartWhereInputGraphType(part, schema, contentFieldProviders, serviceProvider.GetRequiredService<IStringLocalizer<DynamicPartWhereInputGraphType>>())
                     };
 
                     inputGraphType.AddField(field);
@@ -184,14 +189,14 @@ public abstract class DynamicContentTypeBuilder : IContentTypeBuilder
                     Name = partFieldName,
                     Description = S["Represents a {0}.", part.PartDefinition.Name],
                     Type = typeof(DynamicPartGraphType),
-                    ResolvedType = new DynamicPartGraphType(part),
+                    ResolvedType = new DynamicPartGraphType(part, schema, contentFieldProviders),
                     Resolver = new FuncFieldResolver<ContentElement, object>(context =>
                     {
                         var nameToResolve = partName;
                         var typeToResolve = context.FieldDefinition.ResolvedType.GetType().BaseType.GetGenericArguments().First();
 
                         return context.Source.Get(typeToResolve, nameToResolve);
-                    })
+                    }),
                 };
 
                 objectGraphType.AddField(field);

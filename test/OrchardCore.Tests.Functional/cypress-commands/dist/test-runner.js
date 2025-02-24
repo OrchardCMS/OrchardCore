@@ -1,7 +1,5 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', { value: true });
-
 // This module was originally build by the OrchardCore team
 const child_process = require("child_process");
 const fs = require("fs-extra");
@@ -10,6 +8,14 @@ const path = require("path");
 global.log = function (msg) {
     let now = new Date().toLocaleTimeString();
     console.log(`[${now}] ${msg}\n`);
+
+    if (msg.indexOf("Exception") >= 0) {
+        throw new Error("An exception was detected");
+    }
+
+    if (msg.indexOf("fail:") == 0) {
+        throw new Error("An error was logged");
+    }
 };
 
 // Build the dotnet application in release mode
@@ -42,7 +48,7 @@ function copyMigrationsRecipeFile(dir) {
 }
 
 // Host the dotnet application, does not rebuild
-function host(dir, assembly, { appDataLocation = './App_Data', dotnetVersion = 'net8.0' } = {}) {
+function host(dir, assembly, { appDataLocation = './App_Data', dotnetVersion = 'net9.0' } = {}) {
     if (fs.existsSync(path.join(dir, `bin/Release/${dotnetVersion}/`, assembly))) {
         global.log("Application already built, skipping build");
     } else {
@@ -74,7 +80,7 @@ function host(dir, assembly, { appDataLocation = './App_Data', dotnetVersion = '
 }
 
 // combines the functions above, useful when triggering tests from CI
-function e2e(dir, assembly, { dotnetVersion = 'net8.0' } = {}) {
+function e2e(dir, assembly, { dotnetVersion = 'net9.0' } = {}) {
     copyMigrationsRecipeFile(dir);
     deleteDirectory(path.join(dir, "App_Data_Tests"));
     var server = host(dir, assembly, { appDataLocation: "./App_Data_Tests", dotnetVersion });

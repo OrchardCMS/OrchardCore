@@ -4,13 +4,13 @@ namespace OrchardCore.ReCaptcha;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageReCaptchaSettings = new("ManageReCaptchaSettings", "Manage ReCaptcha Settings");
-
     private readonly IEnumerable<Permission> _allPermissions =
     [
-        ManageReCaptchaSettings,
+        ReCaptchaPermissions.ManageReCaptchaSettings,
     ];
 
+    [Obsolete("This will be removed in a future release. Instead use 'ReCaptchaPermissions.ManageReCaptchaSettings'.")]
+    public static readonly Permission ManageReCaptchaSettings = ReCaptchaPermissions.ManageReCaptchaSettings;
     public Task<IEnumerable<Permission>> GetPermissionsAsync()
         => Task.FromResult(_allPermissions);
 

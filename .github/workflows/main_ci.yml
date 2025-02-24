@@ -21,31 +21,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-24.04, windows-2022]
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
         node-version: "15"
-    - uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.0.x'
+    - uses: ./.github/actions/setup-dotnet
     - name: Build
       # See pr_ci.yml for the reason why we disable NuGet audit warnings.
       run: |
-        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
+        dotnet build -c Release /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NuGetAudit=false
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
     - name: Functional Tests
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-24.04'
       run: |
         cd test/OrchardCore.Tests.Functional
         npm install
         npm run cms:test
         npm run mvc:test
     - uses: actions/upload-artifact@v4
-      if: matrix.os == 'ubuntu-latest' && failure()
+      if: matrix.os == 'ubuntu-24.04' && failure()
       with:
         name: Functional Test failure
         path: |

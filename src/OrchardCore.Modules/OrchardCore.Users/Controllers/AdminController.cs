@@ -85,17 +85,16 @@ public sealed class AdminController : Controller
     public async Task<ActionResult> Index([ModelBinder(BinderType = typeof(UserFilterEngineModelBinder), Name = "q")] QueryFilterResult<User> queryFilterResult, PagerParameters pagerParameters)
     {
         // Check a dummy user account to see if the current user has permission to view users.
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ListUsers, new User()))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.ListUsers, new User()))
         {
             return Forbid();
         }
 
         var options = new UserIndexOptions
         {
-            // Populate route values to maintain previous route data when generating page links
-            // await _userOptionsDisplayManager.UpdateEditorAsync(options, _updateModelAccessor.ModelUpdater, false);
             FilterResult = queryFilterResult
         };
+
         options.FilterResult.MapTo(options);
 
         // With the options populated we filter the query, allowing the filters to alter the options.
@@ -126,26 +125,21 @@ public sealed class AdminController : Controller
             userEntries.Add(new UserEntry
             {
                 UserId = user.UserId,
-                Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin")
+                Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin"),
             });
         }
 
         options.UserFilters =
         [
-            new SelectListItem() { Text = S["All Users"], Value = nameof(UsersFilter.All), Selected = (options.Filter == UsersFilter.All) },
-            new SelectListItem() { Text = S["Enabled Users"], Value = nameof(UsersFilter.Enabled), Selected = (options.Filter == UsersFilter.Enabled) },
-            new SelectListItem() { Text = S["Disabled Users"], Value = nameof(UsersFilter.Disabled), Selected = (options.Filter == UsersFilter.Disabled) }
-            // new SelectListItem() { Text = S["Approved"], Value = nameof(UsersFilter.Approved) },
-            // new SelectListItem() { Text = S["Email pending"], Value = nameof(UsersFilter.EmailPending) },
-            // new SelectListItem() { Text = S["Pending"], Value = nameof(UsersFilter.Pending) }
+            new SelectListItem() { Text = S["All Users"], Value = nameof(UsersFilter.All), Selected = options.Filter == UsersFilter.All },
+            new SelectListItem() { Text = S["Enabled Users"], Value = nameof(UsersFilter.Enabled), Selected = options.Filter == UsersFilter.Enabled },
+            new SelectListItem() { Text = S["Disabled Users"], Value = nameof(UsersFilter.Disabled), Selected = options.Filter == UsersFilter.Disabled },
         ];
 
         options.UserSorts =
         [
-            new SelectListItem() { Text = S["Name"], Value = nameof(UsersOrder.Name), Selected = (options.Order == UsersOrder.Name) },
-            new SelectListItem() { Text = S["Email"], Value = nameof(UsersOrder.Email), Selected = (options.Order == UsersOrder.Email) },
-            // new SelectListItem() { Text = S["Created date"], Value = nameof(UsersOrder.CreatedUtc) },
-            // new SelectListItem() { Text = S["Last Login date"], Value = nameof(UsersOrder.LastLoginUtc) }
+            new SelectListItem() { Text = S["Name"], Value = nameof(UsersOrder.Name), Selected = options.Order == UsersOrder.Name },
+            new SelectListItem() { Text = S["Email"], Value = nameof(UsersOrder.Email), Selected = options.Order == UsersOrder.Email },
         ];
 
         options.UsersBulkAction =
@@ -153,14 +147,14 @@ public sealed class AdminController : Controller
             new SelectListItem() { Text = S["Approve"], Value = nameof(UsersBulkAction.Approve) },
             new SelectListItem() { Text = S["Enable"], Value = nameof(UsersBulkAction.Enable) },
             new SelectListItem() { Text = S["Disable"], Value = nameof(UsersBulkAction.Disable) },
-            new SelectListItem() { Text = S["Delete"], Value = nameof(UsersBulkAction.Delete) }
+            new SelectListItem() { Text = S["Delete"], Value = nameof(UsersBulkAction.Delete) },
         ];
 
         var roleNames = new List<string>();
 
         foreach (var roleName in await _roleService.GetRoleNamesAsync())
         {
-            var permission = CommonPermissions.CreateListUsersInRolePermission(roleName);
+            var permission = UsersPermissions.CreateListUsersInRolePermission(roleName);
 
             if (!await _authorizationService.AuthorizeAsync(User, permission))
             {
@@ -228,7 +222,7 @@ public sealed class AdminController : Controller
     public async Task<ActionResult> IndexPOST(UserIndexOptions options, IEnumerable<string> itemIds)
     {
         // Check a dummy user account to see if the current user has permission to manage it.
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ListUsers, new User()))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.ListUsers, new User()))
         {
             return Forbid();
         }
@@ -241,7 +235,7 @@ public sealed class AdminController : Controller
             // To prevent html injection we authorize each user before performing any operations.
             foreach (var user in checkedUsers)
             {
-                var canEditUser = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user);
+                var canEditUser = await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user);
                 var isSameUser = user.UserId == User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 switch (options.BulkAction)
@@ -256,7 +250,7 @@ public sealed class AdminController : Controller
                         }
                         break;
                     case UsersBulkAction.Delete:
-                        if (!isSameUser && await _authorizationService.AuthorizeAsync(User, CommonPermissions.DeleteUsers, user))
+                        if (!isSameUser && await _authorizationService.AuthorizeAsync(User, UsersPermissions.DeleteUsers, user))
                         {
                             await _userManager.DeleteAsync(user);
                             await _notifier.SuccessAsync(H["User {0} successfully deleted.", user.UserName]);
@@ -291,7 +285,7 @@ public sealed class AdminController : Controller
     {
         var user = new User();
 
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
         {
             return Forbid();
         }
@@ -307,7 +301,7 @@ public sealed class AdminController : Controller
     {
         var user = new User();
 
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
         {
             return Forbid();
         }
@@ -338,7 +332,7 @@ public sealed class AdminController : Controller
         if (string.IsNullOrEmpty(id))
         {
             id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditOwnUser))
+            if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditOwnUser))
             {
                 return Forbid();
             }
@@ -350,7 +344,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
         {
             return Forbid();
         }
@@ -372,7 +366,7 @@ public sealed class AdminController : Controller
         {
             editingOwnUser = true;
             id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditOwnUser))
+            if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditOwnUser))
             {
                 return Forbid();
             }
@@ -383,7 +377,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
         {
             return Forbid();
         }
@@ -434,7 +428,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.ViewUsers, user))
         {
             return Forbid();
         }
@@ -452,7 +446,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.DeleteUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.DeleteUsers, user))
         {
             return Forbid();
         }
@@ -485,7 +479,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
         {
             return Forbid();
         }
@@ -503,7 +497,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
         {
             return Forbid();
         }
@@ -531,7 +525,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, user))
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
         {
             return Forbid();
         }

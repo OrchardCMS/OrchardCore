@@ -120,6 +120,13 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
             .SetVersion("1.7.2");
 
         manifest
+            .DefineScript("jQuery.nestedSortable")
+            .SetUrl("~/OrchardCore.Resources/Scripts/jquery.mjs.nestedSortable.js")
+            .SetCdn("https://cdn.jsdelivr.net/npm/nestedSortable@1.3.4/jquery.mjs.nestedSortable.js")
+            .SetCdnIntegrity("sha384-drmLwsDDXGEHmNZHoxS1StHzAllg9a/CKXv31Oe4wYiN9wqJNn+QQjAr6Cin+wyH")
+            .SetVersion("1.3.4");
+
+        manifest
             .DefineScript("bootstrap")
             .SetDependencies("jQuery")
             .SetCdn("https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js", "https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.js")
@@ -383,24 +390,45 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
         manifest
             .DefineStyle("font-awesome")
-            .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/css/all.min.css", "~/OrchardCore.Resources/Vendor/fontawesome-free/css/all.css")
+            .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/css/all.min.css", "~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/css/all.css")
             .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.css")
             .SetCdnIntegrity("sha384-h/hnnw1Bi4nbpD6kE7nYfCXzovi622sY5WBxww8ARKwpdLj5kUWjRuyiXaD1U2JT", "sha384-vMdawx0r3BjxHQwcfWi0YSemtW6u5mKxTKPPh1ogUICPLaEa/6e42yg2wRYzzJtx")
             .SetVersion("6.6.0");
 
         manifest
             .DefineScript("font-awesome")
-            .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.js")
+            .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/js/all.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/js/all.js")
             .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/all.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/all.js")
             .SetCdnIntegrity("sha384-dgEl3vRKux81M373f/TdgoDTV5oZj+yjHrr/1qR5b4btG5q63kYS62t5kod+7Q6v", "sha384-v72QeVpDL6Ne4X2S+fwIXCOLhO57lwIR/qRV05SHAExDg1QoyJGWDxx6VQO3rzlC")
             .SetVersion("6.6.0");
 
         manifest
             .DefineScript("font-awesome-v4-shims")
-            .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/js/v4-shims.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free/js/v4-shims.js")
+            .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/js/v4-shims.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free-6.6.0/js/v4-shims.js")
             .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/js/v4-shims.js")
             .SetCdnIntegrity("sha384-M9y++reQwf5nddw5loUHChCbGE4kwaeHzeEM2yWidMfaRMQeHM6MSwwPuiSnSMHF", "sha384-WrIndr6nwB5l/sVUyZkWDlpNS9Vx/Y+zhmjZNP+j2UJOBmy36ufaIIqd7o2kL0BL")
             .SetVersion("6.6.0");
+
+        manifest
+            .DefineStyle("font-awesome")
+            .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/css/all.min.css", "~/OrchardCore.Resources/Vendor/fontawesome-free/css/all.css")
+            .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.min.css", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/css/all.css")
+            .SetCdnIntegrity("sha384-nRgPTkuX86pH8yjPJUAFuASXQSSl2/bBUiNV47vSYpKFxHJhbcrGnmlYpYJMeD7a", "sha384-2+60qu/gnxJgsqsxJD6ji+GRxiI9685VK/LdfC7jofqMEGqhASfHl1ayqu7tWI/r")
+            .SetVersion("6.7.2");
+
+        manifest
+            .DefineScript("font-awesome")
+            .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.js")
+            .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/js/all.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/js/all.js")
+            .SetCdnIntegrity("sha384-DsXFqEUf3HnCU8om0zbXN58DxV7Bo8/z7AbHBGd2XxkeNpdLrygNiGFr/03W0Xmt", "sha384-103HZqplx8RDtihZoKY8x3qZcFKEwjwT7B2gSWIPsHW3Bw+oZ/YuC4ZG2NCs9X2l")
+            .SetVersion("6.7.2");
+
+        manifest
+            .DefineScript("font-awesome-v4-shims")
+            .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/js/v4-shims.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free/js/v4-shims.js")
+            .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/js/v4-shims.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/js/v4-shims.js")
+            .SetCdnIntegrity("sha384-WVm8++sQXsfFD5HmhLau6q7RS11CQOYMBHGi1pfF2PHd/vthiacQvsVLrRk6lH8O", "sha384-8wHa6NoZT1zIIflbE6bEpvkCitRAeXbtoIAZAaddda+A7iyDB1/WHrGFXXXOqRzp")
+            .SetVersion("6.7.2");
 
         manifest
             .DefineScript("jquery-resizable")
@@ -463,7 +491,7 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
         manifest
             .DefineScript("vue-multiselect")
-            .SetDependencies("vuejs")
+            .SetDependencies("vuejs:2")
             .SetUrl("~/OrchardCore.Resources/Scripts/vue-multiselect.min.js", "~/OrchardCore.Resources/Scripts/vue-multiselect.min.js")
             .SetCdn("https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.js", "https://cdn.jsdelivr.net/npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.js")
             .SetCdnIntegrity("sha384-a4eXewRTYCwYdFtSnMCZTNtiXrfdul6aQdueRgHPAx2y1Ldp0QaFdCTpOx0ycsXU", "sha384-a4eXewRTYCwYdFtSnMCZTNtiXrfdul6aQdueRgHPAx2y1Ldp0QaFdCTpOx0ycsXU")
@@ -485,7 +513,7 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
         manifest
             .DefineScript("vuedraggable")
-            .SetDependencies("vuejs", "Sortable")
+            .SetDependencies("vuejs:2", "Sortable")
             .SetUrl("~/OrchardCore.Resources/Scripts/vuedraggable.umd.min.js", "~/OrchardCore.Resources/Scripts/vuedraggable.umd.js")
             .SetCdn("https://cdn.jsdelivr.net/npm/vuedraggable@2.24.3/dist/vuedraggable.umd.min.js", "https://cdn.jsdelivr.net/npm/vuedraggable@2.24.3/dist/vuedraggable.umd.js")
             .SetCdnIntegrity("sha384-qUA1xXJiX23E4GOeW/XHtsBkV9MUcHLSjhi3FzO08mv8+W8bv5AQ1cwqLskycOTs", "sha384-+jB9vXc/EaIJTlNiZG2tv+TUpKm6GR9HCRZb3VkI3lscZWqrCYDbX2ZXffNJldL9")
@@ -510,6 +538,13 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
             .SetUrl("~/OrchardCore.Resources/Scripts/monaco/ocmonaco.js")
             .SetDependencies("monaco-loader")
             .SetVersion(MonacoEditorVersion);
+
+        manifest
+            .DefineScript("fontawesome-iconpicker")
+            .SetUrl("~/OrchardCore.Resources/Scripts/fontawesome-iconpicker.min.js", "~/OrchardCore.Resources/Scripts/fontawesome-iconpicker.js")
+            .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/fontawesome-iconpicker/3.2.0/js/fontawesome-iconpicker.min.js", "https://cdnjs.cloudflare.com/ajax/libs/fontawesome-iconpicker/3.2.0/js/fontawesome-iconpicker.js")
+            .SetCdnIntegrity("sha512-7dlzSK4Ulfm85ypS8/ya0xLf3NpXiML3s6HTLu4qDq7WiJWtLLyrXb9putdP3/1umwTmzIvhuu9EW7gHYSVtCQ==", "sha512-ARPApqjym7fPaYMaezrx4XTD8mGd0JAvugmK2JDkjb/WTog2b33SwzcSlAnnwFTq9PiTas0U2VqCMzuhpzKREA==")
+            .SetVersion("3.2.0");
 
         return manifest;
     }

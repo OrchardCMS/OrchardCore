@@ -15,7 +15,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
     private readonly ShellDescriptor _shellDescriptor;
     private readonly IExtensionManager _extensionManager;
     private readonly IDocumentManager<RolesDocument> _documentManager;
-    private readonly ISystemRoleNameProvider _systemRoleNameProvider;
+    private readonly ISystemRoleProvider _systemRoleProvider;
     private readonly IEnumerable<IPermissionProvider> _permissionProviders;
     private readonly ITypeFeatureProvider _typeFeatureProvider;
     private readonly ILogger _logger;
@@ -26,7 +26,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
         ShellDescriptor shellDescriptor,
         IExtensionManager extensionManager,
         IDocumentManager<RolesDocument> documentManager,
-        ISystemRoleNameProvider systemRoleNameProvider,
+        ISystemRoleProvider systemRoleProvider,
         IEnumerable<IPermissionProvider> permissionProviders,
         ITypeFeatureProvider typeFeatureProvider,
         ILogger<RoleUpdater> logger)
@@ -34,7 +34,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
         _shellDescriptor = shellDescriptor;
         _extensionManager = extensionManager;
         _documentManager = documentManager;
-        _systemRoleNameProvider = systemRoleNameProvider;
+        _systemRoleProvider = systemRoleProvider;
         _permissionProviders = permissionProviders;
         _typeFeatureProvider = typeFeatureProvider;
         _logger = logger;
@@ -80,7 +80,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
                 var permissions = (stereotype.Permissions ?? [])
                     .Select(stereotype => stereotype.Name);
 
-                if (await UpdatePermissionsAsync(role, permissions))
+                if (UpdatePermissions(role, permissions))
                 {
                     updated = true;
                 }
@@ -121,7 +121,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
             updated = true;
 
             missingFeatures.Remove(feature.Id);
-            await UpdateRolesForEnabledFeatureAsync(role, providers);
+            UpdateRolesForEnabledFeature(role, providers);
         }
 
         if (updated)
@@ -166,7 +166,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
             .SelectMany(stereotype => stereotype.Permissions ?? [])
             .Select(stereotype => stereotype.Name);
 
-        await UpdatePermissionsAsync(role, permissions);
+        UpdatePermissions(role, permissions);
     }
 
     private async Task RemoveRoleForMissingFeaturesAsync(string roleName)
@@ -179,7 +179,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
         }
     }
 
-    private Task<bool> UpdateRolesForEnabledFeatureAsync(Role role, IEnumerable<IPermissionProvider> providers)
+    private bool UpdateRolesForEnabledFeature(Role role, IEnumerable<IPermissionProvider> providers)
     {
         var stereotypes = providers
             .SelectMany(provider => provider.GetDefaultStereotypes())
@@ -187,7 +187,7 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
 
         if (!stereotypes.Any())
         {
-            return Task.FromResult(false);
+            return false;
         }
 
         var permissions = stereotypes
@@ -196,15 +196,15 @@ public class RoleUpdater : FeatureEventHandler, IRoleCreatedEventHandler, IRoleR
 
         if (!permissions.Any())
         {
-            return Task.FromResult(false);
+            return false;
         }
 
-        return UpdatePermissionsAsync(role, permissions);
+        return UpdatePermissions(role, permissions);
     }
 
-    private async Task<bool> UpdatePermissionsAsync(Role role, IEnumerable<string> permissions)
+    private bool UpdatePermissions(Role role, IEnumerable<string> permissions)
     {
-        if (await _systemRoleNameProvider.IsAdminRoleAsync(role.RoleName))
+        if (_systemRoleProvider.IsAdminRole(role.RoleName))
         {
             // Don't update claims for admin role.
             return true;

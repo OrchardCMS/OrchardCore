@@ -55,11 +55,11 @@ Executes a query with the specified name and returns the corresponding content i
 
 Verbs: `POST` and `GET`
 
-| Parameter | Example | Description |
-| --------- | ---- |------------ |
-| `indexName` | `search` | The name of the index to query. |
-| `query` | `{ "query": { "match_all": {} } }` | A JSON object representing the query. |
-| `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
+| Parameter    | Example                                        | Description                                             |
+|--------------|------------------------------------------------|---------------------------------------------------------|
+| `indexName`  | `search`                                       | The name of the index to query.                         |
+| `query`      | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query.                   |
+| `parameters` | `{ size: 3}`                                   | A JSON object representing the parameters of the query. |
 
 ### `api/lucene/documents`
 
@@ -68,11 +68,11 @@ Only the stored fields are returned.
 
 Verbs: `POST` and `GET`
 
-| Parameter | Example | Description |
-| --------- | ---- |------------ |
-| `indexName` | `search` | The name of the index to query. |
-| `query` | `{ "query": { "match_all": {} } }` | A JSON object representing the query. |
-| `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
+| Parameter    | Example                                        | Description                                             |
+|--------------|------------------------------------------------|---------------------------------------------------------|
+| `indexName`  | `search`                                       | The name of the index to query.                         |
+| `query`      | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query.                   |
+| `parameters` | `{ size: 3}`                                   | A JSON object representing the parameters of the query. |
 
 ## Lucene Worker (`OrchardCore.Search.Lucene.Worker`)
 
@@ -84,7 +84,7 @@ If you are running on Azure App Services or if you are using Elasticsearch, then
 
 ## Lucene Queries
 
-The Lucene module provides a management UI and APIs for querying Lucene data using ElasticSearch Queries.
+The Lucene module provides a management UI and APIs for querying Lucene data using Elasticsearch Queries.
 See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html>
 
 ## Recipe step
@@ -318,7 +318,7 @@ So you can use:
 - `terms`
 - `wildcard`
 
-See ElasticSearch documentation for more details:
+See Elasticsearch documentation for more details:
 <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-filter-context.html>
 
 ## Automatic mapping

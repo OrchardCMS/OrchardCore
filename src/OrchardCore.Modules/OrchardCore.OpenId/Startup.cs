@@ -30,7 +30,6 @@ using OrchardCore.OpenId.Services.Handlers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.Tasks;
 using OrchardCore.Recipes;
-using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
@@ -52,12 +51,8 @@ public sealed class Startup : StartupBase
                        .UseYesSql();
             });
 
-        // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
-        services.TryAddEnumerable(new[]
-        {
-            ServiceDescriptor.Scoped<IPermissionProvider, Permissions>(),
-            ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>(),
-        });
+        services.AddPermissionProvider<Permissions>();
+        services.AddNavigationProvider<ManagementAdminMenu>();
     }
 }
 
@@ -66,6 +61,8 @@ public sealed class ClientStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddNavigationProvider<ClientAdminMenu>();
+
         services.TryAddSingleton<IOpenIdClientService, OpenIdClientService>();
 
         // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
@@ -93,6 +90,8 @@ public sealed class ServerStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddNavigationProvider<ServerAdminMenu>();
+
         services.AddOpenIddict()
             .AddServer(options =>
             {
@@ -211,6 +210,8 @@ public sealed class ValidationStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
+        services.AddNavigationProvider<ValidationAdminMenu>();
+
         services.AddOpenIddict()
             .AddValidation(options =>
             {

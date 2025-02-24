@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Deployment;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
@@ -21,16 +22,30 @@ public sealed class ExportContentToDeploymentTargetAdminMenu : AdminNavigationPr
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
-        builder
+        if (NavigationHelper.UseLegacyFormat())
+        {
+            builder
             .Add(S["Configuration"], configuration => configuration
                 .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Export Target Settings"], S["Export Target Settings"].PrefixPosition(), targetSettings => targetSettings
+                        .Add(S["Export target"], S["Export target"].PrefixPosition(), targetSettings => targetSettings
                             .Action("Index", "Admin", _routeValues)
-                            .Permission(OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan)
+                            .Permission(DeploymentPermissions.ManageDeploymentPlan)
                             .LocalNav()
                         )
                     )
+                )
+            );
+
+            return ValueTask.CompletedTask;
+        }
+
+        builder
+            .Add(S["Settings"], settings => settings
+                .Add(S["Deployment Targets"], S["Deployment Targets"].PrefixPosition(), targetSettings => targetSettings
+                    .Action("Index", "Admin", _routeValues)
+                    .Permission(DeploymentPermissions.ManageDeploymentPlan)
+                    .LocalNav()
                 )
             );
 

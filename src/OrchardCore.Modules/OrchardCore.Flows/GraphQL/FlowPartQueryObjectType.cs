@@ -13,7 +13,7 @@ public class FlowPartQueryObjectType : ObjectGraphType<FlowPart>
         Description = S["A FlowPart allows to add content items directly within another content item"];
 
         Field<ListGraphType<ContentItemInterface>>("widgets")
-           .Description("The widgets.")
+           .Description(S["The widgets."])
            .Resolve(context => context.Source.Widgets);
     }
 }

@@ -6,7 +6,7 @@ The Elasticsearch module allows you to manage Elasticsearch indices.
 
 You can use an Elasticsearch cloud service like offered on <https://www.elastic.co> or install it on-premises. For development and testing purposes, it is also available to be deployed with Docker.
 
-### Install Elasticsearch 7.x with Docker compose
+### Install Elasticsearch with Docker compose
 
 Elasticsearch uses a mmapfs directory by default to store its indices. The default operating system limits on mmap counts is likely to be too low, which may result in out of memory exceptions.
 
@@ -28,8 +28,7 @@ Then exit any WSL instance, `wsl --shutdown`, and restart.
 vm.max_map_count = 262144
 ```
 
-Elasticsearch v7.17.5 Docker Compose file :
-[docker-compose.yml](docker-compose.yml)
+Elasticsearch Docker Compose file (check the current Elasticsearch version in the file if you need to run a specific version): [docker-compose.yml](docker-compose.yml)
 
 - Copy this file in a folder named Elasticsearch somewhere safe.
 - Open up a Terminal or Command Shell in this folder.
@@ -189,11 +188,11 @@ Executes a query with the specified name and returns the corresponding content i
 
 Verbs: `POST` and `GET`
 
-| Parameter | Example | Description |
-| --------- | ---- |------------ |
-| `indexName` | `search` | The name of the index to query. |
-| `query` | `{ "query": { "match_all": {} } }` | A JSON object representing the query. |
-| `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
+| Parameter    | Example                                        | Description                                             |
+|--------------|------------------------------------------------|---------------------------------------------------------|
+| `indexName`  | `search`                                       | The name of the index to query.                         |
+| `query`      | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query.                   |
+| `parameters` | `{ size: 3}`                                   | A JSON object representing the parameters of the query. |
 
 ### `api/elasticsearch/documents`
 
@@ -201,15 +200,15 @@ Executes a query with the specified name and returns the corresponding Elasticse
 
 Verbs: `POST` and `GET`
 
-| Parameter | Example | Description |
-| --------- | ---- |------------ |
-| `indexName` | `search` | The name of the index to query. |
-| `query` | `{ "query": { "match_all": {} } }` | A JSON object representing the query. |
-| `parameters` | `{ size: 3}` | A JSON object representing the parameters of the query. |
+| Parameter    | Example                                        | Description                                             |
+|--------------|------------------------------------------------|---------------------------------------------------------|
+| `indexName`  | `search`                                       | The name of the index to query.                         |
+| `query`      | `{ "query": { "match_all": {} }, "size": 10 }` | A JSON object representing the query.                   |
+| `parameters` | `{ size: 3}`                                   | A JSON object representing the parameters of the query. |
 
 ## Elasticsearch Queries
 
-The Elasticsearch module provides a management UI and APIs for querying Elasticsearch data using ElasticSearch Queries.
+The Elasticsearch module provides a management UI and APIs for querying Elasticsearch data using Elasticsearch Queries.
 See: <https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html>
 
 ## Elasticsearch configuration
@@ -244,7 +243,7 @@ The connection types documentation and examples can be found at this url:
 
 ## Elasticsearch Analyzers
 
-As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) and custom analyzers are supported. By default, only `standard` analyzer is available. You may update the Elasticsearch configurations to enable any of the built-in and any custom analyzers. For example, to enable the built in `stop` and `standard` analyzers, you may add the following to the [appsettings.json](../../core/Configuration/README.md) file
+As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-analyzers.html) and custom analyzers are supported. By default, only `standard` analyzer is available. You may update the Elasticsearch configurations to enable any of the built-in and any custom analyzers. For example, to enable the built in `stop` and `standard` analyzers, you may add the following to the [appsettings.json](../Configuration/README.md) file
 
 ```json
 "OrchardCore_Elasticsearch": {
@@ -259,7 +258,7 @@ As of version 1.6, [built-in](https://www.elastic.co/guide/en/elasticsearch/refe
 }
 ```
 
-At the same time, you may define custom analyzers using the [appsettings.json](../../core/Configuration/README.md) file as well. In the following example, we are enabling the [standard](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-standard-analyzer.html) analyzer, customizing the [stop](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-stop-analyzer.html) analyzer and creating a [custom analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-custom-analyzer.html) named `english_analyzer`.
+At the same time, you may define custom analyzers using the [appsettings.json](../Configuration/README.md) file as well. In the following example, we are enabling the [standard](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-standard-analyzer.html) analyzer, customizing the [stop](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-stop-analyzer.html) analyzer and creating a [custom analyzer](https://www.elastic.co/guide/en/elasticsearch/reference/master/analysis-custom-analyzer.html) named `english_analyzer`.
 
 ```json
 "OrchardCore_Elasticsearch": {
@@ -290,6 +289,34 @@ At the same time, you may define custom analyzers using the [appsettings.json](.
   }
 }
 ```
+
+## Elasticsearch Token-Filters
+
+As of version 2.1, you can define custom [token filters](https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-tokenfilters.html) in your Elasticsearch configuration. To add new custom token filters, update your Elasticsearch settings accordingly. 
+
+For instance, to create a token filter named `english_stop`, you can include the following configuration in your `appsettings.json` file:
+
+```json
+"OrchardCore_Elasticsearch": {
+  "TokenFilters": {
+    "english_stop": {
+      "type": "stop",
+      "stopwords": "_english_"
+    }
+  },
+  "Analyzers": {
+    "my_new_analyzer": {
+      "type": "custom",
+      "tokenizer": "standard",
+      "filter": [
+        "english_stop"
+      ]
+    }
+  }
+}
+```
+
+In this example, the `english_stop` token filter removes English stop words, and the `my_new_analyzer` uses the standard tokenizer along with the `english_stop` filter to process text.
 
 ## Elasticsearch vs Lucene
 
@@ -334,11 +361,11 @@ The equivalent of a `StringField` that will behave the same way as a `keyword` i
 
 Here is a small table to compare Lucene and Elasticsearch (string) types:
 
-| Lucene | Elasticsearch | Description |  When Stored  | Search Query type |
-|--------|---------------|---------------------------|-----------------|------------------|
-| StringField | Keyword  | A field that is indexed but not tokenized: the entire value is indexed as a single token     | original value AND indexed | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html) because indexed as a single token.  |
-| TextField   | Text     | A field that is indexed and tokenized, without term vectors | original value AND indexed  | [analyzed fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/full-text-queries.html). Also known as full-text search |
-| StoredField | stored in _source by mapping configuration | A field containing original value (not analyzed) | original value | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html) |
+| Lucene      | Elasticsearch                              | Description                                                                              | When Stored                | Search Query type                                                                                                                           |
+|-------------|--------------------------------------------|------------------------------------------------------------------------------------------|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| StringField | Keyword                                    | A field that is indexed but not tokenized: the entire value is indexed as a single token | original value AND indexed | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html) because indexed as a single token. |
+| TextField   | Text                                       | A field that is indexed and tokenized, without term vectors                              | original value AND indexed | [analyzed fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/full-text-queries.html). Also known as full-text search   |
+| StoredField | stored in _source by mapping configuration | A field containing original value (not analyzed)                                         | original value             | [stored fields](https://www.elastic.co/guide/en/elasticsearch/reference/current/term-level-queries.html)                                    |
 
 ## Video
 

@@ -452,9 +452,8 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 }
             });
 
-            $('#create-folder-name').keypress(function (e) {
-                var key = e.which;
-                if (key == 13) {  // the enter key code
+            $('#create-folder-name').keydown(function (e) {
+                if (e.key == 'Enter') {
                     $('#modalFooterOk').click();
                     return false;
                 }
@@ -527,12 +526,13 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 });
             });
 
-            if (displayMediaApplication) {
-                document.getElementById('mediaApp').style.display = "";
-            }
-
             $(document).trigger('mediaApp:ready');
 
+            if (displayMediaApplication) {
+                setTimeout(function () {
+                    document.getElementById("mediaApp").classList.remove("d-none");
+                }, 100)              
+            }
         },
         error: function (error) {
             console.error(error.responseText);

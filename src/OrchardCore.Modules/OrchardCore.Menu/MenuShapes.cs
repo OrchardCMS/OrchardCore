@@ -1,12 +1,17 @@
+using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
+using OrchardCore.Contents;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Utilities;
 using OrchardCore.Menu.Models;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Menu;
 
@@ -71,8 +76,17 @@ public class MenuShapes : ShapeTableProvider
                 // The first level of menu item shapes is created.
                 // Each other level is created when the menu item is displayed.
 
+                var permissionService = context.ServiceProvider.GetRequiredService<IPermissionService>();
+                var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+                var authorizationService = context.ServiceProvider.GetRequiredService<IAuthorizationService>();
+
                 foreach (var contentItem in menuItems)
                 {
+                    if (!await ShouldCreateAsync(contentItem, contentManager, permissionService, authorizationService, httpContextAccessor.HttpContext?.User))
+                    {
+                        continue;
+                    }
+
                     var shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new
                     {
                         ContentItem = contentItem,
@@ -102,8 +116,18 @@ public class MenuShapes : ShapeTableProvider
 
                 if (menuItems != null)
                 {
+                    var permissionService = context.ServiceProvider.GetRequiredService<IPermissionService>();
+                    var httpContextAccessor = context.ServiceProvider.GetRequiredService<IHttpContextAccessor>();
+                    var authorizationService = context.ServiceProvider.GetRequiredService<IAuthorizationService>();
+                    var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
+
                     foreach (var contentItem in menuItems)
                     {
+                        if (!await ShouldCreateAsync(contentItem, contentManager, permissionService, authorizationService, httpContextAccessor.HttpContext?.User))
+                        {
+                            continue;
+                        }
+
                         var shape = await shapeFactory.CreateAsync("MenuItem", Arguments.From(new
                         {
                             ContentItem = contentItem,
@@ -177,6 +201,59 @@ public class MenuShapes : ShapeTableProvider
         return ValueTask.CompletedTask;
     }
 
+    private async static Task<bool> ShouldCreateAsync(
+        ContentItem contentItem,
+        IContentManager contentManager,
+        IPermissionService permissionService,
+        IAuthorizationService authorizationService,
+        ClaimsPrincipal user)
+    {
+        if (contentItem.TryGet<MenuItemPermissionPart>(out var permissionPart) &&
+            permissionPart.PermissionNames is not null &&
+            permissionPart.PermissionNames.Length > 0)
+        {
+            var permissions = await permissionService.FindByNamesAsync(permissionPart.PermissionNames);
+
+            foreach (var permission in permissions)
+            {
+                if (await authorizationService.AuthorizeAsync(user, permission, contentItem))
+                {
+                    continue;
+                }
+
+                return false;
+            }
+        }
+
+        if (contentItem.TryGet<ContentMenuItemPart>(out var menuItemPart))
+        {
+            string contentItemId = menuItemPart.ContentItem.Content.ContentMenuItemPart.SelectedContentItem.ContentItemIds[0];
+
+            if (string.IsNullOrEmpty(contentItemId))
+            {
+                return false;
+            }
+
+            if (menuItemPart.CheckContentPermissions)
+            {
+                var displayItem = await contentManager.GetAsync(contentItemId, VersionOptions.Published);
+
+                if (displayItem is null)
+                {
+                    return false;
+                }
+
+                await contentManager.LoadAsync(displayItem);
+
+                if (!await authorizationService.AuthorizeAsync(user, CommonPermissions.ViewContent, displayItem))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
     /// <summary>
     /// Converts "foo-ba r" to "FooBaR".
     /// </summary>

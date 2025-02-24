@@ -193,6 +193,15 @@ nuget.exe
 #exclude node modules
 node_modules/
 
+#exclude yarn
+.yarn
+
+#exclude parcel
+.parcel-cache
+
+#exclude .map files
+*.map
+
 wwwroot
 **/Localization/**/*.po
 !test/OrchardCore.Tests/Localization/**/*.po

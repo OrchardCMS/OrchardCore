@@ -46,7 +46,7 @@ public sealed class ImportController : Controller
 
     public async Task<IActionResult> Index()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Import))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Import))
         {
             return Forbid();
         }
@@ -57,15 +57,15 @@ public sealed class ImportController : Controller
     [HttpPost]
     public async Task<IActionResult> Import(IFormFile importedPackage)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Import))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Import))
         {
             return Forbid();
         }
 
         if (importedPackage != null)
         {
-            var tempArchiveName = Path.GetTempFileName() + Path.GetExtension(importedPackage.FileName);
-            var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var tempArchiveName = PathExtensions.GetTempFileName() + Path.GetExtension(importedPackage.FileName);
+            var tempArchiveFolder = PathExtensions.GetTempFileName();
 
             try
             {
@@ -129,7 +129,7 @@ public sealed class ImportController : Controller
 
     public async Task<IActionResult> Json()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Import))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Import))
         {
             return Forbid();
         }
@@ -140,7 +140,7 @@ public sealed class ImportController : Controller
     [HttpPost]
     public async Task<IActionResult> Json(ImportJsonViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.Import))
+        if (!await _authorizationService.AuthorizeAsync(User, DeploymentPermissions.Import))
         {
             return Forbid();
         }

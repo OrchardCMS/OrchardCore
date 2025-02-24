@@ -23,7 +23,7 @@ public class RequiresPermissionValidationRule : IValidationRule
         S = localizer;
     }
 
-    public async ValueTask<INodeVisitor> ValidateAsync(ValidationContext validationContext)
+    public async ValueTask<INodeVisitor> GetPreNodeVisitorAsync(ValidationContext validationContext)
     {
         // shouldn't we access UserContext from validation-context inside MatchingNodeVisitor actions?
         var userContext = (GraphQLUserContext)validationContext.UserContext;
@@ -60,7 +60,7 @@ public class RequiresPermissionValidationRule : IValidationRule
 
     private async Task AuthorizeOperationAsync(ASTNode node, ValidationContext validationContext, GraphQLUserContext userContext, OperationType? operationType, string operationName)
     {
-        if (operationType == OperationType.Mutation && !(await _authorizationService.AuthorizeAsync(userContext.User, CommonPermissions.ExecuteGraphQLMutations)))
+        if (operationType == OperationType.Mutation && !(await _authorizationService.AuthorizeAsync(userContext.User, GraphQLPermissions.ExecuteGraphQLMutations)))
         {
             validationContext.ReportError(new ValidationError(
                 validationContext.Document.Source,
@@ -121,4 +121,10 @@ public class RequiresPermissionValidationRule : IValidationRule
                    S["Authorization is required to access the node. {0}", nodeName],
                    node));
     }
+
+    public ValueTask<IVariableVisitor> GetVariableVisitorAsync(ValidationContext context)
+        => ValueTask.FromResult<IVariableVisitor>(null);
+
+    public ValueTask<INodeVisitor> GetPostNodeVisitorAsync(ValidationContext context)
+        => ValueTask.FromResult<INodeVisitor>(null);
 }

@@ -24,7 +24,7 @@
     var vueElementId = $"TaxonomyField-Tags_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
 }
 
-<script asp-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.min.js" debug-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.js" asp-name="tags-editor" at="Foot" depends-on="vuejs, vue-multiselect"></script>
+<script asp-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.min.js" debug-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.js" asp-name="tags-editor" at="Foot" depends-on="vuejs:2,vue-multiselect"></script>
 <style asp-src="~/OrchardCore.Taxonomies/Styles/tags-editor.min.css" debug-src="~/OrchardCore.Taxonomies/Styles/tags-editor.css" asp-name="tags-editor" depends-on="vue-multiselect"></style>
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.TermContentItemIds)_FieldWrapper">
@@ -48,7 +48,7 @@
                 <div class="w-100">
                     <input asp-for="TermContentItemIds" type="hidden" v-model="selectedTagTermsIds" />
 
-                    <vue-multiselect v-model="selectedTagTerms"
+                    <vue-multiselect asp-validation-class-for="TermContentItemIds" v-model="selectedTagTerms"
                                  placeholder="@T["Type to search"]"
                                  select-label="@T["Select"]"
                                  deselect-label="@T["Remove"]"

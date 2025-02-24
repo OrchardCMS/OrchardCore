@@ -2,7 +2,6 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -166,24 +165,19 @@ public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, ICo
 
         var field = contentPart.GetOrCreate<TField>(partFieldDefinition.Name);
 
-        if (field != null)
-        {
-            BuildPrefix(typePartDefinition, partFieldDefinition, context.HtmlFieldPrefix);
+        BuildPrefix(typePartDefinition, partFieldDefinition, context.HtmlFieldPrefix);
 
-            var fieldEditorContext = new BuildFieldEditorContext(contentPart, typePartDefinition, partFieldDefinition, context);
+        var fieldEditorContext = new BuildFieldEditorContext(contentPart, typePartDefinition, partFieldDefinition, context);
 
-            _typePartDefinition = typePartDefinition;
-            _partFieldDefinition = partFieldDefinition;
+        _typePartDefinition = typePartDefinition;
+        _partFieldDefinition = partFieldDefinition;
 
-            var result = EditAsync(field, fieldEditorContext);
+        var result = EditAsync(field, fieldEditorContext);
 
-            _typePartDefinition = null;
-            _partFieldDefinition = null;
+        _typePartDefinition = null;
+        _partFieldDefinition = null;
 
-            return result;
-        }
-
-        return Task.FromResult(default(IDisplayResult));
+        return result;
     }
 
     async Task<IDisplayResult> IContentFieldDisplayDriver.UpdateEditorAsync(ContentPart contentPart, ContentPartFieldDefinition partFieldDefinition, ContentTypePartDefinition typePartDefinition, UpdateEditorContext context)
@@ -240,21 +234,7 @@ public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, ICo
 
     public virtual Task<IDisplayResult> UpdateAsync(TField field, UpdateFieldEditorContext context)
     {
-#pragma warning disable CS0618 // Type or member is obsolete
-        return UpdateAsync(field, context.Updater, context);
-#pragma warning restore CS0618 // Type or member is obsolete
-    }
-
-    [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the UpdateAsync(TField field, UpdateFieldEditorContext context) method.")]
-    public virtual Task<IDisplayResult> UpdateAsync(TField field, IUpdateModel updater, UpdateFieldEditorContext context)
-    {
-        return Task.FromResult(Update(field, updater, context));
-    }
-
-    [Obsolete("This method is obsolete and will be removed in version 3. Instead, use the UpdateAsync(TField field, UpdateFieldEditorContext context) method.")]
-    public virtual IDisplayResult Update(TField field, IUpdateModel updater, UpdateFieldEditorContext context)
-    {
-        return null;
+        return Task.FromResult<IDisplayResult>(null);
     }
 
     protected string GetEditorShapeType(string shapeType, ContentPartFieldDefinition partFieldDefinition)

@@ -2,15 +2,17 @@
 @using System.Text.Json.Nodes
 @model AuditTrailUserEventDetailViewModel
 
-<table class="table table-sm table-hover mb-0">
+<h2 class="h3">@T["User Info"]</h2>
+
+<table class="table table-sm table-hover">
     <tbody>
         <tr>
-            <th class="border-top-0 w-25">@T["User Id"]</th>
-            <td class="border-top-0">@Model.UserId</td>
+            <th class="w-25">@T["User ID"]</th>
+            <td>@Model.UserEvent.UserId</td>
         </tr>
-    <tr>
-        <th>@T["User Name"]</th>
-        <td>@Model.UserName</td>
+        <tr>
+            <th>@T["Username"]</th>
+            <td>@Model.UserEvent.UserName</td>
     </tr>
     @if (Model.UserEvent.User is { } user && JObject.FromObject(user) is { } userJson)
     {

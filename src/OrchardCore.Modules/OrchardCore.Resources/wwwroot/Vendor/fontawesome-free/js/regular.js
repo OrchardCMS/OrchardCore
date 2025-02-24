@@ -1,5 +1,5 @@
 /*!
- * Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com
+ * Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  * Copyright 2024 Fonticons, Inc.
  */
@@ -8,12 +8,10 @@
 
   let _WINDOW = {};
   let _DOCUMENT = {};
-
   try {
     if (typeof window !== 'undefined') _WINDOW = window;
     if (typeof document !== 'undefined') _DOCUMENT = document;
   } catch (e) {}
-
   const {
     userAgent = ''
   } = _WINDOW.navigator || {};
@@ -23,152 +21,243 @@
   const IS_DOM = !!DOCUMENT.documentElement && !!DOCUMENT.head && typeof DOCUMENT.addEventListener === 'function' && typeof DOCUMENT.createElement === 'function';
   const IS_IE = ~userAgent.indexOf('MSIE') || ~userAgent.indexOf('Trident/');
 
-  var a = "classic",
-      r = "sharp",
-      o = "sharp-duotone";
+  function _defineProperty(e, r, t) {
+    return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+      value: t,
+      enumerable: !0,
+      configurable: !0,
+      writable: !0
+    }) : e[r] = t, e;
+  }
+  function ownKeys(e, r) {
+    var t = Object.keys(e);
+    if (Object.getOwnPropertySymbols) {
+      var o = Object.getOwnPropertySymbols(e);
+      r && (o = o.filter(function (r) {
+        return Object.getOwnPropertyDescriptor(e, r).enumerable;
+      })), t.push.apply(t, o);
+    }
+    return t;
+  }
+  function _objectSpread2(e) {
+    for (var r = 1; r < arguments.length; r++) {
+      var t = null != arguments[r] ? arguments[r] : {};
+      r % 2 ? ownKeys(Object(t), !0).forEach(function (r) {
+        _defineProperty(e, r, t[r]);
+      }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) {
+        Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r));
+      });
+    }
+    return e;
+  }
+  function _toPrimitive(t, r) {
+    if ("object" != typeof t || !t) return t;
+    var e = t[Symbol.toPrimitive];
+    if (void 0 !== e) {
+      var i = e.call(t, r || "default");
+      if ("object" != typeof i) return i;
+      throw new TypeError("@@toPrimitive must return a primitive value.");
+    }
+    return ("string" === r ? String : Number)(t);
+  }
+  function _toPropertyKey(t) {
+    var i = _toPrimitive(t, "string");
+    return "symbol" == typeof i ? i : i + "";
+  }
 
-  var et$1 = {
-    classic: {
-      900: "fas",
-      400: "far",
-      normal: "far",
-      300: "fal",
-      100: "fat"
-    },
-    sharp: {
-      900: "fass",
-      400: "fasr",
-      300: "fasl",
-      100: "fast"
-    },
-    "sharp-duotone": {
-      900: "fasds"
-    }
-  };
-  var bt = {
-    kit: {
-      fak: "kit",
-      "fa-kit": "kit"
-    },
-    "kit-duotone": {
-      fakd: "kit-duotone",
-      "fa-kit-duotone": "kit-duotone"
-    }
-  };
-  var lo = {
-    classic: {
-      "fa-brands": "fab",
-      "fa-duotone": "fad",
-      "fa-light": "fal",
-      "fa-regular": "far",
-      "fa-solid": "fas",
-      "fa-thin": "fat"
-    },
-    sharp: {
-      "fa-solid": "fass",
-      "fa-regular": "fasr",
-      "fa-light": "fasl",
-      "fa-thin": "fast"
-    },
-    "sharp-duotone": {
-      "fa-solid": "fasds"
-    }
-  },
-      no = {
-    classic: {
-      fab: "fa-brands",
-      fad: "fa-duotone",
-      fal: "fa-light",
-      far: "fa-regular",
-      fas: "fa-solid",
-      fat: "fa-thin"
-    },
-    sharp: {
-      fass: "fa-solid",
-      fasr: "fa-regular",
-      fasl: "fa-light",
-      fast: "fa-thin"
-    },
-    "sharp-duotone": {
-      fasds: "fa-solid"
-    }
-  },
-      fo = {
-    classic: {
-      solid: "fas",
-      regular: "far",
-      light: "fal",
-      thin: "fat",
-      duotone: "fad",
-      brands: "fab"
-    },
-    sharp: {
-      solid: "fass",
-      regular: "fasr",
-      light: "fasl",
-      thin: "fast"
-    },
-    "sharp-duotone": {
-      solid: "fasds"
-    }
-  },
-      ho = {
-    classic: {
-      fa: "solid",
-      fas: "solid",
-      "fa-solid": "solid",
-      far: "regular",
-      "fa-regular": "regular",
-      fal: "light",
-      "fa-light": "light",
-      fat: "thin",
-      "fa-thin": "thin",
-      fad: "duotone",
-      "fa-duotone": "duotone",
-      fab: "brands",
-      "fa-brands": "brands"
-    },
-    sharp: {
-      fa: "solid",
-      fass: "solid",
-      "fa-solid": "solid",
-      fasr: "regular",
-      "fa-regular": "regular",
-      fasl: "light",
-      "fa-light": "light",
-      fast: "thin",
-      "fa-thin": "thin"
-    },
-    "sharp-duotone": {
-      fa: "solid",
-      fasds: "solid",
-      "fa-solid": "solid"
-    }
-  };
-  var Io = {
+  var S = {
+      classic: {
+        fa: "solid",
+        fas: "solid",
+        "fa-solid": "solid",
+        far: "regular",
+        "fa-regular": "regular",
+        fal: "light",
+        "fa-light": "light",
+        fat: "thin",
+        "fa-thin": "thin",
+        fab: "brands",
+        "fa-brands": "brands"
+      },
+      duotone: {
+        fa: "solid",
+        fad: "solid",
+        "fa-solid": "solid",
+        "fa-duotone": "solid",
+        fadr: "regular",
+        "fa-regular": "regular",
+        fadl: "light",
+        "fa-light": "light",
+        fadt: "thin",
+        "fa-thin": "thin"
+      },
+      sharp: {
+        fa: "solid",
+        fass: "solid",
+        "fa-solid": "solid",
+        fasr: "regular",
+        "fa-regular": "regular",
+        fasl: "light",
+        "fa-light": "light",
+        fast: "thin",
+        "fa-thin": "thin"
+      },
+      "sharp-duotone": {
+        fa: "solid",
+        fasds: "solid",
+        "fa-solid": "solid",
+        fasdr: "regular",
+        "fa-regular": "regular",
+        fasdl: "light",
+        "fa-light": "light",
+        fasdt: "thin",
+        "fa-thin": "thin"
+      }
+    };
+  var s = "classic";
+  var G = {
+      classic: {
+        900: "fas",
+        400: "far",
+        normal: "far",
+        300: "fal",
+        100: "fat"
+      },
+      duotone: {
+        900: "fad",
+        400: "fadr",
+        300: "fadl",
+        100: "fadt"
+      },
+      sharp: {
+        900: "fass",
+        400: "fasr",
+        300: "fasl",
+        100: "fast"
+      },
+      "sharp-duotone": {
+        900: "fasds",
+        400: "fasdr",
+        300: "fasdl",
+        100: "fasdt"
+      }
+    };
+  var xt = {
+      classic: {
+        solid: "fas",
+        regular: "far",
+        light: "fal",
+        thin: "fat",
+        brands: "fab"
+      },
+      duotone: {
+        solid: "fad",
+        regular: "fadr",
+        light: "fadl",
+        thin: "fadt"
+      },
+      sharp: {
+        solid: "fass",
+        regular: "fasr",
+        light: "fasl",
+        thin: "fast"
+      },
+      "sharp-duotone": {
+        solid: "fasds",
+        regular: "fasdr",
+        light: "fasdl",
+        thin: "fasdt"
+      }
+    };
+  var St = {
+      kit: {
+        fak: "kit",
+        "fa-kit": "kit"
+      },
+      "kit-duotone": {
+        fakd: "kit-duotone",
+        "fa-kit-duotone": "kit-duotone"
+      }
+    };
+  var Ct = {
     kit: {
       "fa-kit": "fak"
     },
     "kit-duotone": {
       "fa-kit-duotone": "fakd"
     }
-  },
-      Fo = {
-    kit: {
-      fak: "fa-kit"
-    },
-    "kit-duotone": {
-      fakd: "fa-kit-duotone"
-    }
-  },
-      So = {
-    kit: {
-      kit: "fak"
-    },
-    "kit-duotone": {
-      "kit-duotone": "fakd"
-    }
   };
+  var Wt = {
+      kit: {
+        fak: "fa-kit"
+      },
+      "kit-duotone": {
+        fakd: "fa-kit-duotone"
+      }
+    };
+  var Et = {
+      kit: {
+        kit: "fak"
+      },
+      "kit-duotone": {
+        "kit-duotone": "fakd"
+      }
+    };
+
+  var ua = {
+      classic: {
+        "fa-brands": "fab",
+        "fa-duotone": "fad",
+        "fa-light": "fal",
+        "fa-regular": "far",
+        "fa-solid": "fas",
+        "fa-thin": "fat"
+      },
+      duotone: {
+        "fa-regular": "fadr",
+        "fa-light": "fadl",
+        "fa-thin": "fadt"
+      },
+      sharp: {
+        "fa-solid": "fass",
+        "fa-regular": "fasr",
+        "fa-light": "fasl",
+        "fa-thin": "fast"
+      },
+      "sharp-duotone": {
+        "fa-solid": "fasds",
+        "fa-regular": "fasdr",
+        "fa-light": "fasdl",
+        "fa-thin": "fasdt"
+      }
+    },
+    ga = {
+      classic: {
+        fab: "fa-brands",
+        fad: "fa-duotone",
+        fal: "fa-light",
+        far: "fa-regular",
+        fas: "fa-solid",
+        fat: "fa-thin"
+      },
+      duotone: {
+        fadr: "fa-regular",
+        fadl: "fa-light",
+        fadt: "fa-thin"
+      },
+      sharp: {
+        fass: "fa-solid",
+        fasr: "fa-regular",
+        fasl: "fa-light",
+        fast: "fa-thin"
+      },
+      "sharp-duotone": {
+        fasds: "fa-solid",
+        fasdr: "fa-regular",
+        fasdl: "fa-light",
+        fasdt: "fa-thin"
+      }
+    };
 
   const NAMESPACE_IDENTIFIER = '___FONT_AWESOME___';
   const PRODUCTION = (() => {
@@ -178,57 +267,45 @@
       return false;
     }
   })();
-
   function familyProxy(obj) {
     // Defaults to the classic family if family is not available
     return new Proxy(obj, {
       get(target, prop) {
-        return prop in target ? target[prop] : target[a];
+        return prop in target ? target[prop] : target[s];
       }
-
     });
   }
+  const _PREFIX_TO_STYLE = _objectSpread2({}, S);
 
-  const _PREFIX_TO_STYLE = { ...ho
-  };
-  _PREFIX_TO_STYLE[a] = { ...ho[a],
-    ...bt['kit'],
-    ...bt['kit-duotone']
-  };
+  // We changed FACSSClassesToStyleId in the icons repo to be canonical and as such, "classic" family does not have any
+  // duotone styles.  But we do still need duotone in _PREFIX_TO_STYLE below, so we are manually adding
+  // {'fa-duotone': 'duotone'}
+  _PREFIX_TO_STYLE[s] = _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, {
+    'fa-duotone': 'duotone'
+  }), S[s]), St['kit']), St['kit-duotone']);
   const PREFIX_TO_STYLE = familyProxy(_PREFIX_TO_STYLE);
-  const _STYLE_TO_PREFIX = { ...fo
-  };
-  _STYLE_TO_PREFIX[a] = { ..._STYLE_TO_PREFIX[a],
-    ...So['kit'],
-    ...So['kit-duotone']
-  };
+  const _STYLE_TO_PREFIX = _objectSpread2({}, xt);
+
+  // We changed FAStyleIdToShortPrefixId in the icons repo to be canonical and as such, "classic" family does not have any
+  // duotone styles.  But we do still need duotone in _STYLE_TO_PREFIX below, so we are manually adding {duotone: 'fad'}
+  _STYLE_TO_PREFIX[s] = _objectSpread2(_objectSpread2(_objectSpread2(_objectSpread2({}, {
+    duotone: 'fad'
+  }), _STYLE_TO_PREFIX[s]), Et['kit']), Et['kit-duotone']);
   const STYLE_TO_PREFIX = familyProxy(_STYLE_TO_PREFIX);
-  const _PREFIX_TO_LONG_STYLE = { ...no
-  };
-  _PREFIX_TO_LONG_STYLE[a] = { ..._PREFIX_TO_LONG_STYLE[a],
-    ...Fo['kit']
-  };
+  const _PREFIX_TO_LONG_STYLE = _objectSpread2({}, ga);
+  _PREFIX_TO_LONG_STYLE[s] = _objectSpread2(_objectSpread2({}, _PREFIX_TO_LONG_STYLE[s]), Wt['kit']);
   const PREFIX_TO_LONG_STYLE = familyProxy(_PREFIX_TO_LONG_STYLE);
-  const _LONG_STYLE_TO_PREFIX = { ...lo
-  };
-  _LONG_STYLE_TO_PREFIX[a] = { ..._LONG_STYLE_TO_PREFIX[a],
-    ...Io['kit']
-  };
+  const _LONG_STYLE_TO_PREFIX = _objectSpread2({}, ua);
+  _LONG_STYLE_TO_PREFIX[s] = _objectSpread2(_objectSpread2({}, _LONG_STYLE_TO_PREFIX[s]), Ct['kit']);
   const LONG_STYLE_TO_PREFIX = familyProxy(_LONG_STYLE_TO_PREFIX);
-  const _FONT_WEIGHT_TO_PREFIX = { ...et$1
-  };
+  const _FONT_WEIGHT_TO_PREFIX = _objectSpread2({}, G);
   const FONT_WEIGHT_TO_PREFIX = familyProxy(_FONT_WEIGHT_TO_PREFIX);
-  const prefixes = new Set();
-  Object.keys(STYLE_TO_PREFIX[a]).map(prefixes.add.bind(prefixes));
-  Object.keys(STYLE_TO_PREFIX[r]).map(prefixes.add.bind(prefixes));
-  Object.keys(STYLE_TO_PREFIX[o]).map(prefixes.add.bind(prefixes));
 
   function bunker(fn) {
     try {
       for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         args[_key - 1] = arguments[_key];
       }
-
       fn(...args);
     } catch (e) {
       if (!PRODUCTION) {
@@ -237,50 +314,43 @@
     }
   }
 
-  const w$1 = WINDOW || {};
-  if (!w$1[NAMESPACE_IDENTIFIER]) w$1[NAMESPACE_IDENTIFIER] = {};
-  if (!w$1[NAMESPACE_IDENTIFIER].styles) w$1[NAMESPACE_IDENTIFIER].styles = {};
-  if (!w$1[NAMESPACE_IDENTIFIER].hooks) w$1[NAMESPACE_IDENTIFIER].hooks = {};
-  if (!w$1[NAMESPACE_IDENTIFIER].shims) w$1[NAMESPACE_IDENTIFIER].shims = [];
-  var namespace = w$1[NAMESPACE_IDENTIFIER];
+  const w = WINDOW || {};
+  if (!w[NAMESPACE_IDENTIFIER]) w[NAMESPACE_IDENTIFIER] = {};
+  if (!w[NAMESPACE_IDENTIFIER].styles) w[NAMESPACE_IDENTIFIER].styles = {};
+  if (!w[NAMESPACE_IDENTIFIER].hooks) w[NAMESPACE_IDENTIFIER].hooks = {};
+  if (!w[NAMESPACE_IDENTIFIER].shims) w[NAMESPACE_IDENTIFIER].shims = [];
+  var namespace = w[NAMESPACE_IDENTIFIER];
 
   function normalizeIcons(icons) {
     return Object.keys(icons).reduce((acc, iconName) => {
       const icon = icons[iconName];
       const expanded = !!icon.icon;
-
       if (expanded) {
         acc[icon.iconName] = icon.icon;
       } else {
         acc[iconName] = icon;
       }
-
       return acc;
     }, {});
   }
-
   function defineIcons(prefix, icons) {
     let params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     const {
       skipHooks = false
     } = params;
     const normalized = normalizeIcons(icons);
-
     if (typeof namespace.hooks.addPack === 'function' && !skipHooks) {
       namespace.hooks.addPack(prefix, normalizeIcons(icons));
     } else {
-      namespace.styles[prefix] = { ...(namespace.styles[prefix] || {}),
-        ...normalized
-      };
+      namespace.styles[prefix] = _objectSpread2(_objectSpread2({}, namespace.styles[prefix] || {}), normalized);
     }
+
     /**
      * Font Awesome 4 used the prefix of `fa` for all icons. With the introduction
      * of new styles we needed to differentiate between them. Prefix `fa` is now an alias
      * for `fas` so we'll ease the upgrade process for our users by automatically defining
      * this as well.
      */
-
-
     if (prefix === 'fas') {
       defineIcons('fa', icons);
     }
@@ -400,7 +470,7 @@
     "face-grin-squint-tears": [512, 512, [129315, "grin-squint-tears"], "f586", "M426.8 14.2C446-5 477.5-4.6 497.1 14.9s20 51 .7 70.3c-14.8 14.8-65.7 23.6-88.3 26.7c-5.6 .9-10.3-3.9-9.5-9.5C403.3 79.9 412 29 426.8 14.2zM75 75C158.2-8.3 284.5-22.2 382.2 33.2c-1.5 4.8-2.9 9.6-4.1 14.3c-3.1 12.2-5.5 24.6-7.3 35c-80.8-53.6-190.7-44.8-261.9 26.4C37.7 180.1 28.9 290 82.5 370.8c-10.5 1.8-22.9 4.2-35 7.3c-4.7 1.2-9.5 2.5-14.3 4.1C-22.2 284.5-8.2 158.2 75 75zm389.6 58.9c4.7-1.2 9.5-2.5 14.3-4.1C534.2 227.5 520.2 353.8 437 437c-83.2 83.2-209.5 97.2-307.2 41.8c1.5-4.8 2.8-9.6 4-14.3c3.1-12.2 5.5-24.6 7.3-35c80.8 53.6 190.7 44.8 261.9-26.4c71.2-71.2 80-181.1 26.4-261.9c10.5-1.8 22.9-4.2 35-7.3zm-105.4 93c10.1-16.3 33.9-16.9 37.9 1.9c9.5 44.4-3.7 93.5-39.3 129.1s-84.8 48.8-129.1 39.3c-18.7-4-18.2-27.8-1.9-37.9c25.2-15.7 50.2-35.4 73.6-58.8s43.1-48.4 58.8-73.6zM92 265.3l97.4-29.7c11.6-3.5 22.5 7.3 19 19l-29.7 97.4c-2.6 8.6-13.4 11.3-19.8 4.9c-2-2-3.2-4.6-3.4-7.3l-5.1-56.1-56.1-5.1c-2.8-.3-5.4-1.5-7.3-3.4c-6.3-6.3-3.6-17.2 4.9-19.8zm193-178.2c2 2 3.2 4.6 3.4 7.3l5.1 56.1 56.1 5.1c2.8 .3 5.4 1.5 7.3 3.4c6.3 6.3 3.6 17.2-4.9 19.8l-97.4 29.7c-11.6 3.5-22.5-7.3-19-19L265.3 92c2.6-8.6 13.4-11.3 19.8-4.9zM14.9 497.1c-19.6-19.6-20-51-.7-70.3C29 412 79.8 403.2 102.4 400.1c5.6-.9 10.3 3.9 9.5 9.5c-3.2 22.5-11.9 73.5-26.7 88.3C66 517 34.5 516.6 14.9 497.1z"],
     "rectangle-list": [576, 512, ["list-alt"], "f022", "M64 80c-8.8 0-16 7.2-16 16l0 320c0 8.8 7.2 16 16 16l448 0c8.8 0 16-7.2 16-16l0-320c0-8.8-7.2-16-16-16L64 80zM0 96C0 60.7 28.7 32 64 32l448 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zm96 64a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm104 0c0-13.3 10.7-24 24-24l224 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-224 0c-13.3 0-24-10.7-24-24zm0 96c0-13.3 10.7-24 24-24l224 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-224 0c-13.3 0-24-10.7-24-24zm0 96c0-13.3 10.7-24 24-24l224 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-224 0c-13.3 0-24-10.7-24-24zm-72-64a32 32 0 1 1 0-64 32 32 0 1 1 0 64zM96 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"],
     "calendar-plus": [448, 512, [], "f271", "M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40L64 64C28.7 64 0 92.7 0 128l0 16 0 48L0 448c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-256 0-48 0-16c0-35.3-28.7-64-64-64l-40 0 0-40c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 40L152 64l0-40zM48 192l352 0 0 256c0 8.8-7.2 16-16 16L64 464c-8.8 0-16-7.2-16-16l0-256zm176 40c-13.3 0-24 10.7-24 24l0 48-48 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l48 0 0 48c0 13.3 10.7 24 24 24s24-10.7 24-24l0-48 48 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-48 0 0-48c0-13.3-10.7-24-24-24z"],
-    "circle-left": [512, 512, [61840, "arrow-alt-circle-left"], "f359", "M48 256a208 208 0 1 1 416 0A208 208 0 1 1 48 256zm464 0A256 256 0 1 0 0 256a256 256 0 1 0 512 0zM256 128l-32 0L96 256 224 384l32 0 0-80 128 0 0-96-128 0 0-80z"],
+    "circle-left": [512, 512, [61840, "arrow-alt-circle-left"], "f359", "M48 256a208 208 0 1 1 416 0A208 208 0 1 1 48 256zm464 0A256 256 0 1 0 0 256a256 256 0 1 0 512 0zM217.4 376.9c4.2 4.5 10.1 7.1 16.3 7.1c12.3 0 22.3-10 22.3-22.3l0-57.7 96 0c17.7 0 32-14.3 32-32l0-32c0-17.7-14.3-32-32-32l-96 0 0-57.7c0-12.3-10-22.3-22.3-22.3c-6.2 0-12.1 2.6-16.3 7.1L117.5 242.2c-3.5 3.8-5.5 8.7-5.5 13.8s2 10.1 5.5 13.8l99.9 107.1z"],
     "money-bill-1": [576, 512, ["money-bill-alt"], "f3d1", "M112 112c0 35.3-28.7 64-64 64l0 160c35.3 0 64 28.7 64 64l352 0c0-35.3 28.7-64 64-64l0-160c-35.3 0-64-28.7-64-64l-352 0zM0 128C0 92.7 28.7 64 64 64l448 0c35.3 0 64 28.7 64 64l0 256c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 128zM176 256a112 112 0 1 1 224 0 112 112 0 1 1 -224 0zm80-48c0 8.8 7.2 16 16 16l0 64-8 0c-8.8 0-16 7.2-16 16s7.2 16 16 16l24 0 24 0c8.8 0 16-7.2 16-16s-7.2-16-16-16l-8 0 0-80c0-8.8-7.2-16-16-16l-16 0c-8.8 0-16 7.2-16 16z"],
     "clock": [512, 512, [128339, "clock-four"], "f017", "M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120l0 136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2 280 120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"],
     "keyboard": [576, 512, [9000], "f11c", "M64 112c-8.8 0-16 7.2-16 16l0 256c0 8.8 7.2 16 16 16l448 0c8.8 0 16-7.2 16-16l0-256c0-8.8-7.2-16-16-16L64 112zM0 128C0 92.7 28.7 64 64 64l448 0c35.3 0 64 28.7 64 64l0 256c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 128zM176 320l224 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-224 0c-8.8 0-16-7.2-16-16l0-16c0-8.8 7.2-16 16-16zm-72-72c0-8.8 7.2-16 16-16l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16zm16-96l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16c0-8.8 7.2-16 16-16zm64 96c0-8.8 7.2-16 16-16l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16zm16-96l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16c0-8.8 7.2-16 16-16zm64 96c0-8.8 7.2-16 16-16l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16zm16-96l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16c0-8.8 7.2-16 16-16zm64 96c0-8.8 7.2-16 16-16l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16zm16-96l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16c0-8.8 7.2-16 16-16zm64 96c0-8.8 7.2-16 16-16l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16zm16-96l16 0c8.8 0 16 7.2 16 16l0 16c0 8.8-7.2 16-16 16l-16 0c-8.8 0-16-7.2-16-16l0-16c0-8.8 7.2-16 16-16z"],
@@ -411,7 +481,7 @@
     "id-card": [576, 512, [62147, "drivers-license"], "f2c2", "M528 160l0 256c0 8.8-7.2 16-16 16l-192 0c0-44.2-35.8-80-80-80l-64 0c-44.2 0-80 35.8-80 80l-32 0c-8.8 0-16-7.2-16-16l0-256 480 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l448 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zM272 256a64 64 0 1 0 -128 0 64 64 0 1 0 128 0zm104-48c-13.3 0-24 10.7-24 24s10.7 24 24 24l80 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-80 0zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24l80 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-80 0z"],
     "sun": [512, 512, [9728], "f185", "M375.7 19.7c-1.5-8-6.9-14.7-14.4-17.8s-16.1-2.2-22.8 2.4L256 61.1 173.5 4.2c-6.7-4.6-15.3-5.5-22.8-2.4s-12.9 9.8-14.4 17.8l-18.1 98.5L19.7 136.3c-8 1.5-14.7 6.9-17.8 14.4s-2.2 16.1 2.4 22.8L61.1 256 4.2 338.5c-4.6 6.7-5.5 15.3-2.4 22.8s9.8 13 17.8 14.4l98.5 18.1 18.1 98.5c1.5 8 6.9 14.7 14.4 17.8s16.1 2.2 22.8-2.4L256 450.9l82.5 56.9c6.7 4.6 15.3 5.5 22.8 2.4s12.9-9.8 14.4-17.8l18.1-98.5 98.5-18.1c8-1.5 14.7-6.9 17.8-14.4s2.2-16.1-2.4-22.8L450.9 256l56.9-82.5c4.6-6.7 5.5-15.3 2.4-22.8s-9.8-12.9-17.8-14.4l-98.5-18.1L375.7 19.7zM269.6 110l65.6-45.2 14.4 78.3c1.8 9.8 9.5 17.5 19.3 19.3l78.3 14.4L402 242.4c-5.7 8.2-5.7 19 0 27.2l45.2 65.6-78.3 14.4c-9.8 1.8-17.5 9.5-19.3 19.3l-14.4 78.3L269.6 402c-8.2-5.7-19-5.7-27.2 0l-65.6 45.2-14.4-78.3c-1.8-9.8-9.5-17.5-19.3-19.3L64.8 335.2 110 269.6c5.7-8.2 5.7-19 0-27.2L64.8 176.8l78.3-14.4c9.8-1.8 17.5-9.5 19.3-19.3l14.4-78.3L242.4 110c8.2 5.7 19 5.7 27.2 0zM256 368a112 112 0 1 0 0-224 112 112 0 1 0 0 224zM192 256a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"],
     "face-laugh-wink": [512, 512, ["laugh-wink"], "f59c", "M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm130.7 57.9c-4.2-13.6 7.1-25.9 21.3-25.9l212.5 0c14.2 0 25.5 12.4 21.3 25.9C369 368.4 318.2 408 258.2 408s-110.8-39.6-127.5-94.1zM144.4 192a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm165.8 21.7c-7.6 8.1-20.2 8.5-28.3 .9s-8.5-20.2-.9-28.3c14.5-15.5 35.2-22.3 54.6-22.3s40.1 6.8 54.6 22.3c7.6 8.1 7.1 20.7-.9 28.3s-20.7 7.1-28.3-.9c-5.5-5.8-14.8-9.7-25.4-9.7s-19.9 3.8-25.4 9.7z"],
-    "circle-down": [512, 512, [61466, "arrow-alt-circle-down"], "f358", "M256 464a208 208 0 1 1 0-416 208 208 0 1 1 0 416zM256 0a256 256 0 1 0 0 512A256 256 0 1 0 256 0zM128 256l0 32L256 416 384 288l0-32-80 0 0-128-96 0 0 128-80 0z"],
+    "circle-down": [512, 512, [61466, "arrow-alt-circle-down"], "f358", "M256 464a208 208 0 1 1 0-416 208 208 0 1 1 0 416zM256 0a256 256 0 1 0 0 512A256 256 0 1 0 256 0zM376.9 294.6c4.5-4.2 7.1-10.1 7.1-16.3c0-12.3-10-22.3-22.3-22.3L304 256l0-96c0-17.7-14.3-32-32-32l-32 0c-17.7 0-32 14.3-32 32l0 96-57.7 0C138 256 128 266 128 278.3c0 6.2 2.6 12.1 7.1 16.3l107.1 99.9c3.8 3.5 8.7 5.5 13.8 5.5s10.1-2 13.8-5.5l107.1-99.9z"],
     "thumbs-down": [512, 512, [128078, 61576], "f165", "M323.8 477.2c-38.2 10.9-78.1-11.2-89-49.4l-5.7-20c-3.7-13-10.4-25-19.5-35l-51.3-56.4c-8.9-9.8-8.2-25 1.6-33.9s25-8.2 33.9 1.6l51.3 56.4c14.1 15.5 24.4 34 30.1 54.1l5.7 20c3.6 12.7 16.9 20.1 29.7 16.5s20.1-16.9 16.5-29.7l-5.7-20c-5.7-19.9-14.7-38.7-26.6-55.5c-5.2-7.3-5.8-16.9-1.7-24.9s12.3-13 21.3-13L448 288c8.8 0 16-7.2 16-16c0-6.8-4.3-12.7-10.4-15c-7.4-2.8-13-9-14.9-16.7s.1-15.8 5.3-21.7c2.5-2.8 4-6.5 4-10.6c0-7.8-5.6-14.3-13-15.7c-8.2-1.6-15.1-7.3-18-15.2s-1.6-16.7 3.6-23.3c2.1-2.7 3.4-6.1 3.4-9.9c0-6.7-4.2-12.6-10.2-14.9c-11.5-4.5-17.7-16.9-14.4-28.8c.4-1.3 .6-2.8 .6-4.3c0-8.8-7.2-16-16-16l-97.5 0c-12.6 0-25 3.7-35.5 10.7l-61.7 41.1c-11 7.4-25.9 4.4-33.3-6.7s-4.4-25.9 6.7-33.3l61.7-41.1c18.4-12.3 40-18.8 62.1-18.8L384 32c34.7 0 62.9 27.6 64 62c14.6 11.7 24 29.7 24 50c0 4.5-.5 8.8-1.3 13c15.4 11.7 25.3 30.2 25.3 51c0 6.5-1 12.8-2.8 18.7C504.8 238.3 512 254.3 512 272c0 35.3-28.6 64-64 64l-92.3 0c4.7 10.4 8.7 21.2 11.8 32.2l5.7 20c10.9 38.2-11.2 78.1-49.4 89zM32 384c-17.7 0-32-14.3-32-32L0 128c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224c0 17.7-14.3 32-32 32l-64 0z"],
     "chess-pawn": [320, 512, [9823], "f443", "M232 152A72 72 0 1 0 88 152a72 72 0 1 0 144 0zm24 120l-12.6 0 10.7 80-48.4 0L195 272l-35 0-35 0-10.7 80-48.4 0 10.7-80L64 272c-13.3 0-24-10.7-24-24s10.7-24 24-24c-15.1-20.1-24-45-24-72C40 85.7 93.7 32 160 32s120 53.7 120 120c0 27-8.9 51.9-24 72c13.3 0 24 10.7 24 24s-10.7 24-24 24zM52.7 464l214.7 0-16.6-32L69.2 432 52.7 464zm207.9-80c12 0 22.9 6.7 28.4 17.3l26.5 51.2c3 5.8 4.6 12.2 4.6 18.7c0 22.5-18.2 40.8-40.8 40.8L40.8 512C18.2 512 0 493.8 0 471.2c0-6.5 1.6-12.9 4.6-18.7l26.5-51.2C36.5 390.7 47.5 384 59.5 384l201 0z"],
     "credit-card": [576, 512, [128179, 62083, "credit-card-alt"], "f09d", "M512 80c8.8 0 16 7.2 16 16l0 32L48 128l0-32c0-8.8 7.2-16 16-16l448 0zm16 144l0 192c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16l0-192 480 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l448 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32zm56 304c-13.3 0-24 10.7-24 24s10.7 24 24 24l48 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-48 0zm128 0c-13.3 0-24 10.7-24 24s10.7 24 24 24l112 0c13.3 0 24-10.7 24-24s-10.7-24-24-24l-112 0z"],

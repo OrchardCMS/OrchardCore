@@ -57,9 +57,9 @@ public class SecurityHeadersApplicationBuilderExtensionsTests
             .Invoke(context);
 
         // Assert
-        Assert.Equal("child-src 'none',connect-src 'self' https://www.domain1.com https://www.domain2.com,default-src *", context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]);
+        Assert.Equal("child-src 'none';connect-src 'self' https://www.domain1.com https://www.domain2.com;default-src *", context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]);
         Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
-        Assert.Equal("camera=self,microphone=*,speaker-selection=self https://www.domain1.com https://www.domain2.com", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
+        Assert.Equal("camera=self;microphone=*;speaker-selection=self https://www.domain1.com https://www.domain2.com", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
         Assert.Equal(ReferrerPolicyValue.Origin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
     }
 
@@ -90,9 +90,9 @@ public class SecurityHeadersApplicationBuilderExtensionsTests
             .Invoke(context);
 
         // Assert
-        Assert.Equal("child-src 'none',connect-src 'self' https://www.domain1.com https://www.domain2.com,default-src *", context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]);
+        Assert.Equal("child-src 'none';connect-src 'self' https://www.domain1.com https://www.domain2.com;default-src *", context.Response.Headers[SecurityHeaderNames.ContentSecurityPolicy]);
         Assert.Equal(ContentTypeOptionsValue.NoSniff, context.Response.Headers[SecurityHeaderNames.XContentTypeOptions]);
-        Assert.Equal("camera=self,microphone=*,speaker=self https://www.domain1.com https://www.domain2.com", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
+        Assert.Equal("camera=self;microphone=*;speaker=self https://www.domain1.com https://www.domain2.com", context.Response.Headers[SecurityHeaderNames.PermissionsPolicy]);
         Assert.Equal(ReferrerPolicyValue.Origin, context.Response.Headers[SecurityHeaderNames.ReferrerPolicy]);
     }
 

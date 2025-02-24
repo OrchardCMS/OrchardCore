@@ -1,7 +1,6 @@
 using System;
 using System.Reflection;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace OrchardCore.Modules.Manifest;
 

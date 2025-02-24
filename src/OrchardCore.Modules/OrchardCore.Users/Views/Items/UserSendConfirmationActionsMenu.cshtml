@@ -1,14 +1,16 @@
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Options
 @using OrchardCore.Users.Models
 
 @model SummaryAdminUserViewModel
 
 @inject UserManager<IUser> UserManager
 @inject IAuthorizationService AuthorizationService
+@inject IOptions<RegistrationOptions> RegistrationOptions
 
 @if (!Model.User.EmailConfirmed &&
-Site.As<RegistrationSettings>().UsersMustValidateEmail &&
-await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditUsers, Model.User))
+RegistrationOptions.Value.UsersMustValidateEmail &&
+await AuthorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, Model.User))
 {
     <li>
         <form method="post" class="d-inline-block" class="no-multisubmit">

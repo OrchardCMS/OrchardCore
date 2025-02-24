@@ -87,7 +87,7 @@ public sealed class WorkflowTypeController : Controller
     [Admin("Workflows/Types", "WorkflowTypes")]
     public async Task<IActionResult> Index(WorkflowTypeIndexOptions options, PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
             return Forbid();
         }
@@ -174,7 +174,7 @@ public sealed class WorkflowTypeController : Controller
     [FormValueRequired("submit.BulkAction")]
     public async Task<IActionResult> BulkEdit(WorkflowTypeIndexOptions options, IEnumerable<long> itemIds)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
             return Forbid();
         }
@@ -214,7 +214,7 @@ public sealed class WorkflowTypeController : Controller
     [HttpPost]
     public async Task<IActionResult> Export(int id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
             return Forbid();
         }
@@ -225,7 +225,7 @@ public sealed class WorkflowTypeController : Controller
     public async Task<IActionResult> EditProperties(int? id, string returnUrl = null)
 
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
             return Forbid();
         }
@@ -259,7 +259,7 @@ public sealed class WorkflowTypeController : Controller
     [HttpPost]
     public async Task<IActionResult> EditProperties(WorkflowTypePropertiesViewModel viewModel, long? id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
             return Forbid();
         }
@@ -308,7 +308,7 @@ public sealed class WorkflowTypeController : Controller
 
     public async Task<IActionResult> Duplicate(long id, string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
             return Forbid();
         }
@@ -335,7 +335,7 @@ public sealed class WorkflowTypeController : Controller
     [HttpPost]
     public async Task<IActionResult> Duplicate(WorkflowTypePropertiesViewModel viewModel, long id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
             return Forbid();
         }
@@ -368,7 +368,7 @@ public sealed class WorkflowTypeController : Controller
 
     public async Task<IActionResult> Edit(long id, string localId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
             return Forbid();
         }
@@ -443,7 +443,7 @@ public sealed class WorkflowTypeController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(WorkflowTypeUpdateModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
             return Forbid();
         }
@@ -504,7 +504,7 @@ public sealed class WorkflowTypeController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(long id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageWorkflows))
+        if (!await _authorizationService.AuthorizeAsync(User, WorkflowsPermissions.ManageWorkflows))
         {
             return Forbid();
         }

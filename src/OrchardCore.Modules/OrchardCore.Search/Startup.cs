@@ -32,11 +32,6 @@ public sealed class Startup : StartupBase
         services.AddNavigationProvider<AdminMenu>();
         services.AddPermissionProvider<Permissions>();
         services.AddSiteDisplayDriver<SearchSettingsDisplayDriver>();
-
-        services.AddContentPart<SearchFormPart>()
-                .UseDisplayDriver<SearchFormPartDisplayDriver>();
-
-        services.AddDataMigration<SearchMigrations>();
     }
 
     public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -47,6 +42,19 @@ public sealed class Startup : StartupBase
             pattern: "search/{index?}",
             defaults: new { controller = typeof(SearchController).ControllerName(), action = nameof(SearchController.Search) }
         );
+    }
+}
+
+[RequireFeatures("OrchardCore.Contents")]
+public sealed class ContentsStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddDataMigration<SearchMigrations>();
+
+        services
+            .AddContentPart<SearchFormPart>()
+            .UseDisplayDriver<SearchFormPartDisplayDriver>();
     }
 }
 

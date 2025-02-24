@@ -32,7 +32,7 @@ public sealed class SitemapCacheController : Controller
 
     public async Task<IActionResult> List()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -48,7 +48,7 @@ public sealed class SitemapCacheController : Controller
     [HttpPost]
     public async Task<IActionResult> PurgeAll()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -69,7 +69,7 @@ public sealed class SitemapCacheController : Controller
     [HttpPost]
     public async Task<IActionResult> Purge(string cacheFileName)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }

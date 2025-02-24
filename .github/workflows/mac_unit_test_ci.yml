@@ -1,6 +1,6 @@
 name: Unit Tests - MacOS
 on:
-# manual trigger
+  # manual trigger
   workflow_dispatch:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -11,7 +11,8 @@ jobs:
     name: Unit Tests
     steps:
     - uses: actions/checkout@v4
+    - uses: ./.github/actions/setup-dotnet
     - name: Build and test
       run: |
-        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true
+        dotnet build -c Release /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj

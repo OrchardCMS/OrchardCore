@@ -19,13 +19,15 @@ concurrency:
 jobs:
   test-npm-build:
     name: Test building assets
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
     - name: Rebuild packages
       run: |
-        npm install
-        gulp rebuild
+        npm install -g corepack
+        corepack enable
+        yarn
+        yarn build -gr
     - name: Check if git has changes
       shell: pwsh
       run: |
@@ -33,7 +35,7 @@ jobs:
 
         if ($changes)
         {
-            Write-Output 'Please make sure to build the assets properly before pushing, see https://docs.orchardcore.net/en/latest/guides/gulp-pipeline/.'
+            Write-Output 'Please make sure to build the assets properly before pushing, see https://docs.orchardcore.net/en/latest/guides/assets-manager/.'
             Write-Output 'The following files changed:'
             Write-Output $changes
             Write-Output 'You can also download the attached artifact to see the changes.'

@@ -6,7 +6,7 @@ using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI.Deployment;
 
-public class AzureAISearchIndexDeploymentSource
+public sealed class AzureAISearchIndexDeploymentSource
     : DeploymentSourceBase<AzureAISearchIndexDeploymentStep>
 {
     private readonly AzureAISearchIndexSettingsService _indexSettingsService;

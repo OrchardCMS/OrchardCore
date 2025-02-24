@@ -1,35 +1,42 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Distributed;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Users.Models;
+using OrchardCore.Users.TimeZone.Handlers;
 using OrchardCore.Users.TimeZone.Models;
 
 namespace OrchardCore.Users.TimeZone.Services;
 
 public class UserTimeZoneService : IUserTimeZoneService
 {
-    private const string CacheKey = "UserTimeZone/";
-    private const string EmptyTimeZone = "empty";
+    private const string EmptyTimeZone = "NoTimeZoneFound";
 
-    private static readonly DistributedCacheEntryOptions _slidingExpiration = new() { SlidingExpiration = TimeSpan.FromHours(1) };
+    private static readonly DistributedCacheEntryOptions _slidingExpiration = new()
+    {
+        SlidingExpiration = TimeSpan.FromHours(1),
+    };
 
     private readonly IClock _clock;
     private readonly IDistributedCache _distributedCache;
+    private readonly UserManager<IUser> _userManager;
 
     public UserTimeZoneService(
         IClock clock,
-        IDistributedCache distributedCache)
+        IDistributedCache distributedCache,
+        UserManager<IUser> userManager)
     {
         _clock = clock;
         _distributedCache = distributedCache;
+        _userManager = userManager;
     }
 
     /// <inheritdoc/>
-    public async ValueTask<ITimeZone> GetAsync(IUser user)
+    public async ValueTask<ITimeZone> GetAsync(string userName)
     {
-        ArgumentNullException.ThrowIfNull(user);
+        ArgumentException.ThrowIfNullOrEmpty(userName);
 
-        var currentTimeZoneId = await GetTimeZoneIdAsync(user);
+        var currentTimeZoneId = await GetTimeZoneIdAsync(userName);
 
         if (string.IsNullOrEmpty(currentTimeZoneId))
         {
@@ -40,40 +47,35 @@ public class UserTimeZoneService : IUserTimeZoneService
     }
 
     /// <inheritdoc/>
-    public async ValueTask UpdateAsync(IUser user)
-    {
-        ArgumentNullException.ThrowIfNull(user);
-
-        if (string.IsNullOrEmpty(user.UserName))
-        {
-            return;
-        }
-
-        await _distributedCache.RemoveAsync(GetCacheKey(user.UserName));
-    }
+    public ValueTask<ITimeZone> GetAsync(IUser user)
+        => GetAsync(user?.UserName);
 
     /// <inheritdoc/>
-    private async ValueTask<string> GetTimeZoneIdAsync(IUser user)
-    {
-        if (string.IsNullOrEmpty(user.UserName))
-        {
-            return null;
-        }
+    public async ValueTask UpdateAsync(IUser user)
+        => await ForgetCacheAsync(user?.UserName);
 
-        var key = GetCacheKey(user.UserName);
+    /// <inheritdoc/>
+    private async ValueTask<string> GetTimeZoneIdAsync(string userName)
+    {
+        var key = UserEventHandler.GetCacheKey(userName);
 
         var timeZoneId = await _distributedCache.GetStringAsync(key);
 
-        // The timezone is not cached yet, resolve it and store the value
+        // The timeZone is not cached yet, resolve it and store the value.
         if (string.IsNullOrEmpty(timeZoneId))
         {
+            // At this point, we know the timeZoneId is not cached for the given userName.
+            // Retrieve the user and cache the timeZoneId.
+            var user = await _userManager.FindByNameAsync(userName);
+
             if (user is User u)
             {
                 timeZoneId = u.As<UserTimeZone>()?.TimeZoneId;
             }
 
-            // We store a special string to remember there is no specific value for this user.
-            // And actual distributed cache implementation might not be able to store null values.
+            // We store a placeholder string to indicate that there is no specific value for this user.
+            // This approach ensures compatibility with distributed cache implementations that may not support null values.
+            // Caching this placeholder helps avoid redundant queries for this user on each request when no time zone is set.
             if (string.IsNullOrEmpty(timeZoneId))
             {
                 timeZoneId = EmptyTimeZone;
@@ -82,7 +84,7 @@ public class UserTimeZoneService : IUserTimeZoneService
             await _distributedCache.SetStringAsync(key, timeZoneId, _slidingExpiration);
         }
 
-        // Do we know this user doesn't have a configured value?
+        // If TimeZoneId matches the placeholder value, we return null instead of the placeholder itself.
         if (timeZoneId == EmptyTimeZone)
         {
             return null;
@@ -91,5 +93,10 @@ public class UserTimeZoneService : IUserTimeZoneService
         return timeZoneId;
     }
 
-    private static string GetCacheKey(string userName) => CacheKey + userName;
+    private Task ForgetCacheAsync(string userName)
+    {
+        var key = UserEventHandler.GetCacheKey(userName);
+
+        return _distributedCache.RemoveAsync(key);
+    }
 }

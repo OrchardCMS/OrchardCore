@@ -6,32 +6,32 @@
 
 The following shapes are rendered when the `MarkdownBodyPart` is attached to a content type:
 
-| Name | Display Type | Default Location | Model Type |
-| ------| ------------ |----------------- | ---------- |
-| `MarkdownBodyPart` | `Detail` | `Content:5` | `MarkdownBodyPartViewModel` |
-| `MarkdownBodyPart` | `Summary` | `Content:10` | `MarkdownBodyPartViewModel` |
+| Name               | Display Type | Default Location | Model Type                  |
+|--------------------|--------------|------------------|-----------------------------|
+| `MarkdownBodyPart` | `Detail`     | `Content:5`      | `MarkdownBodyPartViewModel` |
+| `MarkdownBodyPart` | `Summary`    | `Content:10`     | `MarkdownBodyPartViewModel` |
 
 ### `BodyPartViewModel`
 
 The following properties are available on the `MarkdownBodyPartViewModel` class.
 
-| Property | Type | Description |
-| --------- | ---- |------------ |
-| `Markdown` | `string` | The Markdown value after all tokens have been processed. |
-| `Html` | `string` | The HTML content resulting from the Markdown source. |
-| `ContentItem` | `ContentItem` | The content item of the part. |
-| `MarkdownBodyPart` | `MarkdownBodyPart` | The `MarkdownBodyPart` instance. |
-| `TypePartSettings` | `MarkdownBodyPartSettings` | The settings of the part. |
+| Property           | Type                       | Description                                              |
+|--------------------|----------------------------|----------------------------------------------------------|
+| `Markdown`         | `string`                   | The Markdown value after all tokens have been processed. |
+| `Html`             | `string`                   | The HTML content resulting from the Markdown source.     |
+| `ContentItem`      | `ContentItem`              | The content item of the part.                            |
+| `MarkdownBodyPart` | `MarkdownBodyPart`         | The `MarkdownBodyPart` instance.                         |
+| `TypePartSettings` | `MarkdownBodyPartSettings` | The settings of the part.                                |
 
 ### `MarkdownBodyPart`
 
 The following properties are available on `MarkdownBodyPart`:
 
-| Name | Type | Description |
-| -----| ---- |------------ |
-| `Markdown` | The Markdown content. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `MarkdownBodyPart` shape instead. |
-| `Content` | The raw content of the part. |
-| `ContentItem` | The content item containing this part. |
+| Name          | Type                                                                                                                                                             | Description |
+|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| `Markdown`    | The Markdown content. It can contain Liquid tags so using it directly might result in unexpected results. Prefer rendering the `MarkdownBodyPart` shape instead. |
+| `Content`     | The raw content of the part.                                                                                                                                     |
+| `ContentItem` | The content item containing this part.                                                                                                                           |
 
 ### `MarkdownField`
 
@@ -40,19 +40,19 @@ The shape base class is of type `MarkdownFieldViewModel`.
 
 The following properties are available on the `MarkdownFieldViewModel` class.
 
-| Property | Type | Description |
-| --------- | ---- |------------ |
-| `Markdown` | `string` | The Markdown value once all tokens have been processed. |
-| `Html` | `string` | The HTML content resulting from the Markdown source. |
-| `Field` | `MarkdownField` | The `MarkdownField` instance. |
-| `Part` | `ContentPart` | The part this field is attached to. |
-| `PartFieldDefinition` | `ContentPartFieldDefinition` | The part field definition. |
+| Property              | Type                         | Description                                             |
+|-----------------------|------------------------------|---------------------------------------------------------|
+| `Markdown`            | `string`                     | The Markdown value once all tokens have been processed. |
+| `Html`                | `string`                     | The HTML content resulting from the Markdown source.    |
+| `Field`               | `MarkdownField`              | The `MarkdownField` instance.                           |
+| `Part`                | `ContentPart`                | The part this field is attached to.                     |
+| `PartFieldDefinition` | `ContentPartFieldDefinition` | The part field definition.                              |
 
 ## Sanitization
 
 Markdown output is sanitized during the rendering of content with Display Management.
 
-You can disable this by unchecking the `Sanitize HTML` setting, or further configuring the [HTML Sanitizer](../../core/Sanitizer/README.md)
+You can disable this by unchecking the `Sanitize HTML` setting, or further configuring the [HTML Sanitizer](../Sanitizer/README.md)
 
 When rendering content directly you can disable sanitization by passing a boolean to the helper.
 
@@ -145,37 +145,37 @@ The following configuration values are used by default and can be customized:
 
 The supported extensions described as following:
 
-| Extension | Description |
-| --- | --- |
-| `advanced` | Enable advanced markdown extensions |
-| `pipetables` | Adds a pipe table |
-| `gfm-pipetables` | Adds a pipe table with using header for column count |
-| `hardlinebreak` | Uses the softline break as hardline break |
-| `footnotes` | Allows a footnotes |
-| `footers` | Adds footer block |
-| `citations` | Adds citation |
-| `attributes` |  Allows to attach HTML attributes |
-| `gridtables` | Adds grid table |
-| `abbreviations` | Stores an abbreviation object at the document level |
-| `emojis` | Supports the emojis and smileys |
-| `definitionlists` | Adds a definition list |
-| `customcontainers` | Adds a block custom container |
-| `figures` | Adds figure |
-| `mathematics` | Enable mathematics symbols |
-| `bootstrap` | Enable bootstrap classes |
-| `medialinks` | Extends image Markdown links in case a video or an audio file is linked and output proper link |
-| `smartypants` | Uses the SmartyPants |
-| `autoidentifiers` | Uses the auto-identifier |
-| `tasklists` | Adds the task list |
-| `diagrams` | Allows diagrams |
-| `nofollowlinks` | Add rel=nofollow to all links rendered to HTML |
-| `noopenerlinks` |  |
-| `noreferrerlinks` | Adds rel=nofollow to all links rendered to HTML |
-| `nohtml` | Disables html support |
-| `yaml` | Parses a YAML format into the MarkdownDocument |
-| `nonascii-noescape` | Disables URI escape with % characters for non-US-ASCII characters |
-| `autolinks` | Enable autolinks from text `http://`, `https://`, `ftp://`, `mailto:`, `www.xxx.yyy` |
-| `globalization` | Adds support for right-to-left content by adding appropriate html attribtues |
+| Extension           | Description                                                                                    |
+|---------------------|------------------------------------------------------------------------------------------------|
+| `advanced`          | Enable advanced markdown extensions                                                            |
+| `pipetables`        | Adds a pipe table                                                                              |
+| `gfm-pipetables`    | Adds a pipe table with using header for column count                                           |
+| `hardlinebreak`     | Uses the softline break as hardline break                                                      |
+| `footnotes`         | Allows a footnotes                                                                             |
+| `footers`           | Adds footer block                                                                              |
+| `citations`         | Adds citation                                                                                  |
+| `attributes`        | Allows to attach HTML attributes                                                               |
+| `gridtables`        | Adds grid table                                                                                |
+| `abbreviations`     | Stores an abbreviation object at the document level                                            |
+| `emojis`            | Supports the emojis and smileys                                                                |
+| `definitionlists`   | Adds a definition list                                                                         |
+| `customcontainers`  | Adds a block custom container                                                                  |
+| `figures`           | Adds figure                                                                                    |
+| `mathematics`       | Enable mathematics symbols                                                                     |
+| `bootstrap`         | Enable bootstrap classes                                                                       |
+| `medialinks`        | Extends image Markdown links in case a video or an audio file is linked and output proper link |
+| `smartypants`       | Uses the SmartyPants                                                                           |
+| `autoidentifiers`   | Uses the auto-identifier                                                                       |
+| `tasklists`         | Adds the task list                                                                             |
+| `diagrams`          | Allows diagrams                                                                                |
+| `nofollowlinks`     | Add rel=nofollow to all links rendered to HTML                                                 |
+| `noopenerlinks`     |                                                                                                |
+| `noreferrerlinks`   | Adds rel=nofollow to all links rendered to HTML                                                |
+| `nohtml`            | Disables html support                                                                          |
+| `yaml`              | Parses a YAML format into the MarkdownDocument                                                 |
+| `nonascii-noescape` | Disables URI escape with % characters for non-US-ASCII characters                              |
+| `autolinks`         | Enable autolinks from text `http://`, `https://`, `ftp://`, `mailto:`, `www.xxx.yyy`           |
+| `globalization`     | Adds support for right-to-left content by adding appropriate html attribtues                   |
 
 ## Markdown Pipeline
 

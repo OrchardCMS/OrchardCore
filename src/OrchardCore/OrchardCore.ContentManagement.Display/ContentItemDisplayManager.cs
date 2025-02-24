@@ -20,7 +20,6 @@ namespace OrchardCore.ContentManagement.Display;
 /// </summary>
 public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplayManager
 {
-    private readonly IEnumerable<IContentHandler> _contentHandlers;
     private readonly IEnumerable<IContentDisplayHandler> _handlers;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IShapeFactory _shapeFactory;
@@ -29,7 +28,6 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
 
     public ContentItemDisplayManager(
         IEnumerable<IContentDisplayHandler> handlers,
-        IEnumerable<IContentHandler> contentHandlers,
         IContentDefinitionManager contentDefinitionManager,
         IShapeFactory shapeFactory,
         IEnumerable<IShapePlacementProvider> placementProviders,
@@ -38,7 +36,6 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
         ) : base(shapeFactory, placementProviders)
     {
         _handlers = handlers;
-        _contentHandlers = contentHandlers;
         _contentDefinitionManager = contentDefinitionManager;
         _shapeFactory = shapeFactory;
         _layoutAccessor = layoutAccessor;
@@ -52,7 +49,7 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
         var contentTypeDefinition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType)
             ?? throw new NullReferenceException($"Content Type {contentItem.ContentType} does not exist.");
 
-        var actualDisplayType = string.IsNullOrEmpty(displayType) ? "Detail" : displayType;
+        var actualDisplayType = string.IsNullOrEmpty(displayType) ? OrchardCoreConstants.DisplayType.Detail : displayType;
         var hasStereotype = contentTypeDefinition.TryGetStereotype(out var stereotype);
 
         var actualShapeType = "Content";
@@ -63,7 +60,7 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
         }
 
         // [DisplayType] is only added for the ones different than Detail
-        if (actualDisplayType != "Detail")
+        if (actualDisplayType != OrchardCoreConstants.DisplayType.Detail)
         {
             actualShapeType = actualShapeType + "_" + actualDisplayType;
         }
@@ -77,7 +74,7 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
 
         if (hasStereotype)
         {
-            if (actualDisplayType != "Detail")
+            if (actualDisplayType != OrchardCoreConstants.DisplayType.Detail)
             {
                 // Add fallback/default alternate Stereotype_[DisplayType] e.g. Content.Summary
                 metadata.Alternates.Add($"Stereotype_{actualDisplayType}");
@@ -207,9 +204,7 @@ public class ContentItemDisplayManager : BaseDisplayManager, IContentItemDisplay
 
         var updateContentContext = new UpdateContentContext(contentItem);
 
-        await _contentHandlers.InvokeAsync((handler, updateContentContext) => handler.UpdatingAsync(updateContentContext), updateContentContext, _logger);
         await _handlers.InvokeAsync((handler, contentItem, context) => handler.UpdateEditorAsync(contentItem, context), contentItem, context, _logger);
-        await _contentHandlers.Reverse().InvokeAsync((handler, updateContentContext) => handler.UpdatedAsync(updateContentContext), updateContentContext, _logger);
 
         return context.Shape;
     }

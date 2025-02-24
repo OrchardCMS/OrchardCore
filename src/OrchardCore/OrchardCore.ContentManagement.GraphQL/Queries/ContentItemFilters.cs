@@ -11,13 +11,14 @@ using YesSql;
 
 namespace OrchardCore.ContentManagement.GraphQL.Queries;
 
-public class ContentItemFilters : GraphQLFilter<ContentItem>
+public sealed class ContentItemFilters : GraphQLFilter<ContentItem>
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IAuthorizationService _authorizationService;
 
-    public ContentItemFilters(IHttpContextAccessor httpContextAccessor,
+    public ContentItemFilters(
+        IHttpContextAccessor httpContextAccessor,
         IContentDefinitionManager contentDefinitionManager,
         IAuthorizationService authorizationService)
     {

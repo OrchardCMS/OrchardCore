@@ -43,7 +43,7 @@ public sealed class NodeController : Controller
 
     public async Task<IActionResult> List(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -81,7 +81,7 @@ public sealed class NodeController : Controller
 
     public async Task<IActionResult> Create(string id, string type)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -115,7 +115,7 @@ public sealed class NodeController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(AdminNodeEditViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -156,7 +156,7 @@ public sealed class NodeController : Controller
 
     public async Task<IActionResult> Edit(string id, string treeNodeId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -195,7 +195,7 @@ public sealed class NodeController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(AdminNodeEditViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -238,7 +238,7 @@ public sealed class NodeController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string id, string treeNodeId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -273,7 +273,7 @@ public sealed class NodeController : Controller
     [HttpPost]
     public async Task<IActionResult> Toggle(string id, string treeNodeId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -306,7 +306,7 @@ public sealed class NodeController : Controller
     public async Task<IActionResult> MoveNode(string treeId, string nodeToMoveId,
         string destinationNodeId, int position)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
