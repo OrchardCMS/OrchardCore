@@ -8,9 +8,9 @@ namespace OrchardCore.Users.AuditTrail.Models;
 public class AuditTrailUserEvent
 {
     /// <summary>
-    /// Gets the event name.
+    /// Gets or sets the event name.
     /// </summary>
-    public string Name => "User";
+    public string Name { get; set; } = "User";
 
     /// <summary>
     /// Gets or sets a snapshot of the <see cref="Users.Models.User"/> object, if the event modified it somehow.
