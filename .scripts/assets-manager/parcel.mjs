@@ -107,7 +107,7 @@ function buildParcelOptions(command, assetConfig) {
                     browsers: "> 1%, last 2 versions, not dead",
                 },
                 outputFormat: "global",
-                sourceMap: mode === "development",
+                sourceMap: false, // TODO: mode === "production",
             },
         },
         env: {

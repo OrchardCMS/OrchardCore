@@ -25,14 +25,14 @@
     "action": "parcel",
     "name": "TheAdmin-main",
     "source": "Assets/js/TheAdmin-main/TheAdmin-main.ts",
-    "dest": "wwwroot/js/the-admin-main/",
+    "dest": "wwwroot/js/theadmin-main/",
     "tags": ["theme", "css"]
   },
   {
     "action": "parcel",
     "name": "TheAdmin",
     "source": "Assets/js/TheAdmin/TheAdmin.ts",
-    "dest": "wwwroot/js/the-admin/",
+    "dest": "wwwroot/js/theadmin/",
     "tags": ["theme", "css"]
   }
 ]

@@ -15,12 +15,12 @@ public sealed class ResourceManagementOptionsConfiguration
         _manifest
             .DefineScript("admin")
             .SetDependencies("bootstrap", "admin-main", "theme-manager", "jQuery", "Sortable")
-            .SetUrl("~/TheAdmin/js/the-admin/TheAdmin.js")
+            .SetUrl("~/TheAdmin/js/theadmin/TheAdmin.js")
             .SetVersion("1.0.0");
 
         _manifest
             .DefineScript("admin-main")
-            .SetUrl("~/TheAdmin/js/the-admin-main/TheAdmin-main.js")
+            .SetUrl("~/TheAdmin/js/theadmin-main/TheAdmin-main.js")
             .SetDependencies("theme-head", "js-cookie")
             .SetVersion("1.0.0");
 
