@@ -10,7 +10,7 @@
     "action": "parcel",
     "name": "setup-js",
     "source": "Assets/ts/setup.ts",
-    "dest": "wwwroot/Scripts/",
+    "dest": "wwwroot/Scripts/setup/",
     "tags": ["setup", "js"]
   }
 ]
