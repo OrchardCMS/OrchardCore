@@ -23,10 +23,17 @@
   },
   {
     "action": "parcel",
-    "name": "TheAdmin-main",
+    "name": "TheAdminMain",
     "source": "Assets/js/TheAdmin-main/TheAdmin-main.ts",
     "dest": "wwwroot/js/",
     "tags": ["theme", "css"]
+  },
+  {
+    "action": "min",
+    "name": "TheAdminMain",
+    "source": "wwwroot/js/TheAdmin-main.js",
+    "dest": "wwwroot/js/",
+    "tags": ["admin", "js"]
   },
   {
     "action": "parcel",
@@ -34,5 +41,12 @@
     "source": "Assets/js/TheAdmin/TheAdmin.ts",
     "dest": "wwwroot/js/",
     "tags": ["theme", "css"]
+  },
+  {
+      "action": "min",
+      "name": "TheAdmin",
+      "source": "wwwroot/js/TheAdmin.js",
+      "dest": "wwwroot/js/",
+      "tags": ["admin", "js"]
   }
 ]
