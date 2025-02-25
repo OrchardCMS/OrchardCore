@@ -2201,7 +2201,7 @@ __metadata:
     "@popperjs/core": "npm:2.11.8"
     bootstrap: "npm:5.3.3"
     fontawesome-iconpicker: "npm:3.2.0"
-    vue: "npm:^2.6.14"
+    vue: "npm:2.6.14"
   languageName: unknown
   linkType: soft
 
@@ -2412,7 +2412,7 @@ __metadata:
     blueimp-file-upload: "npm:10.32.0"
     bootstrap: "npm:5.3.3"
     jquery: "npm:3.7.1"
-    vue: "npm:^2.6.14"
+    vue: "npm:2.6.14"
   languageName: unknown
   linkType: soft
 
@@ -16352,6 +16352,13 @@ __metadata:
   bin:
     vue-tsc: ./bin/vue-tsc.js
   checksum: 10/7c72a74a3b090e461da7b04341121efd44c8bf51a5f9c2fc5043b14e1d043c9ece2692a92e419e5240af676f48c58f4490a5424ece311f24b2223cd96b298537
+  languageName: node
+  linkType: hard
+
+"vue@npm:2.6.14":
+  version: 2.6.14
+  resolution: "vue@npm:2.6.14"
+  checksum: 10/382e261c1d995285b1834f093b53d935a537e6afd18a557131890144bcc5b61c87101db70daf8593bd1cdcfad3dcd90a2f4fea35b6ca0cee1e8c6f7f8f88c104
   languageName: node
   linkType: hard
 

@@ -32,6 +32,8 @@ async function runParcel(command, assetConfig) {
         ...options,
     });
 
+    fs.remove(assetConfig.dest); // clean the destination folder
+
     if (isWatching || isHosting) {
         const parcelCacheFolder = options.cacheDir;
         fs.rmSync(parcelCacheFolder, { recursive: true, force: true });
@@ -105,7 +107,7 @@ function buildParcelOptions(command, assetConfig) {
                     browsers: "> 1%, last 2 versions, not dead",
                 },
                 outputFormat: "global",
-                sourceMap: mode === "development",
+                sourceMap: false, // TODO: mode === "production",
             },
         },
         env: {

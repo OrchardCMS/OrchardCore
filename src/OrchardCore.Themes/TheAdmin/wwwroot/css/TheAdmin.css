@@ -8606,6 +8606,10 @@ ul.ui-sortable:not(:has(> li)) {
   font-size: 16px;
 }
 
+.trumbowyg-box .trumbowyg-editor {
+  min-height: 260px;
+}
+
 [dir] .trumbowyg-box,
 [dir] .trumbowyg-dark .trumbowyg-box {
   border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color);
