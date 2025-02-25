@@ -13,7 +13,7 @@
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
 }
 
-<script asp-name="vue-multiselect-userpicker" asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-userpicker.js" at="Foot" depends-on="vuejs:2,vue-multiselect,sortable,vuedraggable"></script>
+<script asp-name="vue-multiselect-userpicker" asp-src="~/OrchardCore.ContentFields/Scripts/vue-multiselect-userpicker.js" at="Foot" depends-on="vuejs:2,vue-multiselect:2,vuedraggable:2,sortable"></script>
 <style asp-name="vue-multiselect" at="Foot"></style>
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.UserIds)_FieldWrapper">
