@@ -94,12 +94,21 @@ glob(config.source).then((files) => {
                             }
                         });
 
-                        fs.copy(file, target)
-                            .then(() => console.log(`Copied (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target)))
-                            .catch((err) => {
-                                console.log(`${chalk.red("Error copying")} (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target), chalk.red(err));
-                                throw err;
-                            });
+                        fs.exists(target).then((exists) => {
+                            if (!exists) {
+                                fs.copy(file, target)
+                                    .then(() => console.log(`Copied (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target)))
+                                    .catch((err) => {
+                                        console.log(
+                                            `${chalk.red("Error copying")} (${chalk.gray("from")}, ${chalk.cyan("to")})`,
+                                            chalk.gray(file),
+                                            chalk.cyan(target),
+                                            chalk.red(err),
+                                        );
+                                        throw err;
+                                    });
+                            }
+                        });
                     } else if (fileInfo.ext === ".css") {
                         let reader = await fs.readFile(file, "utf8");
 

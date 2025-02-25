@@ -9,14 +9,14 @@
     "action": "parcel",
     "name": "themes-theme-manager",
     "source": "Assets/ts/theme-manager.ts",
-    "dest": "wwwroot/Scripts/",
+    "dest": "wwwroot/Scripts/theme-manager/",
     "tags": ["themes", "js"]
   },
   {
     "action": "parcel",
     "name": "themes-theme-head",
     "source": "Assets/ts/theme-head.ts",
-    "dest": "wwwroot/Scripts/",
+    "dest": "wwwroot/Scripts/theme-head/",
     "tags": ["themes", "js"]
   }
 ]
