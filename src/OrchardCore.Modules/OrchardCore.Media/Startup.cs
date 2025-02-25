@@ -21,6 +21,8 @@ using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
+using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Deployment;
 using OrchardCore.Media.Drivers;
@@ -67,7 +69,8 @@ public sealed class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddHttpClient();
-
+        services.AddSingleton<IJSLocalizer, MediaJSLocalizer>();
+        services.AddSingleton<IJSLocalizer, NullJSLocalizer>();
         services.AddSingleton<IAnchorTag, MediaAnchorTag>();
 
         // Resized media and remote media caches cleanups.

@@ -1,45 +1,24 @@
-<script asp-name="media" at="Foot"></script>
-<style asp-name="media" at="Head"></style>
+@using OrchardCore.Localization
+@using OrchardCore.Environment.Shell
+@inject ShellSettings ShellSettings
+@{
+    var jsLocalizations = Orchard.GetJSLocalizations("media-app");
+    var siteId = ShellSettings.TenantId;
+}
 
-<script at="Foot" asp-name="MediaFieldAppInitializer" depends-on="media">
-    initializeMediaApplication(true, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })', '@Context.Request.PathBase.ToString()');
-</script>
-
-<script at="Foot">
-    @* mediaApp is absolutely positioned. When a warning is shown we need to move it down to avoid overlapping. *@
-    $(function () {
-        if (!$('.message').length) { return; };
-        var mediaAppInitialTop = 0;
-        var mediaAppLoaded = false;
-
-        var repositionMediaApp = function () {
-
-            var messagesHeight = 0;
-            $('.message').each(function () {
-                messagesHeight += $(this).outerHeight(true);
-            });
-
-            var newTop = mediaAppInitialTop + messagesHeight;
-
-            $('#mediaApp').css('top', newTop + 'px');
-        }
-
-        $(window).on('resize', function () {
-            if (mediaAppLoaded) {
-                repositionMediaApp();
-            }
-        });
-
-        // before moving we need to wait until the vuejs mediaapp is loaded.
-        var checkMediaAppIsLoaded = setInterval(function () {
-            if ($('#mediaApp').length) {
-                mediaAppInitialTop = $('#mediaApp').offset().top;
-                clearInterval(checkMediaAppIsLoaded);
-                mediaAppLoaded = true;
-                repositionMediaApp();
-            }
-        }, 100);
-    });
-</script>
+<script type="module" asp-name="media" version="2" at="Foot"></script>
+<style asp-name="media" version="2" at="Head"></style>
+<style asp-src="~/OrchardCore.Media/Styles/media2-oc.css"></style>
 
 <h1 style="display:none">@RenderTitleSegments(T["Assets"])</h1>
+
+<div id="media-app">
+    <media-app
+        site-id="@siteId"
+        translations="@Json.Serialize(jsLocalizations).ToString()"
+        base-path="@Href("~")"
+        upload-files-url="@Href("~/api/media/upload")"
+        :max-upload-chunk-size="0"
+    >
+    </media-app>
+</div>

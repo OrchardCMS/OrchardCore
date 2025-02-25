@@ -10,11 +10,33 @@
     "inputs": [
       "../../../node_modules/blueimp-file-upload/js/jquery.fileupload.js",
       "../../../node_modules/blueimp-file-upload/js/jquery.iframe-transport.js",
-      "Assets/js/app/**/*.js"
+      "Assets/js/MediaApp/**/*.js",
+      "Assets/js/MediaField/**/*.js",
+      "Assets/js/Shared/**/*.js"
     ],
     "watch": [
       "Assets/js/app/**/*.js"
     ],
     "output": "wwwroot/Scripts/media.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "Assets/js/vue/media-app/dist/assets/index.js"
+    ],
+    "output": "wwwroot/Scripts/media2.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "Assets/js/vue/media-app/dist/assets/index.css"
+    ],
+    "output": "wwwroot/Styles/media2.css"
+  },
+  {
+    "inputs": [
+      "Assets/scss/media2-oc.scss"
+    ],
+    "output": "wwwroot/Styles/media2-oc.css"
   }
 ]

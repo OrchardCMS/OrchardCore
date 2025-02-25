@@ -1,0 +1,11 @@
+/** 
+Orchard Core specific styles adjustments.
+Add styles to the Media App scss first and adjust here for Orchard Core.
+It needs to display properly in the standalone app first.
+ **/
+
+@media only screen and (min-width: 923px) {
+    #fileContainer {
+        height: calc(100vh - 84px) !important;
+    }
+}

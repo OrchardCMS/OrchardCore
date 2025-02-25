@@ -1,0 +1,31 @@
+.upload-list {
+    margin-bottom: 8px;
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 40px;
+        padding: 10px;
+        background-color: rgba(0,0,0,0.03);
+        border: solid 1px #b9dcff;
+        cursor: pointer;
+        font-size: 0.875rem;
+        color: #666;
+    }
+
+    .toggle-button {
+        padding: 5px;
+    }
+
+    .card-body {
+        border: solid 1px #b9dcff;
+        border-top: none;
+        padding: 0;
+
+        .d-grid {
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 10px;
+        }
+    }
+}

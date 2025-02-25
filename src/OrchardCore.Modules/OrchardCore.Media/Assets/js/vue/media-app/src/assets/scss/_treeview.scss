@@ -1,0 +1,114 @@
+#folder-tree {
+  list-style: none;
+  padding-left: 0;
+  overflow: hidden;
+
+  .treeroot {
+    font-weight: 600;
+    height: 40px;
+    border-bottom: $file-border-content;
+
+    a {
+      font-size: 1rem;
+
+      .folder-actions .btn.btn-sm {
+        font-size: 0.875rem;
+      }
+    }
+
+    .expand {
+      font-size: 0.875rem;
+      padding: 0;
+    }
+
+    // show horizontal-scrollbar to keep it usable even on deeply nested directories
+    + ol {
+      overflow-x: auto;
+    }
+  }
+
+  li.selected > div:not(.treeroot), li.selected > .treeroot {
+    font-weight: bold;
+    background-color: $selected-background-color;
+    border-left: 2px solid var(--topcon-red);
+  }
+
+  .folderhovered {
+    background-color: $selected-background-color;
+  }
+
+  li div {
+    min-height: 40px;
+    padding: 0;
+
+    a {
+      display: block;
+    }
+  }
+
+  div {
+    a {
+      text-decoration: none;
+    }
+  }
+
+  ol {
+    padding-left: 0;
+  }
+
+  .folder {
+    color: lightgray;
+  }
+
+  li {
+    list-style: none;
+  }
+
+  .expand {
+    /* make both icons be in the center as their widths are different */
+    text-align: center;
+    width: 16px;
+    cursor: pointer;
+    font-size: 0.625rem;
+    display: inline-block;
+    padding: 12px 12px 12px 6px;
+  }
+
+  .empty {
+    transform: none;
+    visibility: hidden;
+  }
+
+  .folder-menu-item {
+    display: flex;
+    align-items: center;
+
+    .folder-name {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .folder-actions {
+      align-self: stretch;
+      display: flex;
+      align-items: center;
+      font-size: 0.875rem;
+      margin-right: 10px;
+
+      a.btn {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+}
+/* rtl:ignore */
+#folder-tree {
+  .opened {
+    svg {
+      transform: rotate(90deg);
+      -webkit-transform: rotate(90deg);
+    }
+  }
+}

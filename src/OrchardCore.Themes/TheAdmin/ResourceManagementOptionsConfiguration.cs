@@ -18,6 +18,7 @@ public sealed class ResourceManagementOptionsConfiguration
             .SetUrl("~/TheAdmin/js/TheAdmin.js")
             .SetVersion("1.0.0");
 
+                
         _manifest
             .DefineScript("admin-main")
             .SetUrl("~/TheAdmin/js/TheAdmin-main.js")

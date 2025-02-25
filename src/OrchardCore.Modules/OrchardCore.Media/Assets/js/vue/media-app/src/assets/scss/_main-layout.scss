@@ -1,0 +1,121 @@
+.fileApp {
+    //position: absolute;
+    //top: 52px;
+    //bottom: 0;
+    //right: 0;
+    //left: 259px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+    width: 100%;
+    color: #000;
+    box-shadow: 0 3px 6px #00000029;
+
+    ::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #495057;
+    }
+
+    #fileContainer {
+        border: $file-border-content;
+        display: flex;
+        flex-direction: column; // on small screen #navigationApp and #fileContainerstacked
+
+        height: 100%;
+        width: 100%;
+        align-items: stretch;
+
+        #navigationApp {
+            flex-shrink: 0;
+        }
+
+        #fileContainerMain {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+
+            .file-container-middle {
+                flex-grow: 1;
+                flex-shrink: 0;
+
+                .p-message .p-message-text {
+                    margin-left: unset !important;
+                }
+            }
+
+            .file-container-footer {
+                border-top: $file-border-content;
+            }
+        }
+    }
+    // on large screen they are side by side
+    @media only screen and (min-width: 923px) {
+        #fileContainer {
+            flex-direction: row;
+            height: calc(100vh - 64px);
+
+            #fileContainerMain {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+
+                .file-container-middle {
+                    flex-shrink: 1;
+                    overflow: auto;
+                    scrollbar-width: thin;
+                    scrollbar-color: #495057 #eaeaea;
+                }
+            }
+        }
+        // we don't want left navigation 100% tall when on stacked over the thumbs list
+        #navigationApp {
+            min-width: 240px;
+            border-right: $file-border-content;
+            overflow: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #495057 #eaeaea;
+        }
+    }
+
+    .alert-info {
+        font-size: 0.875rem;
+    }
+
+    .message-warning {
+        width: 100%;
+        display: flex;
+        padding: 20px;
+        margin-bottom: 15px;
+
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+    }
+
+    a.disabled {
+        cursor: default;
+    }
+}
+
+.left-sidebar-compact #fileApp {
+    left: 48px;
+}
+
+.no-breadcrumb-divider {
+    &::before {
+        content: none !important;
+    }
+}
+.breadcrumb-item + .breadcrumb-item {
+    padding-left: 2px;
+
+    &:before {
+        padding-right: 2px;
+    }
+}

@@ -1,0 +1,43 @@
+// main bs components
+@import "../../../node_modules/bootstrap/scss/functions";
+@import "../../../node_modules/bootstrap/scss/variables";
+@import "../../../node_modules/bootstrap/scss/variables-dark";
+@import "../../../node_modules/bootstrap/scss/maps";
+@import "../../../node_modules/bootstrap/scss/mixins";
+@import "../../../node_modules/bootstrap/scss/root";
+@import "../../../node_modules/bootstrap/scss/utilities";
+@import "../../../node_modules/bootstrap/scss/reboot";
+
+// specific components
+@import "../../../node_modules/bootstrap/scss/buttons";
+@import "../../../node_modules/bootstrap/scss/button-group";
+@import "../../../node_modules/bootstrap/scss/nav";
+@import "../../../node_modules/bootstrap/scss/pagination";
+@import "../../../node_modules/bootstrap/scss/tables";
+@import "../../../node_modules/bootstrap/scss/forms";
+@import "../../../node_modules/bootstrap/scss/breadcrumb";
+@import "../../../node_modules/bootstrap/scss/alert";
+
+// needs to be imported last
+@import "../../../node_modules/bootstrap/scss/utilities/api";
+
+// file variables
+@import "./variables";
+
+// main basic layout
+@import "./main-layout";
+
+// vuejs components
+@import "./upload-component";
+@import "./upload-list-component";
+@import "./file-items-grid-component";
+@import "./file-items-table-component";
+@import "./pager-component";
+@import "./modals";
+
+// others
+@import "./navbar";
+@import "./treeview";
+@import "./drop-zone";
+@import "./modal-view";
+@import "./utils";

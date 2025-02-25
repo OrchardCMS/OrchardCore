@@ -20,8 +20,7 @@ public sealed class PermissionProvider : IPermissionProvider
         MediaPermissions.ManageOwnMedia,
     ];
 
-    public Task<IEnumerable<Permission>> GetPermissionsAsync()
-        => Task.FromResult(_allPermissions);
+    public Task<IEnumerable<Permission>> GetPermissionsAsync() => Task.FromResult(_allPermissions);
 
     public IEnumerable<PermissionStereotype> GetDefaultStereotypes() =>
     [

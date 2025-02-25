@@ -1,0 +1,123 @@
+.vfm--fixed {
+  position: fixed;
+}
+.vfm--absolute {
+  position: absolute;
+}
+.vfm--inset {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.vfm--overlay {
+  z-index: -1;
+  background-color: #00000080;
+}
+.vfm--prevent-none {
+  pointer-events: none;
+}
+.vfm--prevent-auto {
+  pointer-events: auto;
+}
+.vfm--outline-none:focus {
+  outline: none;
+}
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+.vfm-fade-enter-active {
+  animation: fade-in 0.3s ease;
+}
+.vfm-fade-leave-active {
+  animation: fade-out 0.3s ease;
+}
+.vfm-bounce-back {
+  transition-property: transform;
+  transition-duration: 0.3s;
+}
+.vfm-slide-up-enter-active,
+.vfm-slide-up-leave-active,
+.vfm-slide-down-enter-active,
+.vfm-slide-down-leave-active {
+  transition: transform 0.3s ease;
+}
+.vfm-slide-down-enter-from,
+.vfm-slide-down-leave-to {
+  transform: translateY(100vh) !important;
+}
+.vfm-slide-up-enter-from,
+.vfm-slide-up-leave-to {
+  transform: translateY(-100vh) !important;
+}
+.vfm-slide-right-enter-active,
+.vfm-slide-right-leave-active,
+.vfm-slide-left-enter-active,
+.vfm-slide-left-leave-active {
+  transition: transform 0.3s ease;
+}
+.vfm-slide-right-enter-from,
+.vfm-slide-right-leave-to {
+  transform: translate(100vw) !important;
+}
+.vfm-slide-left-enter-from,
+.vfm-slide-left-leave-to {
+  transform: translate(-100vw) !important;
+}
+.vfm-swipe-banner-back,
+.vfm-swipe-banner-forward {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 27px;
+  z-index: 10;
+}
+.vfm-swipe-banner-back {
+  left: 0;
+}
+.vfm-swipe-banner-forward {
+  right: 0;
+}
+
+// Customizations
+.vfm {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .vfm__content {
+    &.bg-white {
+      background: #fff !important;
+      color: #000;
+    }
+
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 0.3rem;
+    width: 50vw;
+  }
+
+  .modal__title {
+    margin: 0 2rem 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+}
+
+@media only screen and (max-width: 992px) {
+  .action-modal {
+    width: 95vw !important;
+  }
+}

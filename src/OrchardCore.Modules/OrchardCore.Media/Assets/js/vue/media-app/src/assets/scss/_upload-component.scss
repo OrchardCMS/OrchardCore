@@ -1,0 +1,30 @@
+.upload {
+    background-color: rgba(0,0,0,0.05);
+    border-radius: 2px;
+    border: 1px solid #b9dcff;
+    font-size: 0.875rem;
+    user-select: none;
+    min-width: 300px;
+    flex-grow: 1;
+
+    .close-warning {
+        display: block;
+        float: right;
+        margin-right: -8px;
+        cursor: pointer;
+        padding: 2px 8px;
+    }
+
+    .progress-bar {
+        display: block;
+        margin-top: 15px;
+        height: 3px;
+        background-color: #007bff;
+    }
+}
+
+.upload-warning {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #856404;
+}
