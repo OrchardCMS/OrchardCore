@@ -24,57 +24,57 @@ public class LocalizationManagerTests
         _memoryCache = new MemoryCache(new MemoryCacheOptions());
     }
 
-    [Fact]
-    public void GetDictionaryReturnsDictionaryWithPluralRuleAndCultureIfNoTranslationsExists()
-    {
-        _translationProvider.Setup(o => o.LoadTranslations(
-            It.Is<string>(culture => culture == "cs"),
-            It.IsAny<CultureDictionary>())
-        );
+        [Fact]
+        public async Task GetDictionaryReturnsDictionaryWithPluralRuleAndCultureIfNoTranslationsExists()
+        {
+            _translationProvider.Setup(o => o.LoadTranslationsAsync(
+                It.Is<string>(culture => culture == "cs"),
+                It.IsAny<CultureDictionary>())
+            );
 
         var manager = new LocalizationManager(new[] { _pluralRuleProvider.Object }, new[] { _translationProvider.Object }, _memoryCache);
 
-        var dictionary = manager.GetDictionary(CultureInfo.GetCultureInfo("cs"));
+            var dictionary = await manager.GetDictionaryAsync(CultureInfo.GetCultureInfo("cs"));
 
         Assert.Equal("cs", dictionary.CultureName);
         Assert.Equal(PluralizationRule.Czech, dictionary.PluralRule);
     }
 
-    [Fact]
-    public void GetDictionaryReturnsDictionaryWithTranslationsFromProvider()
-    {
-        var dictionaryRecord = new CultureDictionaryRecord("ball", "míč", "míče", "míčů");
-        _translationProvider
-            .Setup(o => o.LoadTranslations(It.Is<string>(culture => culture == "cs"), It.IsAny<CultureDictionary>()))
-            .Callback<string, CultureDictionary>((culture, dictioanry) => dictioanry.MergeTranslations(new[] { dictionaryRecord }));
+        [Fact]
+        public async Task GetDictionaryReturnsDictionaryWithTranslationsFromProvider()
+        {
+            var dictionaryRecord = new CultureDictionaryRecord("ball", "míč", "míče", "míčů");
+            _translationProvider
+                .Setup(o => o.LoadTranslationsAsync(It.Is<string>(culture => culture == "cs"), It.IsAny<CultureDictionary>()))
+                .Callback<string, CultureDictionary>((culture, dictioanry) => dictioanry.MergeTranslations(new[] { dictionaryRecord }));
 
         var manager = new LocalizationManager([_pluralRuleProvider.Object], [_translationProvider.Object], _memoryCache);
 
-        var dictionary = manager.GetDictionary(CultureInfo.GetCultureInfo("cs"));
-        var key = new CultureDictionaryRecordKey { MessageId = "ball" };
+            var dictionary = await manager.GetDictionaryAsync(CultureInfo.GetCultureInfo("cs"));
+            var key = new CultureDictionaryRecordKey { MessageId = "ball" };
 
         dictionary.Translations.TryGetValue(key, out var translations);
 
         Assert.Equal(translations, dictionaryRecord.Translations);
     }
 
-    [Fact]
-    public void GetDictionarySelectsPluralRuleFromProviderWithHigherPriority()
-    {
-        PluralizationRuleDelegate csPluralRuleOverride = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 0);
+        [Fact]
+        public async Task GetDictionarySelectsPluralRuleFromProviderWithHigherPriority()
+        {
+            PluralizationRuleDelegate csPluralRuleOverride = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 0);
 
         var highPriorityRuleProvider = new Mock<IPluralRuleProvider>();
         highPriorityRuleProvider.SetupGet(o => o.Order).Returns(-1);
         highPriorityRuleProvider.Setup(o => o.TryGetRule(It.Is<CultureInfo>(culture => culture.Name == "cs"), out csPluralRuleOverride)).Returns(true);
 
-        _translationProvider.Setup(o => o.LoadTranslations(
-            It.Is<string>(culture => culture == "cs"),
-            It.IsAny<CultureDictionary>())
-        );
+            _translationProvider.Setup(o => o.LoadTranslationsAsync(
+                It.Is<string>(culture => culture == "cs"),
+                It.IsAny<CultureDictionary>())
+            );
 
         var manager = new LocalizationManager([_pluralRuleProvider.Object, highPriorityRuleProvider.Object], [_translationProvider.Object], _memoryCache);
 
-        var dictionary = manager.GetDictionary(CultureInfo.GetCultureInfo("cs"));
+            var dictionary = await manager.GetDictionaryAsync(CultureInfo.GetCultureInfo("cs"));
 
         Assert.Equal(dictionary.PluralRule, csPluralRuleOverride);
     }
