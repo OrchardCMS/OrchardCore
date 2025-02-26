@@ -1,0 +1,48 @@
+#file-pager {   
+    display: flex;
+    justify-content: center;
+
+    .pagination {
+        display: flex;
+        padding-left: 0;
+        list-style: none;
+        margin: 0px;
+    }
+
+    .page-number {
+        // set all numeric page links the same width (9 -> 10) to keep the "next" button in the same position.
+        min-width: 34px;
+        text-align: center;
+    }
+
+    .page-size-info, .page-info, .total-info {
+        white-space: nowrap;
+        user-select: none;
+
+        span:hover {
+            background-color: inherit;
+        }
+    }
+
+    .page-link{
+        outline: none !important;
+        &:focus {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+    }
+}
+
+@media only screen and ( max-width: 576px ) {
+    #file-pager {
+        .file-last-button, .file-first-button, .total-info, .page-size-label  {
+            display: none;
+        }
+    }
+}
+
+@media only screen and ( max-width: 1200px ) {
+    #file-pager .page-number {
+        display: none;
+    }
+}
