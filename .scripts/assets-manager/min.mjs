@@ -99,12 +99,7 @@ glob(config.source).then((files) => {
                         fs.outputFile(target, sourceFile + "\n")
                             .then(() => console.log(`Copied (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target)))
                             .catch((err) => {
-                                console.log(
-                                    `${chalk.red("Error copying")} (${chalk.gray("from")}, ${chalk.cyan("to")})`,
-                                    chalk.gray(file),
-                                    chalk.cyan(target),
-                                    chalk.red(err),
-                                );
+                                console.log(`${chalk.red("Error copying")} (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target), chalk.red(err));
                                 throw err;
                             });
                     } else if (fileInfo.ext === ".css") {
