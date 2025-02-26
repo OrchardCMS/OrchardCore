@@ -6,7 +6,7 @@ Based on [Concurrently](https://github.com/open-cli-tools/concurrently) the Orch
 
 Old assets are not compiled as ES6 modules so they don't need these bundlers. For that matter we kept the old `gulpfile.js` which will be now triggered by `Concurrently` when doing `yarn build -gr`.
 
-Concurrently uses an `Assets.json` file that defines actions to execute. The old Gulp pipline uses a `GulpAssets.json` file that defines actions to execute.
+Concurrently uses an `Assets.json` file that defines actions to execute. The old Gulp pipeline uses a `GulpAssets.json` file that defines actions to execute.
 
 Parcel is the easiest way to build assets so far as it doesn't require any configuration. It is a zero file configuration bundler which means we use the same configuration for all assets. It is the recommended builder for those who want to easily start with a bundler. Though, Vite is more suited for Vue apps.
 
@@ -171,7 +171,7 @@ Done. Now run:
 
 Now you could execute the commands that are suggested. It will start the Vite dev server with HMR feature. Though what we want is to execute the server by using the asset manager tool. We will need an Assets.json file for that matter.
 
-Create an Assets.json file at the root of your new module. For example: "src/OrchardCore.Modules/PathToYourModule/Assets.json". This file should contains these settings:
+Create an Assets.json file at the root of your new module. For example: "src/OrchardCore.Modules/PathToYourModule/Assets.json". This file should contain these settings:
 
 ```json
 [
@@ -188,7 +188,7 @@ This `Assets.json` file will instruct the asset manager tool to execute the Vite
 
 Here is an example of a configuration file that the asset bundler will be able to work with in the context of a Vue app. Notice that we are using `path.resolve()` so that this configuration file always returns the appropriate relative path to the asset bundler. Also, it is required that you set an `outDir` so that the assets be compiled to that directory.
 
-For more details; these configurations are well documented on Rollup.js and Vite.js websites.
+For more details, these configurations are well documented on Rollup.js and Vite.js websites.
 
 ```javascript
 import { defineConfig } from 'vite'
@@ -232,7 +232,6 @@ Or simply build that Vite app:
 ```cmd
 yarn build -n my-vue-app
 ```
-
 
 ### Webpack
 
@@ -329,7 +328,6 @@ The destination should always be a folder as we do not support renaming files.
 
 You can use the dry-run task to log to the console where the files will be copied to.
 
-
 ### Sass
 
 Allows to transpile scss files.
@@ -373,7 +371,7 @@ export function parcel(type, group) {
 }
 ```
 
-Here is an example for vite:
+Here is an example for Vite:
 
 ```javascript
 import vue from "@vitejs/plugin-vue";
@@ -440,7 +438,7 @@ resolve: {
 },
 ```
 
-Also, now when adding a `<script>` tag to the HTML you will need to use:
+Also, now when adding a `<script>` tag to the HTML, you will need to use:
 
 ```html
 <script type="module" src="somepath"></script>
