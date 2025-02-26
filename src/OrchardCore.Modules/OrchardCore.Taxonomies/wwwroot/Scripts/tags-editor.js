@@ -101,3 +101,4 @@ function initializeTagsEditor(element) {
         return vm;
     }
 }
+

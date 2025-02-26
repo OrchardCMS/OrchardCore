@@ -353,7 +353,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   wordDiff.tokenize = function (value) {
     // All whitespace symbols except newline group into one token, each newline - in separate token
-    var tokens = value.split(/([^\S\r\n]+|[()[\]{}'"\r\n]|\b)/); // Join the boundary splits that we do not consider to be boundaries. This is primarily the extended Latin character set.
+    var tokens = value.split(/([^\S\n]+|[()[\]{}'"\n]|\b)/); // Join the boundary splits that we do not consider to be boundaries. This is primarily the extended Latin character set.
 
     for (var i = 0; i < tokens.length - 1; i++) {
       // If we have an empty string in the next field and we have only word chars before and after, merge
@@ -381,7 +381,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   lineDiff.tokenize = function (value) {
     var retLines = [],
-        linesAndNewlines = value.split(/(\n|\r\n)/); // Ignore the final empty token that occurs if the string ends with a new line
+        linesAndNewlines = value.split(/(\n|\n)/); // Ignore the final empty token that occurs if the string ends with a new line
 
     if (!linesAndNewlines[linesAndNewlines.length - 1]) {
       linesAndNewlines.pop();
@@ -502,7 +502,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   };
 
   jsonDiff.equals = function (left, right) {
-    return Diff.prototype.equals.call(jsonDiff, left.replace(/,([\r\n])/g, '$1'), right.replace(/,([\r\n])/g, '$1'));
+    return Diff.prototype.equals.call(jsonDiff, left.replace(/,([\n])/g, '$1'), right.replace(/,([\n])/g, '$1'));
   };
 
   function diffJson(oldObj, newObj, options) {
@@ -593,8 +593,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   function parsePatch(uniDiff) {
     var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var diffstr = uniDiff.split(/\r\n|[\n\v\f\r\x85]/),
-        delimiters = uniDiff.match(/\r\n|[\n\v\f\r\x85]/g) || [],
+    var diffstr = uniDiff.split(/\n|[\n\v\f\n\x85]/),
+        delimiters = uniDiff.match(/\n|[\n\v\f\n\x85]/g) || [],
         list = [],
         i = 0;
 
@@ -806,8 +806,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     } // Apply the diff to the input
 
 
-    var lines = source.split(/\r\n|[\n\v\f\r\x85]/),
-        delimiters = source.match(/\r\n|[\n\v\f\r\x85]/g) || [],
+    var lines = source.split(/\n|[\n\v\f\n\x85]/),
+        delimiters = source.match(/\n|[\n\v\f\n\x85]/g) || [],
         hunks = uniDiff.hunks,
         compareLine = options.compareLine || function (lineNumber, line, operation, patchContent) {
       return line === patchContent;
@@ -1625,3 +1625,4 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
+

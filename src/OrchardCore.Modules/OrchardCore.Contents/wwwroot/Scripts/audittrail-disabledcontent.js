@@ -8,3 +8,4 @@ $(function () {
         $('.disabledContent__wrapper textarea').prop('disabled', true);
     });
 });
+

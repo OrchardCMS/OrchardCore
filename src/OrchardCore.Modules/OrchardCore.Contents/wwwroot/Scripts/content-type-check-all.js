@@ -28,3 +28,4 @@ document.addEventListener('DOMContentLoaded', function (event) {
         updateMaster();
     });
 });
+

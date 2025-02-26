@@ -12742,12 +12742,12 @@
         update: function () {
             if (typeof this.label === "function") {
                 var lt = this.label(this);
-                this.getElement().innerHTML = lt.replace(/\r\n/g, "<br/>");
+                this.getElement().innerHTML = lt.replace(/\n/g, "<br/>");
             }
             else {
                 if (this.labelText == null) {
                     this.labelText = this.label;
-                    this.getElement().innerHTML = this.labelText.replace(/\r\n/g, "<br/>");
+                    this.getElement().innerHTML = this.labelText.replace(/\n/g, "<br/>");
                 }
             }
         },
@@ -16169,3 +16169,4 @@
     ready(_jp.init);
 
 }).call(typeof window !== 'undefined' ? window : this);
+

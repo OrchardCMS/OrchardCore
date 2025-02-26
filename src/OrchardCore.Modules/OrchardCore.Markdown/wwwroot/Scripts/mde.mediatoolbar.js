@@ -157,3 +157,4 @@ function initializeMdeShortcodeWrapper(mde) {
 
     $(toolbar).wrap('<div class="shortcode-modal-wrapper"></div>');
 }
+

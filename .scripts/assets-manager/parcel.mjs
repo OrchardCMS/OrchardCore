@@ -220,9 +220,7 @@ const normalizeSourceMap = async (assetConfig) => {
     }
 }
 
-// run the process
 await runParcel(action, config);
-
 await createProdJsFile(config);
 await normalizeSourceMap(config);
 

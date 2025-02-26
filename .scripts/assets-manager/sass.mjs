@@ -21,6 +21,13 @@ if (config.dryRun) {
 
 const isWatching = action === "watch";
 
+/**
+ * Recursively resolves all the @import statements in a given file.
+ * @param {string} filePath - The path to the SCSS file.
+ * @param {string} fileContent - The content of the SCSS file.
+ * @param {Set<string>} [resolvedFiles] - The set of resolved files.
+ * @returns {Set<string>} The set of resolved files.
+ */
 const resolveImports = (filePath, fileContent, resolvedFiles = new Set()) => {
     const importRegex = /@import\s+['"](.+?)['"]/g;
     let match;
@@ -75,6 +82,24 @@ if (isWatching) {
 } else {
     runSass(config);
 }
+
+/**
+ * Transpiles SCSS files to CSS, including optional RTL transformation and minification.
+ * 
+ * @param {Object} config - Configuration object for the Sass transpilation process.
+ * @param {string} config.source - Glob pattern or path to the source SCSS files.
+ * @param {string} [config.dest] - Destination directory for the output CSS files. Defaults to a path derived from config.basePath.
+ * @param {boolean} [config.dryRun] - If true, performs a dry run without writing files.
+ * @param {boolean} [config.generateRTL] - If true, generates RTL-compatible CSS using postcss-rtlcss.
+ * 
+ * The function processes SCSS files by:
+ * - Resolving the source files matching the given glob pattern.
+ * - Checking if the destination directory exists and is valid.
+ * - Transpiling SCSS to CSS, optionally generating source maps.
+ * - Generating RTL CSS if specified.
+ * - Minifying the resulting CSS.
+ * - Logging the progress and results to the console.
+ */
 
 function runSass(config) {
     glob(config.source).then((files) => {

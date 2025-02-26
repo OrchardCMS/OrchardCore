@@ -141,3 +141,4 @@ function initializeCodeMirrorShortcodeWrapper(editor) {
         });   
     });  
 }
+

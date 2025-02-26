@@ -72,3 +72,4 @@ function initializeParametersEditor(elem, data, modalBodyElement) {
 function IsNullOrWhiteSpace(str) {
     return str === null || str.match(/^ *$/) !== null;
 }
+

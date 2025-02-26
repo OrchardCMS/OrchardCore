@@ -83,6 +83,7 @@ glob(config.source).then((files) => {
                             sourceMap: mode === "production",
                         }).then((output) => {
                             const minifiedTarget = path.join(dest, path.parse(target).name + ".min.js");
+
                             fs.outputFile(minifiedTarget, output.code);
                             console.log(`Minified (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(minifiedTarget));
 
@@ -94,21 +95,18 @@ glob(config.source).then((files) => {
                             }
                         });
 
-                        fs.exists(target).then((exists) => {
-                            if (!exists) {
-                                fs.copy(file, target)
-                                    .then(() => console.log(`Copied (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target)))
-                                    .catch((err) => {
-                                        console.log(
-                                            `${chalk.red("Error copying")} (${chalk.gray("from")}, ${chalk.cyan("to")})`,
-                                            chalk.gray(file),
-                                            chalk.cyan(target),
-                                            chalk.red(err),
-                                        );
-                                        throw err;
-                                    });
-                            }
-                        });
+                        const sourceFile = reader.toString().replace(/(?:\\[rn])+/g, "\\n");
+                        fs.outputFile(target, sourceFile + "\n")
+                            .then(() => console.log(`Copied (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target)))
+                            .catch((err) => {
+                                console.log(
+                                    `${chalk.red("Error copying")} (${chalk.gray("from")}, ${chalk.cyan("to")})`,
+                                    chalk.gray(file),
+                                    chalk.cyan(target),
+                                    chalk.red(err),
+                                );
+                                throw err;
+                            });
                     } else if (fileInfo.ext === ".css") {
                         let reader = await fs.readFile(file, "utf8");
 

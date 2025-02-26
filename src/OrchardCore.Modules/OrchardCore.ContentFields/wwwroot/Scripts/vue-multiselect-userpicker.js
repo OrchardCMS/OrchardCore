@@ -117,3 +117,4 @@ function initVueMultiselectUserPicker(element) {
         document.querySelector("body").dispatchEvent(event);
     }
 }
+

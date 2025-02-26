@@ -71,3 +71,4 @@ function initializeShortcodesTemplateEditor(categoriesElement, contentElement, u
         return vm;
     }
 }
+

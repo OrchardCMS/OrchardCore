@@ -29,3 +29,4 @@ function initMultiTextFieldPicker(element) {
         document.querySelector("body").dispatchEvent(event);
     }
 }
+

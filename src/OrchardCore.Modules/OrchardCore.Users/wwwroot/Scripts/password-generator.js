@@ -62,3 +62,4 @@ passwordManager = function () {
         copyPassword: copyPassword
     };
 }();
+
