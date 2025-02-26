@@ -1,0 +1,1 @@
+{"version":3,"sourceRoot":null,"mappings":"AAAA,+BAGA","sources":[""],"sourcesContent":[".theme-card {\n  margin-bottom: 15px;\n}\n.theme-card .card-theme-thumbnail {\n  height: 200px;\n  background-color: #f8f9fa;\n  background-size: cover;\n  border-top: 1px solid #f8f9fa;\n  border-bottom: 1px solid #f8f9fa;\n}"],"names":[]}

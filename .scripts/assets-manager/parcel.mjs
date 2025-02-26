@@ -66,7 +66,7 @@ async function runParcel(command, assetConfig) {
             console.log(err.diagnostics);
             process.exit(1);
         }
-        process.exit(0);
+        //process.exit(0);
     }
 }
 
@@ -107,7 +107,7 @@ function buildParcelOptions(command, assetConfig) {
                     browsers: "> 1%, last 2 versions, not dead",
                 },
                 outputFormat: "global",
-                sourceMap: false, // TODO: mode === "production",
+                sourceMap: mode === "production",
             },
         },
         env: {
@@ -124,8 +124,41 @@ function buildParcelOptions(command, assetConfig) {
     return _.merge(defaultOptions, buildConfig("parcel")(action, assetConfig, defaultOptions), assetConfig.options);
 }
 
+const createProdJsFile = async (assetConfig) => {
+    const files = await fs.readdir(assetConfig.dest);
+    
+    for (const file of files) {
+        const filePath = path.join(assetConfig.dest, file);
+        const stats = await fs.stat(filePath);
+
+        if (stats.isFile()) {
+           
+            const jsFile = filePath;
+
+            if (path.extname(jsFile) === ".js") {
+                const fileContent = await fs.readFile(filePath, "utf8");
+                const lines = fileContent.split(/\r?\n/);
+
+                lines.forEach((line, index) => {
+                    if (line.startsWith("//# sourceMappingURL=")) {
+                        lines.splice(index, 1);
+                    }
+                });
+
+                const newContent = lines.join("\n");
+                const prodFilePath = filePath.replace(/\.js$/, ".prod.js");
+                await fs.writeFile(prodFilePath, newContent);
+            }
+        }
+    }
+
+    process.exit(0);
+}
+
 // run the process
 await runParcel(action, config);
+
+await createProdJsFile(config);
 
 function hashCode(str) {
     let hash = 0,

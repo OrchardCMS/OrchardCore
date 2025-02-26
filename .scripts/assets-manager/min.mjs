@@ -80,13 +80,13 @@ glob(config.source).then((files) => {
 
                         swc.minify(reader, {
                             compress: true,
-                            sourceMap: mode === "development",
+                            sourceMap: mode === "production",
                         }).then((output) => {
                             const minifiedTarget = path.join(dest, path.parse(target).name + ".min.js");
                             fs.outputFile(minifiedTarget, output.code);
                             console.log(`Minified (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(minifiedTarget));
 
-                            if (mode === "development" && output.map) {
+                            if (mode === "production" && output.map) {
                                 const mappedTarget = path.join(dest, path.parse(target).name + ".map");
                                 const normalized = output.map.replace(/(?:\\[rn])+/g, "\\n");
                                 fs.outputFile(mappedTarget, normalized + "\n");
@@ -141,7 +141,7 @@ glob(config.source).then((files) => {
                         let { code, map } = transform({
                             code: Buffer.from(reader),
                             minify: true,
-                            sourceMap: mode === "development",
+                            sourceMap: mode === "production",
                         });
 
                         if (code) {
@@ -150,7 +150,7 @@ glob(config.source).then((files) => {
                             console.log(`Minified (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(minifiedTarget));
                         }
 
-                        if (mode === "development" && map) {
+                        if (mode === "production" && map) {
                             const mappedTarget = path.join(dest, path.parse(target).name + ".map");
                             const normalized = map.toString().replace(/(?:\\[rn])+/g, "\\n");
                             await fs.outputFile(mappedTarget, normalized + "\n");

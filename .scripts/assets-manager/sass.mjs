@@ -123,15 +123,15 @@ function runSass(config) {
 
                         if (fileInfo.ext === ".scss") {
                             const scssResult = await sass.compileAsync(file, {
-                                sourceMap: mode === "development",
+                                sourceMap: mode === "production",
                                 sourceMapIncludeSources: false,
                             });
 
-                            if (mode === "development" && scssResult.sourceMap) {
+/*                             if (mode === "production" && scssResult.sourceMap) {
                                 const mappedTarget = path.join(dest, path.parse(target).name + ".scss.map");
                                 fs.outputFile(mappedTarget, JSON5.stringify(scssResult.sourceMap));
                                 console.log(`Mapped (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(mappedTarget));
-                            }
+                            } */
 
                             if (scssResult.css) {
                                 const normalTarget = path.join(dest, path.parse(target).name + ".css");
@@ -162,7 +162,7 @@ function runSass(config) {
                                     console.log(`Minified (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(normalTarget), chalk.cyan(minifiedTarget));
                                 }
 
-                                if (mode === "development" && map) {
+                                if (mode === "production" && map) {
                                     const mappedTarget = path.join(dest, path.parse(target).name + ".css.map");
                                     fs.outputFile(mappedTarget, map);
                                     console.log(`Mapped (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(normalTarget), chalk.cyan(mappedTarget));
