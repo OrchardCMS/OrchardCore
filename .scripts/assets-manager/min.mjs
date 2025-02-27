@@ -78,7 +78,7 @@ glob(config.source).then((files) => {
                     if (fileInfo.ext === ".js") {
                         let reader = await fs.readFile(file, "utf8");
 
-                        await swc.minify(reader, {
+                        await swc.minify(reader.replace(/(\r?\n|\r)/gm, "\n"), {
                             compress: true,
                             sourceMap: mode === "production",
                         }).then((output) => {
