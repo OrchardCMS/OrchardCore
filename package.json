@@ -19,6 +19,7 @@
   "workspaces": [
     ".scripts/assets-manager",
     ".scripts/bloom",
+    ".scripts/po-translator",
     "src/Frontend/",
     "src/OrchardCore.Modules/*/Assets/**",
     "src/OrchardCore.Themes/*/Assets/**"

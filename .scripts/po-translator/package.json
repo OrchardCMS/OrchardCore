@@ -1,0 +1,30 @@
+{
+    "name": "@orchard-core/po-gtranslator",
+    "version": "1.0.0",
+    "description": "A package for translating PO files using Google Translate API",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/GreenTreeLabs/po-gtranslator.git"
+    },
+    "keywords": [
+        "po",
+        "translations"
+    ],
+    "author": "Diego Imbriani - GreenTreeLabs",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/GreenTreeLabs/po-gtranslator/issues"
+    },
+    "homepage": "https://github.com/GreenTreeLabs/po-gtranslator#readme",
+    "dependencies": {
+        "@google-cloud/translate": "^8.0.2",
+        "colors": "^1.4.0",
+        "gettext-parser": "^7.0.1",
+        "sleep": "^6.3.0",
+        "yargs": "^13.2.4"
+    }
+}
