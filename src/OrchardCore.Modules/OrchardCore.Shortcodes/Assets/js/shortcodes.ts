@@ -51,19 +51,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 })
 
-var shortcodesApp;
+let shortcodesApp;
 
-function initializeShortcodesApp(element) {
+const initializeShortcodesApp = (element) => {
     if (element && !shortcodesApp) {
-        var elementId = element.id;
+        let elementId = element.id;
+        let shortcodes = JSON.parse(element.dataset.shortcodes || "[]");
+        let categories = JSON.parse(element.dataset.categories || "[]");
 
         shortcodesApp = new Vue({
             el: '#' + elementId,
             data : function () {
-                
-                var shortcodes = JSON.parse(element.dataset.shortcodes || "[]");
-                var categories = JSON.parse(element.dataset.categories || "[]");
-
                 return {
                     filter: '',
                     allShortcodes: shortcodes,
@@ -77,7 +75,7 @@ function initializeShortcodesApp(element) {
             {
                 filter(filter) {
                     if (filter) {
-                        var lower = filter.toLowerCase();
+                        let lower = filter.toLowerCase();
                         this.filteredShortcodes = this.allShortcodes
                             .filter(s => s.name.startsWith(lower));
                     } else {
@@ -94,7 +92,7 @@ function initializeShortcodesApp(element) {
                     this.selectedValue = '';
                     this.modal = new bootstrap.Modal(this.$el);
                     this.modal.show();
-                    var self = this;
+                    const self = this;
                     this.$el.addEventListener('shown.bs.modal', function (e) {
                         self.$refs.filter.focus();
                     });
@@ -129,7 +127,7 @@ function initializeShortcodesApp(element) {
 }
 
 // initializes a code mirror editor with a shortcode modal.
-function initializeCodeMirrorShortcodeWrapper(editor) {
+const initializeCodeMirrorShortcodeWrapper = (editor) => {
     const codemirrorWrapper = editor.display.wrapper;
 
     codemirrorWrapper.insertAdjacentHTML('beforebegin', shortcodeWrapperTemplate);
@@ -139,4 +137,10 @@ function initializeCodeMirrorShortcodeWrapper(editor) {
             editor.replaceSelection(defaultValue);   
         });   
     });  
+}
+
+const shortcodeModal = document.getElementById("shortcodeModal");
+
+if (shortcodeModal) {
+    initializeShortcodesApp(shortcodeModal);
 }
