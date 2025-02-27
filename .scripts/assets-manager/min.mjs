@@ -78,7 +78,7 @@ glob(config.source).then((files) => {
                     if (fileInfo.ext === ".js") {
                         let reader = await fs.readFile(file, "utf8");
 
-                        swc.minify(reader, {
+                        await swc.minify(reader, {
                             compress: true,
                             sourceMap: mode === "production",
                         }).then((output) => {
@@ -96,7 +96,7 @@ glob(config.source).then((files) => {
                         });
 
                         const sourceFile = reader.toString().replace(/(?:\\[rn])+/g, "\\n");
-                        fs.outputFile(target, sourceFile + "\n")
+                        await fs.outputFile(target, sourceFile + "\n")
                             .then(() => console.log(`Copied (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target)))
                             .catch((err) => {
                                 console.log(`${chalk.red("Error copying")} (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target), chalk.red(err));
