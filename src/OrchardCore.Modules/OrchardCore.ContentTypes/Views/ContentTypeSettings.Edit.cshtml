@@ -66,13 +66,12 @@
 <div class="mb-3">
     <div class="w-md-75 w-xl-50">
         <label asp-for="Stereotype">@T["Stereotype"]</label>
-        <input asp-for="Stereotype" list="stereotypeOptions" type="text" class="form-control">
-        <datalist id="stereotypeOptions">
+		<select asp-for="Stereotype" id="stereotypeOptions" class="form-select">
             @foreach (var item in Model.Options.Stereotypes)
             {
                 <option value="@item.Stereotype">@item.DisplayName</option>
             }
-        </datalist>
+        </select>
     </div>
     <span class="hint">@T["(Optional) The stereotype of the content type. e.g., Widget, MenuItem, ..."]</span>
 </div>

@@ -61,13 +61,12 @@
 <div class="row">
     <div class="mb-3 col-md-6">
         <label asp-for="DefaultTarget" class="form-label">@T["Default value of the Target"]</label>
-        <input asp-for="DefaultTarget" list="targetOptions" class="form-control" />
-        <datalist id="targetOptions">
+		<select asp-for="DefaultTarget" class="form-select">
             <option value="_self">@T["Opens the linked document in the same frame as it was clicked (default)."]</option>
             <option value="_blank">@T["Opens the linked document in a new window or tab."]</option>
             <option value="_parent">@T["Opens the linked document in the parent frame."]</option>
             <option value="_top">@T["Opens the linked document in the full body of the window."]</option>
-        </datalist>
+        </select>
         <span class="hint">@T["The default target proposed when creating a content item."]</span>
         <span asp-validation-for="DefaultTarget" class="text-danger"></span>
     </div>
