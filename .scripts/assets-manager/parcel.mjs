@@ -29,7 +29,7 @@ const hashCode = (str) => {
     }
 
     return hash < 0 ? -hash : hash; // Convert to positive number
-}
+};
 
 /**
  * Runs parcel with the given command and assetConfig.
@@ -91,7 +91,6 @@ async function runParcel(command, assetConfig) {
         //process.exit(0);
     }
 }
-
 
 /**
  * Builds and returns the Parcel options object based on the provided command and asset configuration.
@@ -165,13 +164,12 @@ function buildParcelOptions(command, assetConfig) {
 
 const createProdJsFile = async (assetConfig) => {
     const files = await fs.readdir(assetConfig.dest);
-    
+
     for (const file of files) {
         const filePath = path.join(assetConfig.dest, file);
         const stats = await fs.stat(filePath);
 
         if (stats.isFile()) {
-           
             const jsFile = filePath;
 
             if (path.extname(jsFile) === ".js") {
@@ -190,7 +188,7 @@ const createProdJsFile = async (assetConfig) => {
             }
         }
     }
-}
+};
 
 /**
  * Normalizes line endings in source map files within the specified asset configuration destination.
@@ -206,22 +204,24 @@ const createProdJsFile = async (assetConfig) => {
 
 const normalizeSourceMap = async (assetConfig) => {
     const files = await fs.readdir(assetConfig.dest);
-    
+
     for (const file of files) {
         const filePath = path.join(assetConfig.dest, file);
         const stats = await fs.stat(filePath);
 
-        if (stats.isFile()) {       
+        if (stats.isFile()) {
             if (path.extname(filePath) === ".map") {
                 const fileContent = await fs.readFile(filePath, "utf8");
                 await fs.writeFile(filePath, fileContent.replace(/(?:\\[rn])+/g, "\\n"));
             }
         }
     }
-}
+};
 
 await runParcel(action, config);
-await createProdJsFile(config);
-await normalizeSourceMap(config);
 
-process.exit(0);
+if (action === "build") {
+    await createProdJsFile(config);
+    await normalizeSourceMap(config);
+    process.exit(0);
+}
