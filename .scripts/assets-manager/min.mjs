@@ -8,6 +8,8 @@ import { transform } from "lightningcss";
 import postcss from "postcss";
 import postcssRTLCSS from "postcss-rtlcss";
 import { Mode, Source } from "postcss-rtlcss/options";
+import process from "node:process";
+import { Buffer } from "buffer";
 
 let action = process.argv[2];
 let mode = action === "build" ? "production" : "development";

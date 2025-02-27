@@ -2,6 +2,8 @@
 import webpack from "webpack";
 import JSON5 from "json5";
 import WebpackDevServer from "webpack-dev-server";
+import process from "node:process";
+import { Buffer } from "buffer";
 
 const action = process.argv[2];
 const assetConfig = JSON5.parse(Buffer.from(process.argv[3], "base64").toString("utf-8"));

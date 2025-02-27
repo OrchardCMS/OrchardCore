@@ -6,6 +6,8 @@ import { fileURLToPath } from "url";
 import chalk from "chalk";
 import _ from "lodash";
 import buildConfig from "./config.mjs";
+import process from "node:process";
+import { Buffer } from "buffer";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -54,7 +56,7 @@ async function runParcel(command, assetConfig) {
         ...options,
     });
 
-    fs.remove(assetConfig.dest); // clean the destination folder
+    await fs.remove(assetConfig.dest); // clean the destination folder
 
     if (isWatching || isHosting) {
         const parcelCacheFolder = options.cacheDir;
@@ -62,7 +64,7 @@ async function runParcel(command, assetConfig) {
 
         console.log(chalk.green("Deleted folder:"), chalk.gray(parcelCacheFolder));
 
-        const { unsubscribe } = await parcel.watch((err, event) => {
+        const { unsubscribe } = await parcel.watch((err) => {
             if (err) {
                 throw err;
             }
@@ -88,7 +90,6 @@ async function runParcel(command, assetConfig) {
             console.log(err.diagnostics);
             process.exit(1);
         }
-        //process.exit(0);
     }
 }
 

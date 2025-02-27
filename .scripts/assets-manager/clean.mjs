@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import path from "path";
 import fs from "fs-extra";
+import process from "node:process";
 
 export default async function clean(groups) {
     console.log(chalk.redBright("Clean task called. This wipes all folders referenced as destinations of all groups. Waiting 3 seconds before starting."));

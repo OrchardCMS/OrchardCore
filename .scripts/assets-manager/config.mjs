@@ -1,6 +1,7 @@
 import path from "path";
 import chalk from "chalk";
 import { pathToFileURL } from "url";
+import process from "node:process";
 
 const isWin = process.platform === "win32";
 let pathToFile = path.join(process.cwd(), "build.config.mjs");
