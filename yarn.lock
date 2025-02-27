@@ -4011,11 +4011,11 @@ __metadata:
   linkType: hard
 
 "@swc/types@npm:^0.1.18":
-  version: 0.1.18
-  resolution: "@swc/types@npm:0.1.18"
+  version: 0.1.19
+  resolution: "@swc/types@npm:0.1.19"
   dependencies:
     "@swc/counter": "npm:^0.1.3"
-  checksum: 10/eec16ced877a4bb3a24ab49fd73aa03c0a61722685b1018ba9ddd5dc348b7890ad7ea3d2c934fca6a214013013cac577e0fac7b335f4ca34c1ff34e2a69f69a5
+  checksum: 10/693147cc9b23147164ddff9cb89477c369fbeb103319584779352a9ff1c72e0a70b97a89dfd97629040db8956d668d7b7a8fed328ffea46a3e8c18577e396994
   languageName: node
   linkType: hard
 
