@@ -22,7 +22,7 @@
         "@parcel/transformer-sass": "2.13.3",
         "@parcel/transformer-vue": "2.13.3",
         "@parcel/utils": "2.13.3",
-        "@swc/core": "1.11.1",
+        "@swc/core": "1.11.4",
         "@vitejs/plugin-vue": "^5.2.1",
         "chalk": "^5.2.0",
         "chokidar": "^4.0.3",
