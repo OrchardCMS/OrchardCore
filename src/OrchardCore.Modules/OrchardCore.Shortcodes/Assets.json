@@ -4,18 +4,19 @@
     "generateRTL": true,
     "name": "shortcodes",
     "source": "Assets/scss/shortcodes.scss",
-    "tags": ["admin", "dashboard", "css"]
+    "tags": ["admin", "css"]
   },
   {
-    "action": "min",
+    "action": "parcel",
     "name": "shortcodes-js",
-    "source": "Assets/js/shortcodes.js",
-    "tags": ["admin", "dashboard", "js"]
+    "source": "Assets/js/shortcodes.ts",
+    "dest": "wwwroot/Scripts/shortcodes/",
+    "tags": ["admin", "js"]
   },
   {
     "action": "min",
     "name": "shortcodes-templates",
     "source": "Assets/js/shortcode-templates.js",
-    "tags": ["admin", "dashboard", "js"]
+    "tags": ["admin", "js"]
   }
 ]
