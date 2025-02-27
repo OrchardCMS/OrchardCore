@@ -49,8 +49,8 @@ public sealed class ResourceManagementOptionsConfiguration
             .DefineScript("workflow-editor")
             .SetDependencies("jsplumb", "bootstrap")
             .SetUrl(
-                "~/OrchardCore.Workflows/Scripts/workflow-editor.prod.js",
-                "~/OrchardCore.Workflows/Scripts/workflow-editor.js"
+                "~/OrchardCore.Workflows/Scripts/Workflows/editor/workflow-editor.prod.js",
+                "~/OrchardCore.Workflows/Scripts/Workflows/editor/workflow-editor.js"
             )
             .SetVersion("1.0.0");
 
@@ -58,8 +58,8 @@ public sealed class ResourceManagementOptionsConfiguration
             .DefineScript("workflow-viewer")
             .SetDependencies("jsplumb", "bootstrap")
             .SetUrl(
-                "~/OrchardCore.Workflows/Scripts/workflow-viewer.prod.js",
-                "~/OrchardCore.Workflows/Scripts/workflow-viewer.js"
+                "~/OrchardCore.Workflows/Scripts/Workflows/viewer/workflow-viewer.prod.js",
+                "~/OrchardCore.Workflows/Scripts/Workflows/viewer/workflow-viewer.js"
             )
             .SetVersion("1.0.0");
 
@@ -67,8 +67,8 @@ public sealed class ResourceManagementOptionsConfiguration
             .DefineScript("workflow-url-generator")
             .SetDependencies("jQuery")
             .SetUrl(
-                "~/OrchardCore.Workflows/Scripts/workflow-url-generator.prod.js",
-                "~/OrchardCore.Workflows/Scripts/workflow-url-generator.js"
+                "~/OrchardCore.Workflows/Scripts/Workflows/url-generator/workflow-url-generator.prod.js",
+                "~/OrchardCore.Workflows/Scripts/Workflows/url-generator/workflow-url-generator.js"
             )
             .SetVersion("1.0.0");
     }
