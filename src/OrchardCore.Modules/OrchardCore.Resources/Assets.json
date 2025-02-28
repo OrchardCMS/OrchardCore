@@ -300,6 +300,12 @@
         "tags": ["resources", "js"]
     },
     {
+      "action": "min",
+      "name": "vue-multiselect",
+      "source": "wwwroot/Scripts/vue-multiselect.js",
+      "tags": ["resources", "js"]
+  },
+    {
         "action": "copy",
         "name": "vue-multiselect",
         "source": "../../../node_modules/vue-multiselect/dist/*.css",
