@@ -108,5 +108,6 @@
   },
   "exclude": [
     "node_modules",
+    "wwwroot",
   ]
 }

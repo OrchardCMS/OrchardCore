@@ -6,6 +6,8 @@ import { fileURLToPath } from "url";
 import chalk from "chalk";
 import _ from "lodash";
 import buildConfig from "./config.mjs";
+import { Buffer } from "buffer";
+import process from "node:process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,7 +42,7 @@ async function runParcel(command, assetConfig) {
 
         console.log(chalk.green("Deleted folder:"), chalk.gray(parcelCacheFolder));
 
-        const { unsubscribe } = await parcel.watch((err, event) => {
+        const { unsubscribe } = await parcel.watch((err) => {
             if (err) {
                 throw err;
             }
