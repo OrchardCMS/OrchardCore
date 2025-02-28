@@ -8,7 +8,7 @@
   },
   {
     "action": "min",
-    "name": "shortcodes",
+    "name": "shortcodes-js",
     "source": "Assets/js/shortcodes.js",
     "tags": ["admin", "dashboard", "js"]
   },

@@ -112,6 +112,18 @@ Parcel bundleEntrypoint parameter:
 ]
 ```
 
+#### Sourcemaps
+
+For javascript files Parcel will create a .prod.js file for you along with a .map file. The .prod.js is created for use in production as it doesn't reference the .map file. Using the ResourceManagementOptionsConfiguration you will want to set it this way:
+
+```C#
+    _manifest
+        .DefineScript("admin")
+        .SetDependencies("bootstrap", "admin-main", "theme-manager", "jQuery", "Sortable")
+        .SetUrl("~/TheAdmin/js/theadmin/TheAdmin.prod.js", "~/TheAdmin/js/theadmin/TheAdmin.js")
+        .SetVersion("1.0.0");
+```
+
 ### Vite
 
 Vite bundler action will support any configuration. From bundling a vue app to compiling a simple library. It is working by configuration file. The asset management tool simply loads a vite.config.ts file based on the source folder that we instruct it to use from the Assets.json file.

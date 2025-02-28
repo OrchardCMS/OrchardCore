@@ -2,6 +2,7 @@ import { glob } from "glob";
 import JSON5 from "json5";
 import fs from "fs-extra";
 import path from "path";
+import process from "node:process";
 
 import buildConfig from "./config.mjs";
 

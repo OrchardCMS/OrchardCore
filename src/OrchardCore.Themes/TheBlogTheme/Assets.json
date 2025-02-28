@@ -1,7 +1,7 @@
 [
   {
     "action": "copy",
-    "name": "theme-theblogtheme",
+    "name": "theme-theblogtheme-assets",
     "source": "Assets/TheBlogTheme/dist/assets/**",
     "dest": "wwwroot/assets/",
     "tags": ["theme", "images"]

@@ -7,9 +7,11 @@ import { fileURLToPath } from "url";
 import parseArgs from "minimist";
 import _ from "lodash";
 import prettyMilliseconds from 'pretty-ms';
+import { Buffer } from 'buffer';
 import buildConfig from "./config.mjs";
 import clean from "./clean.mjs";
 import getAllAssetGroups from "./assetGroups.mjs";
+import process from 'node:process';
 
 const startTime = performance.now();
 
