@@ -105,4 +105,3 @@ notificationManager = function () {
         initializeContainer: initialize
     };
 }();
-

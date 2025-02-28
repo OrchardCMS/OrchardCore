@@ -25,4 +25,3 @@ formElementLabelManager = function () {
 document.addEventListener('DOMContentLoaded', function () {
     formElementLabelManager.initilize(document);
 });
-

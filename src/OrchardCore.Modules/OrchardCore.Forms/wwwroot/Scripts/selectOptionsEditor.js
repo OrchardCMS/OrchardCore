@@ -318,4 +318,3 @@ document.addEventListener('DOMContentLoaded', function () {
 
     selectOptionsEditor.initilizeFieldType(document);
 });
-

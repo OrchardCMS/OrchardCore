@@ -10,13 +10,13 @@ export default async function clean(groups) {
         const promises = [];
         for (const g of groups) {
             if (g.dest) {
-                if (!g.dest || typeof g.dest !== "string" || !(g.dest.includes("wwwroot") || g.dest.includes("dist"))) {
+                if (typeof g.dest !== "string" || !(g.dest.includes("wwwroot") || g.dest.includes("dist"))) {
                     console.log(chalk.red("We only support deleting folders that contain wwwroot or dist"), chalk.gray(g.dest));
                     throw chalk.red("Error cleaning: ") + chalk.gray(g.dest);
                 }
 
                 promises.push(
-                    fs
+                    await fs
                         .rm(g.dest, { recursive: true, force: true })
                         .then(() => console.log(chalk.green("Deleted folder:"), chalk.gray(g.dest)))
                         .catch((err) => {
@@ -24,11 +24,37 @@ export default async function clean(groups) {
                             throw err;
                         }),
                 );
+            } else {
+                const scriptFolder = path.resolve(g.basePath + "\\wwwroot\\Scripts");
+                const styleFolder = path.resolve(g.basePath + "\\wwwroot\\Styles");
+
+                console.log(scriptFolder, styleFolder);
+                if (fs.exists(scriptFolder)) {
+                    console.log("allo 1");
+                    await fs
+                        .rm(scriptFolder, { recursive: true, force: true })
+                        .then(() => console.log(chalk.green("Deleted folder:"), chalk.gray(scriptFolder)))
+                        .catch((err) => {
+                            console.log(chalk.red("Error deleting folder:"), chalk.gray(scriptFolder));
+                            throw err;
+                        });
+                }
+
+                if (fs.exists(styleFolder)) {
+                    console.log("allo 2");
+                    await fs
+                        .rm(styleFolder, { recursive: true, force: true })
+                        .then(() => console.log(chalk.green("Deleted folder:"), chalk.gray(styleFolder)))
+                        .catch((err) => {
+                            console.log(chalk.red("Error deleting folder:"), chalk.gray(styleFolder));
+                            throw err;
+                        });
+                }
             }
         }
         const parcelCache = path.join(process.cwd(), ".parcel-cache");
         promises.push(
-            fs
+            await fs
                 .rm(parcelCache, { recursive: true, force: true })
                 .then(() => console.log(chalk.green("Deleted folder:"), chalk.gray(parcelCache)))
                 .catch((err) => {

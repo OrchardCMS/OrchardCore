@@ -63,4 +63,3 @@ function initializeTemplatePreview(nameElement, editorElement) {
         localStorage.removeItem('OrchardCore.templates:not-connected');
    });
 }
-

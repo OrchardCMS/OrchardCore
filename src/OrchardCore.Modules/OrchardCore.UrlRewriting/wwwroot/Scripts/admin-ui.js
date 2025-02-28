@@ -167,4 +167,3 @@ urlRewritingAdmin = function () {
         initialize: initialize
     }
 }();
-

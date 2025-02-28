@@ -42,4 +42,3 @@ function addMapPicker() {
 $(document).ready(function () {
     addMapPicker();
 });
-

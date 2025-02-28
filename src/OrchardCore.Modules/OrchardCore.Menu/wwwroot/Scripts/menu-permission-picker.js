@@ -43,4 +43,3 @@ function initMenuPermissionsPicker(element) {
         document.querySelector("body").dispatchEvent(event);
     }
 }
-

@@ -905,4 +905,3 @@
 		$.mjs.nestedSortable.prototype.options
 	);
 }));
-

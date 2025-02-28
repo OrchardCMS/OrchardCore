@@ -141,4 +141,3 @@ var corsApp = new Vue({
         }
     }
 });
-

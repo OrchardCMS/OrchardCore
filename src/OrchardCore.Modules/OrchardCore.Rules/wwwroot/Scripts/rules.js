@@ -39,4 +39,3 @@ $(function () {
       new Sortable(groups[i], sortableOptions);
     }
 });
-

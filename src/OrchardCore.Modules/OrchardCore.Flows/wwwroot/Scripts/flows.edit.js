@@ -131,4 +131,3 @@ $(function () {
         headerTextLabel.text(newDisplayText);
     });
 });
-

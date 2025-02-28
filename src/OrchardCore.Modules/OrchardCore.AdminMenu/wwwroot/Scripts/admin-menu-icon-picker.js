@@ -56,4 +56,3 @@ var iconPickerVue = new Vue({
         }
     }
 })
-

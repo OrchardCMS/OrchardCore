@@ -68,4 +68,3 @@ function initializeCustomMetaTagsEditor(elem, data, modalBodyElement) {
         }
     });
 }
-

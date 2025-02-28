@@ -55,4 +55,3 @@ sortingListManager = function () {
         create: create
     }
 }();
-

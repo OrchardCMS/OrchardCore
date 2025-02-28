@@ -85,4 +85,3 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedValue, list) 
     });
 
 }
-

@@ -123,4 +123,3 @@ function initVueMultiselect(element) {
         document.querySelector("body").dispatchEvent(event);
     }
 }
-
