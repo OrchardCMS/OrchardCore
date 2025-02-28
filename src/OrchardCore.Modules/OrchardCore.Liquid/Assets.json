@@ -1,19 +1,8 @@
 [
     {
-        "action": "run",
-        "name": "liquid-intellisense",
-        "source": "Assets/monaco/",
-        "order": 1,
-        "scripts": {
-            "build": "tsc liquid-intellisense.ts --outDir ../../wwwroot/monaco/ --target ES5 --removeComments true --lib dom,ES2015,es2015.collection,es2015.iterable,es2015.promise",
-            "watch": "tsc liquid-intellisense.ts --outDir ../../wwwroot/monaco/ --target ES5 --removeComments true --lib dom,ES2015,es2015.collection,es2015.iterable,es2015.promise --watch"
-        },
-        "tags": ["admin", "js"]
-    },
-    {
-        "action": "min",
+        "action": "parcel",
         "name": "liquid-intellisense2",
-        "source": "wwwroot/monaco/liquid-intellisense.js",
+        "source": "Assets/monaco/liquid-intellisense.ts",
         "dest": "wwwroot/monaco/",
         "tags": ["admin", "js"]
     }

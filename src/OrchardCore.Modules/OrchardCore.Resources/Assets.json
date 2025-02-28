@@ -295,16 +295,23 @@
     },
     {
         "action": "copy",
+        "name": "vue-multiselect-2.1.6",
+        "source": "Assets/Vendor/vue-multiselect-2.1.6/**",
+        "dest": "wwwroot/Vendor/vue-multiselect-2.1.6/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
         "name": "vue-multiselect",
         "source": "../../../node_modules/vue-multiselect/dist/*.js",
         "tags": ["resources", "js"]
     },
     {
-      "action": "min",
-      "name": "vue-multiselect",
-      "source": "wwwroot/Scripts/vue-multiselect.js",
-      "tags": ["resources", "js"]
-  },
+        "action": "min",
+        "name": "vue-multiselect",
+        "source": "../../../node_modules/vue-multiselect/dist/vue-multiselect.js",
+        "tags": ["resources", "js"]
+    },
     {
         "action": "copy",
         "name": "vue-multiselect",
@@ -457,13 +464,6 @@
         "name": "font-awesome-free-6.6.0",
         "source": "Assets/Vendor/font-awesome-free-6.6.0/**",
         "dest": "wwwroot/Vendor/font-awesome-free-6.6.0/",
-        "tags": ["resources", "js"]
-    },
-    {
-        "action": "copy",
-        "name": "vue-multiselect-2.1.6",
-        "source": "Assets/Vendor/vue-multiselect-2.1.6/**",
-        "dest": "wwwroot/Vendor/vue-multiselect-2.1.6/",
         "tags": ["resources", "js"]
     },
     {
