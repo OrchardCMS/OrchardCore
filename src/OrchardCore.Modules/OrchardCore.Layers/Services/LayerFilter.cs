@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Admin;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data.Documents;
@@ -116,18 +117,21 @@ public sealed class LayerFilter : IAsyncResultFilter
 
                 if (contentDefinitions.Any(c => c.Name == widget.ContentItem.ContentType))
                 {
-                    var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
+                    // Note: We clone the cached content item to avoid sharing the same instance across threads when rendering widgets.
+                    var contentItem = widget.ContentItem.Clone();
+
+                    var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, updater);
 
                     widgetContent.Classes.Add("widget");
-                    widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
+                    widgetContent.Classes.Add("widget-" + contentItem.ContentType.HtmlClassify());
 
                     var wrapper = new WidgetWrapper
                     {
-                        Widget = widget.ContentItem,
+                        Widget = contentItem,
                         Content = widgetContent
                     };
 
-                    wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
+                    wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + contentItem.ContentType);
                     wrapper.Metadata.Alternates.Add("Widget_Wrapper__Zone__" + widget.Zone);
 
                     var contentZone = layout.Zones[widget.Zone];
