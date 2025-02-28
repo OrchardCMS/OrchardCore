@@ -225,13 +225,13 @@ public static class ContentExtensions
         if (contentElement.Data is not null)
         {
             contentElement.Data.Merge(JObject.FromObject(element.Data), _jsonMergeSettings);
+            contentElement.Elements.Clear();
         }
         else
         {
             contentElement.Data = JObject.FromObject(element.Data);
         }
 
-        contentElement.Elements.Clear();
         return contentElement;
     }
 
