@@ -29,7 +29,7 @@ export default async function clean(groups) {
                 const styleFolder = path.resolve(g.basePath + "\\wwwroot\\Styles");
 
                 console.log(scriptFolder, styleFolder);
-                if (fs.exists(scriptFolder)) {
+                if (await fs.exists(scriptFolder)) {
                     await fs
                         .rm(scriptFolder, { recursive: true, force: true })
                         .then(() => console.log(chalk.green("Deleted folder:"), chalk.gray(scriptFolder)))
@@ -39,7 +39,7 @@ export default async function clean(groups) {
                         });
                 }
 
-                if (fs.exists(styleFolder)) {
+                if (await fs.exists(styleFolder)) {
                     await fs
                         .rm(styleFolder, { recursive: true, force: true })
                         .then(() => console.log(chalk.green("Deleted folder:"), chalk.gray(styleFolder)))
