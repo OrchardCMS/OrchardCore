@@ -3,6 +3,8 @@ import { glob } from "glob";
 import JSON5 from "json5";
 import chalk from "chalk";
 import path from "path";
+import { Buffer } from "buffer";
+import process from "node:process";
 
 let action = process.argv[2];
 const config = JSON5.parse(Buffer.from(process.argv[3], "base64").toString("utf-8"));
