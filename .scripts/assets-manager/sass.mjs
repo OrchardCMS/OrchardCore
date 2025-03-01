@@ -9,8 +9,8 @@ import postcss from "postcss";
 import postcssRTLCSS from "postcss-rtlcss";
 import { Mode } from "postcss-rtlcss/options";
 import chokidar from "chokidar";
-import process from "node:process";
 import { Buffer } from "buffer";
+import process from "node:process";
 
 let action = process.argv[2];
 let mode = action === "build" ? "production" : "development";

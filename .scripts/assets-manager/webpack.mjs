@@ -1,8 +1,8 @@
 // Webpack API see: https://webpack.js.org/api/node/
 import webpack from "webpack";
+import process from 'node:process';
 import JSON5 from "json5";
 import WebpackDevServer from "webpack-dev-server";
-import process from "node:process";
 import { Buffer } from "buffer";
 
 const action = process.argv[2];

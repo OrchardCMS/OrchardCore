@@ -1,0 +1,9 @@
+[
+    {
+        "action": "parcel",
+        "name": "liquid-intellisense2",
+        "source": "Assets/monaco/liquid-intellisense.ts",
+        "dest": "wwwroot/monaco/",
+        "tags": ["admin", "js"]
+    }
+]

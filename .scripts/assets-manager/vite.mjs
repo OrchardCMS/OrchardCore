@@ -1,7 +1,7 @@
 import { build, createServer } from "vite";
 import JSON5 from "json5";
-import process from "node:process";
 import { Buffer } from "buffer";
+import process from "node:process";
 
 async function runVite(command, assetConfig) {
     if (command === "build") {

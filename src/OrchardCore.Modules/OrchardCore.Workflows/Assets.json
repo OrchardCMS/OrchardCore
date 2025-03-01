@@ -43,5 +43,12 @@
     "source": "Assets/Scripts/workflow-url-generator.ts",
     "dest": "wwwroot/Scripts/Workflows/url-generator/",
     "tags": ["workflows", "js"]
+  },
+  {
+    "action": "min",
+    "name": "crossbrowserclipboardcopy",
+    "source": "Assets/Scripts/crossbrowserclipboardcopy.js",
+    "dest": "wwwroot/Scripts/",
+    "tags": ["workflows", "js"]
   }
 ]
