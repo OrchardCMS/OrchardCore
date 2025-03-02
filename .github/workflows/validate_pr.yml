@@ -12,7 +12,7 @@ jobs:
     timeout-minutes: 3
     steps:
       - name: Check for Merge Conflict in PR
-        uses: eps1lon/actions-label-merge-conflict@1b1b1fcde06a9b3d089f3464c96417961dde1168 # v3.0.2
+        uses: eps1lon/actions-label-merge-conflict@1df065ebe6e3310545d4f4c4e862e43bdca146f0 # v3.0.3
         with:
             repoToken: ${{ secrets.GITHUB_TOKEN }}
             commentOnDirty: "This pull request has merge conflicts. Please resolve those before requesting a review."
