@@ -575,7 +575,7 @@ var sort = arr.sort;
 var splice = arr.splice;
 
 
-var whitespace = "[\\x20\\t\\r\\n\\f]";
+var whitespace = "[\\x20\\t\\n\\n\\f]";
 
 
 var rtrimCSS = new RegExp(
@@ -671,7 +671,7 @@ var i,
 
 	// https://www.w3.org/TR/css-syntax-3/#ident-token-diagram
 	identifier = "(?:\\\\[\\da-fA-F]{1,6}" + whitespace +
-		"?|\\\\[^\\r\\n\\f]|[\\w-]|[^\0-\\x7f])+",
+		"?|\\\\[^\\n\\n\\f]|[\\w-]|[^\0-\\x7f])+",
 
 	// Attribute selectors: https://www.w3.org/TR/selectors/#attribute-selectors
 	attributes = "\\[" + whitespace + "*(" + identifier + ")(?:" + whitespace +
@@ -737,7 +737,7 @@ var i,
 	// CSS escapes
 	// https://www.w3.org/TR/CSS21/syndata.html#escaped-characters
 	runescape = new RegExp( "\\\\[\\da-fA-F]{1,6}" + whitespace +
-		"?|\\\\([^\\r\\n\\f])", "g" ),
+		"?|\\\\([^\\n\\n\\f])", "g" ),
 	funescape = function( escape, nonHex ) {
 		var high = "0x" + escape.slice( 1 ) - 0x10000;
 
@@ -1277,7 +1277,7 @@ function setDocument( node ) {
 
 		documentElement.appendChild( el ).innerHTML =
 			"<a id='" + expando + "' href='' disabled='disabled'></a>" +
-			"<select id='" + expando + "-\r\\' disabled='disabled'>" +
+			"<select id='" + expando + "-\n\\' disabled='disabled'>" +
 			"<option selected=''></option></select>";
 
 		// Support: iOS <=7 - 8 only
@@ -2754,7 +2754,7 @@ var siblings = function( n, elem ) {
 
 var rneedsContext = jQuery.expr.match.needsContext;
 
-var rsingleTag = ( /^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|)$/i );
+var rsingleTag = ( /^<([a-z][^\/\0>:\x20\t\n\f]*)[\x20\t\n\f]*\/?>(?:<\/\1>|)$/i );
 
 
 
@@ -3142,7 +3142,7 @@ jQuery.each( {
 		return this.pushStack( matched );
 	};
 } );
-var rnothtmlwhite = ( /[^\x20\t\r\n\f]+/g );
+var rnothtmlwhite = ( /[^\x20\t\n\f]+/g );
 
 
 
@@ -4635,7 +4635,7 @@ jQuery.fn.extend( {
 } );
 var rcheckableType = ( /^(?:checkbox|radio)$/i );
 
-var rtagName = ( /<([a-z][^\/\0>\x20\t\r\n\f]*)/i );
+var rtagName = ( /<([a-z][^\/\0>\x20\t\n\f]*)/i );
 
 var rscriptType = ( /^$|^module$|\/(?:java|ecma)script/i );
 
@@ -7520,7 +7520,7 @@ jQuery.fn.extend( {
 
 
 
-var rreturn = /\r/g;
+var rreturn = /\n/g;
 
 jQuery.fn.extend( {
 	val: function( value ) {
@@ -7918,7 +7918,7 @@ jQuery.fn.extend( {
 
 var
 	rbracket = /\[\]$/,
-	rCRLF = /\r?\n/g,
+	rCRLF = /\n?\n/g,
 	rsubmitterTypes = /^(?:submit|button|image|reset|file)$/i,
 	rsubmittable = /^(?:input|select|textarea|keygen)/i;
 
@@ -8027,11 +8027,11 @@ jQuery.fn.extend( {
 
 			if ( Array.isArray( val ) ) {
 				return jQuery.map( val, function( val ) {
-					return { name: elem.name, value: val.replace( rCRLF, "\r\n" ) };
+					return { name: elem.name, value: val.replace( rCRLF, "\n" ) };
 				} );
 			}
 
-			return { name: elem.name, value: val.replace( rCRLF, "\r\n" ) };
+			return { name: elem.name, value: val.replace( rCRLF, "\n" ) };
 		} ).get();
 	}
 } );

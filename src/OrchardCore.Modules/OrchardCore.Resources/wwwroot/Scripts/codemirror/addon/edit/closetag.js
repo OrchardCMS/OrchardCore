@@ -87,7 +87,7 @@
 
       var indent = indentTags && indexOf(indentTags, lowerTagName) > -1;
       replacements[i] = {indent: indent,
-                         text: ">" + (indent ? "\n\n" : "") + "</" + tagName + ">",
+                         text: ">" + (indent ? "\n" : "") + "</" + tagName + ">",
                          newPos: indent ? CodeMirror.Pos(pos.line + 1, 0) : CodeMirror.Pos(pos.line, pos.ch + 1)};
     }
 
