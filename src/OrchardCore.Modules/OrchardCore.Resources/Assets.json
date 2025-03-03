@@ -92,7 +92,7 @@
         "tags": ["resources", "js"]
     },
     {
-        "action": "copy",
+        "action": "min",
         "name": "popper-js",
         "source": "../../../node_modules/@popperjs/core/dist/umd/popper.js",
         "tags": ["resources", "js"]
