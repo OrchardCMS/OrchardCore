@@ -46,20 +46,23 @@
                                 @{
                                     var options = rule.Fields.Select(x => new SelectListItem { Text = x.Name, Value = x.Value });
                                 }
-                                @Html.DropDownListFor(m => m.Groups[i].Rules[x].Field, options, new { @class = "form-select" })
-
+                                <select asp-for="Groups[i].Rules[x].Field" asp-items="options" class="form-select" data-saved-value="@rule.Field"></select>
                             </div>
 
                             <div class="col">
-                                @Html.DropDownListFor(m => m.Groups[i].Rules[x].Operator, rule.Operators, new { @class = "form-select" })
+                                <select asp-for="Groups[i].Rules[x].Operator" asp-items="rule.Operators" class="form-select"></select>
                             </div>
 
                             <div class="col">
-                                @Html.TextBoxFor(m => m.Groups[i].Rules[x].Value)
+                                <input asp-for="Groups[i].Rules[x].Value" class="form-control" />
+                            </div>
+
+                            <div class="col">
+                                <input asp-for="Groups[i].Rules[x].TargetInputId" type="hidden" />
                             </div>
 
                             <div class="col-auto">
-                                @Html.HiddenFor(m => m.Groups[i].Rules[x].IsRemoved)
+                                <input asp-for="Groups[i].Rules[x].IsRemoved" type="hidden" />
                                 <div class="btn btn-sm btn-danger remove-rule">
                                     <i class="fa-solid fa-trash"></i>
                                 </div>
@@ -68,81 +71,68 @@
                     </li>
                 }
             </ul>
-
         </li>
     }
 </ul>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const fields = [];
+          populateFields(document);
+          const tabEl = document.querySelector('a[data-bs-toggle="tab"]')
+          if (tabEl) {
+              tabEl.addEventListener('shown.bs.tab', event => {
+                  populateFields(event.target);
+              })
+          }
 
-        const tabEl = document.querySelector('button[data-bs-toggle="tab"]')
-        tabEl.addEventListener('shown.bs.tab', event => {
-            // event.target // newly activated tab
-            // event.relatedTarget // previous active tab
+          function populateFields(element) {
+              var fieldElements = element.querySelectorAll('select[name*="FormInputElementVisibilityPart.Groups"][name*="Rules"][name$="Field"]');
+              var inputs = getInputs();
 
-            console.log(event.target);
+              fieldElements.forEach(fieldElement => {
+                  [...fieldElement.options].forEach(option => {
+                      if (option.value) {
+                          option.remove();
+                      }
+                  });
 
-            var fieldElements = event.target.querySelectorAll('select[name$="FormInputElementVisibilityPart.Groups[\\d+].Rules[\\d+].Field"]');
+                  inputs.forEach(input => {
+                      let option = document.createElement('option');
+                      option.value = input.htmlId;
+                      option.textContent = input.htmlName;
+                      option.selected = (fieldElement.dataset.savedValue === input.htmlId);
+                      option.setAttribute('data-input-type', input.htmlInputType);
+                      fieldElement.appendChild(option);
+                  });
+              });
+          }
 
-            var inputs = getInputs();
+          function getInputs() {
+              const widgetElements = document.querySelectorAll('.widget-template');
+              const results = [];
+              widgetElements.forEach(widget => {
+                  const formElementInput = widget.querySelector('input[name$="FormElementPart.Id"]');
+                  const formElementNameInput = widget.querySelector('input[name$="FormInputElementPart.Name"]');
+                  const inputTypeSelect = widget.querySelector('select[name$="InputPart.Type"]');
 
-            fieldElements.forEach(fieldElement => {
+                  if (formElementInput && inputTypeSelect) {
+                      const htmlId = formElementInput.value;
+                      const htmlName = formElementNameInput.value;
+                      const selectedOption = inputTypeSelect.options[inputTypeSelect.selectedIndex].value;
 
-                [...fieldElement.options].forEach(option => {
-                    if (option.value) {
-                        option.remove();
-                    }
-                });
+                      if (!formElementInput.value || !selectedOption) {
+                          return;
+                      }
 
-                inputs.forEach(input => {
-                    let option = document.createElement('option');
-                    option.value = input.htmlId;
-                    option.textContent = input.htmlId;
-                    option.selected = fieldElement.value === input.htmlId;
-                    option.setAttribute('data-input-type', input.htmlInputType);
+                      results.push({
+                          htmlId: htmlId,
+                          htmlName: htmlName,
+                          htmlInputType: selectedOption
+                      });
+                  }
+              });
 
-                    fieldElement.appendChild(option);
-                });
-            });
-        });
-
-        function getInputs() {
-            // Find all elements with the class 'widget-template'
-            const widgetElements = document.querySelectorAll('.widget-template');
-
-            // Initialize an array to store the results
-            const results = [];
-
-            // Loop through each widget element
-            widgetElements.forEach(widget => {
-                // Find the input element where the name ends with 'FormElementPart.Id'
-                const formElementInput = widget.querySelector('input[name$="FormElementPart.Id"]');
-
-                // Find the select element where the name ends with 'InputPart.Type'
-                const inputTypeSelect = widget.querySelector('select[name$="InputPart.Type"]');
-
-                if (formElementInput && inputTypeSelect) {
-                    // Get the value from 'FormElementPart.Id' input and the selected option from 'InputPart.Type'
-                    const htmlId = formElementInput.value;
-                    const selectedOption = inputTypeSelect.options[inputTypeSelect.selectedIndex].value;
-
-                    if (!formElementInput.value || !selectedOption) {
-                        return;
-                    }
-
-                    // Push the result to the results array
-                    results.push({
-                        htmlId: htmlId,
-                        htmlInputType: selectedOption
-                    });
-                }
-            });
-
-            // Return the results
-            return results;
-        }
-
+              return results;
+          }
     });
 </script>

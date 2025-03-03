@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -20,71 +19,94 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
 
     public override IDisplayResult Edit(FormInputElementVisibilityPart part, BuildPartEditorContext context)
     {
+        part.Groups ??= part.Groups ?? new List<FormVisibilityRuleGroup>();
+        if (!part.Groups.Any())
+        {
+            part.Groups = new List<FormVisibilityRuleGroup>
+            {
+               new FormVisibilityRuleGroup
+               {
+                  Rules = new List<FormVisibilityRule>
+                  {
+                    new FormVisibilityRule
+                    {
+                      Field = "",
+                      Operator = FormVisibilityOperator.Is,
+                      Values = Array.Empty<string>()
+                    }
+                  }
+               }
+            };
+        }
+
         return Initialize<FormInputElementVisibilityViewModel>("FormInputElementVisibility_Edit", model =>
         {
+            model.Action = part.Action;
             model.Actions = new List<SelectListItem>
             {
-                new SelectListItem(S["None"], nameof(FormVisibilityAction.None)),
-                new SelectListItem(S["Show"], nameof(FormVisibilityAction.Show)),
-                new SelectListItem(S["Hide"], nameof(FormVisibilityAction.Hide)),
+              new SelectListItem(S["None"], nameof(FormVisibilityAction.None)),
+              new SelectListItem(S["Show"], nameof(FormVisibilityAction.Show)),
+              new SelectListItem(S["Hide"], nameof(FormVisibilityAction.Hide)),
             };
 
-            model.Groups = new List<FormVisibilityRuleGroupViewModel>
+            model.Groups = part.Groups.Select(group =>
             {
-                new FormVisibilityRuleGroupViewModel
+                return new FormVisibilityRuleGroupViewModel
                 {
-                    Rules = new List<FormVisibilityRuleViewModel>
+                    Rules = group.Rules.Select(rule =>
                     {
-                        new FormVisibilityRuleViewModel
+                        return new FormVisibilityRuleViewModel
                         {
-                            Fields = new List<FormVisibilityFieldViewModel>
-                            {
-                                new FormVisibilityFieldViewModel
-                                {
-                                    Name = "Field 1",
-                                    Value = "Field1",
-                                },
-                                new FormVisibilityFieldViewModel
-                                {
-                                    Name = "Field 2",
-                                    Value = "Field2",
-                                },
-                            },
+                            Field = rule.Field,
+                            Operator = rule.Operator,
+                            Value = rule.Values?.FirstOrDefault() ?? string.Empty,
+                            TargetInputId = rule.TargetInputId,
+                            Fields = new List<FormVisibilityFieldViewModel>(),
                             Operators = new List<SelectListItem>
                             {
-                                new SelectListItem(S["Is"], nameof(FormVisibilityOperator.Is)),
-                                new SelectListItem(S["Is not"], nameof(FormVisibilityOperator.IsNot)),
-                                new SelectListItem(S["Empty"], nameof(FormVisibilityOperator.Empty)),
-                                new SelectListItem(S["Not empty"],nameof(FormVisibilityOperator.NotEmpty)),
-                                new SelectListItem(S["Contains"], nameof(FormVisibilityOperator.Contains)),
-                                new SelectListItem(S["Does not contain"], nameof(FormVisibilityOperator.DoesNotContain)),
-                                new SelectListItem(S["Starts with"], nameof(FormVisibilityOperator.StartsWith)),
-                                new SelectListItem(S["Ends with"], nameof(FormVisibilityOperator.EndsWith)),
-                                new SelectListItem(S["Greater then"], nameof(FormVisibilityOperator.GreaterThan)),
-                                new SelectListItem(S["Less then"], nameof(FormVisibilityOperator.LessThan)),
-                            },
-                        },
-                    },
-                },
-            };
+                               new SelectListItem(S["Is"], nameof(FormVisibilityOperator.Is)),
+                               new SelectListItem(S["Is not"], nameof(FormVisibilityOperator.IsNot)),
+                               new SelectListItem(S["Empty"], nameof(FormVisibilityOperator.Empty)),
+                               new SelectListItem(S["Not empty"], nameof(FormVisibilityOperator.NotEmpty)),
+                               new SelectListItem(S["Contains"], nameof(FormVisibilityOperator.Contains)),
+                               new SelectListItem(S["Does not contain"], nameof(FormVisibilityOperator.DoesNotContain)),
+                               new SelectListItem(S["Starts with"], nameof(FormVisibilityOperator.StartsWith)),
+                               new SelectListItem(S["Ends with"], nameof(FormVisibilityOperator.EndsWith)),
+                               new SelectListItem(S["Greater than"], nameof(FormVisibilityOperator.GreaterThan)),
+                               new SelectListItem(S["Less than"], nameof(FormVisibilityOperator.LessThan)),
+                            }
+                        };
+                    }).ToList()
+                };
+            }).ToList();
         }).Location("Parts:0#Visibility Settings;5");
     }
-
     public override async Task<IDisplayResult> UpdateAsync(FormInputElementVisibilityPart part, UpdatePartEditorContext context)
     {
         var model = new FormInputElementVisibilityViewModel();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
+        Console.WriteLine("Updated model: Action = " + model.Action);
+        part.Action = model.Action;
 
-        part.Groups = model.Groups.Select(x => new FormVisibilityRuleGroup
-        {
-            Rules = x.Rules.Select(y => new FormVisibilityRule
+        part.Groups = (model.Groups ?? new List<FormVisibilityRuleGroupViewModel>())
+            .Select(x =>
             {
-                Field = y.Field,
-                Operator = y.Operator,
-                Values = GetValues(y.Value),
-            }).ToList(),
-        });
+                return new FormVisibilityRuleGroup
+                {
+                    Rules = x.Rules.Select(y =>
+                    {
+                        Console.WriteLine($"Updating rule: Field = {y.Field}, Value = {y.Value}");
+                        return new FormVisibilityRule
+                        {
+                            Field = y.Field,
+                            Operator = y.Operator,
+                            Values = GetValues(y.Value),
+                            TargetInputId = y.TargetInputId
+                        };
+                    }).ToList()
+                };
+            }).ToList();
 
         return Edit(part, context);
     }
@@ -95,11 +117,11 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
         {
             try
             {
-                return JsonSerializer.Deserialize<string[]>(value);
+                var jsonArray = new[] { value };
+                return jsonArray;
             }
             catch { }
         }
-
-        return [];
+        return Array.Empty<string>();
     }
 }
