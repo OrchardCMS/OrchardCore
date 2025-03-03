@@ -1,5 +1,5 @@
 /**!
- * Sortable 1.15.6
+ * Sortable 1.15.3
  * @author	RubaXa   <trash@rubaxa.org>
  * @author	owenm    <owen23355@gmail.com>
  * @license MIT
@@ -134,7 +134,7 @@
     throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
 
-  var version = "1.15.6";
+  var version = "1.15.3";
 
   function userAgent(pattern) {
     if (typeof window !== 'undefined' && window.navigator) {
@@ -1127,8 +1127,7 @@
         x: 0,
         y: 0
       },
-      // Disabled on Safari: #1571; Enabled on Safari IOS: #2244
-      supportPointer: Sortable.supportPointer !== false && 'PointerEvent' in window && (!Safari || IOS),
+      supportPointer: Sortable.supportPointer !== false && 'PointerEvent' in window && !Safari,
       emptyInsertThreshold: 5
     };
     PluginManager.initializePlugins(this, el, defaults);
@@ -1239,7 +1238,7 @@
           pluginEvent('filter', _this, {
             evt: evt
           });
-          preventOnFilter && evt.preventDefault();
+          preventOnFilter && evt.cancelable && evt.preventDefault();
           return; // cancel dnd
         }
       } else if (filter) {
@@ -1261,7 +1260,7 @@
           }
         });
         if (filter) {
-          preventOnFilter && evt.preventDefault();
+          preventOnFilter && evt.cancelable && evt.preventDefault();
           return; // cancel dnd
         }
       }
@@ -1333,15 +1332,9 @@
         on(ownerDocument, 'dragover', nearestEmptyInsertDetectEvent);
         on(ownerDocument, 'mousemove', nearestEmptyInsertDetectEvent);
         on(ownerDocument, 'touchmove', nearestEmptyInsertDetectEvent);
-        if (options.supportPointer) {
-          on(ownerDocument, 'pointerup', _this._onDrop);
-          // Native D&D triggers pointercancel
-          !this.nativeDraggable && on(ownerDocument, 'pointercancel', _this._onDrop);
-        } else {
-          on(ownerDocument, 'mouseup', _this._onDrop);
-          on(ownerDocument, 'touchend', _this._onDrop);
-          on(ownerDocument, 'touchcancel', _this._onDrop);
-        }
+        on(ownerDocument, 'mouseup', _this._onDrop);
+        on(ownerDocument, 'touchend', _this._onDrop);
+        on(ownerDocument, 'touchcancel', _this._onDrop);
 
         // Make dragEl draggable (must be before delay for FireFox)
         if (FireFox && this.nativeDraggable) {
@@ -1361,14 +1354,9 @@
           // If the user moves the pointer or let go the click or touch
           // before the delay has been reached:
           // disable the delayed drag
-          if (options.supportPointer) {
-            on(ownerDocument, 'pointerup', _this._disableDelayedDrag);
-            on(ownerDocument, 'pointercancel', _this._disableDelayedDrag);
-          } else {
-            on(ownerDocument, 'mouseup', _this._disableDelayedDrag);
-            on(ownerDocument, 'touchend', _this._disableDelayedDrag);
-            on(ownerDocument, 'touchcancel', _this._disableDelayedDrag);
-          }
+          on(ownerDocument, 'mouseup', _this._disableDelayedDrag);
+          on(ownerDocument, 'touchend', _this._disableDelayedDrag);
+          on(ownerDocument, 'touchcancel', _this._disableDelayedDrag);
           on(ownerDocument, 'mousemove', _this._delayedDragTouchMoveHandler);
           on(ownerDocument, 'touchmove', _this._delayedDragTouchMoveHandler);
           options.supportPointer && on(ownerDocument, 'pointermove', _this._delayedDragTouchMoveHandler);
@@ -1394,8 +1382,6 @@
       off(ownerDocument, 'mouseup', this._disableDelayedDrag);
       off(ownerDocument, 'touchend', this._disableDelayedDrag);
       off(ownerDocument, 'touchcancel', this._disableDelayedDrag);
-      off(ownerDocument, 'pointerup', this._disableDelayedDrag);
-      off(ownerDocument, 'pointercancel', this._disableDelayedDrag);
       off(ownerDocument, 'mousemove', this._delayedDragTouchMoveHandler);
       off(ownerDocument, 'touchmove', this._delayedDragTouchMoveHandler);
       off(ownerDocument, 'pointermove', this._delayedDragTouchMoveHandler);
@@ -1416,6 +1402,7 @@
       }
       try {
         if (document.selection) {
+          // Timeout neccessary for IE9
           _nextTick(function () {
             document.selection.empty();
           });
@@ -1637,7 +1624,6 @@
       _this._dragStartId = _nextTick(_this._dragStarted.bind(_this, fallback, evt));
       on(document, 'selectstart', _this);
       moved = true;
-      window.getSelection().removeAllRanges();
       if (Safari) {
         css(document.body, 'user-select', 'none');
       }
@@ -1909,7 +1895,6 @@
       off(ownerDocument, 'mouseup', this._onDrop);
       off(ownerDocument, 'touchend', this._onDrop);
       off(ownerDocument, 'pointerup', this._onDrop);
-      off(ownerDocument, 'pointercancel', this._onDrop);
       off(ownerDocument, 'touchcancel', this._onDrop);
       off(document, 'selectstart', this);
     },
@@ -3100,38 +3085,28 @@
               var lastIndex = index(lastMultiDragSelect),
                 currentIndex = index(dragEl$1);
               if (~lastIndex && ~currentIndex && lastIndex !== currentIndex) {
-                (function () {
-                  // Must include lastMultiDragSelect (select it), in case modified selection from no selection
-                  // (but previous selection existed)
-                  var n, i;
-                  if (currentIndex > lastIndex) {
-                    i = lastIndex;
-                    n = currentIndex;
-                  } else {
-                    i = currentIndex;
-                    n = lastIndex + 1;
-                  }
-                  var filter = options.filter;
-                  for (; i < n; i++) {
-                    if (~multiDragElements.indexOf(children[i])) continue;
-                    // Check if element is draggable
-                    if (!closest(children[i], options.draggable, parentEl, false)) continue;
-                    // Check if element is filtered
-                    var filtered = filter && (typeof filter === 'function' ? filter.call(sortable, evt, children[i], sortable) : filter.split(',').some(function (criteria) {
-                      return closest(children[i], criteria.trim(), parentEl, false);
-                    }));
-                    if (filtered) continue;
-                    toggleClass(children[i], options.selectedClass, true);
-                    multiDragElements.push(children[i]);
-                    dispatchEvent({
-                      sortable: sortable,
-                      rootEl: rootEl,
-                      name: 'select',
-                      targetEl: children[i],
-                      originalEvent: evt
-                    });
-                  }
-                })();
+                // Must include lastMultiDragSelect (select it), in case modified selection from no selection
+                // (but previous selection existed)
+                var n, i;
+                if (currentIndex > lastIndex) {
+                  i = lastIndex;
+                  n = currentIndex;
+                } else {
+                  i = currentIndex;
+                  n = lastIndex + 1;
+                }
+                for (; i < n; i++) {
+                  if (~multiDragElements.indexOf(children[i])) continue;
+                  toggleClass(children[i], options.selectedClass, true);
+                  multiDragElements.push(children[i]);
+                  dispatchEvent({
+                    sortable: sortable,
+                    rootEl: rootEl,
+                    name: 'select',
+                    targetEl: children[i],
+                    originalEvent: evt
+                  });
+                }
               }
             } else {
               lastMultiDragSelect = dragEl$1;

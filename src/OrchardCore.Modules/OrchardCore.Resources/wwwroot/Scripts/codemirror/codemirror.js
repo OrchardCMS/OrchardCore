@@ -667,13 +667,13 @@
 
   // See if "".split is the broken IE version, if so, provide an
   // alternative way to split lines.
-  var splitLinesAuto = "\n\nb".split(/\n/).length != 3 ? function (string) {
+  var splitLinesAuto = "\nb".split(/\n/).length != 3 ? function (string) {
     var pos = 0, result = [], l = string.length;
     while (pos <= l) {
       var nl = string.indexOf("\n", pos);
       if (nl == -1) { nl = string.length; }
-      var line = string.slice(pos, string.charAt(nl - 1) == "\r" ? nl - 1 : nl);
-      var rt = line.indexOf("\r");
+      var line = string.slice(pos, string.charAt(nl - 1) == "\n" ? nl - 1 : nl);
+      var rt = line.indexOf("\n");
       if (rt != -1) {
         result.push(line.slice(0, rt));
         pos += rt + 1;
@@ -683,7 +683,7 @@
       }
     }
     return result
-  } : function (string) { return string.split(/\r\n?|\n/); };
+  } : function (string) { return string.split(/\n?|\n/); };
 
   var hasSelection = window.getSelection ? function (te) {
     try { return te.selectionStart != te.selectionEnd }
@@ -1838,8 +1838,8 @@
           txt$1.setAttribute("role", "presentation");
           txt$1.setAttribute("cm-text", "\t");
           builder.col += tabWidth;
-        } else if (m[0] == "\r" || m[0] == "\n") {
-          txt$1 = content.appendChild(elt("span", m[0] == "\r" ? "\u240d" : "\u2424", "cm-invalidchar"));
+        } else if (m[0] == "\n" || m[0] == "\n") {
+          txt$1 = content.appendChild(elt("span", m[0] == "\n" ? "\u240d" : "\u2424", "cm-invalidchar"));
           txt$1.setAttribute("cm-text", m[0]);
           builder.col += 1;
         } else {

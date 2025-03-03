@@ -6,6 +6,8 @@ import { fileURLToPath } from "url";
 import chalk from "chalk";
 import _ from "lodash";
 import buildConfig from "./config.mjs";
+import { Buffer } from "buffer";
+import process from "node:process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,6 +17,28 @@ const config = JSON5.parse(Buffer.from(process.argv[3], "base64").toString("utf-
 const isWatching = action === "watch";
 const isHosting = action === "host";
 
+const hashCode = (str) => {
+    let hash = 0,
+        i,
+        chr;
+
+    if (str.length === 0) return hash;
+
+    for (i = 0; i < str.length; i++) {
+        chr = str.charCodeAt(i);
+        hash = (hash << 5) - hash + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+
+    return hash < 0 ? -hash : hash; // Convert to positive number
+};
+
+/**
+ * Runs parcel with the given command and assetConfig.
+ * @param {string} command - The command to run (e.g. build, watch, host)
+ * @param {object} assetConfig - The asset configuration to use
+ * @returns {Promise<void>}
+ */
 async function runParcel(command, assetConfig) {
     //console.log(`parcel ${command}`, assetConfig);
 
@@ -32,7 +56,7 @@ async function runParcel(command, assetConfig) {
         ...options,
     });
 
-    fs.remove(assetConfig.dest); // clean the destination folder
+    await fs.remove(assetConfig.dest); // clean the destination folder
 
     if (isWatching || isHosting) {
         const parcelCacheFolder = options.cacheDir;
@@ -40,7 +64,7 @@ async function runParcel(command, assetConfig) {
 
         console.log(chalk.green("Deleted folder:"), chalk.gray(parcelCacheFolder));
 
-        const { unsubscribe } = await parcel.watch((err, event) => {
+        const { unsubscribe } = await parcel.watch((err) => {
             if (err) {
                 throw err;
             }
@@ -66,11 +90,17 @@ async function runParcel(command, assetConfig) {
             console.log(err.diagnostics);
             process.exit(1);
         }
-        process.exit(0);
     }
 }
 
-// Builds the options to pass to the parcel constructor.
+/**
+ * Builds and returns the Parcel options object based on the provided command and asset configuration.
+ *
+ * @param {string} command - The command to execute, which can be either "build" or "watch".
+ * @param {Object} assetConfig - The asset configuration object that contains settings for building or watching assets.
+ * @returns {Object} - The Parcel options object tailored for the specified command and asset configuration.
+ */
+
 function buildParcelOptions(command, assetConfig) {
     let nodeEnv;
     if (command === "build") {
@@ -107,7 +137,7 @@ function buildParcelOptions(command, assetConfig) {
                     browsers: "> 1%, last 2 versions, not dead",
                 },
                 outputFormat: "global",
-                sourceMap: false, // TODO: mode === "production",
+                sourceMap: mode === "production",
             },
         },
         env: {
@@ -124,21 +154,75 @@ function buildParcelOptions(command, assetConfig) {
     return _.merge(defaultOptions, buildConfig("parcel")(action, assetConfig, defaultOptions), assetConfig.options);
 }
 
-// run the process
+/**
+ * Processes JavaScript files in the specified asset configuration destination,
+ * removing source mapping URL comments and creating corresponding production
+ * JavaScript files with the ".prod.js" extension.
+ *
+ * @param {Object} assetConfig - The asset configuration object.
+ * @param {string} assetConfig.dest - The directory containing JavaScript files to process.
+ */
+
+const createProdJsFile = async (assetConfig) => {
+    const files = await fs.readdir(assetConfig.dest);
+
+    for (const file of files) {
+        const filePath = path.join(assetConfig.dest, file);
+        const stats = await fs.stat(filePath);
+
+        if (stats.isFile()) {
+            const jsFile = filePath;
+
+            if (path.extname(jsFile) === ".js") {
+                const fileContent = await fs.readFile(filePath, "utf8");
+                const lines = fileContent.split(/\r?\n/);
+
+                lines.forEach((line, index) => {
+                    if (line.startsWith("//# sourceMappingURL=")) {
+                        lines.splice(index, 1);
+                    }
+                });
+
+                const newContent = lines.join("\n");
+                const prodFilePath = filePath.replace(/\.js$/, ".prod.js");
+                await fs.writeFile(prodFilePath, newContent);
+            }
+        }
+    }
+};
+
+/**
+ * Normalizes line endings in source map files within the specified asset configuration destination.
+ *
+ * This function reads all files in the provided destination directory and checks for files
+ * with a ".map" extension. It then reads the content of each source map file and replaces
+ * any line ending characters (such as "\r\n" or "\n") with a consistent "\n" newline character
+ * to ensure uniformity.
+ *
+ * @param {Object} assetConfig - The asset configuration object.
+ * @param {string} assetConfig.dest - The directory containing files to process.
+ */
+
+const normalizeSourceMap = async (assetConfig) => {
+    const files = await fs.readdir(assetConfig.dest);
+
+    for (const file of files) {
+        const filePath = path.join(assetConfig.dest, file);
+        const stats = await fs.stat(filePath);
+
+        if (stats.isFile()) {
+            if (path.extname(filePath) === ".map") {
+                const fileContent = await fs.readFile(filePath, "utf8");
+                await fs.writeFile(filePath, fileContent.replace(/(?:\\[rn])+/g, "\\n"));
+            }
+        }
+    }
+};
+
 await runParcel(action, config);
 
-function hashCode(str) {
-    let hash = 0,
-        i,
-        chr;
-
-    if (str.length === 0) return hash;
-
-    for (i = 0; i < str.length; i++) {
-        chr = str.charCodeAt(i);
-        hash = (hash << 5) - hash + chr;
-        hash |= 0; // Convert to 32bit integer
-    }
-
-    return hash < 0 ? -hash : hash; // Convert to positive number
+if (action === "build") {
+    await createProdJsFile(config);
+    await normalizeSourceMap(config);
+    process.exit(0);
 }
