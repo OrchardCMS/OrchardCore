@@ -11,11 +11,7 @@ public class ContentPartDefinition : ContentDefinition
         Settings = [];
     }
 
-    public ContentPartDefinition(
-        string name,
-        IEnumerable<ContentPartFieldDefinition> fields,
-        JsonObject settings
-    )
+    public ContentPartDefinition(string name, IEnumerable<ContentPartFieldDefinition> fields, JsonObject settings)
     {
         Name = name;
         Fields = fields.ToList();
