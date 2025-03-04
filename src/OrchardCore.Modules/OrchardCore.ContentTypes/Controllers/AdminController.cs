@@ -149,7 +149,7 @@ public sealed class AdminController : Controller
     }
 
     [Admin("ContentTypes/Edit/{id}", "EditType")]
-    public async Task<ActionResult> Edit(string id)
+    public async Task<ActionResult> Edit(string id, string submit)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
@@ -164,7 +164,14 @@ public sealed class AdminController : Controller
         }
 
         typeViewModel.Editor = await _contentDefinitionDisplayManager.BuildTypeEditorAsync(typeViewModel.TypeDefinition, _updateModelAccessor.ModelUpdater);
-
+        if (string.Equals(submit, "save", StringComparison.Ordinal))
+        {
+            return RedirectToAction(nameof(List));
+        }
+        else if (string.Equals(submit, "SaveAndContinue", StringComparison.Ordinal))
+        {
+            await _notifier.SuccessAsync(H["Content type updated successfully."]);
+        }
         return View(typeViewModel);
     }
 
