@@ -26,12 +26,12 @@ public class PoParser
     /// <param name="reader">The <see cref="TextReader"/>.</param>
     /// <returns>A list of culture records.</returns>
 #pragma warning disable CA1822 // Mark members as static
-    public IEnumerable<CultureDictionaryRecord> Parse(TextReader reader)
+    public async IAsyncEnumerable<CultureDictionaryRecord> ParseAsync(TextReader reader)
 #pragma warning restore CA1822 // Mark members as static
     {
         var entryBuilder = new DictionaryRecordBuilder();
         string line;
-        while ((line = reader.ReadLine()) != null)
+        while ((line = await reader.ReadLineAsync()) != null)
         {
             (var context, var content) = ParseLine(line);
 
