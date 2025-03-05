@@ -184,7 +184,7 @@ const createProdJsFile = async (assetConfig) => {
                 });
 
                 const newContent = lines.join("\n");
-                const prodFilePath = filePath.replace(/\.js$/, ".prod.js");
+                const prodFilePath = filePath.replace(/\.js$/, ".min.js");
                 await fs.writeFile(prodFilePath, newContent);
             }
         }
