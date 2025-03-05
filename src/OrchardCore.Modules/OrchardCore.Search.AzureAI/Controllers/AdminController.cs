@@ -251,8 +251,6 @@ public sealed class AdminController : Controller
         {
             try
             {
-                // TO Investigate: GetMappingsAsync should be moved to _indexSettingsService.
-
                 settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings);
 
                 if (await _indexManager.CreateAsync(settings))
@@ -386,17 +384,17 @@ public sealed class AdminController : Controller
             // At this point we know that the index does not exists on remote server. Let's delete it locally.
             await _indexSettingsService.DeleteAsync(id);
 
-            await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", id]);
+            await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", settings.IndexName]);
         }
         else if (await _indexManager.DeleteAsync(settings.IndexName))
         {
             await _indexSettingsService.DeleteAsync(id);
 
-            await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", id]);
+            await _notifier.SuccessAsync(H["Index <em>{0}</em> deleted successfully.", settings.IndexName]);
         }
         else
         {
-            await _notifier.ErrorAsync(H["An error occurred while deleting the <em>{0}</em> index.", id]);
+            await _notifier.ErrorAsync(H["An error occurred while deleting the <em>{0}</em> index.", settings.IndexName]);
         }
 
         return RedirectToAction(nameof(Index));
@@ -456,7 +454,7 @@ public sealed class AdminController : Controller
 
         if (!await _indexManager.ExistsAsync(settings.IndexName))
         {
-            await _notifier.ErrorAsync(H["Unable to reset the <em>{0}</em> index. Try rebuilding it instead.", id]);
+            await _notifier.ErrorAsync(H["Unable to reset the <em>{0}</em> index. Try rebuilding it instead.", settings.IndexName]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -465,7 +463,7 @@ public sealed class AdminController : Controller
         settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings);
         await _indexSettingsService.UpdateAsync(settings);
         await _indexSettingsService.SynchronizeAsync(settings);
-        await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", id]);
+        await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", settings.IndexName]);
 
         return RedirectToAction(nameof(Index));
     }
