@@ -164,11 +164,11 @@ public sealed class AdminController : Controller
         }
 
         typeViewModel.Editor = await _contentDefinitionDisplayManager.BuildTypeEditorAsync(typeViewModel.TypeDefinition, _updateModelAccessor.ModelUpdater);
-        if (string.Equals(submit, "save", StringComparison.Ordinal))
+        if (submit == "save")
         {
             return RedirectToAction(nameof(List));
         }
-        else if (string.Equals(submit, "SaveAndContinue", StringComparison.Ordinal))
+        else if (submit == "SaveAndContinue")
         {
             await _notifier.SuccessAsync(H["Content type updated successfully."]);
         }

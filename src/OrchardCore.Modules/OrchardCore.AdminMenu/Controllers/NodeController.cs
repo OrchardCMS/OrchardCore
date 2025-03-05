@@ -225,7 +225,7 @@ public sealed class NodeController : Controller
             await _adminMenuService.SaveAsync(adminMenu);
 
             await _notifier.SuccessAsync(H["Admin node updated successfully."]);
-            if (string.Equals(submit, "SaveAndContinue", StringComparison.Ordinal))
+            if (submit == "SaveAndContinue")
             {
                 model.Editor = editor;
                 return View(model);
