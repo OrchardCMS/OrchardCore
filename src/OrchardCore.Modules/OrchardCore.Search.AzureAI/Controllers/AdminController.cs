@@ -80,6 +80,7 @@ public sealed class AdminController : Controller
         H = htmlLocalizer;
     }
 
+    [Admin("azure-search/Index", "AzureAISearch.Index")]
     public async Task<IActionResult> Index(AzureAIIndexOptions options, PagerParameters pagerParameters)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchPermissions.ManageAzureAISearchIndexes))
@@ -145,6 +146,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     [ActionName(nameof(Index))]
     [FormValueRequired("submit.Filter")]
+    [Admin("azure-search/Index", "AzureAISearch.Index")]
     public ActionResult IndexFilterPOST(AdminIndexViewModel model)
         => RedirectToAction(nameof(Index),
             new RouteValueDictionary
@@ -156,6 +158,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     [ActionName(nameof(Index))]
     [FormValueRequired("submit.BulkAction")]
+    [Admin("azure-search/Index", "AzureAISearch.Index")]
     public async Task<IActionResult> IndexPost(AzureAIIndexOptions options, IEnumerable<string> itemIds)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AzureAISearchPermissions.ManageAzureAISearchIndexes))
@@ -459,7 +462,6 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        // settings.SetLastTaskId(0);
         settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings);
         await _indexSettingsService.UpdateAsync(settings);
         await _indexSettingsService.SynchronizeAsync(settings);

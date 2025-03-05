@@ -129,5 +129,4 @@ public sealed class ContentAzureAISearchIndexHandler : AzureAISearchIndexSetting
 
         return Task.CompletedTask;
     }
-
 }
