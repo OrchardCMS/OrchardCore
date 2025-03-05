@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
@@ -11,13 +13,16 @@ namespace OrchardCore.Search.AzureAI.Drivers;
 internal sealed class AzureAISearchIndexSettingsDisplayDriver : DisplayDriver<AzureAISearchIndexSettings>
 {
     private readonly AzureAISearchIndexManager _indexManager;
+    private readonly AzureAISearchDefaultOptions _azureAIOptions;
     private readonly IStringLocalizer S;
 
     public AzureAISearchIndexSettingsDisplayDriver(
         AzureAISearchIndexManager indexManager,
+        IOptions<AzureAISearchDefaultOptions> azureAIOptions,
         IStringLocalizer<AzureAISearchIndexSettingsDisplayDriver> stringLocalizer)
     {
         _indexManager = indexManager;
+        _azureAIOptions = azureAIOptions.Value;
         S = stringLocalizer;
     }
 
@@ -32,26 +37,17 @@ internal sealed class AzureAISearchIndexSettingsDisplayDriver : DisplayDriver<Az
 
     public override IDisplayResult Edit(AzureAISearchIndexSettings settings, BuildEditorContext context)
     {
-        if (!string.Equals(AzureAISearchConstants.ContentsIndexSource, settings.Source, StringComparison.OrdinalIgnoreCase))
-        {
-            return null;
-        }
-
         return Initialize<AzureAISettingsViewModel>("AzureAISearchIndexSettingsFields_Edit", model =>
         {
             model.AnalyzerName = settings.AnalyzerName ?? AzureAISearchDefaultOptions.DefaultAnalyzer;
             model.IndexName = settings.IndexName;
             model.IsNew = context.IsNew;
+            model.Analyzers = _azureAIOptions.Analyzers.Select(x => new SelectListItem(x, x));
         }).Location("Content:1");
     }
 
     public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexSettings settings, UpdateEditorContext context)
     {
-        if (!string.Equals(AzureAISearchConstants.ContentsIndexSource, settings.Source, StringComparison.OrdinalIgnoreCase))
-        {
-            return null;
-        }
-
         var model = new AzureAISettingsViewModel();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);

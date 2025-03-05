@@ -30,6 +30,11 @@ public class ContentAzureAISearchEvents : IAzureAISearchEvents
 
     public async Task MappingAsync(AzureAISearchMappingContext context)
     {
+        if (!string.Equals(AzureAISearchConstants.ContentsIndexSource, context.Settings.Source, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
         var metadata = context.Settings.As<ContentIndexMetadata>();
 
         foreach (var contentType in metadata.IndexedContentTypes ?? [])

@@ -70,11 +70,9 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                     continue;
                 }
 
-                indexObject.Value["Source"] = AzureAISearchConstants.ContentsIndexSource;
-
                 var indexName = indexObject.Value["IndexName"]?.GetValue<string>();
 
-                if (!string.IsNullOrEmpty(indexName))
+                if (string.IsNullOrEmpty(indexName))
                 {
                     // Bad index! this is a scenario that should never happen.
                     continue;
@@ -85,6 +83,8 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                     // Bad index! this is a scenario that should never happen.
                     continue;
                 }
+
+                indexSettings.Source = AzureAISearchConstants.ContentsIndexSource;
 
                 if (string.IsNullOrEmpty(indexSettings.Id))
                 {
@@ -105,11 +105,23 @@ internal sealed class AzureAISearchIndexSettingsMigrations : DataMigration
                     metadata.IndexLatest = indexLatest.Value;
                 }
 
-                var indexContentTypes = indexObject.Value[nameof(ContentIndexMetadata.IndexedContentTypes)]?.GetValue<string[]>();
+                var indexContentTypes = indexObject.Value[nameof(ContentIndexMetadata.IndexedContentTypes)]?.AsArray();
 
                 if (indexContentTypes is not null)
                 {
-                    metadata.IndexedContentTypes = indexContentTypes;
+                    var items = new HashSet<string>();
+
+                    foreach (var indexContentType in indexContentTypes)
+                    {
+                        var value = indexContentType.GetValue<string>();
+
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            items.Add(value);
+                        }
+                    }
+
+                    metadata.IndexedContentTypes = items.ToArray();
                 }
 
                 indexSettings.Put(metadata);

@@ -21,9 +21,14 @@ public sealed class ContentAzureAISearchIndexHandler : AzureAISearchIndexSetting
     public override Task InitializingAsync(AzureAISearchIndexSettingsInitializingContext context)
         => PopulateAsync(context.Settings, context.Data);
 
-    private static Task PopulateAsync(AzureAISearchIndexSettings index, JsonNode data)
+    private static Task PopulateAsync(AzureAISearchIndexSettings settings, JsonNode data)
     {
-        var metadata = index.As<ContentIndexMetadata>();
+        if (!string.Equals(AzureAISearchConstants.ContentsIndexSource, settings.Source, StringComparison.OrdinalIgnoreCase))
+        {
+            return Task.CompletedTask;
+        }
+
+        var metadata = settings.As<ContentIndexMetadata>();
 
         var indexLatest = data[nameof(ContentIndexMetadata.IndexLatest)]?.GetValue<bool>();
 
@@ -39,20 +44,37 @@ public sealed class ContentAzureAISearchIndexHandler : AzureAISearchIndexSetting
             metadata.Culture = culture;
         }
 
-        var indexContentTypes = data[nameof(ContentIndexMetadata.IndexedContentTypes)]?.GetValue<string[]>();
+        var indexContentTypes = data[nameof(ContentIndexMetadata.IndexedContentTypes)]?.AsArray();
 
         if (indexContentTypes is not null)
         {
-            metadata.IndexedContentTypes = indexContentTypes;
+            var items = new HashSet<string>();
+
+            foreach (var indexContentType in indexContentTypes)
+            {
+                var value = indexContentType.GetValue<string>();
+
+                if (!string.IsNullOrEmpty(value))
+                {
+                    items.Add(value);
+                }
+            }
+
+            metadata.IndexedContentTypes = items.ToArray();
         }
 
-        index.Put(metadata);
+        settings.Put(metadata);
 
         return Task.CompletedTask;
     }
 
     public override Task ValidatingAsync(AzureAISearchIndexSettingsValidatingContext context)
     {
+        if (!string.Equals(AzureAISearchConstants.ContentsIndexSource, context.Settings.Source, StringComparison.OrdinalIgnoreCase))
+        {
+            return Task.CompletedTask;
+        }
+
         var metadata = context.Settings.As<ContentIndexMetadata>();
 
         if (metadata.IndexedContentTypes is null || metadata.IndexedContentTypes.Length == 0)
@@ -72,6 +94,11 @@ public sealed class ContentAzureAISearchIndexHandler : AzureAISearchIndexSetting
 
     public override Task SynchronizedAsync(AzureAISearchIndexSettingsSynchronizedContext context)
     {
+        if (!string.Equals(AzureAISearchConstants.ContentsIndexSource, context.Settings.Source, StringComparison.OrdinalIgnoreCase))
+        {
+            return Task.CompletedTask;
+        }
+
         return HttpBackgroundJob.ExecuteAfterEndOfRequestAsync("sync-content-items-azure-ai", context.Settings.IndexName, async (scope, indexName) =>
         {
             var indexingService = scope.ServiceProvider.GetRequiredService<AzureAISearchIndexingService>();
@@ -81,6 +108,11 @@ public sealed class ContentAzureAISearchIndexHandler : AzureAISearchIndexSetting
 
     public override Task ExportingAsync(AzureAISearchIndexSettingsExportingContext context)
     {
+        if (!string.Equals(AzureAISearchConstants.ContentsIndexSource, context.Settings.Source, StringComparison.OrdinalIgnoreCase))
+        {
+            return Task.CompletedTask;
+        }
+
         var metadata = context.Settings.As<ContentIndexMetadata>();
 
         context.Data["IndexLatest"] = metadata.IndexLatest;
@@ -97,4 +129,5 @@ public sealed class ContentAzureAISearchIndexHandler : AzureAISearchIndexSetting
 
         return Task.CompletedTask;
     }
+
 }

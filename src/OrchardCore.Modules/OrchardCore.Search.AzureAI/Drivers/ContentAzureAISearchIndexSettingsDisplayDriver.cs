@@ -21,6 +21,11 @@ internal sealed class ContentAzureAISearchIndexSettingsDisplayDriver : DisplayDr
 
     public override IDisplayResult Edit(AzureAISearchIndexSettings settings, BuildEditorContext context)
     {
+        if (!string.Equals(AzureAISearchConstants.ContentsIndexSource, settings.Source, StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
         return Initialize<ContentIndexMetadataViewModel>("ContentIndexMetadata_Edit", model =>
         {
             var metadata = settings.As<ContentIndexMetadata>();
@@ -37,6 +42,11 @@ internal sealed class ContentAzureAISearchIndexSettingsDisplayDriver : DisplayDr
 
     public override async Task<IDisplayResult> UpdateAsync(AzureAISearchIndexSettings settings, UpdateEditorContext context)
     {
+        if (!string.Equals(AzureAISearchConstants.ContentsIndexSource, settings.Source, StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
         var model = new ContentIndexMetadataViewModel();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
