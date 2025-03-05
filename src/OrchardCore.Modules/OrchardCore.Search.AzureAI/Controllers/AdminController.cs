@@ -7,7 +7,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -29,7 +28,6 @@ public sealed class AdminController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly AzureAISearchIndexManager _indexManager;
     private readonly AzureAISearchIndexSettingsService _indexSettingsService;
-    private readonly IContentManager _contentManager;
     private readonly IShapeFactory _shapeFactory;
     private readonly AzureAIIndexDocumentManager _azureAIIndexDocumentManager;
     private readonly AzureAISearchDefaultOptions _azureAIOptions;
@@ -48,7 +46,6 @@ public sealed class AdminController : Controller
         IAuthorizationService authorizationService,
         AzureAISearchIndexManager indexManager,
         AzureAISearchIndexSettingsService indexSettingsService,
-        IContentManager contentManager,
         IShapeFactory shapeFactory,
         AzureAIIndexDocumentManager azureAIIndexDocumentManager,
         IOptions<AzureAISearchDefaultOptions> azureAIOptions,
@@ -66,7 +63,6 @@ public sealed class AdminController : Controller
         _authorizationService = authorizationService;
         _indexManager = indexManager;
         _indexSettingsService = indexSettingsService;
-        _contentManager = contentManager;
         _shapeFactory = shapeFactory;
         _azureAIIndexDocumentManager = azureAIIndexDocumentManager;
         _azureAIOptions = azureAIOptions.Value;
