@@ -52,6 +52,12 @@ public class PlaceholderAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
                 try
                 {
                     var treeBuilder = treeNodeBuilders.FirstOrDefault(x => x.Name == childTreeNode.GetType().Name);
+
+                    if (treeBuilder is null)
+                    {
+                        continue;
+                    }
+
                     await treeBuilder.BuildNavigationAsync(childTreeNode, itemBuilder, treeNodeBuilders);
                 }
                 catch (Exception e)
