@@ -1,32 +1,30 @@
-using System;
-
 namespace OrchardCore.Localization.Data;
 
 public class DataLocalizedString
 {
-    public DataLocalizedString(string name, string context, string value)
-        : this(name, context, value, resourceNotFound: false)
+    public DataLocalizedString(string context, string name, string value)
+        : this(context, name, value, resourceNotFound: false)
     {
 
     }
 
-    public DataLocalizedString(string name, string context, string value, bool resourceNotFound)
+    public DataLocalizedString(string context, string name, string value, bool resourceNotFound)
     {
-        ArgumentNullException.ThrowIfNullOrEmpty(name, nameof(name));
         ArgumentNullException.ThrowIfNullOrEmpty(context, nameof(context));
-        ArgumentNullException.ThrowIfNullOrEmpty(value, nameof(value));
+        ArgumentNullException.ThrowIfNullOrEmpty(name, nameof(name));
+        //ArgumentNullException.ThrowIfNullOrEmpty(value, nameof(value));
 
-        Name = name;
         Context = context;
+        Name = name;
         Value = value;
         ResourceNotFound = resourceNotFound;
     }
 
     public static implicit operator string(DataLocalizedString dataLocalizedString) => dataLocalizedString?.Value;
 
-    public string Name { get; }
-
     public string Context { get; }
+
+    public string Name { get; }
 
     public string Value { get; }
 

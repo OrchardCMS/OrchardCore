@@ -28,7 +28,7 @@ public class DataLocalizer : IDataLocalizer
 
             var translation = GetTranslation(name, context, CultureInfo.CurrentUICulture);
 
-            return new DataLocalizedString(name, context, translation ?? name, translation == null);
+            return new DataLocalizedString(context, name, translation ?? name, translation == null);
         }
     }
 
@@ -41,7 +41,7 @@ public class DataLocalizer : IDataLocalizer
             var localizedString = new DataLocalizedString(name, context, translation, translation.ResourceNotFound);
             var formatted = string.Format(localizedString.Value, arguments);
 
-            return new DataLocalizedString(name, context, formatted, translation.ResourceNotFound);
+            return new DataLocalizedString(context, name, formatted, translation.ResourceNotFound);
         }
     }
 
@@ -54,7 +54,7 @@ public class DataLocalizer : IDataLocalizer
 
         foreach (var translation in translations)
         {
-            yield return new DataLocalizedString(translation.Key, context, translation.Value);
+            yield return new DataLocalizedString(context, translation.Key, translation.Value);
         }
     }
 

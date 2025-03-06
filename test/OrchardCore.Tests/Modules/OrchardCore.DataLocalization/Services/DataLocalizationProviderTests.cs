@@ -31,8 +31,18 @@ public class DataLocalizationProviderTests
         contentDefinitionService.Setup(cds => cds.GetTypesAsync())
             .ReturnsAsync(() => new List<EditTypeViewModel>
             {
-                new() { DisplayName = "BlogPost", TypeDefinition = CreateContentTypeDefinition("BlogPost", "Blog Post", ["Title", "Body", "Author"]) },
-                new() { DisplayName = "Person", TypeDefinition = CreateContentTypeDefinition("Person", "Person",  ["FirstName", "LastName"]) },
+                new()
+                {
+                    Name = "BlogPost",
+                    DisplayName = "Blog Post",
+                    TypeDefinition = CreateContentTypeDefinition("BlogPost", "Blog Post", ["Title", "Body", "Author"])
+                },
+                new()
+                {
+                    Name = "Person",
+                    DisplayName = "Person",
+                    TypeDefinition = CreateContentTypeDefinition("Person", "Person",  ["FirstName", "LastName"])
+                },
             });
         var dataLocalizationProvider = new ContentFieldDataLocalizationProvider(contentDefinitionService.Object);
         var localizedStrings = await dataLocalizationProvider.GetDescriptorsAsync();
@@ -54,7 +64,10 @@ public class DataLocalizationProviderTests
         return new ContentTypeDefinition(
             name,
             displayName,
-            new List<ContentTypePartDefinition> { new("Part", new ContentPartDefinition("Part", contentPartFieldDefinitions, settings), settings) },
+            new List<ContentTypePartDefinition>
+            {
+                new(name, new ContentPartDefinition(name, contentPartFieldDefinitions, settings), settings)
+            },
             settings);
     }
 }
