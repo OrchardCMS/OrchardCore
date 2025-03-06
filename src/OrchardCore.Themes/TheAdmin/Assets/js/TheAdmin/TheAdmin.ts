@@ -213,9 +213,11 @@ $("body").on("submit", "form.no-multisubmit", function (e) {
 declare global {
     interface Window {
         confirmDialog: typeof confirmDialog;
+        bootstrap: typeof bootstrap;
     }
 }
 
 window.confirmDialog = confirmDialog;
+window.bootstrap = bootstrap;
 
 export { confirmDialog, getTechnicalName };
