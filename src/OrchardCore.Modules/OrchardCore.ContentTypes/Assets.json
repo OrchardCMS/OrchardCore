@@ -4,5 +4,12 @@
     "name": "content-types",
     "source": "Assets/js/list-items-filter.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "content-type-create",
+    "source": "Assets/js/content-type-create.ts",
+    "dest": "wwwroot/Scripts/content-type-create",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]
