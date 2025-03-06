@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
 
@@ -10,7 +5,7 @@ namespace OrchardCore.DataLocalization.Services.Tests;
 
 public class ContentTypeDataLocalizationProviderTests
 {
-    private readonly ContentTypeDataLocalizationProvider _contentTypeDataLocalizationProvider;
+    //private readonly ContentTypeDataLocalizationProvider _contentTypeDataLocalizationProvider;
 
     public ContentTypeDataLocalizationProviderTests()
     {
@@ -22,7 +17,7 @@ public class ContentTypeDataLocalizationProviderTests
                 new() { DisplayName = "News" }
             });
 
-        _contentTypeDataLocalizationProvider = new ContentTypeDataLocalizationProvider(contentDefinitionService.Object);
+        //_contentTypeDataLocalizationProvider = new ContentTypeDataLocalizationProvider(contentDefinitionService.Object);
     }
 
     //[InlineData("Article", "es", "Artículo")]
