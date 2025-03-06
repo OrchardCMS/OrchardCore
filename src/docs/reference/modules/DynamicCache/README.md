@@ -51,10 +51,10 @@ If both types of expiration windows are supplied, the sliding policy will be use
 
 Here is a list of common cache dependency values that can be used to invalidate cache entries.
 
-| Dependency | Description |
-| --------- | ----------- |
+| Dependency                      | Description                                                                                                            |
+|---------------------------------|------------------------------------------------------------------------------------------------------------------------|
 | `contentitemid:{ContentItemId}` | Invalidated when a content item described with its unique id (`{ContentItemId}`) is Published, Unpublished or Removed. |
-| `alias:{Alias}` | Invalidated when a content item with a specific alias (`{Alias}`) is Published, Unpublished or Removed. |
+| `alias:{Alias}`                 | Invalidated when a content item with a specific alias (`{Alias}`) is Published, Unpublished or Removed.                |
 
 You can create your own dependencies by calling `RemoveTagAsync()` on `ITagCache` in response to events.
 
@@ -74,15 +74,15 @@ Contexts can be parameterized, for instance `query:age` will pick the `age` valu
 
 ### Available Contexts
 
-| Context | Description |
-| --------- | ----------- |
-| `features` | The list of enabled features. |
-| `features:{featureName}` | The specified feature name. |
-| `query` | The list of querystring values. |
-| `query:{queryName}` | The specified query name value. |
-| `user` | The current user. |
-| `user.roles` | The roles of the current user. |
-| `route` | The current request path. |
+| Context                  | Description                     |
+|--------------------------|---------------------------------|
+| `features`               | The list of enabled features.   |
+| `features:{featureName}` | The specified feature name.     |
+| `query`                  | The list of querystring values. |
+| `query:{queryName}`      | The specified query name value. |
+| `user`                   | The current user.               |
+| `user.roles`             | The roles of the current user.  |
+| `route`                  | The current request path.       |
 
 You can create your own Contexts by implementing `ICacheContextProvider`.
 
@@ -112,16 +112,16 @@ Example: `myShape.Cache("myshape")`
 
 #### CacheContext members
 
-| Method | Description |
-| --------- | ----------- |
-| `WithDuration(Timespan)` | Cache the shape for the specified amount of time. |
-| `WithSlidingExpiration(Timespan)` | Cache the shape for a specific amount of time with a sliding window. |
-| `AddContext(params string[])` | Varies the cached content on the specified context values. |
-| `RemoveContext(string)` | Removes the specified context. |
-| `AddDependency(params string[])` | Defines the context values that will invalidate the cache entry. |
-| `RemoveDependency(string)` | Removes the specified dependency. |
-| `AddTag(string)` | Adds a tag to the cache entry to that it can be invalidated by this tag value. |
-| `RemoveTag(string)` | Removes the specified tag. |
+| Method                            | Description                                                                    |
+|-----------------------------------|--------------------------------------------------------------------------------|
+| `WithDuration(Timespan)`          | Cache the shape for the specified amount of time.                              |
+| `WithSlidingExpiration(Timespan)` | Cache the shape for a specific amount of time with a sliding window.           |
+| `AddContext(params string[])`     | Varies the cached content on the specified context values.                     |
+| `RemoveContext(string)`           | Removes the specified context.                                                 |
+| `AddDependency(params string[])`  | Defines the context values that will invalidate the cache entry.               |
+| `RemoveDependency(string)`        | Removes the specified dependency.                                              |
+| `AddTag(string)`                  | Adds a tag to the cache entry to that it can be invalidated by this tag value. |
+| `RemoveTag(string)`               | Removes the specified tag.                                                     |
 
 !!! note
     `AddDependency` differs from `AddContext` in that it doesn't store multiple values for each context,
@@ -132,14 +132,14 @@ Example: `myShape.Cache("myshape")`
 
 When using shape tag helpers, the following attributes can be used:
 
-| Razor Attribute | Liquid Attribute | Description | Required |
-| --------- | ----------- | ----------- | ----------- |
-| `cache-id` | `cache_id` | The identifier of the cached shape. | Yes |
-| `cache-context` | `cache_context` | A set of space/comma-separated context values. | No |
-| `cache-dependency` | `cache_dependency` | A set of space/comma-separated dependency values. | No |
-| `cache-tag` | `cache_tag` | A set of space/comma-separated tag values. | No |
-| `cache-fixed-duration` | `cache_fixed_duration` | The cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
-| `cache-sliding-duration` | `cache_sliding_duration` | The sliding cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
+| Razor Attribute          | Liquid Attribute         | Description                                                             | Required |
+|--------------------------|--------------------------|-------------------------------------------------------------------------|----------|
+| `cache-id`               | `cache_id`               | The identifier of the cached shape.                                     | Yes      |
+| `cache-context`          | `cache_context`          | A set of space/comma-separated context values.                          | No       |
+| `cache-dependency`       | `cache_dependency`       | A set of space/comma-separated dependency values.                       | No       |
+| `cache-tag`              | `cache_tag`              | A set of space/comma-separated tag values.                              | No       |
+| `cache-fixed-duration`   | `cache_fixed_duration`   | The cache duration of the entry, e.g. "00:05:00" for 5 minutes.         | No       |
+| `cache-sliding-duration` | `cache_sliding_duration` | The sliding cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No       |
 
 For example, to cache the menu shape in a liquid template, you would use this markup:
 
@@ -155,13 +155,13 @@ The liquid `cache` block can be used to cache sections of markup. `cache` blocks
 
 #### Arguments
 
-| Liquid Attribute | Description | Required |
-| --------- | ----------- | ----------- |
-| `id` | The identifier of the cached shape. | Yes (this is the default first argument --- no need to explicitly specify the name of this argument.)  |
-| `contexts` | A set of space/comma-separated context values. | No |
-| `dependencies` | A set of space/comma-separated dependency values. | No |
-| `expires_after` | The cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
-| `expires_sliding` | The sliding cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No |
+| Liquid Attribute  | Description                                                             | Required                                                                                              |
+|-------------------|-------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| `id`              | The identifier of the cached shape.                                     | Yes (this is the default first argument --- no need to explicitly specify the name of this argument.) |
+| `contexts`        | A set of space/comma-separated context values.                          | No                                                                                                    |
+| `dependencies`    | A set of space/comma-separated dependency values.                       | No                                                                                                    |
+| `expires_after`   | The cache duration of the entry, e.g. "00:05:00" for 5 minutes.         | No                                                                                                    |
+| `expires_sliding` | The sliding cache duration of the entry, e.g. "00:05:00" for 5 minutes. | No                                                                                                    |
 
 #### Examples
 
@@ -197,12 +197,12 @@ An example might be a cache block around a list of content items from a query --
 
 There are four tags that allow you to alter the current cache scope. It's safe to use these tags even if you don't necessarily know if you're inside a cache block:
 
-| Liquid Tag | Description | Example |
-| --------- | ----------- | ----------- |
-| `cache_dependency` | Adds a dependency to the current cache scope. | `{% cache_dependency "alias:{Alias}" %}` |
-| `cache_expires_on` | Sets a fixed date and time that the cache item will expire. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block.  | `{% cache_expires_on {A DateTime or DateTimeOffset instance %}` (e.g. from a date/time field on a content item) |
-| `cache_expires_after` | Sets a timespan relative to when the item was cached that the cache item will expire. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block. | `{% cache_expires_after "01:00:00" %}` (One hour) |
-| `cache_expires_sliding` | Sets a sliding window for the expiry of the cache item. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block. | `{% cache_expires_sliding "00:01:00" %}` (One minute) |
+| Liquid Tag              | Description                                                                                                                                                                                                                                       | Example                                                                                                         |
+|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
+| `cache_dependency`      | Adds a dependency to the current cache scope.                                                                                                                                                                                                     | `{% cache_dependency "alias:{Alias}" %}`                                                                        |
+| `cache_expires_on`      | Sets a fixed date and time that the cache item will expire. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block.                           | `{% cache_expires_on {A DateTime or DateTimeOffset instance %}` (e.g. from a date/time field on a content item) |
+| `cache_expires_after`   | Sets a timespan relative to when the item was cached that the cache item will expire. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block. | `{% cache_expires_after "01:00:00" %}` (One hour)                                                               |
+| `cache_expires_sliding` | Sets a sliding window for the expiry of the cache item. The most restrictive cache policy (i.e. the one with the shortest life) will win in the event of multiple expiry policies being defined for a single block.                               | `{% cache_expires_sliding "00:01:00" %}` (One minute)                                                           |
 
 #### Example
 

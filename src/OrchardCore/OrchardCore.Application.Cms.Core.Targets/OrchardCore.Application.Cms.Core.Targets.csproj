@@ -131,7 +131,4 @@
     <ProjectReference Include="..\..\OrchardCore.Themes\TheAdmin\TheAdmin.csproj" PrivateAssets="none" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="OrchardCore.Translations.All" />
-  </ItemGroup>
 </Project>

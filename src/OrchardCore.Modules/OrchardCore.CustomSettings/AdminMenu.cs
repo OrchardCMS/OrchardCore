@@ -40,10 +40,12 @@ public sealed class AdminMenu : AdminNavigationProvider
 
             var htmlName = type.Name.HtmlClassify();
 
-            builder
+            if (NavigationHelper.UseLegacyFormat())
+            {
+                builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
-                        .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), layers => layers
+                        .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), customSettings => customSettings
                             .Action("Index", "Admin", routeValues)
                             .AddClass(htmlName)
                             .Id(htmlName)
@@ -51,6 +53,21 @@ public sealed class AdminMenu : AdminNavigationProvider
                             .Resource(type.Name)
                             .LocalNav()
                         )
+                    )
+                );
+
+                continue;
+            }
+
+            builder
+                .Add(S["Settings"], settings => settings
+                    .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), layers => layers
+                        .Action("Index", "Admin", routeValues)
+                        .AddClass(htmlName)
+                        .Id(htmlName)
+                        .Permission(Permissions.CreatePermissionForType(type))
+                        .Resource(type.Name)
+                        .LocalNav()
                     )
                 );
         }

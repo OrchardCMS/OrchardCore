@@ -4,13 +4,13 @@ namespace OrchardCore.Users;
 
 public sealed class Permissions : IPermissionProvider
 {
-    public static readonly Permission ManageUsers = CommonPermissions.ManageUsers;
-    public static readonly Permission ViewUsers = CommonPermissions.ViewUsers;
-    public static readonly Permission ManageOwnUserInformation = CommonPermissions.EditOwnUser;
-    public static readonly Permission EditOwnUser = CommonPermissions.EditOwnUser;
-    public static readonly Permission ListUsers = CommonPermissions.ListUsers;
-    public static readonly Permission EditUsers = CommonPermissions.EditUsers;
-    public static readonly Permission DeleteUsers = CommonPermissions.DeleteUsers;
+    public static readonly Permission ManageUsers = UsersPermissions.ManageUsers;
+    public static readonly Permission ViewUsers = UsersPermissions.ViewUsers;
+    public static readonly Permission ManageOwnUserInformation = UsersPermissions.EditOwnUser;
+    public static readonly Permission EditOwnUser = UsersPermissions.EditOwnUser;
+    public static readonly Permission ListUsers = UsersPermissions.ListUsers;
+    public static readonly Permission EditUsers = UsersPermissions.EditUsers;
+    public static readonly Permission DeleteUsers = UsersPermissions.DeleteUsers;
 
     private readonly IEnumerable<Permission> _allPermissions =
     [

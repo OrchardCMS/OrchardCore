@@ -14,8 +14,24 @@ public sealed class AdminMenu : AdminNavigationProvider
 
     protected override ValueTask BuildAsync(NavigationBuilder builder)
     {
+        if (NavigationHelper.UseLegacyFormat())
+        {
+            builder
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Media"], S["Media"].PrefixPosition(), media => media
+                        .Add(S["Azure Blob Options"], S["Azure Blob Options"].PrefixPosition(), options => options
+                            .Action("Options", "Admin", "OrchardCore.Media.Azure")
+                            .Permission(Permissions.ViewAzureMediaOptions)
+                            .LocalNav()
+                        )
+                    )
+                );
+
+            return ValueTask.CompletedTask;
+        }
+
         builder
-            .Add(S["Configuration"], configuration => configuration
+            .Add(S["Settings"], settings => settings
                 .Add(S["Media"], S["Media"].PrefixPosition(), media => media
                     .Add(S["Azure Blob Options"], S["Azure Blob Options"].PrefixPosition(), options => options
                         .Action("Options", "Admin", "OrchardCore.Media.Azure")

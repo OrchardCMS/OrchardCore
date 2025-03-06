@@ -56,11 +56,14 @@
 .workflow-canvas .jtk-connector {
   z-index: 4;
 }
-.workflow-canvas .jtk-endpoint, .workflow-canvas .endpointTargetLabel, .workflow-canvas .endpointSourceLabel {
+.workflow-canvas .jtk-endpoint,
+.workflow-canvas .endpointTargetLabel,
+.workflow-canvas .endpointSourceLabel {
   z-index: 21;
   cursor: pointer;
 }
-.workflow-canvas .endpointTargetLabel, .workflow-canvas .endpointSourceLabel {
+.workflow-canvas .endpointTargetLabel,
+.workflow-canvas .endpointSourceLabel {
   font-size: 8px;
 }
 .workflow-canvas .jtk-overlay {

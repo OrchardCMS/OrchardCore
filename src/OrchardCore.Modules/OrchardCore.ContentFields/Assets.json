@@ -1,50 +1,62 @@
 [
   {
-    "inputs": [
-      "Assets/js/vue-multiselect-wrapper.js"
-    ],
-    "output": "wwwroot/Scripts/vue-multiselect-wrapper.js"
+    "action": "min",
+    "name": "contentfields",
+    "source": "Assets/js/vue-multiselect-wrapper.js",
+    "tags": ["admin", "dashboard", "js"]
   },
   {
-    "inputs": [
-      "Assets/js/vue-multiselect-userpicker.js"
-    ],
-    "output": "wwwroot/Scripts/vue-multiselect-userpicker.js"
+    "action": "min",
+    "name": "contentfields",
+    "source": "Assets/js/vue-multiselect-userpicker.js",
+    "tags": ["admin", "dashboard", "js"]
   },
   {
-    "inputs": [
-      "Assets/js/vue-multiselect-multitextfieldpicker.js"
-    ],
-    "output": "wwwroot/Scripts/vue-multiselect-multitextfieldpicker.js"
+    "action": "min",
+    "name": "contentfields",
+    "source": "Assets/js/vue-multiselect-multitextfieldpicker.js",
+    "tags": ["admin", "dashboard", "js"]
   },
   {
-    "inputs": [
-      "Assets/scss/optionsEditor.scss"
-    ],
-    "output": "wwwroot/Styles/optionsEditor.css"
+    "action": "sass",
+    "name": "contentfields",
+    "source": "Assets/scss/optionsEditor.scss",
+    "tags": ["admin", "dashboard", "css"]
   },
   {
-    "inputs": [
-      "Assets/scss/fontawesome_iconpicker.scss"
-    ],
-    "output": "wwwroot/Styles/fontawesome-iconpicker.css"
+    "action": "sass",
+    "name": "contentfields",
+    "source": "Assets/scss/fontawesome-iconpicker.scss",
+    "tags": ["admin", "dashboard", "css"]
   },
   {
-    "inputs": [
-      "Assets/js/OptionsEditor/*.js"
-    ],
-    "output": "wwwroot/Scripts/optionsEditor.js"
+    "action": "min",
+    "name": "contentfields",
+    "source": "Assets/js/OptionsEditor/*.js",
+    "tags": ["admin", "dashboard", "js"]
   },
   {
-    "inputs": [
-      "Assets/js/trumbowyg.media.tag.js"
-    ],
-    "output": "wwwroot/Scripts/trumbowyg.media.tag.js"
+    "action": "min",
+    "name": "contentfields",
+    "source": "Assets/js/trumbowyg.media.tag.js",
+    "tags": ["admin", "dashboard", "js"]
   },
   {
-    "inputs": [
-      "Assets/js/trumbowyg.media.url.js"
-    ],
-    "output": "wwwroot/Scripts/trumbowyg.media.url.js"
+    "action": "min",
+    "name": "contentfields",
+    "source": "Assets/js/trumbowyg.media.url.js",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "contentfields",
+    "source": "Assets/js/iconpicker-custom.js",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "copy",
+    "name": "contentfields",
+    "source": "Assets/scss/iconpicker-custom.css",
+    "tags": ["admin", "dashboard", "css"]
   }
 ]

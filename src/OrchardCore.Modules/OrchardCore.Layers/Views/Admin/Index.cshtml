@@ -68,7 +68,7 @@
 
                             @if (Model.Layers.Count > 0)
                             {
-                                var widgetContentTypes = await ContentDefinitionManager.ListWidgetTypeDefinitionsAsync();
+                                var widgetContentTypes = (await ContentDefinitionManager.ListWidgetTypeDefinitionsAsync()).OrderBy(w => w.DisplayName);
 
                                 if (widgetContentTypes.Any())
                                 {

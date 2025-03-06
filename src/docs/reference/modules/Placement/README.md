@@ -94,6 +94,24 @@ It is built using the `Part` it's contained in, and the name of the `Field`.
 For instance, if a field named `MyField` would be added to an `Article` content type, its differentiator would be `Article-MyField`.  
 If a field named `City` was added to an `Address` part then its differentiator would be `Address-City`.
 
+### Field Display Modes
+
+The placement rules are stricter for non-standard display modes.
+
+1. The shape type must include `_Display`. For example `TextField_Display`.
+2. You must use the full differentiator defined as `[PartType]-[FieldName]-[FieldType]_Display__[DisplayMode]`. For a text field named `MyField` on the Content Type `Blog` the differentiator is `Blog-MyField-TextField_Display__Header`.
+
+```json
+{
+  "TextField_Display": [
+    {
+      "place": "Content:1",
+      "differentiator": "Blog-MyField-TextField_Display__Header"
+    }
+  ]
+}
+```
+
 ## Shape differentiators
 
 You can find information about shape differentiators in the [Templates documentation](../../modules/Templates/README.md#content-field-differentiator)

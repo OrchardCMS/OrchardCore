@@ -1,364 +1,490 @@
 [
-  {
-    "generateRTL": false,
-    "inputs": [
-      "node_modules/bootstrap/scss/bootstrap.scss"
-    ],
-    "output": "wwwroot/Styles/bootstrap.css"
-  },
-  {
-    "generateRTL": false,
-    "inputs": [
-      "node_modules/bootstrap/dist/css/bootstrap.rtl.css"
-    ],
-    "output": "wwwroot/Styles/bootstrap.rtl.css"
-  },
-  {
-    "inputs": [
-      "node_modules/bootstrap/dist/js/bootstrap.js"
-    ],
-    "output": "wwwroot/Scripts/bootstrap.js"
-  },
-  {
-    "inputs": [
-      "Assets/js/credential-helpers.js"
-    ],
-    "output": "wwwroot/Scripts/credential-helpers.js"
-  },
-  {
-    "inputs": [
-      "node_modules/bootstrap/dist/js/bootstrap.bundle.js"
-    ],
-    "output": "wwwroot/Scripts/bootstrap.bundle.js"
-  },
-  {
-    "inputs": [
-      "node_modules/@popperjs/core/dist/umd/popper.js"
-    ],
-    "output": "wwwroot/Scripts/popper.js"
-  },
-  {
-    "generateRTL": true,
-    "inputs": [
-      "node_modules/bootstrap-select/dist/css/bootstrap-select.css"
-    ],
-    "output": "wwwroot/Styles/bootstrap-select.css"
-  },
-  {
-    "inputs": [
-      "node_modules/bootstrap-select/dist/js/bootstrap-select.js"
-    ],
-    "output": "wwwroot/Scripts/bootstrap-select.js"
-  },
-  {
-    "generateRTL": false,
-    "inputs": [
-      "node_modules/codemirror/lib/codemirror.css"
-    ],
-    "output": "wwwroot/Styles/codemirror/codemirror.css"
-  },
-  {
-    "inputs": [
-      "node_modules/codemirror/addon/display/fullscreen.css"
-    ],
-    "output": "wwwroot/Styles/codemirror/addon/display/fullscreen.css"
-  },
-  {
-    "inputs": [
-      "node_modules/codemirror/addon/hint/show-hint.css"
-    ],
-    "output": "wwwroot/Styles/codemirror/addon/hint/show-hint.css"
-  },
-  {
-    "inputs": [
-      "node_modules/codemirror/lib/codemirror.js"
-    ],
-    "output": "wwwroot/Scripts/codemirror/codemirror.js"
-  },
-  {
-    "inputs": [
-      "node_modules/codemirror/addon/selection/active-line.js"
-    ],
-    "output": "wwwroot/Scripts/codemirror/addon/selection/active-line.js"
-  },
-  {
-    "inputs": [
-      "node_modules/codemirror/addon/display/autorefresh.js"
-    ],
-    "output": "wwwroot/Scripts/codemirror/addon/display/autorefresh.js"
-  },
-  {
-    "inputs": [
-      "node_modules/codemirror/addon/display/fullscreen.js"
-    ],
-    "output": "wwwroot/Scripts/codemirror/addon/display/fullscreen.js"
-  },
-  {
-    "inputs": [
-      "node_modules/codemirror/addon/edit/closetag.js"
-    ],
-    "output": "wwwroot/Scripts/codemirror/addon/edit/closetag.js"
-  },
-  {
-    "inputs": [
-      "node_modules/codemirror/addon/hint/show-hint.js"
-    ],
-    "output": "wwwroot/Scripts/codemirror/addon/hint/show-hint.js"
-  },
-  {
-    "inputs": [
-      "node_modules/codemirror/addon/hint/sql-hint.js"
-    ],
-    "output": "wwwroot/Scripts/codemirror/addon/hint/sql-hint.js"
-  },
-  {
-    "inputs": [
-      "node_modules/codemirror/addon/mode/multiplex.js"
-    ],
-    "output": "wwwroot/Scripts/codemirror/addon/mode/multiplex.js"
-  },
-  {
-    "inputs": [
-      "node_modules/codemirror/addon/mode/simple.js"
-    ],
-    "output": "wwwroot/Scripts/codemirror/addon/mode/simple.js"
-  },
-  {
-    "inputs": [
-      "node_modules/codemirror/mode/css/css.js"
-    ],
-    "output": "wwwroot/Scripts/codemirror/mode/css/css.js"
-  },
-  {
-    "inputs": [
-      "node_modules/codemirror/mode/htmlmixed/htmlmixed.js"
-    ],
-    "output": "wwwroot/Scripts/codemirror/mode/htmlmixed/htmlmixed.js"
-  },
-  {
-    "inputs": [
-      "node_modules/codemirror/mode/javascript/javascript.js"
-    ],
-    "output": "wwwroot/Scripts/codemirror/mode/javascript/javascript.js"
-  },
-  {
-    "inputs": [
-      "node_modules/codemirror/mode/sql/sql.js"
-    ],
-    "output": "wwwroot/Scripts/codemirror/mode/sql/sql.js"
-  },
-  {
-    "inputs": [
-      "node_modules/codemirror/mode/xml/xml.js"
-    ],
-    "output": "wwwroot/Scripts/codemirror/mode/xml/xml.js"
-  },
-  {
-    "inputs": [
-      "node_modules/jquery/dist/jquery.js"
-    ],
-    "output": "wwwroot/Scripts/jquery.js"
-  },
-  {
-    "inputs": [
-      "node_modules/jquery/dist/jquery.slim.js"
-    ],
-    "output": "wwwroot/Scripts/jquery.slim.js"
-  },
-  {
-    "inputs": [
-      "node_modules/jquery.easing/jquery.easing.js"
-    ],
-    "output": "wwwroot/Scripts/jquery.easing.js"
-  },
-  {
-    "inputs": [
-      "node_modules/jquery-resizable-dom/dist/jquery-resizable.js"
-    ],
-    "output": "wwwroot/Scripts/jquery-resizable.js"
-  },
-  {
-    "inputs": [
-      "node_modules/@popperjs/core/dist/umd/popper.js"
-    ],
-    "output": "wwwroot/Scripts/popper.js"
-  },
-  {
-    "generateRTL": true,
-    "inputs": [
-      "node_modules/trumbowyg/dist/ui/sass/trumbowyg.scss"
-    ],
-    "output": "wwwroot/Styles/trumbowyg/trumbowyg.css"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/trumbowyg/dist/ui/icons.svg"
-    ],
-    "output": "wwwroot/Scripts/trumbowyg/ui/icons.svg"
-  },
-  {
-    "generateRTL": true,
-    "inputs": [
-      "Assets/trumbowyg/plugins/*/ui/sass/*.scss"
-    ],
-    "output": "wwwroot/Styles/trumbowyg/trumbowyg-plugins.css"
-  },
-  {
-    "inputs": [
-      "node_modules/trumbowyg/dist/trumbowyg.js"
-    ],
-    "output": "wwwroot/Scripts/trumbowyg/trumbowyg.js"
-  },
-  {
-    "inputs": [
-      "Assets/trumbowyg/js/trumbowyg.shortcodes.js"
-    ],
-    "output": "wwwroot/Scripts/trumbowyg/trumbowyg.shortcodes.js"
-  },
-  {
-    "inputs": [
-      "Assets/trumbowyg/js/trumbowyg.theme.js"
-    ],
-    "output": "wwwroot/Scripts/trumbowyg/trumbowyg.theme.js"
-  },
-  {
-    "inputs": [
-      "Assets/trumbowyg/plugins/allowtagsfrompaste/trumbowyg.allowtagsfrompaste.js",
-      "Assets/trumbowyg/plugins/base64/trumbowyg.base64.js",
-      "Assets/trumbowyg/plugins/cleanpaste/trumbowyg.cleanpaste.js",
-      "Assets/trumbowyg/plugins/colors/trumbowyg.colors.js",
-      "Assets/trumbowyg/plugins/emoji/trumbowyg.emoji.js",
-      "Assets/trumbowyg/plugins/fontfamily/trumbowyg.fontfamily.js",
-      "Assets/trumbowyg/plugins/fontsize/trumbowyg.fontsize.js",
-      "Assets/trumbowyg/plugins/giphy/trumbowyg.giphy.js",
-      "Assets/trumbowyg/plugins/history/trumbowyg.history.js",
-      "Assets/trumbowyg/plugins/indent/trumbowyg.indent.js",
-      "Assets/trumbowyg/plugins/insertaudio/trumbowyg.insertaudio.js",
-      "Assets/trumbowyg/plugins/lineheight/trumbowyg.lineheight.js",
-      "Assets/trumbowyg/plugins/mathml/trumbowyg.mathml.js",
-      "Assets/trumbowyg/plugins/mention/trumbowyg.mention.js",
-      "Assets/trumbowyg/plugins/noembed/trumbowyg.noembed.js",
-      "Assets/trumbowyg/plugins/pasteembed/trumbowyg.pasteembed.js",
-      "Assets/trumbowyg/plugins/pasteimage/trumbowyg.pasteimage.js",
-      "Assets/trumbowyg/plugins/preformatted/trumbowyg.preformatted.js",
-      "Assets/trumbowyg/plugins/resizimg/trumbowyg.resizimg.js",
-      "Assets/trumbowyg/plugins/specialchars/trumbowyg.specialchars.js",
-      "Assets/trumbowyg/plugins/table/trumbowyg.table.js",
-      "Assets/trumbowyg/plugins/template/trumbowyg.template.js",
-      "Assets/trumbowyg/plugins/upload/trumbowyg.upload.js"
-    ],
-    "output": "wwwroot/Scripts/trumbowyg/trumbowyg-plugins.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/vue/dist/vue.js"
-    ],
-    "output": "wwwroot/Scripts/vue.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/vue/dist/vue.min.js"
-    ],
-    "output": "wwwroot/Scripts/vue.min.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/vue-multiselect/dist/vue-multiselect.min.js"
-    ],
-    "output": "wwwroot/Scripts/vue-multiselect.min.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/vue-multiselect/dist/vue-multiselect.min.css*"
-    ],
-    "output": "wwwroot/Styles/@"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/sortablejs/Sortable.min.js"
-    ],
-    "output": "wwwroot/Scripts/Sortable.min.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/sortablejs/Sortable.js"
-    ],
-    "output": "wwwroot/Scripts/Sortable.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/vuedraggable/dist/vuedraggable.umd.*"
-    ],
-    "output": "wwwroot/Scripts/@"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/@fortawesome/fontawesome-free/css/*"
-    ],
-    "output": "wwwroot/Vendor/fontawesome-free/css/@"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/@fortawesome/fontawesome-free/js/*"
-    ],
-    "output": "wwwroot/Vendor/fontawesome-free/js/@"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/@fortawesome/fontawesome-free/webfonts/*"
-    ],
-    "output": "wwwroot/Vendor/fontawesome-free/webfonts/@"
-  },
-  {
-    "inputs": [
-      "node_modules/js-cookie/dist/js.cookie.js"
-    ],
-    "output": "wwwroot/Scripts/js.cookie.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/nouislider/dist/nouislider.js"
-    ],
-    "output": "wwwroot/Scripts/nouislider/nouislider.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/nouislider/dist/nouislider.d.ts"
-    ],
-    "output": "wwwroot/Scripts/nouislider/nouislider.d.ts"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/nouislider/dist/nouislider.css"
-    ],
-    "output": "wwwroot/Scripts/nouislider/nouislider.css"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "Assets/monaco/*"
-    ],
-    "output": "wwwroot/Scripts/monaco/@"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/monaco-editor/min/**/*"
-    ],
-    "output": "wwwroot/Scripts/monaco/@"
-  }
+    {
+        "action": "min",
+        "name": "credential-helpers",
+        "source": "Assets/js/credential-helpers.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "bootstrap",
+        "source": "../../../node_modules/bootstrap/dist/css/bootstrap.css",
+        "tags": ["resources", "css"]
+    },
+    {
+        "action": "copy",
+        "name": "bootstrap",
+        "source": "../../../node_modules/bootstrap/dist/css/bootstrap.css.map",
+        "tags": ["resources", "css"]
+    },
+    {
+        "action": "copy",
+        "name": "bootstrap",
+        "source": "../../../node_modules/bootstrap/dist/css/bootstrap.min.css",
+        "tags": ["resources", "css"]
+    },
+    {
+        "action": "copy",
+        "name": "bootstrap-rtl",
+        "source": "../../../node_modules/bootstrap/dist/css/bootstrap.rtl.css",
+        "tags": ["resources", "css"]
+    },
+    {
+        "action": "copy",
+        "name": "bootstrap-rtl",
+        "source": "../../../node_modules/bootstrap/dist/css/bootstrap.rtl.css.map",
+        "tags": ["resources", "css"]
+    },
+    {
+        "action": "copy",
+        "name": "bootstrap-rtl",
+        "source": "../../../node_modules/bootstrap/dist/css/bootstrap.rtl.min.css",
+        "tags": ["resources", "css"]
+    },
+    {
+        "action": "copy",
+        "name": "bootstrap-rtl",
+        "source": "../../../node_modules/bootstrap/dist/css/bootstrap.rtl.min.css.map",
+        "tags": ["resources", "css"]
+    },
+    {
+        "action": "copy",
+        "name": "bootstrap-js",
+        "source": "../../../node_modules/bootstrap/dist/js/bootstrap.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "bootstrap-js",
+        "source": "../../../node_modules/bootstrap/dist/js/bootstrap.js.map",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "bootstrap-js",
+        "source": "../../../node_modules/bootstrap/dist/js/bootstrap.min.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "bootstrap-js",
+        "source": "../../../node_modules/bootstrap/dist/js/bootstrap.min.js.map",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "source": "../../../node_modules/bootstrap/dist/js/bootstrap.bundle.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "source": "../../../node_modules/bootstrap/dist/js/bootstrap.bundle.js.map",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "source": "../../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "source": "../../../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js.map",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "popper-js",
+        "source": "../../../node_modules/@popperjs/core/dist/umd/popper.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "bootstrap-select",
+        "source": "../../../node_modules/bootstrap-select/dist/js/*.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "codemirror",
+        "source": "../../../node_modules/codemirror/lib/codemirror.css",
+        "dest": "wwwroot/Styles/codemirror/",
+        "tags": ["resources", "css"]
+    },
+    {
+        "action": "min",
+        "name": "codemirror",
+        "source": "../../../node_modules/codemirror/addon/display/fullscreen.css",
+        "dest": "wwwroot/Styles/codemirror/addon/display/",
+        "tags": ["resources", "css"]
+    },
+    {
+        "action": "min",
+        "name": "codemirror",
+        "source": "../../../node_modules/codemirror/addon/hint/show-hint.css",
+        "dest": "wwwroot/Styles/codemirror/addon/hint/",
+        "tags": ["resources", "css"]
+    },
+    {
+        "action": "min",
+        "name": "codemirror",
+        "source": "../../../node_modules/codemirror/lib/codemirror.js",
+        "dest": "wwwroot/Scripts/codemirror/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "codemirror",
+        "source": "../../../node_modules/codemirror/addon/selection/active-line.js",
+        "dest": "wwwroot/Scripts/codemirror/addon/selection/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "codemirror",
+        "source": "../../../node_modules/codemirror/addon/display/autorefresh.js",
+        "dest": "wwwroot/Scripts/codemirror/addon/display/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "codemirror",
+        "source": "../../../node_modules/codemirror/addon/display/fullscreen.js",
+        "dest": "wwwroot/Scripts/codemirror/addon/display/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "codemirror",
+        "source": "../../../node_modules/codemirror/addon/edit/closetag.js",
+        "dest": "wwwroot/Scripts/codemirror/addon/edit/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "codemirror",
+        "source": "../../../node_modules/codemirror/addon/hint/show-hint.js",
+        "dest": "wwwroot/Scripts/codemirror/addon/hint/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "codemirror",
+        "source": "../../../node_modules/codemirror/addon/hint/sql-hint.js",
+        "dest": "wwwroot/Scripts/codemirror/addon/hint/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "codemirror",
+        "source": "../../../node_modules/codemirror/addon/mode/multiplex.js",
+        "dest": "wwwroot/Scripts/codemirror/addon/mode/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "codemirror",
+        "source": "../../../node_modules/codemirror/addon/mode/simple.js",
+        "dest": "wwwroot/Scripts/codemirror/addon/mode/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "codemirror",
+        "source": "../../../node_modules/codemirror/mode/css/css.js",
+        "dest": "wwwroot/Scripts/codemirror/mode/css/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "codemirror",
+        "source": "../../../node_modules/codemirror/mode/htmlmixed/htmlmixed.js",
+        "dest": "wwwroot/Scripts/codemirror/mode/htmlmixed/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "codemirror",
+        "source": "../../../node_modules/codemirror/mode/javascript/javascript.js",
+        "dest": "wwwroot/Scripts/codemirror/mode/javascript/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "codemirror",
+        "source": "../../../node_modules/codemirror/mode/sql/sql.js",
+        "dest": "wwwroot/Scripts/codemirror/mode/sql/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "codemirror",
+        "source": "../../../node_modules/codemirror/mode/xml/xml.js",
+        "dest": "wwwroot/Scripts/codemirror/mode/xml/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "jquery",
+        "source": "../../../node_modules/jquery/dist/jquery.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "jquery",
+        "source": "../../../node_modules/jquery/dist/jquery.slim.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "jquery",
+        "source": "../../../node_modules/jquery.easing/jquery.easing.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "jquery",
+        "source": "../../../node_modules/jquery-resizable-dom/dist/jquery-resizable.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "jquery",
+        "source": "../../../node_modules/@popperjs/core/dist/umd/popper.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "trumbowyg",
+        "source": "../../../node_modules/trumbowyg/dist/ui/icons.svg",
+        "dest": "wwwroot/Scripts/trumbowyg/ui/",
+        "tags": ["resources", "images"]
+    },
+    {
+        "action": "min",
+        "name": "trumbowyg",
+        "source": "../../../node_modules/trumbowyg/dist/trumbowyg.js",
+        "dest": "wwwroot/Scripts/trumbowyg/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "trumbowyg",
+        "source": "Assets/trumbowyg/js/trumbowyg.shortcodes.js",
+        "dest": "wwwroot/Scripts/trumbowyg/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "trumbowyg",
+        "source": "Assets/trumbowyg/js/trumbowyg.theme.js",
+        "dest": "wwwroot/Scripts/trumbowyg/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "vue2",
+        "source": "Assets/Vendor/vue-2.6.14/dist/*.js",
+        "dest": "wwwroot/Vendor/vue-2.6.14/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "vue3",
+        "source": "../../../node_modules/vue/dist/*.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "vue-multiselect-2.1.6",
+        "source": "Assets/Vendor/vue-multiselect-2.1.6/**",
+        "dest": "wwwroot/Vendor/vue-multiselect-2.1.6/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "vue-multiselect",
+        "source": "../../../node_modules/vue-multiselect/dist/*.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "vue-multiselect",
+        "source": "../../../node_modules/vue-multiselect/dist/vue-multiselect.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "vue-multiselect",
+        "source": "../../../node_modules/vue-multiselect/dist/*.css",
+        "tags": ["resources", "css"]
+    },
+    {
+        "action": "copy",
+        "name": "vuedraggable",
+        "source": "../../../node_modules/vuedraggable/dist/vuedraggable.umd.*",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "sortable",
+        "source": "../../../node_modules/sortablejs/Sortable.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "sortable",
+        "source": "../../../node_modules/sortablejs/Sortable.min.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "js-cookie",
+        "source": "../../../node_modules/js-cookie/dist/js.cookie.js",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "nouislider",
+        "source": "../../../node_modules/nouislider/dist/nouislider.js",
+        "dest": "wwwroot/Scripts/nouislider/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "nouislider",
+        "source": "../../../node_modules/nouislider/dist/nouislider.d.ts",
+        "dest": "wwwroot/Scripts/nouislider/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "name": "nouislider",
+        "source": "../../../node_modules/nouislider/dist/nouislider.css",
+        "dest": "wwwroot/Scripts/nouislider/",
+        "tags": ["resources", "css"]
+    },
+    {
+        "action": "copy",
+        "name": "fortawesome",
+        "source": "../../../node_modules/@fortawesome/fontawesome-free/css/*",
+        "dest": "wwwroot/Vendor/fontawesome-free/css/",
+        "tags": ["resources", "css"]
+    },
+    {
+        "action": "copy",
+        "name": "fortawesome",
+        "source": "../../../node_modules/@fortawesome/fontawesome-free/js/*",
+        "dest": "wwwroot/Vendor/fontawesome-free/js/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "fortawesome",
+        "source": "../../../node_modules/@fortawesome/fontawesome-free/webfonts/*",
+        "dest": "wwwroot/Vendor/fontawesome-free/webfonts/",
+        "tags": ["resources", "fonts"]
+    },
+    {
+        "action": "copy",
+        "name": "monaco",
+        "source": "Assets/monaco/*",
+        "dest": "wwwroot/Scripts/monaco/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "monaco",
+        "source": "Assets/Vendor/monaco/**",
+        "dest": "wwwroot/Scripts/monaco/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "min",
+        "generateRTL": true,
+        "name": "bootstrap-select-css",
+        "source": "../../../node_modules/bootstrap-select/dist/css/bootstrap-select.css",
+        "tags": ["resources", "css"]
+    },
+    {
+        "action": "copy",
+        "name": "fontawesome-iconpicker",
+        "source": "../../../node_modules/fontawesome-iconpicker/dist/js/fontawesome-iconpicker.min.js",
+        "tags": ["admin", "dashboard", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "fontawesome-iconpicker",
+        "source": "../../../node_modules/fontawesome-iconpicker/dist/js/fontawesome-iconpicker.js",
+        "tags": ["admin", "dashboard", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "bootstrap-4.6.1",
+        "source": "Assets/Vendor/bootstrap-4.6.1/**",
+        "dest": "wwwroot/Vendor/bootstrap-4.6.1/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "jquery-3.4.1",
+        "source": "Assets/Vendor/jquery-3.4.1/**",
+        "dest": "wwwroot/Vendor/jquery-3.4.1/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "jquery-3.5.1",
+        "source": "Assets/Vendor/jquery-3.5.1/**",
+        "dest": "wwwroot/Vendor/jquery-3.5.1/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "jquery-3.6.0",
+        "source": "Assets/Vendor/jquery-3.6.0/**",
+        "dest": "wwwroot/Vendor/jquery-3.6.0/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "jquery-ui-1.12.1",
+        "source": "Assets/Vendor/jquery-ui-1.12.1/**",
+        "dest": "wwwroot/Vendor/jquery-ui-1.12.1/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "popper-1.16.1",
+        "source": "Assets/Vendor/popper-1.16.1/**",
+        "dest": "wwwroot/Vendor/popper-1.16.1/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "font-awesome-free-6.6.0",
+        "source": "Assets/Vendor/font-awesome-free-6.6.0/**",
+        "dest": "wwwroot/Vendor/font-awesome-free-6.6.0/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "vue-draggable-2.24.3",
+        "source": "Assets/Vendor/vue-draggable-2.24.3/**",
+        "dest": "wwwroot/Vendor/vue-draggable-2.24.3/",
+        "tags": ["resources", "js"]
+    },
+    {
+        "action": "copy",
+        "name": "images",
+        "source": "Assets/images/*",
+        "dest": "wwwroot/Styles/images/",
+        "tags": ["resources", "images"]
+    },
+    {
+        "action": "copy",
+        "name": "deprecated-res",
+        "source": "Assets/Vendor/deprecated/*",
+        "dest": "wwwroot/Scripts/",
+        "tags": ["resources", "js"]
+    }
 ]

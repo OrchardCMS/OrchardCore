@@ -64,7 +64,7 @@ public sealed class TwitterSigninStartup : StartupBase
 {
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddNavigationProvider<AdminMenuSignin>();
+        services.AddNavigationProvider<AdminMenuSignIn>();
         services.AddSingleton<ITwitterSigninService, TwitterSigninService>();
         services.AddSiteDisplayDriver<TwitterSigninSettingsDisplayDriver>();
 

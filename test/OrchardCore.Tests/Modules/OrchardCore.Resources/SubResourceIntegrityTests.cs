@@ -7,7 +7,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Resources;
 public class SubResourceIntegrityTests
 {
     [CIFact]
-    public async Task SavedSubResourceIntegritiesShouldMatchCurrentResources()
+    public static async Task SavedSubResourceIntegritiesShouldMatchCurrentResources()
     {
         // Arrange
         var resourceOptions = Options.Create(new ResourceOptions());

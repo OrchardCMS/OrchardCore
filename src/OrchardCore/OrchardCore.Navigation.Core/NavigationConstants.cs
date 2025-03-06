@@ -10,7 +10,9 @@ public static class NavigationConstants
 
     public const string AdminMenuSearchPosition = "6";
 
-    public const string AdminMenuSecurityPosition = "7";
+    public const string AdminMenuAccessControlPosition = "7";
+
+    public const string AdminMenuSecurityPosition = AdminMenuAccessControlPosition;
 
     public const string AdminMenuAuditTrailPosition = "7.5";
 
@@ -21,4 +23,6 @@ public static class NavigationConstants
     public const string AdminId = "admin";
 
     public const string AdminMenuId = "adminMenu";
+
+    public const string LegacyAdminMenuNavigationSwitchKey = "LegacyAdminMenuNavigation";
 }

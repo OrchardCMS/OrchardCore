@@ -66,7 +66,7 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -121,7 +121,7 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> Display(string sitemapId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -136,7 +136,7 @@ public sealed class AdminController : Controller
         var items = new List<dynamic>();
         foreach (var source in sitemap.SitemapSources)
         {
-            var item = await _displayManager.BuildDisplayAsync(source, _updateModelAccessor.ModelUpdater, "SummaryAdmin");
+            var item = await _displayManager.BuildDisplayAsync(source, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin);
             item.Properties["SitemapId"] = sitemap.SitemapId;
             item.Properties["SitemapSource"] = source;
             items.Add(item);
@@ -166,7 +166,7 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> Create()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -179,7 +179,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(CreateSitemapViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -215,7 +215,7 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> Edit(string sitemapId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -241,7 +241,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(EditSitemapViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -283,7 +283,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string sitemapId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -305,7 +305,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Toggle(string sitemapId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }
@@ -330,7 +330,7 @@ public sealed class AdminController : Controller
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> ListPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+        if (!await _authorizationService.AuthorizeAsync(User, SitemapsPermissions.ManageSitemaps))
         {
             return Forbid();
         }

@@ -12,7 +12,7 @@ notificationManager = function () {
         return false;
     }
 
-    const initialize = (readUrl, wrapperSelector) => {
+    const initialize = (readUrl, unreadBadgeSelector, wrapperSelector) => {
 
         if (!readUrl) {
             console.log('No readUrl was provided.');
@@ -21,6 +21,16 @@ notificationManager = function () {
         }
 
         const reading = [];
+        let totalUnread = 0;
+        let unreadElement = null;
+
+        if (unreadBadgeSelector) {
+            unreadElement = document.querySelector(unreadBadgeSelector);
+
+            if (unreadElement) {
+                totalUnread = parseInt(unreadElement.innerText)
+            }
+        }
 
         var elements = document.getElementsByClassName('mark-notification-as-read');
 
@@ -55,6 +65,15 @@ notificationManager = function () {
                     }).then(response => response.json())
                         .then(result => {
                             if (result.updated) {
+
+                                if (unreadElement) {
+                                    if (totalUnread > 1) {
+                                        unreadElement.innerText = --totalUnread;
+                                    } else {
+                                        unreadElement.style.display = 'none';
+                                    }
+                                }
+
                                 if (wrapperSelector) {
                                     var wrapper = e.target.closest(wrapperSelector);
                                     if (wrapper) {

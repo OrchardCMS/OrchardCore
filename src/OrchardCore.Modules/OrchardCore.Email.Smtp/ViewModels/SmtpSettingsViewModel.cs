@@ -13,7 +13,7 @@ public class SmtpSettingsViewModel
     [Range(0, 65535)]
     public int Port { get; set; } = 25;
 
-    public bool AutoSelectEncryption { get; set; }
+    public bool AutoSelectEncryption { get; set; } = true;
 
     public bool RequireCredentials { get; set; }
 

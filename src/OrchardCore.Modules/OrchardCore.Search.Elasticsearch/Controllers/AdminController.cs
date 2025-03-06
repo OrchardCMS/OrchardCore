@@ -101,7 +101,7 @@ public sealed class AdminController : Controller
         PagerParameters pagerParameters,
         [FromServices] IShapeFactory shapeFactory)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
         {
             return Forbid();
         }
@@ -169,7 +169,7 @@ public sealed class AdminController : Controller
         var IsCreate = string.IsNullOrWhiteSpace(indexName);
         var settings = new ElasticIndexSettings();
 
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
         {
             return Forbid();
         }
@@ -208,7 +208,7 @@ public sealed class AdminController : Controller
     [HttpPost, ActionName(nameof(Edit))]
     public async Task<ActionResult> EditPost(ElasticIndexSettingsViewModel model, string[] indexedContentTypes)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
         {
             return Forbid();
         }
@@ -308,7 +308,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<ActionResult> Reset(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
         {
             return Forbid();
         }
@@ -334,7 +334,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<ActionResult> Rebuild(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
         {
             return Forbid();
         }
@@ -372,7 +372,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<ActionResult> Delete(ElasticIndexSettingsViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
         {
             return Forbid();
         }
@@ -406,7 +406,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<ActionResult> ForceDelete(ElasticIndexSettingsViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
         {
             return Forbid();
         }
@@ -445,7 +445,7 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> SyncSettings()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
         {
             return Forbid();
         }
@@ -474,7 +474,7 @@ public sealed class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> Query(AdminQueryViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
         {
             return Forbid();
         }
@@ -544,7 +544,7 @@ public sealed class AdminController : Controller
     [FormValueRequired("submit.BulkAction")]
     public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageElasticIndexes))
+        if (!await _authorizationService.AuthorizeAsync(User, ElasticsearchPermissions.ManageElasticIndexes))
         {
             return Forbid();
         }

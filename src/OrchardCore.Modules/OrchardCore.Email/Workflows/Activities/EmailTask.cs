@@ -74,15 +74,55 @@ public class EmailTask : TaskActivity<EmailTask>
         set => SetProperty(value);
     }
 
+    [Obsolete("This property is deprecated, please use TextBody & HtmlBody instead.")]
     public WorkflowExpression<string> Body
     {
         get => GetProperty(() => new WorkflowExpression<string>());
         set => SetProperty(value);
     }
 
+    [Obsolete("This property is deprecated, please use TextBody & HtmlBody instead.")]
     public bool IsHtmlBody
     {
         get => GetProperty(() => true);
+        set => SetProperty(value);
+    }
+
+    public MailMessageBodyFormat BodyFormat
+    {
+        get => GetProperty(() => MailMessageBodyFormat.All);
+        set => SetProperty(value);
+    }
+
+    public WorkflowExpression<string> TextBody
+    {
+        get
+        {
+            var textBody = GetProperty<WorkflowExpression<string>>();
+
+            if (textBody == null && !GetProperty(() => true, "IsHtmlBody"))
+            {
+                textBody = GetProperty(() => new WorkflowExpression<string>(), "Body");
+            }
+
+            return textBody ?? new WorkflowExpression<string>();
+        }
+        set => SetProperty(value);
+    }
+
+    public WorkflowExpression<string> HtmlBody
+    {
+        get
+        {
+            var htmlBody = GetProperty<WorkflowExpression<string>>();
+
+            if (htmlBody == null && GetProperty(() => true, "IsHtmlBody"))
+            {
+                htmlBody = GetProperty(() => new WorkflowExpression<string>(), "Body");
+            }
+
+            return htmlBody ?? new WorkflowExpression<string>();
+        }
         set => SetProperty(value);
     }
 
@@ -100,7 +140,8 @@ public class EmailTask : TaskActivity<EmailTask>
         var cc = await _expressionEvaluator.EvaluateAsync(Cc, workflowContext, null);
         var bcc = await _expressionEvaluator.EvaluateAsync(Bcc, workflowContext, null);
         var subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext, null);
-        var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, IsHtmlBody ? _htmlEncoder : null);
+        var textBody = await _expressionEvaluator.EvaluateAsync(TextBody, workflowContext, null);
+        var htmlBody = await _expressionEvaluator.EvaluateAsync(HtmlBody, workflowContext, _htmlEncoder);
 
         var message = new MailMessage
         {
@@ -112,9 +153,23 @@ public class EmailTask : TaskActivity<EmailTask>
             // Email reply-to header https://tools.ietf.org/html/rfc4021#section-2.1.4
             ReplyTo = replyTo?.Trim(),
             Subject = subject?.Trim(),
-            Body = body?.Trim(),
-            IsHtmlBody = IsHtmlBody
         };
+
+        switch (BodyFormat)
+        {
+            case MailMessageBodyFormat.All:
+                message.HtmlBody = htmlBody?.Trim();
+                message.TextBody = textBody?.Trim();
+                break;
+            case MailMessageBodyFormat.Text:
+                message.TextBody = textBody?.Trim();
+                break;
+            case MailMessageBodyFormat.Html:
+                message.HtmlBody = htmlBody?.Trim();
+                break;
+            default:
+                break;
+        }
 
         if (!string.IsNullOrWhiteSpace(sender))
         {

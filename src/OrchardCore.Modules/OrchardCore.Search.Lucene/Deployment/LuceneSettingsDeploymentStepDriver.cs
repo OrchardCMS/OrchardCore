@@ -10,7 +10,7 @@ public sealed class LuceneSettingsDeploymentStepDriver : DisplayDriver<Deploymen
     {
         return
             CombineAsync(
-                View("LuceneSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                View("LuceneSettingsDeploymentStep_Fields_Summary", step).Location(OrchardCoreConstants.DisplayType.Summary, "Content"),
                 View("LuceneSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
             );
     }

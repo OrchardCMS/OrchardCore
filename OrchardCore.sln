@@ -534,6 +534,50 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.UrlRewriting.Ab
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.UrlRewriting.Core", "src\OrchardCore\OrchardCore.UrlRewriting.Core\OrchardCore.UrlRewriting.Core.csproj", "{7B18DD99-A7BB-4297-8679-D87289758756}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.Roles.Abstractions", "src\OrchardCore\OrchardCore.Roles.Abstractions\OrchardCore.Roles.Abstractions.csproj", "{F5E7DCC3-12C2-4363-9702-639561A8101C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{77554EA8-DA53-4C8F-81D2-3DDEE7B57FC3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets Manager", "Assets Manager", "{A0E14603-F98D-4AED-A4EB-DE59F14364DA}"
+	ProjectSection(SolutionItems) = preProject
+		.scripts\assets-manager\.gitignore = .scripts\assets-manager\.gitignore
+		.scripts\assets-manager\.parcelrc = .scripts\assets-manager\.parcelrc
+		.scripts\assets-manager\assetGroups.mjs = .scripts\assets-manager\assetGroups.mjs
+		.scripts\assets-manager\build.mjs = .scripts\assets-manager\build.mjs
+		.scripts\assets-manager\clean.mjs = .scripts\assets-manager\clean.mjs
+		.scripts\assets-manager\config.mjs = .scripts\assets-manager\config.mjs
+		.scripts\assets-manager\copy.mjs = .scripts\assets-manager\copy.mjs
+		.scripts\assets-manager\min.mjs = .scripts\assets-manager\min.mjs
+		.scripts\assets-manager\package.json = .scripts\assets-manager\package.json
+		.scripts\assets-manager\parcel.mjs = .scripts\assets-manager\parcel.mjs
+		.scripts\assets-manager\README.md = .scripts\assets-manager\README.md
+		.scripts\assets-manager\sass.mjs = .scripts\assets-manager\sass.mjs
+		.scripts\assets-manager\vite.mjs = .scripts\assets-manager\vite.mjs
+		.scripts\assets-manager\webpack.mjs = .scripts\assets-manager\webpack.mjs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bloom", "Bloom", "{A847EDA7-A67E-4C12-9BFF-044CB7938BA8}"
+	ProjectSection(SolutionItems) = preProject
+		.scripts\bloom\package.json = .scripts\bloom\package.json
+		.scripts\bloom\README.md = .scripts\bloom\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "components", "components", "{E7B921D8-DBF1-4D36-B74C-C5E793E3CE05}"
+	ProjectSection(SolutionItems) = preProject
+		.scripts\bloom\components\password-strength.ts = .scripts\bloom\components\password-strength.ts
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "helpers", "helpers", "{3BAC3DFA-1B57-466C-BDDF-E5481020CAD7}"
+	ProjectSection(SolutionItems) = preProject
+		.scripts\bloom\helpers\globals.ts = .scripts\bloom\helpers\globals.ts
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{9FD38847-D151-4CBF-8564-4AC4E0B32AB1}"
+	ProjectSection(SolutionItems) = preProject
+		.scripts\bloom\assets\bloom.ai = .scripts\bloom\assets\bloom.ai
+		.scripts\bloom\assets\bloom.svg = .scripts\bloom\assets\bloom.svg
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1414,6 +1458,10 @@ Global
 		{7B18DD99-A7BB-4297-8679-D87289758756}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B18DD99-A7BB-4297-8679-D87289758756}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B18DD99-A7BB-4297-8679-D87289758756}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5E7DCC3-12C2-4363-9702-639561A8101C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5E7DCC3-12C2-4363-9702-639561A8101C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5E7DCC3-12C2-4363-9702-639561A8101C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5E7DCC3-12C2-4363-9702-639561A8101C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1658,6 +1706,12 @@ Global
 		{D0F8B342-BDA8-44CB-AA43-7A65C79636A2} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{675C8A76-C64F-47EC-B4F5-06D4F2D9662A} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{7B18DD99-A7BB-4297-8679-D87289758756} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{F5E7DCC3-12C2-4363-9702-639561A8101C} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{A0E14603-F98D-4AED-A4EB-DE59F14364DA} = {77554EA8-DA53-4C8F-81D2-3DDEE7B57FC3}
+		{A847EDA7-A67E-4C12-9BFF-044CB7938BA8} = {77554EA8-DA53-4C8F-81D2-3DDEE7B57FC3}
+		{E7B921D8-DBF1-4D36-B74C-C5E793E3CE05} = {A847EDA7-A67E-4C12-9BFF-044CB7938BA8}
+		{3BAC3DFA-1B57-466C-BDDF-E5481020CAD7} = {A847EDA7-A67E-4C12-9BFF-044CB7938BA8}
+		{9FD38847-D151-4CBF-8564-4AC4E0B32AB1} = {A847EDA7-A67E-4C12-9BFF-044CB7938BA8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

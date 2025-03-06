@@ -7,5 +7,7 @@ public class IndexAlias
     public string Index { get; set; }
 
     public Type IndexType { get; set; }
+
+    public bool IsPartial { get; set; }
 }
 

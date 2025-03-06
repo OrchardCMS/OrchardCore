@@ -7,6 +7,4 @@ namespace OrchardCore.Modules;
 /// This custom <see cref="IFileProvider"/> implementation provides Di registration identification
 /// for IStaticFileProviders that should be served via UseStaticFiles.
 /// </summary>
-public interface IModuleStaticFileProvider : IStaticFileProvider
-{
-}
+public interface IModuleStaticFileProvider : IStaticFileProvider;

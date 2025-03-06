@@ -49,7 +49,7 @@ public sealed class ValidationConfigurationController : Controller
     [Admin("OpenId/ValidationConfiguration", "OpenIdValidationConfiguration")]
     public async Task<IActionResult> Index()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageValidationSettings))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageValidationSettings))
         {
             return Forbid();
         }
@@ -64,7 +64,7 @@ public sealed class ValidationConfigurationController : Controller
     [ActionName(nameof(Index))]
     public async Task<IActionResult> IndexPost()
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageValidationSettings))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageValidationSettings))
         {
             return Forbid();
         }

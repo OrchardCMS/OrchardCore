@@ -1,0 +1,1 @@
+[Assets Manager documentation](../../src/docs/guides/assets-manager/README.md)

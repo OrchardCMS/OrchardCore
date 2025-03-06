@@ -51,13 +51,13 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
                 }).OrderBy(entry => entry.Role)
                 .ToArray();
         }).Location("Content:6#Two-Factor Authentication")
-        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+        .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
         .OnGroup(SettingsGroupId);
     }
 
     public override async Task<IDisplayResult> UpdateAsync(ISite site, RoleLoginSettings settings, UpdateEditorContext context)
     {
-        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, CommonPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext?.User, UsersPermissions.ManageUsers))
         {
             return null;
         }

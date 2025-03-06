@@ -6,7 +6,7 @@ namespace OrchardCore.Demo;
 public sealed class Permissions : IPermissionProvider
 {
     public static readonly Permission DemoAPIAccess = new("DemoAPIAccess", "Access to Demo API ");
-    public static readonly Permission ManageOwnUserProfile = new("ManageOwnUserProfile", "Manage own user profile", new Permission[] { CommonPermissions.ManageUsers });
+    public static readonly Permission ManageOwnUserProfile = new("ManageOwnUserProfile", "Manage own user profile", new Permission[] { UsersPermissions.ManageUsers });
 
     private static readonly IEnumerable<Permission> _allPermissions =
     [
