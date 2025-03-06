@@ -13,12 +13,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Deployment\Models\**" />
-    <EmbeddedResource Remove="Deployment\Models\**" />
-    <None Remove="Deployment\Models\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
