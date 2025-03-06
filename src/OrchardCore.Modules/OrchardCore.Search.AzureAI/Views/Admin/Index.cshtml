@@ -1,3 +1,4 @@
+@using OrchardCore.DisplayManagement
 @using OrchardCore.Search.AzureAI.ViewModels
 
 @model AdminIndexViewModel
@@ -24,13 +25,13 @@
                     </div>
                 </div>
                 <div class="col-auto">
-                    <a asp-route-action="Create" class="btn btn-secondary create" role="button">@T["Add Index"]</a>
+                    <button type="button" class="btn btn-secondary create" role="button" data-bs-toggle="modal" data-bs-target="#modalAddIndex">@T["Add index"]</button>
                 </div>
             </div>
         </div>
     </div>
     <ul class="list-group with-checkbox">
-        @if (Model.Indexes.Any())
+        @if (Model.Indexes.Count > 0)
         {
             <li class="list-group-item text-bg-theme">
                 <div class="row">
@@ -59,26 +60,16 @@
             </li>
             @foreach (var entry in Model.Indexes)
             {
-                <li class="list-group-item list-group-item-action">
-                    <div class="row">
-                        <div class="col-lg col-12 title d-flex align-items-center">
-                            <div class="form-check">
-                                <input type="checkbox" class="form-check-input" value="@entry.Name" name="itemIds" id="itemIds-@entry.Name">
-                                <label class="form-check-label" for="itemIds-@entry.Name">&nbsp;</label>
-                            </div>
-                            <div>
-                                <h5 class="mb-0">@entry.Name</h5>
-                            </div>
+                <li class="list-group-item item d-flex justify-content-between align-items-center" data-filter-value="@entry.Index.IndexName.ToLowerInvariant()">
+                    <div class="d-flex flex-row">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" value="@entry.Index.Id" name="itemIds" id="itemIds-@entry.Index.Id">
+                            <label class="form-check-label" for="itemIds-@entry.Index.Id">&nbsp;</label>
                         </div>
+                    </div>
 
-                        <div class="col-lg-auto col-12 d-flex justify-content-end">
-                            <div class="actions">
-                                <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-IndexName="@entry.Name">@T["Edit"]</a>
-                                <a asp-action="Reset" asp-route-indexName="@entry.Name" class="btn btn-primary btn-sm" data-title="@T["Reset Index"]" data-message="@T["This will restart the indexing of all content items. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" data-url-af="UnsafeUrl">@T["Reset"]</a>
-                                <a class="btn btn-warning btn-sm" asp-action="Rebuild" asp-route-indexName="@entry.Name" data-title="@T["Rebuild Index"]" data-message="@T["Your index will be rebuilt, which might alter some services during the process. Continue?"]" data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-url-af="UnsafeUrl">@T["Rebuild"]</a>
-                                <a class="btn btn-danger btn-sm" type="button" asp-action="Delete" asp-route-IndexName="@entry.Name" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
-                            </div>
-                        </div>
+                    <div class="flex-grow-1">
+                        @await DisplayAsync(entry.Shape)
                     </div>
                 </li>
             }
@@ -93,6 +84,39 @@
         }
     </ul>
 </form>
+
+<!-- Modal -->
+<div class="modal fade" id="modalAddIndex" tabindex="-1" role="dialog" aria-labelledby="available-rule-types-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="available-rule-types-title">@T["Available Sources"]</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @if (!Model.SourceNames.Any())
+                {
+                    <p class="p-3 mb-2 bg-warning text-white">@T["You need to enable a feature which provides an Azure AI Index source."]</p>
+                }
+                else
+                {
+                    <div class="row row-cols-1 row-cols-md-3 g-2">
+                        @foreach (var providerName in Model.SourceNames)
+                        {
+                            IShape shape = await New.AzureAISearchIndexSettings_Link(Source: providerName);
+                            shape.Metadata.Alternates.Add("AzureAISearchIndexSettings_Link__" + providerName);
+
+                            @await DisplayAsync(shape)
+                        }
+                    </div>
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @await DisplayAsync(Model.Pager)
 

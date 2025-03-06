@@ -1,7 +1,6 @@
 using Azure.Search.Documents;
 using Azure.Search.Documents.Models;
 using Microsoft.Extensions.Logging;
-using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
@@ -14,27 +13,21 @@ public class AzureAIIndexDocumentManager
 {
     private readonly AzureAIClientFactory _clientFactory;
     private readonly AzureAISearchIndexManager _indexManager;
-    private readonly IContentManager _contentManager;
     private readonly IEnumerable<IAzureAISearchDocumentEvents> _documentEvents;
-    private readonly IEnumerable<IAzureAISearchFieldIndexEvents> _fieldIndexEvents;
-    private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
+    private readonly IEnumerable<IAzureAISearchEvents> _azureAISearchEvents;
     private readonly ILogger _logger;
 
     public AzureAIIndexDocumentManager(
         AzureAIClientFactory clientFactory,
         AzureAISearchIndexManager indexManager,
-        IContentManager contentManager,
         IEnumerable<IAzureAISearchDocumentEvents> documentEvents,
-        IEnumerable<IAzureAISearchFieldIndexEvents> fieldIndexEvents,
-        IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
+        IEnumerable<IAzureAISearchEvents> azureAISearchEvents,
         ILogger<AzureAIIndexDocumentManager> logger)
     {
         _clientFactory = clientFactory;
         _indexManager = indexManager;
-        _contentManager = contentManager;
         _documentEvents = documentEvents;
-        _fieldIndexEvents = fieldIndexEvents;
-        _contentItemIndexHandlers = contentItemIndexHandlers;
+        _azureAISearchEvents = azureAISearchEvents;
         _logger = logger;
     }
 
@@ -202,46 +195,11 @@ public class AzureAIIndexDocumentManager
     {
         ArgumentNullException.ThrowIfNull(settings);
 
-        var indexMappings = new List<AzureAISearchIndexMap>();
+        var mappingContext = new AzureAISearchMappingContext(settings);
 
-        foreach (var contentType in settings.IndexedContentTypes ?? [])
-        {
-            var contentItem = await _contentManager.NewAsync(contentType);
-            var index = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
-            var buildIndexContext = new BuildIndexContext(index, contentItem, [contentType], new AzureAISearchContentIndexSettings());
-            await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
+        await _azureAISearchEvents.InvokeAsync((handler, context) => handler.MappingAsync(context), mappingContext, _logger);
 
-            await AddIndexMappingAsync(indexMappings, IndexingConstants.ContentItemIdKey, new DocumentIndexEntry(IndexingConstants.ContentItemIdKey, contentItem.ContentItemId, Types.Text, DocumentIndexOptions.Keyword), settings);
-            await AddIndexMappingAsync(indexMappings, IndexingConstants.ContentItemVersionIdKey, new DocumentIndexEntry(IndexingConstants.ContentItemVersionIdKey, contentItem.ContentItemId, Types.Text, DocumentIndexOptions.Keyword), settings);
-
-            foreach (var entry in index.Entries)
-            {
-                if (!AzureAISearchIndexNamingHelper.TryGetSafeFieldName(entry.Name, out var safeFieldName))
-                {
-                    continue;
-                }
-
-                await AddIndexMappingAsync(indexMappings, safeFieldName, entry, settings);
-            }
-        }
-
-        return indexMappings;
-    }
-
-    private async Task AddIndexMappingAsync(List<AzureAISearchIndexMap> indexMappings, string safeFieldName, DocumentIndexEntry entry, AzureAISearchIndexSettings settings)
-    {
-        var indexMap = new AzureAISearchIndexMap(safeFieldName, entry.Type, entry.Options)
-        {
-            IndexingKey = entry.Name,
-        };
-
-        var context = new SearchIndexDefinition(indexMap, entry, settings);
-
-        await _fieldIndexEvents.InvokeAsync((handler, ctx) => handler.MappingAsync(ctx), context, _logger);
-
-        await _fieldIndexEvents.InvokeAsync((handler, ctx) => handler.MappedAsync(ctx), context, _logger);
-
-        indexMappings.Add(indexMap);
+        return mappingContext.Mappings;
     }
 
     private static IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndexBase> indexDocuments, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappings)

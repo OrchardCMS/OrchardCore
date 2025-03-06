@@ -23,7 +23,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<AzureAIIndexDocumentManager>();
         services.AddScoped<AzureAISearchIndexingService>();
         services.AddScoped<IAzureAISearchFieldIndexEvents, DefaultAzureAISearchFieldIndexEvents>();
-        services.AddSingleton<AzureAISearchIndexSettingsService>();
+        services.AddScoped<AzureAISearchIndexSettingsService>();
         services.AddSingleton<AzureAIClientFactory>();
 
         services.AddRecipeExecutionStep<AzureAISearchIndexRebuildStep>();
