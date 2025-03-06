@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
@@ -9,6 +11,8 @@ using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.AzureAI.Deployment;
 using OrchardCore.Search.AzureAI.Drivers;
 using OrchardCore.Search.AzureAI.Handlers;
+using OrchardCore.Search.AzureAI.Migrations;
+using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI;
@@ -20,6 +24,11 @@ public sealed class Startup : StartupBase
         services.AddAzureAISearchServices();
         services.AddSiteDisplayDriver<AzureAISearchDefaultSettingsDisplayDriver>();
         services.AddNavigationProvider<AdminMenu>();
+
+        services.AddDisplayDriver<AzureAISearchIndexSettings, AzureAISearchIndexSettingsDisplayDriver>();
+        services.AddScoped<IAzureAISearchIndexSettingsHandler, AzureAISearchIndexHandler>();
+
+        services.AddDataMigration<AzureAISearchIndexSettingsMigrations>();
     }
 }
 
@@ -42,6 +51,32 @@ public sealed class ContentTypesStartup : StartupBase
         services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartIndexSettingsDisplayDriver>();
         services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
         services.AddScoped<IAuthorizationHandler, AzureAISearchAuthorizationHandler>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Contents")]
+public sealed class ContentsStartup : StartupBase
+{
+    private readonly IStringLocalizer S;
+
+    public ContentsStartup(IStringLocalizer<ContentsStartup> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IAzureAISearchEvents, ContentAzureAISearchEvents>();
+        services.AddDisplayDriver<AzureAISearchIndexSettings, ContentAzureAISearchIndexSettingsDisplayDriver>();
+        services.AddScoped<IAzureAISearchIndexSettingsHandler, ContentAzureAISearchIndexHandler>();
+        services.Configure<AzureAISearchOptions>(options =>
+        {
+            options.AddIndexSource(AzureAISearchConstants.ContentsIndexSource, o =>
+            {
+                o.DisplayName = S["Contents"];
+                o.Description = S["Create an index based on content items."];
+            });
+        });
     }
 }
 

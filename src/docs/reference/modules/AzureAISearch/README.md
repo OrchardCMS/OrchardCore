@@ -27,6 +27,32 @@ Then navigate to `Search` > `Indexing` > `Azure AI Indices` to add an index.
 
 ![image](images/management.gif)
 
+## Custom Sources  
+
+As of version 3, Azure AI Search supports multiple index sources. When the **Contents** feature is enabled, the `Contents` source is automatically added, allowing you to create indexes based on content types.  
+
+If you need to create an index for data that doesn't originate from Orchard's content items, you can do so by registering a custom index source. This gives you full control over where the data comes from and how it is mapped to your index fields.  
+
+For example, let's define a custom source called **CustomSource**:  
+
+```csharp
+services.Configure<AzureAISearchOptions>(options =>
+{
+    options.AddIndexSource("CustomSource", o =>
+    {
+        o.DisplayName = S["Custom Source"];
+        o.Description = S["Create an index based on custom data."];
+    });
+});
+```  
+
+Next, you need to implement the `IAzureAISearchEvents` interface. In the `MappingAsync` method, populate `context.Mappings` to define the index fields and their types.  
+
+If you want the UI to capture custom data related to your source, implement `DisplayDriver<AzureAISearchIndexSettings>`.  
+
+Additionally, you may implement `IAzureAISearchIndexSettingsHandler` to handle events such as data export during deployment, initialization, reset, synchronization, updates, or recipe validation.  
+
+
 ## Recipes 
 
 ### Creating Azure AI Search Index Step
@@ -40,6 +66,7 @@ The `Create Index Step` create an Azure AI Search index if one does not already 
       "name":"azureai-index-create",
       "Indices":[
         {
+            "Source": "Contents",
             "IndexName": "articles",
             "IndexLatest": false,
             "IndexedContentTypes": [
@@ -49,6 +76,7 @@ The `Create Index Step` create an Azure AI Search index if one does not already 
             "Culture": "any"
         },
         {
+            "Source": "Contents",
             "IndexName": "blogs",
             "IndexLatest": false,
             "IndexedContentTypes": [
