@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -10,6 +11,8 @@ namespace OrchardCore.Forms.Drivers;
 
 public sealed class FormInputElementPartDisplayDriver : ContentPartDisplayDriver<FormInputElementPart>
 {
+    private const string _validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.[]";
+
     internal readonly IStringLocalizer S;
 
     public FormInputElementPartDisplayDriver(IStringLocalizer<FormInputElementPartDisplayDriver> stringLocalizer)
@@ -35,10 +38,36 @@ public sealed class FormInputElementPartDisplayDriver : ContentPartDisplayDriver
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Name), S["A value is required for Name."]);
         }
+        else
+        {
+            var safeName = SanitizeInputName(viewModel.Name.AsSpan());
 
-        part.Name = viewModel.Name?.Trim();
+            if (viewModel.Name != safeName)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Name), S["A Name contains invalid characters."]);
+            }
+        }
+
+        part.Name = viewModel.Name;
         part.ContentItem.DisplayText = part.Name;
 
         return Edit(part, context);
+    }
+
+    public static string SanitizeInputName(ReadOnlySpan<char> inputSpan)
+    {
+        var sanitizedName = new StringBuilder(inputSpan.Length);
+
+        foreach (var c in inputSpan)
+        {
+            if (!_validCharacters.Contains(c))
+            {
+                continue;
+            }
+
+            sanitizedName.Append(c);
+        }
+
+        return sanitizedName.ToString();
     }
 }
