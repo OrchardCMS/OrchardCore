@@ -7,9 +7,9 @@
   },
   {
     "action": "parcel",
-    "name": "content-type-create",
-    "source": "Assets/js/content-type-create.ts",
-    "dest": "wwwroot/Scripts/content-type-create",
+    "name": "autocomplete",
+    "source": "Assets/js/autocomplete.ts",
+    "dest": "wwwroot/Scripts/autocomplete",
     "tags": ["admin", "dashboard", "js"]
   }
 ]
