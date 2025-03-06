@@ -9,21 +9,16 @@ namespace OrchardCore.Localization.Data;
 
 public class DataResourceManager
 {
-    private const string _cacheKeyPrefix = "CultureDictionary-";
+    private const string CacheKeyPrefix = "CultureDictionary-";
 
-    private static readonly PluralizationRuleDelegate _defaultPluralRule = n => (n != 1 ? 1 : 0);
+    private static readonly PluralizationRuleDelegate _noPluralRule = n => 0;
 
     private readonly IDataTranslationProvider _translationProvider;
-    private readonly IList<IPluralRuleProvider> _pluralRuleProviders;
     private readonly IMemoryCache _cache;
 
-    public DataResourceManager(
-        IDataTranslationProvider translationProvider,
-        IEnumerable<IPluralRuleProvider> pluralRuleProviders,
-        IMemoryCache cache)
+    public DataResourceManager(IDataTranslationProvider translationProvider, IMemoryCache cache)
     {
         _translationProvider = translationProvider;
-        _pluralRuleProviders = pluralRuleProviders.OrderBy(o => o.Order).ToArray();
         _cache = cache;
     }
 
@@ -31,15 +26,8 @@ public class DataResourceManager
 
     public string GetString(string name, string context, CultureInfo culture)
     {
-        if (string.IsNullOrEmpty(name))
-        {
-            throw new ArgumentException($"'{nameof(name)}' cannot be null or empty.", nameof(name));
-        }
-
-        if (string.IsNullOrEmpty(context))
-        {
-            throw new ArgumentException($"'{nameof(context)}' cannot be null or empty.", nameof(context));
-        }
+        ArgumentNullException.ThrowIfNullOrEmpty(name, nameof(name));
+        ArgumentNullException.ThrowIfNullOrEmpty(context, nameof(context));
 
         culture ??= CultureInfo.CurrentUICulture;
 
@@ -59,7 +47,7 @@ public class DataResourceManager
 
     public IDictionary<string, string> GetResources(CultureInfo culture, bool tryParents)
     {
-        ArgumentNullException.ThrowIfNull(culture);
+        ArgumentNullException.ThrowIfNull(culture, nameof(culture));
 
         var currentCulture = culture;
 
@@ -90,19 +78,10 @@ public class DataResourceManager
 
     private CultureDictionary GetCultureDictionary(CultureInfo culture)
     {
-        var cachedDictionary = _cache.GetOrCreate(_cacheKeyPrefix + culture.Name, k => new Lazy<CultureDictionary>(() =>
+        var cachedDictionary = _cache.GetOrCreate(CacheKeyPrefix + culture.Name, k => new Lazy<CultureDictionary>(() =>
         {
-            var rule = _defaultPluralRule;
+            var dictionary = new CultureDictionary(culture.Name, _noPluralRule);
 
-            foreach (var provider in _pluralRuleProviders)
-            {
-                if (provider.TryGetRule(culture, out rule))
-                {
-                    break;
-                }
-            }
-
-            var dictionary = new CultureDictionary(culture.Name, rule ?? _defaultPluralRule);
             _translationProvider.LoadTranslations(culture.Name, dictionary);
 
             return dictionary;

@@ -1,151 +1,64 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Localization.Data;
 
 public class DataLocalizer : IDataLocalizer
 {
-    private readonly ILocalizationManager _localizationManager;
+    private readonly DataResourceManager _dataResourceManager;
     private readonly bool _fallBackToParentCulture;
     private readonly ILogger _logger;
 
-    public DataLocalizer(
-        ILocalizationManager localizationManager,
-        bool fallBackToParentCulture,
-        ILogger logger)
+    public DataLocalizer(DataResourceManager dataResourceManager, bool fallBackToParentCulture, ILogger logger)
     {
-        _localizationManager = localizationManager;
+        _dataResourceManager = dataResourceManager;
         _fallBackToParentCulture = fallBackToParentCulture;
         _logger = logger;
     }
 
-    public LocalizedString this[string name]
+    /// <inheritdoc/>
+    public DataLocalizedString this[string name, string context]
     {
         get
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+            ArgumentNullException.ThrowIfNullOrEmpty(name, nameof(name));
+            ArgumentNullException.ThrowIfNullOrEmpty(context, nameof(context));
 
-            var translation = GetTranslation(name, CultureInfo.CurrentUICulture, null);
+            var translation = GetTranslation(name, context, CultureInfo.CurrentUICulture);
 
-            return new LocalizedString(name, translation ?? name, translation == null);
+            return new DataLocalizedString(name, context, translation ?? name, translation == null);
         }
     }
 
-    public LocalizedString this[string name, params object[] arguments]
+    /// <inheritdoc/>
+    public DataLocalizedString this[string name, string context, params object[] arguments]
     {
         get
         {
-            var (translation, argumentsWithCount) = GetTranslation(name, arguments);
-            var formatted = string.Format(translation.Value, argumentsWithCount);
+            var translation = this[name, context];
+            var localizedString = new DataLocalizedString(name, context, translation, translation.ResourceNotFound);
+            var formatted = string.Format(localizedString.Value, arguments);
 
-            return new LocalizedString(name, formatted, translation.ResourceNotFound);
+            return new DataLocalizedString(name, context, formatted, translation.ResourceNotFound);
         }
     }
 
-    public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
+    /// <inheritdoc/>
+    public IEnumerable<DataLocalizedString> GetAllStrings(string context, bool includeParentCultures)
     {
         var culture = CultureInfo.CurrentUICulture;
 
-        return includeParentCultures
-            ? GetAllStringsFromCultureHierarchy(culture)
-            : GetAllStrings(culture);
-    }
+        var translations = _dataResourceManager.GetResources(culture, includeParentCultures);
 
-    public (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
-    {
-        ArgumentNullException.ThrowIfNull(name);
-
-        // Check if a plural form is called, which is when the only argument is of type PluralizationArgument
-        if (arguments.Length == 1 && arguments[0] is PluralizationArgument pluralArgument)
+        foreach (var translation in translations)
         {
-            var translation = GetTranslation(name, CultureInfo.CurrentUICulture, pluralArgument.Count);
-
-            object[] argumentsWithCount;
-
-            if (pluralArgument.Arguments.Length > 0)
-            {
-                argumentsWithCount = new object[pluralArgument.Arguments.Length + 1];
-                argumentsWithCount[0] = pluralArgument.Count;
-                Array.Copy(pluralArgument.Arguments, 0, argumentsWithCount, 1, pluralArgument.Arguments.Length);
-            }
-            else
-            {
-                argumentsWithCount = [pluralArgument.Count];
-            }
-
-            translation ??= GetTranslation(pluralArgument.Forms, CultureInfo.CurrentUICulture, pluralArgument.Count);
-
-            return (new LocalizedString(name, translation, translation == null), argumentsWithCount);
-        }
-        else
-        {
-            var translation = this[name];
-            return (new LocalizedString(name, translation, translation.ResourceNotFound), arguments);
+            yield return new DataLocalizedString(translation.Key, context, translation.Value);
         }
     }
 
-    private IEnumerable<LocalizedString> GetAllStringsFromCultureHierarchy(CultureInfo culture)
-    {
-        var currentCulture = culture;
-        var allLocalizedStrings = new List<LocalizedString>();
-
-        do
-        {
-            var localizedStrings = GetAllStrings(currentCulture);
-
-            if (localizedStrings != null)
-            {
-                foreach (var localizedString in localizedStrings)
-                {
-                    if (!allLocalizedStrings.Any(ls => ls.Name == localizedString.Name))
-                    {
-                        allLocalizedStrings.Add(localizedString);
-                    }
-                }
-            }
-
-            currentCulture = currentCulture.Parent;
-        } while (currentCulture != currentCulture.Parent);
-
-        return allLocalizedStrings;
-    }
-
-    private IEnumerable<LocalizedString> GetAllStrings(CultureInfo culture)
-    {
-        var dictionary = _localizationManager.GetDictionary(culture);
-
-        foreach (var translation in dictionary.Translations)
-        {
-            yield return new LocalizedString(translation.Key, translation.Value.FirstOrDefault());
-        }
-    }
-
-    private string GetTranslation(string[] pluralForms, CultureInfo culture, int? count)
-    {
-        var dictionary = _localizationManager.GetDictionary(culture);
-        var pluralForm = count.HasValue ? dictionary.PluralRule(count.Value) : 0;
-
-        if (pluralForm >= pluralForms.Length)
-        {
-            if (_logger.IsEnabled(LogLevel.Warning))
-            {
-                _logger.LogWarning("Plural form '{PluralForm}' doesn't exist in values provided by the 'IStringLocalizer.Plural' method. Provided values: {PluralForms}", pluralForm, string.Join(", ", pluralForms));
-            }
-
-            return pluralForms[^1];
-        }
-
-        return pluralForms[pluralForm];
-    }
-
-    private string GetTranslation(string name, CultureInfo culture, int? count)
+    private string GetTranslation(string name, string context, CultureInfo culture)
     {
         string translation = null;
         try
@@ -154,7 +67,9 @@ public class DataLocalizer : IDataLocalizer
             {
                 do
                 {
-                    if (ExtractTranslation() != null)
+                    translation = _dataResourceManager.GetString(name, context, culture);
+
+                    if (translation != null)
                     {
                         break;
                     }
@@ -165,25 +80,12 @@ public class DataLocalizer : IDataLocalizer
             }
             else
             {
-                ExtractTranslation();
-            }
-
-            string ExtractTranslation()
-            {
-                var dictionary = _localizationManager.GetDictionary(culture);
-
-                if (dictionary != null)
-                {
-                    var key = new CultureDictionaryRecordKey(name);
-                    translation = dictionary[key, count];
-                }
-
-                return translation;
+                translation = _dataResourceManager.GetString(name, context);
             }
         }
         catch (PluralFormNotFoundException ex)
         {
-            _logger.LogWarning(ex.Message);
+            _logger.LogWarning(ex, "There is no pluralization form for the resource string '{Name}' with the culture '{Culture}'.", name, culture.Name);
         }
 
         return translation;

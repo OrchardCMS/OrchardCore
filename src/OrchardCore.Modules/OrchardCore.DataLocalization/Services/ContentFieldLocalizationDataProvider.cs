@@ -21,5 +21,5 @@ public class ContentFieldDataLocalizationProvider : ILocalizationDataProvider
     public async Task<IEnumerable<DataLocalizedString>> GetDescriptorsAsync()
         => (await _contentDefinitionService.GetTypesAsync())
             .SelectMany(t => t.TypeDefinition.Parts)
-            .SelectMany(p => p.PartDefinition.Fields.Select(f => new DataLocalizedString(_contentFieldsContext, f.Name)));
+            .SelectMany(p => p.PartDefinition.Fields.Select(f => new DataLocalizedString(_contentFieldsContext, f.Name, string.Empty)));
 }

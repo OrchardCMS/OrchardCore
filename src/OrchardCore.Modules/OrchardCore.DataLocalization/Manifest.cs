@@ -7,5 +7,5 @@ using OrchardCore.Modules.Manifest;
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "Provides support for data localization.",
     Category = "Internationalization",
-    Dependencies = new[] { "OrchardCore.Localization" }
+    Dependencies = ["OrchardCore.Localization"]
 )]

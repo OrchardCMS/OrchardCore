@@ -16,12 +16,16 @@ public class TranslationsManagerTests
     [Fact]
     public async Task GetTranslationsDocument()
     {
+        // Arrange & Act
         var translationsDocument = await _translationsManager.Object.GetTranslationsDocumentAsync();
 
+        // Assert
         Assert.NotNull(translationsDocument);
         Assert.Equal(3, translationsDocument.Translations.Count);
+
         var spanishTranslations = translationsDocument.Translations["es"];
         var frenchTranslations = translationsDocument.Translations["fr"];
+
         Assert.Equal("Artículo1", spanishTranslations.First().Value);
         Assert.Equal("Article1", frenchTranslations.First().Value);
         Assert.Equal("Nombre", spanishTranslations.Last().Value);
@@ -31,11 +35,13 @@ public class TranslationsManagerTests
     [Fact]
     public async Task GetTranslationsDocument_GroupByContext()
     {
+        // Arrange & Act
         var translationsDocument = await _translationsManager.Object.GetTranslationsDocumentAsync();
         var groups = translationsDocument.Translations
             .SelectMany(t => t.Value)
             .GroupBy(t => t.Context);
 
+        // Assert
         Assert.Equal(2, groups.Count());
         Assert.StartsWith("Content Type", groups.First().Key);
         Assert.Equal(8, groups.First().Count());
