@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Localization.Data;
 using OrchardCore.Localization;
-using System.Linq;
 
 namespace OrchardCore.DataLocalization.Services;
 
@@ -23,10 +22,9 @@ public class DataTranslationProvider : IDataTranslationProvider
 
             var translationsDocument = translationsManager.GetTranslationsDocumentAsync().Result;
 
-            if (translationsDocument.Translations.ContainsKey(cultureName))
+            if (translationsDocument.Translations.TryGetValue(cultureName, out var translations))
             {
-                var records = translationsDocument.Translations[cultureName]
-                    .Select(t => new CultureDictionaryRecord(t.Key, t.Context, new[] { t.Value }));
+                var records = translations.Select(t => new CultureDictionaryRecord(t.Key, t.Context, [t.Value]));
 
                 dictionary.MergeTranslations(records);
             }
