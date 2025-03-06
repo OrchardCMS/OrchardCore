@@ -210,4 +210,12 @@ $("body").on("submit", "form.no-multisubmit", function (e) {
     }, 5000);
 });
 
+declare global {
+    interface Window {
+        confirmDialog: typeof confirmDialog;
+    }
+}
+
+window.confirmDialog = confirmDialog;
+
 export { confirmDialog, getTechnicalName };
