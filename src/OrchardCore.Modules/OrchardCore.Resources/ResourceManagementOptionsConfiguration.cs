@@ -1077,7 +1077,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("vue-draggable")
-            .SetDependencies("vuejs", "Sortable")
+            .SetDependencies("vuejs:2", "Sortable")
             .SetUrl(
                 "~/OrchardCore.Resources/Vendor/vue-draggable-2.24.3/vuedraggable.umd.min.js",
                 "~/OrchardCore.Resources/Vendor/vue-draggable-2.24.3/vuedraggable.umd.js"

@@ -157,7 +157,7 @@ function buildParcelOptions(command, assetConfig) {
 /**
  * Processes JavaScript files in the specified asset configuration destination,
  * removing source mapping URL comments and creating corresponding production
- * JavaScript files with the ".prod.js" extension.
+ * JavaScript files with the ".min.js" extension.
  *
  * @param {Object} assetConfig - The asset configuration object.
  * @param {string} assetConfig.dest - The directory containing JavaScript files to process.
@@ -184,7 +184,7 @@ const createProdJsFile = async (assetConfig) => {
                 });
 
                 const newContent = lines.join("\n");
-                const prodFilePath = filePath.replace(/\.js$/, ".prod.js");
+                const prodFilePath = filePath.replace(/\.js$/, ".min.js");
                 await fs.writeFile(prodFilePath, newContent);
             }
         }

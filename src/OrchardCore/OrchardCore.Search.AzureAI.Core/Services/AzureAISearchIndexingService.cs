@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Entities;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Search.AzureAI.Models;
@@ -48,7 +49,7 @@ public class AzureAISearchIndexingService
 
         if (indexNames == null || indexNames.Length == 0)
         {
-            indexSettings = new List<AzureAISearchIndexSettings>(indexesDocument.IndexSettings.Values);
+            indexSettings = [.. indexesDocument.IndexSettings.Values];
         }
         else
         {
@@ -71,7 +72,7 @@ public class AzureAISearchIndexingService
 
         var tasks = new List<IndexingTask>();
 
-        var allContentTypes = indexSettings.SelectMany(x => x.IndexedContentTypes ?? []).Distinct().ToArray();
+        var allContentTypes = indexSettings.SelectMany(x => x.As<ContentIndexMetadata>().IndexedContentTypes ?? []).Distinct().ToArray();
         var readOnlySession = _store.CreateSession(withTracking: false);
 
         while (tasks.Count <= _batchSize)
@@ -97,14 +98,14 @@ public class AzureAISearchIndexingService
 
             var settingsByIndex = indexSettings.ToDictionary(x => x.IndexName);
 
-            if (indexSettings.Any(x => !x.IndexLatest))
+            if (indexSettings.Any(x => !x.As<ContentIndexMetadata>().IndexLatest))
             {
                 var publishedContentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Published && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync();
                 allPublished = publishedContentItems.DistinctBy(x => x.ContentItemId)
                 .ToDictionary(k => k.ContentItemId);
             }
 
-            if (indexSettings.Any(x => x.IndexLatest))
+            if (indexSettings.Any(x => x.As<ContentIndexMetadata>().IndexLatest))
             {
                 var latestContentItems = await readOnlySession.Query<ContentItem, ContentItemIndex>(index => index.Latest && index.ContentType.IsIn(allContentTypes) && index.ContentItemId.IsIn(updatedContentItemIds)).ListAsync();
                 allLatest = latestContentItems.DistinctBy(x => x.ContentItemId).ToDictionary(k => k.ContentItemId);
@@ -141,7 +142,9 @@ public class AzureAISearchIndexingService
                             continue;
                         }
 
-                        var context = !settings.IndexLatest ? publishedIndexContext : latestIndexContext;
+                        var metadata = settings.As<ContentIndexMetadata>();
+
+                        var context = !metadata.IndexLatest ? publishedIndexContext : latestIndexContext;
 
                         // We index only if we actually found a content item in the database.
                         if (context == null)
@@ -150,7 +153,7 @@ public class AzureAISearchIndexingService
                         }
 
                         // Ignore if the content item content type is not indexed in this index.
-                        if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
+                        if (!metadata.IndexedContentTypes.Contains(context.ContentItem.ContentType))
                         {
                             continue;
                         }
@@ -158,7 +161,7 @@ public class AzureAISearchIndexingService
                         // Ignore if the culture is not indexed in this index.
                         var cultureAspect = await _contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
                         var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
-                        var ignoreIndexedCulture = settings.Culture != "any" && culture != settings.Culture;
+                        var ignoreIndexedCulture = metadata.Culture != "any" && culture != metadata.Culture;
 
                         if (ignoreIndexedCulture)
                         {
@@ -200,6 +203,7 @@ public class AzureAISearchIndexingService
                 {
                     // We know none of the previous batches failed to update this index.
                     settings.SetLastTaskId(lastTaskId);
+
                     await _azureAISearchIndexSettingsService.UpdateAsync(settings);
                 }
             }

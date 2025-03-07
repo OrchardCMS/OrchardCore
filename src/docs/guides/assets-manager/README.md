@@ -114,13 +114,13 @@ Parcel bundleEntrypoint parameter:
 
 #### Sourcemaps
 
-For javascript files Parcel will create a .prod.js file for you along with a .map file. The .prod.js is created for use in production as it doesn't reference the .map file. Using the ResourceManagementOptionsConfiguration you will want to set it this way:
+For javascript files Parcel will create a .min.js file for you along with a .map file. The .min.js is created for use in production as it doesn't reference the .map file. Using the ResourceManagementOptionsConfiguration you will want to set it this way:
 
 ```C#
     _manifest
         .DefineScript("admin")
         .SetDependencies("bootstrap", "admin-main", "theme-manager", "jQuery", "Sortable")
-        .SetUrl("~/TheAdmin/js/theadmin/TheAdmin.prod.js", "~/TheAdmin/js/theadmin/TheAdmin.js")
+        .SetUrl("~/TheAdmin/js/theadmin/TheAdmin.min.js", "~/TheAdmin/js/theadmin/TheAdmin.js")
         .SetVersion("1.0.0");
 ```
 

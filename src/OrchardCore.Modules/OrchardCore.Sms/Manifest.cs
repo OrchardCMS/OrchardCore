@@ -10,7 +10,7 @@ using OrchardCore.Modules.Manifest;
     Name = "SMS",
     Id = "OrchardCore.Sms",
     Description = "Provides settings and services to send SMS messages.",
-    Category = "SMS"
+    Category = "Communication"
 )]
 
 [assembly: Feature(
