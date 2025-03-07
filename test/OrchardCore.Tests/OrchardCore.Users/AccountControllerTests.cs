@@ -457,8 +457,6 @@ public class AccountControllerTests
             ["steps"] = recipeSteps,
         };
 
-        var t = recipe.ToJsonString();
-
         await RunRecipeAsync(context, recipe);
 
         return context;
