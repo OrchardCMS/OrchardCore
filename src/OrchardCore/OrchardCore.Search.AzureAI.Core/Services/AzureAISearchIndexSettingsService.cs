@@ -127,6 +127,14 @@ public class AzureAISearchIndexSettingsService
         return validatingContext.Result;
     }
 
+    public async Task SetMappingsAsync(AzureAISearchIndexSettings settings)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+
+        var mappingContext = new AzureAISearchMappingContext(settings);
+        await _handlers.InvokeAsync((handler, ctx) => handler.MappingAsync(ctx), mappingContext, _logger);
+    }
+
     public async Task ResetAsync(AzureAISearchIndexSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);

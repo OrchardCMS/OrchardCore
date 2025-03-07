@@ -250,7 +250,7 @@ public sealed class AdminController : Controller
         {
             try
             {
-                settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings);
+                await _indexSettingsService.SetMappingsAsync(settings);
 
                 if (await _indexManager.CreateAsync(settings))
                 {
@@ -328,7 +328,7 @@ public sealed class AdminController : Controller
         {
             try
             {
-                settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings);
+                await _indexSettingsService.SetMappingsAsync(settings);
 
                 if (!await _indexManager.CreateAsync(settings))
                 {
@@ -420,7 +420,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings);
+        await _indexSettingsService.SetMappingsAsync(settings);
         await _indexSettingsService.ResetAsync(settings);
         await _indexSettingsService.UpdateAsync(settings);
         await _indexManager.RebuildAsync(settings);
@@ -458,7 +458,8 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        settings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(settings);
+        await _indexSettingsService.SetMappingsAsync(settings);
+        await _indexSettingsService.ResetAsync(settings);
         await _indexSettingsService.UpdateAsync(settings);
         await _indexSettingsService.SynchronizeAsync(settings);
         await _notifier.SuccessAsync(H["Index <em>{0}</em> reset successfully.", settings.IndexName]);

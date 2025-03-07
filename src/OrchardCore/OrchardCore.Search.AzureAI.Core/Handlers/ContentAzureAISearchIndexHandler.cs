@@ -2,19 +2,39 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.BackgroundJobs;
+using OrchardCore.ContentManagement;
+using OrchardCore.Contents.Indexing;
 using OrchardCore.Entities;
+using OrchardCore.Indexing;
+using OrchardCore.Modules;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
+using static OrchardCore.Indexing.DocumentIndexBase;
 
 namespace OrchardCore.Search.AzureAI.Handlers;
 
 public sealed class ContentAzureAISearchIndexHandler : AzureAISearchIndexSettingsHandlerBase
 {
+    private readonly IContentManager _contentManager;
+    private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
+    private readonly IEnumerable<IAzureAISearchFieldIndexEvents> _fieldIndexEvents;
+    private readonly ILogger _logger;
+
     private readonly IStringLocalizer S;
 
-    public ContentAzureAISearchIndexHandler(IStringLocalizer<ContentAzureAISearchIndexHandler> stringLocalizer)
+    public ContentAzureAISearchIndexHandler(
+        IContentManager contentManager,
+        IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
+        IEnumerable<IAzureAISearchFieldIndexEvents> fieldIndexEvents,
+        ILogger<ContentAzureAISearchIndexHandler> logger,
+        IStringLocalizer<ContentAzureAISearchIndexHandler> stringLocalizer)
     {
+        _contentManager = contentManager;
+        _contentItemIndexHandlers = contentItemIndexHandlers;
+        _fieldIndexEvents = fieldIndexEvents;
+        _logger = logger;
         S = stringLocalizer;
     }
 
@@ -87,6 +107,11 @@ public sealed class ContentAzureAISearchIndexHandler : AzureAISearchIndexSetting
 
     public override Task ResetAsync(AzureAISearchIndexSettingsResetContext context)
     {
+        if (!string.Equals(AzureAISearchConstants.ContentsIndexSource, context.Settings.Source, StringComparison.OrdinalIgnoreCase))
+        {
+            return Task.CompletedTask;
+        }
+
         context.Settings.SetLastTaskId(0);
 
         return Task.CompletedTask;
@@ -128,5 +153,51 @@ public sealed class ContentAzureAISearchIndexHandler : AzureAISearchIndexSetting
         context.Data["IndexedContentTypes"] = jsonArray;
 
         return Task.CompletedTask;
+    }
+
+    public override async Task MappingAsync(AzureAISearchMappingContext context)
+    {
+        if (!string.Equals(AzureAISearchConstants.ContentsIndexSource, context.Settings.Source, StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+        var metadata = context.Settings.As<ContentIndexMetadata>();
+
+        foreach (var contentType in metadata.IndexedContentTypes ?? [])
+        {
+            var contentItem = await _contentManager.NewAsync(contentType);
+            var index = new DocumentIndex(contentItem.ContentItemId, contentItem.ContentItemVersionId);
+            var buildIndexContext = new BuildIndexContext(index, contentItem, [contentType], new AzureAISearchContentIndexSettings());
+            await _contentItemIndexHandlers.InvokeAsync(x => x.BuildIndexAsync(buildIndexContext), _logger);
+
+            await AddIndexMappingAsync(context.Settings.IndexMappings, IndexingConstants.ContentItemIdKey, new DocumentIndexEntry(IndexingConstants.ContentItemIdKey, contentItem.ContentItemId, Types.Text, DocumentIndexOptions.Keyword), context.Settings);
+            await AddIndexMappingAsync(context.Settings.IndexMappings, IndexingConstants.ContentItemVersionIdKey, new DocumentIndexEntry(IndexingConstants.ContentItemVersionIdKey, contentItem.ContentItemId, Types.Text, DocumentIndexOptions.Keyword), context.Settings);
+
+            foreach (var entry in index.Entries)
+            {
+                if (!AzureAISearchIndexNamingHelper.TryGetSafeFieldName(entry.Name, out var safeFieldName))
+                {
+                    continue;
+                }
+
+                await AddIndexMappingAsync(context.Settings.IndexMappings, safeFieldName, entry, context.Settings);
+            }
+        }
+    }
+
+    private async Task AddIndexMappingAsync(IList<AzureAISearchIndexMap> indexMappings, string safeFieldName, DocumentIndexEntry entry, AzureAISearchIndexSettings settings)
+    {
+        var indexMap = new AzureAISearchIndexMap(safeFieldName, entry.Type, entry.Options)
+        {
+            IndexingKey = entry.Name,
+        };
+
+        var context = new SearchIndexDefinition(indexMap, entry, settings);
+
+        await _fieldIndexEvents.InvokeAsync((handler, ctx) => handler.MappingAsync(ctx), context, _logger);
+
+        await _fieldIndexEvents.InvokeAsync((handler, ctx) => handler.MappedAsync(ctx), context, _logger);
+
+        indexMappings.Add(indexMap);
     }
 }

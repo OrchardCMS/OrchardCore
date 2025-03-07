@@ -10,6 +10,8 @@ public interface IAzureAISearchIndexSettingsHandler
 
     Task ValidatingAsync(AzureAISearchIndexSettingsValidatingContext context);
 
+    Task MappingAsync(AzureAISearchMappingContext context);
+
     Task ResetAsync(AzureAISearchIndexSettingsResetContext context);
 
     Task SynchronizedAsync(AzureAISearchIndexSettingsSynchronizedContext context);
