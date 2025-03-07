@@ -1,7 +1,7 @@
-using System.Text;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
@@ -11,8 +11,6 @@ namespace OrchardCore.Forms.Drivers;
 
 public sealed class FormInputElementPartDisplayDriver : ContentPartDisplayDriver<FormInputElementPart>
 {
-    private const string _validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.[]";
-
     internal readonly IStringLocalizer S;
 
     public FormInputElementPartDisplayDriver(IStringLocalizer<FormInputElementPartDisplayDriver> stringLocalizer)
@@ -40,7 +38,7 @@ public sealed class FormInputElementPartDisplayDriver : ContentPartDisplayDriver
         }
         else
         {
-            var safeName = SanitizeInputName(viewModel.Name.AsSpan());
+            var safeName = viewModel.Name.GetSafeHTMLInputName();
 
             if (viewModel.Name != safeName)
             {
@@ -52,22 +50,5 @@ public sealed class FormInputElementPartDisplayDriver : ContentPartDisplayDriver
         part.ContentItem.DisplayText = part.Name;
 
         return Edit(part, context);
-    }
-
-    public static string SanitizeInputName(ReadOnlySpan<char> inputSpan)
-    {
-        var sanitizedName = new StringBuilder(inputSpan.Length);
-
-        foreach (var c in inputSpan)
-        {
-            if (!_validCharacters.Contains(c))
-            {
-                continue;
-            }
-
-            sanitizedName.Append(c);
-        }
-
-        return sanitizedName.ToString();
     }
 }
