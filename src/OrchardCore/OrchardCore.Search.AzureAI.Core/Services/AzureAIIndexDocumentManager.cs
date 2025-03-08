@@ -14,20 +14,17 @@ public class AzureAIIndexDocumentManager
     private readonly AzureAIClientFactory _clientFactory;
     private readonly AzureAISearchIndexManager _indexManager;
     private readonly IEnumerable<IAzureAISearchDocumentEvents> _documentEvents;
-    private readonly IEnumerable<IAzureAISearchEvents> _azureAISearchEvents;
     private readonly ILogger _logger;
 
     public AzureAIIndexDocumentManager(
         AzureAIClientFactory clientFactory,
         AzureAISearchIndexManager indexManager,
         IEnumerable<IAzureAISearchDocumentEvents> documentEvents,
-        IEnumerable<IAzureAISearchEvents> azureAISearchEvents,
         ILogger<AzureAIIndexDocumentManager> logger)
     {
         _clientFactory = clientFactory;
         _indexManager = indexManager;
         _documentEvents = documentEvents;
-        _azureAISearchEvents = azureAISearchEvents;
         _logger = logger;
     }
 
@@ -189,17 +186,6 @@ public class AzureAIIndexDocumentManager
         {
             _logger.LogError(ex, "Unable to delete documents from Azure AI Search Settings");
         }
-    }
-
-    public async Task<IList<AzureAISearchIndexMap>> GetMappingsAsync(AzureAISearchIndexSettings settings)
-    {
-        ArgumentNullException.ThrowIfNull(settings);
-
-        var mappingContext = new AzureAISearchMappingContext(settings);
-
-        await _azureAISearchEvents.InvokeAsync((handler, context) => handler.MappingAsync(context), mappingContext, _logger);
-
-        return mappingContext.Mappings;
     }
 
     private static IEnumerable<SearchDocument> CreateSearchDocuments(IEnumerable<DocumentIndexBase> indexDocuments, Dictionary<string, IEnumerable<AzureAISearchIndexMap>> mappings)

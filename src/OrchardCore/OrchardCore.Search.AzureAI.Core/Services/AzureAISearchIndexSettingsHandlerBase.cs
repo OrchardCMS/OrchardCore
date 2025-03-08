@@ -1,4 +1,4 @@
-﻿using OrchardCore.Search.AzureAI.Models;
+using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
@@ -10,6 +10,11 @@ public abstract class AzureAISearchIndexSettingsHandlerBase : IAzureAISearchInde
     }
 
     public virtual Task InitializingAsync(AzureAISearchIndexSettingsInitializingContext context)
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task MappingAsync(AzureAISearchMappingContext context)
     {
         return Task.CompletedTask;
     }

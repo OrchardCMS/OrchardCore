@@ -66,7 +66,6 @@ public sealed class ContentsStartup : StartupBase
 
     public override void ConfigureServices(IServiceCollection services)
     {
-        services.AddScoped<IAzureAISearchEvents, ContentAzureAISearchEvents>();
         services.AddDisplayDriver<AzureAISearchIndexSettings, ContentAzureAISearchIndexSettingsDisplayDriver>();
         services.AddScoped<IAzureAISearchIndexSettingsHandler, ContentAzureAISearchIndexHandler>();
         services.Configure<AzureAISearchOptions>(options =>

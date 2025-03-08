@@ -12,20 +12,17 @@ public sealed class AzureAISearchIndexSettingsStep : NamedRecipeStepHandler
     public const string Name = "azureai-index-create";
 
     private readonly AzureAISearchIndexManager _indexManager;
-    private readonly AzureAIIndexDocumentManager _azureAIIndexDocumentManager;
     private readonly AzureAISearchIndexSettingsService _azureAISearchIndexSettingsService;
 
     internal readonly IStringLocalizer S;
 
     public AzureAISearchIndexSettingsStep(
         AzureAISearchIndexManager indexManager,
-        AzureAIIndexDocumentManager azureAIIndexDocumentManager,
         AzureAISearchIndexSettingsService azureAISearchIndexSettingsService,
         IStringLocalizer<AzureAISearchIndexSettingsStep> stringLocalizer)
         : base(Name)
     {
         _indexManager = indexManager;
-        _azureAIIndexDocumentManager = azureAIIndexDocumentManager;
         _azureAISearchIndexSettingsService = azureAISearchIndexSettingsService;
         S = stringLocalizer;
     }
@@ -68,7 +65,7 @@ public sealed class AzureAISearchIndexSettingsStep : NamedRecipeStepHandler
             {
                 var indexSettings = await _azureAISearchIndexSettingsService.NewAsync(sourceName, token);
                 indexSettings.IndexFullName = _indexManager.GetFullIndexName(indexName);
-                indexSettings.IndexMappings = await _azureAIIndexDocumentManager.GetMappingsAsync(indexSettings);
+                await _azureAISearchIndexSettingsService.SetMappingsAsync(indexSettings);
 
                 var validationResult = await _azureAISearchIndexSettingsService.ValidateAsync(indexSettings);
 
