@@ -1,6 +1,15 @@
 var mdeToolbar;
 
-$(function () {
+function initializeMdeShortcodeWrapper(mde) {
+    const toolbar = mde.gui.toolbar;
+
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('shortcode-modal-wrapper');
+    toolbar.parentNode.insertBefore(wrapper, toolbar);
+    wrapper.appendChild(toolbar);
+}
+
+$(document).ready(function() {
     mdeToolbar = [
         {
             name: "guide",
@@ -84,20 +93,21 @@ $(function () {
         {
             name: "image",
             action: function (editor) {
-                $("#mediaApp").detach().appendTo('#mediaModalMarkdown .modal-body');
-                document.getElementById("mediaApp").classList.remove("d-none");
+                const mediaAppElement = document.getElementById("mediaApp");
+                mediaAppElement.parentNode.removeChild(mediaAppElement);
+                document.getElementById("mediaModalMarkdown").querySelector(".modal-body").appendChild(mediaAppElement);
                 mediaApp.selectedMedias = [];
-                var modal = new bootstrap.Modal($('#mediaModalMarkdown'));
+                const modal = new bootstrap.Modal(document.getElementById("mediaModalMarkdown"));
                 modal.show();
-                $('#mediaMarkdownSelectButton').on('click', function (v) {
-                    var mediaMarkdownContent = "";
-                    for (i = 0; i < mediaApp.selectedMedias.length; i++) {
+                document.getElementById("mediaMarkdownSelectButton").addEventListener("click", function (v) {
+                    let mediaMarkdownContent = "";
+                    for (let i = 0; i < mediaApp.selectedMedias.length; i++) {
                         mediaMarkdownContent += ' [image]' + mediaApp.selectedMedias[i].mediaPath + '[/image]';
                     }
-                    var cm = editor.codemirror;
+                    const cm = editor.codemirror;
                     cm.replaceSelection(mediaMarkdownContent)
                     modal.hide();
-                    $(this).off('click');
+                    this.removeEventListener("click", arguments.callee);
                 });
             },
             className: "far fa-image fa-sm",
@@ -151,9 +161,3 @@ $(function () {
         }
     ];
 });
-
-function initializeMdeShortcodeWrapper(mde) {
-    const toolbar = mde.gui.toolbar;
-
-    $(toolbar).wrap('<div class="shortcode-modal-wrapper"></div>');
-}

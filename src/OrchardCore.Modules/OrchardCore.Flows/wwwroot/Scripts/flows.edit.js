@@ -1,133 +1,126 @@
 //variables used in FlowPart.Edit sortable
 var widgetDragItem, lastContainer, widgetItemSourceId, widgetItemDestId;
 
-$(function () {
-    $(document).on('click', '.add-widget', function (event) {
-        var type = $(this).data("widget-type");
-        var targetId = $(this).data("target-id");
-        var htmlFieldPrefix = $(this).data("html-field-prefix");
-        var createEditorUrl = $('#' + targetId).data("buildeditorurl");
-        var prefixesName = $(this).data("prefixes-name");
-        var flowmetadata = $(this).data("flowmetadata");
-        var parentContentType = $(this).data("parent-content-type");
-        var partName = $(this).data("part-name");
+document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('click', function (event) {
+        if (event.target.matches('.add-widget')) {
+            var type = event.target.dataset.widgetType;
+            var targetId = event.target.dataset.targetId;
+            var htmlFieldPrefix = event.target.dataset.htmlFieldPrefix;
+            var createEditorUrl = document.getElementById(targetId).dataset.buildeditorurl;
+            var prefixesName = event.target.dataset.prefixesName;
+            var flowmetadata = event.target.dataset.flowmetadata;
+            var parentContentType = event.target.dataset.parentContentType;
+            var partName = event.target.dataset.partName;
 
-        // Retrieve all index values knowing that some elements may have been moved / removed.
-        var indexes = $('#' + targetId).closest("form").find("input[name*='Prefixes']")
-            .filter(function (i, e) {
-                return $(e).val().substring(0, $(e).val().lastIndexOf('-')) === htmlFieldPrefix;
-            })
-            .map(function (i, e) {
-                return parseInt($(e).val().substring($(e).val().lastIndexOf('-') + 1)) || 0;
-            });
+            var indexes = Array.from(document.querySelectorAll(`#${targetId}`).closest("form").querySelectorAll("input[name*='Prefixes']"))
+                .filter(e => e.value.substring(0, e.value.lastIndexOf('-')) === htmlFieldPrefix)
+                .map(e => parseInt(e.value.substring(e.value.lastIndexOf('-') + 1)) || 0);
 
-        // Use a prefix based on the items count (not a guid) so that the browser autofill still works.
-        var index = indexes.length ? Math.max(...indexes) + 1 : 0;
-        var prefix = htmlFieldPrefix + '-' + index.toString();
+            var index = indexes.length ? Math.max(...indexes) + 1 : 0;
+            var prefix = htmlFieldPrefix + '-' + index.toString();
 
-        var contentTypesName = $(this).data("contenttypes-name");
-        var contentItemsName = $(this).data("contentitems-name");
-        $.ajax({
-            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&contentItemsName=" + contentItemsName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName
-        }).done(function (data) {
-            var result = JSON.parse(data);
-            $(document.getElementById(targetId)).append(result.Content);
+            var contentTypesName = event.target.dataset.contenttypesName;
+            var contentItemsName = event.target.dataset.contentitemsName;
 
-            var dom = $(result.Scripts);
-            dom.filter('script').each(function () {
-                $.globalEval(this.text || this.textContent || this.innerHTML || '');
-            });
-        });
-    });
+            fetch(`${createEditorUrl}?id=${type}&prefix=${prefix}&prefixesName=${prefixesName}&contentTypesName=${contentTypesName}&contentItemsName=${contentItemsName}&targetId=${targetId}&flowmetadata=${flowmetadata}&parentContentType=${parentContentType}&partName=${partName}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById(targetId).insertAdjacentHTML('beforeend', data.Content);
 
-    $(document).on('click', '.insert-widget', function (event) {
-        var type = $(this).data("widget-type");
-        var target = $(this).closest('.widget-template');
-        var targetId = $(this).data("target-id");
-        var htmlFieldPrefix = $(this).data("html-field-prefix");
-        var createEditorUrl = $('#' + targetId).data("buildeditorurl");
-        var flowmetadata = $(this).data("flowmetadata");
-        var prefixesName = $(this).data("prefixes-name");
-        var parentContentType = $(this).data("parent-content-type");
-        var partName = $(this).data("part-name");
-
-        // Retrieve all index values knowing that some elements may have been moved / removed.
-        var indexes = $('#' + targetId).closest("form").find("input[name*='Prefixes']")
-            .filter(function (i, e) {
-                return $(e).val().substring(0, $(e).val().lastIndexOf('-')) === htmlFieldPrefix;
-            })
-            .map(function (i, e) {
-                return parseInt($(e).val().substring($(e).val().lastIndexOf('-') + 1)) || 0;
-            });
-
-        // Use a prefix based on the items count (not a guid) so that the browser autofill still works.
-        var index = indexes.length ? Math.max(...indexes) + 1 : 0;
-        var prefix = htmlFieldPrefix + '-' + index.toString();
-
-        var contentTypesName = $(this).data("contenttypes-name");
-        var contentItemsName = $(this).data("contentitems-name");
-        $.ajax({
-            url: createEditorUrl + "?id=" + type + "&prefix=" + prefix + "&prefixesName=" + prefixesName + "&contentTypesName=" + contentTypesName + "&contentItemsName=" + contentItemsName + "&targetId=" + targetId + "&flowmetadata=" + flowmetadata + "&parentContentType=" + parentContentType + "&partName=" + partName
-        }).done(function (data) {
-            var result = JSON.parse(data);
-            $(result.Content).insertBefore(target);
-
-            var dom = $(result.Scripts);
-            dom.filter('script').each(function () {
-                $.globalEval(this.text || this.textContent || this.innerHTML || '');
-            });
-        });
-    });
-
-    $(document).on('click', '.widget-delete', function () {
-        var $this = $(this);
-        confirmDialog({
-            ...$this.data(), callback: function (r) {
-                if (r) {
-                    $this.closest('.widget-template').remove();
-                    $(document).trigger('contentpreview:render');
-                }
-            }
-        });
-    });
-
-    $(document).on('change', '.widget-editor-footer label, .widget-editor-header label', function () {
-
-        var $tmpl = $(this).closest('.widget-template');
-        var $radio = $(this).find("input:first-child");
-        if ($radio[0].id !== 'undefined' && $radio[0].id.indexOf('Size') > 0) {
-            var $radioSize = $(this).find("input:first-child").val();
-            var classList = $tmpl.attr('class').split(' ');
-            $.each(classList, function (id, item) {
-                if (item.indexOf('col-md-') === 0) $tmpl.removeClass(item);
-            });
-            var colSize = Math.round($radioSize / 100 * 12);
-            $tmpl.addClass('col-md-' + colSize);
-
-            var dropdown = $(this).closest('.dropdown-menu');
-            dropdown.prev('button').text($radioSize + '%');
-        } else if ($radio[0].id !== 'undefined' && $radio[0].id.indexOf('Alignment') > 0) {
-            var svg = $(this).find('svg')[0].outerHTML;
-            var alignDropdown = $(this).closest('.dropdown-menu');
-            var $btn = alignDropdown.prev('button');
-            $btn.html(svg);
+                    var dom = new DOMParser().parseFromString(data.Scripts, 'text/html');
+                    Array.from(dom.querySelectorAll('script')).forEach(script => {
+                        eval(script.textContent || script.innerHTML);
+                    });
+                });
         }
 
-        $(this).parent().find('.dropdown-item').removeClass('active');
-        $(this).toggleClass('active');
-        $(document).trigger('contentpreview:render');
+        if (event.target.matches('.insert-widget')) {
+            var type = event.target.dataset.widgetType;
+            var target = event.target.closest('.widget-template');
+            var targetId = event.target.dataset.targetId;
+            var htmlFieldPrefix = event.target.dataset.htmlFieldPrefix;
+            var createEditorUrl = document.getElementById(targetId).dataset.buildeditorurl;
+            var flowmetadata = event.target.dataset.flowmetadata;
+            var prefixesName = event.target.dataset.prefixesName;
+            var parentContentType = event.target.dataset.parentContentType;
+            var partName = event.target.dataset.partName;
+
+            var indexes = Array.from(document.querySelectorAll(`#${targetId}`).closest("form").querySelectorAll("input[name*='Prefixes']"))
+                .filter(e => e.value.substring(0, e.value.lastIndexOf('-')) === htmlFieldPrefix)
+                .map(e => parseInt(e.value.substring(e.value.lastIndexOf('-') + 1)) || 0);
+
+            var index = indexes.length ? Math.max(...indexes) + 1 : 0;
+            var prefix = htmlFieldPrefix + '-' + index.toString();
+
+            var contentTypesName = event.target.dataset.contenttypesName;
+            var contentItemsName = event.target.dataset.contentitemsName;
+
+            fetch(`${createEditorUrl}?id=${type}&prefix=${prefix}&prefixesName=${prefixesName}&contentTypesName=${contentTypesName}&contentItemsName=${contentItemsName}&targetId=${targetId}&flowmetadata=${flowmetadata}&parentContentType=${parentContentType}&partName=${partName}`)
+                .then(response => response.json())
+                .then(data => {
+                    target.insertAdjacentHTML('beforebegin', data.Content);
+
+                    var dom = new DOMParser().parseFromString(data.Scripts, 'text/html');
+                    Array.from(dom.querySelectorAll('script')).forEach(script => {
+                        eval(script.textContent || script.innerHTML);
+                    });
+                });
+        }
+
+        if (event.target.matches('.widget-delete')) {
+            var $this = event.target;
+            confirmDialog({
+                ...$this.dataset, callback: function (r) {
+                    if (r) {
+                        $this.closest('.widget-template').remove();
+                        document.dispatchEvent(new Event('contentpreview:render'));
+                    }
+                }
+            });
+        }
+
+        if (event.target.matches('.widget-editor-btn-toggle')) {
+            event.target.closest('.widget-editor').classList.toggle('collapsed');
+        }
     });
 
-    $(document).on('click', '.widget-editor-btn-toggle', function () {
-        $(this).closest('.widget-editor').toggleClass('collapsed');
+    document.addEventListener('change', function (event) {
+        if (event.target.matches('.widget-editor-footer label, .widget-editor-header label')) {
+            var $tmpl = event.target.closest('.widget-template');
+            var $radio = event.target.querySelector("input:first-child");
+            if ($radio && $radio.id.includes('Size')) {
+                var $radioSize = $radio.value;
+                var classList = $tmpl.className.split(' ');
+                classList.forEach(item => {
+                    if (item.startsWith('col-md-')) $tmpl.classList.remove(item);
+                });
+                var colSize = Math.round($radioSize / 100 * 12);
+                $tmpl.classList.add('col-md-' + colSize);
+
+                var dropdown = event.target.closest('.dropdown-menu');
+                dropdown.previousElementSibling.textContent = $radioSize + '%';
+            } else if ($radio && $radio.id.includes('Alignment')) {
+                var svg = event.target.querySelector('svg').outerHTML;
+                var alignDropdown = event.target.closest('.dropdown-menu');
+                var $btn = alignDropdown.previousElementSibling;
+                $btn.innerHTML = svg;
+            }
+
+            Array.from(event.target.parentNode.querySelectorAll('.dropdown-item')).forEach(item => item.classList.remove('active'));
+            event.target.classList.toggle('active');
+            document.dispatchEvent(new Event('contentpreview:render'));
+        }
     });
 
-    $(document).on('keyup', '.widget-editor-body .form-group input.content-caption-text', function () {
-        var headerTextLabel = $(this).closest('.widget-editor').find('.widget-editor-header:first .widget-editor-header-text');
-        var contentTypeDisplayText = headerTextLabel.data('content-type-display-text');
-        var title = $(this).val();
-        var newDisplayText = title + ' ' + contentTypeDisplayText;
+    document.addEventListener('keyup', function (event) {
+        if (event.target.matches('.widget-editor-body .form-group input.content-caption-text')) {
+            var headerTextLabel = event.target.closest('.widget-editor').querySelector('.widget-editor-header:first-child .widget-editor-header-text');
+            var contentTypeDisplayText = headerTextLabel.dataset.contentTypeDisplayText;
+            var title = event.target.value;
+            var newDisplayText = title + ' ' + contentTypeDisplayText;
 
-        headerTextLabel.text(newDisplayText);
+            headerTextLabel.textContent = newDisplayText;
+        }
     });
 });

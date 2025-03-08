@@ -8,7 +8,7 @@
     The shape is created from MenuPartDisplayDriver
 *@
 
-<script asp-src="~/OrchardCore.Menu/Scripts/menu.js" at="Foot" depends-on="jQuery-ui"></script>
+<script asp-name="jQuery.nestedSortable" depends-on="jQuery-ui" at="Foot"></script>
 <style asp-src="~/OrchardCore.Menu/Styles/menu.min.css" debug-src="~/OrchardCore.Menu/Styles/menu.css" depends-on="jQuery-ui"></style>
 
 @using OrchardCore
@@ -101,7 +101,7 @@
         }
     });
 
-    $(function () {
+    $(document).ready(function() {
         $('#menu')
             .nestedSortable({
                 handle: 'div.menu-item-title',

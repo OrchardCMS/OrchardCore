@@ -1,33 +1,42 @@
 function updateStepOrders(oldIndex, newIndex) {
-    var url = $('#stepOrderUrl').data("url");
-    var id = $('#deploymentPlanId').data("id");
+    const urlElement = document.getElementById('stepOrderUrl');
+    const idElement = document.getElementById('deploymentPlanId');
+    const requestVerificationTokenElement = document.querySelector("input[name='__RequestVerificationToken']");
+    const errorMessageElement = document.getElementById('stepOrderErrorMessage');
 
-    $.ajax({
-        url: url,
+    const url = urlElement.dataset.url;
+    const id = idElement.dataset.id;
+
+    fetch(url, {
         method: 'POST',
-        data: {
-            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
-            id: id,
-            newIndex: newIndex,
-            oldIndex: oldIndex,
+        headers: {
+            'Content-Type': 'application/json',
         },
-        error: function (error) {
-            alert($('#stepOrderErrorMessage').data("message"));
-        }
-    });
+        body: JSON.stringify({
+            __RequestVerificationToken: requestVerificationTokenElement.value,
+            id,
+            newIndex,
+            oldIndex,
+        }),
+    })
+        .then(response => response.json())
+        .catch(error => {
+            alert(errorMessageElement.dataset.message);
+        });
 }
 
-$(function () {
-    var sortable = document.getElementById("stepOrder");
-    if (!sortable) {
+document.addEventListener('DOMContentLoaded', () => {
+    const sortableElement = document.getElementById('stepOrder');
+    if (!sortableElement) {
         return;
     }
-    var sortable = Sortable.create(sortable, {
-        handle: ".ui-sortable-handle",
-        onSort: function (evt) {
-            var oldIndex = evt.oldIndex;
-            var newIndex = evt.newIndex;
+
+    Sortable.create(sortableElement, {
+        handle: '.ui-sortable-handle',
+        onSort: (evt) => {
+            const oldIndex = evt.oldIndex;
+            const newIndex = evt.newIndex;
             updateStepOrders(oldIndex, newIndex);
-        }
+        },
     });
 });

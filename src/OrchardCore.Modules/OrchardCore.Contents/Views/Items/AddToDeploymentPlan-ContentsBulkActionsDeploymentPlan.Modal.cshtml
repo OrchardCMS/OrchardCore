@@ -39,7 +39,7 @@
 </zone>
 
 <script at="Foot" depends-on="jQuery">
-    $(function () {
+    $(document).ready(function() {
         $('#modalAddToDeploymentPlanContentsBulkActionsDeploymentPlan').on('show.bs.modal', function () {
             var itemIds = $(":checkbox[name='itemIds']:checked");
             if (itemIds.length > 1) {

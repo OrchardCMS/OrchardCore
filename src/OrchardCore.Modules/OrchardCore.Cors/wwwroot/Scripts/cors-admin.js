@@ -10,14 +10,14 @@ var optionsList = Vue.component('options-list',
         methods: {
             addOption: function (value) {
                 if (value !== null && value !== '') {
-                    var noDuplicates = ($.inArray(value.toLowerCase(), this.options.map(o => o.toLowerCase())) < 0);
+                    var noDuplicates = (this.options.map(o => o.toLowerCase()).indexOf(value.toLowerCase()) < 0);
                     if (noDuplicates) {
                         this.options.push(value);
                     }
                 }
             },
             deleteOption: function (value) {
-                this.options.splice($.inArray(value, this.options), 1);
+                this.options.splice(this.options.indexOf(value), 1);
             }
         }
     });
@@ -61,9 +61,10 @@ var corsApp = new Vue({
         },
         deletePolicy: function (policy, event) {
             this.selectedPolicy = null;
-            var policyToRemove = this.policies.filter(function (item) { return item.name === policy.name; });
-            if (policyToRemove.length > 0)
-                this.policies.splice($.inArray(policyToRemove[0], this.policies), 1);
+            const policyToRemove = this.policies.find(item => item.name === policy.name);
+            if (policyToRemove) {
+                this.policies.splice(this.policies.indexOf(policyToRemove), 1);
+            }
             event.stopPropagation();
             this.save();
         },
@@ -73,7 +74,7 @@ var corsApp = new Vue({
             }
 
             if (policy.originalName) {
-                var policyIndex = this.policies.findIndex((oldPolicy) => oldPolicy.name === policy.originalName);
+                const policyIndex = this.policies.findIndex((oldPolicy) => oldPolicy.name === policy.originalName);
                 this.policies[policyIndex] = policy;
             }
             else {
@@ -91,38 +92,38 @@ var corsApp = new Vue({
             this.selectedPolicy = null;
         },
         searchBox: function () {
-            var searchBox = $('#search-box');
+            const searchBox = document.getElementById('search-box');
 
             // On Enter, edit the item if there is a single one
-            searchBox.keydown(function (e) {
+            searchBox.addEventListener('keydown', (e) => {
                 if (e.key == 'Enter') {
 
                     // Edit the item if there is a single filtered element
-                    var visible = $('#corsAdmin > ul > li:visible');
+                    const visible = document.querySelectorAll('#corsAdmin > ul > li:visible');
                     if (visible.length == 1) {
-                        window.location = visible.find('.edit').attr('href');
+                        window.location = visible[0].querySelector('.edit').href;
                     }
                     return false;
                 }
             });
 
             // On each keypress filter the list
-            searchBox.keyup(function (e) {
-                var search = $(this).val().toLowerCase();
-                var elementsToFilter = $("[data-filter-value]");
+            searchBox.addEventListener('keyup', (e) => {
+                const search = searchBox.value.toLowerCase();
+                const elementsToFilter = document.querySelectorAll("[data-filter-value]");
 
                 // On ESC, clear the search box and display all
                 if (e.keyCode == 27 || search == '') {
-                    searchBox.val('');
-                    elementsToFilter.toggle(true);
-                    $('#list-alert').addClass("d-none");
+                    searchBox.value = '';
+                    elementsToFilter.forEach(el => el.style.display = '');
+                    document.getElementById('list-alert').classList.add("d-none");
                 }
                 else {
-                    var intVisible = 0;
-                    elementsToFilter.each(function () {
-                        var text = $(this).data('filter-value').toLowerCase();
-                        var found = text.indexOf(search) > -1;
-                        $(this).toggle(found);
+                    let intVisible = 0;
+                    elementsToFilter.forEach(el => {
+                        const text = el.dataset.filterValue.toLowerCase();
+                        const found = text.indexOf(search) > -1;
+                        el.style.display = found ? '' : 'none';
 
                         if (found) {
                             intVisible++;
@@ -131,13 +132,14 @@ var corsApp = new Vue({
 
                     // We display an alert if a search is not found
                     if (intVisible == 0) {
-                        $('#list-alert').removeClass("d-none");
+                        document.getElementById('list-alert').classList.remove("d-none");
                     }
                     else {
-                        $('#list-alert').addClass("d-none");
+                        document.getElementById('list-alert').classList.add("d-none");
                     }
                 }
             });
         }
     }
 });
+

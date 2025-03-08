@@ -135,7 +135,7 @@
 </div>
 
 <script at="Foot">
-    $(function () {
+    $(document).ready(function() {
         $('.selectpicker').selectpicker();
         $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
             $("[name='submit.Filter']").click();

@@ -82,7 +82,7 @@
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
 <script at="Foot">
-    $(function () {
+    $(document).ready(function() {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.HtmlBody)'), {
             lineNumbers: true,
             styleActiveLine: true,

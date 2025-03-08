@@ -90,7 +90,7 @@ const togglePasswordVisibility = (
     passwordCtl.setAttribute("type", type);
 
     // toggle the eye slash icon
-    const icon = togglePasswordCtl.getElementsByClassName("icon")[0];
+    const icon = togglePasswordCtl.querySelector(".icon");
     if (icon) {
         if (icon.getAttribute("data-icon")) {
             // if the icon is rendered as a svg
@@ -112,9 +112,7 @@ const init = () => {
     // Show hide the connection string when a provider is selected
     document
         .getElementById("DatabaseProvider")
-        ?.addEventListener("change", function () {
-            toggleConnectionStringAndPrefix();
-        });
+        ?.addEventListener("change", () => toggleConnectionStringAndPrefix());
 
     // Refresh the recipe description
     document.querySelectorAll("#recipes div a").forEach(function (element) {
@@ -178,33 +176,34 @@ const init = () => {
         "#toggleConnectionString"
     );
     if (toggleConnectionString) {
-        toggleConnectionString.addEventListener("click", function (e) {
+        toggleConnectionString.addEventListener("click", (e) =>
             togglePasswordVisibility(
                 document.querySelector("#ConnectionString"),
                 document.querySelector("#toggleConnectionString")
-            );
-        });
+            )
+        );
     }
 
     const togglePassword = document.querySelector("#togglePassword");
-    togglePassword?.addEventListener("click", function (e) {
+    togglePassword?.addEventListener("click", (e) =>
         togglePasswordVisibility(
             document.querySelector("#Password"),
             document.querySelector("#togglePassword")
-        );
-    });
+        )
+    );
 
     const togglePasswordConfirmation = document.querySelector(
         "#togglePasswordConfirmation"
     );
-    togglePasswordConfirmation?.addEventListener("click", function (e) {
+    togglePasswordConfirmation?.addEventListener("click", (e) =>
         togglePasswordVisibility(
             document.querySelector("#PasswordConfirmation"),
             document.querySelector("#togglePasswordConfirmation")
-        );
-    });
+        )
+    );
 
     setLocalizationUrl();
 };
 
 init();
+

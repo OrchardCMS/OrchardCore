@@ -2,7 +2,7 @@ sortingListManager = function () {
 
     const saveOrders = (evt, url, errorMessage) => {
 
-        var data = {
+        const data = {
             oldIndex: evt.oldIndex,
             newIndex: evt.newIndex
         };
@@ -20,27 +20,27 @@ sortingListManager = function () {
 
     const create = (selector, sortUrl, errorMessage) => {
 
-        var sortable = document.querySelector(selector);
+        const element = document.querySelector(selector);
 
-        if (!sortable) {
+        if (!element) {
             console.log('Unable to find the sortable element. The given selector is: ' + selector);
 
             return;
         }
 
-        if (sortUrl) {
-            orderUrl = sortUrl;
-        } else {
-            orderUrl = sortable.getAttribute('data-sort-uri');
-        }
+        let orderUrl = sortUrl;
 
         if (!orderUrl) {
-            console.log('Unable to determine the sort post URI. Either pass it to the create function or set it as data-sort-uri to the sorting element.');
+            orderUrl = element.getAttribute('data-sort-uri');
 
-            return;
+            if (!orderUrl) {
+                console.log('Unable to determine the sort post URI. Either pass it to the create function or set it as data-sort-uri to the sorting element.');
+
+                return;
+            }
         }
 
-        var sortable = Sortable.create(sortable, {
+        Sortable.create(element, {
             handle: ".ui-sortable-handle",
             animation: 150,
             filter: ".ignore-elements",

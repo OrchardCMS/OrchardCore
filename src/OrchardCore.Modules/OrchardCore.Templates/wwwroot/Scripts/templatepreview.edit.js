@@ -2,9 +2,9 @@ var editor;
 
 function initializeTemplatePreview(nameElement, editorElement) {
 
-    var antiforgerytoken = $("[name='__RequestVerificationToken']").val();
+    var antiforgerytoken = document.querySelector("[name='__RequestVerificationToken']").value;
 
-    sendFormData = function (nameElement) {
+    function sendFormData() {
 
         var formData = {
             'Name': nameElement.value,
@@ -13,7 +13,7 @@ function initializeTemplatePreview(nameElement, editorElement) {
         };
 
         // store the form data to pass it in the event handler
-        localStorage.setItem('OrchardCore.templates', JSON.stringify($.param(formData)));
+        localStorage.setItem('OrchardCore.templates', JSON.stringify(new URLSearchParams(formData).toString()));
     }
 
     editor = CodeMirror.fromTextArea(editorElement, {
@@ -33,33 +33,31 @@ function initializeTemplatePreview(nameElement, editorElement) {
         }
     });
 
-    editor.on('change', function (cm) {
-        sendFormData(nameElement);
-    });
+    editor.on('change', sendFormData);
 
     window.addEventListener('storage', function (ev) {
         if (ev.key != 'OrchardCore.templates:ready') return; // ignore other keys
 
         // triggered by the preview window the first time it is loaded in order
         // to pre-render the view even if no contentpreview:render is already sent
-        sendFormData(nameElement);
+        sendFormData();
     }, false);
 
-    $(nameElement)
-        .on('input', function () { sendFormData(nameElement); })
-        .on('propertychange', function () { sendFormData(nameElement); })
-        .on('change', function () { sendFormData(nameElement); })
-        .on('keyup', function (event) {
-            // handle backspace
-            if (event.keyCode == 46 || event.ctrlKey) {
-                sendFormData(nameElement);
-            }
-        });
+    nameElement.addEventListener('input', sendFormData);
+    nameElement.addEventListener('propertychange', sendFormData);
+    nameElement.addEventListener('change', sendFormData);
+    nameElement.addEventListener('keyup', function (event) {
+        // handle backspace
+        if (event.keyCode == 46 || event.ctrlKey) {
+            sendFormData();
+        }
+    });
 
-    $(window).on('unload', function () {
+    window.addEventListener('unload', function () {
         localStorage.removeItem('OrchardCore.templates');
         // this will raise an event in the preview window to notify that the live preview is no longer active.
         localStorage.setItem('OrchardCore.templates:not-connected', '');
         localStorage.removeItem('OrchardCore.templates:not-connected');
    });
 }
+

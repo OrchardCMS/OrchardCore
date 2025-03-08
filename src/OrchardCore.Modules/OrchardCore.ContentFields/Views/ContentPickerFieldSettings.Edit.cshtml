@@ -109,7 +109,7 @@
 
 <script at="Foot" depends-on="jquery">
     //<![CDATA[
-    $(function () {
+    $(document).ready(function() {
         editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TitlePattern)'), {
             autoRefresh: true,
             lineNumbers: true,

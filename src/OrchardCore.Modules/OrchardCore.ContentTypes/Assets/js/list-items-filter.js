@@ -61,9 +61,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.key === "Enter" && search != '') {
 
             if (visibleRows.length > 0) {
-                let link = visibleRows[0].querySelector('a.edit-button');
+                const link = visibleRows[0].querySelector('a.edit-button');
 
-                let hrefValue = link.getAttribute("href");
+                const hrefValue = link.getAttribute("href");
 
                 if (hrefValue) {
                     location.href = hrefValue;
@@ -75,3 +75,4 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+

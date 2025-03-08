@@ -30,7 +30,7 @@
 </div>
 
 <script at="Foot">
-    $(function () {
+    $(document).ready(function() {
         var myCodeMirror = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
     });
 </script>

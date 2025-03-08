@@ -10,27 +10,28 @@ var iconPickerVue = new Vue({
         iconPickerModal: null,
     },
     mounted: function () {
-        var self = this;
+        const self = this;
 
-        $('.icp-auto').iconpicker({
-            title: false,
-            templates: {
-                search: '<input type="search" class="form-control iconpicker-search" placeholder="" />' // just to leave empty the placeholder because it is not localized
-            }
+        document.querySelectorAll('.icp-auto').forEach(element => {
+            self.initIconPicker(element);
         });
 
-        $('#inline-picker').on('iconpickerSelected', function (e) {
-            var selected = e.iconpickerInstance.options.fullClassFormatter(e.iconpickerValue);
+        document.getElementById('inline-picker').addEventListener('iconpickerSelected', function (e) {
+            const selected = e.detail.iconpickerInstance.options.fullClassFormatter(e.detail.iconpickerValue);
             
             if (self.targetInputField) {
-                $('#' + self.targetInputField).val(selected);
+                document.getElementById(self.targetInputField).value = selected;
             }
 
             if (self.targetIconTag) {
                 // We need to replace the full tag with the new class.
                 // We could simply apply the new selected class to the i element.
                 // But there is an issue: when the previous class is not a valid fa icon the icon does not refresh.
-                $('#' + self.targetIconTag).replaceWith('<i id="' + self.targetIconTag + '" class="'+ selected + '"></i>')                
+                const iconTag = document.getElementById(self.targetIconTag);
+                const newIconTag = document.createElement('i');
+                newIconTag.id = self.targetIconTag;
+                newIconTag.className = selected;
+                iconTag.parentNode.replaceChild(newIconTag, iconTag);                
             }
 
             if (self.iconPickerModal != null)
@@ -41,6 +42,14 @@ var iconPickerVue = new Vue({
 
     },
     methods: {
+        initIconPicker(element) {
+            $(element).iconpicker({
+                title: false,
+                templates: {
+                    search: '<input type="search" class="form-control iconpicker-search" placeholder="" />' // just to leave empty the placeholder because it is not localized
+                }
+            });
+        },
         show: function (targetInputField, targetIconTag) {
             this.targetInputField = targetInputField;
             this.targetIconTag = targetIconTag;

@@ -32,18 +32,18 @@ notificationManager = function () {
             }
         }
 
-        var elements = document.getElementsByClassName('mark-notification-as-read');
+        const elements = document.querySelectorAll('.mark-notification-as-read');
 
         for (let i = 0; i < elements.length; i++) {
 
             ['click', 'mouseover'].forEach((evt) => {
                 elements[i].addEventListener(evt, (e) => {
 
-                    if (e.target.getAttribute('data-is-read') != "false") {
+                    if (e.target.getAttribute('data-is-read') !== "false") {
                         return;
                     }
 
-                    var messageId = e.target.getAttribute('data-message-id');
+                    const messageId = e.target.getAttribute('data-message-id');
 
                     if (!messageId) {
                         return;
@@ -75,7 +75,7 @@ notificationManager = function () {
                                 }
 
                                 if (wrapperSelector) {
-                                    var wrapper = e.target.closest(wrapperSelector);
+                                    const wrapper = e.target.closest(wrapperSelector);
                                     if (wrapper) {
                                         wrapper.classList.remove('notification-is-unread');
                                         wrapper.classList.add('notification-is-read');
@@ -90,7 +90,7 @@ notificationManager = function () {
                                 }
                             }
 
-                            var targetUrl = e.target.getAttribute('data-target-url');
+                            const targetUrl = e.target.getAttribute('data-target-url');
 
                             if (targetUrl) {
                                 window.location.href = targetUrl;
@@ -105,3 +105,4 @@ notificationManager = function () {
         initializeContainer: initialize
     };
 }();
+

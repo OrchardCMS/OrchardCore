@@ -122,7 +122,7 @@
 </div>
 
 <script at="Foot">
-    $(function () {
+    $(document).ready(function() {
         $('.icon-picker-trigger').on('click', function (e) {
             var node = $(e.target).data('related-node');
             iconPickerVue.show(node, 'sample-icon-' + node);

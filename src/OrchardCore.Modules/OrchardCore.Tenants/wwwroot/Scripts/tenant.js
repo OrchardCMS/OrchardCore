@@ -1,4 +1,4 @@
-$(function () {
+$(document).ready(function() {
     toggleConnectionStringAndPrefix();
 
     // Show hide the connection string when a provider is selected

@@ -24,7 +24,7 @@
     </div>
 </div>
 <script at="Foot">
-    $(function () {
+    $(document).ready(function() {
         var markdownElement = document.getElementById("@Html.IdFor(m => m.Markdown)");
         @* When field is rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
         if (markdownElement) {

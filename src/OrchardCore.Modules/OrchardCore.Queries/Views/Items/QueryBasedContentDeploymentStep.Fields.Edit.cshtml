@@ -42,7 +42,7 @@
 </div>
 
 <script at="Foot">
-    $(function () {
+    $(document).ready(function() {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(m => m.QueryParameters)'), { mode: "javascript", json: true, lineNumbers: true, viewportMargin: Infinity });
     });
 </script>

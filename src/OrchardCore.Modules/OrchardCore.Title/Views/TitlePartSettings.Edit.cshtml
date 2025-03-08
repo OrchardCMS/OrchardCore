@@ -39,7 +39,7 @@
 </div>
 
 <script at="Foot" depends-on="jquery">
-    $(function () {
+    $(document).ready(function() {
         editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Pattern)'), {
             autoRefresh: true,
             lineNumbers: true,

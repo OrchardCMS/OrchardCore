@@ -160,7 +160,7 @@ type Context = {
         }
     }
 
-    $(function () {
+    $(document).ready(function() {
         var syncRolesCheckbox = document.getElementById('@Html.IdFor(x => x.UseScriptToSyncProperties)');
 
         syncRolesCheckbox.addEventListener("change", toggleEditorState);

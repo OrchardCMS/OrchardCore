@@ -1,44 +1,43 @@
 function addMapPicker() {
 
-    var lat = $('[data-latitude]').val();
-    var long = $('[data-longitude]').val();
+    const latElement = document.querySelector('[data-latitude]');
+    const longElement = document.querySelector('[data-longitude]');
 
-    var mapCenter = [40.866667, 34.566667];
-    var zoom = 0;
+    const mapCenter = [40.866667, 34.566667];
+    let zoom = 0;
 
-    if (lat && long) {
-        mapCenter = [lat, long];
+    if (latElement.value && longElement.value) {
+        mapCenter[0] = parseFloat(latElement.value);
+        mapCenter[1] = parseFloat(longElement.value);
         zoom = 14;
     }
 
-    var map = L.map('map', { center: mapCenter, zoom: zoom });
+    const map = L.map('map', { center: mapCenter, zoom: zoom });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
-    var marker = L.marker(mapCenter, { draggable: true }).addTo(map);
+    const marker = L.marker(mapCenter, { draggable: true }).addTo(map);
 
     function updateMarker(lat, lng) {
         marker
             .setLatLng([lat, lng])
-            .bindPopup("Location :  " + marker.getLatLng().toString())
+            .bindPopup(`Location :  ${marker.getLatLng().toString()}`)
             .openPopup();
         return false;
-    };
+    }
 
     map.on('click', function (e) {
-        $('[data-latitude]').val(e.latlng.lat.toFixed(6));
-        $('[data-longitude]').val(e.latlng.lng.toFixed(6));
+        latElement.value = e.latlng.lat.toFixed(6);
+        longElement.value = e.latlng.lng.toFixed(6);
         updateMarker(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6));
     });
 
-
-    var updateMarkerByInputs = function () {
-        return updateMarker($('[data-latitude]').val(), $('[data-longitude]').val());
+    const updateMarkerByInputs = function () {
+        return updateMarker(latElement.value, longElement.value);
     }
-    $('[data-latitude]').on('input', updateMarkerByInputs);
-    $('[data-longitude]').on('input', updateMarkerByInputs);
+
+    latElement.addEventListener('input', updateMarkerByInputs);
+    longElement.addEventListener('input', updateMarkerByInputs);
 }
 
-$(document).ready(function () {
-    addMapPicker();
-});
+document.addEventListener('DOMContentLoaded', addMapPicker);

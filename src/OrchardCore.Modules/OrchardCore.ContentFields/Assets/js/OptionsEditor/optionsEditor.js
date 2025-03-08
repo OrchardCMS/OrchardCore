@@ -35,7 +35,8 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
             },
             uncheck: function (index) {
                 if (index == previouslyChecked) {
-                    $('#customRadio_' + index)[0].checked = false;
+                    const customRadio = elem.querySelector(`#customRadio_${index}`);
+                    customRadio.checked = false;
                     store.state.selected = null;
                     previouslyChecked = null;
                 }
@@ -58,7 +59,6 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
                 return store.getOptionsFormattedList();
             },
             showModal: function () {
-                optionsModal.props.data.modal = new bootstrap.Modal(modalBodyElement[0]);
                 optionsModal.props.data.modal.show();
             },
             closeModal: function () {
@@ -74,7 +74,7 @@ function initializeOptionsEditor(elem, data, defaultValue, modalBodyElement) {
         },
         data: {
             sharedState: store.state,
-            modal: null
+            modal: new bootstrap.Modal(modalBodyElement)
         },
         el: elem,
         methods: {

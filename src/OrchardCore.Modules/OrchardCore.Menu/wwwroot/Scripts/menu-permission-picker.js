@@ -36,10 +36,10 @@ function initMenuPermissionsPicker(element) {
                     this.arrayOfItems.splice(this.arrayOfItems.indexOf(item), 1)
                 }
             }
-        })
+        });
 
         /*Hook for other scripts that might want to have access to the view model*/
         var event = new CustomEvent("menu-permission-picker-created", { detail: { vm: vm } });
-        document.querySelector("body").dispatchEvent(event);
+        document.body.dispatchEvent(event);
     }
 }

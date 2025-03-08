@@ -71,88 +71,100 @@
             height: 240
         };
 
-        $("#dashboard-undo-message a").on('click', function(e){
-            e.preventDefault();
-            $("#dashboard-undo-form").submit();
+        const undoLink = document.querySelector("#dashboard-undo-message a");
+        undoLink.addEventListener("click", event => {
+            event.preventDefault();
+            const undoForm = document.querySelector("#dashboard-undo-form");
+            undoForm.dispatchEvent(new Event("submit"));
         });
 
-        function Update(metadata)
-        {
-            var token = $("[name='__RequestVerificationToken']").val();
-            var data = {
-                __RequestVerificationToken : token,
-                parts : metadata
-            };
-            $.post({
-                url: '@Url.Action("Update")',
-                data: data,
-                success: function (data) {
-                    $('#dashboard-undo-message').removeClass("d-none");
-                },
-                fail: function(){
-                    $('#dashboard-undo-message').addClass("d-none");
+        function Update(metadata) {
+            const token = document.querySelector("[name='__RequestVerificationToken']").value;
+            const data = new URLSearchParams();
+            data.append('__RequestVerificationToken', token);
+            for (const [key, value] of Object.entries(metadata)) {
+                data.append(`parts[${key}]`, value);
+            }
+
+            fetch('@Url.Action("Update")', {
+                method: 'POST',
+                body: data,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(() => {
+                document.getElementById('dashboard-undo-message').classList.remove("d-none");
+            })
+            .catch(() => {
+                document.getElementById('dashboard-undo-message').classList.add("d-none");
             });
         }
 
         function snapTo(org, val, gridSize)
         {
-            var snap_X =1;
+            let snap_X = 1;
             if (org.width < val.width)
             {
-                snap_X = Math.ceil(val.width/gridSize.width) ;
+                snap_X = Math.ceil(val.width / gridSize.width);
             }
             else
             {
-                snap_X = Math.floor(val.width/gridSize.width) ;
+                snap_X = Math.floor(val.width / gridSize.width);
             }
 
             if (snap_X === 0)
                 snap_X = 1;
 
-            var snap_Y =1;
+            let snap_Y = 1;
             if (org.height < val.height)
             {
-                snap_Y = Math.ceil(val.height/gridSize.height) ;
+                snap_Y = Math.ceil(val.height / gridSize.height);
             }
             else
             {
-                snap_Y = Math.floor(val.height/gridSize.height) ;
+                snap_Y = Math.floor(val.height / gridSize.height);
             }
 
-            if(snap_Y ===0 )
+            if (snap_Y === 0)
                 snap_Y = 1;
-            var snap = { X : snap_X, Y: snap_Y};
+
+            const snap = { X: snap_X, Y: snap_Y };
             return snap;
         }
 
         function setUndoValues()
         {
-            $(".dashboard-container .dashboard-wrapper")
-                .each(function (index, value) {
-                    $('#undo_' + $(value).attr('id') + '_Position').val(index);
-                    $('#undo_' + $(value).attr('id') + '_Height').val(value.style.getPropertyValue('--dashboard-height'));
-                    $('#undo_' + $(value).attr('id') + '_Width').val(value.style.getPropertyValue('--dashboard-width'));
-                });
+            const wrappers = document.querySelectorAll(".dashboard-container .dashboard-wrapper");
+            wrappers.forEach((wrapper, index) => {
+                document.getElementById(`undo_${wrapper.id}_Position`).value = index;
+                document.getElementById(`undo_${wrapper.id}_Height`).value = wrapper.style.getPropertyValue('--dashboard-height');
+                document.getElementById(`undo_${wrapper.id}_Width`).value = wrapper.style.getPropertyValue('--dashboard-width');
+            });
         }
 
-        function getCurrentValues()
-        {
-            var metadata = [];
-            $(".dashboard-container .dashboard-wrapper")
-                .each(function (index, value) {
-                    var position = index;
-                    var height = $(this)[0].style.getPropertyValue('--dashboard-height');
-                    var width = $(this)[0].style.getPropertyValue('--dashboard-width');
-                    var contentItemId = $(this).attr("id");
+        function getCurrentValues() {
+            const metadata = [];
+            const wrappers = document.querySelectorAll(".dashboard-container .dashboard-wrapper");
+            wrappers.forEach((wrapper, index) => {
+                const position = index;
+                const height = wrapper.style.getPropertyValue('--dashboard-height');
+                const width = wrapper.style.getPropertyValue('--dashboard-width');
+                const contentItemId = wrapper.id;
 
-                    metadata.push( {
-                        "ContentItemId" : contentItemId,
-                        "Position" : position,
-                        "Width" : width,
-                        "Height": height
-                    });
+                metadata.push({
+                    "ContentItemId": contentItemId,
+                    "Position": position,
+                    "Width": width,
+                    "Height": height
                 });
+            });
             return metadata;
         }
 
@@ -213,6 +225,7 @@
                 }
             }
         });
+        
         $(".dashboard-wrapper").resizable({
             handles: "s,e,se",
             helper: "ui-resizable-helper"
@@ -275,24 +288,22 @@
             }
         });
 
-        $(window).on('show.bs.dropdown', function (e) {
-            _menu = $(e.target).find('.dropdown-menu');
-            $('body').append(_menu.detach());
-            var eOffset = $(e.target).offset();
-            _menu.css({
-                'display': 'block',
-                    'top': eOffset.top + $(e.target).outerHeight(),
-                    'left': eOffset.left
-            });
+        window.addEventListener('show.bs.dropdown', function (e) {
+            _menu = e.target.querySelector('.dropdown-menu');
+            document.body.appendChild(_menu);
+            var eOffset = e.target.getBoundingClientRect();
+            _menu.style.display = 'block';
+            _menu.style.top = `${eOffset.top + e.target.offsetHeight}px`;
+            _menu.style.left = `${eOffset.left}px`;
         });
 
-        $(window).on('resize', function (e) {
+        window.addEventListener('resize', function () {
             calculateCellSize();
         });
 
-        $(window).on('hide.bs.dropdown', function (e) {
-            $(e.target).append(_menu.detach());
-            _menu.hide();
+        window.addEventListener('hide.bs.dropdown', function (e) {
+            e.target.appendChild(_menu);
+            _menu.style.display = 'none';
             _menu = null;
         });
     });

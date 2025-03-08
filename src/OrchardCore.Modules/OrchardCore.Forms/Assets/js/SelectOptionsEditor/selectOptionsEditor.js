@@ -1,3 +1,4 @@
+//TODO: refactor without jquery
 selectOptionsEditor = function () {
 
     const initilize = (elemId, optionsData, defaultValue) => {
@@ -276,23 +277,22 @@ selectOptionsEditor = function () {
 
     const initilizeFieldType = (wrapper) => {
         var selectMenus = wrapper.getElementsByClassName('field-type-select-menu');
-        for (let i = 0; i < selectMenus.length; i++) {
-            var selectMenu = selectMenus[i];
+
+        selectMenus.forEach(function (selectMenu) {
             selectMenu.addEventListener('change', function (e) {
                 var widgetWrapper = e.target.closest('.widget-editor-body');
                 var visibleForInputContainers = widgetWrapper.getElementsByClassName('show-for-input');	
 
-                for (let i = 0; i < visibleForInputContainers.length; i++) {
-                    var container = visibleForInputContainers[i];
+                visibleForInputContainers.forEach(function (container) {
                     if (e.target.value == 'reset' || e.target.value == 'submit' || e.target.value == 'hidden') {
                         container.classList.add('d-none');
                     } else {
                         container.classList.remove('d-none');
                     }
-                }
+                });
             });
             selectMenu.dispatchEvent(new Event('change'));
-        }
+        });
     };
 
     return {
@@ -304,9 +304,7 @@ selectOptionsEditor = function () {
 document.addEventListener('DOMContentLoaded', function () {
     var wrappers = document.getElementsByName('select-part-properties-wrapper');
 
-    for (let i = 0; i < wrappers.length; i++) {
-        var wrapper = wrappers[i];
-
+    wrappers.forEach(function (wrapper) {
         var fieldWrapper = wrapper.querySelector('.field-options-wrapper');
 
         if (fieldWrapper != null) {
@@ -315,7 +313,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             selectOptionsEditor.initilizeElement(fieldWrapper.Id, initialOptions.innerHTML, initialDefaultValue.value)
         }
-    }
+    });
 
     selectOptionsEditor.initilizeFieldType(document);
 });
+

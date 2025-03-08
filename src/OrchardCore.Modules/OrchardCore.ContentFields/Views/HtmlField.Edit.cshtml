@@ -27,7 +27,7 @@
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script at="Foot">
-    $(function () {
+    $(document).ready(function() {
         var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Html)');
     @* When the field is rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
         if (optionsTextArea) {

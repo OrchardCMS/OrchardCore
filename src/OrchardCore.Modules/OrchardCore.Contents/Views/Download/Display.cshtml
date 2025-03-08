@@ -35,7 +35,7 @@
 </form>
 
 <script at="Foot">
-    $(function () {
+    $(document).ready(function() {
         var editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.ContentItemJson)'), {
             autoRefresh: true,
             lineNumbers: true,

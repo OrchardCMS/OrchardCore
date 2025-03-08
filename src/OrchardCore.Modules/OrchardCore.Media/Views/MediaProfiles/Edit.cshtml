@@ -113,7 +113,7 @@
 </form>
 
 <script at="Foot">
-    $(function () {
+    $(document).ready(function() {
         $('#@Html.IdFor(x => x.SelectedMode)').on('change', function () {
             if ((this.value === '@((int)ResizeMode.Pad)') || (this.value === '@((int)ResizeMode.BoxPad)')) {
                 $('#@Html.IdFor(x => x.BackgroundColor)').closest('.form-g').show();

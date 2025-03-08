@@ -7,7 +7,7 @@
 
 <script at="Foot">
     @* mediaApp is absolutely positioned. When a warning is shown we need to move it down to avoid overlapping. *@
-    $(function () {
+    $(document).ready(function() {
         if (!$('.message').length) { return; };
         var mediaAppInitialTop = 0;
         var mediaAppLoaded = false;

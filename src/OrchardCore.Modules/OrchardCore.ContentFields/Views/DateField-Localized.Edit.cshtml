@@ -25,7 +25,7 @@
 <style asp-name="jQuery-ui" at="Head"></style>
 <script asp-name="jQuery-ui-i18n" at="Foot"></script>
 <script at="Foot">
-    $(function () {
+    $(document).ready(function() {
         $('#@datepickerId').datepicker($.datepicker.regional['@language']);
     });
 </script>

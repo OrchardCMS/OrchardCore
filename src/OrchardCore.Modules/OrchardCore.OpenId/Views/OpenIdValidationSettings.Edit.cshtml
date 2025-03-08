@@ -43,7 +43,7 @@
 </div>
 
 <script at="Foot">
-    $(function () {
+    $(document).ready(function() {
         var authority = $('#@Html.IdFor(model => model.Authority)');
         var audience = $('#@Html.IdFor(model => model.Audience)');
         var tenant = $('#@Html.IdFor(model => model.Tenant)');

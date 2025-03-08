@@ -169,7 +169,7 @@
 </div>
 
 <script at="Foot" depends-on="jQuery">
-    $(function () {
+    $(document).ready(function() {
         function showSelectedCollapse() {
             var val = $(this).val();
             var option = $("option", this).filter(function (i, el) { return $(el).val() == val; });

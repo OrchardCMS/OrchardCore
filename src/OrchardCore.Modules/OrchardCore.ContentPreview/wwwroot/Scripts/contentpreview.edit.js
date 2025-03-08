@@ -1,63 +1,44 @@
-$(function () {
-    $(document)
-        .on('input', '.content-preview-text', function () {
-            $(document).trigger('contentpreview:render');
-        })
-        .on('propertychange', '.content-preview-text', function () {
-            $(document).trigger('contentpreview:render');
-        })
-        .on('keyup', '.content-preview-text', function (event) {
-            // handle backspace
-            if (event.keyCode == 46 || event.ctrlKey) {
-                $(document).trigger('contentpreview:render');
-            }
-        })
-        .on('change', '.content-preview-select', function () {
-            $(document).trigger('contentpreview:render');
-        });
-});
+document.addEventListener('DOMContentLoaded', function () {
 
-
-$(function () {
-    
     var previewButton, contentItemType, previewId, previewContentItemId, previewContentItemVersionId, form, formData;
 
     previewButton = document.getElementById('previewButton');
-    contentItemType = $(document.getElementById('contentItemType')).data('value');
-    previewId = $(document.getElementById('previewId')).data('value');
-    previewContentItemId = $(document.getElementById('previewContentItemId')).data('value');
-    previewContentItemVersionId = $(document.getElementById('previewContentItemVersionId')).data('value');
-    form = $(previewButton).closest('form');
+    contentItemType = document.getElementById('contentItemType').dataset.value;
+    previewId = document.getElementById('previewId').dataset.value;
+    previewContentItemId = document.getElementById('previewContentItemId').dataset.value;
+    previewContentItemVersionId = document.getElementById('previewContentItemVersionId').dataset.value;
+    form = previewButton.closest('form');
 
-    sendFormData = function () {
+    function sendFormData() {
 
-        formData = form.serializeArray(); // convert form to array
-        formData.push({ name: "ContentItemType", value: contentItemType });
-        formData.push({ name: "PreviewId", value: previewId });
-        formData.push({ name: "PreviewContentItemId", value: previewContentItemId });
-        formData.push({ name: "PreviewContentItemVersionId", value: previewContentItemVersionId });
+        formData = new FormData(form);
+        formData.append('ContentItemType', contentItemType);
+        formData.append('PreviewId', previewId);
+        formData.append('PreviewContentItemId', previewContentItemId);
+        formData.append('PreviewContentItemVersionId', previewContentItemVersionId);
 
         // store the form data to pass it in the event handler
-        localStorage.setItem('contentpreview:' + previewId, JSON.stringify($.param(formData)));
+        localStorage.setItem('contentpreview:' + previewId, new URLSearchParams(formData).toString());
     }
 
-    $(document).on('contentpreview:render', function () {
+    document.addEventListener('contentpreview:render', function () {
         sendFormData();
     });
 
 
-    $(window).on('storage', function (ev) {
-        if (ev.originalEvent.key != 'contentpreview:ready:' + previewId) return; // ignore other keys
+    window.addEventListener('storage', function (ev) {
+        if (ev.key !== 'contentpreview:ready:' + previewId) return; // ignore other keys
 
         // triggered by the preview window the first time it is loaded in order
         // to pre-render the view even if no contentpreview:render is already sent
         sendFormData();
     });    
 
-    $(window).on('unload', function () {
+    window.addEventListener('beforeunload', function () {
         localStorage.removeItem('contentpreview:' + previewId);
         // this will raise an event in the preview window to notify that the live preview is no longer active.
         localStorage.setItem('contentpreview:not-connected:' + previewId, '');
         localStorage.removeItem('contentpreview:not-connected:' + previewId);
     });
 });
+

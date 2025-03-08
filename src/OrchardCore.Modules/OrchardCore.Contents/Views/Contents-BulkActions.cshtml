@@ -13,7 +13,7 @@
 }
 
 <script at="Foot">
-    $(function () {
+    $(document).ready(function() {
         $(".dropdown-menu .dropdown-item").filter(function () {
             return $(this).data("action");
         }).on("click", function () {

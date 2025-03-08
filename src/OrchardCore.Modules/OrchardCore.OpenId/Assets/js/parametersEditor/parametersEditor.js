@@ -1,6 +1,6 @@
 function initializeParametersEditor(elem, data, modalBodyElement) {
 
-    var store = {
+    const store = {
         state: {
             parameters: data
         },
@@ -11,59 +11,50 @@ function initializeParametersEditor(elem, data, modalBodyElement) {
             this.state.parameters.splice(index, 1);
         },
         getParametersFormattedList: function () {
-            return JSON.stringify(this.state.parameters.filter(function (x) { return !IsNullOrWhiteSpace(x.name) }));
+            return JSON.stringify(this.state.parameters.filter(parameter => !IsNullOrWhiteSpace(parameter.name)));
         }
-    }
+    };
 
-    var parametersTable = {
+    const ParametersTable = {
         template: '#parameters-table',
         props: ['data'],
         name: 'parameters-table',
         methods: {
-            add: function () {
-                store.addParameter();
-            },
-            remove: function (index) {
-                store.removeParameter(index);
-            },
-            getParametersFormattedList: function () {
-                return store.getParametersFormattedList();
-            }
+            add: store.addParameter,
+            remove: store.removeParameter,
+            getParametersFormattedList: store.getParametersFormattedList
         }
     };
 
-    var parametersModal = {
+    const ParametersModal = {
         template: '#parameters-modal',
         props: ['data'],
         name: 'parameters-modal',
         methods: {
-            getParametersFormattedList: function () {
-                return store.getParametersFormattedList();
-            },
+            getParametersFormattedList: store.getParametersFormattedList,
             showModal: function () {
-                parametersModal.props.data.modal = new bootstrap.Modal(modalBodyElement[0]);
-                parametersModal.props.data.modal.show();
+                this.data.modal.show();
             },
             closeModal: function () {
-                parametersModal.props.data.modal.hide();
+                this.data.modal.hide();
             }
         }
     };
 
     new Vue({
         components: {
-            parametersTable: parametersTable,
-            parametersModal: parametersModal
+            ParametersTable,
+            ParametersModal
         },
-        data: {
-            sharedState: store.state,
-            modal: null
+        data() {
+            return {
+                sharedState: store.state,
+                modal: new bootstrap.Modal(modalBodyElement[0])
+            };
         },
-        el: elem,
+        el,
         methods: {
-            showModal: function () {
-                parametersModal.methods.showModal();
-            }
+            showModal: ParametersModal.methods.showModal
         }
     });
 

@@ -29,7 +29,7 @@
     let iframe = document.getElementById('iframe');
     let previewRenderTimer = null, previewRendering, previewRenderData, initialized, renderPreviewUrl;
 
-    $(function () {
+    $(document).ready(function() {
         var previewEventTimer = null;
         renderPreviewUrl = document.getElementById('renderPreviewUrl').getAttribute('data-value');
         $(window).on('storage', function (ev) {

@@ -24,7 +24,7 @@
 </div>
 
 <script at="Foot">
-    $(function () {
+    $(document).ready(function() {
         CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), {
             mode: "text/x-pgsql",
             indentWithTabs: true, smartIndent: true, matchBrackets: true, lineNumbers: true, styleActiveLine: true, viewportMargin: Infinity,

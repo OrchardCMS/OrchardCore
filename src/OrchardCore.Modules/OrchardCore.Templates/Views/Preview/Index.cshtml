@@ -38,7 +38,7 @@
     var previewRenderData;
     var initialized;
 
-    $(function () {
+    $(document).ready(function() {
         $(window).on('storage', function (ev) {
             if (ev.key == 'OrchardCore.templates:not-connected') {
                 $(notConnectedWarning).show();

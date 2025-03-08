@@ -3,8 +3,25 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedValue, list) 
     var optionsTable = {
         name: 'options-table',
         template: '#options-table',
-        props: ['data', 'defaultValue', 'selectedValue', 'list'],
-        data: function () {
+        props: {
+            data: {
+                type: Array,
+                required: true
+            },
+            defaultValue: {
+                type: String,
+                required: true
+            },
+            selectedValue: {
+                type: String,
+                required: true
+            },
+            list: {
+                type: Array,
+                required: true
+            }
+        },
+        data() {
             return {
                 defaultCulture: this.defaultValue,
                 selectedCulture: typeof this.selectedValue != 'undefined' ? this.selectedValue : selectedValue,
@@ -12,34 +29,27 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedValue, list) 
             }
         },
         methods: {
-            add: function () {
+            add() {
                 if (!this.data.includes(this.selectedCulture)) {
                     this.data.push(this.selectedCulture);
 
-                    var culture = this.selectedCulture;
-                    var selectedCulture = this.allCultures.filter(function (ele) {
-                        return ele.Name == culture;
-                    });
+                    const culture = this.selectedCulture;
+                    const selectedCulture = this.allCultures.find(element => element.Name === culture);
 
-                    if (selectedCulture.length > 0) {
-                        selectedCulture[0].Supported = true;
+                    if (selectedCulture) {
+                        selectedCulture.Supported = true;
                     }
 
-                    var allUnsupportedCultures = this.allCultures.filter(function (ele) {
-                        return ele.Supported == false
-                    });
+                    const allUnsupportedCultures = this.allCultures.filter(element => !element.Supported);
 
                     if (allUnsupportedCultures.length > 0) {
                         this.selectedCulture = allUnsupportedCultures[0].Name;
                     }
                 }
             },
-            remove: function (index) {
-
-                var selectedCulture = this.data[index];
-                cultureRemoved = this.list.filter(function (ele) {
-                    return ele.Name == selectedCulture;
-                });
+            remove(index) {
+                const selectedCulture = this.data[index];
+                const cultureRemoved = this.list.filter(element => element.Name === selectedCulture);
 
                 if (cultureRemoved.length > 0) {
                     cultureRemoved[0].Supported = false;
@@ -47,25 +57,23 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedValue, list) 
 
                 this.data.splice(index, 1);
 
-                var allUnsupportedCultures = this.allCultures.filter(function (ele) {
-                    return ele.Supported == false
-                });
+                const allUnsupportedCultures = this.allCultures.filter(element => !element.Supported);
 
                 if (allUnsupportedCultures.length > 0) {
                     this.selectedCulture = allUnsupportedCultures[0].Name;
                 }
             },
-            getSupportedCultures: function () {
+            getSupportedCultures() {
                 return JSON.stringify(this.data);
             },
-            getDefaultCulture: function () {
-                var result = defaultValue;
-                if (this.defaultCulture != null) {
+            getDefaultCulture() {
+                let result = defaultValue;
+                if (this.defaultCulture !== null) {
                     result = this.defaultCulture;
                 }
                 return result;
             },
-            getAllCultures: function () {
+            getAllCultures() {
                 return this.AllCultures;
             }
         }
@@ -73,15 +81,17 @@ function initializeOptionsEditor(elem, data, defaultValue, selectedValue, list) 
 
     new Vue({
         components: {
-            optionsTable: optionsTable
+            optionsTable
         },
-        data: {
-            allCultures: list,
-            supportedCultures: data,
-            defaultCulture: defaultValue,
-            selectedCulture: selectedValue
+        data() {
+            return {
+                allCultures: list,
+                supportedCultures: data,
+                defaultCulture: defaultValue,
+                selectedCulture: selectedValue
+            }
         },
-        el: elem
+        el
     });
-
 }
+

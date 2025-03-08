@@ -19,13 +19,14 @@ function initMultiTextFieldPicker(element) {
                 value: function () {
                     // We add a delay to allow for the <input> to get the actual value	
                     // before the form is submitted	
-                    setTimeout(function () { $(document).trigger('contentpreview:render') }, 100);
+                    setTimeout(function () { document.dispatchEvent(new Event('contentpreview:render')) }, 100);
                 }
             },
         })
         
         /*Hook for other scripts that might want to have access to the view model*/
         var event = new CustomEvent("multitextfield-picker-created", { detail: { vm: vm } });
-        document.querySelector("body").dispatchEvent(event);
+        document.body.dispatchEvent(event);
     }
 }
+

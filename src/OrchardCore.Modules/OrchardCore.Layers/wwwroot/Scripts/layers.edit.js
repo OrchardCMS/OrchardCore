@@ -11,7 +11,7 @@ function guid() {
     return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
 }
 
-$(function () {
+$(document).ready(function() {
 
     $(document).on('click', '.add-layer-widget', function (event) {
         var type = $(this).data("widget-type");

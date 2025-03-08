@@ -1,27 +1,34 @@
 function updateRuleOrders(conditionId, toConditionId, toPosition) {
-    var url = $('#ruleOrderUrl').data("url");
-    var parameters = {};
-    $('.ruleorderparameters').each(function(i, val) {
-        parameters[$(val).data("param")] = $(val).data("value");
-    });
+    const urlElement = document.getElementById('ruleOrderUrl');
+    const url = urlElement.dataset.url;
+    const parameters = {};
+    const parameterElements = document.querySelectorAll('.ruleorderparameters');
+    for (const element of parameterElements) {
+        parameters[element.dataset.param] = element.dataset.value;
+    }
 
-    parameters["__RequestVerificationToken"] = $("input[name='__RequestVerificationToken']").val();
+    const requestVerificationTokenElement = document.querySelector("input[name='__RequestVerificationToken']");
+    parameters["__RequestVerificationToken"] = requestVerificationTokenElement.value;
     parameters["conditionId"] = conditionId;
     parameters["toConditionId"] = toConditionId;
     parameters["toPosition"] = toPosition;
 
-    $.ajax({
-        url: url,
+    fetch(url, {
         method: 'POST',
-        data: parameters,
-        error: function (error) {
-            alert($('#ruleOrderErrorMessage').data("message"));
-        }
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(parameters),
+    })
+    .catch(error => {
+        const errorMessageElement = document.getElementById('ruleOrderErrorMessage');
+        alert(errorMessageElement.dataset.message);
     });
 }
 
-$(function () {
-    var sortableOptions = {
+document.addEventListener('DOMContentLoaded', function () {
+    const groups = document.querySelectorAll(".condition-group");
+    const sortableOptions = {
       group: {
         name: "sortable-list"
       },
@@ -31,10 +38,9 @@ $(function () {
       swapThreshold: 0.65,
       onEnd: function (evt) {
         // When nesting groups use onEnd as onSort fires for every group it passes through.
-        updateRuleOrders($(evt.item).data("conditionid"), $(evt.item).parent().data("conditiongroupid"), evt.newIndex);
+        updateRuleOrders(evt.item.dataset.conditionid, evt.item.parentElement.dataset.conditiongroupid, evt.newIndex);
       }
     }; 
-    var groups = document.querySelectorAll(".condition-group");
     for (var i = 0; i < groups.length; i++) {
       new Sortable(groups[i], sortableOptions);
     }

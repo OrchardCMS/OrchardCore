@@ -12,7 +12,7 @@
     The shape is created from TaxonomyPartDisplayDriver
 *@
 
-<script asp-src="~/OrchardCore.Taxonomies/Scripts/menu.js" at="Foot" depends-on="jQuery-ui"></script>
+<script asp-name="jQuery.nestedSortable" depends-on="jQuery-ui" at="Foot"></script>
 <style asp-src="~/OrchardCore.Taxonomies/Styles/menu.min.css" debug-src="~/OrchardCore.Taxonomies/Styles/menu.css" depends-on="jQuery-ui"></style>
 
 @{
@@ -67,7 +67,7 @@
     var menuItemId;
     var confirmLeave;
 
-    $(function () {
+    $(document).ready(function() {
         $('#menu')
             .nestedSortable({
                 handle: 'div.menu-item-title',

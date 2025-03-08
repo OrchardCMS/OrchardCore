@@ -1,7 +1,7 @@
 <a id="exportContentToDeploymentTargetBulkActions" class="dropdown-item" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to export these items?"]">@T["Export to deployment target"]</a>
 
 <script at="Foot" depends-on="jQuery">
-    $(function () {
+    $(document).ready(function() {
         $('#exportContentToDeploymentTargetBulkActions').on('click', function () {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 var $this = $(this);

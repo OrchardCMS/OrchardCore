@@ -104,7 +104,7 @@
 </div>
 
 <script at="Foot" depends-on="jquery">
-    $(function () {
+    $(document).ready(function() {
         $('.add-parent-link-checkbox').on('click', function (e) {
 
             var iconPickerFieldSet = $(e.target).closest('.add-parent-link-fieldset').siblings('.icon-picker-for-content-type');

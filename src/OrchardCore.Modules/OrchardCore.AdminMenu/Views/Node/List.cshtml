@@ -6,7 +6,7 @@
     var index = 0;
 }
 
-<script asp-name="jQuery.nestedSortable" at="Foot" depends-on="jQuery-ui"></script>
+<script asp-name="jQuery.nestedSortable" depends-on="jQuery-ui" at="Foot"></script>
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css"></style>
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Nodes for '{0}'", Model.AdminMenu.Name])</h1></zone>
@@ -109,7 +109,7 @@
         });
     }
 
-    $(function () {
+    $(document).ready(function() {
         $('#menu')
             .nestedSortable({
                 handle: 'div.menu-item-title',

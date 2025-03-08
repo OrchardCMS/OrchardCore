@@ -33,7 +33,7 @@
 </div>
 
 <script At="Foot" depends-on="jQuery">
-    $(function () {
+    $(document).ready(function() {
         $('#modalConditions').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget) // Button that triggered the modal
             var conditionGroupId = button.data('condition-group-id');
@@ -54,7 +54,7 @@
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 
-    $(function () {
+    $(document).ready(function() {
         var searchBox = $('#search-box');
 
         // On each keypress filter the list of cards

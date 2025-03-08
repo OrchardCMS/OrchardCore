@@ -15,10 +15,10 @@ function initializeTagsEditor(element) {
                 var selectableTagTerms = allTagTerms;
 
                 // Leaves only filters selectableTerms.
-                if (element.dataset.leavesOnly == 'true') {
-                    selectableTagTerms = selectableTagTerms.filter(function (tagTerm) { return tagTerm.isLeaf });
+                if (element.dataset.leavesOnly === 'true') {
+                    selectableTagTerms = selectableTagTerms.filter(tagTerm => tagTerm.isLeaf);
                     // Self heal when leaves only value is updated.
-                    allTagTerms.forEach(function (tagTerm) {
+                    allTagTerms.forEach(tagTerm => {
                         if (!selectableTagTerms.includes(tagTerm)) {
                             tagTerm.selected = false;
                         }
@@ -26,74 +26,72 @@ function initializeTagsEditor(element) {
                 }
 
                 // Selected terms are show in selected tags field.
-                selectedTagTerms = allTagTerms.filter(function (tagTerm) { return tagTerm.selected });
+                var selectedTagTerms = allTagTerms.filter(tagTerm => tagTerm.selected);
 
                 return {
                     open: element.dataset.open,
                     taxonomyContentItemId: element.dataset.taxonomyContentItemId,
                     createTagUrl: element.dataset.createTagUrl,
                     createTagErrorMessage: element.dataset.createTagErrorMessage,
-                    selectedTagTerms: selectedTagTerms,
-                    selectableTagTerms: selectableTagTerms,
-                    allTagTerms: allTagTerms
+                    selectedTagTerms,
+                    selectableTagTerms,
+                    allTagTerms
                 }
             },
             computed: {
-                isDisabled: function () {
-                    if (this.open == 'false' && this.selectableTagTerms.length === 0) {
-                        return true;
-                    }
-                    return false;
+                isDisabled() {
+                    return this.open === 'false' && this.selectableTagTerms.length === 0;
                 },
-                selectedTagTermsIds: function() {
+                selectedTagTermsIds() {
                     if (!this.selectedTagTerms) {
                         return [];
                     }
                     if (Array.isArray(this.selectedTagTerms)) {
-                        return this.selectedTagTerms.map(function (tagTerm) { return tagTerm.contentItemId });
+                        return this.selectedTagTerms.map(tagTerm => tagTerm.contentItemId);
                     } else {
                         return this.selectedTagTerms.contentItemId;
                     }
                 }
             },
             methods: {
-                createTagTerm(newTagTerm) {
-                    var self = this;
-                    $.ajax({
-                        url: self.createTagUrl,
-                        method: 'POST',
-                        data: {
-                            __RequestVerificationToken: $("input[name='__RequestVerificationToken']").val(),
-                            taxonomyContentItemId: self.taxonomyContentItemId,
-                            displayText: newTagTerm
-                        },
-                        success: function (data) {
-                            var tagTerm = {
-                                contentItemId: data.contentItemId,
-                                displayText: data.displayText,
-                                selected: true
-                            }
-                            // Add to allTagTerms array so model binding will save tag as selected.
-                            self.allTagTerms.push(tagTerm);
+                async createTagTerm(newTagTerm) {
+                    const self = this;
+                    try {
+                        const response = await fetch(self.createTagUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                __RequestVerificationToken: document.querySelector("input[name='__RequestVerificationToken']").value,
+                                taxonomyContentItemId: self.taxonomyContentItemId,
+                                displayText: newTagTerm
+                            })
+                        });
+                        const data = await response.json();
+                        const tagTerm = {
+                            contentItemId: data.contentItemId,
+                            displayText: data.displayText,
+                            selected: true
+                        };
+                        // Add to allTagTerms array so model binding will save tag as selected.
+                        self.allTagTerms.push(tagTerm);
 
-                            // Add to selectedTerms to display in vue-multi-select.
-                            self.selectedTagTerms.push(tagTerm);
-
-                        },
-                        error: function () {
-                            alert(self.createTagErrorMessage);
-                        }
-                    });
+                        // Add to selectedTerms to display in vue-multi-select.
+                        self.selectedTagTerms.push(tagTerm);
+                    } catch (error) {
+                        alert(self.createTagErrorMessage);
+                    }
                 },
                 onSelect(selectedTagTerm) {
-                    var tagTerm = this.allTagTerms.find(function (tagTerm) { return tagTerm.contentItemId === selectedTagTerm.contentItemId });
+                    const tagTerm = this.allTagTerms.find(tagTerm => tagTerm.contentItemId === selectedTagTerm.contentItemId);
                     tagTerm.selected = true;
-                    $(document).trigger('contentpreview:render');
+                    document.dispatchEvent(new Event('contentpreview:render'));
                 },
                 onRemove(removedTagTerm) {
-                    var tagTerm = this.allTagTerms.find(function (tagTerm) { return tagTerm.contentItemId === removedTagTerm.contentItemId });
+                    const tagTerm = this.allTagTerms.find(tagTerm => tagTerm.contentItemId === removedTagTerm.contentItemId);
                     tagTerm.selected = false;
-                    $(document).trigger('contentpreview:render');
+                    document.dispatchEvent(new Event('contentpreview:render'));
                 }
             }
         });

@@ -130,7 +130,7 @@
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }
 
-    $(function () {
+    $(document).ready(function() {
         var searchBox = $('#search-box');
 
         // On each keypress filter the list of cards

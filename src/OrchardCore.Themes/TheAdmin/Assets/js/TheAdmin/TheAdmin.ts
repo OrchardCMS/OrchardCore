@@ -69,7 +69,7 @@ function confirmDialog({ callback, ...options }) {
     });
 })();
 
-$(function () {
+$(document).ready(function() {
     $("body").on("click", '[data-url-af~="RemoveUrl"], a[itemprop~="RemoveUrl"]', function () {
         var _this = $(this);
         if (_this.filter('a[itemprop~="UnsafeUrl"]').length == 1) {
@@ -100,7 +100,7 @@ $(function () {
     });
 });
 
-$(function () {
+$(document).ready(function() {
     var magicToken = $("input[name=__RequestVerificationToken]").first();
     if (magicToken) {
         $("body").on("click", 'a[data-url-af~="UnsafeUrl"], a[itemprop~="UnsafeUrl"]', function () {

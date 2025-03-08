@@ -12,6 +12,7 @@ function debounce(func, wait, immediate) {
         if (callNow) func.apply(context, args);
     };
 };
+
 function initVueMultiselect(element) {
     // only run script if element exists
     if (element) {
@@ -58,7 +59,7 @@ function initVueMultiselect(element) {
                 selectedIds: function () {
                     // We add a delay to allow for the <input> to get the actual value	
                     // before the form is submitted	
-                    setTimeout(function () { $(document).trigger('contentpreview:render') }, 100);
+                    setTimeout(function () { document.dispatchEvent(new Event('contentpreview:render')) }, 100);
                 }
             },
             created: function () {
@@ -70,12 +71,12 @@ function initVueMultiselect(element) {
                 // items so we can hide/show it later (in onSelect and remove). We use the "mounted"
                 // lifecycle method rather than "created" so we know the component has been attached 
                 // to the DOM and we can therefore travese the DOM to find the desired div.
-                this.searchBoxContainer = $(this.$el).children().last();
+                this.searchBoxContainer = this.$el.lastChild;
 
                 // If we're loading an existing content item, we may already have a content picker
                 // configured to only allow a single content item and that item has already been selected. 
                 // In this case, we need to hide the search box now and not wait for onSelect or remove.
-                this.searchBoxContainer.css("display", multiple || this.arrayOfItems.length === 0 ? "block" : "none");
+                this.searchBoxContainer.style.display = multiple || this.arrayOfItems.length === 0 ? "block" : "none";
             },
             methods: {
                 asyncFind: function (query) {
@@ -99,7 +100,7 @@ function initVueMultiselect(element) {
                     // So here we set the display mode accordingly. We always show the select list 
                     // if allowing multiple content items and do not show it if we're only allowing 
                     // a single content item and we've just selected that one item.
-                    this.searchBoxContainer.css("display", multiple ? "block" : "none");
+                    this.searchBoxContainer.style.display = multiple ? "block" : "none";
                 },
                 url: function(item) {
                     var url = item.isEditable ? editUrl : viewUrl;
@@ -113,7 +114,7 @@ function initVueMultiselect(element) {
                     // want to show it, and (2) if we are only allowing a single content type to be 
                     // selected, and we've just removed that content type, we now need to show the 
                     // search box so we are able to add a new one.
-                    this.searchBoxContainer.css("display", "block");
+                    this.searchBoxContainer.style.display = "block";
                 }
             }
         })
@@ -123,3 +124,4 @@ function initVueMultiselect(element) {
         document.querySelector("body").dispatchEvent(event);
     }
 }
+

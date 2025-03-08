@@ -1,6 +1,6 @@
 function initializeCustomMetaTagsEditor(elem, data, modalBodyElement) {
 
-    var store = {
+    const store = {
         debug: false,
         state: {
             metaTags: data
@@ -16,7 +16,7 @@ function initializeCustomMetaTagsEditor(elem, data, modalBodyElement) {
         }
     }
 
-    var metaTagsTable = {
+    const metaTagsTable = {
         template: '#meta-tags-table',
         props: ['data'],
         name: 'meta-tags-table',
@@ -33,7 +33,7 @@ function initializeCustomMetaTagsEditor(elem, data, modalBodyElement) {
         }
     };
 
-    var metaTagsModal = {
+    const metaTagsModal = {
         template: '#meta-tags-modal',
         props: ['data'],
         name: 'meta-tags-modal',
@@ -56,9 +56,11 @@ function initializeCustomMetaTagsEditor(elem, data, modalBodyElement) {
             metaTagsTable: metaTagsTable,
             metaTagsModal: metaTagsModal
         },
-        data: {
-            sharedState: store.state,
-            modal: null
+        data() {
+            return {
+                sharedState: store.state,
+                modal: null
+            }
         },
         el: elem,
         methods: {
@@ -68,3 +70,4 @@ function initializeCustomMetaTagsEditor(elem, data, modalBodyElement) {
         }
     });
 }
+
