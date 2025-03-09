@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
+    <TargetFrameworks>$(DefaultTargetFramework)</TargetFrameworks>
     <RootNamespace>OrchardCore.Benchmark</RootNamespace>
     <IsPackable>false</IsPackable>
     <GenerateTestingPlatformEntryPoint>false</GenerateTestingPlatformEntryPoint>
