@@ -136,7 +136,6 @@ public sealed class AccessController : Controller
                 return View(new AuthorizeViewModel
                 {
                     ApplicationName = await _applicationManager.GetLocalizedDisplayNameAsync(application),
-                    RequestId = request.RequestId,
                     Scope = request.Scope
                 });
         }
@@ -327,10 +326,7 @@ public sealed class AccessController : Controller
             }
         }
 
-        return View(new LogoutViewModel
-        {
-            RequestId = request.RequestId
-        });
+        return View();
     }
 
     [ActionName(nameof(Logout)), AllowAnonymous, DisableCors]
