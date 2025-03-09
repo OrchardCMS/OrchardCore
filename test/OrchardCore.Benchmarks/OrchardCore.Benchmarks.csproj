@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>$(CommonTargetFrameworks)</TargetFrameworks>
-    <RootNamespace>OrchardCore.Benchmark</RootNamespace>
     <IsPackable>false</IsPackable>
     <GenerateTestingPlatformEntryPoint>false</GenerateTestingPlatformEntryPoint>
     <IsTestProject>false</IsTestProject>

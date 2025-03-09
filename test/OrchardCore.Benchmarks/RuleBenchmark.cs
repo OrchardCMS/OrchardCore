@@ -12,7 +12,7 @@ using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
 using OrchardCore.Tests.Modules.OrchardCore.Rules;
 
-namespace OrchardCore.Benchmark;
+namespace OrchardCore.Benchmarks;
 
 [MemoryDiagnoser]
 public class RuleBenchmark
