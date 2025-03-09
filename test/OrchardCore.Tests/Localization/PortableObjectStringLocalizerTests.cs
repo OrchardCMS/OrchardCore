@@ -342,8 +342,8 @@ public class PortableObjectStringLocalizerTests
         // Act
         var translation = localizer["Hello"];
 
-        // Assert
-        _localizationManager.Verify(lm => lm.GetDictionary(It.IsAny<CultureInfo>()), Times.Exactly(expectedCalls));
+            // Assert
+            _localizationManager.Verify(lm => lm.GetDictionaryAsync(It.IsAny<CultureInfo>()), Times.Exactly(expectedCalls));
 
         Assert.Equal("Hello", translation);
     }
@@ -359,8 +359,9 @@ public class PortableObjectStringLocalizerTests
         var dictionary = new CultureDictionary(cultureName, pluralRule);
         dictionary.MergeTranslations(records);
 
-        _localizationManager.Setup(o => o.GetDictionary(It.Is<CultureInfo>(c => c.Name == cultureName))).Returns(dictionary);
-    }
+            _localizationManager.Setup(o => o.GetDictionaryAsync(It.Is<CultureInfo>(c => c.Name == cultureName)))
+                .ReturnsAsync(dictionary);
+        }
 
     public class PortableObjectLocalizationStartup
     {
