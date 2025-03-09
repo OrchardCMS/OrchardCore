@@ -12,7 +12,7 @@
     <NoWarn>$(NoWarn);CA1707;EnableGenerateDocumentationFile</NoWarn>
     <!-- Without this, we get an "error CS0017: Program has more than one entry point defined." due to
     BenchmarkDotNet's auto-generated entry point. -->
-    <StartupObject>OrchardCore.Benchmark.Program</StartupObject>
+    <StartupObject>OrchardCore.Benchmarks.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
