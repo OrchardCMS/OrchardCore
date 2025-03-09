@@ -58,12 +58,12 @@
     <PackageVersion Include="NJsonSchema" Version="11.0.2" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="5.3.14" />
     <PackageVersion Include="NodaTime" Version="3.2.0" />
-    <PackageVersion Include="OpenIddict.Core" Version="6.0.0" />
-    <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="6.0.0" />
-    <PackageVersion Include="OpenIddict.Server.DataProtection" Version="6.0.0" />
-    <PackageVersion Include="OpenIddict.Validation.AspNetCore" Version="6.0.0" />
-    <PackageVersion Include="OpenIddict.Validation.DataProtection" Version="6.0.0" />
-    <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="6.0.0" />
+    <PackageVersion Include="OpenIddict.Core" Version="6.1.1" />
+    <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="6.1.1" />
+    <PackageVersion Include="OpenIddict.Server.DataProtection" Version="6.1.1" />
+    <PackageVersion Include="OpenIddict.Validation.AspNetCore" Version="6.1.1" />
+    <PackageVersion Include="OpenIddict.Validation.DataProtection" Version="6.1.1" />
+    <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="6.1.1" />
     <PackageVersion Include="OrchardCore.Translations.All" Version="2.1.0" />
     <PackageVersion Include="PdfPig" Version="0.1.9" />
     <PackageVersion Include="Serilog.AspNetCore" Version="8.0.3" />

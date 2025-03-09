@@ -295,11 +295,10 @@ public class OpenIdAuthorizationStore<TAuthorization> : IOpenIdAuthorizationStor
 
             var authorizations = (await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
                 authorization => authorization.CreationDate < threshold.UtcDateTime &&
-                                (authorization.Status != OpenIddictConstants.Statuses.Valid ||
-                                (authorization.Type == OpenIddictConstants.AuthorizationTypes.AdHoc &&
+                                (authorization.Status != Statuses.Valid || authorization.Type == AuthorizationTypes.AdHoc) &&
                                  authorization.AuthorizationId.IsNotIn<OpenIdTokenIndex>(
                                      token => token.AuthorizationId,
-                                     token => token.Id != 0))),
+                                     token => token.Id != 0),
                 collection: OpenIdCollection).Take(100).ListAsync()).ToList();
 
             if (authorizations.Count is 0)
