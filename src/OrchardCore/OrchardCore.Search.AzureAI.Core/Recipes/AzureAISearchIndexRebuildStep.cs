@@ -41,7 +41,6 @@ public sealed class AzureAISearchIndexRebuildStep : NamedRecipeStepHandler
 
             foreach (var settings in indexSettings)
             {
-                await indexSettingsService.SetMappingsAsync(settings);
                 await indexSettingsService.ResetAsync(settings);
                 await indexSettingsService.UpdateAsync(settings);
                 await indexManager.RebuildAsync(settings);

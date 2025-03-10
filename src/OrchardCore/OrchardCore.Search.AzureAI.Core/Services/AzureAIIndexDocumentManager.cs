@@ -12,18 +12,18 @@ namespace OrchardCore.Search.AzureAI.Services;
 public class AzureAIIndexDocumentManager
 {
     private readonly AzureAIClientFactory _clientFactory;
-    private readonly AzureAISearchIndexManager _indexManager;
+    private readonly AzureAISearchIndexNameService _indexNameService;
     private readonly IEnumerable<IAzureAISearchDocumentEvents> _documentEvents;
     private readonly ILogger _logger;
 
     public AzureAIIndexDocumentManager(
         AzureAIClientFactory clientFactory,
-        AzureAISearchIndexManager indexManager,
+        AzureAISearchIndexNameService indexNameService,
         IEnumerable<IAzureAISearchDocumentEvents> documentEvents,
         ILogger<AzureAIIndexDocumentManager> logger)
     {
         _clientFactory = clientFactory;
-        _indexManager = indexManager;
+        _indexNameService = indexNameService;
         _documentEvents = documentEvents;
         _logger = logger;
     }
@@ -308,10 +308,8 @@ public class AzureAIIndexDocumentManager
 
     private SearchClient GetSearchClient(string indexName)
     {
-        var fullIndexName = _indexManager.GetFullIndexName(indexName);
+        var fullIndexName = _indexNameService.GetFullIndexName(indexName);
 
-        var client = _clientFactory.CreateSearchClient(fullIndexName);
-
-        return client;
+        return _clientFactory.CreateSearchClient(fullIndexName);
     }
 }

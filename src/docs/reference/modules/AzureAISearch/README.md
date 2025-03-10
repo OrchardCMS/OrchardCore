@@ -46,7 +46,7 @@ services.Configure<AzureAISearchOptions>(options =>
 });
 ```  
 
-Next, you need to implement the `IAzureAISearchIndexSettingsHandler` interface. In the `MappingAsync` method, populate `context.Settings.Mappings` to define the index fields and their types. You may use `AzureAISearchIndexSettingsHandlerBase` to simplify your implementation. 
+Next, you need to implement the `IAzureAISearchIndexSettingsHandler` interface. In the `CreatingAsync` and `UpdatingAsync` methods, populate or update the `context.Settings.IndexMappings` to define the index fields and their types. You may use `AzureAISearchIndexSettingsHandlerBase` to simplify your implementation. 
 
 If you want the UI to capture custom data related to your source, implement `DisplayDriver<AzureAISearchIndexSettings>`.  
 

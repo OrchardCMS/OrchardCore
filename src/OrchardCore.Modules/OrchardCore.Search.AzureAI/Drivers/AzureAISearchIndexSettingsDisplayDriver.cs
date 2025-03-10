@@ -68,7 +68,6 @@ internal sealed class AzureAISearchIndexSettingsDisplayDriver : DisplayDriver<Az
             }
 
             settings.IndexName = model.IndexName;
-            settings.IndexFullName = _indexManager.GetFullIndexName(model.IndexName);
         }
 
         settings.AnalyzerName = model.AnalyzerName;

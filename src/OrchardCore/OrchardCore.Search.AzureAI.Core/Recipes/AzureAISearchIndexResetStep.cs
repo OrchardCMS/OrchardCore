@@ -41,13 +41,10 @@ public sealed class AzureAISearchIndexResetStep : NamedRecipeStepHandler
 
             foreach (var settings in indexSettings)
             {
-                await indexSettingsService.SetMappingsAsync(settings);
                 await indexSettingsService.ResetAsync(settings);
                 await indexSettingsService.UpdateAsync(settings);
                 if (!await indexManager.ExistsAsync(settings.IndexName))
                 {
-                    settings.IndexFullName = indexManager.GetFullIndexName(settings.IndexName);
-
                     await indexManager.CreateAsync(settings);
                 }
 

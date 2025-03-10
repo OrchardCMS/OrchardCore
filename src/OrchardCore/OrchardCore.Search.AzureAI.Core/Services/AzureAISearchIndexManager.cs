@@ -1,9 +1,6 @@
 using Azure;
 using Azure.Search.Documents.Indexes.Models;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Search.AzureAI.Models;
 using static OrchardCore.Indexing.DocumentIndexBase;
@@ -20,26 +17,18 @@ public class AzureAISearchIndexManager
     private readonly AzureAIClientFactory _clientFactory;
     private readonly ILogger _logger;
     private readonly IEnumerable<IAzureAISearchIndexEvents> _indexEvents;
-    private readonly IMemoryCache _memoryCache;
-    private readonly ShellSettings _shellSettings;
-    private readonly AzureAISearchDefaultOptions _azureAIOptions;
-    private readonly string _prefixCacheKey;
+    private readonly AzureAISearchIndexNameService _indexNameService;
 
     public AzureAISearchIndexManager(
         AzureAIClientFactory clientFactory,
         ILogger<AzureAISearchIndexManager> logger,
         IEnumerable<IAzureAISearchIndexEvents> indexEvents,
-        IMemoryCache memoryCache,
-        ShellSettings shellSettings,
-        IOptions<AzureAISearchDefaultOptions> azureAIOptions)
+        AzureAISearchIndexNameService indexNameService)
     {
         _clientFactory = clientFactory;
         _logger = logger;
         _indexEvents = indexEvents;
-        _memoryCache = memoryCache;
-        _shellSettings = shellSettings;
-        _azureAIOptions = azureAIOptions.Value;
-        _prefixCacheKey = $"AzureAISearchIndexesPrefix_{shellSettings.Name}";
+        _indexNameService = indexNameService;
     }
 
     public async Task<bool> CreateAsync(AzureAISearchIndexSettings settings)
@@ -51,11 +40,11 @@ public class AzureAISearchIndexManager
 
         try
         {
-            var context = new AzureAISearchIndexCreateContext(settings, GetFullIndexName(settings.IndexName));
+            var context = new AzureAISearchIndexCreateContext(settings, settings.IndexFullName);
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatingAsync(ctx), context, _logger);
 
-            var searchIndex = GetSearchIndex(context.IndexFullName, settings);
+            var searchIndex = GetSearchIndex(settings);
 
             var client = _clientFactory.CreateSearchIndexClient();
 
@@ -80,7 +69,7 @@ public class AzureAISearchIndexManager
     {
         try
         {
-            var indexFullName = GetFullIndexName(indexName);
+            var indexFullName = _indexNameService.GetFullIndexName(indexName);
 
             var client = _clientFactory.CreateSearchIndexClient();
 
@@ -112,7 +101,7 @@ public class AzureAISearchIndexManager
 
         try
         {
-            var context = new AzureAISearchIndexRemoveContext(indexName, GetFullIndexName(indexName));
+            var context = new AzureAISearchIndexRemoveContext(indexName, _indexNameService.GetFullIndexName(indexName));
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.RemovingAsync(ctx), context, _logger);
 
@@ -136,7 +125,7 @@ public class AzureAISearchIndexManager
     {
         try
         {
-            var context = new AzureAISearchIndexRebuildContext(settings, GetFullIndexName(settings.IndexName));
+            var context = new AzureAISearchIndexRebuildContext(settings);
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.RebuildingAsync(ctx), context, _logger);
 
@@ -144,10 +133,10 @@ public class AzureAISearchIndexManager
 
             if (await ExistsAsync(settings.IndexName))
             {
-                await client.DeleteIndexAsync(context.IndexFullName);
+                await client.DeleteIndexAsync(settings.IndexFullName);
             }
 
-            var searchIndex = GetSearchIndex(context.IndexFullName, settings);
+            var searchIndex = GetSearchIndex(settings);
 
             await client.CreateIndexAsync(searchIndex);
 
@@ -159,39 +148,7 @@ public class AzureAISearchIndexManager
         }
     }
 
-    public string GetFullIndexName(string indexName)
-    {
-        ArgumentException.ThrowIfNullOrWhiteSpace(indexName);
-
-        return GetIndexPrefix() + '-' + indexName;
-    }
-
-    private string GetIndexPrefix()
-    {
-        if (!_memoryCache.TryGetValue<string>(_prefixCacheKey, out var value))
-        {
-            var prefix = _shellSettings.Name.ToLowerInvariant();
-
-            if (!string.IsNullOrWhiteSpace(_azureAIOptions.IndexesPrefix))
-            {
-                prefix = $"{_azureAIOptions.IndexesPrefix.ToLowerInvariant()}-{prefix}";
-            }
-
-            if (AzureAISearchIndexNamingHelper.TryGetSafePrefix(prefix, out var safePrefix))
-            {
-                value = safePrefix;
-                _memoryCache.Set(_prefixCacheKey, safePrefix);
-            }
-            else
-            {
-                throw new InvalidOperationException($"Unable to create a safe index prefix for AI Search. Attempted to created a safe name using '{safePrefix}'.");
-            }
-        }
-
-        return value ?? string.Empty;
-    }
-
-    private static SearchIndex GetSearchIndex(string fullIndexName, AzureAISearchIndexSettings settings)
+    private static SearchIndex GetSearchIndex(AzureAISearchIndexSettings settings)
     {
         var searchFields = new List<SearchField>();
 
@@ -236,7 +193,7 @@ public class AzureAISearchIndexManager
             }
         }
 
-        var searchIndex = new SearchIndex(fullIndexName)
+        var searchIndex = new SearchIndex(settings.IndexFullName)
         {
             Fields = searchFields,
             Suggesters =

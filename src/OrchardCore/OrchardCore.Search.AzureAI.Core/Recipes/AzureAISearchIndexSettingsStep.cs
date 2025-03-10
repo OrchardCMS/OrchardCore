@@ -64,8 +64,6 @@ public sealed class AzureAISearchIndexSettingsStep : NamedRecipeStepHandler
             if (!await _indexManager.ExistsAsync(safeIndexName))
             {
                 var indexSettings = await _azureAISearchIndexSettingsService.NewAsync(sourceName, token);
-                indexSettings.IndexFullName = _indexManager.GetFullIndexName(indexName);
-                await _azureAISearchIndexSettingsService.SetMappingsAsync(indexSettings);
 
                 var validationResult = await _azureAISearchIndexSettingsService.ValidateAsync(indexSettings);
 
@@ -79,10 +77,10 @@ public sealed class AzureAISearchIndexSettingsStep : NamedRecipeStepHandler
                     continue;
                 }
 
+                await _azureAISearchIndexSettingsService.CreateAsync(indexSettings);
+
                 if (await _indexManager.CreateAsync(indexSettings))
                 {
-                    await _azureAISearchIndexSettingsService.UpdateAsync(indexSettings);
-
                     await _azureAISearchIndexSettingsService.SynchronizeAsync(indexSettings);
                 }
             }
