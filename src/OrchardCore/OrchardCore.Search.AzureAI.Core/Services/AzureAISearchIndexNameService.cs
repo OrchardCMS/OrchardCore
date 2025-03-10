@@ -1,11 +1,11 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Search.AzureAI.Models;
 
 namespace OrchardCore.Search.AzureAI.Services;
 
-public class AzureAISearchIndexNameService
+public sealed class AzureAISearchIndexNameService
 {
     private readonly IMemoryCache _memoryCache;
     private readonly ShellSettings _shellSettings;

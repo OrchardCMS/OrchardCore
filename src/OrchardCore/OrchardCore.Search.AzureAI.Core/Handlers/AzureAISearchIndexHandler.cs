@@ -9,6 +9,7 @@ namespace OrchardCore.Search.AzureAI.Handlers;
 public sealed class AzureAISearchIndexHandler : AzureAISearchIndexSettingsHandlerBase
 {
     private readonly AzureAISearchIndexNameService _searchIndexNameService;
+
     private readonly IStringLocalizer S;
 
     public AzureAISearchIndexHandler(
