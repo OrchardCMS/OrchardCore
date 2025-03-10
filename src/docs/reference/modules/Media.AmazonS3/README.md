@@ -2,6 +2,9 @@
 
 The Amazon S3 Media module enables support for storing assets in Amazon S3 Buckets.
 
+!!! note
+    For a scalable Orchard Core that is fully deployed on AWS stack with ECS, you can refer to [the quickstart CloudFormation template](https://github.com/gcl-team/Experiment.OrchardCore.Main/blob/main/Infrastructure.yml).
+
 ## Amazon S3 Media Storage (`OrchardCore.Media.AmazonS3`)
 
 The feature replaces the default App_Data file-based media store with an Amazon Media Storage Provider.
