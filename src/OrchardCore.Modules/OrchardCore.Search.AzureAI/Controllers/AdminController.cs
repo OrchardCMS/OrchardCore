@@ -250,25 +250,22 @@ public sealed class AdminController : Controller
         {
             try
             {
-                await _indexSettingsService.SetMappingsAsync(settings);
+                await _indexSettingsService.CreateAsync(settings);
 
                 if (await _indexManager.CreateAsync(settings))
                 {
-                    await _indexSettingsService.UpdateAsync(settings);
                     await _indexSettingsService.SynchronizeAsync(settings);
                     await _notifier.SuccessAsync(H["Index <em>{0}</em> created successfully.", settings.IndexName]);
 
                     return RedirectToAction(nameof(Index));
                 }
-                else
-                {
-                    await _notifier.ErrorAsync(H["An error occurred while creating the index."]);
-                }
+
+                await _notifier.ErrorAsync(H["An error occurred while creating the index."]);
             }
             catch (Exception e)
             {
                 await _notifier.ErrorAsync(H["An error occurred while creating the index."]);
-                _logger.LogError(e, "An error occurred while creating an index {IndexName}.", _indexManager.GetFullIndexName(settings.IndexName));
+                _logger.LogError(e, "An error occurred while creating an index {IndexName}.", settings.IndexFullName);
             }
         }
 
@@ -328,8 +325,6 @@ public sealed class AdminController : Controller
         {
             try
             {
-                await _indexSettingsService.SetMappingsAsync(settings);
-
                 if (!await _indexManager.CreateAsync(settings))
                 {
                     await _notifier.ErrorAsync(H["An error occurred while updating the index."]);
@@ -348,7 +343,7 @@ public sealed class AdminController : Controller
             {
                 await _notifier.ErrorAsync(H["An error occurred while updating the index."]);
 
-                _logger.LogError(e, "An error occurred while updating an index {IndexName}.", _indexManager.GetFullIndexName(settings.IndexName));
+                _logger.LogError(e, "An error occurred while updating an index {IndexName}.", settings.IndexFullName);
             }
         }
 
@@ -420,7 +415,6 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        await _indexSettingsService.SetMappingsAsync(settings);
         await _indexSettingsService.ResetAsync(settings);
         await _indexSettingsService.UpdateAsync(settings);
         await _indexManager.RebuildAsync(settings);
@@ -458,7 +452,6 @@ public sealed class AdminController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        await _indexSettingsService.SetMappingsAsync(settings);
         await _indexSettingsService.ResetAsync(settings);
         await _indexSettingsService.UpdateAsync(settings);
         await _indexSettingsService.SynchronizeAsync(settings);

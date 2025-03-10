@@ -8,11 +8,23 @@ namespace OrchardCore.Search.AzureAI.Handlers;
 
 public sealed class AzureAISearchIndexHandler : AzureAISearchIndexSettingsHandlerBase
 {
+    private readonly AzureAISearchIndexNameService _searchIndexNameService;
+
     private readonly IStringLocalizer S;
 
-    public AzureAISearchIndexHandler(IStringLocalizer<AzureAISearchIndexHandler> stringLocalizer)
+    public AzureAISearchIndexHandler(
+        AzureAISearchIndexNameService searchIndexNameService,
+        IStringLocalizer<AzureAISearchIndexHandler> stringLocalizer)
     {
+        _searchIndexNameService = searchIndexNameService;
         S = stringLocalizer;
+    }
+
+    public override Task CreatingAsync(AzureAISearchIndexSettingsCreateContext context)
+    {
+        context.Settings.IndexFullName = _searchIndexNameService.GetFullIndexName(context.Settings.IndexName);
+
+        return Task.CompletedTask;
     }
 
     public override Task InitializingAsync(AzureAISearchIndexSettingsInitializingContext context)

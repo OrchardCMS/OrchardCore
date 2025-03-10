@@ -56,6 +56,31 @@ public class AzureAISearchIndexSettingsService
         return null;
     }
 
+    public async Task CreateAsync(AzureAISearchIndexSettings settings)
+    {
+        ArgumentNullException.ThrowIfNull(settings);
+
+        var document = await LoadDocumentAsync();
+
+        if (document.IndexSettings.Values.Any(x => x.IndexName == settings.IndexName && x.Source == settings.Source && x.Id != settings.Id))
+        {
+            throw new InvalidOperationException("Another index with the same name already exists.");
+        }
+
+        var updatedContext = new AzureAISearchIndexSettingsCreateContext(settings);
+        await _handlers.InvokeAsync((handler, ctx) => handler.CreatingAsync(ctx), updatedContext, _logger);
+
+        if (settings.IndexMappings.Count == 0)
+        {
+            throw new InvalidOperationException("At least one index-mapping is required.");
+        }
+
+        document.IndexSettings[settings.Id] = settings;
+        await DocumentManager.UpdateAsync(document);
+
+        await _handlers.InvokeAsync((handler, ctx) => handler.CreatedAsync(ctx), updatedContext, _logger);
+    }
+
     public async Task UpdateAsync(AzureAISearchIndexSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
@@ -67,10 +92,17 @@ public class AzureAISearchIndexSettingsService
             throw new InvalidOperationException("Another index with the same name already exists.");
         }
 
+        var updatedContext = new AzureAISearchIndexSettingsUpdateContext(settings);
+        await _handlers.InvokeAsync((handler, ctx) => handler.UpdatingAsync(ctx), updatedContext, _logger);
+
+        if (settings.IndexMappings.Count == 0)
+        {
+            throw new InvalidOperationException("At least one index-mapping is required.");
+        }
+
         document.IndexSettings[settings.Id] = settings;
         await DocumentManager.UpdateAsync(document);
 
-        var updatedContext = new AzureAISearchIndexSettingsUpdatedContext(settings);
         await _handlers.InvokeAsync((handler, ctx) => handler.UpdatedAsync(ctx), updatedContext, _logger);
     }
 
@@ -125,14 +157,6 @@ public class AzureAISearchIndexSettingsService
         await _handlers.InvokeAsync((handler, ctx) => handler.ValidatingAsync(ctx), validatingContext, _logger);
 
         return validatingContext.Result;
-    }
-
-    public async Task SetMappingsAsync(AzureAISearchIndexSettings settings)
-    {
-        ArgumentNullException.ThrowIfNull(settings);
-
-        var mappingContext = new AzureAISearchMappingContext(settings);
-        await _handlers.InvokeAsync((handler, ctx) => handler.MappingAsync(ctx), mappingContext, _logger);
     }
 
     public async Task ResetAsync(AzureAISearchIndexSettings settings)

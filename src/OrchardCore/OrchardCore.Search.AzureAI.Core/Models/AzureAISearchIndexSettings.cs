@@ -16,7 +16,7 @@ public class AzureAISearchIndexSettings : Entity
 
     public string QueryAnalyzerName { get; set; }
 
-    public IList<AzureAISearchIndexMap> IndexMappings { get; set; }
+    public IList<AzureAISearchIndexMap> IndexMappings { get; init; } = [];
 
     private long _lastTaskId;
 

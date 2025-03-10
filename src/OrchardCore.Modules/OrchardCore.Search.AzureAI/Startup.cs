@@ -7,12 +7,14 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Search.Abstractions;
 using OrchardCore.Search.AzureAI.Deployment;
 using OrchardCore.Search.AzureAI.Drivers;
 using OrchardCore.Search.AzureAI.Handlers;
 using OrchardCore.Search.AzureAI.Migrations;
 using OrchardCore.Search.AzureAI.Models;
+using OrchardCore.Search.AzureAI.Recipes;
 using OrchardCore.Search.AzureAI.Services;
 
 namespace OrchardCore.Search.AzureAI;
@@ -29,6 +31,17 @@ public sealed class Startup : StartupBase
         services.AddScoped<IAzureAISearchIndexSettingsHandler, AzureAISearchIndexHandler>();
 
         services.AddDataMigration<AzureAISearchIndexSettingsMigrations>();
+    }
+}
+
+[RequireFeatures("OrchardCore.Recipes.Core")]
+public sealed class RecipeStartup : StartupBase
+{
+    public override void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRecipeExecutionStep<AzureAISearchIndexRebuildStep>();
+        services.AddRecipeExecutionStep<AzureAISearchIndexResetStep>();
+        services.AddRecipeExecutionStep<AzureAISearchIndexSettingsStep>();
     }
 }
 
