@@ -40,7 +40,7 @@ public class AzureAISearchIndexManager
 
         try
         {
-            var context = new AzureAISearchIndexCreateContext(settings, settings.IndexFullName);
+            var context = new AzureAISearchIndexCreateContext(settings);
 
             await _indexEvents.InvokeAsync((handler, ctx) => handler.CreatingAsync(ctx), context, _logger);
 
