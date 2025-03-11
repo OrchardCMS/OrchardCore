@@ -248,12 +248,6 @@
     },
     {
         "action": "copy",
-        "name": "jquery",
-        "source": "../../../node_modules/@popperjs/core/dist/umd/popper.js",
-        "tags": ["resources", "js"]
-    },
-    {
-        "action": "copy",
         "name": "trumbowyg",
         "source": "../../../node_modules/trumbowyg/dist/ui/icons.svg",
         "dest": "wwwroot/Scripts/trumbowyg/ui/",
