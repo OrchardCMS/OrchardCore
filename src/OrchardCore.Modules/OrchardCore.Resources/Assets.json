@@ -295,15 +295,10 @@
         "tags": ["resources", "js"]
     },
     {
+        "order": 1,
         "action": "copy",
         "name": "vue-multiselect",
         "source": "../../../node_modules/vue-multiselect/dist/*.js",
-        "tags": ["resources", "js"]
-    },
-    {
-        "action": "min",
-        "name": "vue-multiselect",
-        "source": "../../../node_modules/vue-multiselect/dist/vue-multiselect.js",
         "tags": ["resources", "js"]
     },
     {
