@@ -21,7 +21,8 @@ window.formVisibilityGroups = function () {
           groups: [],
           fieldOptions: config.fieldOptions || [],
           operatorOptions: [],
-          prefix: ''
+          prefix: '',
+          widgetId: config.appElementSelector.replace('#', '')
         };
       },
       computed: {
@@ -93,6 +94,31 @@ window.formVisibilityGroups = function () {
             }
           }
           return [];
+        },
+        populateGroupsFromInputs: function populateGroupsFromInputs() {
+          var inputs = document.querySelectorAll("[name^=\"".concat(this.prefix, "Groups[\"][name*=\"").concat(this.widgetId, "\"]"));
+          var groupsMap = new Map();
+          inputs.forEach(function (input) {
+            var match = input.name.match(/Groups\[(\d+)\]\.Rules\[(\d+)\]\.(Field|Operator|Value)/);
+            if (!match) return;
+            var groupIndex = Number(match[1]);
+            var ruleIndex = Number(match[2]);
+            var fieldType = match[3].toLowerCase();
+            if (!groupsMap.has(groupIndex)) {
+              groupsMap.set(groupIndex, {
+                rules: []
+              });
+            }
+            if (!groupsMap.get(groupIndex).rules[ruleIndex]) {
+              groupsMap.get(groupIndex).rules[ruleIndex] = {
+                field: "",
+                operator: "",
+                value: ""
+              };
+            }
+            groupsMap.get(groupIndex).rules[ruleIndex][fieldType.toLowerCase()] = input.value;
+          });
+          this.groups = Array.from(groupsMap.values());
         }
       },
       mounted: function mounted() {
@@ -100,35 +126,25 @@ window.formVisibilityGroups = function () {
         if (config.prefix) {
           this.prefix = config.prefix + '.';
         }
-        console.log('config.appElementSelector:', config.appElementSelector); // Log the appElementSelector value
-
-        //var appElement = document.querySelector(config.appElementSelector);
-
-        //if (!appElement) {
-        //    console.log('Null?:', appElement);
-        //    return;
-        //}
-
-        //var data = appElement.getAttribute('data-groups') || '{}';
-        //console.log("data-groups attribute value:", data); // Log the data-groups attribute value
-
-        //var groups = JSON.parse(data);
-        //console.log("Parsed groups data:", groups); // Log the parsed groups data
-
-        //// Load groups from the data-groups attribute
-        //if (groups) {
-        //    this.groups = groups;
-        //}
-
-        //var savedGroups = localStorage.getItem('formVisibilityGroups');
-        //if (savedGroups) {
-        //    groups = JSON.parse(savedGroups);
-        //}
-
         this.$nextTick(function () {
           _this.populateFields();
-          console.log("Vue component mounted. Prefix is:", _this.prefix);
           _this.operatorOptions = _this.findOperators();
+          var savedGroups = localStorage.getItem("savedGroups_".concat(_this.widgetId));
+          if (savedGroups) {
+            try {
+              _this.groups = JSON.parse(savedGroups);
+              console.log("\u2705 Restored groups for widget ".concat(_this.widgetId, " from localStorage:"), _this.groups);
+            } catch (error) {
+              console.error("❌ Failed to parse saved groups:", error);
+            }
+          } else {
+            _this.populateGroupsFromInputs();
+          }
+          _this.$watch('groups', function (newGroups) {
+            localStorage.setItem("savedGroups_".concat(_this.widgetId), JSON.stringify(newGroups));
+          }, {
+            deep: true
+          });
         });
       },
       template: config.template

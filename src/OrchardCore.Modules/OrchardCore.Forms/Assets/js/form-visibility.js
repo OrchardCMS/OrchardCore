@@ -88,6 +88,7 @@ window.formVisibilityGroups = function () {
                     fieldOptions: config.fieldOptions || [],
                     operatorOptions: [],
                     prefix: '',
+                    widgetId: config.appElementSelector.replace('#', '')
                 };
             },
 
@@ -177,49 +178,62 @@ window.formVisibilityGroups = function () {
                         }
                     }
                     return [];
-                }
+                },
+
+                populateGroupsFromInputs() {
+                    const inputs = document.querySelectorAll(`[name^="${this.prefix}Groups["][name*="${this.widgetId}"]`);
+
+                    let groupsMap = new Map();
+
+                    inputs.forEach(input => {
+                        const match = input.name.match(/Groups\[(\d+)\]\.Rules\[(\d+)\]\.(Field|Operator|Value)/);
+                        if (!match) return;
+
+                        const groupIndex = Number(match[1]);
+                        const ruleIndex = Number(match[2]);
+                        const fieldType = match[3].toLowerCase();
+
+                        if (!groupsMap.has(groupIndex)) {
+                            groupsMap.set(groupIndex, { rules: [] });
+                        }
+
+                        if (!groupsMap.get(groupIndex).rules[ruleIndex]) {
+                            groupsMap.get(groupIndex).rules[ruleIndex] = { field: "", operator: "", value: "" };
+                        }
+
+                        groupsMap.get(groupIndex).rules[ruleIndex][fieldType.toLowerCase()] = input.value;
+                    });
+
+                    this.groups = Array.from(groupsMap.values());
+                },
             },
 
             mounted() {
-
                 if (config.prefix) {
                     this.prefix = config.prefix + '.';
                 }
 
-                console.log('config.appElementSelector:', config.appElementSelector); // Log the appElementSelector value
-
-
-                //var appElement = document.querySelector(config.appElementSelector);
-
-
-                //if (!appElement) {
-                //    console.log('Null?:', appElement);
-                //    return;
-                //}
-
-                //var data = appElement.getAttribute('data-groups') || '{}';
-                //console.log("data-groups attribute value:", data); // Log the data-groups attribute value
-
-                //var groups = JSON.parse(data);
-                //console.log("Parsed groups data:", groups); // Log the parsed groups data
-
-                //// Load groups from the data-groups attribute
-                //if (groups) {
-                //    this.groups = groups;
-                //}
-
-                //var savedGroups = localStorage.getItem('formVisibilityGroups');
-                //if (savedGroups) {
-                //    groups = JSON.parse(savedGroups);
-                //}
-
                 this.$nextTick(() => {
                     this.populateFields();
-                    console.log("Vue component mounted. Prefix is:", this.prefix);
                     this.operatorOptions = this.findOperators();
+
+                    const savedGroups = localStorage.getItem(`savedGroups_${this.widgetId}`);
+                    if (savedGroups) {
+                        try {
+                            this.groups = JSON.parse(savedGroups);
+                            console.log(`✅ Restored groups for widget ${this.widgetId} from localStorage:`, this.groups);
+                        } catch (error) {
+                            console.error("❌ Failed to parse saved groups:", error);
+                        }
+                    } else {
+                        this.populateGroupsFromInputs();
+                    }
+
+                    this.$watch('groups', (newGroups) => {
+                        localStorage.setItem(`savedGroups_${this.widgetId}`, JSON.stringify(newGroups));
+                    }, { deep: true });
                 });
-            },
-            template: config.template
+            }, template: config.template
         });
         return app;
     };
