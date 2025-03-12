@@ -248,12 +248,6 @@
     },
     {
         "action": "copy",
-        "name": "jquery",
-        "source": "../../../node_modules/@popperjs/core/dist/umd/popper.js",
-        "tags": ["resources", "js"]
-    },
-    {
-        "action": "copy",
         "name": "trumbowyg",
         "source": "../../../node_modules/trumbowyg/dist/ui/icons.svg",
         "dest": "wwwroot/Scripts/trumbowyg/ui/",
@@ -301,15 +295,10 @@
         "tags": ["resources", "js"]
     },
     {
+        "order": 1,
         "action": "copy",
         "name": "vue-multiselect",
         "source": "../../../node_modules/vue-multiselect/dist/*.js",
-        "tags": ["resources", "js"]
-    },
-    {
-        "action": "min",
-        "name": "vue-multiselect",
-        "source": "../../../node_modules/vue-multiselect/dist/vue-multiselect.js",
         "tags": ["resources", "js"]
     },
     {

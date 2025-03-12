@@ -1,2 +1,1431 @@
-var VueMultiselect=function(e,t){"use strict";function i(e){return 0!==e&&(!!Array.isArray(e)&&0===e.length||!e)}function s(e){return e.filter(e=>!e.$isLabel)}function l(e,t){return i=>i.reduce((i,s)=>s[e]&&s[e].length?(i.push({$groupLabel:s[t],$isLabel:!0}),i.concat(s[e])):i,[])}let o=(...e)=>t=>e.reduce((e,t)=>t(e),t);var n={data(){return{search:"",isOpen:!1,preferredOpenDirection:"below",optimizedHeight:this.maxHeight}},props:{internalSearch:{type:Boolean,default:!0},options:{type:Array,required:!0},multiple:{type:Boolean,default:!1},trackBy:{type:String},label:{type:String},searchable:{type:Boolean,default:!0},clearOnSelect:{type:Boolean,default:!0},hideSelected:{type:Boolean,default:!1},placeholder:{type:String,default:"Select option"},allowEmpty:{type:Boolean,default:!0},resetAfter:{type:Boolean,default:!1},closeOnSelect:{type:Boolean,default:!0},customLabel:{type:Function,default:(e,t)=>i(e)?"":t?e[t]:e},taggable:{type:Boolean,default:!1},tagPlaceholder:{type:String,default:"Press enter to create a tag"},tagPosition:{type:String,default:"top"},max:{type:[Number,Boolean],default:!1},id:{default:null},optionsLimit:{type:Number,default:1e3},groupValues:{type:String},groupLabel:{type:String},groupSelect:{type:Boolean,default:!1},blockKeys:{type:Array,default:()=>[]},preserveSearch:{type:Boolean,default:!1},preselectFirst:{type:Boolean,default:!1},preventAutofocus:{type:Boolean,default:!1},filteringSortFunc:{type:Function,default:null}},mounted(){!this.multiple&&this.max&&console.warn("[Vue-Multiselect warn]: Max prop should not be used when prop Multiple equals false."),this.preselectFirst&&!this.internalValue.length&&this.options.length&&this.select(this.filteredOptions[0])},computed:{internalValue(){return this.modelValue||0===this.modelValue?Array.isArray(this.modelValue)?this.modelValue:[this.modelValue]:[]},filteredOptions(){var e;let t=this.search||"",i=t.toLowerCase().trim(),s=this.options.concat();return s=this.internalSearch?this.groupValues?this.filterAndFlat(s,i,this.label):this.filterOptions(s,i,this.label,this.customLabel):this.groupValues?l(this.groupValues,this.groupLabel)(s):s,s=this.hideSelected?s.filter((e=this.isSelected,(...t)=>!e(...t))):s,this.taggable&&i.length&&!this.isExistingOption(i)&&("bottom"===this.tagPosition?s.push({isTag:!0,label:t}):s.unshift({isTag:!0,label:t})),s.slice(0,this.optionsLimit)},valueKeys(){return this.trackBy?this.internalValue.map(e=>e[this.trackBy]):this.internalValue},optionKeys(){return(this.groupValues?this.flatAndStrip(this.options):this.options).map(e=>this.customLabel(e,this.label).toString().toLowerCase())},currentOptionLabel(){return this.multiple?this.searchable?"":this.placeholder:this.internalValue.length?this.getOptionLabel(this.internalValue[0]):this.searchable?"":this.placeholder}},watch:{internalValue:{handler(){this.resetAfter&&this.internalValue.length&&(this.search="",this.$emit("update:modelValue",this.multiple?[]:null))},deep:!0},search(){this.$emit("search-change",this.search)}},emits:["open","search-change","close","select","update:modelValue","remove","tag"],methods:{getValue(){return this.multiple?this.internalValue:0===this.internalValue.length?null:this.internalValue[0]},filterAndFlat(e,t,i){return o(this.filterGroups(t,i,this.groupValues,this.groupLabel,this.customLabel),l(this.groupValues,this.groupLabel))(e)},flatAndStrip(e){return o(l(this.groupValues,this.groupLabel),s)(e)},updateSearch(e){this.search=e},isExistingOption(e){return!!this.options&&this.optionKeys.indexOf(e)>-1},isSelected(e){let t=this.trackBy?e[this.trackBy]:e;return this.valueKeys.indexOf(t)>-1},isOptionDisabled:e=>!!e.$isDisabled,getOptionLabel(e){if(i(e))return"";if(e.isTag)return e.label;if(e.$isLabel)return e.$groupLabel;let t=this.customLabel(e,this.label);return i(t)?"":t},select(e,t){if(e.$isLabel&&this.groupSelect){this.selectGroup(e);return}if(-1===this.blockKeys.indexOf(t)&&!this.disabled&&!e.$isDisabled&&!e.$isLabel&&(!this.max||!this.multiple||this.internalValue.length!==this.max)&&("Tab"!==t||this.pointerDirty)){if(e.isTag)this.$emit("tag",e.label,this.id),this.search="",this.closeOnSelect&&!this.multiple&&this.deactivate();else{if(this.isSelected(e)){"Tab"!==t&&this.removeElement(e);return}this.multiple?this.$emit("update:modelValue",this.internalValue.concat([e])):this.$emit("update:modelValue",e),this.$emit("select",e,this.id),this.clearOnSelect&&(this.search="")}this.closeOnSelect&&this.deactivate()}},selectGroup(e){let t=this.options.find(t=>t[this.groupLabel]===e.$groupLabel);if(t){if(this.wholeGroupSelected(t)){this.$emit("remove",t[this.groupValues],this.id);let e=this.trackBy?t[this.groupValues].map(e=>e[this.trackBy]):t[this.groupValues],i=this.internalValue.filter(t=>-1===e.indexOf(this.trackBy?t[this.trackBy]:t));this.$emit("update:modelValue",i)}else{let e=t[this.groupValues].filter(e=>!(this.isOptionDisabled(e)||this.isSelected(e)));this.max&&e.splice(this.max-this.internalValue.length),this.$emit("select",e,this.id),this.$emit("update:modelValue",this.internalValue.concat(e))}this.closeOnSelect&&this.deactivate()}},wholeGroupSelected(e){return e[this.groupValues].every(e=>this.isSelected(e)||this.isOptionDisabled(e))},wholeGroupDisabled(e){return e[this.groupValues].every(this.isOptionDisabled)},removeElement(e,t=!0){if(this.disabled||e.$isDisabled)return;if(!this.allowEmpty&&this.internalValue.length<=1){this.deactivate();return}let i="object"==typeof e?this.valueKeys.indexOf(e[this.trackBy]):this.valueKeys.indexOf(e);if(this.multiple){let e=this.internalValue.slice(0,i).concat(this.internalValue.slice(i+1));this.$emit("update:modelValue",e)}else this.$emit("update:modelValue",null);this.$emit("remove",e,this.id),this.closeOnSelect&&t&&this.deactivate()},removeLastElement(){-1===this.blockKeys.indexOf("Delete")&&0===this.search.length&&Array.isArray(this.internalValue)&&this.internalValue.length&&this.removeElement(this.internalValue[this.internalValue.length-1],!1)},activate(){this.isOpen||this.disabled||(this.adjustPosition(),this.groupValues&&0===this.pointer&&this.filteredOptions.length&&(this.pointer=1),this.isOpen=!0,this.searchable?(this.preserveSearch||(this.search=""),this.preventAutofocus||this.$nextTick(()=>this.$refs.search&&this.$refs.search.focus())):this.preventAutofocus||void 0===this.$el||this.$el.focus(),this.$emit("open",this.id))},deactivate(){this.isOpen&&(this.isOpen=!1,this.searchable?null!==this.$refs.search&&void 0!==this.$refs.search&&this.$refs.search.blur():void 0!==this.$el&&this.$el.blur(),this.preserveSearch||(this.search=""),this.$emit("close",this.getValue(),this.id))},toggle(){this.isOpen?this.deactivate():this.activate()},adjustPosition(){if("undefined"==typeof window)return;let e=this.$el.getBoundingClientRect().top,t=window.innerHeight-this.$el.getBoundingClientRect().bottom;t>this.maxHeight||t>e||"below"===this.openDirection||"bottom"===this.openDirection?(this.preferredOpenDirection="below",this.optimizedHeight=Math.min(t-40,this.maxHeight)):(this.preferredOpenDirection="above",this.optimizedHeight=Math.min(e-40,this.maxHeight))},filterOptions(e,t,i,s){return t?e.filter(e=>{var l;return void 0===(l=s(e,i))&&(l="undefined"),null===l&&(l="null"),!1===l&&(l="false"),-1!==l.toString().toLowerCase().indexOf(t.trim())}).sort((e,t)=>"function"==typeof this.filteringSortFunc?this.filteringSortFunc(e,t):s(e,i).length-s(t,i).length):e},filterGroups(e,t,i,s,l){return o=>o.map(o=>{if(!o[i])return console.warn("Options passed to vue-multiselect do not contain groups, despite the config."),[];let n=this.filterOptions(o[i],e,t,l);return n.length?{[s]:o[s],[i]:n}:[]})}}},r={data:()=>({pointer:0,pointerDirty:!1}),props:{showPointer:{type:Boolean,default:!0},optionHeight:{type:Number,default:40}},computed:{pointerPosition(){return this.pointer*this.optionHeight},visibleElements(){return this.optimizedHeight/this.optionHeight}},watch:{filteredOptions(){this.pointerAdjust()},isOpen(){this.pointerDirty=!1},pointer(){this.$refs.search&&this.$refs.search.setAttribute("aria-activedescendant",this.id+"-"+this.pointer.toString())}},methods:{optionHighlight(e,t){return{"multiselect__option--highlight":e===this.pointer&&this.showPointer,"multiselect__option--selected":this.isSelected(t)}},groupHighlight(e,t){if(!this.groupSelect)return["multiselect__option--disabled",{"multiselect__option--group":t.$isLabel}];let i=this.options.find(e=>e[this.groupLabel]===t.$groupLabel);return i&&!this.wholeGroupDisabled(i)?["multiselect__option--group",{"multiselect__option--highlight":e===this.pointer&&this.showPointer},{"multiselect__option--group-selected":this.wholeGroupSelected(i)}]:"multiselect__option--disabled"},addPointerElement({key:e}="Enter"){this.filteredOptions.length>0&&this.select(this.filteredOptions[this.pointer],e),this.pointerReset()},pointerForward(){this.pointer<this.filteredOptions.length-1&&(this.pointer++,this.$refs.list.scrollTop<=this.pointerPosition-(this.visibleElements-1)*this.optionHeight&&(this.$refs.list.scrollTop=this.pointerPosition-(this.visibleElements-1)*this.optionHeight),this.filteredOptions[this.pointer]&&this.filteredOptions[this.pointer].$isLabel&&!this.groupSelect&&this.pointerForward()),this.pointerDirty=!0},pointerBackward(){this.pointer>0?(this.pointer--,this.$refs.list.scrollTop>=this.pointerPosition&&(this.$refs.list.scrollTop=this.pointerPosition),this.filteredOptions[this.pointer]&&this.filteredOptions[this.pointer].$isLabel&&!this.groupSelect&&this.pointerBackward()):this.filteredOptions[this.pointer]&&this.filteredOptions[0].$isLabel&&!this.groupSelect&&this.pointerForward(),this.pointerDirty=!0},pointerReset(){this.closeOnSelect&&(this.pointer=0,this.$refs.list&&(this.$refs.list.scrollTop=0))},pointerAdjust(){this.pointer>=this.filteredOptions.length-1&&(this.pointer=this.filteredOptions.length?this.filteredOptions.length-1:0),this.filteredOptions.length>0&&this.filteredOptions[this.pointer].$isLabel&&!this.groupSelect&&this.pointerForward()},pointerSet(e){this.pointer=e,this.pointerDirty=!0}}},a={name:"vue-multiselect",mixins:[n,r],compatConfig:{MODE:3,ATTR_ENUMERATED_COERCION:!1},props:{name:{type:String,default:""},modelValue:{type:null,default:()=>[]},selectLabel:{type:String,default:"Press enter to select"},selectGroupLabel:{type:String,default:"Press enter to select group"},selectedLabel:{type:String,default:"Selected"},deselectLabel:{type:String,default:"Press enter to remove"},deselectGroupLabel:{type:String,default:"Press enter to deselect group"},showLabels:{type:Boolean,default:!0},limit:{type:Number,default:99999},maxHeight:{type:Number,default:300},limitText:{type:Function,default:e=>`and ${e} more`},loading:{type:Boolean,default:!1},disabled:{type:Boolean,default:!1},spellcheck:{type:Boolean,default:!1},openDirection:{type:String,default:""},showNoOptions:{type:Boolean,default:!0},showNoResults:{type:Boolean,default:!0},tabindex:{type:Number,default:0},required:{type:Boolean,default:!1}},computed:{hasOptionGroup(){return this.groupValues&&this.groupLabel&&this.groupSelect},isSingleLabelVisible(){return(this.singleValue||0===this.singleValue)&&(!this.isOpen||!this.searchable)&&!this.visibleValues.length},isPlaceholderVisible(){return!this.internalValue.length&&(!this.searchable||!this.isOpen)},visibleValues(){return this.multiple?this.internalValue.slice(0,this.limit):[]},singleValue(){return this.internalValue[0]},deselectLabelText(){return this.showLabels?this.deselectLabel:""},deselectGroupLabelText(){return this.showLabels?this.deselectGroupLabel:""},selectLabelText(){return this.showLabels?this.selectLabel:""},selectGroupLabelText(){return this.showLabels?this.selectGroupLabel:""},selectedLabelText(){return this.showLabels?this.selectedLabel:""},inputStyle(){return this.searchable||this.multiple&&this.modelValue&&this.modelValue.length?this.isOpen?{width:"100%"}:{width:"0",position:"absolute",padding:"0"}:""},contentStyle(){return this.options.length?{display:"inline-block"}:{display:"block"}},isAbove(){return"above"===this.openDirection||"top"===this.openDirection||"below"!==this.openDirection&&"bottom"!==this.openDirection&&"above"===this.preferredOpenDirection},showSearchInput(){return this.searchable&&(!this.hasSingleSelectedSlot||!this.visibleSingleValue&&0!==this.visibleSingleValue||this.isOpen)},isRequired(){return!1!==this.required&&this.internalValue.length<=0}}};let h=["tabindex","aria-expanded","aria-owns","aria-activedescendant"],p={ref:"tags",class:"multiselect__tags"},u={class:"multiselect__tags-wrap"},c=["textContent"],d=["onKeypress","onMousedown"],m=["textContent"],g={class:"multiselect__spinner"},f=["name","id","spellcheck","placeholder","required","value","disabled","tabindex","aria-label","aria-controls"],b=["id","aria-multiselectable"],y={key:0},v={class:"multiselect__option"},V=["aria-selected","id","role"],w=["onClick","onMouseenter","data-select","data-selected","data-deselect"],S=["data-select","data-deselect","onMouseenter","onMousedown"],O={class:"multiselect__option"},L={class:"multiselect__option"};return a.render=function(e,i,s,l,o,n){return t.openBlock(),t.createElementBlock("div",{tabindex:e.searchable?-1:s.tabindex,class:t.normalizeClass([{"multiselect--active":e.isOpen,"multiselect--disabled":s.disabled,"multiselect--above":n.isAbove,"multiselect--has-options-group":n.hasOptionGroup},"multiselect"]),onFocus:i[14]||(i[14]=t=>e.activate()),onBlur:i[15]||(i[15]=t=>!e.searchable&&e.deactivate()),onKeydown:[i[16]||(i[16]=t.withKeys(t.withModifiers(t=>e.pointerForward(),["self","prevent"]),["down"])),i[17]||(i[17]=t.withKeys(t.withModifiers(t=>e.pointerBackward(),["self","prevent"]),["up"]))],onKeypress:i[18]||(i[18]=t.withKeys(t.withModifiers(t=>e.addPointerElement(t),["stop","self"]),["enter","tab"])),onKeyup:i[19]||(i[19]=t.withKeys(t=>e.deactivate(),["esc"])),role:"combobox","aria-expanded":e.isOpen,"aria-owns":"listbox-"+e.id,"aria-activedescendant":e.isOpen&&null!==e.pointer?e.id+"-"+e.pointer:null},[t.renderSlot(e.$slots,"caret",{toggle:e.toggle},()=>[t.createElementVNode("div",{onMousedown:i[0]||(i[0]=t.withModifiers(t=>e.toggle(),["prevent","stop"])),class:"multiselect__select"},null,32)]),t.renderSlot(e.$slots,"clear",{search:e.search}),t.createElementVNode("div",p,[t.renderSlot(e.$slots,"selection",{search:e.search,remove:e.removeElement,values:n.visibleValues,isOpen:e.isOpen},()=>[t.withDirectives(t.createElementVNode("div",u,[(t.openBlock(!0),t.createElementBlock(t.Fragment,null,t.renderList(n.visibleValues,(s,l)=>t.renderSlot(e.$slots,"tag",{option:s,search:e.search,remove:e.removeElement},()=>[(t.openBlock(),t.createElementBlock("span",{class:"multiselect__tag",key:l,onMousedown:i[1]||(i[1]=t.withModifiers(()=>{},["prevent"]))},[t.createElementVNode("span",{textContent:t.toDisplayString(e.getOptionLabel(s))},null,8,c),t.createElementVNode("i",{tabindex:"1",onKeypress:t.withKeys(t.withModifiers(t=>e.removeElement(s),["prevent"]),["enter"]),onMousedown:t.withModifiers(t=>e.removeElement(s),["prevent"]),class:"multiselect__tag-icon"},null,40,d)],32))])),256))],512),[[t.vShow,n.visibleValues.length>0]]),e.internalValue&&e.internalValue.length>s.limit?t.renderSlot(e.$slots,"limit",{key:0},()=>[t.createElementVNode("strong",{class:"multiselect__strong",textContent:t.toDisplayString(s.limitText(e.internalValue.length-s.limit))},null,8,m)]):t.createCommentVNode("v-if",!0)]),t.createVNode(t.Transition,{name:"multiselect__loading"},{default:t.withCtx(()=>[t.renderSlot(e.$slots,"loading",{},()=>[t.withDirectives(t.createElementVNode("div",g,null,512),[[t.vShow,s.loading]])])]),_:3}),e.searchable?(t.openBlock(),t.createElementBlock("input",{key:0,ref:"search",name:s.name,id:e.id,type:"text",autocomplete:"off",spellcheck:s.spellcheck,placeholder:e.placeholder,required:n.isRequired,style:t.normalizeStyle(n.inputStyle),value:e.search,disabled:s.disabled,tabindex:s.tabindex,"aria-label":s.name+"-searchbox",onInput:i[2]||(i[2]=t=>e.updateSearch(t.target.value)),onFocus:i[3]||(i[3]=t.withModifiers(t=>e.activate(),["prevent"])),onBlur:i[4]||(i[4]=t.withModifiers(t=>e.deactivate(),["prevent"])),onKeyup:i[5]||(i[5]=t.withKeys(t=>e.deactivate(),["esc"])),onKeydown:[i[6]||(i[6]=t.withKeys(t.withModifiers(t=>e.pointerForward(),["prevent"]),["down"])),i[7]||(i[7]=t.withKeys(t.withModifiers(t=>e.pointerBackward(),["prevent"]),["up"])),i[9]||(i[9]=t.withKeys(t.withModifiers(t=>e.removeLastElement(),["stop"]),["delete"]))],onKeypress:i[8]||(i[8]=t.withKeys(t.withModifiers(t=>e.addPointerElement(t),["prevent","stop","self"]),["enter"])),class:"multiselect__input","aria-controls":"listbox-"+e.id},null,44,f)):t.createCommentVNode("v-if",!0),n.isSingleLabelVisible?(t.openBlock(),t.createElementBlock("span",{key:1,class:"multiselect__single",onMousedown:i[10]||(i[10]=t.withModifiers((...t)=>e.toggle&&e.toggle(...t),["prevent"]))},[t.renderSlot(e.$slots,"singleLabel",{option:n.singleValue},()=>[t.createTextVNode(t.toDisplayString(e.currentOptionLabel),1)])],32)):t.createCommentVNode("v-if",!0),n.isPlaceholderVisible?(t.openBlock(),t.createElementBlock("span",{key:2,class:"multiselect__placeholder",onMousedown:i[11]||(i[11]=t.withModifiers((...t)=>e.toggle&&e.toggle(...t),["prevent"]))},[t.renderSlot(e.$slots,"placeholder",{},()=>[t.createTextVNode(t.toDisplayString(e.placeholder),1)])],32)):t.createCommentVNode("v-if",!0)],512),t.createVNode(t.Transition,{name:"multiselect",persisted:""},{default:t.withCtx(()=>[t.withDirectives(t.createElementVNode("div",{class:"multiselect__content-wrapper",onFocus:i[12]||(i[12]=(...t)=>e.activate&&e.activate(...t)),tabindex:"-1",onMousedown:i[13]||(i[13]=t.withModifiers(()=>{},["prevent"])),style:t.normalizeStyle({maxHeight:e.optimizedHeight+"px"}),ref:"list"},[t.createElementVNode("ul",{class:"multiselect__content",style:t.normalizeStyle(n.contentStyle),role:"listbox",id:"listbox-"+e.id,"aria-multiselectable":e.multiple},[t.renderSlot(e.$slots,"beforeList"),e.multiple&&e.max===e.internalValue.length?(t.openBlock(),t.createElementBlock("li",y,[t.createElementVNode("span",v,[t.renderSlot(e.$slots,"maxElements",{},()=>[t.createTextVNode("Maximum of "+t.toDisplayString(e.max)+" options selected. First remove a selected option to select another.",1)])])])):t.createCommentVNode("v-if",!0),!e.max||e.internalValue.length<e.max?(t.openBlock(!0),t.createElementBlock(t.Fragment,{key:1},t.renderList(e.filteredOptions,(i,s)=>(t.openBlock(),t.createElementBlock("li",{class:"multiselect__element",key:s,"aria-selected":e.isSelected(i),id:e.id+"-"+s,role:i&&(i.$isLabel||i.$isDisabled)?null:"option"},[i&&(i.$isLabel||i.$isDisabled)?t.createCommentVNode("v-if",!0):(t.openBlock(),t.createElementBlock("span",{key:0,class:t.normalizeClass([e.optionHighlight(s,i),"multiselect__option"]),onClick:t.withModifiers(t=>e.select(i),["stop"]),onMouseenter:t.withModifiers(t=>e.pointerSet(s),["self"]),"data-select":i&&i.isTag?e.tagPlaceholder:n.selectLabelText,"data-selected":n.selectedLabelText,"data-deselect":n.deselectLabelText},[t.renderSlot(e.$slots,"option",{option:i,search:e.search,index:s},()=>[t.createElementVNode("span",null,t.toDisplayString(e.getOptionLabel(i)),1)])],42,w)),i&&(i.$isLabel||i.$isDisabled)?(t.openBlock(),t.createElementBlock("span",{key:1,"data-select":e.groupSelect&&n.selectGroupLabelText,"data-deselect":e.groupSelect&&n.deselectGroupLabelText,class:t.normalizeClass([e.groupHighlight(s,i),"multiselect__option"]),onMouseenter:t.withModifiers(t=>e.groupSelect&&e.pointerSet(s),["self"]),onMousedown:t.withModifiers(t=>e.selectGroup(i),["prevent"])},[t.renderSlot(e.$slots,"option",{option:i,search:e.search,index:s},()=>[t.createElementVNode("span",null,t.toDisplayString(e.getOptionLabel(i)),1)])],42,S)):t.createCommentVNode("v-if",!0)],8,V))),128)):t.createCommentVNode("v-if",!0),t.withDirectives(t.createElementVNode("li",null,[t.createElementVNode("span",O,[t.renderSlot(e.$slots,"noResult",{search:e.search},()=>[i[20]||(i[20]=t.createTextVNode("No elements found. Consider changing the search query."))])])],512),[[t.vShow,s.showNoResults&&0===e.filteredOptions.length&&e.search&&!s.loading]]),t.withDirectives(t.createElementVNode("li",null,[t.createElementVNode("span",L,[t.renderSlot(e.$slots,"noOptions",{},()=>[i[21]||(i[21]=t.createTextVNode("List is empty."))])])],512),[[t.vShow,s.showNoOptions&&(0===e.options.length||!0===n.hasOptionGroup&&0===e.filteredOptions.length)&&!e.search&&!s.loading]]),t.renderSlot(e.$slots,"afterList")],12,b)],36),[[t.vShow,e.isOpen]])]),_:3})],42,h)},e.Multiselect=a,e.default=a,e.multiselectMixin=n,e.pointerMixin=r,Object.defineProperty(e,"__esModule",{value:!0}),e}({},Vue);
-//# sourceMappingURL=vue-multiselect.map
+var VueMultiselect = (function (exports, vue) {
+  'use strict';
+
+  function isEmpty (opt) {
+    if (opt === 0) return false
+    if (Array.isArray(opt) && opt.length === 0) return true
+    return !opt
+  }
+
+  function not (fun) {
+    return (...params) => !fun(...params)
+  }
+
+  function includes (str, query) {
+    /* istanbul ignore else */
+    if (str === undefined) str = 'undefined';
+    if (str === null) str = 'null';
+    if (str === false) str = 'false';
+    const text = str.toString().toLowerCase();
+    return text.indexOf(query.trim()) !== -1
+  }
+
+  function stripGroups (options) {
+    return options.filter((option) => !option.$isLabel)
+  }
+
+  function flattenOptions (values, label) {
+    return (options) =>
+      options.reduce((prev, curr) => {
+        /* istanbul ignore else */
+        if (curr[values] && curr[values].length) {
+          prev.push({
+            $groupLabel: curr[label],
+            $isLabel: true
+          });
+          return prev.concat(curr[values])
+        }
+        return prev
+      }, [])
+  }
+
+  const flow = (...fns) => (x) => fns.reduce((v, f) => f(v), x);
+
+  var multiselectMixin = {
+    data () {
+      return {
+        search: '',
+        isOpen: false,
+        preferredOpenDirection: 'below',
+        optimizedHeight: this.maxHeight
+      }
+    },
+    props: {
+      /**
+       * Decide whether to filter the results based on search query.
+       * Useful for async filtering, where we search through more complex data.
+       * @type {Boolean}
+       */
+      internalSearch: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * Array of available options: Objects, Strings or Integers.
+       * If array of objects, visible label will default to option.label.
+       * If `labal` prop is passed, label will equal option['label']
+       * @type {Array}
+       */
+      options: {
+        type: Array,
+        required: true
+      },
+      /**
+       * Equivalent to the `multiple` attribute on a `<select>` input.
+       * @default false
+       * @type {Boolean}
+       */
+      multiple: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Key to compare objects
+       * @default 'id'
+       * @type {String}
+       */
+      trackBy: {
+        type: String
+      },
+      /**
+       * Label to look for in option Object
+       * @default 'label'
+       * @type {String}
+       */
+      label: {
+        type: String
+      },
+      /**
+       * Enable/disable search in options
+       * @default true
+       * @type {Boolean}
+       */
+      searchable: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * Clear the search input after `)
+       * @default true
+       * @type {Boolean}
+       */
+      clearOnSelect: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * Hide already selected options
+       * @default false
+       * @type {Boolean}
+       */
+      hideSelected: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Equivalent to the `placeholder` attribute on a `<select>` input.
+       * @default 'Select option'
+       * @type {String}
+       */
+      placeholder: {
+        type: String,
+        default: 'Select option'
+      },
+      /**
+       * Allow to remove all selected values
+       * @default true
+       * @type {Boolean}
+       */
+      allowEmpty: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * Reset this.internalValue, this.search after this.internalValue changes.
+       * Useful if want to create a stateless dropdown.
+       * @default false
+       * @type {Boolean}
+       */
+      resetAfter: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Enable/disable closing after selecting an option
+       * @default true
+       * @type {Boolean}
+       */
+      closeOnSelect: {
+        type: Boolean,
+        default: true
+      },
+      /**
+       * Function to interpolate the custom label
+       * @default false
+       * @type {Function}
+       */
+      customLabel: {
+        type: Function,
+        default (option, label) {
+          if (isEmpty(option)) return ''
+          return label ? option[label] : option
+        }
+      },
+      /**
+       * Disable / Enable tagging
+       * @default false
+       * @type {Boolean}
+       */
+      taggable: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * String to show when highlighting a potential tag
+       * @default 'Press enter to create a tag'
+       * @type {String}
+      */
+      tagPlaceholder: {
+        type: String,
+        default: 'Press enter to create a tag'
+      },
+      /**
+       * By default new tags will appear above the search results.
+       * Changing to 'bottom' will revert this behaviour
+       * and will proritize the search results
+       * @default 'top'
+       * @type {String}
+      */
+      tagPosition: {
+        type: String,
+        default: 'top'
+      },
+      /**
+       * Number of allowed selected options. No limit if 0.
+       * @default 0
+       * @type {Number}
+      */
+      max: {
+        type: [Number, Boolean],
+        default: false
+      },
+      /**
+       * Will be passed with all events as second param.
+       * Useful for identifying events origin.
+       * @default null
+       * @type {String|Integer}
+      */
+      id: {
+        default: null
+      },
+      /**
+       * Limits the options displayed in the dropdown
+       * to the first X options.
+       * @default 1000
+       * @type {Integer}
+      */
+      optionsLimit: {
+        type: Number,
+        default: 1000
+      },
+      /**
+       * Name of the property containing
+       * the group values
+       * @default 1000
+       * @type {String}
+      */
+      groupValues: {
+        type: String
+      },
+      /**
+       * Name of the property containing
+       * the group label
+       * @default 1000
+       * @type {String}
+      */
+      groupLabel: {
+        type: String
+      },
+      /**
+       * Allow to select all group values
+       * by selecting the group label
+       * @default false
+       * @type {Boolean}
+       */
+      groupSelect: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Array of keyboard keys to block
+       * when selecting
+       * @default 1000
+       * @type {String}
+      */
+      blockKeys: {
+        type: Array,
+        default () {
+          return []
+        }
+      },
+      /**
+       * Prevent from wiping up the search value
+       * @default false
+       * @type {Boolean}
+      */
+      preserveSearch: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Select 1st options if value is empty
+       * @default false
+       * @type {Boolean}
+      */
+      preselectFirst: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Prevent autofocus
+       * @default false
+       * @type {Boolean}
+       */
+      preventAutofocus: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Allows a custom function for sorting search/filtered results.
+       * @default null
+       * @type {Function}
+       */
+      filteringSortFunc: {
+        type: Function,
+        default: null
+      }
+    },
+    mounted () {
+      /* istanbul ignore else */
+      if (!this.multiple && this.max) {
+        console.warn('[Vue-Multiselect warn]: Max prop should not be used when prop Multiple equals false.');
+      }
+      if (
+        this.preselectFirst &&
+        !this.internalValue.length &&
+        this.options.length
+      ) {
+        this.select(this.filteredOptions[0]);
+      }
+    },
+    computed: {
+      internalValue () {
+        return this.modelValue || this.modelValue === 0
+          ? Array.isArray(this.modelValue) ? this.modelValue : [this.modelValue]
+          : []
+      },
+      filteredOptions () {
+        const search = this.search || '';
+        const normalizedSearch = search.toLowerCase().trim();
+
+        let options = this.options.concat();
+
+        /* istanbul ignore else */
+        if (this.internalSearch) {
+          options = this.groupValues
+            ? this.filterAndFlat(options, normalizedSearch, this.label)
+            : this.filterOptions(options, normalizedSearch, this.label, this.customLabel);
+        } else {
+          options = this.groupValues ? flattenOptions(this.groupValues, this.groupLabel)(options) : options;
+        }
+
+        options = this.hideSelected
+          ? options.filter(not(this.isSelected))
+          : options;
+
+        /* istanbul ignore else */
+        if (this.taggable && normalizedSearch.length && !this.isExistingOption(normalizedSearch)) {
+          if (this.tagPosition === 'bottom') {
+            options.push({ isTag: true, label: search });
+          } else {
+            options.unshift({ isTag: true, label: search });
+          }
+        }
+
+        return options.slice(0, this.optionsLimit)
+      },
+      valueKeys () {
+        if (this.trackBy) {
+          return this.internalValue.map((element) => element[this.trackBy])
+        } else {
+          return this.internalValue
+        }
+      },
+      optionKeys () {
+        const options = this.groupValues ? this.flatAndStrip(this.options) : this.options;
+        return options.map((element) => this.customLabel(element, this.label).toString().toLowerCase())
+      },
+      currentOptionLabel () {
+        return this.multiple
+          ? this.searchable ? '' : this.placeholder
+          : this.internalValue.length
+            ? this.getOptionLabel(this.internalValue[0])
+            : this.searchable ? '' : this.placeholder
+      }
+    },
+    watch: {
+      internalValue: {
+        handler () {
+        /* istanbul ignore else */
+          if (this.resetAfter && this.internalValue.length) {
+            this.search = '';
+            this.$emit('update:modelValue', this.multiple ? [] : null);
+          }
+        },
+        deep: true
+      },
+      search () {
+        this.$emit('search-change', this.search);
+      }
+    },
+    emits: ['open', 'search-change', 'close', 'select', 'update:modelValue', 'remove', 'tag'],
+    methods: {
+      /**
+       * Returns the internalValue in a way it can be emited to the parent
+       * @returns {Object||Array||String||Integer}
+       */
+      getValue () {
+        return this.multiple
+          ? this.internalValue
+          : this.internalValue.length === 0
+            ? null
+            : this.internalValue[0]
+      },
+      /**
+       * Filters and then flattens the options list
+       * @param  {Array}
+       * @return {Array} returns a filtered and flat options list
+       */
+      filterAndFlat (options, search, label) {
+        return flow(
+          this.filterGroups(search, label, this.groupValues, this.groupLabel, this.customLabel),
+          flattenOptions(this.groupValues, this.groupLabel)
+        )(options)
+      },
+      /**
+       * Flattens and then strips the group labels from the options list
+       * @param  {Array}
+       * @return {Array} returns a flat options list without group labels
+       */
+      flatAndStrip (options) {
+        return flow(
+          flattenOptions(this.groupValues, this.groupLabel),
+          stripGroups
+        )(options)
+      },
+      /**
+       * Updates the search value
+       * @param  {String}
+       */
+      updateSearch (query) {
+        this.search = query;
+      },
+      /**
+       * Finds out if the given query is already present
+       * in the available options
+       * @param  {String}
+       * @return {Boolean} returns true if element is available
+       */
+      isExistingOption (query) {
+        return !this.options
+          ? false
+          : this.optionKeys.indexOf(query) > -1
+      },
+      /**
+       * Finds out if the given element is already present
+       * in the result value
+       * @param  {Object||String||Integer} option passed element to check
+       * @returns {Boolean} returns true if element is selected
+       */
+      isSelected (option) {
+        const opt = this.trackBy
+          ? option[this.trackBy]
+          : option;
+        return this.valueKeys.indexOf(opt) > -1
+      },
+      /**
+       * Finds out if the given option is disabled
+       * @param  {Object||String||Integer} option passed element to check
+       * @returns {Boolean} returns true if element is disabled
+       */
+      isOptionDisabled (option) {
+        return !!option.$isDisabled
+      },
+      /**
+       * Returns empty string when options is null/undefined
+       * Returns tag query if option is tag.
+       * Returns the customLabel() results and casts it to string.
+       *
+       * @param  {Object||String||Integer} Passed option
+       * @returns {Object||String}
+       */
+      getOptionLabel (option) {
+        if (isEmpty(option)) return ''
+        /* istanbul ignore else */
+        if (option.isTag) return option.label
+        /* istanbul ignore else */
+        if (option.$isLabel) return option.$groupLabel
+
+        const label = this.customLabel(option, this.label);
+        /* istanbul ignore else */
+        if (isEmpty(label)) return ''
+        return label
+      },
+      /**
+       * Add the given option to the list of selected options
+       * or sets the option as the selected option.
+       * If option is already selected -> remove it from the results.
+       *
+       * @param  {Object||String||Integer} option to select/deselect
+       * @param  {Boolean} block removing
+       */
+      select (option, key) {
+        /* istanbul ignore else */
+        if (option.$isLabel && this.groupSelect) {
+          this.selectGroup(option);
+          return
+        }
+        if (this.blockKeys.indexOf(key) !== -1 ||
+          this.disabled ||
+          option.$isDisabled ||
+          option.$isLabel
+        ) return
+        /* istanbul ignore else */
+        if (this.max && this.multiple && this.internalValue.length === this.max) return
+        /* istanbul ignore else */
+        if (key === 'Tab' && !this.pointerDirty) return
+        if (option.isTag) {
+          this.$emit('tag', option.label, this.id);
+          this.search = '';
+          if (this.closeOnSelect && !this.multiple) this.deactivate();
+        } else {
+          const isSelected = this.isSelected(option);
+
+          if (isSelected) {
+            if (key !== 'Tab') this.removeElement(option);
+            return
+          }
+
+          if (this.multiple) {
+            this.$emit('update:modelValue', this.internalValue.concat([option]));
+          } else {
+            this.$emit('update:modelValue', option);
+          }
+
+          this.$emit('select', option, this.id);
+
+          /* istanbul ignore else */
+          if (this.clearOnSelect) this.search = '';
+        }
+        /* istanbul ignore else */
+        if (this.closeOnSelect) this.deactivate();
+      },
+      /**
+       * Add the given group options to the list of selected options
+       * If all group optiona are already selected -> remove it from the results.
+       *
+       * @param  {Object||String||Integer} group to select/deselect
+       */
+      selectGroup (selectedGroup) {
+        const group = this.options.find((option) => {
+          return option[this.groupLabel] === selectedGroup.$groupLabel
+        });
+
+        if (!group) return
+
+        if (this.wholeGroupSelected(group)) {
+          this.$emit('remove', group[this.groupValues], this.id);
+
+          const groupValues = this.trackBy ? group[this.groupValues].map(val => val[this.trackBy]) : group[this.groupValues];
+          const newValue = this.internalValue.filter(
+            option => groupValues.indexOf(this.trackBy ? option[this.trackBy] : option) === -1
+          );
+
+          this.$emit('update:modelValue', newValue);
+        } else {
+          const optionsToAdd = group[this.groupValues].filter(
+            option => !(this.isOptionDisabled(option) || this.isSelected(option))
+          );
+
+          // if max is defined then just select options respecting max
+          if (this.max) {
+            optionsToAdd.splice(this.max - this.internalValue.length);
+          }
+
+          this.$emit('select', optionsToAdd, this.id);
+          this.$emit(
+            'update:modelValue',
+            this.internalValue.concat(optionsToAdd)
+          );
+        }
+
+        if (this.closeOnSelect) this.deactivate();
+      },
+      /**
+       * Helper to identify if all values in a group are selected
+       *
+       * @param {Object} group to validated selected values against
+       */
+      wholeGroupSelected (group) {
+        return group[this.groupValues].every((option) => this.isSelected(option) || this.isOptionDisabled(option)
+        )
+      },
+      /**
+       * Helper to identify if all values in a group are disabled
+       *
+       * @param {Object} group to check for disabled values
+       */
+      wholeGroupDisabled (group) {
+        return group[this.groupValues].every(this.isOptionDisabled)
+      },
+      /**
+       * Removes the given option from the selected options.
+       * Additionally checks this.allowEmpty prop if option can be removed when
+       * it is the last selected option.
+       *
+       * @param  {type} option description
+       * @return {type}        description
+       */
+      removeElement (option, shouldClose = true) {
+        /* istanbul ignore else */
+        if (this.disabled) return
+        /* istanbul ignore else */
+        if (option.$isDisabled) return
+        /* istanbul ignore else */
+        if (!this.allowEmpty && this.internalValue.length <= 1) {
+          this.deactivate();
+          return
+        }
+
+        const index = typeof option === 'object'
+          ? this.valueKeys.indexOf(option[this.trackBy])
+          : this.valueKeys.indexOf(option);
+
+        if (this.multiple) {
+          const newValue = this.internalValue.slice(0, index).concat(this.internalValue.slice(index + 1));
+          this.$emit('update:modelValue', newValue);
+        } else {
+          this.$emit('update:modelValue', null);
+        }
+        this.$emit('remove', option, this.id);
+
+        /* istanbul ignore else */
+        if (this.closeOnSelect && shouldClose) this.deactivate();
+      },
+      /**
+       * Calls this.removeElement() with the last element
+       * from this.internalValue (selected element Array)
+       *
+       * @fires this#removeElement
+       */
+      removeLastElement () {
+        /* istanbul ignore else */
+        if (this.blockKeys.indexOf('Delete') !== -1) return
+        /* istanbul ignore else */
+        if (this.search.length === 0 && Array.isArray(this.internalValue) && this.internalValue.length) {
+          this.removeElement(this.internalValue[this.internalValue.length - 1], false);
+        }
+      },
+      /**
+       * Opens the multiselect’s dropdown.
+       * Sets this.isOpen to TRUE
+       */
+      activate () {
+        /* istanbul ignore else */
+        if (this.isOpen || this.disabled) return
+
+        this.adjustPosition();
+        /* istanbul ignore else  */
+        if (this.groupValues && this.pointer === 0 && this.filteredOptions.length) {
+          this.pointer = 1;
+        }
+
+        this.isOpen = true;
+        /* istanbul ignore else  */
+        if (this.searchable) {
+          if (!this.preserveSearch) this.search = '';
+          if (!this.preventAutofocus) this.$nextTick(() => this.$refs.search && this.$refs.search.focus());
+        } else if (!this.preventAutofocus) {
+          if (typeof this.$el !== 'undefined') this.$el.focus();
+        }
+        this.$emit('open', this.id);
+      },
+      /**
+       * Closes the multiselect’s dropdown.
+       * Sets this.isOpen to FALSE
+       */
+      deactivate () {
+        /* istanbul ignore else */
+        if (!this.isOpen) return
+
+        this.isOpen = false;
+        /* istanbul ignore else  */
+        if (this.searchable) {
+          if (this.$refs.search !== null && typeof this.$refs.search !== 'undefined') this.$refs.search.blur();
+        } else {
+          if (typeof this.$el !== 'undefined') this.$el.blur();
+        }
+        if (!this.preserveSearch) this.search = '';
+        this.$emit('close', this.getValue(), this.id);
+      },
+      /**
+       * Call this.activate() or this.deactivate()
+       * depending on this.isOpen value.
+       *
+       * @fires this#activate || this#deactivate
+       * @property {Boolean} isOpen indicates if dropdown is open
+       */
+      toggle () {
+        this.isOpen
+          ? this.deactivate()
+          : this.activate();
+      },
+      /**
+       * Updates the hasEnoughSpace variable used for
+       * detecting where to expand the dropdown
+       */
+      adjustPosition () {
+        if (typeof window === 'undefined') return
+
+        const spaceAbove = this.$el.getBoundingClientRect().top;
+        const spaceBelow = window.innerHeight - this.$el.getBoundingClientRect().bottom;
+        const hasEnoughSpaceBelow = spaceBelow > this.maxHeight;
+
+        if (hasEnoughSpaceBelow || spaceBelow > spaceAbove || this.openDirection === 'below' || this.openDirection === 'bottom') {
+          this.preferredOpenDirection = 'below';
+          this.optimizedHeight = Math.min(spaceBelow - 40, this.maxHeight);
+        } else {
+          this.preferredOpenDirection = 'above';
+          this.optimizedHeight = Math.min(spaceAbove - 40, this.maxHeight);
+        }
+      },
+      /**
+       * Filters and sorts the options ready for selection
+       * @param {Array} options
+       * @param {String} search
+       * @param {String} label
+       * @param {Function} customLabel
+       * @returns {Array}
+       */
+      filterOptions (options, search, label, customLabel) {
+        return search
+          ? options
+            .filter((option) => includes(customLabel(option, label), search))
+            .sort((a, b) => {
+              if (typeof this.filteringSortFunc === 'function') {
+                return this.filteringSortFunc(a, b)
+              }
+              return customLabel(a, label).length - customLabel(b, label).length
+            })
+          : options
+      },
+      /**
+       *
+       * @param {String} search
+       * @param {String} label
+       * @param {String} values
+       * @param {String} groupLabel
+       * @param {function} customLabel
+       * @returns {function(*): *}
+       */
+      filterGroups (search, label, values, groupLabel, customLabel) {
+        return (groups) => groups.map((group) => {
+          /* istanbul ignore else */
+          if (!group[values]) {
+            console.warn('Options passed to vue-multiselect do not contain groups, despite the config.');
+            return []
+          }
+          const groupOptions = this.filterOptions(group[values], search, label, customLabel);
+
+          return groupOptions.length
+            ? {
+                [groupLabel]: group[groupLabel], [values]: groupOptions
+              }
+            : []
+        })
+      }
+    }
+  };
+
+  var pointerMixin = {
+    data () {
+      return {
+        pointer: 0,
+        pointerDirty: false
+      }
+    },
+    props: {
+      /**
+       * Enable/disable highlighting of the pointed value.
+       * @type {Boolean}
+       * @default true
+       */
+      showPointer: {
+        type: Boolean,
+        default: true
+      },
+      optionHeight: {
+        type: Number,
+        default: 40
+      }
+    },
+    computed: {
+      pointerPosition () {
+        return this.pointer * this.optionHeight
+      },
+      visibleElements () {
+        return this.optimizedHeight / this.optionHeight
+      }
+    },
+    watch: {
+      filteredOptions () {
+        this.pointerAdjust();
+      },
+      isOpen () {
+        this.pointerDirty = false;
+      },
+      pointer () {
+        this.$refs.search && this.$refs.search.setAttribute('aria-activedescendant', this.id + '-' + this.pointer.toString());
+      }
+    },
+    methods: {
+      optionHighlight (index, option) {
+        return {
+          'multiselect__option--highlight': index === this.pointer && this.showPointer,
+          'multiselect__option--selected': this.isSelected(option)
+        }
+      },
+      groupHighlight (index, selectedGroup) {
+        if (!this.groupSelect) {
+          return [
+            'multiselect__option--disabled',
+            { 'multiselect__option--group': selectedGroup.$isLabel }
+          ]
+        }
+
+        const group = this.options.find((option) => {
+          return option[this.groupLabel] === selectedGroup.$groupLabel
+        });
+
+        return group && !this.wholeGroupDisabled(group)
+          ? [
+              'multiselect__option--group',
+              { 'multiselect__option--highlight': index === this.pointer && this.showPointer },
+              { 'multiselect__option--group-selected': this.wholeGroupSelected(group) }
+            ]
+          : 'multiselect__option--disabled'
+      },
+      addPointerElement ({ key } = 'Enter') {
+        /* istanbul ignore else */
+        if (this.filteredOptions.length > 0) {
+          this.select(this.filteredOptions[this.pointer], key);
+        }
+        this.pointerReset();
+      },
+      pointerForward () {
+        /* istanbul ignore else */
+        if (this.pointer < this.filteredOptions.length - 1) {
+          this.pointer++;
+          /* istanbul ignore next */
+          if (this.$refs.list.scrollTop <= this.pointerPosition - (this.visibleElements - 1) * this.optionHeight) {
+            this.$refs.list.scrollTop = this.pointerPosition - (this.visibleElements - 1) * this.optionHeight;
+          }
+          /* istanbul ignore else */
+          if (
+            this.filteredOptions[this.pointer] &&
+            this.filteredOptions[this.pointer].$isLabel &&
+            !this.groupSelect
+          ) this.pointerForward();
+        }
+        this.pointerDirty = true;
+      },
+      pointerBackward () {
+        if (this.pointer > 0) {
+          this.pointer--;
+          /* istanbul ignore else */
+          if (this.$refs.list.scrollTop >= this.pointerPosition) {
+            this.$refs.list.scrollTop = this.pointerPosition;
+          }
+          /* istanbul ignore else */
+          if (
+            this.filteredOptions[this.pointer] &&
+            this.filteredOptions[this.pointer].$isLabel &&
+            !this.groupSelect
+          ) this.pointerBackward();
+        } else {
+          /* istanbul ignore else */
+          if (
+            this.filteredOptions[this.pointer] &&
+            this.filteredOptions[0].$isLabel &&
+            !this.groupSelect
+          ) this.pointerForward();
+        }
+        this.pointerDirty = true;
+      },
+      pointerReset () {
+        /* istanbul ignore else */
+        if (!this.closeOnSelect) return
+        this.pointer = 0;
+        /* istanbul ignore else */
+        if (this.$refs.list) {
+          this.$refs.list.scrollTop = 0;
+        }
+      },
+      pointerAdjust () {
+        /* istanbul ignore else */
+        if (this.pointer >= this.filteredOptions.length - 1) {
+          this.pointer = this.filteredOptions.length
+            ? this.filteredOptions.length - 1
+            : 0;
+        }
+
+        if (this.filteredOptions.length > 0 &&
+          this.filteredOptions[this.pointer].$isLabel &&
+          !this.groupSelect
+        ) {
+          this.pointerForward();
+        }
+      },
+      pointerSet (index) {
+        this.pointer = index;
+        this.pointerDirty = true;
+      }
+    }
+  };
+
+  var script = {
+    name: 'vue-multiselect',
+    mixins: [multiselectMixin, pointerMixin],
+    compatConfig: {
+      MODE: 3,
+      ATTR_ENUMERATED_COERCION: false
+    },
+    props: {
+      /**
+         * name attribute to match optional label element
+         * @default ''
+         * @type {String}
+         */
+      name: {
+        type: String,
+        default: ''
+      },
+      /**
+         * Presets the selected options value.
+         * @type {Object||Array||String||Integer}
+         */
+      modelValue: {
+        type: null,
+        default () {
+          return []
+        }
+      },
+      /**
+         * String to show when pointing to an option
+         * @default 'Press enter to select'
+         * @type {String}
+         */
+      selectLabel: {
+        type: String,
+        default: 'Press enter to select'
+      },
+      /**
+         * String to show when pointing to an option
+         * @default 'Press enter to select'
+         * @type {String}
+         */
+      selectGroupLabel: {
+        type: String,
+        default: 'Press enter to select group'
+      },
+      /**
+         * String to show next to selected option
+         * @default 'Selected'
+         * @type {String}
+         */
+      selectedLabel: {
+        type: String,
+        default: 'Selected'
+      },
+      /**
+         * String to show when pointing to an already selected option
+         * @default 'Press enter to remove'
+         * @type {String}
+         */
+      deselectLabel: {
+        type: String,
+        default: 'Press enter to remove'
+      },
+      /**
+         * String to show when pointing to an already selected option
+         * @default 'Press enter to remove'
+         * @type {String}
+         */
+      deselectGroupLabel: {
+        type: String,
+        default: 'Press enter to deselect group'
+      },
+      /**
+         * Decide whether to show pointer labels
+         * @default true
+         * @type {Boolean}
+         */
+      showLabels: {
+        type: Boolean,
+        default: true
+      },
+      /**
+         * Limit the display of selected options. The rest will be hidden within the limitText string.
+         * @default 99999
+         * @type {Integer}
+         */
+      limit: {
+        type: Number,
+        default: 99999
+      },
+      /**
+         * Sets maxHeight style value of the dropdown
+         * @default 300
+         * @type {Integer}
+         */
+      maxHeight: {
+        type: Number,
+        default: 300
+      },
+      /**
+         * Function that process the message shown when selected
+         * elements pass the defined limit.
+         * @default 'and * more'
+         * @param {Int} count Number of elements more than limit
+         * @type {Function}
+         */
+      limitText: {
+        type: Function,
+        default: (count) => `and ${count} more`
+      },
+      /**
+         * Set true to trigger the loading spinner.
+         * @default False
+         * @type {Boolean}
+         */
+      loading: {
+        type: Boolean,
+        default: false
+      },
+      /**
+         * Disables the multiselect if true.
+         * @default false
+         * @type {Boolean}
+         */
+      disabled: {
+        type: Boolean,
+        default: false
+      },
+      /**
+       * Enables search input's spellcheck if true.
+       * @default false
+       * @type {Boolean}
+       */
+      spellcheck: {
+        type: Boolean,
+        default: false
+      },
+      /**
+         * Fixed opening direction
+         * @default ''
+         * @type {String}
+         */
+      openDirection: {
+        type: String,
+        default: ''
+      },
+      /**
+         * Shows slot with message about empty options
+         * @default true
+         * @type {Boolean}
+         */
+      showNoOptions: {
+        type: Boolean,
+        default: true
+      },
+      showNoResults: {
+        type: Boolean,
+        default: true
+      },
+      tabindex: {
+        type: Number,
+        default: 0
+      },
+      /**
+       * Adds Required attribute to the input element when there is no value selected
+       * @default false
+       * @type {Boolean}
+       */
+      required: {
+        type: Boolean,
+        default: false
+      }
+    },
+    computed: {
+      hasOptionGroup () {
+        return this.groupValues && this.groupLabel && this.groupSelect
+      },
+      isSingleLabelVisible () {
+        return (
+          (this.singleValue || this.singleValue === 0) &&
+            (!this.isOpen || !this.searchable) &&
+            !this.visibleValues.length
+        )
+      },
+      isPlaceholderVisible () {
+        return !this.internalValue.length && (!this.searchable || !this.isOpen)
+      },
+      visibleValues () {
+        return this.multiple ? this.internalValue.slice(0, this.limit) : []
+      },
+      singleValue () {
+        return this.internalValue[0]
+      },
+      deselectLabelText () {
+        return this.showLabels ? this.deselectLabel : ''
+      },
+      deselectGroupLabelText () {
+        return this.showLabels ? this.deselectGroupLabel : ''
+      },
+      selectLabelText () {
+        return this.showLabels ? this.selectLabel : ''
+      },
+      selectGroupLabelText () {
+        return this.showLabels ? this.selectGroupLabel : ''
+      },
+      selectedLabelText () {
+        return this.showLabels ? this.selectedLabel : ''
+      },
+      inputStyle () {
+        if (
+          this.searchable ||
+            (this.multiple && this.modelValue && this.modelValue.length)
+        ) {
+          // Hide input by setting the width to 0 allowing it to receive focus
+          return this.isOpen
+            ? { width: '100%' }
+            : { width: '0', position: 'absolute', padding: '0' }
+        }
+        return ''
+      },
+      contentStyle () {
+        return this.options.length
+          ? { display: 'inline-block' }
+          : { display: 'block' }
+      },
+      isAbove () {
+        if (this.openDirection === 'above' || this.openDirection === 'top') {
+          return true
+        } else if (
+          this.openDirection === 'below' ||
+            this.openDirection === 'bottom'
+        ) {
+          return false
+        } else {
+          return this.preferredOpenDirection === 'above'
+        }
+      },
+      showSearchInput () {
+        return (
+          this.searchable &&
+            (this.hasSingleSelectedSlot &&
+              (this.visibleSingleValue || this.visibleSingleValue === 0)
+              ? this.isOpen
+              : true)
+        )
+      },
+      isRequired () {
+        if (this.required === false) {
+          return false
+        }
+        // if we have a value, any value, then this isn't required
+        return this.internalValue.length <= 0
+      }
+    }
+  };
+
+  const _hoisted_1 = ["tabindex", "aria-expanded", "aria-owns", "aria-activedescendant"];
+  const _hoisted_2 = {
+    ref: "tags",
+    class: "multiselect__tags"
+  };
+  const _hoisted_3 = { class: "multiselect__tags-wrap" };
+  const _hoisted_4 = ["textContent"];
+  const _hoisted_5 = ["onKeypress", "onMousedown"];
+  const _hoisted_6 = ["textContent"];
+  const _hoisted_7 = { class: "multiselect__spinner" };
+  const _hoisted_8 = ["name", "id", "spellcheck", "placeholder", "required", "value", "disabled", "tabindex", "aria-label", "aria-controls"];
+  const _hoisted_9 = ["id", "aria-multiselectable"];
+  const _hoisted_10 = { key: 0 };
+  const _hoisted_11 = { class: "multiselect__option" };
+  const _hoisted_12 = ["aria-selected", "id", "role"];
+  const _hoisted_13 = ["onClick", "onMouseenter", "data-select", "data-selected", "data-deselect"];
+  const _hoisted_14 = ["data-select", "data-deselect", "onMouseenter", "onMousedown"];
+  const _hoisted_15 = { class: "multiselect__option" };
+  const _hoisted_16 = { class: "multiselect__option" };
+
+  function render(_ctx, _cache, $props, $setup, $data, $options) {
+    return (vue.openBlock(), vue.createElementBlock("div", {
+      tabindex: _ctx.searchable ? -1 : $props.tabindex,
+      class: vue.normalizeClass([{ 'multiselect--active': _ctx.isOpen, 'multiselect--disabled': $props.disabled, 'multiselect--above': $options.isAbove, 'multiselect--has-options-group': $options.hasOptionGroup }, "multiselect"]),
+      onFocus: _cache[14] || (_cache[14] = $event => (_ctx.activate())),
+      onBlur: _cache[15] || (_cache[15] = $event => (_ctx.searchable ? false : _ctx.deactivate())),
+      onKeydown: [
+        _cache[16] || (_cache[16] = vue.withKeys(vue.withModifiers($event => (_ctx.pointerForward()), ["self","prevent"]), ["down"])),
+        _cache[17] || (_cache[17] = vue.withKeys(vue.withModifiers($event => (_ctx.pointerBackward()), ["self","prevent"]), ["up"]))
+      ],
+      onKeypress: _cache[18] || (_cache[18] = vue.withKeys(vue.withModifiers($event => (_ctx.addPointerElement($event)), ["stop","self"]), ["enter","tab"])),
+      onKeyup: _cache[19] || (_cache[19] = vue.withKeys($event => (_ctx.deactivate()), ["esc"])),
+      role: "combobox",
+      "aria-expanded": _ctx.isOpen,
+      "aria-owns": 'listbox-'+_ctx.id,
+      "aria-activedescendant": _ctx.isOpen && _ctx.pointer !== null ? _ctx.id + '-' + _ctx.pointer : null
+    }, [
+      vue.renderSlot(_ctx.$slots, "caret", { toggle: _ctx.toggle }, () => [
+        vue.createElementVNode("div", {
+          onMousedown: _cache[0] || (_cache[0] = vue.withModifiers($event => (_ctx.toggle()), ["prevent","stop"])),
+          class: "multiselect__select"
+        }, null, 32 /* NEED_HYDRATION */)
+      ]),
+      vue.renderSlot(_ctx.$slots, "clear", { search: _ctx.search }),
+      vue.createElementVNode("div", _hoisted_2, [
+        vue.renderSlot(_ctx.$slots, "selection", {
+          search: _ctx.search,
+          remove: _ctx.removeElement,
+          values: $options.visibleValues,
+          isOpen: _ctx.isOpen
+        }, () => [
+          vue.withDirectives(vue.createElementVNode("div", _hoisted_3, [
+            (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($options.visibleValues, (option, index) => {
+              return vue.renderSlot(_ctx.$slots, "tag", {
+                option: option,
+                search: _ctx.search,
+                remove: _ctx.removeElement
+              }, () => [
+                (vue.openBlock(), vue.createElementBlock("span", {
+                  class: "multiselect__tag",
+                  key: index,
+                  onMousedown: _cache[1] || (_cache[1] = vue.withModifiers(() => {}, ["prevent"]))
+                }, [
+                  vue.createElementVNode("span", {
+                    textContent: vue.toDisplayString(_ctx.getOptionLabel(option))
+                  }, null, 8 /* PROPS */, _hoisted_4),
+                  vue.createElementVNode("i", {
+                    tabindex: "1",
+                    onKeypress: vue.withKeys(vue.withModifiers($event => (_ctx.removeElement(option)), ["prevent"]), ["enter"]),
+                    onMousedown: vue.withModifiers($event => (_ctx.removeElement(option)), ["prevent"]),
+                    class: "multiselect__tag-icon"
+                  }, null, 40 /* PROPS, NEED_HYDRATION */, _hoisted_5)
+                ], 32 /* NEED_HYDRATION */))
+              ])
+            }), 256 /* UNKEYED_FRAGMENT */))
+          ], 512 /* NEED_PATCH */), [
+            [vue.vShow, $options.visibleValues.length > 0]
+          ]),
+          (_ctx.internalValue && _ctx.internalValue.length > $props.limit)
+            ? vue.renderSlot(_ctx.$slots, "limit", { key: 0 }, () => [
+                vue.createElementVNode("strong", {
+                  class: "multiselect__strong",
+                  textContent: vue.toDisplayString($props.limitText(_ctx.internalValue.length - $props.limit))
+                }, null, 8 /* PROPS */, _hoisted_6)
+              ])
+            : vue.createCommentVNode("v-if", true)
+        ]),
+        vue.createVNode(vue.Transition, { name: "multiselect__loading" }, {
+          default: vue.withCtx(() => [
+            vue.renderSlot(_ctx.$slots, "loading", {}, () => [
+              vue.withDirectives(vue.createElementVNode("div", _hoisted_7, null, 512 /* NEED_PATCH */), [
+                [vue.vShow, $props.loading]
+              ])
+            ])
+          ]),
+          _: 3 /* FORWARDED */
+        }),
+        (_ctx.searchable)
+          ? (vue.openBlock(), vue.createElementBlock("input", {
+              key: 0,
+              ref: "search",
+              name: $props.name,
+              id: _ctx.id,
+              type: "text",
+              autocomplete: "off",
+              spellcheck: $props.spellcheck,
+              placeholder: _ctx.placeholder,
+              required: $options.isRequired,
+              style: vue.normalizeStyle($options.inputStyle),
+              value: _ctx.search,
+              disabled: $props.disabled,
+              tabindex: $props.tabindex,
+              "aria-label": $props.name + '-searchbox',
+              onInput: _cache[2] || (_cache[2] = $event => (_ctx.updateSearch($event.target.value))),
+              onFocus: _cache[3] || (_cache[3] = vue.withModifiers($event => (_ctx.activate()), ["prevent"])),
+              onBlur: _cache[4] || (_cache[4] = vue.withModifiers($event => (_ctx.deactivate()), ["prevent"])),
+              onKeyup: _cache[5] || (_cache[5] = vue.withKeys($event => (_ctx.deactivate()), ["esc"])),
+              onKeydown: [
+                _cache[6] || (_cache[6] = vue.withKeys(vue.withModifiers($event => (_ctx.pointerForward()), ["prevent"]), ["down"])),
+                _cache[7] || (_cache[7] = vue.withKeys(vue.withModifiers($event => (_ctx.pointerBackward()), ["prevent"]), ["up"])),
+                _cache[9] || (_cache[9] = vue.withKeys(vue.withModifiers($event => (_ctx.removeLastElement()), ["stop"]), ["delete"]))
+              ],
+              onKeypress: _cache[8] || (_cache[8] = vue.withKeys(vue.withModifiers($event => (_ctx.addPointerElement($event)), ["prevent","stop","self"]), ["enter"])),
+              class: "multiselect__input",
+              "aria-controls": 'listbox-'+_ctx.id
+            }, null, 44 /* STYLE, PROPS, NEED_HYDRATION */, _hoisted_8))
+          : vue.createCommentVNode("v-if", true),
+        ($options.isSingleLabelVisible)
+          ? (vue.openBlock(), vue.createElementBlock("span", {
+              key: 1,
+              class: "multiselect__single",
+              onMousedown: _cache[10] || (_cache[10] = vue.withModifiers((...args) => (_ctx.toggle && _ctx.toggle(...args)), ["prevent"]))
+            }, [
+              vue.renderSlot(_ctx.$slots, "singleLabel", { option: $options.singleValue }, () => [
+                vue.createTextVNode(vue.toDisplayString(_ctx.currentOptionLabel), 1 /* TEXT */)
+              ])
+            ], 32 /* NEED_HYDRATION */))
+          : vue.createCommentVNode("v-if", true),
+        ($options.isPlaceholderVisible)
+          ? (vue.openBlock(), vue.createElementBlock("span", {
+              key: 2,
+              class: "multiselect__placeholder",
+              onMousedown: _cache[11] || (_cache[11] = vue.withModifiers((...args) => (_ctx.toggle && _ctx.toggle(...args)), ["prevent"]))
+            }, [
+              vue.renderSlot(_ctx.$slots, "placeholder", {}, () => [
+                vue.createTextVNode(vue.toDisplayString(_ctx.placeholder), 1 /* TEXT */)
+              ])
+            ], 32 /* NEED_HYDRATION */))
+          : vue.createCommentVNode("v-if", true)
+      ], 512 /* NEED_PATCH */),
+      vue.createVNode(vue.Transition, {
+        name: "multiselect",
+        persisted: ""
+      }, {
+        default: vue.withCtx(() => [
+          vue.withDirectives(vue.createElementVNode("div", {
+            class: "multiselect__content-wrapper",
+            onFocus: _cache[12] || (_cache[12] = (...args) => (_ctx.activate && _ctx.activate(...args))),
+            tabindex: "-1",
+            onMousedown: _cache[13] || (_cache[13] = vue.withModifiers(() => {}, ["prevent"])),
+            style: vue.normalizeStyle({ maxHeight: _ctx.optimizedHeight + 'px' }),
+            ref: "list"
+          }, [
+            vue.createElementVNode("ul", {
+              class: "multiselect__content",
+              style: vue.normalizeStyle($options.contentStyle),
+              role: "listbox",
+              id: 'listbox-'+_ctx.id,
+              "aria-multiselectable": _ctx.multiple
+            }, [
+              vue.renderSlot(_ctx.$slots, "beforeList"),
+              (_ctx.multiple && _ctx.max === _ctx.internalValue.length)
+                ? (vue.openBlock(), vue.createElementBlock("li", _hoisted_10, [
+                    vue.createElementVNode("span", _hoisted_11, [
+                      vue.renderSlot(_ctx.$slots, "maxElements", {}, () => [
+                        vue.createTextVNode("Maximum of " + vue.toDisplayString(_ctx.max) + " options selected. First remove a selected option to select another.", 1 /* TEXT */)
+                      ])
+                    ])
+                  ]))
+                : vue.createCommentVNode("v-if", true),
+              (!_ctx.max || _ctx.internalValue.length < _ctx.max)
+                ? (vue.openBlock(true), vue.createElementBlock(vue.Fragment, { key: 1 }, vue.renderList(_ctx.filteredOptions, (option, index) => {
+                    return (vue.openBlock(), vue.createElementBlock("li", {
+                      class: "multiselect__element",
+                      key: index,
+                      "aria-selected": _ctx.isSelected(option),
+                      id: _ctx.id + '-' + index,
+                      role: !(option && (option.$isLabel || option.$isDisabled)) ? 'option' : null
+                    }, [
+                      (!(option && (option.$isLabel || option.$isDisabled)))
+                        ? (vue.openBlock(), vue.createElementBlock("span", {
+                            key: 0,
+                            class: vue.normalizeClass([_ctx.optionHighlight(index, option), "multiselect__option"]),
+                            onClick: vue.withModifiers($event => (_ctx.select(option)), ["stop"]),
+                            onMouseenter: vue.withModifiers($event => (_ctx.pointerSet(index)), ["self"]),
+                            "data-select": option && option.isTag ? _ctx.tagPlaceholder : $options.selectLabelText,
+                            "data-selected": $options.selectedLabelText,
+                            "data-deselect": $options.deselectLabelText
+                          }, [
+                            vue.renderSlot(_ctx.$slots, "option", {
+                              option: option,
+                              search: _ctx.search,
+                              index: index
+                            }, () => [
+                              vue.createElementVNode("span", null, vue.toDisplayString(_ctx.getOptionLabel(option)), 1 /* TEXT */)
+                            ])
+                          ], 42 /* CLASS, PROPS, NEED_HYDRATION */, _hoisted_13))
+                        : vue.createCommentVNode("v-if", true),
+                      (option && (option.$isLabel || option.$isDisabled))
+                        ? (vue.openBlock(), vue.createElementBlock("span", {
+                            key: 1,
+                            "data-select": _ctx.groupSelect && $options.selectGroupLabelText,
+                            "data-deselect": _ctx.groupSelect && $options.deselectGroupLabelText,
+                            class: vue.normalizeClass([_ctx.groupHighlight(index, option), "multiselect__option"]),
+                            onMouseenter: vue.withModifiers($event => (_ctx.groupSelect && _ctx.pointerSet(index)), ["self"]),
+                            onMousedown: vue.withModifiers($event => (_ctx.selectGroup(option)), ["prevent"])
+                          }, [
+                            vue.renderSlot(_ctx.$slots, "option", {
+                              option: option,
+                              search: _ctx.search,
+                              index: index
+                            }, () => [
+                              vue.createElementVNode("span", null, vue.toDisplayString(_ctx.getOptionLabel(option)), 1 /* TEXT */)
+                            ])
+                          ], 42 /* CLASS, PROPS, NEED_HYDRATION */, _hoisted_14))
+                        : vue.createCommentVNode("v-if", true)
+                    ], 8 /* PROPS */, _hoisted_12))
+                  }), 128 /* KEYED_FRAGMENT */))
+                : vue.createCommentVNode("v-if", true),
+              vue.withDirectives(vue.createElementVNode("li", null, [
+                vue.createElementVNode("span", _hoisted_15, [
+                  vue.renderSlot(_ctx.$slots, "noResult", { search: _ctx.search }, () => [
+                    _cache[20] || (_cache[20] = vue.createTextVNode("No elements found. Consider changing the search query."))
+                  ])
+                ])
+              ], 512 /* NEED_PATCH */), [
+                [vue.vShow, $props.showNoResults && (_ctx.filteredOptions.length === 0 && _ctx.search && !$props.loading)]
+              ]),
+              vue.withDirectives(vue.createElementVNode("li", null, [
+                vue.createElementVNode("span", _hoisted_16, [
+                  vue.renderSlot(_ctx.$slots, "noOptions", {}, () => [
+                    _cache[21] || (_cache[21] = vue.createTextVNode("List is empty."))
+                  ])
+                ])
+              ], 512 /* NEED_PATCH */), [
+                [vue.vShow, $props.showNoOptions && ((_ctx.options.length === 0 || ($options.hasOptionGroup === true && _ctx.filteredOptions.length === 0)) && !_ctx.search && !$props.loading)]
+              ]),
+              vue.renderSlot(_ctx.$slots, "afterList")
+            ], 12 /* STYLE, PROPS */, _hoisted_9)
+          ], 36 /* STYLE, NEED_HYDRATION */), [
+            [vue.vShow, _ctx.isOpen]
+          ])
+        ]),
+        _: 3 /* FORWARDED */
+      })
+    ], 42 /* CLASS, PROPS, NEED_HYDRATION */, _hoisted_1))
+  }
+
+  script.render = render;
+
+  exports.Multiselect = script;
+  exports["default"] = script;
+  exports.multiselectMixin = multiselectMixin;
+  exports.pointerMixin = pointerMixin;
+
+  Object.defineProperty(exports, '__esModule', { value: true });
+
+  return exports;
+
+})({}, Vue);
