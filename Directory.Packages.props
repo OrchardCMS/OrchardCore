@@ -1,10 +1,8 @@
 <Project>
-
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageVersion Include="AngleSharp" Version="1.2.0" />
     <PackageVersion Include="AWSSDK.S3" Version="3.7.415" />
@@ -46,6 +44,7 @@
     <PackageVersion Include="MiniProfiler.AspNetCore.Mvc" Version="4.5.4" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="ncrontab" Version="3.3.3" />
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="NJsonSchema" Version="11.1.0" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="5.3.15" />
     <PackageVersion Include="NodaTime" Version="3.2.1" />
@@ -75,16 +74,13 @@
     <PackageVersion Include="YesSql.Filters.Query" Version="5.2.0" />
     <PackageVersion Include="ZString" Version="2.6.0" />
   </ItemGroup>
-
   <ItemGroup>
     <GlobalPackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <GlobalPackageReference Include="Microsoft.CodeAnalysis.CSharp.CodeStyle" Version="4.12.0" />
   </ItemGroup>
-
   <!-- These versions are used for tansitive dependency forced upgrades only. E.g. when a package references a vulnerable version. -->
   <!-- To list all vulnerable direct references run 'dotnet list package -vulnerable' (use double dash, just XML comments can't contain it) -->
   <!-- To list all vulnerable transitive references run 'dotnet list package -vulnerable -include-transitive' (use double dash, just XML comments can't contain it) -->
-
   <!-- The dependency graphs are generated using 'dotnet nuget why <.sln> <package id>' -->
   <ItemGroup>
     <!--
@@ -114,21 +110,17 @@
     <PackageVersion Include="System.Runtime.Caching" Version="8.0.1" />
     <PackageVersion Include="System.Private.Uri" Version="4.3.2" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'" >
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <!-- Several transitive dependencies on 8.0.4 and lower which is vulnerable -->
     <PackageVersion Include="System.Text.Json" Version="8.0.5" />
     <!-- Several transitive dependencies on 8.0.0 which has known vulnerabilities -->
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'" >
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="9.0.2" />
   </ItemGroup>
-
   <!-- These versions are used for the NuGet packages that are dependent on the current TFM -->
   <!-- There may be no TFM in an evaluation phase so we can't use a conditional 'Property' -->
-  
   <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="9.0.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.2" />
@@ -141,14 +133,11 @@
     <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="9.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="9.0.2" />
-
     <!-- dotnet/extensions repository -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.1.0" />
-    
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
   </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Facebook" Version="8.0.13" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.13" />
@@ -161,12 +150,9 @@
     <PackageVersion Include="Microsoft.AspNetCore.Owin" Version="8.0.13" />
     <PackageVersion Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.13" />
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="8.0.13" />
-
     <!-- dotnet/extensions repository -->
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="8.10.0" />
-
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="8.0.3" />
   </ItemGroup>
-
 </Project>

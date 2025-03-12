@@ -1,0 +1,113 @@
+@using OrchardCore.Forms.ViewModels
+@model FormInputElementVisibilityViewModel
+
+@foreach (var group in Model.Groups)
+{
+    @foreach (var rule in group.Rules)
+    {
+        <div id="@rule.Field" class="form-group visibility-target d-none"
+             data-field="@rule.Field"
+             data-operator="@rule.Operator"
+             data-value="@rule.Value"
+             data-action="@Model.Action.ToString().ToLower()">
+            <label>@rule.Field</label>
+            <script>
+                console.log("Field Action:", "@Model.Action.ToString().ToLower()");
+            </script>
+        </div>
+    }
+}
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+     let hasUserInteracted = false; // Prevents rules from running before checkbox interaction
+
+      document.querySelectorAll('.visibility-target').forEach(targetElement => {
+        let action = targetElement.dataset.action?.toLowerCase();
+        let widgetWrapper = targetElement.closest('.widget');
+        // Hide if action is "show" or "hide", but leave it alone if "none"
+        const shouldHide = action === "show" || action === "hide";
+        widgetWrapper.classList.toggle("d-none", shouldHide);
+      });
+
+        function applyVisibilityRules() {
+            // 🔹 Step 1: Loop through each visibility rule in the form
+            document.querySelectorAll('.visibility-target').forEach(targetElement => {
+                const fieldId = targetElement.dataset.field;
+                const operator = targetElement.dataset.operator;
+                const actualField = document.getElementById(fieldId) || document.querySelector(`[name="${fieldId}"]`);
+                let ruleValue = targetElement.dataset.value?.trim().toLowerCase() || "";
+                let action = targetElement.dataset.action?.toLowerCase();
+                let fieldValue = "";
+
+                if (actualField.type === "checkbox") {
+                    fieldValue = actualField.checked ? "true" : "false";
+                } else {
+                    fieldValue = actualField.value?.trim().toLowerCase() || "";
+                }
+
+                let rulePassed = false;
+                switch (operator) {
+                    case "Is":
+                        rulePassed = fieldValue === ruleValue;
+                        break;
+                    case "IsNot":
+                        rulePassed = fieldValue !== ruleValue;
+                        break;
+                    case "Empty":
+                        rulePassed = fieldValue === "";
+                        break;
+                    case "NotEmpty":
+                        rulePassed = fieldValue !== "";
+                        break;
+                    case "Contains":
+                        rulePassed = fieldValue.includes(ruleValue);
+                        break;
+                    case "DoesNotContain":
+                        rulePassed = !fieldValue.includes(ruleValue);
+                        break;
+                    case "GreaterThan":
+                        rulePassed = parseFloat(fieldValue) > parseFloat(ruleValue);
+                        break;
+                    case "LessThan":
+                        rulePassed = parseFloat(fieldValue) < parseFloat(ruleValue);
+                        break;
+                    default:
+                        console.warn(`⚠️ Unknown operator: ${operator}`);
+                        break;
+                }
+
+
+                if (rulePassed && action === "hide") {
+                    console.log(`🔄 Flipping Action: ${fieldId} (Hide → Show)`);
+                    action = "show";
+                }
+
+                // this is the issue
+                const fieldWrapper = targetElement.closest('.form-group');
+            //  const fieldWrapper = actualField.closest('.widget');
+            // issue is here
+                if (fieldWrapper) {
+                    if (action === "show" && rulePassed) {
+                        console.log(`🎯 Showing: ${fieldId}`);
+                        fieldWrapper.classList.remove("d-none");
+                    } else {
+                        console.log(`🚫 Hiding: ${fieldId}`);
+                        fieldWrapper.classList.add("d-none");
+                    }
+                }
+            });
+        }
+
+      //  applyVisibilityRules();
+
+         document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener("change", () => {
+                hasUserInteracted = true; // allow visibility rules
+                console.log(`🔄 Checkbox Clicked: ${checkbox.id} - Checked: ${checkbox.checked}`);
+                applyVisibilityRules();
+            });
+        })
+    });
+</script>

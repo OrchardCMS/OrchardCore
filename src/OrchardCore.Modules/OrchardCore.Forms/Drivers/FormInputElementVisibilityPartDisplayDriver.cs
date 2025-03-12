@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -10,10 +11,15 @@ namespace OrchardCore.Forms.Drivers;
 
 internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartDisplayDriver<FormInputElementVisibilityPart>
 {
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
     internal readonly IStringLocalizer S;
 
-    public FormInputElementVisibilityPartDisplayDriver(IStringLocalizer<FormInputElementVisibilityPartDisplayDriver> stringLocalizer)
+    public FormInputElementVisibilityPartDisplayDriver(
+        IHttpContextAccessor httpContextAccessor,
+        IStringLocalizer<FormInputElementVisibilityPartDisplayDriver> stringLocalizer)
     {
+        _httpContextAccessor = httpContextAccessor;
         S = stringLocalizer;
     }
 
@@ -60,7 +66,6 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
                             Field = rule.Field,
                             Operator = rule.Operator,
                             Value = rule.Values?.FirstOrDefault() ?? string.Empty,
-                            TargetInputId = rule.TargetInputId,
                             Fields = new List<FormVisibilityFieldViewModel>(),
                             Operators = new List<SelectListItem>
                             {
@@ -81,12 +86,15 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
             }).ToList();
         }).Location("Parts:0#Visibility Settings;5");
     }
+
     public override async Task<IDisplayResult> UpdateAsync(FormInputElementVisibilityPart part, UpdatePartEditorContext context)
     {
         var model = new FormInputElementVisibilityViewModel();
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
-        Console.WriteLine("Updated model: Action = " + model.Action);
+
+        var request = _httpContextAccessor.HttpContext.Request;
+
         part.Action = model.Action;
 
         part.Groups = (model.Groups ?? new List<FormVisibilityRuleGroupViewModel>())
@@ -96,13 +104,11 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
                 {
                     Rules = x.Rules.Select(y =>
                     {
-                        Console.WriteLine($"Updating rule: Field = {y.Field}, Value = {y.Value}");
                         return new FormVisibilityRule
                         {
                             Field = y.Field,
                             Operator = y.Operator,
                             Values = GetValues(y.Value),
-                            TargetInputId = y.TargetInputId
                         };
                     }).ToList()
                 };

@@ -3,6 +3,12 @@
 
 @model FormInputElementVisibilityViewModel
 
+@{
+    // Each instance of the form gets its own unique container id.
+    var idPrefix = Html.IdForModel();
+    // var idPrefix = Html.IdForModel().Replace("_", ".");
+}
+
 <div class="@Orchard.GetWrapperClasses()">
     <label asp-for="Action" class="@Orchard.GetLabelClasses()">@T["Action"]</label>
     <div class="@Orchard.GetEndClasses()">
@@ -11,128 +17,46 @@
     </div>
 </div>
 
-<ul class="list-group mb-3">
-    <li class="list-group-item">
-        <div class="d-flex justify-content-end">
-            <div class="btn btn-sm btn-primary">
-                <i class="fa-solid fa-circle-plus"></i> @T["New Group"]
-            </div>
-        </div>
-    </li>
-    @for (var i = 0; i < Model.Groups.Count; i++)
-    {
-        var group = Model.Groups[i];
+<div class="input-visibility-settings">
+    <div id="@(idPrefix)_groupsContainerId" data-groups="@Html.Raw(Json.Serialize(Model.Groups))"></div>
+</div>
 
-        <li class="list-group-item">
-            <div class="d-flex justify-content-end mb-2">
-                <div class="btn btn-sm btn-secondary">
-                    <i class="fa-solid fa-plus"></i> @T["New Rule"]
-                </div>
-            </div>
+<div id="operatorData" style="display:none;"
+     data-operators='@Html.Raw(Json.Serialize(Model.Groups.First().Rules.First().Operators))'>
+</div>
 
-            <ul class="list-group mb-3">
-                <li class="list-group-item">
-                    @Html.HiddenFor(m => m.Groups[i].IsRemoved)
-                    <div class="btn btn-sm btn-danger remove-group">
-                        <i class="fa-solid fa-trash"></i>
-                    </div>
-                </li>
-                @for (var x = 0; x < group.Rules.Count; x++)
-                {
-                    var rule = group.Rules[x];
-                    <li class="list-group-item">
-                        <div class="row">
-                            <div class="col">
-                                @{
-                                    var options = rule.Fields.Select(x => new SelectListItem { Text = x.Name, Value = x.Value });
-                                }
-                                <select asp-for="Groups[i].Rules[x].Field" asp-items="options" class="form-select" data-saved-value="@rule.Field"></select>
-                            </div>
+<script asp-name="form-visibility" asp-src="/OrchardCore.Forms/Scripts/form-visibility.min.js" src-debug="/OrchardCore.Forms/Scripts/form-visibility.js" at="Foot" depends-on="vuejs:2"></script>
 
-                            <div class="col">
-                                <select asp-for="Groups[i].Rules[x].Operator" asp-items="rule.Operators" class="form-select"></select>
-                            </div>
-
-                            <div class="col">
-                                <input asp-for="Groups[i].Rules[x].Value" class="form-control" />
-                            </div>
-
-                            <div class="col">
-                                <input asp-for="Groups[i].Rules[x].TargetInputId" type="hidden" />
-                            </div>
-
-                            <div class="col-auto">
-                                <input asp-for="Groups[i].Rules[x].IsRemoved" type="hidden" />
-                                <div class="btn btn-sm btn-danger remove-rule">
-                                    <i class="fa-solid fa-trash"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                }
-            </ul>
-        </li>
-    }
-</ul>
+@* <script at="Foot">
+    document.addEventListener('DOMContentLoaded', function () {
+        formVisibilityGroups.initialize({
+            appElementSelector: '[id$="_groupsContainerId"]',
+            prefix: '@Html.NameForModel()'
+        });
+        console.log('Vue initialization done with appElementSelector: [id$="_groupsContainerId"]');
+    });
+</script> *@
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-          populateFields(document);
-          const tabEl = document.querySelector('a[data-bs-toggle="tab"]')
-          if (tabEl) {
-              tabEl.addEventListener('shown.bs.tab', event => {
-                  populateFields(event.target);
-              })
-          }
+    document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(() => {
+            // const container = document.querySelector('[id$="_groupsContainerId"]');
+            const container = document.querySelector('#@(idPrefix)_groupsContainerId');
 
-          function populateFields(element) {
-              var fieldElements = element.querySelectorAll('select[name*="FormInputElementVisibilityPart.Groups"][name*="Rules"][name$="Field"]');
-              var inputs = getInputs();
 
-              fieldElements.forEach(fieldElement => {
-                  [...fieldElement.options].forEach(option => {
-                      if (option.value) {
-                          option.remove();
-                      }
-                  });
+            if (!container) {
+                console.error(`❌ Cannot find element with selector: #@(idPrefix)_groupsContainerId`);
 
-                  inputs.forEach(input => {
-                      let option = document.createElement('option');
-                      option.value = input.htmlId;
-                      option.textContent = input.htmlName;
-                      option.selected = (fieldElement.dataset.savedValue === input.htmlId);
-                      option.setAttribute('data-input-type', input.htmlInputType);
-                      fieldElement.appendChild(option);
-                  });
-              });
-          }
+                return;
+            }
 
-          function getInputs() {
-              const widgetElements = document.querySelectorAll('.widget-template');
-              const results = [];
-              widgetElements.forEach(widget => {
-                  const formElementInput = widget.querySelector('input[name$="FormElementPart.Id"]');
-                  const formElementNameInput = widget.querySelector('input[name$="FormInputElementPart.Name"]');
-                  const inputTypeSelect = widget.querySelector('select[name$="InputPart.Type"]');
+            formVisibilityGroups.initialize({
+                appElementSelector: '#@(idPrefix)_groupsContainerId',
+                prefix: '@Html.NameForModel()'
+            });
 
-                  if (formElementInput && inputTypeSelect) {
-                      const htmlId = formElementInput.value;
-                      const htmlName = formElementNameInput.value;
-                      const selectedOption = inputTypeSelect.options[inputTypeSelect.selectedIndex].value;
-
-                      if (!formElementInput.value || !selectedOption) {
-                          return;
-                      }
-
-                      results.push({
-                          htmlId: htmlId,
-                          htmlName: htmlName,
-                          htmlInputType: selectedOption
-                      });
-                  }
-              });
-
-              return results;
-          }
+            console.log('✅ Vue initialization done with appElementSelector:', '#@(idPrefix)_groupsContainerId');
+        }, 100);  // Add delay to ensure element exists
     });
 </script>
+@* appElementSelector: '[id$="_groupsContainerId"]', *@

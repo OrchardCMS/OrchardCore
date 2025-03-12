@@ -16,5 +16,11 @@
       "Assets/js/formElementLabelManager.js"
     ],
     "output": "wwwroot/Scripts/formElementLabelManager.js"
+  },
+  {
+    "inputs": [
+      "Assets/js/form-visibility.js"
+    ],
+    "output": "wwwroot/Scripts/form-visibility.js"
   }
 ]

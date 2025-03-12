@@ -2,9 +2,9 @@ namespace OrchardCore.Forms.ViewModels;
 
 public class FormVisibilityRuleGroupViewModel
 {
-    public bool IsRemoved { get; set; } // If true, this group will be ignored
+    public bool IsRemoved { get; set; }
 
-    public IList<FormVisibilityRuleViewModel> Rules { get; set; }
+    public List<FormVisibilityRuleViewModel> Rules { get; set; }
 }
 
 // This ViewModel represents a group of rules that act as an OR (||) condition.

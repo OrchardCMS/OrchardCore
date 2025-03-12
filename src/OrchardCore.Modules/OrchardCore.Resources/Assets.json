@@ -253,16 +253,9 @@
   {
     "copy": true,
     "inputs": [
-      "node_modules/vue/dist/vue.js"
+      "node_modules/vue/dist/vue.global.js"
     ],
-    "output": "wwwroot/Scripts/vue.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/vue/dist/vue.min.js"
-    ],
-    "output": "wwwroot/Scripts/vue.min.js"
+    "output": "wwwroot/scripts/vue.global.js"
   },
   {
     "copy": true,

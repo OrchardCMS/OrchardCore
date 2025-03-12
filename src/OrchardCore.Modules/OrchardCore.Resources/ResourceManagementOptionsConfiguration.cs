@@ -483,6 +483,13 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
             .SetVersion("2.6.14");
 
         manifest
+            .DefineScript("vuejs")
+            .SetUrl("~/OrchardCore.Resources/scripts/vue.global.min.js", "~/OrchardCore.Resources/scripts/vue.global.js")
+            .SetCdn("https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.prod.min.js", "https://cdn.jsdelivr.net/npm/vue@3.5.13/dist/vue.global.js")
+            .SetCdnIntegrity("sha384-ZvVvvjBwvU29cD0yQLwh8++Sa0uYooNo1jVSRV0aSSmDWm+hYxokwYXmmEzu4ZTS", "sha384-G++pO/TtP6SeNEBuO/CYuppmlcEhA0Rj9IcY5feVJXhyYraEA8CKVZV38iDXLTyJ")
+            .SetVersion("3.5.13");
+
+        manifest
             .DefineScript("vue-multiselect")
             .SetDependencies("vuejs:2")
             .SetUrl("~/OrchardCore.Resources/Scripts/vue-multiselect.min.js", "~/OrchardCore.Resources/Scripts/vue-multiselect.min.js")
@@ -542,16 +549,16 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
         switch (_resourceOptions.ResourceDebugMode)
         {
             case ResourceDebugMode.Enabled:
-                options.DebugMode = true;
-                break;
+            options.DebugMode = true;
+            break;
 
             case ResourceDebugMode.Disabled:
-                options.DebugMode = false;
-                break;
+            options.DebugMode = false;
+            break;
 
             case ResourceDebugMode.FromConfiguration:
-                options.DebugMode = !_env.IsProduction();
-                break;
+            options.DebugMode = !_env.IsProduction();
+            break;
         }
 
         options.UseCdn = _resourceOptions.UseCdn;

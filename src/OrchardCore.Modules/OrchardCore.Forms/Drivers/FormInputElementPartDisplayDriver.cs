@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
@@ -15,6 +16,32 @@ public sealed class FormInputElementPartDisplayDriver : ContentPartDisplayDriver
     public FormInputElementPartDisplayDriver(IStringLocalizer<FormInputElementPartDisplayDriver> stringLocalizer)
     {
         S = stringLocalizer;
+    }
+
+    public override IDisplayResult Display(FormInputElementPart part, BuildPartDisplayContext context)
+    {
+        var visibilityPart = part.ContentItem.As<FormInputElementVisibilityPart>();
+
+        return Initialize<FormInputElementVisibilityViewModel>("FormInputElementPart_Visibility", model =>
+        {
+            model.Action = visibilityPart.Action;
+
+            model.Groups = visibilityPart.Groups.Select(group =>
+                new FormVisibilityRuleGroupViewModel
+                {
+                    Rules = group.Rules?.Select(rule =>
+                    {
+                        return new FormVisibilityRuleViewModel
+                        {
+                            Field = rule.Field,
+                            Operator = rule.Operator,
+                            Value = rule.Values?.FirstOrDefault() ?? string.Empty,
+                            ConditionalField = rule.ConditionalField,
+                            ShowWhenMatched = rule.ShowWhenMatched
+                        };
+                    }).ToList() ?? new List<FormVisibilityRuleViewModel>()
+                }).ToList();
+        }).Location("Detail", "Content");
     }
 
     public override IDisplayResult Edit(FormInputElementPart part, BuildPartEditorContext context)
