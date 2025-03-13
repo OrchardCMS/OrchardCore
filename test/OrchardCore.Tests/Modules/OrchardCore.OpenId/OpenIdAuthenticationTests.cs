@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Web;
 using OrchardCore.Deployment.Services;
@@ -28,13 +29,15 @@ public class OpenIdAuthenticationTests
             new JsonObject
             {
                 {"name", "OpenIdApplication"},
-                {"clientId", clientId},
-                {"displayName", "Test Application"},
-                {"type", "public"},
-                {"consentType", "Implicit"},
-                {"allowClientCredentialsFlow", true},
-                {"redirectUris", redirectUri},
-                {"roleEntries", new JsonArray
+                {"ClientId", clientId},
+                {"DisplayName", "Test Application"},
+                {"Type", "public"},
+                {"ConsentType", "Implicit"},
+                {"AllowAuthorizationCodeFlow", true},
+                {"RequireProofKeyForCodeExchange", true},
+                {"AllowRefreshTokenFlow", true},
+                {"RedirectUris", redirectUri},
+                {"RoleEntries", new JsonArray
                     {
                         new JsonObject
                         {
@@ -71,6 +74,8 @@ public class OpenIdAuthenticationTests
             {"steps", recipeSteps},
         };
 
+        var recipeString = JsonSerializer.Serialize(recipe);
+
         await RunRecipeAsync(context, recipe);
 
         var codeVerifier = GenerateCodeVerifier();
@@ -81,54 +86,58 @@ public class OpenIdAuthenticationTests
 
         var authResponse = await context.Client.GetAsync(url, CancellationToken.None);
 
-        if (authResponse.StatusCode == HttpStatusCode.Redirect)
+        Assert.Equal(HttpStatusCode.Redirect, authResponse.StatusCode);
+
+        var d = await authResponse.Content.ReadAsStringAsync(CancellationToken.None);
+
+        var redirectLocation = authResponse.Headers.Location?.ToString();
+
+        if (!string.IsNullOrEmpty(redirectLocation) && redirectLocation.Contains("request_id"))
         {
-            var redirectLocation = authResponse.Headers.Location?.ToString();
+            var uri = new Uri(redirectLocation);
+            var redirectParams = HttpUtility.ParseQueryString(uri.Query);
+            var requestId = redirectParams["request_id"];
 
-            if (!string.IsNullOrEmpty(redirectLocation) && redirectLocation.Contains("request_id"))
-            {
-                var uri = new Uri(redirectLocation);
-                var redirectParams = HttpUtility.ParseQueryString(uri.Query);
-                var requestId = redirectParams["request_id"];
+            var returnUrl = HttpUtility.UrlEncode($"/connect/authorize?request_id={requestId}&prompt=continue");
 
-                var returnUrl = HttpUtility.UrlEncode($"/connect/authorize?request_id={requestId}&prompt=continue");
+            // Visit the login page to get the AntiForgery token.
+            var getLoginResponse = await context.Client.GetAsync($"Login?ReturnUrl={returnUrl}", CancellationToken.None);
 
-                // Visit the login page to get the AntiForgery token.
-                var getLoginResponse = await context.Client.GetAsync($"Login?ReturnUrl={returnUrl}", CancellationToken.None);
-
-                var loginForm = new Dictionary<string, string>
+            var loginForm = new Dictionary<string, string>
                     {
                         {"__RequestVerificationToken", await AntiForgeryHelper.ExtractAntiForgeryToken(getLoginResponse) },
                         {$"{nameof(LoginForm)}.{nameof(LoginViewModel.UserName)}", "admin"},
                         {$"{nameof(LoginForm)}.{nameof(LoginViewModel.Password)}", "Password01_"},
                     };
 
-                var requestForLoginPost = PostRequestHelper.CreateMessageWithCookies($"Login?ReturnUrl={returnUrl}", loginForm, getLoginResponse);
+            var requestForLoginPost = PostRequestHelper.CreateMessageWithCookies($"Login?ReturnUrl={returnUrl}", loginForm, getLoginResponse);
 
-                // Login
-                var postLoginResponse = await context.Client.SendAsync(requestForLoginPost, CancellationToken.None);
+            // Login
+            var postLoginResponse = await context.Client.SendAsync(requestForLoginPost, CancellationToken.None);
 
-                // After login, follow the next redirect to get the authorization code
-                if (postLoginResponse.StatusCode == HttpStatusCode.Redirect)
+            // After login, follow the next redirect to get the authorization code
+            if (postLoginResponse.StatusCode == HttpStatusCode.Redirect)
+            {
+                var tt = await postLoginResponse.Content.ReadAsStringAsync(CancellationToken.None);
+
+                var finalRedirect = postLoginResponse.Headers.Location?.ToString();
+
+                if (finalRedirect != null && finalRedirect.StartsWith(redirectUri))
                 {
-                    var finalRedirect = postLoginResponse.Headers.Location?.ToString();
+                    // Extract the authorization code from the query string.
+                    var codeParams = HttpUtility.ParseQueryString(new Uri(finalRedirect).Query);
+                    var authorizationCode = codeParams["code"];
 
-                    if (finalRedirect != null && finalRedirect.StartsWith(redirectUri))
-                    {
-                        // Extract the authorization code from the query string.
-                        var codeParams = HttpUtility.ParseQueryString(new Uri(finalRedirect).Query);
-                        var authorizationCode = codeParams["code"];
+                    Assert.NotNull(authorizationCode);
 
-                        Assert.NotNull(authorizationCode);
+                    // The test should be to exchange the code for an access token multiple times at the same time.
 
-                        // The test should be to exchange the code for an access token multiple times at the same time.
-
-                        // Exchange the authorization code for an access token.
-                        await ExchangeCodeForTokenAsync(context, authorizationCode, clientId, redirectUri, codeVerifier);
-                    }
+                    // Exchange the authorization code for an access token.
+                    await ExchangeCodeForTokenAsync(context, authorizationCode, clientId, redirectUri, codeVerifier);
                 }
             }
         }
+
     }
 
     private static async Task<string> ExchangeCodeForTokenAsync(SiteContext context, string authorizationCode, string clientId, string redirectUri, string codeVerifier)
