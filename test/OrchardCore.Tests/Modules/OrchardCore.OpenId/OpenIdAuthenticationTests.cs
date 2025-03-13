@@ -84,8 +84,10 @@ public class OpenIdAuthenticationTests
             Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId.Validation"));
             Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId"));
 
+            var httpClient = context.Client;
+
             // Visit the login page to get the AntiForgery token.
-            var getLoginResponse = await context.Client.GetAsync("Login", CancellationToken.None);
+            var getLoginResponse = await httpClient.GetAsync("Login", CancellationToken.None);
 
             var loginForm = new Dictionary<string, string>
             {
@@ -99,7 +101,7 @@ public class OpenIdAuthenticationTests
             var requestForLoginPost = HttpRequestHelper.CreatePostMessageWithCookies($"Login?ReturnUrl=/{shellSettings.RequestUrlPrefix}?loggedIn=true", loginForm, getLoginResponse);
 
             // Login
-            var postLoginResponse = await context.Client.SendAsync(requestForLoginPost, CancellationToken.None);
+            var postLoginResponse = await httpClient.SendAsync(requestForLoginPost, CancellationToken.None);
 
             Assert.Equal(HttpStatusCode.Redirect, postLoginResponse.StatusCode);
 
@@ -116,17 +118,15 @@ public class OpenIdAuthenticationTests
 
             var challengeCode = GenerateCodeChallenge(codeVerifier);
 
-            var url = $"connect/authorize?client_id={clientId}&response_type=code&redirect_uri={redirectUri}&scope=openid offline_access&code_challenge_method=S256&code_challenge={challengeCode}";
+            var url = $"connect/authorize?client_id={clientId}&response_type=code&redirect_uri={Uri.EscapeDataString(redirectUri)}&scope=openid%20offline_access&code_challenge_method=S256&code_challenge={Uri.EscapeDataString(challengeCode)}";
 
             var requestForAuthorize = HttpRequestHelper.CreateGetMessageWithCookies(url, postLoginResponse);
 
             Assert.True(requestForAuthorize.Headers.Contains("Cookie"), "Cookie header is missing from request.");
 
-            var authResponse = await context.Client.SendAsync(requestForAuthorize, CancellationToken.None);
+            var authResponse = await httpClient.SendAsync(requestForAuthorize, CancellationToken.None);
 
             Assert.Equal(HttpStatusCode.Redirect, authResponse.StatusCode);
-
-            var d = await authResponse.Content.ReadAsStringAsync(CancellationToken.None);
 
             var finalRedirect = authResponse.Headers.Location?.ToString();
 
@@ -140,12 +140,13 @@ public class OpenIdAuthenticationTests
 
                 // The test should be to exchange the code for an access token multiple times at the same time.
                 // Exchange the authorization code for an access token.
-                await ExchangeCodeForTokenAsync(context, postLoginResponse, authorizationCode, clientId, redirectUri, codeVerifier);
+                await ExchangeCodeForTokenAsync(httpClient, postLoginResponse, authorizationCode, clientId, redirectUri, codeVerifier);
             }
+
         });
     }
 
-    private static async Task<string> ExchangeCodeForTokenAsync(SiteContext context, HttpResponseMessage response, string authorizationCode, string clientId, string redirectUri, string codeVerifier)
+    private static async Task<string> ExchangeCodeForTokenAsync(HttpClient httpClient, HttpResponseMessage response, string authorizationCode, string clientId, string redirectUri, string codeVerifier)
     {
         var data = new Dictionary<string, string>()
         {
@@ -158,7 +159,7 @@ public class OpenIdAuthenticationTests
 
         var request = HttpRequestHelper.CreatePostMessageWithCookies("connect/token", data, response);
 
-        var tokenResponse = await context.Client.SendAsync(request, CancellationToken.None);
+        var tokenResponse = await httpClient.SendAsync(request, CancellationToken.None);
 
         tokenResponse.EnsureSuccessStatusCode();
 
