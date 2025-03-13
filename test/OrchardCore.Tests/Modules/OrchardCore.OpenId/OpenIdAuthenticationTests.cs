@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -159,13 +160,19 @@ public class OpenIdAuthenticationTests
 
             Assert.NotEmpty(authorizationCode);
 
-            var tokenResult = await ExchangeCodeForTokenAsync(httpClient, postLoginResponse, authorizationCode, clientId, redirectUri, codeVerifier);
+            var tokens = new ConcurrentBag<string>();
 
-            Assert.NotEmpty(tokenResult["access_token"]?.ToString());
+            var taskOne = ExchangeCodeForTokenAsync(httpClient, cookies, authorizationCode, clientId, redirectUri, codeVerifier, tokens);
+            var taskTwo = ExchangeCodeForTokenAsync(httpClient, cookies, authorizationCode, clientId, redirectUri, codeVerifier, tokens);
+            var taskThree = ExchangeCodeForTokenAsync(httpClient, cookies, authorizationCode, clientId, redirectUri, codeVerifier, tokens);
+
+            await Task.WhenAll(taskOne, taskTwo, taskThree);
+
+            Assert.Equal(3, tokens.Count);
         });
     }
 
-    private static async Task<JsonObject> ExchangeCodeForTokenAsync(HttpClient httpClient, HttpResponseMessage response, string authorizationCode, string clientId, string redirectUri, string codeVerifier)
+    private static async Task ExchangeCodeForTokenAsync(HttpClient httpClient, IDictionary<string, string> cookies, string authorizationCode, string clientId, string redirectUri, string codeVerifier, ConcurrentBag<string> tokens)
     {
         var data = new Dictionary<string, string>()
         {
@@ -176,13 +183,20 @@ public class OpenIdAuthenticationTests
             { "code_verifier", codeVerifier },
         };
 
-        var request = HttpRequestHelper.CreatePostMessageWithCookies("connect/token", data, response);
+        var request = HttpRequestHelper.CreatePost("connect/token", data);
+        CookiesHelper.AddCookiesToRequest(request, cookies);
 
         var tokenResponse = await httpClient.SendAsync(request, CancellationToken.None);
 
         tokenResponse.EnsureSuccessStatusCode();
 
-        return await tokenResponse.Content.ReadFromJsonAsync<JsonObject>();
+        var tokenResult = await tokenResponse.Content.ReadFromJsonAsync<JsonObject>();
+
+        Assert.NotEmpty(tokenResult["access_token"]?.ToString());
+
+        tokens.Add(tokenResult["access_token"]?.ToString());
+
+        Debug.WriteLine("access token is " + tokenResult["access_token"]?.ToString());
     }
 
     private static string GenerateCodeVerifier()
