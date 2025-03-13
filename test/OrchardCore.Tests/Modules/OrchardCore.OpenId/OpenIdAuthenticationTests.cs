@@ -4,6 +4,8 @@ using System.Text.Json.Nodes;
 using System.Web;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Environment.Shell;
+using OrchardCore.OpenId.YesSql.Indexes;
+using OrchardCore.OpenId.YesSql.Models;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Tests.OrchardCore.Users;
 using OrchardCore.Users.Models;
@@ -22,10 +24,20 @@ public class OpenIdAuthenticationTests
 
         var redirectUri = context.Client.BaseAddress.ToString() + "signin-oidc";
 
-        var clientId = "id";
+        var clientId = "test_public_client_id";
 
         var recipeSteps = new JsonArray
         {
+            new JsonObject
+            {
+                {"name", "Feature"},
+                {"enable", new JsonArray(
+                    "OrchardCore.Users",
+                    "OrchardCore.OpenId.Server",
+                    "OrchardCore.OpenId.Validation",
+                    "OrchardCore.OpenId")
+                },
+            },
             new JsonObject
             {
                 {"name", "OpenIdApplication"},
@@ -37,34 +49,6 @@ public class OpenIdAuthenticationTests
                 {"RequireProofKeyForCodeExchange", true},
                 {"AllowRefreshTokenFlow", true},
                 {"RedirectUris", redirectUri},
-                {"RoleEntries", new JsonArray
-                    {
-                        new JsonObject
-                        {
-                            {"name", "role1"},
-                            {"selected", true},
-                        },
-                        new JsonObject
-                        {
-                            {"name", "role2"},
-                        },
-                        new JsonObject
-                        {
-                            {"name", "scope1"},
-                            {"selected", true},
-                        },
-                    }
-                },
-            },
-            new JsonObject
-            {
-                {"name", "Feature"},
-                {"enable", new JsonArray(
-                    "OrchardCore.Users",
-                    "OrchardCore.OpenId.Server",
-                    "OrchardCore.OpenId.Validation",
-                    "OrchardCore.OpenId")
-                },
             },
         };
 
@@ -85,6 +69,17 @@ public class OpenIdAuthenticationTests
             Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId"));
 
             var httpClient = context.Client;
+
+            var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();
+
+            var applications = await session.Query<OpenIdApplication, OpenIdApplicationIndex>(OpenIdApplication.OpenIdCollection).ListAsync();
+
+            Assert.Single(applications);
+
+            var application = applications.First();
+
+            Assert.True(application.ClientId == clientId);
+            Assert.Contains(redirectUri, application.RedirectUris);
 
             // Visit the login page to get the AntiForgery token.
             var getLoginResponse = await httpClient.GetAsync("Login", CancellationToken.None);
@@ -115,12 +110,19 @@ public class OpenIdAuthenticationTests
             Assert.Contains("orchauth_" + shellSettings.Name, cookies.Keys);
 
             var codeVerifier = GenerateCodeVerifier();
-
             var challengeCode = GenerateCodeChallenge(codeVerifier);
+            var requestData = new Dictionary<string, string>
+            {
+                { "client_id", clientId },
+                { "response_type", "code" },
+                { "redirect_uri", redirectUri },
+                { "scope", "openid offline_access" },
+                { "code_challenge_method", "S256" },
+                { "code_verifier", codeVerifier },
+                { "code_challenge", challengeCode },
+            };
 
-            var url = $"connect/authorize?client_id={clientId}&response_type=code&redirect_uri={Uri.EscapeDataString(redirectUri)}&scope=openid%20offline_access&code_challenge_method=S256&code_challenge={Uri.EscapeDataString(challengeCode)}";
-
-            var requestForAuthorize = HttpRequestHelper.CreateGetMessageWithCookies(url, postLoginResponse);
+            var requestForAuthorize = HttpRequestHelper.CreatePostMessageWithCookies("connect/authorize", requestData, postLoginResponse);
 
             Assert.True(requestForAuthorize.Headers.Contains("Cookie"), "Cookie header is missing from request.");
 
@@ -129,6 +131,14 @@ public class OpenIdAuthenticationTests
             Assert.Equal(HttpStatusCode.Redirect, authResponse.StatusCode);
 
             var finalRedirect = authResponse.Headers.Location?.ToString();
+
+            var codeRequest = HttpRequestHelper.CreateGetMessageWithCookies(finalRedirect, postLoginResponse);
+
+            var codeResponse = await httpClient.SendAsync(codeRequest);
+
+            Assert.Equal(HttpStatusCode.Redirect, codeResponse.StatusCode);
+
+            // Here I expect codeResponse would be a redirect NOT Ok.
 
             if (finalRedirect != null && finalRedirect.StartsWith(redirectUri))
             {
@@ -142,7 +152,6 @@ public class OpenIdAuthenticationTests
                 // Exchange the authorization code for an access token.
                 await ExchangeCodeForTokenAsync(httpClient, postLoginResponse, authorizationCode, clientId, redirectUri, codeVerifier);
             }
-
         });
     }
 
