@@ -1,3 +1,13 @@
+interface PasswordStrengthOptions {
+    requiredLength?: number;
+    requireUppercase?: boolean;
+    requireLowercase?: boolean;
+    requireDigit?: boolean;
+    requireNonAlphanumeric?: boolean;
+    target?: string;
+    style?: string;
+}
+
 /**
  * This function initializes a password strength checker on a given input element.
  * It evaluates the password based on specified requirements such as minimum length,
@@ -14,7 +24,7 @@
  * @param {string} options.target - CSS selector for the element where the strength progress bar is displayed.
  * @param {string} options.style - CSS style string for the progress bar.
  */
-export default (element: HTMLInputElement, options: any) => {
+export default (element: HTMLInputElement, options: PasswordStrengthOptions) => {
     const settings = Object.assign(
         {
             requiredLength: 8,

@@ -2,10 +2,8 @@ using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.Recipes;
 using OrchardCore.Search.AzureAI.Handlers;
 using OrchardCore.Search.AzureAI.Models;
-using OrchardCore.Search.AzureAI.Recipes;
 using OrchardCore.Search.AzureAI.Services;
 using OrchardCore.Security.Permissions;
 
@@ -23,12 +21,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<AzureAIIndexDocumentManager>();
         services.AddScoped<AzureAISearchIndexingService>();
         services.AddScoped<IAzureAISearchFieldIndexEvents, DefaultAzureAISearchFieldIndexEvents>();
-        services.AddSingleton<AzureAISearchIndexSettingsService>();
+        services.AddScoped<AzureAISearchIndexSettingsService>();
         services.AddSingleton<AzureAIClientFactory>();
-
-        services.AddRecipeExecutionStep<AzureAISearchIndexRebuildStep>();
-        services.AddRecipeExecutionStep<AzureAISearchIndexResetStep>();
-        services.AddRecipeExecutionStep<AzureAISearchIndexSettingsStep>();
+        services.AddSingleton<AzureAISearchIndexNameService>();
 
         return services;
     }

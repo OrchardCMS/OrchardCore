@@ -1,10 +1,2 @@
-$(function () {
-    $('.disabledContent__wrapper input').prop('disabled', true);
-    $('.disabledContent__wrapper textarea').prop('disabled', true);
-    $('.disabledContent__wrapper button').prop('disabled', true);
-    $('.disabledContent__wrapper .widget-editor .widget-editor-header .widget-editor-btn-toggle').prop('disabled', false);
-
-    setTimeout(function () {
-        $('.disabledContent__wrapper textarea').prop('disabled', true);
-    });
-});
+$(function(){$(".disabledContent__wrapper input").prop("disabled",!0),$(".disabledContent__wrapper textarea").prop("disabled",!0),$(".disabledContent__wrapper button").prop("disabled",!0),$(".disabledContent__wrapper .widget-editor .widget-editor-header .widget-editor-btn-toggle").prop("disabled",!1),setTimeout(function(){$(".disabledContent__wrapper textarea").prop("disabled",!0)})});
+//# sourceMappingURL=audittrail-disabledcontent.map

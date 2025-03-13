@@ -2,11 +2,11 @@ using System.IO;
 using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using OrchardCore.Benchmark.Support;
+using OrchardCore.Benchmarks.Support;
 using OrchardCore.Mvc;
 using OrchardCore.ResourceManagement;
 
-namespace OrchardCore.Benchmark;
+namespace OrchardCore.Benchmarks;
 
 [MemoryDiagnoser]
 public class ResourceManagerBenchmark
