@@ -13,6 +13,13 @@ public static class HttpRequestHelper
         };
     }
 
+    public static HttpRequestMessage CreateGet(string path)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(path);
+
+        return new HttpRequestMessage(HttpMethod.Get, path);
+    }
+
     public static HttpRequestMessage CreatePostMessageWithCookies(string path, Dictionary<string, string> data, HttpResponseMessage response)
     {
         var message = CreatePost(path, data);
@@ -24,7 +31,7 @@ public static class HttpRequestHelper
     {
         ArgumentException.ThrowIfNullOrEmpty(path);
 
-        var message = new HttpRequestMessage(HttpMethod.Get, path);
+        var message = CreateGet(path);
 
         return CookiesHelper.CopyCookies(message, response);
     }

@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -44,7 +45,7 @@ public class OpenIdAuthenticationTests
                 {"ClientId", clientId},
                 {"DisplayName", "Test Application"},
                 {"Type", "public"},
-                {"ConsentType", "Implicit"},
+                {"ConsentType", "implicit"},
                 {"AllowAuthorizationCodeFlow", true},
                 {"RequireProofKeyForCodeExchange", true},
                 {"AllowRefreshTokenFlow", true},
@@ -80,6 +81,13 @@ public class OpenIdAuthenticationTests
 
             Assert.True(application.ClientId == clientId);
             Assert.Contains(redirectUri, application.RedirectUris);
+            Assert.Contains(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode, application.Permissions);
+            Assert.Contains(OpenIddictConstants.Permissions.GrantTypes.RefreshToken, application.Permissions);
+            Assert.Contains(OpenIddictConstants.Permissions.Endpoints.Authorization, application.Permissions);
+            Assert.Contains(OpenIddictConstants.Permissions.Endpoints.Token, application.Permissions);
+            Assert.Contains(OpenIddictConstants.Permissions.ResponseTypes.Code, application.Permissions);
+
+            Assert.Contains(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange, application.Requirements);
 
             // Visit the login page to get the AntiForgery token.
             var getLoginResponse = await httpClient.GetAsync("Login", CancellationToken.None);
@@ -122,7 +130,8 @@ public class OpenIdAuthenticationTests
                 { "code_challenge", challengeCode },
             };
 
-            var requestForAuthorize = HttpRequestHelper.CreatePostMessageWithCookies("connect/authorize", requestData, postLoginResponse);
+            var requestForAuthorize = HttpRequestHelper.CreatePost("connect/authorize", requestData);
+            CookiesHelper.AddCookiesToRequest(requestForAuthorize, cookies);
 
             Assert.True(requestForAuthorize.Headers.Contains("Cookie"), "Cookie header is missing from request.");
 
@@ -130,32 +139,33 @@ public class OpenIdAuthenticationTests
 
             Assert.Equal(HttpStatusCode.Redirect, authResponse.StatusCode);
 
-            var finalRedirect = authResponse.Headers.Location?.ToString();
+            var authRedirectResponse = authResponse.Headers.Location?.ToString();
 
-            var codeRequest = HttpRequestHelper.CreateGetMessageWithCookies(finalRedirect, postLoginResponse);
+            var codeRequest = HttpRequestHelper.CreateGet(authRedirectResponse);
+            CookiesHelper.AddCookiesToRequest(codeRequest, cookies);
 
             var codeResponse = await httpClient.SendAsync(codeRequest);
 
             Assert.Equal(HttpStatusCode.Redirect, codeResponse.StatusCode);
 
-            // Here I expect codeResponse would be a redirect NOT Ok.
+            var finalRedirect = codeResponse.Headers.Location?.ToString();
 
-            if (finalRedirect != null && finalRedirect.StartsWith(redirectUri))
-            {
-                // Extract the authorization code from the query string.
-                var codeParams = HttpUtility.ParseQueryString(new Uri(finalRedirect).Query);
-                var authorizationCode = codeParams["code"];
+            Assert.NotEmpty(finalRedirect);
+            Assert.StartsWith(redirectUri, finalRedirect);
 
-                Assert.NotNull(authorizationCode);
+            // Extract the authorization code from the query string.
+            var codeParams = HttpUtility.ParseQueryString(new Uri(finalRedirect).Query);
+            var authorizationCode = codeParams["code"];
 
-                // The test should be to exchange the code for an access token multiple times at the same time.
-                // Exchange the authorization code for an access token.
-                await ExchangeCodeForTokenAsync(httpClient, postLoginResponse, authorizationCode, clientId, redirectUri, codeVerifier);
-            }
+            Assert.NotEmpty(authorizationCode);
+
+            var tokenResult = await ExchangeCodeForTokenAsync(httpClient, postLoginResponse, authorizationCode, clientId, redirectUri, codeVerifier);
+
+            Assert.NotEmpty(tokenResult["access_token"]?.ToString());
         });
     }
 
-    private static async Task<string> ExchangeCodeForTokenAsync(HttpClient httpClient, HttpResponseMessage response, string authorizationCode, string clientId, string redirectUri, string codeVerifier)
+    private static async Task<JsonObject> ExchangeCodeForTokenAsync(HttpClient httpClient, HttpResponseMessage response, string authorizationCode, string clientId, string redirectUri, string codeVerifier)
     {
         var data = new Dictionary<string, string>()
         {
@@ -172,7 +182,7 @@ public class OpenIdAuthenticationTests
 
         tokenResponse.EnsureSuccessStatusCode();
 
-        return await tokenResponse.Content.ReadAsStringAsync();
+        return await tokenResponse.Content.ReadFromJsonAsync<JsonObject>();
     }
 
     private static string GenerateCodeVerifier()
