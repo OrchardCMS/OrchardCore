@@ -84,8 +84,6 @@ public class OpenIdAuthenticationTests
             Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId.Validation"));
             Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId"));
 
-            var shellSettings = scope.ServiceProvider.GetService<ShellSettings>();
-
             // Visit the login page to get the AntiForgery token.
             var getLoginResponse = await context.Client.GetAsync("Login", CancellationToken.None);
 
@@ -95,6 +93,8 @@ public class OpenIdAuthenticationTests
                 {$"{nameof(LoginForm)}.{nameof(LoginViewModel.UserName)}", "admin"},
                 {$"{nameof(LoginForm)}.{nameof(LoginViewModel.Password)}", "Password01_"},
             };
+
+            var shellSettings = scope.ServiceProvider.GetService<ShellSettings>();
 
             var requestForLoginPost = HttpRequestHelper.CreatePostMessageWithCookies($"Login?ReturnUrl=/{shellSettings.RequestUrlPrefix}?loggedIn=true", loginForm, getLoginResponse);
 
@@ -139,23 +139,26 @@ public class OpenIdAuthenticationTests
                 Assert.NotNull(authorizationCode);
 
                 // The test should be to exchange the code for an access token multiple times at the same time.
-
                 // Exchange the authorization code for an access token.
-                await ExchangeCodeForTokenAsync(context, authorizationCode, clientId, redirectUri, codeVerifier);
+                await ExchangeCodeForTokenAsync(context, postLoginResponse, authorizationCode, clientId, redirectUri, codeVerifier);
             }
         });
     }
 
-    private static async Task<string> ExchangeCodeForTokenAsync(SiteContext context, string authorizationCode, string clientId, string redirectUri, string codeVerifier)
+    private static async Task<string> ExchangeCodeForTokenAsync(SiteContext context, HttpResponseMessage response, string authorizationCode, string clientId, string redirectUri, string codeVerifier)
     {
-        var tokenResponse = await context.Client.PostAsync("connect/token", new FormUrlEncodedContent(new[]
+        var data = new Dictionary<string, string>()
         {
-            new KeyValuePair<string, string>("client_id", clientId),
-            new KeyValuePair<string, string>("grant_type", "authorization_code"),
-            new KeyValuePair<string, string>("code", authorizationCode),
-            new KeyValuePair<string, string>("redirect_uri", redirectUri),
-            new KeyValuePair<string, string>("code_verifier", codeVerifier) // Required for PKCE
-        }));
+            { "client_id", clientId },
+            { "grant_type", "authorization_code" },
+            { "code", authorizationCode },
+            { "redirect_uri", redirectUri },
+            { "code_verifier", codeVerifier },
+        };
+
+        var request = HttpRequestHelper.CreatePostMessageWithCookies("connect/token", data, response);
+
+        var tokenResponse = await context.Client.SendAsync(request, CancellationToken.None);
 
         tokenResponse.EnsureSuccessStatusCode();
 
