@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Web;
 using OrchardCore.Deployment.Services;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Tests.Apis.Context;
 using OrchardCore.Tests.OrchardCore.Users;
 using OrchardCore.Users.Models;
@@ -12,7 +13,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId;
 
 public class OpenIdAuthenticationTests
 {
-
     [Fact]
     public async Task OpenIdCanExchangeCodeForAccessToken()
     {
@@ -63,8 +63,7 @@ public class OpenIdAuthenticationTests
                     "OrchardCore.Users",
                     "OrchardCore.OpenId.Server",
                     "OrchardCore.OpenId.Validation",
-                    "OrchardCore.OpenId",
-                    "OrchardCore.OpenId.Client")
+                    "OrchardCore.OpenId")
                 },
             },
         };
@@ -74,34 +73,21 @@ public class OpenIdAuthenticationTests
             {"steps", recipeSteps},
         };
 
-        var recipeString = JsonSerializer.Serialize(recipe);
-
         await RunRecipeAsync(context, recipe);
 
-        var codeVerifier = GenerateCodeVerifier();
-
-        var challengeCode = GenerateCodeChallenge(codeVerifier);
-
-        var url = $"connect/authorize?client_id={clientId}&response_type=code&redirect_uri={redirectUri}&scope=openid offline_access&code_challenge_method=S256&code_challenge={challengeCode}";
-
-        var authResponse = await context.Client.GetAsync(url, CancellationToken.None);
-
-        Assert.Equal(HttpStatusCode.Redirect, authResponse.StatusCode);
-
-        var d = await authResponse.Content.ReadAsStringAsync(CancellationToken.None);
-
-        var redirectLocation = authResponse.Headers.Location?.ToString();
-
-        if (!string.IsNullOrEmpty(redirectLocation) && redirectLocation.Contains("request_id"))
+        await context.UsingTenantScopeAsync(async scope =>
         {
-            var uri = new Uri(redirectLocation);
-            var redirectParams = HttpUtility.ParseQueryString(uri.Query);
-            var requestId = redirectParams["request_id"];
+            var featureManager = scope.ServiceProvider.GetService<IShellFeaturesManager>();
 
-            var returnUrl = HttpUtility.UrlEncode($"/connect/authorize?request_id={requestId}&prompt=continue");
+            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.Users"));
+            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId.Server"));
+            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId.Validation"));
+            Assert.True(await featureManager.IsFeatureEnabledAsync("OrchardCore.OpenId"));
+
+            var shellSettings = scope.ServiceProvider.GetService<ShellSettings>();
 
             // Visit the login page to get the AntiForgery token.
-            var getLoginResponse = await context.Client.GetAsync($"Login?ReturnUrl={returnUrl}", CancellationToken.None);
+            var getLoginResponse = await context.Client.GetAsync("Login", CancellationToken.None);
 
             var loginForm = new Dictionary<string, string>
             {
@@ -110,17 +96,39 @@ public class OpenIdAuthenticationTests
                 {$"{nameof(LoginForm)}.{nameof(LoginViewModel.Password)}", "Password01_"},
             };
 
-            var requestForLoginPost = PostRequestHelper.CreateMessageWithCookies($"Login?ReturnUrl={returnUrl}", loginForm, getLoginResponse);
+            var requestForLoginPost = HttpRequestHelper.CreatePostMessageWithCookies($"Login?ReturnUrl=/{shellSettings.RequestUrlPrefix}?loggedIn=true", loginForm, getLoginResponse);
 
             // Login
             var postLoginResponse = await context.Client.SendAsync(requestForLoginPost, CancellationToken.None);
 
             Assert.Equal(HttpStatusCode.Redirect, postLoginResponse.StatusCode);
 
-            // After login, follow the next redirect to get the authorization code
-            var tt = await postLoginResponse.Content.ReadAsStringAsync(CancellationToken.None);
+            var redirectLocation = postLoginResponse.Headers.Location?.ToString();
 
-            var finalRedirect = postLoginResponse.Headers.Location?.ToString();
+            Assert.NotEmpty(redirectLocation);
+            Assert.Contains("loggedIn=true", redirectLocation);
+
+            var cookies = CookiesHelper.ExtractCookies(postLoginResponse);
+
+            Assert.Contains("orchauth_" + shellSettings.Name, cookies.Keys);
+
+            var codeVerifier = GenerateCodeVerifier();
+
+            var challengeCode = GenerateCodeChallenge(codeVerifier);
+
+            var url = $"connect/authorize?client_id={clientId}&response_type=code&redirect_uri={redirectUri}&scope=openid offline_access&code_challenge_method=S256&code_challenge={challengeCode}";
+
+            var requestForAuthorize = HttpRequestHelper.CreateGetMessageWithCookies(url, postLoginResponse);
+
+            Assert.True(requestForAuthorize.Headers.Contains("Cookie"), "Cookie header is missing from request.");
+
+            var authResponse = await context.Client.SendAsync(requestForAuthorize, CancellationToken.None);
+
+            Assert.Equal(HttpStatusCode.Redirect, authResponse.StatusCode);
+
+            var d = await authResponse.Content.ReadAsStringAsync(CancellationToken.None);
+
+            var finalRedirect = authResponse.Headers.Location?.ToString();
 
             if (finalRedirect != null && finalRedirect.StartsWith(redirectUri))
             {
@@ -135,7 +143,7 @@ public class OpenIdAuthenticationTests
                 // Exchange the authorization code for an access token.
                 await ExchangeCodeForTokenAsync(context, authorizationCode, clientId, redirectUri, codeVerifier);
             }
-        }
+        });
     }
 
     private static async Task<string> ExchangeCodeForTokenAsync(SiteContext context, string authorizationCode, string clientId, string redirectUri, string codeVerifier)
@@ -190,7 +198,7 @@ public class OpenIdAuthenticationTests
             {
                 using (var stream = new FileStream(tempArchiveName, FileMode.Create))
                 {
-                    var bytes = Encoding.UTF8.GetBytes(data.ToJsonString());
+                    var bytes = JsonSerializer.SerializeToUtf8Bytes(data);
 
                     await stream.WriteAsync(bytes);
                 }

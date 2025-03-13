@@ -406,7 +406,7 @@ public class AccountControllerTests
             {$"{nameof(RegisterUserForm)}.{nameof(model.ConfirmPassword)}", model.ConfirmPassword},
         };
 
-        return PostRequestHelper.CreateMessageWithCookies("Register", data, response);
+        return HttpRequestHelper.CreatePostMessageWithCookies("Register", data, response);
     }
 
     private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true, bool enableExternalAuthentication = false)
