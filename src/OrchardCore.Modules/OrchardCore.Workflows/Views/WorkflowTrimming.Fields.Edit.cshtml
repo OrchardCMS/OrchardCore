@@ -27,89 +27,44 @@
     <span class="hint">@T["The last time the background trimming task was run."]</span>
 </div>
 
-@* We use a hard-coded list of statuses here instead of iterating over the enum so the explicit T-strings make
-   PO file extraction and thus localization easier (and so the default English displayed string can be different than
-   the enum value's name). *@
+@{
+    var statusIterator = 0;
+    var localizedStatusNames = new Dictionary<WorkflowStatus, LocalizedHtmlString>
+    {
+        { WorkflowStatus.Idle, T["Idle"] },
+        { WorkflowStatus.Starting, T["Starting"] },
+        { WorkflowStatus.Resuming, T["Resuming"] },
+        { WorkflowStatus.Executing, T["Executing"] },
+        { WorkflowStatus.Halted, T["Halted"] },
+        { WorkflowStatus.Finished, T["Finished"] },
+        { WorkflowStatus.Faulted, T["Faulted"] },
+        { WorkflowStatus.Aborted, T["Aborted"] },
+    };
+}
+
 <div class="mb-3 row">
     <label asp-for="Statuses" class="control-label">@T["Statuses"]</label>
-    <div class="col-xs-12">
-        <div class="form-check">
-            <input type="hidden" asp-for="@Model.Statuses[0].Status" />
-            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[0].IsSelected" id="@Html.IdFor(m => m.Statuses[0])">
-            <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[0])">
-                @T["Idle"]
-            </label>
+    @foreach (var status in Enum.GetValues<WorkflowStatus>())
+    {
+        <div class="col-xs-12">
+            <div class="form-check">
+                <input type="hidden" asp-for="@Model.Statuses[statusIterator].Status" />
+                <input class="form-check-input workflow-status" type="checkbox" id="@Html.IdFor(m => m.Statuses[statusIterator])"
+                       asp-for="@Model.Statuses[statusIterator].IsSelected">
+                <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[statusIterator])">
+                    @if (localizedStatusNames.TryGetValue(status, out var localizedStatus))
+                    {
+                        @localizedStatus
+                    }
+                    else
+                    {
+                        @status
+                    }
+                </label>
+            </div>
         </div>
-    </div>
 
-    <div class="col-xs-12">
-        <div class="form-check">
-            <input type="hidden" asp-for="@Model.Statuses[1].Status" />
-            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[1].IsSelected" id="@Html.IdFor(m => m.Statuses[1])">
-            <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[1])">
-                @T["Starting"]
-            </label>
-        </div>
-    </div>
-
-    <div class="col-xs-12">
-        <div class="form-check">
-            <input type="hidden" asp-for="@Model.Statuses[2].Status" />
-            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[2].IsSelected" id="@Html.IdFor(m => m.Statuses[2])">
-            <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[2])">
-                @T["Resuming"]
-            </label>
-        </div>
-    </div>
-
-    <div class="col-xs-12">
-        <div class="form-check">
-            <input type="hidden" asp-for="@Model.Statuses[3].Status" />
-            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[3].IsSelected" id="@Html.IdFor(m => m.Statuses[3])">
-            <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[3])">
-                @T["Executing"]
-            </label>
-        </div>
-    </div>
-
-    <div class="col-xs-12">
-        <div class="form-check">
-            <input type="hidden" asp-for="@Model.Statuses[4].Status" />
-            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[4].IsSelected" id="@Html.IdFor(m => m.Statuses[4])">
-            <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[4])">
-                @T["Halted"]
-            </label>
-        </div>
-    </div>
-
-    <div class="col-xs-12">
-        <div class="form-check">
-            <input type="hidden" asp-for="@Model.Statuses[5].Status" />
-            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[5].IsSelected" id="@Html.IdFor(m => m.Statuses[5])">
-            <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[5])">
-                @T["Finished"]
-            </label>
-        </div>
-    </div>
-
-    <div class="col-xs-12">
-        <div class="form-check">
-            <input type="hidden" asp-for="@Model.Statuses[6].Status" />
-            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[6].IsSelected" id="@Html.IdFor(m => m.Statuses[6])">
-            <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[6])">
-                @T["Faulted"]
-            </label>
-        </div>
-    </div>
-
-    <div class="col-xs-12">
-        <div class="form-check">
-            <input type="hidden" asp-for="@Model.Statuses[7].Status" />
-            <input class="form-check-input workflow-status" type="checkbox" asp-for="@Model.Statuses[7].IsSelected" id="@Html.IdFor(m => m.Statuses[7])">
-            <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[7])">
-                @T["Aborted"]
-            </label>
-        </div>
-    </div>
+        statusIterator++;
+    }
     <span class="hint">@T["The workflow statuses to include in the trimming process."]</span>
 </div>
