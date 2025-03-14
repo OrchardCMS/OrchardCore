@@ -17,13 +17,10 @@ public class DocumentStore : IDocumentStore
     private DocumentStoreCommitSuccessDelegate _afterCommitSuccess;
     private DocumentStoreCommitFailureDelegate _afterCommitFailure;
 
-    private readonly SemaphoreSlim _semaphore;
-
     private bool _canceled;
 
     public DocumentStore(ISession session)
     {
-        _semaphore = new SemaphoreSlim(1, 1);
         _session = session;
     }
 
@@ -122,15 +119,8 @@ public class DocumentStore : IDocumentStore
             return;
         }
 
-        await _semaphore.WaitAsync();
-
         try
         {
-            if (_session is null)
-            {
-                return;
-            }
-
             await _session.SaveChangesAsync();
 
             _loaded.Clear();
@@ -156,10 +146,6 @@ public class DocumentStore : IDocumentStore
             {
                 throw;
             }
-        }
-        finally
-        {
-            _semaphore.Release();
         }
     }
 }
