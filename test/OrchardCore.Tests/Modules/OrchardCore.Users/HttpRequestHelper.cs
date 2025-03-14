@@ -1,8 +1,8 @@
-namespace OrchardCore.Tests.OrchardCore.Users;
+namespace OrchardCore.Tests.Modules.OrchardCore.Users;
 
 public static class HttpRequestHelper
 {
-    public static HttpRequestMessage CreatePost(string path, Dictionary<string, string> data)
+    public static HttpRequestMessage CreatePostMessage(string path, Dictionary<string, string> data)
     {
         ArgumentException.ThrowIfNullOrEmpty(path);
         ArgumentNullException.ThrowIfNull(data);
@@ -13,7 +13,7 @@ public static class HttpRequestHelper
         };
     }
 
-    public static HttpRequestMessage CreateGet(string path)
+    public static HttpRequestMessage CreateGetMessage(string path)
     {
         ArgumentException.ThrowIfNullOrEmpty(path);
 
@@ -22,7 +22,7 @@ public static class HttpRequestHelper
 
     public static HttpRequestMessage CreatePostMessageWithCookies(string path, Dictionary<string, string> data, HttpResponseMessage response)
     {
-        var message = CreatePost(path, data);
+        var message = CreatePostMessage(path, data);
 
         return CookiesHelper.CopyCookies(message, response);
     }
@@ -31,7 +31,7 @@ public static class HttpRequestHelper
     {
         ArgumentException.ThrowIfNullOrEmpty(path);
 
-        var message = CreateGet(path);
+        var message = CreateGetMessage(path);
 
         return CookiesHelper.CopyCookies(message, response);
     }

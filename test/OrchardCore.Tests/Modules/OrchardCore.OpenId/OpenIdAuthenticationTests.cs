@@ -1,14 +1,12 @@
-using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Web;
-using OrchardCore.Deployment.Services;
 using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.YesSql.Indexes;
 using OrchardCore.OpenId.YesSql.Models;
 using OrchardCore.Tests.Apis.Context;
+using OrchardCore.Tests.Modules.OrchardCore.Users;
 using OrchardCore.Tests.OrchardCore.Users;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
@@ -18,7 +16,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId;
 public class OpenIdAuthenticationTests
 {
     [Fact]
-    public async Task OpenIdCanExchangeCodeForAccessToken()
+    public async Task OpenId_CodeFlow_CanExchangeAuthorizationCodeForAccessTokenOnlyOnce()
     {
         var context = new SiteContext();
 
@@ -26,7 +24,7 @@ public class OpenIdAuthenticationTests
 
         var redirectUri = context.Client.BaseAddress.ToString() + "signin-oidc";
 
-        var clientId = "test_public_client_id";
+        var clientId = "test_id";
 
         var recipeSteps = new JsonArray
         {
@@ -59,7 +57,7 @@ public class OpenIdAuthenticationTests
             {"steps", recipeSteps},
         };
 
-        await RunRecipeAsync(context, recipe);
+        await RecipeHelpers.RunRecipeAsync(context, recipe);
 
         await context.UsingTenantScopeAsync(async scope =>
         {
@@ -79,9 +77,9 @@ public class OpenIdAuthenticationTests
             Assert.Single(applications);
 
             var application = applications.First();
-
             Assert.True(application.ClientId == clientId);
             Assert.Contains(redirectUri, application.RedirectUris);
+            Assert.Equal("implicit", application.ConsentType);
             Assert.Contains(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode, application.Permissions);
             Assert.Contains(OpenIddictConstants.Permissions.GrantTypes.RefreshToken, application.Permissions);
             Assert.Contains(OpenIddictConstants.Permissions.Endpoints.Authorization, application.Permissions);
@@ -91,30 +89,30 @@ public class OpenIdAuthenticationTests
             Assert.Contains(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange, application.Requirements);
 
             // Visit the login page to get the AntiForgery token.
-            var getLoginResponse = await httpClient.GetAsync("Login", CancellationToken.None);
+            var loginGetRequest = await httpClient.GetAsync("Login", CancellationToken.None);
 
-            var loginForm = new Dictionary<string, string>
+            var loginFormData = new Dictionary<string, string>
             {
-                {"__RequestVerificationToken", await AntiForgeryHelper.ExtractAntiForgeryToken(getLoginResponse) },
+                {"__RequestVerificationToken", await AntiForgeryHelper.ExtractAntiForgeryToken(loginGetRequest) },
                 {$"{nameof(LoginForm)}.{nameof(LoginViewModel.UserName)}", "admin"},
                 {$"{nameof(LoginForm)}.{nameof(LoginViewModel.Password)}", "Password01_"},
             };
 
             var shellSettings = scope.ServiceProvider.GetService<ShellSettings>();
 
-            var requestForLoginPost = HttpRequestHelper.CreatePostMessageWithCookies($"Login?ReturnUrl=/{shellSettings.RequestUrlPrefix}?loggedIn=true", loginForm, getLoginResponse);
+            var loginPostRequest = HttpRequestHelper.CreatePostMessageWithCookies($"Login?ReturnUrl=/{shellSettings.RequestUrlPrefix}?loggedIn=true", loginFormData, loginGetRequest);
 
             // Login
-            var postLoginResponse = await httpClient.SendAsync(requestForLoginPost, CancellationToken.None);
+            var loginPostResponse = await httpClient.SendAsync(loginPostRequest, CancellationToken.None);
 
-            Assert.Equal(HttpStatusCode.Redirect, postLoginResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.Redirect, loginPostResponse.StatusCode);
 
-            var redirectLocation = postLoginResponse.Headers.Location?.ToString();
+            var loginRequestRedirectToLocation = loginPostResponse.Headers.Location?.ToString();
 
-            Assert.NotEmpty(redirectLocation);
-            Assert.Contains("loggedIn=true", redirectLocation);
+            Assert.NotEmpty(loginRequestRedirectToLocation);
+            Assert.Contains("loggedIn=true", loginRequestRedirectToLocation);
 
-            var cookies = CookiesHelper.ExtractCookies(postLoginResponse);
+            var cookies = CookiesHelper.ExtractCookies(loginPostResponse);
 
             Assert.Contains("orchauth_" + shellSettings.Name, cookies.Keys);
 
@@ -131,44 +129,47 @@ public class OpenIdAuthenticationTests
                 { "code_challenge", challengeCode },
             };
 
-            var requestForAuthorize = HttpRequestHelper.CreatePost("connect/authorize", requestData);
-            CookiesHelper.AddCookiesToRequest(requestForAuthorize, cookies);
+            var authorizeRequestMessage = HttpRequestHelper.CreatePostMessage("connect/authorize", requestData);
+            CookiesHelper.AddCookiesToRequest(authorizeRequestMessage, cookies);
 
-            Assert.True(requestForAuthorize.Headers.Contains("Cookie"), "Cookie header is missing from request.");
+            Assert.True(authorizeRequestMessage.Headers.Contains("Cookie"), "Cookie header is missing from request.");
 
-            var authResponse = await httpClient.SendAsync(requestForAuthorize, CancellationToken.None);
+            var authorizeResponse = await httpClient.SendAsync(authorizeRequestMessage, CancellationToken.None);
 
-            Assert.Equal(HttpStatusCode.Redirect, authResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.Redirect, authorizeResponse.StatusCode);
 
-            var authRedirectResponse = authResponse.Headers.Location?.ToString();
+            var authorizeRequestRedirectToLocation = authorizeResponse.Headers.Location?.ToString();
 
-            var codeRequest = HttpRequestHelper.CreateGet(authRedirectResponse);
-            CookiesHelper.AddCookiesToRequest(codeRequest, cookies);
+            Assert.NotEmpty(authorizeRequestRedirectToLocation);
 
-            var codeResponse = await httpClient.SendAsync(codeRequest);
+            var authorizationCodeRequestMessage = HttpRequestHelper.CreateGetMessage(authorizeRequestRedirectToLocation);
+            CookiesHelper.AddCookiesToRequest(authorizationCodeRequestMessage, cookies);
 
-            Assert.Equal(HttpStatusCode.Redirect, codeResponse.StatusCode);
+            var authorizationCodeResponse = await httpClient.SendAsync(authorizationCodeRequestMessage);
 
-            var finalRedirect = codeResponse.Headers.Location?.ToString();
+            Assert.Equal(HttpStatusCode.Redirect, authorizationCodeResponse.StatusCode);
+
+            var finalRedirect = authorizationCodeResponse.Headers.Location?.ToString();
 
             Assert.NotEmpty(finalRedirect);
             Assert.StartsWith(redirectUri, finalRedirect);
 
             // Extract the authorization code from the query string.
-            var codeParams = HttpUtility.ParseQueryString(new Uri(finalRedirect).Query);
-            var authorizationCode = codeParams["code"];
+            var queryParameters = HttpUtility.ParseQueryString(new Uri(finalRedirect).Query);
+            var authorizationCode = queryParameters["code"];
 
             Assert.NotEmpty(authorizationCode);
 
             var tokens = new ConcurrentBag<string>();
 
+            // One one task should succeed since OpenId will only allow one access_token exchange for every authorization_code.
             var taskOne = ExchangeCodeForTokenAsync(httpClient, cookies, authorizationCode, clientId, redirectUri, codeVerifier, tokens);
             var taskTwo = ExchangeCodeForTokenAsync(httpClient, cookies, authorizationCode, clientId, redirectUri, codeVerifier, tokens);
             var taskThree = ExchangeCodeForTokenAsync(httpClient, cookies, authorizationCode, clientId, redirectUri, codeVerifier, tokens);
 
             await Task.WhenAll(taskOne, taskTwo, taskThree);
 
-            Assert.Equal(3, tokens.Count);
+            Assert.Single(tokens);
         });
     }
 
@@ -183,20 +184,21 @@ public class OpenIdAuthenticationTests
             { "code_verifier", codeVerifier },
         };
 
-        var request = HttpRequestHelper.CreatePost("connect/token", data);
+        var request = HttpRequestHelper.CreatePostMessage("connect/token", data);
         CookiesHelper.AddCookiesToRequest(request, cookies);
 
         var tokenResponse = await httpClient.SendAsync(request, CancellationToken.None);
 
-        tokenResponse.EnsureSuccessStatusCode();
+        if (tokenResponse.IsSuccessStatusCode)
+        {
+            var tokenResult = await tokenResponse.Content.ReadFromJsonAsync<JsonObject>();
 
-        var tokenResult = await tokenResponse.Content.ReadFromJsonAsync<JsonObject>();
+            var accessToken = tokenResult["access_token"]?.ToString();
 
-        Assert.NotEmpty(tokenResult["access_token"]?.ToString());
+            Assert.NotEmpty(accessToken);
 
-        tokens.Add(tokenResult["access_token"]?.ToString());
-
-        Debug.WriteLine("access token is " + tokenResult["access_token"]?.ToString());
+            tokens.Add(accessToken);
+        }
     }
 
     private static string GenerateCodeVerifier()
@@ -211,7 +213,7 @@ public class OpenIdAuthenticationTests
         return Convert.ToBase64String(randomBytes)
             .TrimEnd('=')
             .Replace('+', '-')
-            .Replace('/', '_'); // Base64 URL encoding
+            .Replace('/', '_');
     }
 
     private static string GenerateCodeChallenge(string codeVerifier)
@@ -221,44 +223,6 @@ public class OpenIdAuthenticationTests
         return Convert.ToBase64String(hashBytes)
             .TrimEnd('=')
             .Replace('+', '-')
-            .Replace('/', '_'); // Base64 URL encoding
-    }
-
-    private static async Task RunRecipeAsync(SiteContext context, JsonObject data)
-    {
-        await context.UsingTenantScopeAsync(async scope =>
-        {
-            var tempArchiveName = PathExtensions.GetTempFileName() + ".json";
-            var tempArchiveFolder = PathExtensions.GetTempFileName();
-
-            try
-            {
-                using (var stream = new FileStream(tempArchiveName, FileMode.Create))
-                {
-                    var bytes = JsonSerializer.SerializeToUtf8Bytes(data);
-
-                    await stream.WriteAsync(bytes);
-                }
-
-                Directory.CreateDirectory(tempArchiveFolder);
-                File.Move(tempArchiveName, Path.Combine(tempArchiveFolder, "Recipe.json"));
-
-                var deploymentManager = scope.ServiceProvider.GetRequiredService<IDeploymentManager>();
-
-                await deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
-            }
-            finally
-            {
-                if (File.Exists(tempArchiveName))
-                {
-                    File.Delete(tempArchiveName);
-                }
-
-                if (Directory.Exists(tempArchiveFolder))
-                {
-                    Directory.Delete(tempArchiveFolder, true);
-                }
-            }
-        });
+            .Replace('/', '_');
     }
 }
