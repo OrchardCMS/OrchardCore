@@ -31,6 +31,7 @@
    PO file extraction and thus localization easier (and so the default English displayed string can be different than
    the enum value's name). *@
 <div class="mb-3 row">
+    <label asp-for="Statuses" class="control-label">@T["Statuses"]</label>
     <div class="col-xs-12">
         <div class="form-check">
             <input type="hidden" asp-for="@Model.Statuses[0].Status" />
@@ -110,4 +111,5 @@
             </label>
         </div>
     </div>
+    <span class="hint">@T["The workflow statuses to include in the trimming process."]</span>
 </div>
