@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Tests.Apis.Context;
+using OrchardCore.Tests.OrchardCore.Users;
 using OrchardCore.Users;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Handlers;
