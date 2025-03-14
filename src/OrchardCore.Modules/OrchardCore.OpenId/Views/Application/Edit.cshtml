@@ -37,7 +37,7 @@
         <span asp-validation-for="ClientId" class="text-danger"></span>
     </div>
 
-    <div class="mb-3" asp-validation-class-for="ClientSecret">
+    <div class="mb-3" asp-validation-class-for="ClientSecret" id="ClientSecretWrapper">
         <label asp-for="ClientSecret" class="form-label">@T["Client Secret"]</label>
         <div class="input-group">
             <input type="password" asp-for="ClientSecret" placeholder="@T["enter a new value to replace the existing secret"]" class="form-control" autocomplete="new-password" />
@@ -249,12 +249,12 @@
     @if (settings == null)
     {
         <text>
-                    $("#AllowAuthorizationCodeFlowFieldSet").collapse("show");
-                $("#AllowClientCredentialsFlowFieldSet").collapse("show");
-                $("#AllowImplicitFlowFieldSet").collapse("show");
-                $("#AllowPasswordFlowFieldSet").collapse("show");
-                $("#AllowRefreshTokenFlowFieldSet").collapse("show");
-                $("#AllowLogoutEndpointFieldSet").collapse("show");
+                            $("#AllowAuthorizationCodeFlowFieldSet").collapse("show");
+                        $("#AllowClientCredentialsFlowFieldSet").collapse("show");
+                        $("#AllowImplicitFlowFieldSet").collapse("show");
+                        $("#AllowPasswordFlowFieldSet").collapse("show");
+                        $("#AllowRefreshTokenFlowFieldSet").collapse("show");
+                        $("#AllowLogoutEndpointFieldSet").collapse("show");
         </text>
     }
     else
@@ -266,8 +266,8 @@
         else
         {
             <text>
-                        $("#AllowAuthorizationCodeFlowFieldSet").collapse("hide");
-                    $("#AllowAuthorizationCodeFlow").prop("checked", false);
+                                        $("#AllowAuthorizationCodeFlowFieldSet").collapse("hide");
+                                    $("#AllowAuthorizationCodeFlow").prop("checked", false);
             </text>
         }
 
@@ -278,8 +278,8 @@
         else
         {
             <text>
-                        $("#AllowClientCredentialsFlowFieldSet").collapse("hide");
-                    $("#AllowClientCredentialsFlow").prop("checked", false);
+                                        $("#AllowClientCredentialsFlowFieldSet").collapse("hide");
+                                    $("#AllowClientCredentialsFlow").prop("checked", false);
             </text>
         }
 
@@ -290,8 +290,8 @@
         else
         {
             <text>
-                        $("#AllowImplicitFlowFieldSet").collapse("hide");
-                    $("#AllowImplicitFlow").prop("checked", false);
+                                        $("#AllowImplicitFlowFieldSet").collapse("hide");
+                                    $("#AllowImplicitFlow").prop("checked", false);
             </text>
         }
 
@@ -302,8 +302,8 @@
         else
         {
             <text>
-                        $("#AllowHybridFlowFieldSet").collapse("hide");
-                    $("#AllowHybridFlowFlow").prop("checked", false);
+                                        $("#AllowHybridFlowFieldSet").collapse("hide");
+                                    $("#AllowHybridFlowFlow").prop("checked", false);
             </text>
         }
 
@@ -314,8 +314,8 @@
         else
         {
             <text>
-                        $("#AllowPasswordFlowFieldSet").collapse("hide");
-                    $("#AllowPasswordFlow").prop("checked", false);
+                                        $("#AllowPasswordFlowFieldSet").collapse("hide");
+                                    $("#AllowPasswordFlow").prop("checked", false);
             </text>
         }
 
@@ -326,8 +326,8 @@
         else
         {
             <text>
-                        $("#AllowRefreshTokenFlowFieldSet").collapse("hide");
-                    $("#AllowRefreshTokenFlow").prop("checked", false);
+                                        $("#AllowRefreshTokenFlowFieldSet").collapse("hide");
+                                    $("#AllowRefreshTokenFlow").prop("checked", false);
             </text>
         }
 
@@ -338,8 +338,8 @@
         else
         {
             <text>
-                        $("#AllowLogoutEndpointFieldSet").collapse("hide");
-                    $("#AllowLogoutEndpointFieldSet").prop("checked", false);
+                                        $("#AllowLogoutEndpointFieldSet").collapse("hide");
+                                    $("#AllowLogoutEndpointFieldSet").prop("checked", false);
             </text>
         }
     }
@@ -349,16 +349,16 @@
             refreshClientSecret();
         });
         function refreshClientSecret(defaultType) {
-            var type = $("#Type"), secret = $("#ClientSecret");
+            var type = $("#Type"), secret = $("#ClientSecret"), secretWrapper = $('#ClientSecretWrapper');
 
             var allowClientCredentialsFlow = $("#AllowClientCredentialsFlow");
             if (type.val() === '@OpenIddictConstants.ClientTypes.Confidential') {
-                secret.parent().show();
+                secretWrapper.show();
                 allowClientCredentialsFlow.removeAttr("disabled");
             }
             else {
                 secret.val("");
-                secret.parent().hide();
+                secretWrapper.hide();
                 allowClientCredentialsFlow.attr('disabled', true);
                 allowClientCredentialsFlow.prop("checked", false);
             }

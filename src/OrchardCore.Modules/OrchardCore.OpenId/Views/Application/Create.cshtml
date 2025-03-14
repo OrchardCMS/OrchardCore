@@ -37,7 +37,7 @@
         <span asp-validation-for="ClientId" class="text-danger"></span>
     </div>
 
-    <div class="mb-3" asp-validation-class-for="ClientSecret">
+    <div class="mb-3" asp-validation-class-for="ClientSecret" id="ClientSecretWrapper">
         <label asp-for="ClientSecret" class="form-label">@T["Client Secret"]</label>
         <div class="input-group">
             <input type="password" asp-for="ClientSecret" class="form-control" autocomplete="new-password" />
@@ -231,104 +231,104 @@
         refreshOfflineAccessTip(false);
 
         function refreshForbiddenFlows() {
-            @if (settings == null)
-            {
-                <text>
-                    $("#AllowAuthorizationCodeFlowFieldSet").collapse("show");
-                    $("#AllowClientCredentialsFlowFieldSet").collapse("show");
-                    $("#AllowImplicitFlowFieldSet").collapse("show");
-                    $("#AllowPasswordFlowFieldSet").collapse("show");
-                    $("#AllowRefreshTokenFlowFieldSet").collapse("show");
-                    $("#AllowLogoutEndpointFieldSet").collapse("show");
-                </text>
+    @if (settings == null)
+    {
+        <text>
+                            $("#AllowAuthorizationCodeFlowFieldSet").collapse("show");
+                            $("#AllowClientCredentialsFlowFieldSet").collapse("show");
+                            $("#AllowImplicitFlowFieldSet").collapse("show");
+                            $("#AllowPasswordFlowFieldSet").collapse("show");
+                            $("#AllowRefreshTokenFlowFieldSet").collapse("show");
+                            $("#AllowLogoutEndpointFieldSet").collapse("show");
+        </text>
 
-            }
-            else
-            {
-                if (settings.AllowAuthorizationCodeFlow)
-                {
-                    <text>$("#AllowAuthorizationCodeFlowFieldSet").collapse("show");</text>
-                }
-                else
-                {
-                    <text>
-                        $("#AllowAuthorizationCodeFlowFieldSet").collapse("hide");
-                        $("#AllowAuthorizationCodeFlow").prop("checked", false);
-                    </text>
-                }
+    }
+    else
+    {
+        if (settings.AllowAuthorizationCodeFlow)
+        {
+            <text>$("#AllowAuthorizationCodeFlowFieldSet").collapse("show");</text>
+        }
+        else
+        {
+            <text>
+                                        $("#AllowAuthorizationCodeFlowFieldSet").collapse("hide");
+                                        $("#AllowAuthorizationCodeFlow").prop("checked", false);
+            </text>
+        }
 
-                if (settings.AllowClientCredentialsFlow)
-                {
-                    <text>$("#AllowClientCredentialsFlowFieldSet").collapse("show");</text>
-                }
-                else
-                {
-                    <text>
-                        $("#AllowClientCredentialsFlowFieldSet").collapse("hide");
-                        $("#AllowClientCredentialsFlow").prop("checked", false);
-                    </text>
-                }
+        if (settings.AllowClientCredentialsFlow)
+        {
+            <text>$("#AllowClientCredentialsFlowFieldSet").collapse("show");</text>
+        }
+        else
+        {
+            <text>
+                                        $("#AllowClientCredentialsFlowFieldSet").collapse("hide");
+                                        $("#AllowClientCredentialsFlow").prop("checked", false);
+            </text>
+        }
 
-                if (settings.AllowImplicitFlow)
-                {
-                    <text>$("#AllowImplicitFlowFieldSet").collapse("show");</text>
-                }
-                else
-                {
-                    <text>
-                        $("#AllowImplicitFlowFieldSet").collapse("hide");
-                        $("#AllowImplicitFlow").prop("checked", false);
-                    </text>
-                }
+        if (settings.AllowImplicitFlow)
+        {
+            <text>$("#AllowImplicitFlowFieldSet").collapse("show");</text>
+        }
+        else
+        {
+            <text>
+                                        $("#AllowImplicitFlowFieldSet").collapse("hide");
+                                        $("#AllowImplicitFlow").prop("checked", false);
+            </text>
+        }
 
-                if (settings.AllowHybridFlow)
-                {
-                    <text>$("#AllowHybridFlowFieldSet").collapse("show");</text>
-                }
-                else
-                {
-                    <text>
-                        $("#AllowHybridFlowFieldSet").collapse("hide");
-                        $("#AllowHybridFlowFlow").prop("checked", false);
-                    </text>
-                }
+        if (settings.AllowHybridFlow)
+        {
+            <text>$("#AllowHybridFlowFieldSet").collapse("show");</text>
+        }
+        else
+        {
+            <text>
+                                        $("#AllowHybridFlowFieldSet").collapse("hide");
+                                        $("#AllowHybridFlowFlow").prop("checked", false);
+            </text>
+        }
 
-                if (settings.AllowPasswordFlow)
-                {
-                    <text>$("#AllowPasswordFlowFieldSet").collapse("show");</text>
-                }
-                else
-                {
-                    <text>
-                        $("#AllowPasswordFlowFieldSet").collapse("hide");
-                        $("#AllowPasswordFlow").prop("checked", false);
-                    </text>
-                }
+        if (settings.AllowPasswordFlow)
+        {
+            <text>$("#AllowPasswordFlowFieldSet").collapse("show");</text>
+        }
+        else
+        {
+            <text>
+                                        $("#AllowPasswordFlowFieldSet").collapse("hide");
+                                        $("#AllowPasswordFlow").prop("checked", false);
+            </text>
+        }
 
-                if (settings.AllowRefreshTokenFlow)
-                {
-                    <text>$("#AllowRefreshTokenFlowFieldSet").collapse("show");</text>
-                }
-                else
-                {
-                    <text>
-                        $("#AllowRefreshTokenFlowFieldSet").collapse("hide");
-                        $("#AllowRefreshTokenFlow").prop("checked", false);
-                    </text>
-                }
+        if (settings.AllowRefreshTokenFlow)
+        {
+            <text>$("#AllowRefreshTokenFlowFieldSet").collapse("show");</text>
+        }
+        else
+        {
+            <text>
+                                        $("#AllowRefreshTokenFlowFieldSet").collapse("hide");
+                                        $("#AllowRefreshTokenFlow").prop("checked", false);
+            </text>
+        }
 
-                if (settings.LogoutEndpointPath.HasValue)
-                {
-                    <text>$("#AllowLogoutEndpointFieldSet").collapse("show");</text>
-                }
-                else
-                {
-                    <text>
-                        $("#AllowLogoutEndpointFieldSet").collapse("hide");
-                        $("#AllowLogoutEndpointFieldSet").prop("checked", false);
-                    </text>
-                }
-            }
+        if (settings.LogoutEndpointPath.HasValue)
+        {
+            <text>$("#AllowLogoutEndpointFieldSet").collapse("show");</text>
+        }
+        else
+        {
+            <text>
+                                        $("#AllowLogoutEndpointFieldSet").collapse("hide");
+                                        $("#AllowLogoutEndpointFieldSet").prop("checked", false);
+            </text>
+        }
+    }
         }
 
         $("#Type").change(function () {
@@ -336,7 +336,7 @@
         });
         function refreshClientSecret(defaultType) {
             var type = $("#Type");
-            $("#ClientSecret").parent().collapse(type.val() === '@OpenIddictConstants.ClientTypes.Confidential' ? "show" : "hide");
+            $("#ClientSecretWrapper").collapse(type.val() === '@OpenIddictConstants.ClientTypes.Confidential' ? "show" : "hide");
 
             var allowClientCredentialsFlow = $("#AllowClientCredentialsFlow");
             if ($("#Type").val() === '@OpenIddictConstants.ClientTypes.Confidential') {
