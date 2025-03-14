@@ -1,113 +1,144 @@
 @using OrchardCore.Forms.ViewModels
 @model FormInputElementVisibilityViewModel
 
+@using System.Diagnostics;
+
+
+@{
+    int groupIndex = 0;
+}
+
 @foreach (var group in Model.Groups)
 {
-    @foreach (var rule in group.Rules)
+    int ruleIndex = 0;
+    foreach (var rule in group.Rules)
     {
-        <div id="@rule.Field" class="form-group visibility-target d-none"
-             data-field="@rule.Field"
+        string containerId = Guid.NewGuid().ToString("N");
+
+        <div id="@containerId"
+             class="form-group visibility-target d-none"
+             data-targetInput="@rule.Field"
              data-operator="@rule.Operator"
              data-value="@rule.Value"
-             data-action="@Model.Action.ToString().ToLower()">
-            <label>@rule.Field</label>
-            <script>
-                console.log("Field Action:", "@Model.Action.ToString().ToLower()");
-            </script>
+             data-action="@Model.Action">
         </div>
+
+        ruleIndex++;
     }
+    groupIndex++;
 }
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
+        const rulesMap = {};
+        // Build the map of rules from each .visibility-target element
+        document.querySelectorAll('.visibility-target').forEach(ruleElement => {
+            const targetInput = ruleElement.dataset.targetinput;
+            console.log('Processing ruleElement:', ruleElement);
+            console.log('ruleElement.dataset:', ruleElement.dataset);
+            if (!rulesMap[targetInput]) {
+                rulesMap[targetInput] = [];
+            }
+            rulesMap[targetInput].push(ruleElement);
+            console.log(`Added rule for targetInput "${targetInput}".`);
+        });
+        console.log("Completed building rules map:", rulesMap);
 
-     let hasUserInteracted = false; // Prevents rules from running before checkbox interaction
-
-      document.querySelectorAll('.visibility-target').forEach(targetElement => {
-        let action = targetElement.dataset.action?.toLowerCase();
-        let widgetWrapper = targetElement.closest('.widget');
-        // Hide if action is "show" or "hide", but leave it alone if "none"
-        const shouldHide = action === "show" || action === "hide";
-        widgetWrapper.classList.toggle("d-none", shouldHide);
-      });
-
-        function applyVisibilityRules() {
-            // 🔹 Step 1: Loop through each visibility rule in the form
-            document.querySelectorAll('.visibility-target').forEach(targetElement => {
-                const fieldId = targetElement.dataset.field;
-                const operator = targetElement.dataset.operator;
-                const actualField = document.getElementById(fieldId) || document.querySelector(`[name="${fieldId}"]`);
-                let ruleValue = targetElement.dataset.value?.trim().toLowerCase() || "";
-                let action = targetElement.dataset.action?.toLowerCase();
-                let fieldValue = "";
-
-                if (actualField.type === "checkbox") {
-                    fieldValue = actualField.checked ? "true" : "false";
-                } else {
-                    fieldValue = actualField.value?.trim().toLowerCase() || "";
-                }
-
-                let rulePassed = false;
-                switch (operator) {
-                    case "Is":
-                        rulePassed = fieldValue === ruleValue;
-                        break;
-                    case "IsNot":
-                        rulePassed = fieldValue !== ruleValue;
-                        break;
-                    case "Empty":
-                        rulePassed = fieldValue === "";
-                        break;
-                    case "NotEmpty":
-                        rulePassed = fieldValue !== "";
-                        break;
-                    case "Contains":
-                        rulePassed = fieldValue.includes(ruleValue);
-                        break;
-                    case "DoesNotContain":
-                        rulePassed = !fieldValue.includes(ruleValue);
-                        break;
-                    case "GreaterThan":
-                        rulePassed = parseFloat(fieldValue) > parseFloat(ruleValue);
-                        break;
-                    case "LessThan":
-                        rulePassed = parseFloat(fieldValue) < parseFloat(ruleValue);
-                        break;
-                    default:
-                        console.warn(`⚠️ Unknown operator: ${operator}`);
-                        break;
-                }
-
-
-                if (rulePassed && action === "hide") {
-                    console.log(`🔄 Flipping Action: ${fieldId} (Hide → Show)`);
-                    action = "show";
-                }
-
-                // this is the issue
-                const fieldWrapper = targetElement.closest('.form-group');
-            //  const fieldWrapper = actualField.closest('.widget');
-            // issue is here
-                if (fieldWrapper) {
-                    if (action === "show" && rulePassed) {
-                        console.log(`🎯 Showing: ${fieldId}`);
-                        fieldWrapper.classList.remove("d-none");
+        // New function: Initialize widget visibility based on the rule action.
+        function initializeWidgetVisibility() {
+            Object.keys(rulesMap).forEach(targetInput => {
+                rulesMap[targetInput].forEach(ruleElement => {
+                    const action = ruleElement.dataset.action?.toLowerCase();
+                    const widget = ruleElement.closest('.widget');
+                    if (widget) {
+                        if (action === "hide") {
+                            widget.classList.add("d-none");
+                            console.log(`Initial state for widget of "${targetInput}": Action is Hide, widget is hidden.`);
+                        } else if (action === "show") {
+                            widget.classList.remove("d-none");
+                            console.log(`Initial state for widget of "${targetInput}": Action is Show, widget is visible.`);
+                        }
                     } else {
-                        console.log(`🚫 Hiding: ${fieldId}`);
-                        fieldWrapper.classList.add("d-none");
+                        console.warn(`No .widget container found for ruleElement:`, ruleElement);
                     }
-                }
+                });
             });
         }
 
-      //  applyVisibilityRules();
+        // Run the initial visibility setting on page load
+        initializeWidgetVisibility();
 
-         document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.addEventListener("change", () => {
-                hasUserInteracted = true; // allow visibility rules
-                console.log(`🔄 Checkbox Clicked: ${checkbox.id} - Checked: ${checkbox.checked}`);
-                applyVisibilityRules();
+        // Attach change listeners to each field that has rules
+        Object.keys(rulesMap).forEach(targetInput => {
+            const actualField = document.getElementById(targetInput) || document.querySelector(`[name="${targetInput}"]`);
+            if (!actualField) {
+                console.warn(`No matching field for "${targetInput}", skipping listener attachment.`);
+                return;
+            }
+            console.log(`Attaching change listener for field "${targetInput}".`);
+            actualField.addEventListener("change", () => {
+                console.log(`Field "${targetInput}" changed.`);
+                updateRulesForField(targetInput, actualField, rulesMap[targetInput]);
             });
-        })
+        });
+
+        // Function to update widget visibility based on rules when a field changes
+        function updateRulesForField(targetInput, actualField, rules) {
+            let triggerValue = "";
+            if (actualField.type === "checkbox") {
+                triggerValue = actualField.checked ? "true" : "false";
+                console.log(`Checkbox value for "${targetInput}": ${triggerValue}`);
+            } else {
+                triggerValue = actualField.value?.trim().toLowerCase() || "";
+                console.log(`Field value for "${targetInput}": ${triggerValue}`);
+            }
+            rules.forEach(ruleElement => {
+                const operator = ruleElement.dataset.operator?.toLowerCase();
+                const ruleValue = (ruleElement.dataset.value || "").trim().toLowerCase();
+                console.log(`Evaluating rule for "${targetInput}": current value = "${triggerValue}", operator = "${operator}", rule value = "${ruleValue}"`);
+                let rulePassed = false;
+                switch (operator) {
+                    case "is":
+                        rulePassed = (triggerValue === ruleValue);
+                        break;
+                    case "isnot":
+                        rulePassed = (triggerValue !== ruleValue);
+                        break;
+                    case "empty":
+                        rulePassed = (triggerValue === "");
+                        break;
+                    case "notempty":
+                        rulePassed = (triggerValue !== "");
+                        break;
+                    case "contains":
+                        rulePassed = triggerValue.includes(ruleValue);
+                        break;
+                    case "doesnotcontain":
+                        rulePassed = !triggerValue.includes(ruleValue);
+                        break;
+                    case "greaterthan":
+                        rulePassed = parseFloat(triggerValue) > parseFloat(ruleValue);
+                        break;
+                    case "lessthan":
+                        rulePassed = parseFloat(triggerValue) < parseFloat(ruleValue);
+                        break;
+                    default:
+                        console.warn(`⚠️ Unknown operator for "${targetInput}": ${operator}`);
+                        break;
+                }
+                const widget = ruleElement.closest('.widget');
+                if (widget) {
+                    if (rulePassed) {
+                        widget.classList.remove("d-none");
+                        console.log(`Rule passed for "${targetInput}". Showing entire widget.`);
+                    } else {
+                       // widget.classList.add("d-none");
+                        console.log(`Rule failed for "${targetInput}". Hiding entire widget.`);
+                    }
+                } else {
+                    console.warn(`No .widget container found for ruleElement:`, ruleElement);
+                }
+            });
+        }
     });
 </script>

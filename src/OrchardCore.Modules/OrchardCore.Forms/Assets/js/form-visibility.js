@@ -221,7 +221,6 @@ window.formVisibilityGroups = function () {
                     if (savedGroups) {
                         try {
                             this.groups = JSON.parse(savedGroups);
-                            console.log(`✅ Restored groups for widget ${this.widgetId} from localStorage:`, this.groups);
                         } catch (error) {
                             console.error("❌ Failed to parse saved groups:", error);
                         }
