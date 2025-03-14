@@ -18,6 +18,7 @@ public sealed class ContentPartSettingsDisplayDriver : ContentPartDefinitionDisp
             model.Reusable = settings.Reusable;
             model.Description = settings.Description;
             model.DisplayName = settings.DisplayName;
+            model.AutoCollapseContainedItems = settings.AutoCollapseContainedItems;
             model.ContentPartDefinition = contentPartDefinition;
         }).Location("Content");
     }
@@ -32,6 +33,7 @@ public sealed class ContentPartSettingsDisplayDriver : ContentPartDefinitionDisp
         context.Builder.Reusable(model.Reusable);
         context.Builder.WithDescription(model.Description);
         context.Builder.WithDisplayName(model.DisplayName);
+        context.Builder.AutoCollapseContainedItems(model.AutoCollapseContainedItems);
 
         return Edit(contentPartDefinition, context);
     }

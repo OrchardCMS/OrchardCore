@@ -62,4 +62,8 @@ public static class ContentPartSettingsExtensions
 
         return displayName;
     }
+    public static ContentPartDefinitionBuilder AutoCollapseContainedItems(this ContentPartDefinitionBuilder builder, bool autoCollapseContainedItems = true)
+    {
+        return builder.MergeSettings<ContentPartSettings>(x => x.AutoCollapseContainedItems = autoCollapseContainedItems);
+    }
 }

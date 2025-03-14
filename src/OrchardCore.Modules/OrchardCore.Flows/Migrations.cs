@@ -18,11 +18,13 @@ public sealed class Migrations : DataMigration
     {
         await _contentDefinitionManager.AlterPartDefinitionAsync("FlowPart", builder => builder
             .Attachable()
+            .AutoCollapseContainedItems()
             .WithDescription("Provides a customizable body for your content item where you can build a content structure with widgets."));
 
         await _contentDefinitionManager.AlterPartDefinitionAsync("BagPart", builder => builder
             .Attachable()
             .Reusable()
+            .AutoCollapseContainedItems()
             .WithDescription("Provides a collection behavior for your content item where you can place other content items."));
 
         // Shortcut other migration steps on new content definition schemas.

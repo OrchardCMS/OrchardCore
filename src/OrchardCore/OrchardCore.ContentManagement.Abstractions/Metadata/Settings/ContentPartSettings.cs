@@ -26,4 +26,5 @@ public class ContentPartSettings
     /// Gets or sets the default position of the part when attached to a type.
     /// </summary>
     public string DefaultPosition { get; set; }
+    public bool AutoCollapseContainedItems { get; set; }
 }
