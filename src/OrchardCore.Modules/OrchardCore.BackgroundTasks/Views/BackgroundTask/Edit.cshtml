@@ -38,7 +38,7 @@
                 <div class="@Orchard.GetEndClasses()">
                     <div class="input-group mb-3">
                         <input asp-for="Schedule" class="form-control" />
-                        <span id="use-default-schedule" class="btn btn-outline-danger">@T["Reset Schedule"]</span>
+                        <button type="button" id="use-default-schedule" class="btn btn-outline-danger">@T["Reset Schedule"]</button>
                     </div>
                     <span class="hint">@T["The task schedule as a cron expression."]</span>
                 </div>
