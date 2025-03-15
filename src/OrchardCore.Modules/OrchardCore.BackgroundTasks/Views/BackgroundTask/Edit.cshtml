@@ -38,7 +38,7 @@
                 <div class="@Orchard.GetEndClasses()">
                     <div class="input-group mb-3">
                         <input asp-for="Schedule" class="form-control" />
-                        <button id="use-default-schedule" class="btn btn-outline-success">@T["Reset Schedule"]</button>
+                        <button type="button" id="use-default-schedule" class="btn btn-outline-danger">@T["Reset Schedule"]</button>
                     </div>
                     <span class="hint">@T["The task schedule as a cron expression."]</span>
                 </div>
@@ -88,7 +88,6 @@
 <script at="Foot">
     document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('use-default-schedule').addEventListener('click', function (e) {
-            e.preventDefault();
             document.getElementById('@Html.IdFor(x => x.Schedule)').value = document.getElementById('@Html.IdFor(x => x.DefaultSchedule)').value;
         });
     })
