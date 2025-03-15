@@ -111,7 +111,7 @@ public class UserStore :
             }
 
             await _session.SaveAsync(user);
-            await _session.SaveChangesAsync();
+            await _session.FlushAsync();
             await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
         }
         catch (Exception e)
@@ -139,7 +139,7 @@ public class UserStore :
             }
 
             _session.Delete(user);
-            await _session.SaveChangesAsync();
+            await _session.FlushAsync();
             await Handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
         }
         catch (Exception e)
@@ -232,7 +232,7 @@ public class UserStore :
             }
 
             await _session.SaveAsync(user);
-            await _session.SaveChangesAsync();
+            await _session.FlushAsync();
             await Handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
         }
         catch (Exception e)
