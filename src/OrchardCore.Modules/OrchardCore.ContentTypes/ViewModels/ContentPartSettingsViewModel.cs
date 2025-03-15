@@ -12,5 +12,4 @@ public class ContentPartSettingsViewModel
 
     [BindNever]
     public ContentPartDefinition ContentPartDefinition { get; set; }
-    public bool AutoCollapseContainedItems { get; set; }
 }
