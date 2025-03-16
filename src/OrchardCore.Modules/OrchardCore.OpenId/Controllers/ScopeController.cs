@@ -4,7 +4,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -23,7 +22,6 @@ public sealed class ScopeController : Controller
     private readonly IOpenIdScopeManager _scopeManager;
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
-    private readonly INotifier _notifier;
 
     internal readonly IStringLocalizer S;
 
@@ -33,8 +31,7 @@ public sealed class ScopeController : Controller
         IOptions<PagerOptions> pagerOptions,
         IStringLocalizer<ScopeController> stringLocalizer,
         IAuthorizationService authorizationService,
-        ShellSettings shellSettings,
-        INotifier notifier)
+        ShellSettings shellSettings)
     {
         _scopeManager = scopeManager;
         _shapeFactory = shapeFactory;
@@ -42,7 +39,6 @@ public sealed class ScopeController : Controller
         S = stringLocalizer;
         _authorizationService = authorizationService;
         _shellSettings = shellSettings;
-        _notifier = notifier;
     }
 
     [Admin("OpenId/Scope", "OpenIdScope")]
