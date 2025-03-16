@@ -11,5 +11,5 @@ public class BagPartSettingsViewModel
     public string[] ContainedContentTypes { get; set; } = [];
     public BagPartSettingType Source { get; set; }
     public string Stereotypes { get; set; }
-    public bool AutoCollapseContainedItems { get; set; }
+    public bool CollapseContainedItems { get; set; }
 }

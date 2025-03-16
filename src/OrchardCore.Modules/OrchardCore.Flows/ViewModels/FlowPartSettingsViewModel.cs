@@ -8,5 +8,5 @@ public class FlowPartSettingsViewModel
     public FlowPartSettings FlowPartSettings { get; set; }
     public NameValueCollection ContentTypes { get; set; }
     public string[] ContainedContentTypes { get; set; } = [];
-    public bool AutoCollapseContainedItems { get; set; }
+    public bool CollapseContainedItems { get; set; }
 }
