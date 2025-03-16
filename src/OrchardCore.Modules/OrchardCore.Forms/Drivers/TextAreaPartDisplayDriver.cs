@@ -8,6 +8,8 @@ namespace OrchardCore.Forms.Drivers;
 
 public sealed class TextAreaPartDisplayDriver : ContentPartDisplayDriver<TextAreaPart>
 {
+    private const int DefaultRows = 3;
+
     public override IDisplayResult Display(TextAreaPart part, BuildPartDisplayContext context)
     {
         return View("TextAreaPart", part).Location(OrchardCoreConstants.DisplayType.Detail, "Content");
@@ -31,7 +33,9 @@ public sealed class TextAreaPartDisplayDriver : ContentPartDisplayDriver<TextAre
 
         part.Placeholder = viewModel.Placeholder?.Trim();
         part.DefaultValue = viewModel.DefaultValue?.Trim();
-        part.Rows = viewModel.Rows;
+        part.Rows = viewModel.Rows > DefaultRows
+            ? viewModel.Rows
+            : DefaultRows;
 
         return Edit(part, context);
     }
