@@ -8,7 +8,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
-using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
@@ -31,7 +30,6 @@ public sealed class AdminController : Controller
     private readonly IShellHost _shellHost;
     private readonly IShellSettingsManager _shellSettingsManager;
     private readonly IShellRemovalManager _shellRemovalManager;
-    private readonly IEnumerable<DatabaseProvider> _databaseProviders;
     private readonly IAuthorizationService _authorizationService;
     private readonly ShellSettings _currentShellSettings;
     private readonly IFeatureProfilesService _featureProfilesService;
@@ -52,7 +50,6 @@ public sealed class AdminController : Controller
         IShellHost shellHost,
         IShellSettingsManager shellSettingsManager,
         IShellRemovalManager shellRemovalManager,
-        IEnumerable<DatabaseProvider> databaseProviders,
         IAuthorizationService authorizationService,
         ShellSettings currentShellSettings,
         IFeatureProfilesService featureProfilesService,
@@ -71,7 +68,6 @@ public sealed class AdminController : Controller
         _shellHost = shellHost;
         _shellSettingsManager = shellSettingsManager;
         _shellRemovalManager = shellRemovalManager;
-        _databaseProviders = databaseProviders;
         _authorizationService = authorizationService;
         _currentShellSettings = currentShellSettings;
         _featureProfilesService = featureProfilesService;
