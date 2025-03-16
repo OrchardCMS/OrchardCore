@@ -19,17 +19,19 @@ public sealed class TextAreaPartDisplayDriver : ContentPartDisplayDriver<TextAre
         {
             m.Placeholder = part.Placeholder;
             m.DefaultValue = part.DefaultValue;
+            m.Rows = part.Rows;
         });
     }
 
     public override async Task<IDisplayResult> UpdateAsync(TextAreaPart part, UpdatePartEditorContext context)
     {
-        var viewModel = new InputPartEditViewModel();
+        var viewModel = new TextAreaPartEditViewModel();
 
         await context.Updater.TryUpdateModelAsync(viewModel, Prefix);
 
         part.Placeholder = viewModel.Placeholder?.Trim();
         part.DefaultValue = viewModel.DefaultValue?.Trim();
+        part.Rows = viewModel.Rows;
 
         return Edit(part, context);
     }

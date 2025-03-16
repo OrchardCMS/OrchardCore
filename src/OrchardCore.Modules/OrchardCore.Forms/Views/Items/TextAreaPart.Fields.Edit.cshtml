@@ -17,3 +17,11 @@
         <span class="hint">@T["The default value for this textarea."]</span>
     </div>
 </div>
+
+<div class="@Orchard.GetWrapperClasses()">
+    <label asp-for="Rows" class="@Orchard.GetLabelClasses()">@T["Rows"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <input asp-for="Rows" type="number" class="form-control content-preview-text" />
+        <span class="hint">@T["The rows number for this textarea."]</span>
+    </div>
+</div>
