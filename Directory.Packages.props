@@ -27,7 +27,7 @@
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.4.1" />
     <PackageVersion Include="Jint" Version="4.1.0" />
     <PackageVersion Include="JsonPath.Net" Version="2.1.1" />
-    <PackageVersion Include="HtmlSanitizer" Version="9.0.876" />
+    <PackageVersion Include="HtmlSanitizer" Version="9.1.878-beta" />
     <PackageVersion Include="Irony" Version="1.5.3" />
     <PackageVersion Include="libphonenumber-csharp" Version="8.13.55" />
     <PackageVersion Include="Lorem.Universal.NET" Version="4.0.80" />
