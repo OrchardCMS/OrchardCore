@@ -1,7 +1,7 @@
 using System.Security.Claims;
-using System.Web;
 using Fluid;
 using Fluid.Values;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +21,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Commands;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
@@ -57,14 +56,7 @@ public sealed class Startup : StartupBase
     private static readonly string _accountControllerName = typeof(AccountController).ControllerName();
     private static readonly string _emailConfirmationControllerName = typeof(EmailConfirmationController).ControllerName();
 
-    private readonly string _tenantName;
-
     private UserOptions _userOptions;
-
-    public Startup(ShellSettings shellSettings)
-    {
-        _tenantName = shellSettings.Name;
-    }
 
     public override void ConfigureServices(IServiceCollection services)
     {
@@ -96,22 +88,9 @@ public sealed class Startup : StartupBase
 
         services.AddUsers();
 
-        services.ConfigureApplicationCookie(options =>
-        {
-            var userOptions = ShellScope.Services.GetRequiredService<IOptions<UserOptions>>();
-
-            options.Cookie.Name = "orchauth_" + HttpUtility.UrlEncode(_tenantName);
-
-            // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
-            // set by the pipeline and coming from the request 'PathBase' which already ends with the
-            // tenant prefix but may also start by a path related e.g to a virtual folder.
-
-            options.LoginPath = "/" + userOptions.Value.LoginPath;
-            options.LogoutPath = "/" + userOptions.Value.LogoffPath;
-            options.AccessDeniedPath = "/Error/403";
-        });
-
+        services.AddTransient<IPostConfigureOptions<CookieAuthenticationOptions>, ConfigureCookieAuthenticationOptions>();
         services.AddTransient<IPostConfigureOptions<SecurityStampValidatorOptions>, ConfigureSecurityStampOptions>();
+
         services.AddDataMigration<Migrations>();
 
         services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
