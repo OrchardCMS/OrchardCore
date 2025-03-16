@@ -18,7 +18,7 @@
     <PackageVersion Include="Azure.Storage.Blobs" Version="12.24.0" />
     <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
-    <PackageVersion Include="DocumentFormat.OpenXml" Version="3.2.0" />
+    <PackageVersion Include="DocumentFormat.OpenXml" Version="3.3.0" />
     <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.17.2" />
     <PackageVersion Include="Fluid.Core" Version="2.17.0" />
     <PackageVersion Include="GraphQL" Version="8.4.1" />
