@@ -7,5 +7,6 @@ public class BagPartSettings
     public string[] ContainedStereotypes { get; set; } = [];
 
     public string DisplayType { get; set; }
+
     public bool CollapseContainedItems { get; set; }
 }
