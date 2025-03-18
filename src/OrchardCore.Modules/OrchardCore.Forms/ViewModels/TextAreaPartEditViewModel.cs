@@ -6,5 +6,5 @@ public class TextAreaPartEditViewModel
 
     public string Placeholder { get; set; }
 
-    public int Rows { get; set; }
+    public int? Rows { get; set; }
 }

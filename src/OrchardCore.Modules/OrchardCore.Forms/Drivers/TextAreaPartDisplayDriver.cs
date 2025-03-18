@@ -1,14 +1,21 @@
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Forms.Drivers;
 
 public sealed class TextAreaPartDisplayDriver : ContentPartDisplayDriver<TextAreaPart>
 {
-    private const int DefaultRows = 3;
+    private IStringLocalizer S;
+
+    public TextAreaPartDisplayDriver(IStringLocalizer<TextAreaPartDisplayDriver> stringLocalizer)
+    {
+        S = stringLocalizer;
+    }
 
     public override IDisplayResult Display(TextAreaPart part, BuildPartDisplayContext context)
     {
@@ -33,9 +40,12 @@ public sealed class TextAreaPartDisplayDriver : ContentPartDisplayDriver<TextAre
 
         part.Placeholder = viewModel.Placeholder?.Trim();
         part.DefaultValue = viewModel.DefaultValue?.Trim();
-        part.Rows = viewModel.Rows > DefaultRows
-            ? viewModel.Rows
-            : DefaultRows;
+        part.Rows = viewModel.Rows;
+
+        if (viewModel.Rows < 1)
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Rows), S["The Rows field should be greater than or equal 1."]);
+        }
 
         return Edit(part, context);
     }
