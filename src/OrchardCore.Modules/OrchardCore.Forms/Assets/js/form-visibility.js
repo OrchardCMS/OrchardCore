@@ -32,7 +32,7 @@ window.formVisibilityGroups = function () {
                             <div class="col">
                                 <select class="form-select" v-model="rule.operator" :name="prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Operator'">
                                     <option value="">Select Operator</option>
-                                    <option v-for="option in operatorOptions" :value="option.value">
+                                    <option v-for="option in operatorsList(rule.field)" :value="option.value">
                                         {{ option.text }}
                                     </option>
                                 </select>
@@ -87,6 +87,7 @@ window.formVisibilityGroups = function () {
                     groups: [],
                     fieldOptions: config.fieldOptions || [],
                     operatorOptions: [],
+                    allOperatorOptions: [],
                     prefix: '',
                     widgetId: config.appElementSelector.replace('#', '')
                 };
@@ -126,10 +127,12 @@ window.formVisibilityGroups = function () {
 
                 populateFields() {
                     const inputs = this.getInputs();
+
                     this.fieldOptions = inputs.map(input => {
                         return {
                             value: input.htmlId,
-                            text: input.htmlName
+                            text: input.htmlName,
+                            type: input.htmlInputType,
                         };
                     });
                 },
@@ -170,14 +173,58 @@ window.formVisibilityGroups = function () {
 
                 findOperators() {
                     const operatorData = document.getElementById('operatorData');
+
                     if (operatorData) {
                         try {
-                            return JSON.parse(operatorData.getAttribute('data-operators'));
+                            const masterList = JSON.parse(operatorData.getAttribute('data-operators'));
+                            this.allOperatorOptions = masterList;
+                            return masterList;
                         } catch (e) {
                             console.error("Error parsing operator data:", e);
                         }
                     }
+
                     return [];
+                },
+
+                operatorMapping() {
+                    return {
+                        checkbox: ["is", "isnot"],
+                        text: ["is", "isnot", "empty", "notempty", "contains", "doesnotcontain", "startswith", "endswith"],
+                        number: ["is", "isnot", "greaterthan", "lessthan"],
+                        email: ["is", "isnot", "empty", "notempty"],
+                        tel: ["is", "isnot"],
+                        date: ["is", "isnot", "greaterthan", "lessthan"],
+                        time: ["is", "isnot", "greaterthan", "lessthan"],
+                        "datetime": ["is", "isnot", "greaterthan", "lessthan"],
+                        "datetime-local": ["is", "isnot", "greaterthan", "lessthan"],
+                        month: ["is", "isnot"],
+                        week: ["is", "isnot"],
+                        hidden: ["is", "isnot"],
+                        password: ["is", "isnot", "empty", "notempty"],
+                        color: ["is", "isnot"],
+                        range: ["is", "isnot", "greaterthan", "lessthan"],
+                        file: ["is", "isnot"],
+                        url: ["is", "isnot", "contains"],
+                        image: ["is", "isnot"],
+                        reset: ["is", "isnot"],
+                        search: ["is", "isnot", "contains"],
+                        submit: [],
+                    };
+                },
+
+                operatorsList(fieldId) {
+                    const field = this.fieldOptions.find(f => f.value === fieldId);
+
+                    if (!field) return [];
+
+                    const mapping = this.operatorMapping();
+
+                    if (!mapping[field.type]) return [];
+
+                    return this.allOperatorOptions.filter(x =>
+                        mapping[field.type].includes(x.value.toLowerCase())
+                    );
                 },
 
                 populateGroupsFromInputs() {
@@ -190,7 +237,9 @@ window.formVisibilityGroups = function () {
                         if (!match) return;
 
                         const groupIndex = Number(match[1]);
+
                         const ruleIndex = Number(match[2]);
+
                         const fieldType = match[3].toLowerCase();
 
                         if (!groupsMap.has(groupIndex)) {
@@ -206,6 +255,34 @@ window.formVisibilityGroups = function () {
 
                     this.groups = Array.from(groupsMap.values());
                 },
+
+                syncWithNewInputs(savedData) {
+                    try {
+                        // Step 1: Get the latest input fields from the form
+                        const currentInputs = this.getInputs();
+
+                        return currentInputs.map((input) => {
+                            // Step 2: Check if savedData is a valid array
+                            if (!Array.isArray(savedData)) {
+                                console.warn("⚠️ savedData is not an array. Resetting to new inputs.");
+                                return [];
+                            }
+
+                            // Step 3: Find a matching saved group for this input
+                            const existingGroup = savedData.find((group) =>
+                                group.rules.some(rule => rule.field === input.htmlId)
+                            );
+
+                            // Step 4: 🚀 **Fix: If no existing group, return nothing (NO AUTO-CREATION)**
+                            return existingGroup ? existingGroup : null;
+                        }).filter(group => group !== null); // 🚀 **Filter out 'null' values**
+                        // This ensures we only keep existing groups, and do not add new ones
+
+                    } catch (error) {
+                        console.error("❌ syncWithNewInputs() failed:", error);
+                        return []; // Return an empty array to avoid breaking the app
+                    }
+                },
             },
 
             mounted() {
@@ -215,12 +292,16 @@ window.formVisibilityGroups = function () {
 
                 this.$nextTick(() => {
                     this.populateFields();
+
                     this.operatorOptions = this.findOperators();
 
                     const savedGroups = localStorage.getItem(`savedGroups_${this.widgetId}`);
+
                     if (savedGroups) {
                         try {
-                            this.groups = JSON.parse(savedGroups);
+                            const savedData = JSON.parse(savedGroups);
+                            this.groups = this.syncWithNewInputs(savedData);
+
                         } catch (error) {
                             console.error("❌ Failed to parse saved groups:", error);
                         }
@@ -228,9 +309,13 @@ window.formVisibilityGroups = function () {
                         this.populateGroupsFromInputs();
                     }
 
-                    this.$watch('groups', (newGroups) => {
-                        localStorage.setItem(`savedGroups_${this.widgetId}`, JSON.stringify(newGroups));
-                    }, { deep: true });
+                    this.$watch(
+                        "groups",
+                        (newGroups) => {
+                            localStorage.setItem(`savedGroups_${this.widgetId}`, JSON.stringify(newGroups));
+                        },
+                        { deep: true }
+                    );
                 });
             }, template: config.template
         });

@@ -30,113 +30,136 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const rulesMap = {};
-        // Build the map of rules from each .visibility-target element
-        document.querySelectorAll('.visibility-target').forEach(ruleElement => {
-            const targetInput = ruleElement.dataset.targetinput;
-            console.log('Processing ruleElement:', ruleElement);
-            console.log('ruleElement.dataset:', ruleElement.dataset);
-            if (!rulesMap[targetInput]) {
-                rulesMap[targetInput] = [];
-            }
-            rulesMap[targetInput].push(ruleElement);
-            console.log(`Added rule for targetInput "${targetInput}".`);
-        });
-        console.log("Completed building rules map:", rulesMap);
 
-        // New function: Initialize widget visibility based on the rule action.
-        function initializeWidgetVisibility() {
-            Object.keys(rulesMap).forEach(targetInput => {
-                rulesMap[targetInput].forEach(ruleElement => {
-                    const action = ruleElement.dataset.action?.toLowerCase();
-                    const widget = ruleElement.closest('.widget');
-                    if (widget) {
-                        if (action === "hide") {
-                            widget.classList.add("d-none");
-                            console.log(`Initial state for widget of "${targetInput}": Action is Hide, widget is hidden.`);
-                        } else if (action === "show") {
-                            widget.classList.remove("d-none");
-                            console.log(`Initial state for widget of "${targetInput}": Action is Show, widget is visible.`);
+         const rulesMap = {};
+
+            document.querySelectorAll('.visibility-target').forEach(ruleElement => {
+                const targetInput = ruleElement.dataset.targetinput;
+
+                if (!rulesMap[targetInput]) {
+                    rulesMap[targetInput] = [];
+                }
+
+                rulesMap[targetInput].push(ruleElement);
+            });
+
+            function initializeWidgetVisibility() {
+                Object.keys(rulesMap).forEach(targetInput => {
+
+                    rulesMap[targetInput].forEach(ruleElement => {
+
+                        const action = ruleElement.dataset.action?.toLowerCase();
+
+                        const widget = ruleElement.closest('.widget');
+
+                        if (widget) {
+                            if (action === "hide") {
+                                widget.classList.add("d-none");
+                            }
+                            else if (action === "show") {
+                                widget.classList.remove("d-none");
+                            }
                         }
-                    } else {
-                        console.warn(`No .widget container found for ruleElement:`, ruleElement);
-                    }
+                    });
+                });
+            }
+
+            // Run visibility setting on page load
+            initializeWidgetVisibility();
+
+            Object.keys(rulesMap).forEach(targetInput => {
+
+                if (!targetInput || targetInput.trim() === "") {
+                    console.warn("⚠️ Skipping empty targetInput in rulesMap");
+                    return;
+                }
+
+                const inputFieldRule = document.getElementById(targetInput) || document.querySelector(`[name="${targetInput}"]`);
+                if (!inputFieldRule) {
+                    return;
+                }
+                inputFieldRule.addEventListener("change", () => {
+                    passRules(targetInput, inputFieldRule, rulesMap[targetInput]);
                 });
             });
-        }
 
-        // Run the initial visibility setting on page load
-        initializeWidgetVisibility();
-
-        // Attach change listeners to each field that has rules
-        Object.keys(rulesMap).forEach(targetInput => {
-            const actualField = document.getElementById(targetInput) || document.querySelector(`[name="${targetInput}"]`);
-            if (!actualField) {
-                console.warn(`No matching field for "${targetInput}", skipping listener attachment.`);
-                return;
-            }
-            console.log(`Attaching change listener for field "${targetInput}".`);
-            actualField.addEventListener("change", () => {
-                console.log(`Field "${targetInput}" changed.`);
-                updateRulesForField(targetInput, actualField, rulesMap[targetInput]);
-            });
-        });
-
-        // Function to update widget visibility based on rules when a field changes
-        function updateRulesForField(targetInput, actualField, rules) {
+        function passRules(targetInput, inputFieldRule, rules) {
             let triggerValue = "";
-            if (actualField.type === "checkbox") {
-                triggerValue = actualField.checked ? "true" : "false";
-                console.log(`Checkbox value for "${targetInput}": ${triggerValue}`);
-            } else {
-                triggerValue = actualField.value?.trim().toLowerCase() || "";
-                console.log(`Field value for "${targetInput}": ${triggerValue}`);
+
+            if (inputFieldRule.type === "checkbox") {
+                triggerValue = inputFieldRule.checked ? "true" : "false";
             }
+            else if (inputFieldRule.type === "number") {
+                triggerValue = parseFloat(inputFieldRule.value);
+            }
+            else {
+                triggerValue = inputFieldRule.value?.trim().toLowerCase() || "";
+            }
+
             rules.forEach(ruleElement => {
                 const operator = ruleElement.dataset.operator?.toLowerCase();
-                const ruleValue = (ruleElement.dataset.value || "").trim().toLowerCase();
-                console.log(`Evaluating rule for "${targetInput}": current value = "${triggerValue}", operator = "${operator}", rule value = "${ruleValue}"`);
-                let rulePassed = false;
-                switch (operator) {
-                    case "is":
-                        rulePassed = (triggerValue === ruleValue);
-                        break;
-                    case "isnot":
-                        rulePassed = (triggerValue !== ruleValue);
-                        break;
-                    case "empty":
-                        rulePassed = (triggerValue === "");
-                        break;
-                    case "notempty":
-                        rulePassed = (triggerValue !== "");
-                        break;
-                    case "contains":
-                        rulePassed = triggerValue.includes(ruleValue);
-                        break;
-                    case "doesnotcontain":
-                        rulePassed = !triggerValue.includes(ruleValue);
-                        break;
-                    case "greaterthan":
-                        rulePassed = parseFloat(triggerValue) > parseFloat(ruleValue);
-                        break;
-                    case "lessthan":
-                        rulePassed = parseFloat(triggerValue) < parseFloat(ruleValue);
-                        break;
-                    default:
-                        console.warn(`⚠️ Unknown operator for "${targetInput}": ${operator}`);
-                        break;
+
+                let ruleValueRaw = (ruleElement.dataset.value || "").trim().toLowerCase();
+
+                let ruleValue = ruleValueRaw;
+
+                if (inputFieldRule.type === "number") {
+                    ruleValue = parseFloat(ruleValueRaw);
                 }
+                console.log(`Evaluating rule for "${targetInput}": current value = "${triggerValue}", operator = "${operator}", rule value = "${ruleValue}"`);
+
+                let rulePassed = false;
+
+                switch (operator) {
+                    case null:
+                    case "":
+                    console.warn(`⚠️ No operator selected for "${targetInput}". Skipping rule.`);
+                    return;
+
+                    case "is":
+                    rulePassed = (triggerValue === ruleValue);
+                    break;
+                    case "isnot":
+                    rulePassed = (triggerValue !== ruleValue);
+                    break;
+                    case "empty":
+                    rulePassed = (triggerValue === "" || isNaN(triggerValue));
+                    break;
+                    case "notempty":
+                    rulePassed = (triggerValue !== "" && !isNaN(triggerValue));
+                    break;
+                    case "contains":
+                    rulePassed = triggerValue.includes(ruleValue);
+                    break;
+                    case "doesnotcontain":
+                    rulePassed = !triggerValue.includes(ruleValue);
+                    break;
+                    case "startswith":
+                    rulePassed = triggerValue.startsWith(ruleValue);
+                    break;
+                    case "endswith":
+                    rulePassed = triggerValue.endsWith(ruleValue);
+                    break;
+                    case "greaterthan":
+                    rulePassed = triggerValue > ruleValue;
+                    break;
+                    case "lessthan":
+                    rulePassed = triggerValue < ruleValue;
+                    break;
+                    default:
+                    console.warn(`⚠️ Unknown operator for "${targetInput}": ${operator}`);
+                    break;
+                }
+
                 const widget = ruleElement.closest('.widget');
+
                 if (widget) {
                     if (rulePassed) {
                         widget.classList.remove("d-none");
-                        console.log(`Rule passed for "${targetInput}". Showing entire widget.`);
-                    } else {
-                       // widget.classList.add("d-none");
-                        console.log(`Rule failed for "${targetInput}". Hiding entire widget.`);
                     }
-                } else {
-                    console.warn(`No .widget container found for ruleElement:`, ruleElement);
+                    else {
+                        widget.classList.add("d-none");
+                    }
                 }
             });
         }

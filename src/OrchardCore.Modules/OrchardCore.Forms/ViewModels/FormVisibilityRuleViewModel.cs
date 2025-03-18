@@ -6,9 +6,9 @@ namespace OrchardCore.Forms.ViewModels;
 
 public class FormVisibilityRuleViewModel
 {
-    public string Field { get; set; }
+    public string Field { get; set; } = "";
 
-    public FormVisibilityOperator Operator { get; set; }
+    public FormVisibilityOperator? Operator { get; set; }
 
     public bool IsRemoved { get; set; }
 

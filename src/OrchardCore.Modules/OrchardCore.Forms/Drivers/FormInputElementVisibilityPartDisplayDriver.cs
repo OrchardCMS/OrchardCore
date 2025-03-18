@@ -37,7 +37,7 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
                     new FormVisibilityRule
                     {
                       Field = "",
-                      Operator = FormVisibilityOperator.Is,
+                      Operator = null,
                       Values = Array.Empty<string>()
                     }
                   }
