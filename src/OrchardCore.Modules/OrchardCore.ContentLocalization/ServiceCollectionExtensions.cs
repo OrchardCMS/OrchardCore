@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OrchardCore.ContentLocalization.Drivers;
 using OrchardCore.ContentLocalization.Handlers;
+using OrchardCore.ContentLocalization.Indexes;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentManagement;
