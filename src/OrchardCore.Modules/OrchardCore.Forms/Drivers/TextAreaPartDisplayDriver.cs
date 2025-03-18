@@ -10,7 +10,7 @@ namespace OrchardCore.Forms.Drivers;
 
 public sealed class TextAreaPartDisplayDriver : ContentPartDisplayDriver<TextAreaPart>
 {
-    private IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public TextAreaPartDisplayDriver(IStringLocalizer<TextAreaPartDisplayDriver> stringLocalizer)
     {
