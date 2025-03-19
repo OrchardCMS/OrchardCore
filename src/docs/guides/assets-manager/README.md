@@ -447,4 +447,10 @@ Also, now when adding a `<script>` tag to the HTML, you will need to use:
 
 Meaning that the ESM script will be interpreted as CommonJS by the browser if the script tag doesn't have it.
 
-Also, Vite builds currently will return a console log if you are trying to use them without the `type="module"` parameter on a script tag if not they will throw exceptions from code, so it is mandatory to use `type="module"` with them. Parcel doesn't prevent this and their ESM compiled script will load fine but you should try to avoid it else it is counter productive, you should then use a CommonJS build.
+Also, Vite by default only allows ES6 builds. Currently it will return a console log if you are trying to integrate its .js builds without the `type="module"` parameter on their script tag; if not they will throw exceptions from code, so it is mandatory to use `type="module"` with them.
+
+Parcel allows ES6 builds by configuration in the package.json file by adding the `"type": "module"` parameter.
+If this parameter is not set Parcel will compile as CommonJS. 
+
+ESM compiled scripts will load fine on a script tag without `"type="module"`. Though you should try to avoid it.
+See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules#applying_the_module_to_your_html
