@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Deployment;
-using OrchardCore.Search.AzureAI.Deployment.Models;
+using OrchardCore.Modules;
 using OrchardCore.Search.AzureAI.Models;
 using OrchardCore.Search.AzureAI.Services;
 
@@ -10,10 +11,17 @@ public sealed class AzureAISearchIndexDeploymentSource
     : DeploymentSourceBase<AzureAISearchIndexDeploymentStep>
 {
     private readonly AzureAISearchIndexSettingsService _indexSettingsService;
+    private readonly IEnumerable<IAzureAISearchIndexSettingsHandler> _handlers;
+    private readonly ILogger _logger;
 
-    public AzureAISearchIndexDeploymentSource(AzureAISearchIndexSettingsService indexSettingsService)
+    public AzureAISearchIndexDeploymentSource(
+        AzureAISearchIndexSettingsService indexSettingsService,
+        IEnumerable<IAzureAISearchIndexSettingsHandler> handlers,
+        ILogger<AzureAISearchIndexDeploymentSource> logger)
     {
         _indexSettingsService = indexSettingsService;
+        _handlers = handlers;
+        _logger = logger;
     }
 
     protected override async Task ProcessAsync(AzureAISearchIndexDeploymentStep step, DeploymentPlanResult result)
@@ -33,9 +41,18 @@ public sealed class AzureAISearchIndexDeploymentSource
                 continue;
             }
 
-            var indexInfo = GetIndexInfo(index);
+            var indexInfo = new JsonObject()
+            {
+                { "IndexName", index.IndexName },
+                { "AnalyzerName", index.AnalyzerName },
+                { "QueryAnalyzerName", index.QueryAnalyzerName },
+            };
 
-            data.Add(JObject.FromObject(indexInfo));
+            var exportingContext = new AzureAISearchIndexSettingsExportingContext(index, indexInfo);
+
+            await _handlers.InvokeAsync((handler, context) => handler.ExportingAsync(context), exportingContext, _logger);
+
+            data.Add(indexInfo);
         }
 
         result.Steps.Add(new JsonObject
@@ -44,15 +61,4 @@ public sealed class AzureAISearchIndexDeploymentSource
             ["Indices"] = data,
         });
     }
-
-    private static AzureAISearchIndexInfo GetIndexInfo(AzureAISearchIndexSettings settings)
-        => new()
-        {
-            IndexName = settings.IndexName,
-            AnalyzerName = settings.AnalyzerName,
-            QueryAnalyzerName = settings.QueryAnalyzerName,
-            IndexedContentTypes = settings.IndexedContentTypes ?? [],
-            IndexLatest = settings.IndexLatest,
-            Culture = settings.Culture,
-        };
 }

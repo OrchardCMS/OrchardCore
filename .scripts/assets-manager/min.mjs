@@ -8,6 +8,8 @@ import { transform } from "lightningcss";
 import postcss from "postcss";
 import postcssRTLCSS from "postcss-rtlcss";
 import { Mode, Source } from "postcss-rtlcss/options";
+import { Buffer } from "buffer";
+import process from "node:process";
 
 let action = process.argv[2];
 let mode = action === "build" ? "production" : "development";
@@ -78,37 +80,29 @@ glob(config.source).then((files) => {
                     if (fileInfo.ext === ".js") {
                         let reader = await fs.readFile(file, "utf8");
 
-                        swc.minify(reader, {
-                            compress: true,
-                            sourceMap: mode === "development",
-                        }).then((output) => {
-                            const minifiedTarget = path.join(dest, path.parse(target).name + ".min.js");
-                            fs.outputFile(minifiedTarget, output.code);
-                            console.log(`Minified (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(minifiedTarget));
+                        await swc
+                            .minify(reader.replace(/(\r?\n|\r)/gm, "\n"), {
+                                compress: true,
+                                mangle: true,
+                                sourceMap: mode === "production",
+                            })
+                            .then((output) => {
+                                const minifiedTarget = path.join(dest, path.parse(target).name + ".min.js");
 
-                            if (mode === "development" && output.map) {
-                                const mappedTarget = path.join(dest, path.parse(target).name + ".map");
-                                const normalized = output.map.replace(/(?:\\[rn])+/g, "\\n");
-                                fs.outputFile(mappedTarget, normalized + "\n");
-                                console.log(`Mapped (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(mappedTarget));
-                            }
-                        });
+                                fs.outputFile(minifiedTarget, output.code + "\n");
+                                console.log(`Minified for prod from (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(minifiedTarget));
 
-                        fs.exists(target).then((exists) => {
-                            if (!exists) {
-                                fs.copy(file, target)
-                                    .then(() => console.log(`Copied (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target)))
-                                    .catch((err) => {
-                                        console.log(
-                                            `${chalk.red("Error copying")} (${chalk.gray("from")}, ${chalk.cyan("to")})`,
-                                            chalk.gray(file),
-                                            chalk.cyan(target),
-                                            chalk.red(err),
-                                        );
-                                        throw err;
-                                    });
-                            }
-                        });
+                                if (mode === "production" && output.map) {
+                                    const mappedTarget = path.join(dest, path.parse(target).name + ".map");
+                                    let normalized = output.map.replace(/(?:\\[rn])+/g, "\\n");
+                                    fs.outputFile(mappedTarget, normalized + "\n");
+                                    console.log(`Mapped (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(mappedTarget));
+                                }
+
+                                fs.outputFile(target, output.code + "\n" + "//# sourceMappingURL=" + path.parse(target).name + ".map");
+                                console.log(`Minified for dev from (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(target));
+                                
+                            });
                     } else if (fileInfo.ext === ".css") {
                         let reader = await fs.readFile(file, "utf8");
 
@@ -138,23 +132,15 @@ glob(config.source).then((files) => {
                                 throw err;
                             });
 
-                        let { code, map } = transform({
+                        let { code } = transform({
                             code: Buffer.from(reader),
-                            minify: true,
-                            sourceMap: mode === "development",
+                            minify: true
                         });
 
                         if (code) {
                             const minifiedTarget = path.join(dest, path.parse(target).name + ".min.css");
                             await fs.outputFile(minifiedTarget, code.toString());
                             console.log(`Minified (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(minifiedTarget));
-                        }
-
-                        if (mode === "development" && map) {
-                            const mappedTarget = path.join(dest, path.parse(target).name + ".map");
-                            const normalized = map.toString().replace(/(?:\\[rn])+/g, "\\n");
-                            await fs.outputFile(mappedTarget, normalized + "\n");
-                            console.log(`Mapped (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(mappedTarget));
                         }
                     } else {
                         console.log("Trying to minify a file with an extension that is not allowed.");

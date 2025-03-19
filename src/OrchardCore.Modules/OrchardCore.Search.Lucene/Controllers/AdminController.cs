@@ -25,7 +25,6 @@ using OrchardCore.Routing;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Services;
 using OrchardCore.Search.Lucene.ViewModels;
-using YesSql;
 
 namespace OrchardCore.Search.Lucene.Controllers;
 
@@ -34,7 +33,6 @@ public sealed class AdminController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
-    private readonly ISession _session;
     private readonly LuceneIndexManager _luceneIndexManager;
     private readonly LuceneIndexingService _luceneIndexingService;
     private readonly IAuthorizationService _authorizationService;
@@ -55,7 +53,6 @@ public sealed class AdminController : Controller
     internal readonly IHtmlLocalizer H;
 
     public AdminController(
-        ISession session,
         IContentDefinitionManager contentDefinitionManager,
         LuceneIndexManager luceneIndexManager,
         LuceneIndexingService luceneIndexingService,
@@ -74,7 +71,6 @@ public sealed class AdminController : Controller
         IOptions<TemplateOptions> templateOptions,
         ILocalizationService localizationService)
     {
-        _session = session;
         _luceneIndexManager = luceneIndexManager;
         _luceneIndexingService = luceneIndexingService;
         _authorizationService = authorizationService;

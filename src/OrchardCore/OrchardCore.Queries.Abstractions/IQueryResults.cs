@@ -8,5 +8,5 @@ public interface IQueryResults
     /// <summary>
     /// Gets or sets the query items.
     /// </summary>
-    public IEnumerable<object> Items { get; set; }
+    IEnumerable<object> Items { get; set; }
 }

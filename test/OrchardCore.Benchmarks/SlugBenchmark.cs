@@ -1,7 +1,7 @@
 using BenchmarkDotNet.Attributes;
 using OrchardCore.Modules.Services;
 
-namespace OrchardCore.Benchmark;
+namespace OrchardCore.Benchmarks;
 
 [MemoryDiagnoser]
 public class SlugBenchmark

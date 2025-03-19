@@ -16,7 +16,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundJobs;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Liquid;
@@ -27,7 +26,6 @@ using OrchardCore.Search.Elasticsearch.Core.Models;
 using OrchardCore.Search.Elasticsearch.Core.Services;
 using OrchardCore.Search.Elasticsearch.ViewModels;
 using OrchardCore.Settings;
-using YesSql;
 
 namespace OrchardCore.Search.Elasticsearch;
 
@@ -36,10 +34,8 @@ public sealed class AdminController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
-    private readonly ISession _session;
     private readonly ISiteService _siteService;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
-    private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly ElasticsearchIndexManager _elasticIndexManager;
     private readonly ElasticsearchIndexingService _elasticIndexingService;
@@ -57,10 +53,8 @@ public sealed class AdminController : Controller
     internal readonly IHtmlLocalizer H;
 
     public AdminController(
-        ISession session,
         ISiteService siteService,
         ILiquidTemplateManager liquidTemplateManager,
-        IContentDefinitionManager contentDefinitionManager,
         IAuthorizationService authorizationService,
         ElasticsearchIndexManager elasticIndexManager,
         ElasticsearchIndexingService elasticIndexingService,
@@ -76,10 +70,8 @@ public sealed class AdminController : Controller
         IStringLocalizer<AdminController> stringLocalizer,
         IHtmlLocalizer<AdminController> htmlLocalizer)
     {
-        _session = session;
         _siteService = siteService;
         _liquidTemplateManager = liquidTemplateManager;
-        _contentDefinitionManager = contentDefinitionManager;
         _authorizationService = authorizationService;
         _elasticIndexManager = elasticIndexManager;
         _elasticIndexingService = elasticIndexingService;

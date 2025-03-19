@@ -9,6 +9,8 @@ import postcss from "postcss";
 import postcssRTLCSS from "postcss-rtlcss";
 import { Mode } from "postcss-rtlcss/options";
 import chokidar from "chokidar";
+import { Buffer } from "buffer";
+import process from "node:process";
 
 let action = process.argv[2];
 let mode = action === "build" ? "production" : "development";
@@ -21,6 +23,13 @@ if (config.dryRun) {
 
 const isWatching = action === "watch";
 
+/**
+ * Recursively resolves all the @import statements in a given file.
+ * @param {string} filePath - The path to the SCSS file.
+ * @param {string} fileContent - The content of the SCSS file.
+ * @param {Set<string>} [resolvedFiles] - The set of resolved files.
+ * @returns {Set<string>} The set of resolved files.
+ */
 const resolveImports = (filePath, fileContent, resolvedFiles = new Set()) => {
     const importRegex = /@import\s+['"](.+?)['"]/g;
     let match;
@@ -76,6 +85,24 @@ if (isWatching) {
     runSass(config);
 }
 
+/**
+ * Transpiles SCSS files to CSS, including optional RTL transformation and minification.
+ *
+ * @param {Object} config - Configuration object for the Sass transpilation process.
+ * @param {string} config.source - Glob pattern or path to the source SCSS files.
+ * @param {string} [config.dest] - Destination directory for the output CSS files. Defaults to a path derived from config.basePath.
+ * @param {boolean} [config.dryRun] - If true, performs a dry run without writing files.
+ * @param {boolean} [config.generateRTL] - If true, generates RTL-compatible CSS using postcss-rtlcss.
+ *
+ * The function processes SCSS files by:
+ * - Resolving the source files matching the given glob pattern.
+ * - Checking if the destination directory exists and is valid.
+ * - Transpiling SCSS to CSS, optionally generating source maps.
+ * - Generating RTL CSS if specified.
+ * - Minifying the resulting CSS.
+ * - Logging the progress and results to the console.
+ */
+
 function runSass(config) {
     glob(config.source).then((files) => {
         if (files.length == 0) {
@@ -123,15 +150,15 @@ function runSass(config) {
 
                         if (fileInfo.ext === ".scss") {
                             const scssResult = await sass.compileAsync(file, {
-                                sourceMap: mode === "development",
+                                sourceMap: mode === "production",
                                 sourceMapIncludeSources: false,
                             });
 
-                            if (mode === "development" && scssResult.sourceMap) {
+                            /*                             if (mode === "production" && scssResult.sourceMap) {
                                 const mappedTarget = path.join(dest, path.parse(target).name + ".scss.map");
                                 fs.outputFile(mappedTarget, JSON5.stringify(scssResult.sourceMap));
                                 console.log(`Mapped (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(file), chalk.cyan(mappedTarget));
-                            }
+                            } */
 
                             if (scssResult.css) {
                                 const normalTarget = path.join(dest, path.parse(target).name + ".css");
@@ -162,11 +189,11 @@ function runSass(config) {
                                     console.log(`Minified (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(normalTarget), chalk.cyan(minifiedTarget));
                                 }
 
-                                if (mode === "development" && map) {
+/*                                 if (mode === "production" && map) {
                                     const mappedTarget = path.join(dest, path.parse(target).name + ".css.map");
                                     fs.outputFile(mappedTarget, map);
                                     console.log(`Mapped (${chalk.gray("from")}, ${chalk.cyan("to")})`, chalk.gray(normalTarget), chalk.cyan(mappedTarget));
-                                }
+                                } */
                             }
                         } else {
                             console.log("Trying to transpile a SASS file with an extension that is not allowed.");

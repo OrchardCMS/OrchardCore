@@ -36,15 +36,13 @@ public sealed class ServerAdminMenu : AdminNavigationProvider
 
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
-                    .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), openId => openId
-                        .AddClass("openid")
-                        .Id("openid")
-                        .Add(S["Authorization Server"], S["Authorization Server"].PrefixPosition(), server => server
-                            .Action("Index", "ServerConfiguration", "OrchardCore.OpenId")
-                            .Permission(OpenIdPermissions.ManageServerSettings)
-                            .LocalNav()
-                        )
+                .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), openId => openId
+                    .AddClass("openid")
+                    .Id("openid")
+                    .Add(S["Authorization Server"], S["Authorization Server"].PrefixPosition(), server => server
+                        .Action("Index", "ServerConfiguration", "OrchardCore.OpenId")
+                        .Permission(OpenIdPermissions.ManageServerSettings)
+                        .LocalNav()
                     )
                 )
             );

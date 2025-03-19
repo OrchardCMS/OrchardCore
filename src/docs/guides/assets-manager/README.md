@@ -15,7 +15,8 @@ Parcel is the easiest way to build assets so far as it doesn't require any confi
 1. Install the current 22.x version of [Node.js](https://nodejs.org/en/download). If you are already using a different version of Node.js for other projects, we recommend using Node Version Manager (see [here](https://github.com/nvm-sh/nvm) for the original project for *nix systems, and [here](https://github.com/coreybutler/nvm-windows) for Windows).
 2. From the root of the repository, run the following commands. Be sure to indeed run **exactly** these, and verify that Yarn v4.6.x got installed.
     ```cmd
-    corepack enable
+    REM On Windows may require to run command shell with administrator privileges.
+    corepack enable 
     yarn
     ```
 
@@ -109,6 +110,18 @@ Parcel bundleEntrypoint parameter:
     "tags":["vue3"]
   }
 ]
+```
+
+#### Sourcemaps
+
+For javascript files Parcel will create a .min.js file for you along with a .map file. The .min.js is created for use in production as it doesn't reference the .map file. Using the ResourceManagementOptionsConfiguration you will want to set it this way:
+
+```C#
+    _manifest
+        .DefineScript("admin")
+        .SetDependencies("bootstrap", "admin-main", "theme-manager", "jQuery", "Sortable")
+        .SetUrl("~/TheAdmin/js/theadmin/TheAdmin.min.js", "~/TheAdmin/js/theadmin/TheAdmin.js")
+        .SetVersion("1.0.0");
 ```
 
 ### Vite
