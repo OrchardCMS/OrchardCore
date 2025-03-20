@@ -6,7 +6,5 @@ public class FormInputElementVisibilityPart : ContentPart
 {
     public IEnumerable<FormVisibilityRuleGroup> Groups { get; set; }
 
-    public FormVisibilityAction Action { get; set; } = FormVisibilityAction.None;  // Default to None
-
-    public string Prefix { get; set; }
+    public FormVisibilityAction Action { get; set; } = FormVisibilityAction.None;
 }

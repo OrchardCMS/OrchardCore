@@ -29,7 +29,8 @@
     document.addEventListener('DOMContentLoaded', function () {
         formVisibilityGroups.initialize({
         appElementSelector: '#@(idPrefix)_groupsContainerId',
-        prefix: '@Html.NameForModel()'
+        prefix: '@Html.NameForModel()',
+        widgetId: '@Html.NameForModel()'
         });
     });
 </script>

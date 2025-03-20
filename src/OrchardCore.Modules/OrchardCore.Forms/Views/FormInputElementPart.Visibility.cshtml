@@ -1,9 +1,6 @@
 @using OrchardCore.Forms.ViewModels
 @model FormInputElementVisibilityViewModel
 
-@using System.Diagnostics;
-
-
 @{
     int groupIndex = 0;
 }
@@ -31,57 +28,56 @@
 <script>
     document.addEventListener("DOMContentLoaded", () => {
 
-         const rulesMap = {};
+        const rulesMap = {};
 
-            document.querySelectorAll('.visibility-target').forEach(ruleElement => {
-                const targetInput = ruleElement.dataset.targetinput;
+        document.querySelectorAll('.visibility-target').forEach(ruleElement => {
+            const targetInput = ruleElement.dataset.targetinput;
 
-                if (!rulesMap[targetInput]) {
-                    rulesMap[targetInput] = [];
-                }
-
-                rulesMap[targetInput].push(ruleElement);
-            });
-
-            function initializeWidgetVisibility() {
-                Object.keys(rulesMap).forEach(targetInput => {
-
-                    rulesMap[targetInput].forEach(ruleElement => {
-
-                        const action = ruleElement.dataset.action?.toLowerCase();
-
-                        const widget = ruleElement.closest('.widget');
-
-                        if (widget) {
-                            if (action === "hide") {
-                                widget.classList.add("d-none");
-                            }
-                            else if (action === "show") {
-                                widget.classList.remove("d-none");
-                            }
-                        }
-                    });
-                });
+            if (!rulesMap[targetInput]) {
+                rulesMap[targetInput] = [];
             }
 
-            // Run visibility setting on page load
-            initializeWidgetVisibility();
+            rulesMap[targetInput].push(ruleElement);
+        });
 
+        function initializeWidgetVisibility() {
             Object.keys(rulesMap).forEach(targetInput => {
 
-                if (!targetInput || targetInput.trim() === "") {
-                    console.warn("⚠️ Skipping empty targetInput in rulesMap");
-                    return;
-                }
+                rulesMap[targetInput].forEach(ruleElement => {
 
-                const inputFieldRule = document.getElementById(targetInput) || document.querySelector(`[name="${targetInput}"]`);
-                if (!inputFieldRule) {
-                    return;
-                }
-                inputFieldRule.addEventListener("change", () => {
-                    passRules(targetInput, inputFieldRule, rulesMap[targetInput]);
+                    const action = ruleElement.dataset.action?.toLowerCase();
+
+                    const widget = ruleElement.closest('.widget');
+
+                    if (widget) {
+                        if (action === "hide") {
+                            widget.classList.add("d-none");
+                        }
+                        else if (action === "show") {
+                            widget.classList.remove("d-none");
+                        }
+                    }
                 });
             });
+        }
+
+        initializeWidgetVisibility();
+
+        Object.keys(rulesMap).forEach(targetInput => {
+
+            if (!targetInput || targetInput.trim() === "") {
+                return;
+            }
+
+            const inputFieldRule = document.getElementById(targetInput) || document.querySelector(`[name="${targetInput}"]`);
+            if (!inputFieldRule) {
+                return;
+            }
+
+            inputFieldRule.addEventListener("change", () => {
+                passRules(targetInput, inputFieldRule, rulesMap[targetInput]);
+            });
+        });
 
         function passRules(targetInput, inputFieldRule, rules) {
             let triggerValue = "";
@@ -95,6 +91,9 @@
             else {
                 triggerValue = inputFieldRule.value?.trim().toLowerCase() || "";
             }
+
+            // declare outside of loop
+            let someRulePassed = false;
 
             rules.forEach(ruleElement => {
                 const operator = ruleElement.dataset.operator?.toLowerCase();
@@ -151,17 +150,21 @@
                     break;
                 }
 
-                const widget = ruleElement.closest('.widget');
+                if (rulePassed) {
+                    someRulePassed = true;
+                }
+            });
 
+            if (rules.length > 0) {
+                const widget = rules[0].closest('.widget');
                 if (widget) {
-                    if (rulePassed) {
+                    if (someRulePassed) {
                         widget.classList.remove("d-none");
-                    }
-                    else {
+                    } else {
                         widget.classList.add("d-none");
                     }
                 }
-            });
+            }
         }
     });
 </script>

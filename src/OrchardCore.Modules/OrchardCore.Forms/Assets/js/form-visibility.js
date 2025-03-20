@@ -89,7 +89,8 @@ window.formVisibilityGroups = function () {
                     operatorOptions: [],
                     allOperatorOptions: [],
                     prefix: '',
-                    widgetId: config.appElementSelector.replace('#', '')
+                    // widgetId: config.appElementSelector.replace('#', '')
+                    widgetId: config.widgetId,
                 };
             },
 
@@ -101,10 +102,20 @@ window.formVisibilityGroups = function () {
 
             methods: {
                 addGroup() {
-                    this.groups.push({
+
+                    console.log("[VisibilityGroups] addGroup triggered");
+                    var newGroup = {
                         id: 'group-' + (groupCounter++),
-                        rules: []
-                    });
+                        rules: [{
+                            id: 'rule-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+                            field: '',
+                            operator: '',
+                            value: ''
+                        }]
+                    };
+
+                    this.groups.push(newGroup);
+                    this.$set(this.groups, this.groups.length - 1, newGroup);
                 },
 
                 addRule(groupIndex) {
@@ -114,7 +125,8 @@ window.formVisibilityGroups = function () {
                         operator: '',
                         value: ''
                     };
-                    this.groups[groupIndex].rules.push(newRule);
+
+                    this.$set(this.groups[groupIndex].rules, this.groups[groupIndex].rules.length, newRule);
                 },
 
                 removeGroup(groupIndex) {
@@ -258,29 +270,36 @@ window.formVisibilityGroups = function () {
 
                 syncWithNewInputs(savedData) {
                     try {
-                        // Step 1: Get the latest input fields from the form
                         const currentInputs = this.getInputs();
-
-                        return currentInputs.map((input) => {
-                            // Step 2: Check if savedData is a valid array
+                        const matchedGroups = [];
+                        // For each input in the form, find every group that references it
+                        currentInputs.forEach(input => {
                             if (!Array.isArray(savedData)) {
-                                console.warn("⚠️ savedData is not an array. Resetting to new inputs.");
-                                return [];
+                                return;
                             }
 
-                            // Step 3: Find a matching saved group for this input
-                            const existingGroup = savedData.find((group) =>
+                            const referencingGroups = savedData.filter(group =>
                                 group.rules.some(rule => rule.field === input.htmlId)
                             );
 
-                            // Step 4: 🚀 **Fix: If no existing group, return nothing (NO AUTO-CREATION)**
-                            return existingGroup ? existingGroup : null;
-                        }).filter(group => group !== null); // 🚀 **Filter out 'null' values**
-                        // This ensures we only keep existing groups, and do not add new ones
+                            matchedGroups.push(...referencingGroups);
+                        });
 
-                    } catch (error) {
-                        console.error("❌ syncWithNewInputs() failed:", error);
-                        return []; // Return an empty array to avoid breaking the app
+                        const uniqueGroups = [];
+                        const foundGroup = new Set();
+
+                        for (const group of matchedGroups) {
+                            if (!foundGroup.has(group.id)) {
+                                foundGroup.add(group.id);
+                                uniqueGroups.push(group);
+                            }
+                        }
+
+                        return uniqueGroups;
+
+                    } catch (e) {
+                        console.error(e);
+                        return [];
                     }
                 },
             },
@@ -292,18 +311,18 @@ window.formVisibilityGroups = function () {
 
                 this.$nextTick(() => {
                     this.populateFields();
-
                     this.operatorOptions = this.findOperators();
 
-                    const savedGroups = localStorage.getItem(`savedGroups_${this.widgetId}`);
+                    const savedKeys = Object.keys(localStorage).filter(key => key.startsWith(`savedGroups_${this.widgetId}`));
+
+                    const savedGroups = savedKeys.length > 0 ? localStorage.getItem(savedKeys[savedKeys.length - 1]) : null;
 
                     if (savedGroups) {
                         try {
                             const savedData = JSON.parse(savedGroups);
                             this.groups = this.syncWithNewInputs(savedData);
-
-                        } catch (error) {
-                            console.error("❌ Failed to parse saved groups:", error);
+                        } catch (e) {
+                            console.error("Error parsing saved groups:", e);
                         }
                     } else {
                         this.populateGroupsFromInputs();
@@ -312,9 +331,11 @@ window.formVisibilityGroups = function () {
                     this.$watch(
                         "groups",
                         (newGroups) => {
+                            if (!newGroups || newGroups.length === 0) {
+                                return;
+                            }
                             localStorage.setItem(`savedGroups_${this.widgetId}`, JSON.stringify(newGroups));
-                        },
-                        { deep: true }
+                        }, { deep: true }
                     );
                 });
             }, template: config.template

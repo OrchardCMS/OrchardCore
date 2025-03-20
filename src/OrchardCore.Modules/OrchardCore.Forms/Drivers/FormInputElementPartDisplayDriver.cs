@@ -36,8 +36,6 @@ public sealed class FormInputElementPartDisplayDriver : ContentPartDisplayDriver
                             Field = rule.Field,
                             Operator = rule.Operator,
                             Value = rule.Values?.FirstOrDefault() ?? string.Empty,
-                            ConditionalField = rule.ConditionalField,
-                            ShowWhenMatched = rule.ShowWhenMatched
                         };
                     }).ToList() ?? new List<FormVisibilityRuleViewModel>()
                 }).ToList();

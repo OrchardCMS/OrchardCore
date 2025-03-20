@@ -3,6 +3,12 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 window.formVisibilityGroups = function () {
   var defaultConfig = {
     template: "\n           <div>\n        <ul class=\"list-group\">\n            <!-- Loop through each group -->\n            <li class=\"list-group-item\" v-for=\"(group, groupIndex) in groups\" :key=\"groupIndex\">\n                <div class=\"d-flex justify-content-between mb-2\">\n                    <span>Group {{ groupIndex + 1 }}</span>\n                    <input type=\"hidden\" :name=\"prefix + 'Groups[' + groupIndex + '].IsRemoved'\" value=\"false\" />\n                    <button type=\"button\" class=\"btn btn-sm btn-danger\" @click=\"removeGroup(groupIndex)\">\n                        <i class=\"fa-solid fa-trash\"></i> Remove Group\n                    </button>\n                </div>\n\n                <!-- Loop through each rule -->\n                <ul class=\"list-group mb-3\">\n                    <!-- Loop through each rule in the group -->\n                    <li class=\"list-group-item\" v-for=\"(rule, ruleIndex) in group.rules\" :key=\"ruleIndex\">\n                        <div class=\"row\">\n                            <div class=\"col\">\n                                <select class=\"form-select\" v-model=\"rule.field\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Field'\">\n                                    <option value=\"\">Select Field</option>\n                                    <option v-for=\"option in fieldOptions\" :value=\"option.value\">\n                                        {{ option.text }}\n                                    </option>\n                                </select>\n                            </div>\n\n                            <div class=\"col\">\n                                <select class=\"form-select\" v-model=\"rule.operator\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Operator'\">\n                                    <option value=\"\">Select Operator</option>\n                                    <option v-for=\"option in operatorsList(rule.field)\" :value=\"option.value\">\n                                        {{ option.text }}\n                                    </option>\n                                </select>\n                            </div>\n\n                            <div class=\"col\">\n                                <input type=\"text\" class=\"form-control\" v-model=\"rule.value\" placeholder=\"Value\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Value'\" />\n                            </div>\n\n                            <div class=\"col-auto\">\n                                <input type=\"hidden\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].IsRemoved'\" value=\"false\" />\n                                <button type=\"button\" class=\"btn btn-sm btn-danger\" @click=\"removeRule(groupIndex, ruleIndex)\">\n                                    <i class=\"fa-solid fa-trash\"></i> Remove Rule\n                                </button>\n                            </div>\n                        </div>\n                    </li>\n                    <li class=\"list-group-item\">\n                        <div class=\"d-flex justify-content-end mb-2\">\n                            <button type=\"button\" class=\"btn btn-sm btn-secondary\" @click=\"addRule(groupIndex)\">\n                                <i class=\"fa-solid fa-circle-plus\"></i> New Rule\n                            </button>\n                        </div>\n                    </li>\n                </ul>\n            </li>\n            <li class=\"list-group-item\">\n                <div class=\"d-flex justify-content-end\">\n                    <button type=\"button\" class=\"btn btn-sm btn-primary\" @click=\"addGroup()\">\n                        <i class=\"fa-solid fa-circle-plus\"></i> New Group\n                    </button>\n                </div>\n            </li>\n        </ul>\n    </div>\n        "
@@ -23,7 +29,8 @@ window.formVisibilityGroups = function () {
           operatorOptions: [],
           allOperatorOptions: [],
           prefix: '',
-          widgetId: config.appElementSelector.replace('#', '')
+          // widgetId: config.appElementSelector.replace('#', '')
+          widgetId: config.widgetId
         };
       },
       computed: {
@@ -33,10 +40,18 @@ window.formVisibilityGroups = function () {
       },
       methods: {
         addGroup: function addGroup() {
-          this.groups.push({
+          console.log("[VisibilityGroups] addGroup triggered");
+          var newGroup = {
             id: 'group-' + groupCounter++,
-            rules: []
-          });
+            rules: [{
+              id: 'rule-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+              field: '',
+              operator: '',
+              value: ''
+            }]
+          };
+          this.groups.push(newGroup);
+          this.$set(this.groups, this.groups.length - 1, newGroup);
         },
         addRule: function addRule(groupIndex) {
           var newRule = {
@@ -45,7 +60,7 @@ window.formVisibilityGroups = function () {
             operator: '',
             value: ''
           };
-          this.groups[groupIndex].rules.push(newRule);
+          this.$set(this.groups[groupIndex].rules, this.groups[groupIndex].rules.length, newRule);
         },
         removeGroup: function removeGroup(groupIndex) {
           this.groups.splice(groupIndex, 1);
@@ -162,31 +177,33 @@ window.formVisibilityGroups = function () {
         },
         syncWithNewInputs: function syncWithNewInputs(savedData) {
           try {
-            // Step 1: Get the latest input fields from the form
             var currentInputs = this.getInputs();
-            return currentInputs.map(function (input) {
-              // Step 2: Check if savedData is a valid array
+            var matchedGroups = [];
+            // For each input in the form, find every group that references it
+            currentInputs.forEach(function (input) {
               if (!Array.isArray(savedData)) {
-                console.warn("⚠️ savedData is not an array. Resetting to new inputs.");
-                return [];
+                return;
               }
-
-              // Step 3: Find a matching saved group for this input
-              var existingGroup = savedData.find(function (group) {
+              var referencingGroups = savedData.filter(function (group) {
                 return group.rules.some(function (rule) {
                   return rule.field === input.htmlId;
                 });
               });
-
-              // Step 4: 🚀 **Fix: If no existing group, return nothing (NO AUTO-CREATION)**
-              return existingGroup ? existingGroup : null;
-            }).filter(function (group) {
-              return group !== null;
-            }); // 🚀 **Filter out 'null' values**
-            // This ensures we only keep existing groups, and do not add new ones
-          } catch (error) {
-            console.error("❌ syncWithNewInputs() failed:", error);
-            return []; // Return an empty array to avoid breaking the app
+              matchedGroups.push.apply(matchedGroups, _toConsumableArray(referencingGroups));
+            });
+            var uniqueGroups = [];
+            var foundGroup = new Set();
+            for (var _i = 0, _matchedGroups = matchedGroups; _i < _matchedGroups.length; _i++) {
+              var group = _matchedGroups[_i];
+              if (!foundGroup.has(group.id)) {
+                foundGroup.add(group.id);
+                uniqueGroups.push(group);
+              }
+            }
+            return uniqueGroups;
+          } catch (e) {
+            console.error(e);
+            return [];
           }
         }
       },
@@ -198,18 +215,24 @@ window.formVisibilityGroups = function () {
         this.$nextTick(function () {
           _this.populateFields();
           _this.operatorOptions = _this.findOperators();
-          var savedGroups = localStorage.getItem("savedGroups_".concat(_this.widgetId));
+          var savedKeys = Object.keys(localStorage).filter(function (key) {
+            return key.startsWith("savedGroups_".concat(_this.widgetId));
+          });
+          var savedGroups = savedKeys.length > 0 ? localStorage.getItem(savedKeys[savedKeys.length - 1]) : null;
           if (savedGroups) {
             try {
               var savedData = JSON.parse(savedGroups);
               _this.groups = _this.syncWithNewInputs(savedData);
-            } catch (error) {
-              console.error("❌ Failed to parse saved groups:", error);
+            } catch (e) {
+              console.error("Error parsing saved groups:", e);
             }
           } else {
             _this.populateGroupsFromInputs();
           }
           _this.$watch("groups", function (newGroups) {
+            if (!newGroups || newGroups.length === 0) {
+              return;
+            }
             localStorage.setItem("savedGroups_".concat(_this.widgetId), JSON.stringify(newGroups));
           }, {
             deep: true

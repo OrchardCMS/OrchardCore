@@ -9,6 +9,4 @@ public class FormVisibilityRule
     public string[] Values { get; set; }
 
     public string ConditionalField { get; set; }
-
-    public bool ShowWhenMatched { get; set; }
 }
