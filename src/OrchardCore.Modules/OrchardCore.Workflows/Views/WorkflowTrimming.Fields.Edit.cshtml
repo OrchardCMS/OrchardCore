@@ -41,36 +41,19 @@
                 <input class="form-check-input workflow-status" type="checkbox" id="@Html.IdFor(m => m.Statuses[statusIterator])"
                        asp-for="@Model.Statuses[statusIterator].IsSelected">
                 <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[statusIterator])">
-                    @switch (status)
-                    {
-                        case WorkflowStatus.Idle:
-                            @T["Idle"]
-                            break;
-                        case WorkflowStatus.Starting:
-                            @T["Starting"]
-                            break;
-                        case WorkflowStatus.Resuming:
-                            @T["Resuming"]
-                            break;
-                        case WorkflowStatus.Executing:
-                            @T["Executing"]
-                            break;
-                        case WorkflowStatus.Halted:
-                            @T["Halted"]
-                            break;
-                        case WorkflowStatus.Finished:
-                            @T["Finished"]
-                            break;
-                        case WorkflowStatus.Faulted:
-                            @T["Faulted"]
-                            break;
-                        case WorkflowStatus.Aborted:
-                            @T["Aborted"]
-                            break;
-                        default:
-                            @status
-                            break;
-                    }
+                    @{ var loc = status switch
+                        {
+                            WorkflowStatus.Idle => T["Idle"],
+                            WorkflowStatus.Starting => T["Starting"],
+                            WorkflowStatus.Resuming => T["Resuming"],
+                            WorkflowStatus.Executing => T["Executing"],
+                            WorkflowStatus.Halted => T["Halted"],
+                            WorkflowStatus.Finished => T["Finished"],
+                            WorkflowStatus.Faulted => T["Faulted"],
+                            WorkflowStatus.Aborted => T["Aborted"],
+                            _ => throw new InvalidOperationException($"Unkown Workflow status: {status}")
+                        };
+                    } @loc
                 </label>
             </div>
         </div>
