@@ -361,7 +361,7 @@ public sealed class UserService : IUserService
 
         await _registrationFormEvents.InvokeAsync((e, ctx) => e.RegisteringAsync(ctx), context, _logger);
 
-        if (!context.CancelSignIn && !_registrationOptions.UsersAreModerated && !_registrationOptions.UsersMustValidateEmail)
+        if (!context.CancelSignIn)
         {
             await _signInManager.SignInAsync(user, isPersistent: false);
         }
