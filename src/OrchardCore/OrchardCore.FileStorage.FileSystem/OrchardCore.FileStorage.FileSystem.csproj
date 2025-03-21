@@ -19,7 +19,7 @@
     <ProjectReference Include="..\OrchardCore.FileStorage.Abstractions\OrchardCore.FileStorage.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net10.0'))">
     <PackageReference Include="System.Linq.Async" />
   </ItemGroup>
 

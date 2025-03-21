@@ -22,6 +22,7 @@ public static class ServiceProviderExtensions
         return (TResult)ActivatorUtilities.CreateInstance(provider, type);
     }
 
+#if !NET10_0_OR_GREATER
     /// <summary>
     /// Gets the service object of the specified type with the specified key.
     /// </summary>
@@ -35,4 +36,6 @@ public static class ServiceProviderExtensions
 
         throw new InvalidOperationException("This service provider doesn't support keyed services.");
     }
+#endif
+
 }
