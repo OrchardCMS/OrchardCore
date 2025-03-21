@@ -169,8 +169,10 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost, ActionName("Edit")]
-    public async Task<ActionResult> EditPost(string id, EditTypeViewModel viewModel)
+    public async Task<ActionResult> EditPost(
+        string id, EditTypeViewModel viewModel, [Bind(Prefix = "submit.Save")] string submitSave)
     {
+        var stayOnSamePage = submitSave == "submit.SaveAndContinue";
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
@@ -207,9 +209,9 @@ public sealed class AdminController : Controller
             await _notifier.SuccessAsync(H["Content type updated successfully."]);
         }
 
-        return HttpContext.Request.Form.ContainsKey("submit.Save")
-            ? RedirectToAction(nameof(List))
-            : RedirectToAction(nameof(Edit), new { id });
+        return stayOnSamePage
+            ? RedirectToAction(nameof(Edit), new { id })
+            : RedirectToAction(nameof(List));
     }
 
     [HttpPost, ActionName("Edit")]
