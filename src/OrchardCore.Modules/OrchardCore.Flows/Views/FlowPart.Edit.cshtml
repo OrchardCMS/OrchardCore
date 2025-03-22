@@ -122,7 +122,7 @@
         }
 
         @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
-                           if ($('#@widgetTemplatePlaceholderId').length == 1) {
+        if ($('#@widgetTemplatePlaceholderId').length == 1) {
             $("#@widgetTemplatePlaceholderId").sortable({
                 handle: ".widget-editor-handle",
                 cursor: "move",
@@ -161,13 +161,10 @@
                     lastContainer.toggleClass('widget-dropzone-hint');
                     widgetDragItem.find('.card').first().toggleClass('border-primary');
 
-                    if (lastContainer[0] != this && this.dataset.widgetTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) >= 0) {
-
-                        widgetItemDestId = widgetDragItem.parent().attr('id');
-
-                        if (widgetItemDestId !== widgetItemSourceId) {
-
-                            var inputs = widgetDragItem.children("input[name*='FlowPart']");
+                    widgetItemDestId = widgetDragItem.parent().attr('id');
+                    if (widgetItemDestId !== widgetItemSourceId) {
+                        if (lastContainer[0] != this && this.dataset.widgetTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) >= 0) {
+                            var inputs = widgetDragItem.children("input[name*='@partName']");
 
                             var destination = $('#' + widgetItemDestId);
                             var source = $('#' + widgetItemSourceId);
@@ -193,7 +190,6 @@
                                         $(this).attr('name', destNameGuid + $(this).attr('name'));
                                     });
                                 }
-
                             }
                             else if (source.length > 0) {
                                 inputs.each(function (index, item) {
@@ -201,20 +197,23 @@
                                     $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, ''));
                                 });
                             }
-
                         }
-
-                        $(document).trigger('contentpreview:render');
-                        widgetItemDestId = null;
+                        else {
+                            event.preventDefault();
+                        }
                     }
-                    else {
-                        event.preventDefault();
+
+                    if (lastContainer[0] != this)
+                    {
+                        $(document).trigger('contentpreview:render');
                     }
 
                     //clear the global variables
                     widgetDragItem = null;
+                    draggedWidget = null;
                     lastContainer = null;
                     widgetItemSourceId = null;
+                    widgetItemDestId = null;
                 },
                 over: function (event, ui) {
                     var $self = $(this);
