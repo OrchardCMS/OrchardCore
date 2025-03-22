@@ -9,7 +9,7 @@ using OrchardCore.Media.Processing;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Processors;
 
-namespace OrchardCore.Benchmark;
+namespace OrchardCore.Benchmarks;
 
 [MemoryDiagnoser]
 public class MediaTokenServiceBenchmark

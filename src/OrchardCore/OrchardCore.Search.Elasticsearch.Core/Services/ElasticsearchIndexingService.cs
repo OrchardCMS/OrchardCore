@@ -5,7 +5,6 @@ using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -22,8 +21,6 @@ public class ElasticsearchIndexingService
 {
     private const int BatchSize = 100;
 
-    private readonly IShellHost _shellHost;
-    private readonly ShellSettings _shellSettings;
     private readonly ElasticsearchIndexSettingsService _elasticIndexSettingsService;
     private readonly ElasticsearchIndexManager _indexManager;
     private readonly IIndexingTaskManager _indexingTaskManager;
@@ -36,8 +33,6 @@ public class ElasticsearchIndexingService
     private readonly ILogger _logger;
 
     public ElasticsearchIndexingService(
-        IShellHost shellHost,
-        ShellSettings shellSettings,
         ElasticsearchIndexSettingsService elasticIndexSettingsService,
         ElasticsearchIndexManager indexManager,
         IIndexingTaskManager indexingTaskManager,
@@ -49,8 +44,6 @@ public class ElasticsearchIndexingService
         IContentDefinitionManager contentDefinitionManager,
         ILogger<ElasticsearchIndexingService> logger)
     {
-        _shellHost = shellHost;
-        _shellSettings = shellSettings;
         _elasticIndexSettingsService = elasticIndexSettingsService;
         _indexManager = indexManager;
         _indexingTaskManager = indexingTaskManager;

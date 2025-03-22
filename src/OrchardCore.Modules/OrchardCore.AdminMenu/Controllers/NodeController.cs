@@ -43,7 +43,7 @@ public sealed class NodeController : Controller
 
     public async Task<IActionResult> List(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -81,7 +81,7 @@ public sealed class NodeController : Controller
 
     public async Task<IActionResult> Create(string id, string type)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -115,7 +115,7 @@ public sealed class NodeController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(AdminNodeEditViewModel model)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -156,7 +156,7 @@ public sealed class NodeController : Controller
 
     public async Task<IActionResult> Edit(string id, string treeNodeId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -193,9 +193,9 @@ public sealed class NodeController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(AdminNodeEditViewModel model)
+    public async Task<IActionResult> Edit(AdminNodeEditViewModel model, string submit)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -225,7 +225,15 @@ public sealed class NodeController : Controller
             await _adminMenuService.SaveAsync(adminMenu);
 
             await _notifier.SuccessAsync(H["Admin node updated successfully."]);
-            return RedirectToAction(nameof(List), new { id = model.AdminMenuId });
+            if (submit == "SaveAndContinue")
+            {
+                model.Editor = editor;
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction(nameof(List), new { id = model.AdminMenuId });
+            }
         }
 
         await _notifier.ErrorAsync(H["The admin node has validation errors."]);
@@ -238,7 +246,7 @@ public sealed class NodeController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string id, string treeNodeId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -273,7 +281,7 @@ public sealed class NodeController : Controller
     [HttpPost]
     public async Task<IActionResult> Toggle(string id, string treeNodeId)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }
@@ -306,7 +314,7 @@ public sealed class NodeController : Controller
     public async Task<IActionResult> MoveNode(string treeId, string nodeToMoveId,
         string destinationNodeId, int position)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+        if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
             return Forbid();
         }

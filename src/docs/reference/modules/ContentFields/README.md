@@ -5,25 +5,25 @@ Some fields are available in their specific module.
 
 ## Available Fields
 
-| Name | Properties |
-| --- | --- |
-| `BooleanField` | `bool Value` |
-| `ContentPickerField` | `string[] ContentItemIds` |
-| `DateField` | `DateTime? Value` |
-| `DateTimeField` | `DateTime? Value` |
-| `HtmlField` | `string Html` |
-| `LinkField` | `string Url, string Text` |
-| `LocalizationSetContentPickerField` | `string[] LocalizationSets` |
-| `MarkdownField` | `string Markdown` |
-| `MediaField` | `string[] Paths` |
-| `MultiTextField` | `string[] Values` |
-| `NumericField` | `decimal? Value` |
-| `GeoPointField` | `decimal Latitude, decimal Longitude` |
-| `TaxonomyField` | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` |
-| `TextField` | `string Text` |
-| `TimeField` | `TimeSpan? Value` |
-| `UserPickerField` | `string[] UserIds` |
-| `YoutubeField` | `string EmbeddedAddress, string RawAddress` |
+| Name                                | Properties                                                     |
+|-------------------------------------|----------------------------------------------------------------|
+| `BooleanField`                      | `bool Value`                                                   |
+| `ContentPickerField`                | `string[] ContentItemIds`                                      |
+| `DateField`                         | `DateTime? Value`                                              |
+| `DateTimeField`                     | `DateTime? Value`                                              |
+| `HtmlField`                         | `string Html`                                                  |
+| `LinkField`                         | `string Url, string Text`                                      |
+| `LocalizationSetContentPickerField` | `string[] LocalizationSets`                                    |
+| `MarkdownField`                     | `string Markdown`                                              |
+| `MediaField`                        | `string[] Paths`                                               |
+| `MultiTextField`                    | `string[] Values`                                              |
+| `NumericField`                      | `decimal? Value`                                               |
+| `GeoPointField`                     | `decimal Latitude, decimal Longitude`                          |
+| `TaxonomyField`                     | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` |
+| `TextField`                         | `string Text`                                                  |
+| `TimeField`                         | `TimeSpan? Value`                                              |
+| `UserPickerField`                   | `string[] UserIds`                                             |
+| `YoutubeField`                      | `string EmbeddedAddress, string RawAddress`                    |
 
 !!! note
     Each field is rendered by a corresponding `Shape Type` that is using its own a Display view model.  
@@ -52,10 +52,10 @@ From a field shape (see Shape Type in the table listing all the fields) you can 
 
 The convention for a field view model is to also expose these properties:
 
-| Property | Description |
-| --- | --- |
-| `Field` | The ContentField. |
-| `Part` | The ContentPart that contains the field. |
+| Property              | Description                                                                                          |
+|-----------------------|------------------------------------------------------------------------------------------------------|
+| `Field`               | The ContentField.                                                                                    |
+| `Part`                | The ContentPart that contains the field.                                                             |
 | `PartFieldDefinition` | The Content Part Field Definition that contains the part. Which also give access to the Content Type |
 
 Some view models have special properties that are computed from the actual field data and which are more useful for templating.
@@ -64,9 +64,9 @@ Some view models have special properties that are computed from the actual field
 
 #### `DisplayHtmlFieldViewModel`
 
-| Property | Description |
-| --- | --- |
-| `Html` | The processed HTML, once all liquid tags have been processed. |
+| Property | Description                                                   |
+|----------|---------------------------------------------------------------|
+| `Html`   | The processed HTML, once all liquid tags have been processed. |
 
 #### Html Field Example
 
@@ -84,8 +84,8 @@ or, to display the raw content before the tags are converted:
 
 #### `DisplayDateTimeFieldViewModel`
 
-| Property | Description |
-| --- | --- |
+| Property        | Description                                 |
+|-----------------|---------------------------------------------|
 | `LocalDateTime` | The date time in the time zone of the site. |
 
 #### DateTime Field Example
@@ -141,6 +141,33 @@ Or to render the referenced content item:
         @await Orchard.DisplayAsync(contentItem, "Detail")
     }
     ```
+### `LinkField`
+
+Field used to display a link.
+
+#### `LinkFieldViewModel`
+
+| Property | Description                             |
+|----------|-----------------------------------------|
+| Url      | A valid URI for the href                |
+| Text     | The text to display                     |
+| Target   | The target attribute for the anchor tag, [Target](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#target) |
+
+!!! Note: By default the http and https are the only URIs permitted. In order to use other URIs like mailto and tel you must configure the [HTML Sanitizer](../Sanitizer/README.md). 
+
+#### Link Field Example 
+
+=== "Liquid"
+
+``` liquid
+<a href='{{Model.Url}}' Target={{Model.Target}}>{{Model.Text}}</a>
+```
+
+=== "Razor"
+
+```html
+<a href="@Model.Url" target="@Model.Target">@Model.Text</a>
+```
 
 ### `LocalizationSetContentPickerField`
 

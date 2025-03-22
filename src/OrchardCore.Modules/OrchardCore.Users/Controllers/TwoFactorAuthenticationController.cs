@@ -24,9 +24,7 @@ namespace OrchardCore.Users.Controllers;
 public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationBaseController, IUpdateModel
 {
     private readonly ILogger _logger;
-    private readonly IEnumerable<ILoginFormEvent> _accountEvents;
-    private readonly IdentityOptions _identityOptions;
-    private readonly IShapeFactory _shapeFactory;
+    private readonly IEnumerable<ILoginFormEvent> _loginFormEvents;
     private readonly IDisplayManager<TwoFactorMethod> _twoFactorDisplayManager;
 
     public TwoFactorAuthenticationController(
@@ -37,12 +35,10 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
         IHtmlLocalizer<AccountController> htmlLocalizer,
         IStringLocalizer<AccountController> stringLocalizer,
         IOptions<TwoFactorOptions> twoFactorOptions,
-        IEnumerable<ILoginFormEvent> accountEvents,
+        IEnumerable<ILoginFormEvent> loginFormEvents,
         INotifier notifier,
         IDistributedCache distributedCache,
-        IOptions<IdentityOptions> identityOptions,
         ITwoFactorAuthenticationHandlerCoordinator twoFactorHandlerCoordinator,
-        IShapeFactory shapeFactory,
         IDisplayManager<TwoFactorMethod> twoFactorDisplayManager)
         : base(userManager,
             distributedCache,
@@ -55,9 +51,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
             twoFactorOptions)
     {
         _logger = logger;
-        _accountEvents = accountEvents;
-        _identityOptions = identityOptions.Value;
-        _shapeFactory = shapeFactory;
+        _loginFormEvents = loginFormEvents;
         _twoFactorDisplayManager = twoFactorDisplayManager;
     }
 
@@ -130,7 +124,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
 
             if (result.Succeeded)
             {
-                await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
+                await _loginFormEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
                 return await LoggedInActionResultAsync(user, model.ReturnUrl);
             }
@@ -139,7 +133,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
             {
                 _logger.LogWarning("User account locked out.");
                 ModelState.AddModelError(string.Empty, S["The account is locked out."]);
-                await _accountEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
+                await _loginFormEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
 
                 return RedirectToAccountLogin();
             }
@@ -147,7 +141,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
             ModelState.AddModelError(string.Empty, S["Invalid verification code."]);
 
             // Login failed with a known user.
-            await _accountEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
+            await _loginFormEvents.InvokeAsync((e, user) => e.LoggingInFailedAsync(user), user, _logger);
         }
 
         model.HasMultipleProviders = providers.Count > 1;
@@ -191,7 +185,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
 
             if (result.Succeeded)
             {
-                await _accountEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
+                await _loginFormEvents.InvokeAsync((e, user) => e.LoggedInAsync(user), user, _logger);
 
                 return await LoggedInActionResultAsync(user, model.ReturnUrl);
             }
@@ -201,7 +195,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
                 _logger.LogWarning("User account locked out.");
 
                 ModelState.AddModelError(string.Empty, S["The account is locked out"]);
-                await _accountEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
+                await _loginFormEvents.InvokeAsync((e, user) => e.IsLockedOutAsync(user), user, _logger);
 
                 return RedirectToAccountLogin();
             }

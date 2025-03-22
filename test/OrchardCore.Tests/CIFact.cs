@@ -42,4 +42,6 @@ public class CIFactAttribute : Attribute, IFactAttribute
 
     /// <inheritdoc/>
     public int Timeout { get; set; }
+
+    public Type[]? SkipExceptions => Array.Empty<Type>();
 }

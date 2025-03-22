@@ -5,7 +5,7 @@ namespace OrchardCore.Indexing;
 /// </summary>
 public interface IContentIndexSettings
 {
-    public bool Included { get; set; }
+    bool Included { get; set; }
 
-    public DocumentIndexOptions ToOptions();
+    DocumentIndexOptions ToOptions();
 }

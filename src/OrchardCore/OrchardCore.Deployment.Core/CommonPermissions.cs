@@ -6,11 +6,12 @@ namespace OrchardCore.Deployment;
 /// This class contains the source references to the OrchardCore.Deployment module permissions so they can be used in other modules
 /// without having to reference the OrchardCore.Deployment by itself.
 /// </summary>
+[Obsolete("This will be removed in a future release. Instead use 'OrchardCore.Deployment.DeploymentPermissions'.")]
 public static class CommonPermissions
 {
-    public static readonly Permission ManageDeploymentPlan = new("ManageDeploymentPlan", "Manage deployment plans");
+    public static readonly Permission ManageDeploymentPlan = DeploymentPermissions.ManageDeploymentPlan;
 
-    public static readonly Permission Export = new("Export", "Export Data");
+    public static readonly Permission Export = DeploymentPermissions.Export;
 
-    public static readonly Permission Import = new("Import", "Import Data", isSecurityCritical: true);
+    public static readonly Permission Import = DeploymentPermissions.Import;
 }

@@ -1,15 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
-using OrchardCore.Settings;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
@@ -19,43 +14,25 @@ namespace OrchardCore.Users.Controllers;
 [Feature(UserConstants.Features.UserRegistration)]
 public sealed class RegistrationController : Controller
 {
-    private readonly UserManager<IUser> _userManager;
-    private readonly IAuthorizationService _authorizationService;
-    private readonly ISiteService _siteService;
-    private readonly INotifier _notifier;
-    private readonly ILogger _logger;
     private readonly IDisplayManager<RegisterUserForm> _registerUserDisplayManager;
-    private readonly RegistrationOptions _registrationOptions;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-    private readonly IEnumerable<ILoginFormEvent> _accountEvents;
+    private readonly IEnumerable<ILoginFormEvent> _loginFormEvents;
     private readonly IUserService _userService;
 
     internal readonly IStringLocalizer S;
     internal readonly IHtmlLocalizer H;
 
     public RegistrationController(
-        UserManager<IUser> userManager,
-        IAuthorizationService authorizationService,
-        ISiteService siteService,
-        INotifier notifier,
-        ILogger<RegistrationController> logger,
         IDisplayManager<RegisterUserForm> registerUserDisplayManager,
-        IOptions<RegistrationOptions> registrationOptions,
         IUpdateModelAccessor updateModelAccessor,
-        IEnumerable<ILoginFormEvent> accountEvents,
+        IEnumerable<ILoginFormEvent> loginFormEvents,
         IUserService userService,
         IHtmlLocalizer<RegistrationController> htmlLocalizer,
         IStringLocalizer<RegistrationController> stringLocalizer)
     {
-        _userManager = userManager;
-        _authorizationService = authorizationService;
-        _siteService = siteService;
-        _notifier = notifier;
-        _logger = logger;
         _registerUserDisplayManager = registerUserDisplayManager;
-        _registrationOptions = registrationOptions.Value;
         _updateModelAccessor = updateModelAccessor;
-        _accountEvents = accountEvents;
+        _loginFormEvents = loginFormEvents;
         _userService = userService;
         H = htmlLocalizer;
         S = stringLocalizer;
@@ -90,9 +67,9 @@ public sealed class RegistrationController : Controller
             // If we get a user, redirect to returnUrl.
             if (iUser is User user)
             {
-                foreach (var accountEvent in _accountEvents)
+                foreach (var loginFormEvent in _loginFormEvents)
                 {
-                    var loginResult = await accountEvent.ValidatingLoginAsync(user);
+                    var loginResult = await loginFormEvent.ValidatingLoginAsync(user);
 
                     if (loginResult != null)
                     {

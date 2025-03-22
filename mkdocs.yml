@@ -152,6 +152,7 @@ nav:
       - Microsoft Entra ID (Azure AD) integration: guides/microsoft-entra-id-integration/README.md
       - Create a Liquid Widget: guides/create-liquid-widget/README.md
       - Query Content Items Based on Taxonomy: guides/query-content-items-based-on-taxonomy/README.md
+      - Assets manager: guides/assets-manager/README.md
       - Gulp pipeline: guides/gulp-pipeline/README.md
   - Key Topics:
       - Manage your Content: topics/content-management/README.md
@@ -287,6 +288,8 @@ nav:
       - Libraries: reference/libraries/README.md
       - Glossary: reference/glossary/README.md
   - Releases Notes:
+      - 2.1.6: releases/2.1.6.md
+      - 2.1.5: releases/2.1.5.md
       - 2.1.4: releases/2.1.4.md
       - 2.1.3: releases/2.1.3.md
       - 2.1.2: releases/2.1.2.md

@@ -30,7 +30,7 @@ public sealed class ChangeEmailSettingsDisplayDriver : SiteDisplayDriver<ChangeE
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers))
         {
             return null;
         }
@@ -46,7 +46,7 @@ public sealed class ChangeEmailSettingsDisplayDriver : SiteDisplayDriver<ChangeE
     {
         var user = _httpContextAccessor.HttpContext?.User;
 
-        if (!await _authorizationService.AuthorizeAsync(user, CommonPermissions.ManageUsers))
+        if (!await _authorizationService.AuthorizeAsync(user, UsersPermissions.ManageUsers))
         {
             return null;
         }

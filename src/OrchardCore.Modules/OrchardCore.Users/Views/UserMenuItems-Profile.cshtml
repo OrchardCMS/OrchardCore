@@ -2,7 +2,7 @@
 
 @inject IAuthorizationService AuthorizationService
 
-@if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditOwnUser))
+@if (await AuthorizationService.AuthorizeAsync(User, UsersPermissions.EditOwnUser))
 {
     <li>
         <a class="dropdown-item" asp-area="@UserConstants.Features.Users" asp-action="Edit" asp-controller="Admin">
@@ -10,7 +10,7 @@
         </a>
     </li>
 }
-else if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.ViewUsers))
+else if (await AuthorizationService.AuthorizeAsync(User, UsersPermissions.ViewUsers))
 {
     <li>
         <a class="dropdown-item" asp-area="@UserConstants.Features.Users" asp-action="Display" asp-controller="Admin" asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)">

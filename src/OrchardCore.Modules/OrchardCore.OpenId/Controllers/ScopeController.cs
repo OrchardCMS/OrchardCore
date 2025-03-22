@@ -4,7 +4,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -23,7 +22,6 @@ public sealed class ScopeController : Controller
     private readonly IOpenIdScopeManager _scopeManager;
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
-    private readonly INotifier _notifier;
 
     internal readonly IStringLocalizer S;
 
@@ -33,8 +31,7 @@ public sealed class ScopeController : Controller
         IOptions<PagerOptions> pagerOptions,
         IStringLocalizer<ScopeController> stringLocalizer,
         IAuthorizationService authorizationService,
-        ShellSettings shellSettings,
-        INotifier notifier)
+        ShellSettings shellSettings)
     {
         _scopeManager = scopeManager;
         _shapeFactory = shapeFactory;
@@ -42,13 +39,12 @@ public sealed class ScopeController : Controller
         S = stringLocalizer;
         _authorizationService = authorizationService;
         _shellSettings = shellSettings;
-        _notifier = notifier;
     }
 
     [Admin("OpenId/Scope", "OpenIdScope")]
     public async Task<ActionResult> Index(PagerParameters pagerParameters)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageScopes))
         {
             return Forbid();
         }
@@ -78,7 +74,7 @@ public sealed class ScopeController : Controller
     [HttpGet]
     public async Task<IActionResult> Create(string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageScopes))
         {
             return Forbid();
         }
@@ -93,7 +89,7 @@ public sealed class ScopeController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(CreateOpenIdScopeViewModel model, string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageScopes))
         {
             return Forbid();
         }
@@ -143,7 +139,7 @@ public sealed class ScopeController : Controller
 
     public async Task<IActionResult> Edit(string id, string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageScopes))
         {
             return Forbid();
         }
@@ -176,7 +172,7 @@ public sealed class ScopeController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(EditOpenIdScopeViewModel model, string returnUrl = null)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageScopes))
         {
             return Forbid();
         }
@@ -241,7 +237,7 @@ public sealed class ScopeController : Controller
     [HttpPost]
     public async Task<IActionResult> Delete(string id)
     {
-        if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageScopes))
+        if (!await _authorizationService.AuthorizeAsync(User, OpenIdPermissions.ManageScopes))
         {
             return Forbid();
         }

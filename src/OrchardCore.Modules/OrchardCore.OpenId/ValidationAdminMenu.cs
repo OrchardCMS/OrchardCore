@@ -24,7 +24,7 @@ public sealed class ValidationAdminMenu : AdminNavigationProvider
                        .Add(S["Settings"], S["Settings"].PrefixPosition(), settings => settings
                             .Add(S["Token Validation"], S["Token Validation"].PrefixPosition(), validation => validation
                                 .Action("Index", "ValidationConfiguration", "OrchardCore.OpenId")
-                                .Permission(Permissions.ManageValidationSettings)
+                                .Permission(OpenIdPermissions.ManageValidationSettings)
                                 .LocalNav()
                             )
                        )
@@ -36,13 +36,11 @@ public sealed class ValidationAdminMenu : AdminNavigationProvider
 
         builder
             .Add(S["Settings"], settings => settings
-                .Add(S["Security"], S["Security"].PrefixPosition(), security => security
-                    .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), openId => openId
-                        .Add(S["Token Validation"], S["Token Validation"].PrefixPosition(), validation => validation
-                            .Action("Index", "ValidationConfiguration", "OrchardCore.OpenId")
-                            .Permission(Permissions.ManageValidationSettings)
-                            .LocalNav()
-                        )
+                .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), openId => openId
+                    .Add(S["Token Validation"], S["Token Validation"].PrefixPosition(), validation => validation
+                        .Action("Index", "ValidationConfiguration", "OrchardCore.OpenId")
+                        .Permission(OpenIdPermissions.ManageValidationSettings)
+                        .LocalNav()
                     )
                 )
             );

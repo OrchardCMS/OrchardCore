@@ -178,6 +178,12 @@ public sealed class OpenIdServerConfiguration : IConfigureOptions<Authentication
         options.Scopes.Add(Scopes.Phone);
         options.Scopes.Add(Scopes.Profile);
         options.Scopes.Add(Scopes.Roles);
+
+        // Note: caching is enabled for both authorization and end session requests to allow sending
+        // large POST authorization and end session requests, but can be programmatically disabled, as the
+        // authorization and end session views support flowing the entire payload and not just the request_uri.
+        options.EnableAuthorizationRequestCaching = true;
+        options.EnableEndSessionRequestCaching = true;
     }
 
     public void Configure(OpenIddictServerDataProtectionOptions options)
@@ -201,12 +207,6 @@ public sealed class OpenIdServerConfiguration : IConfigureOptions<Authentication
         options.EnableEndSessionEndpointPassthrough = true;
         options.EnableTokenEndpointPassthrough = true;
         options.EnableUserInfoEndpointPassthrough = true;
-
-        // Note: caching is enabled for both authorization and end session requests to allow sending
-        // large POST authorization and end session requests, but can be programmatically disabled, as the
-        // authorization and end session views support flowing the entire payload and not just the request_id.
-        options.EnableAuthorizationRequestCaching = true;
-        options.EnableEndSessionRequestCaching = true;
 
         // Note: error pass-through is enabled to allow the actions of the MVC authorization controller
         // to handle the errors returned by the interactive endpoints without relying on the generic

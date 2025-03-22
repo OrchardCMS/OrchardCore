@@ -41,7 +41,7 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
             return;
         }
 
-        if (requirement.Permission.Name != Permissions.ManageMediaFolder.Name)
+        if (requirement.Permission.Name != MediaPermissions.ManageMediaFolder.Name)
         {
             return;
         }
@@ -66,22 +66,22 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
                             _fileStore.Combine(_usersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(context.User)))
                             .TrimEnd(_pathSeparator) + _pathSeparator;
 
-        var permission = Permissions.ManageMedia;
+        var permission = MediaPermissions.ManageMedia;
 
         // Handle attached media field folder.
         if (IsAuthorizedFolder(_mediaFieldsFolder, path) || IsDescendantOfauthorizedFolder(_mediaFieldsFolder, path))
         {
-            permission = Permissions.ManageAttachedMediaFieldsFolder;
+            permission = MediaPermissions.ManageAttachedMediaFieldsFolder;
         }
 
         if (IsAuthorizedFolder(_usersFolder, path) || IsAuthorizedFolder(userOwnFolder, path) || IsDescendantOfauthorizedFolder(userOwnFolder, path))
         {
-            permission = Permissions.ManageOwnMedia;
+            permission = MediaPermissions.ManageOwnMedia;
         }
 
         if (IsDescendantOfauthorizedFolder(_usersFolder, path) && !IsAuthorizedFolder(userOwnFolder, path) && !IsDescendantOfauthorizedFolder(userOwnFolder, path))
         {
-            permission = Permissions.ManageOthersMedia;
+            permission = MediaPermissions.ManageOthersMedia;
         }
 
         // Lazy load to prevent circular dependencies.
@@ -91,7 +91,7 @@ public sealed class ManageMediaFolderAuthorizationHandler : AuthorizationHandler
         {
             // Check if viewing is allowed for this folder, if secure media is also enabled.
             if (!_serviceProvider.IsSecureMediaEnabled() ||
-                await authorizationService.AuthorizeAsync(context.User, SecureMediaPermissions.ViewMedia, (object)path))
+                await authorizationService.AuthorizeAsync(context.User, MediaPermissions.ViewMedia, (object)path))
             {
                 context.Succeed(requirement);
             }

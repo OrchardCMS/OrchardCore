@@ -1,8 +1,15 @@
 [
   {
-    "inputs": [
-      "Assets/js/list-items-filter.js"
-    ],
-    "output": "wwwroot/Scripts/list-items-filter.js"
+    "action": "min",
+    "name": "content-types",
+    "source": "Assets/js/list-items-filter.js",
+    "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "parcel",
+    "name": "autocomplete",
+    "source": "Assets/js/autocomplete.ts",
+    "dest": "wwwroot/Scripts/autocomplete",
+    "tags": ["admin", "dashboard", "js"]
   }
 ]
