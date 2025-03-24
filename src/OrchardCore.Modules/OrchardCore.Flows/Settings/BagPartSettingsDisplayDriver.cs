@@ -18,10 +18,10 @@ public sealed class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisp
 
     public BagPartSettingsDisplayDriver(
         IContentDefinitionManager contentDefinitionManager,
-        IStringLocalizer<BagPartSettingsDisplayDriver> localizer)
+        IStringLocalizer<BagPartSettingsDisplayDriver> stringLocalizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
-        S = localizer;
+        S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
@@ -42,6 +42,7 @@ public sealed class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisp
             {
                 model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
             }
+            
         }).Location("Content");
     }
 

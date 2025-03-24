@@ -44,7 +44,7 @@ public sealed class FlowPartSettingsDisplayDriver : ContentTypePartDefinitionDis
         context.Builder.WithSettings(new FlowPartSettings
         {
             ContainedContentTypes = model.ContainedContentTypes,
-            CollapseContainedItems = model.CollapseContainedItems
+            CollapseContainedItems = model.CollapseContainedItems,
         });
 
         return Edit(contentTypePartDefinition, context);

@@ -5,6 +5,7 @@
     <span class="hint">@T["The content types that this flow can contain."]</span>
     @await Component.InvokeAsync("SelectContentTypes", new { selectedContentTypes = Model.ContainedContentTypes, htmlName = Html.NameFor(m => m.ContainedContentTypes), stereotype = "Widget" })
 </div>
+
 <div class="form-check">
     <input type="checkbox" class="form-check-input" asp-for="CollapseContainedItems">
     <label class="form-check-label" asp-for="CollapseContainedItems">@T["Auto Collapse"]</label>

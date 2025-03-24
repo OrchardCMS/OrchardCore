@@ -1,6 +1,7 @@
 @model OrchardCore.Flows.ViewModels.BagPartSettingsViewModel
 @using OrchardCore.Flows.Settings
 @using OrchardCore.Flows.Models
+
 <div class="mb-3">
     <label asp-for="Source" class="form-label">@T["Contained Content Types"]</label>
     <div class="w-sm-50" id="@Html.IdFor(x => x.Source)">
@@ -32,6 +33,7 @@
         <span class="hint">@T["The Stereotypes of the content types that this bag can contain. You may define multiple Stereotypes using the comma (,) as a separator"]</span>
     </div>
 </div>
+
 <div class="mb-3">
     <div class="w-sm-50">
         <label asp-for="DisplayType" class="form-label">@T["Display Type"]</label>
@@ -39,6 +41,7 @@
     </div>
     <span class="hint">@T["The display type to use when rendering the content items. Default is Summary."]</span>
 </div>
+
 <div class="form-check">
     <input type="checkbox" class="form-check-input" asp-for="CollapseContainedItems">
     <label class="form-check-label" asp-for="CollapseContainedItems">@T["Collapse Contained Items"]</label>
