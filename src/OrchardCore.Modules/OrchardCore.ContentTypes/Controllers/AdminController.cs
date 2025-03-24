@@ -149,7 +149,7 @@ public sealed class AdminController : Controller
     }
 
     [Admin("ContentTypes/Edit/{id}", "EditType")]
-    public async Task<ActionResult> Edit(string id, string submit)
+    public async Task<ActionResult> Edit(string id)
     {
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
@@ -164,21 +164,15 @@ public sealed class AdminController : Controller
         }
 
         typeViewModel.Editor = await _contentDefinitionDisplayManager.BuildTypeEditorAsync(typeViewModel.TypeDefinition, _updateModelAccessor.ModelUpdater);
-        if (submit == "save")
-        {
-            return RedirectToAction(nameof(List));
-        }
-        else if (submit == "SaveAndContinue")
-        {
-            await _notifier.SuccessAsync(H["Content type updated successfully."]);
-        }
+
         return View(typeViewModel);
     }
 
     [HttpPost, ActionName("Edit")]
-    [FormValueRequired("submit.Save")]
-    public async Task<ActionResult> EditPOST(string id, EditTypeViewModel viewModel)
+    public async Task<ActionResult> EditPost(
+        string id, EditTypeViewModel viewModel, [Bind(Prefix = "submit.Save")] string submitSave)
     {
+        var stayOnSamePage = submitSave == "submit.SaveAndContinue";
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
@@ -209,11 +203,15 @@ public sealed class AdminController : Controller
             {
                 await _contentDefinitionService.AlterPartFieldsOrderAsync(ownedPartDefinition, viewModel.OrderedFieldNames);
             }
+
             await _contentDefinitionService.AlterTypePartsOrderAsync(contentTypeDefinition, viewModel.OrderedPartNames);
-            await _notifier.SuccessAsync(H["\"{0}\" settings have been saved.", contentTypeDefinition.Name]);
+
+            await _notifier.SuccessAsync(H["Content type updated successfully."]);
         }
 
-        return RedirectToAction(nameof(Edit), new { id });
+        return stayOnSamePage
+            ? RedirectToAction(nameof(Edit), new { id })
+            : RedirectToAction(nameof(List));
     }
 
     [HttpPost, ActionName("Edit")]
