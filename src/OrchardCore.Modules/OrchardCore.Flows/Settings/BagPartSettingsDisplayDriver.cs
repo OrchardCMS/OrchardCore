@@ -53,7 +53,8 @@ public sealed class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisp
             m => m.ContainedContentTypes,
             m => m.DisplayType,
             m => m.Source,
-            m => m.Stereotypes);
+            m => m.Stereotypes,
+            m => m.CollapseContainedItems);
 
         switch (model.Source)
         {

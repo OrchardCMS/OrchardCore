@@ -10,11 +10,12 @@
     var flowPartSettings = contentTypeDefinition.GetSettings<OrchardCore.Flows.Models.FlowPartSettings>();
     var contentItemDisplayText = contentItem.ContentItem.DisplayText;
     var widgetContentTypes = (IEnumerable<ContentTypeDefinition>)Model.ContainedContentTypes;
+    var collapsed = !Model.Inline || flowPartSettings.CollapseContainedItems;
 
     var editorId = "contentEditor_" + Model.PrefixValue;
 }
 
-<div class="widget widget-editor card my-1@(Model.Inline || flowPartSettings.CollapseContainedItems ? " collapsed" : string.Empty)">
+<div class="widget widget-editor card my-1@(collapsed ? " collapsed" : string.Empty)">
     <div class="widget-editor-header card-header text-muted py-1 ps-2 pe-1">
         @if (Model.CanMove != false)
         {
