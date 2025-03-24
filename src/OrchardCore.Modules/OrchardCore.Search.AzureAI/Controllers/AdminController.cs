@@ -10,7 +10,6 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Indexing;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Search.AzureAI.Models;
@@ -29,10 +28,8 @@ public sealed class AdminController : Controller
     private readonly AzureAISearchIndexManager _indexManager;
     private readonly AzureAISearchIndexSettingsService _indexSettingsService;
     private readonly IShapeFactory _shapeFactory;
-    private readonly AzureAIIndexDocumentManager _azureAIIndexDocumentManager;
     private readonly AzureAISearchDefaultOptions _azureAIOptions;
     private readonly INotifier _notifier;
-    private readonly IEnumerable<IContentItemIndexHandler> _contentItemIndexHandlers;
     private readonly ILogger _logger;
     private readonly IDisplayManager<AzureAISearchIndexSettings> _displayManager;
     private readonly AzureAISearchOptions _azureAISearchOptions;
@@ -47,10 +44,8 @@ public sealed class AdminController : Controller
         AzureAISearchIndexManager indexManager,
         AzureAISearchIndexSettingsService indexSettingsService,
         IShapeFactory shapeFactory,
-        AzureAIIndexDocumentManager azureAIIndexDocumentManager,
         IOptions<AzureAISearchDefaultOptions> azureAIOptions,
         INotifier notifier,
-        IEnumerable<IContentItemIndexHandler> contentItemIndexHandlers,
         IDisplayManager<AzureAISearchIndexSettings> displayManager,
         IOptions<AzureAISearchOptions> azureAISearchOptions,
         IUpdateModelAccessor updateModelAccessor,
@@ -64,10 +59,8 @@ public sealed class AdminController : Controller
         _indexManager = indexManager;
         _indexSettingsService = indexSettingsService;
         _shapeFactory = shapeFactory;
-        _azureAIIndexDocumentManager = azureAIIndexDocumentManager;
         _azureAIOptions = azureAIOptions.Value;
         _notifier = notifier;
-        _contentItemIndexHandlers = contentItemIndexHandlers;
         _logger = logger;
         _displayManager = displayManager;
         _azureAISearchOptions = azureAISearchOptions.Value;

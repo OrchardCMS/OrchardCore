@@ -1,8 +1,9 @@
+using OrchardCore.Tests.Modules.OrchardCore.Users;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 
-namespace OrchardCore.Tests.OrchardCore.Users.Core;
+namespace OrchardCore.Tests.Modules.OrchardCore.Users.OrchardCore.Users.Core;
 
 public class DefaultUserClaimsPrincipalProviderFactoryTests
 {
