@@ -42,7 +42,7 @@ public sealed class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisp
             {
                 model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
             }
-            
+
         }).Location("Content");
     }
 
@@ -86,7 +86,7 @@ public sealed class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisp
         {
             ContainedContentTypes = [],
             ContainedStereotypes = model.Stereotypes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries),
-            DisplayType = model.DisplayType
+            DisplayType = model.DisplayType,
         });
     }
 
@@ -104,7 +104,7 @@ public sealed class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisp
             ContainedContentTypes = model.ContainedContentTypes,
             ContainedStereotypes = [],
             DisplayType = model.DisplayType,
-            CollapseContainedItems = model.CollapseContainedItems
+            CollapseContainedItems = model.CollapseContainedItems,
         });
     }
 }
