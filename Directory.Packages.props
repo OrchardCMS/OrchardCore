@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageVersion Include="AngleSharp" Version="1.2.0" />
-    <PackageVersion Include="AWSSDK.S3" Version="3.7.415.18" />
+    <PackageVersion Include="AWSSDK.S3" Version="3.7.415.24" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.400" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.0.1" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.1" />
@@ -38,8 +38,8 @@
     <PackageVersion Include="MailKit" Version="4.11.0" />
     <PackageVersion Include="Markdig" Version="0.40.0" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.11.0" />
-    <PackageVersion Include="Microsoft.Identity.Web" Version="3.8.0" />
-    <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.6.1" />
+    <PackageVersion Include="Microsoft.Identity.Web" Version="3.8.1" />
+    <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.7.0" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageVersion Include="MimeKit" Version="4.11.0" />
