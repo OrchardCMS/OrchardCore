@@ -1,13 +1,17 @@
 @using OrchardCore.Localization
-
+@using OrchardCore.Flows.Models
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync((string)Model.ContentItem.ContentType);
+    var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
     var contentTypeDisplayText = contentTypeDefinition.DisplayName;
-    var bagPartSettings = contentTypeDefinition.GetSettings<OrchardCore.Flows.Models.BagPartSettings>();
-    var collapsed = !Model.Inline || bagPartSettings.CollapseContainedItems;
+
+    var parentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync((string)Model.ParentContentType);
+    var collectionDefinition = parentTypeDefinition?.Parts?.FirstOrDefault(x => x.Name == (string)Model.CollectionPartName);
+    var bagPartSettings = collectionDefinition?.GetSettings<BagPartSettings>();
+
+    var collapsed = !Model.Inline && bagPartSettings?.CollapseContainedItems == true;
 
     if (!ViewContext.ModelState.IsValid && ViewContext.ModelState.Keys.Any(key => key.StartsWith(Model.PrefixValue, StringComparison.OrdinalIgnoreCase)))
     {
