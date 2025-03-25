@@ -297,7 +297,7 @@ public sealed class AdminController : Controller
 
     [HttpPost]
     [ActionName(nameof(Create))]
-    public async Task<IActionResult> CreatePost([Bind(Prefix = "User.Password")] string password)
+    public async Task<IActionResult> CreatePost([Bind(Prefix = "User.Password")] string password, [Bind(Prefix = "User.EmailConfirmed")] bool emailConfirmed)
     {
         var user = new User();
 
@@ -318,6 +318,12 @@ public sealed class AdminController : Controller
         if (!ModelState.IsValid)
         {
             return View(shape);
+        }
+
+        if (emailConfirmed && !await _userManager.IsEmailConfirmedAsync(user))
+        {
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            await _userManager.ConfirmEmailAsync(user, token);
         }
 
         await _notifier.SuccessAsync(H["User created successfully."]);
