@@ -49,22 +49,22 @@
                     <input asp-for="TermContentItemIds" type="hidden" v-model="selectedTagTermsIds" />
 
                     <vue-multiselect asp-validation-class-for="TermContentItemIds" v-model="selectedTagTerms"
-                                     placeholder="@T["Type to search"]"
-                                     select-label="@T["Select"]"
-                                     deselect-label="@T["Remove"]"
-                                     :options="selectableTagTerms"
-                                     :multiple="@((!taxonomySettings.Unique).ToString().ToLower())"
-                                     :show-labels="false"
-                                     :close-on-select="@taxonomySettings.Unique.ToString().ToLower()"
-                                     :disabled="isDisabled"
-                                     track-by="contentItemId"
-                                     label="displayText"
-                                     @@select="onSelect"
-                                     @@remove="onRemove"
-                                     :taggable="@open.ToString().ToLower()"
-                                     tag-position="bottom"
-                                     tag-placeholder="@T["Press enter to create a tag"]"
-                                     @@tag="createTagTerm">
+                                placeholder="@T["Type to search"]"
+                                select-label="@T["Select"]"
+                                deselect-label="@T["Remove"]"
+                                :options="selectableTagTerms"
+                                :multiple="@((!taxonomySettings.Unique).ToString().ToLower())"
+                                :show-labels="false"
+                                :close-on-select="@taxonomySettings.Unique.ToString().ToLower()"
+                                :disabled="isDisabled"
+                                track-by="contentItemId"
+                                label="displayText"
+                                @@select="onSelect"
+                                @@remove="onRemove"
+                                :taggable="@open.ToString().ToLower()"
+                                tag-position="bottom"
+                                tag-placeholder="@T["Press enter to create a tag"]"
+                                @@tag="createTagTerm">
                         <template slot="noResult">
                             @T["No tags found"]
                         </template>
