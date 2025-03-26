@@ -41,7 +41,7 @@
                 <input class="form-check-input workflow-status" type="checkbox" id="@Html.IdFor(m => m.Statuses[statusIterator])"
                        asp-for="@Model.Statuses[statusIterator].IsSelected">
                 <label class="form-check-label" for="@Html.IdFor(m => m.Statuses[statusIterator])">
-                    @{ var loc = status switch
+                    @{ var localizedStatus = status switch
                         {
                             WorkflowStatus.Idle => T["Idle"],
                             WorkflowStatus.Starting => T["Starting"],
@@ -51,9 +51,9 @@
                             WorkflowStatus.Finished => T["Finished"],
                             WorkflowStatus.Faulted => T["Faulted"],
                             WorkflowStatus.Aborted => T["Aborted"],
-                            _ => throw new InvalidOperationException($"Unkown Workflow status: {status}")
+                            _ => T["Status: {0}", status.ToString()]
                         };
-                    } @loc
+                    } @localizedStatus
                 </label>
             </div>
         </div>
