@@ -295,7 +295,7 @@ public sealed class AdminController : Controller
 
     [HttpPost]
     [ActionName(nameof(Create))]
-    public async Task<IActionResult> CreatePost([Bind(Prefix = "User.Password")] string password, [Bind(Prefix = "User.EmailConfirmed")] bool emailConfirmed)
+    public async Task<IActionResult> CreatePost([Bind(Prefix = "User.Password")] string password)
     {
         var user = new User();
 
@@ -316,11 +316,6 @@ public sealed class AdminController : Controller
         if (!ModelState.IsValid)
         {
             return View(shape);
-        }
-
-        if (emailConfirmed)
-        {
-            _ = await ConfirmUserEmailAsync(user);
         }
 
         await _notifier.SuccessAsync(H["User created successfully."]);
@@ -361,7 +356,7 @@ public sealed class AdminController : Controller
 
     [HttpPost]
     [ActionName(nameof(Edit))]
-    public async Task<IActionResult> EditPost(string id, string returnUrl, [Bind(Prefix = "User.EmailConfirmed")] bool emailConfirmed)
+    public async Task<IActionResult> EditPost(string id, string returnUrl)
     {
         // When no id is provided we assume the user is trying to edit their own profile.
         var editingOwnUser = false;
@@ -404,11 +399,6 @@ public sealed class AdminController : Controller
             return View(shape);
         }
 
-        if (emailConfirmed)
-        {
-            _ = await ConfirmUserEmailAsync(user);
-        }
-
         if (User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId)
         {
             await _signInManager.RefreshSignInAsync(user);
@@ -444,6 +434,26 @@ public sealed class AdminController : Controller
         var model = await _userDisplayManager.BuildDisplayAsync(user, _updateModelAccessor.ModelUpdater, "DetailAdmin");
 
         return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Approve(string id)
+    {
+        if (await _userManager.FindByIdAsync(id) is not User user)
+        {
+            return NotFound();
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
+        {
+            return Forbid();
+        }
+
+        _ = await ConfirmUserEmailAsync(user);
+
+        await _notifier.SuccessAsync(H["User approved successfully."]);
+
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]

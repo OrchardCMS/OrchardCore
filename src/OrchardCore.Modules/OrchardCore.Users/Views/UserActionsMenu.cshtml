@@ -24,6 +24,13 @@
     }
 }
 
+@if (canEdit && !await UserManager.IsEmailConfirmedAsync(Model.User))
+{
+    <li>
+        <a asp-action="Approve" asp-route-id="@Model.User.UserId" class="dropdown-item" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Approve user"]" data-message="@T["Are you sure you want to approve this user?"]">@T["Approve"]</a>
+    </li>
+}
+
 @if (!isCurrentUser && await AuthorizationService.AuthorizeAsync(User, UsersPermissions.DeleteUsers, Model.User))
 {
     <li>

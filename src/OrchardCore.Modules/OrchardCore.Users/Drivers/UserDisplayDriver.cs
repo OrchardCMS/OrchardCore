@@ -67,7 +67,6 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
 
         return Initialize<EditUserViewModel>("UserFields_Edit", model =>
         {
-            model.EmailConfirmed = user.EmailConfirmed;
             model.IsEnabled = user.IsEnabled;
             model.IsNewRequest = context.IsNew;
             // The current user cannot disable themselves, nor can a user without permission to manage this user disable them.
