@@ -404,7 +404,7 @@ public sealed class AdminController : Controller
             return View(shape);
         }
 
-        if(emailConfirmed)
+        if (emailConfirmed)
         {
             _ = await ConfirmUserEmailAsync(user);
         }
