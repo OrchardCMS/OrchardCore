@@ -138,15 +138,6 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
             await _userEventHandlers.InvokeAsync((handler, context) => handler.EnabledAsync(context), userContext, _logger);
         }
 
-        if (context.Updater.ModelState.IsValid)
-        {
-            if (model.EmailConfirmed && !await _userManager.IsEmailConfirmedAsync(user))
-            {
-                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                await _userManager.ConfirmEmailAsync(user, token);
-            }
-        }
-
         return await EditAsync(user, context);
     }
 
