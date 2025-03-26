@@ -18,10 +18,10 @@ public sealed class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisp
 
     public BagPartSettingsDisplayDriver(
         IContentDefinitionManager contentDefinitionManager,
-        IStringLocalizer<BagPartSettingsDisplayDriver> localizer)
+        IStringLocalizer<BagPartSettingsDisplayDriver> stringLocalizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
-        S = localizer;
+        S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, BuildEditorContext context)
@@ -36,10 +36,13 @@ public sealed class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisp
             model.ContentTypes = [];
             model.Source = settings.ContainedStereotypes != null && settings.ContainedStereotypes.Length > 0 ? BagPartSettingType.Stereotypes : BagPartSettingType.ContentTypes;
             model.Stereotypes = string.Join(',', settings.ContainedStereotypes ?? []);
+            model.CollapseContainedItems = settings.CollapseContainedItems;
+
             foreach (var contentTypeDefinition in await _contentDefinitionManager.ListTypeDefinitionsAsync())
             {
                 model.ContentTypes.Add(contentTypeDefinition.Name, contentTypeDefinition.DisplayName);
             }
+
         }).Location("Content");
     }
 
@@ -51,7 +54,8 @@ public sealed class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisp
             m => m.ContainedContentTypes,
             m => m.DisplayType,
             m => m.Source,
-            m => m.Stereotypes);
+            m => m.Stereotypes,
+            m => m.CollapseContainedItems);
 
         switch (model.Source)
         {
@@ -82,7 +86,7 @@ public sealed class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisp
         {
             ContainedContentTypes = [],
             ContainedStereotypes = model.Stereotypes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries),
-            DisplayType = model.DisplayType
+            DisplayType = model.DisplayType,
         });
     }
 
@@ -99,7 +103,8 @@ public sealed class BagPartSettingsDisplayDriver : ContentTypePartDefinitionDisp
         {
             ContainedContentTypes = model.ContainedContentTypes,
             ContainedStereotypes = [],
-            DisplayType = model.DisplayType
+            DisplayType = model.DisplayType,
+            CollapseContainedItems = model.CollapseContainedItems,
         });
     }
 }
