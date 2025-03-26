@@ -242,10 +242,8 @@ public sealed class AdminController : Controller
                 {
                     case UsersBulkAction.None: break;
                     case UsersBulkAction.Approve:
-                        if (canEditUser && !await _userManager.IsEmailConfirmedAsync(user))
+                        if (canEditUser && await ConfirmUserEmailAsync(user))
                         {
-                            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                            await _userManager.ConfirmEmailAsync(user, token);
                             await _notifier.SuccessAsync(H["User {0} successfully approved.", user.UserName]);
                         }
                         break;
@@ -320,10 +318,9 @@ public sealed class AdminController : Controller
             return View(shape);
         }
 
-        if (emailConfirmed && !await _userManager.IsEmailConfirmedAsync(user))
+        if (emailConfirmed)
         {
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            await _userManager.ConfirmEmailAsync(user, token);
+            _ = await ConfirmUserEmailAsync(user);
         }
 
         await _notifier.SuccessAsync(H["User created successfully."]);
@@ -364,7 +361,7 @@ public sealed class AdminController : Controller
 
     [HttpPost]
     [ActionName(nameof(Edit))]
-    public async Task<IActionResult> EditPost(string id, string returnUrl)
+    public async Task<IActionResult> EditPost(string id, string returnUrl, [Bind(Prefix = "User.EmailConfirmed")] bool emailConfirmed)
     {
         // When no id is provided we assume the user is trying to edit their own profile.
         var editingOwnUser = false;
@@ -405,6 +402,11 @@ public sealed class AdminController : Controller
         if (!ModelState.IsValid)
         {
             return View(shape);
+        }
+
+        if(emailConfirmed)
+        {
+            _ = await ConfirmUserEmailAsync(user);
         }
 
         if (User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId)
@@ -558,5 +560,18 @@ public sealed class AdminController : Controller
         }
 
         return RedirectToAction(nameof(Index));
+    }
+
+    private async Task<bool> ConfirmUserEmailAsync(User user)
+    {
+        if (await _userManager.IsEmailConfirmedAsync(user))
+        {
+            return false;
+        }
+
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        await _userManager.ConfirmEmailAsync(user, token);
+
+        return true;
     }
 }
