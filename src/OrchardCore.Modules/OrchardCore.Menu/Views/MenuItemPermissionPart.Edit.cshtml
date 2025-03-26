@@ -8,8 +8,6 @@
     var allItems = JConvert.SerializeObject(Model.AllItems, JOptions.CamelCase);
 }
 
-<script asp-name="vuejs" at="Foot" version="2"></script>
-<script asp-name="vue-multiselect" version="2" at="Foot"></script>
 <script asp-name="menu-permission-picker" asp-src="~/OrchardCore.Menu/Scripts/menu-permission-picker.min.js" debug-src="~/OrchardCore.Menu/Scripts/menu-permission-picker.js" at="Foot" depends-on="vuejs:2,vue-multiselect:2"></script>
 <style asp-name="menu-permission-picker" asp-src="~/OrchardCore.Menu/Styles/menu-permission-picker.min.css" debug-src="~/OrchardCore.Menu/Styles/menu-permission-picker.css" depends-on="vue-multiselect:2"></style>
 
