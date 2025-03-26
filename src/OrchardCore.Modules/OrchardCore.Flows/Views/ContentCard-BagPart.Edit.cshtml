@@ -1,11 +1,17 @@
 @using OrchardCore.Localization
-
+@using OrchardCore.Flows.Models
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    var contentType = (await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType))?.DisplayName;
-    var collapsed = !Model.Inline;
+    var contentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+    var contentTypeDisplayText = contentTypeDefinition.DisplayName;
+
+    var parentTypeDefinition = await ContentDefinitionManager.GetTypeDefinitionAsync((string)Model.ParentContentType);
+    var collectionDefinition = parentTypeDefinition?.Parts?.FirstOrDefault(x => x.Name == (string)Model.CollectionPartName);
+    var bagPartSettings = collectionDefinition?.GetSettings<BagPartSettings>();
+
+    var collapsed = !Model.Inline && bagPartSettings?.CollapseContainedItems == true;
 
     if (!ViewContext.ModelState.IsValid && ViewContext.ModelState.Keys.Any(key => key.StartsWith(Model.PrefixValue, StringComparison.OrdinalIgnoreCase)))
     {
@@ -21,7 +27,7 @@
         }
         <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse"><i class="fa-solid fa-angle-down" aria-hidden="true"></i></button>
         <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand"><i class="fa-solid fa-angle-@(Orchard.CultureDir() == LanguageDirection.LTR ? "right" : "left")" aria-hidden="true"></i></button>
-        @T["{0} <span class=\"hint dashed\">{1}</span>", contentItem.DisplayText, contentType]
+        @T["{0} <span class=\"hint dashed\">{1}</span>", contentItem.DisplayText, contentTypeDisplayText]
         @if (Model.CanDelete)
         {
             <div class="btn-group btn-group-sm float-end" role="group">
