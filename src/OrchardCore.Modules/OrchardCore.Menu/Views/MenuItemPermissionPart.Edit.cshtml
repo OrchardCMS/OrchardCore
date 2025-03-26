@@ -17,19 +17,17 @@
     <div class="@Orchard.GetEndClasses()">
         <div id="PermissionPicker" class="vue-multiselect" data-selected-items="@selectedItems" data-all-items="@allItems" v-cloak>
 
-            <div>
-                <ul class="list-group w-xl-50 permission-picker-default__list mb-1" v-show="arrayOfItems.length">
-                    <li v-for="(item, i) in arrayOfItems"
-                        class="list-group-item permission-picker-default__list-item d-flex align-items-start justify-content-between"
-                        :key="item.name">
-                        <div class="align-items-center align-self-center"><span>{{ item.displayText }}</span></div>
+            <ul class="mb-1 list-group w-xl-50 permission-picker-default__list" v-show="arrayOfItems.length">
+                <li v-for="(item, i) in arrayOfItems"
+                    class="list-group-item permission-picker-default__list-item d-flex align-items-start justify-content-between"
+                    :key="item.name">
+                    <div class="align-items-center align-self-center"><span>{{ item.displayText }}</span></div>
 
-                        <div class="btn-group btn-group-sm align-items-center" role="group">
-                            <button v-on:click="remove(item)" type="button" class="btn btn-secondary permission-picker-default__list-item__delete"><i class="fa-solid fa-trash fa-sm" aria-hidden="true"></i></button>
-                        </div>
-                    </li>
-                </ul>
-            </div>
+                    <div class="btn-group btn-group-sm align-items-center" role="group">
+                        <button v-on:click="remove(item)" type="button" class="btn btn-secondary permission-picker-default__list-item__delete"><i class="fa-solid fa-trash fa-sm" aria-hidden="true"></i></button>
+                    </div>
+                </li>
+            </ul>
 
             <div class="mb-3">
                 <div class="w-xl-50">
