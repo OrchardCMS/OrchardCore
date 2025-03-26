@@ -17,8 +17,8 @@
     <div class="@Orchard.GetEndClasses()">
         <div id="PermissionPicker" class="vue-multiselect" data-selected-items="@selectedItems" data-all-items="@allItems" v-cloak>
 
-            <div class="mb-3">
-                <ul class="list-group w-xl-50 permission-picker-default__list" v-show="arrayOfItems.length">
+            <div>
+                <ul class="list-group w-xl-50 permission-picker-default__list mb-1" v-show="arrayOfItems.length">
                     <li v-for="(item, i) in arrayOfItems"
                         class="list-group-item permission-picker-default__list-item d-flex align-items-start justify-content-between"
                         :key="item.name">
