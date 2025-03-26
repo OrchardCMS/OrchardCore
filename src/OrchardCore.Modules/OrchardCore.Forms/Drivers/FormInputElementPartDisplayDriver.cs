@@ -24,9 +24,9 @@ public sealed class FormInputElementPartDisplayDriver : ContentPartDisplayDriver
 
         return Initialize<FormInputElementVisibilityViewModel>("FormInputElementPart_Visibility", model =>
         {
-            model.Action = visibilityPart.Action;
+            model.Action = visibilityPart?.Action ?? FormVisibilityAction.None;
 
-            model.Groups = visibilityPart.Groups.Select(group =>
+            model.Groups = visibilityPart?.Groups?.Select(group =>
                 new FormVisibilityRuleGroupViewModel
                 {
                     Rules = group.Rules?.Select(rule =>
@@ -34,11 +34,11 @@ public sealed class FormInputElementPartDisplayDriver : ContentPartDisplayDriver
                         return new FormVisibilityRuleViewModel
                         {
                             Field = rule.Field,
-                            Operator = rule.Operator,
+                            Operator = rule.Operator.ToString(),
                             Value = rule.Values?.FirstOrDefault() ?? string.Empty,
                         };
                     }).ToList() ?? new List<FormVisibilityRuleViewModel>()
-                }).ToList();
+                }).ToList() ?? new List<FormVisibilityRuleGroupViewModel>();
         }).Location("Detail", "Content");
     }
 

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -11,15 +10,11 @@ namespace OrchardCore.Forms.Drivers;
 
 internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartDisplayDriver<FormInputElementVisibilityPart>
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
     internal readonly IStringLocalizer S;
 
     public FormInputElementVisibilityPartDisplayDriver(
-        IHttpContextAccessor httpContextAccessor,
         IStringLocalizer<FormInputElementVisibilityPartDisplayDriver> stringLocalizer)
     {
-        _httpContextAccessor = httpContextAccessor;
         S = stringLocalizer;
     }
 
@@ -37,7 +32,7 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
                     new FormVisibilityRule
                     {
                       Field = "",
-                      Operator = null,
+                      Operator = FormVisibilityOperator.Is,
                       Values = Array.Empty<string>()
                     }
                   }
@@ -64,7 +59,8 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
                         return new FormVisibilityRuleViewModel
                         {
                             Field = rule.Field,
-                            Operator = rule.Operator,
+                            // Enum comes as a INT value, so we need to parse it ToString()
+                            Operator = rule.Operator.ToString(),
                             Value = rule.Values?.FirstOrDefault() ?? string.Empty,
                             Fields = new List<FormVisibilityFieldViewModel>(),
                             Operators = new List<SelectListItem>
@@ -93,8 +89,6 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
 
         await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-        var request = _httpContextAccessor.HttpContext.Request;
-
         part.Action = model.Action;
 
         part.Groups = (model.Groups ?? new List<FormVisibilityRuleGroupViewModel>())
@@ -102,18 +96,23 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
             {
                 return new FormVisibilityRuleGroup
                 {
-                    Rules = x.Rules.Select(y =>
+                    Rules = x.Rules.Select(r =>
                     {
+                        var parsedOperator = FormVisibilityOperator.Is;
+                        if (!string.IsNullOrWhiteSpace(r.Operator))
+                        {
+                            parsedOperator = Enum.Parse<FormVisibilityOperator>(r.Operator);
+                        }
+                        // Enum comes as a INT value, so we need to parse it ToString()
                         return new FormVisibilityRule
                         {
-                            Field = y.Field,
-                            Operator = y.Operator,
-                            Values = GetValues(y.Value),
+                            Field = r.Field,
+                            Operator = parsedOperator,
+                            Values = GetValues(r.Value),
                         };
                     }).ToList()
                 };
             }).ToList();
-
         return Edit(part, context);
     }
 

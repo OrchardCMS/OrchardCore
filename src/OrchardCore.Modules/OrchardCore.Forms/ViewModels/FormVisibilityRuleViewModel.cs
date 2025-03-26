@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using OrchardCore.Forms.Models;
 
 namespace OrchardCore.Forms.ViewModels;
 
@@ -8,7 +7,7 @@ public class FormVisibilityRuleViewModel
 {
     public string Field { get; set; } = "";
 
-    public FormVisibilityOperator? Operator { get; set; }
+    public string Operator { get; set; }
 
     public string Value { get; set; }
 

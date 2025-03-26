@@ -84,12 +84,11 @@ window.formVisibilityGroups = function () {
             el: config.appElementSelector,
             data() {
                 return {
-                    groups: [],
+                    groups: config.groupOptions || [],
                     fieldOptions: config.fieldOptions || [],
-                    operatorOptions: [],
-                    allOperatorOptions: [],
+                    operatorOptions: config.operatorOptions || [],
+                    allOperatorOptions: config.operatorOptions || [],
                     prefix: '',
-                    // widgetId: config.appElementSelector.replace('#', '')
                     widgetId: config.widgetId,
                 };
             },
@@ -102,8 +101,6 @@ window.formVisibilityGroups = function () {
 
             methods: {
                 addGroup() {
-
-                    console.log("[VisibilityGroups] addGroup triggered");
                     var newGroup = {
                         id: 'group-' + (groupCounter++),
                         rules: [{
@@ -138,43 +135,37 @@ window.formVisibilityGroups = function () {
                 },
 
                 populateFields() {
-                    const inputs = this.getInputs();
-
-                    this.fieldOptions = inputs.map(input => {
+                    const inputs = this.getInputs(document);
+                    this.fieldOptions = inputs.map(function (input) {
                         return {
-                            value: input.htmlId,
+                            value: input.htmlName,
                             text: input.htmlName,
-                            type: input.htmlInputType,
+                            type: input.htmlInputType
                         };
                     });
                 },
 
-                getInputs() {
-                    const widgetElements = document.querySelectorAll('.widget-template');
+                getInputs(el) {
+                    const widgetElements = el.querySelectorAll('.widget-template');
 
                     const results = [];
 
                     widgetElements.forEach(function (widget) {
 
-                        const formElementInput = widget.querySelector('input[name$="FormElementPart.Id"]');
-
                         const formElementNameInput = widget.querySelector('input[name$="FormInputElementPart.Name"]');
 
                         const inputTypeSelect = widget.querySelector('select[name$="InputPart.Type"]');
 
-                        if (formElementInput && inputTypeSelect) {
-
-                            const htmlId = formElementInput.value;
+                        if (formElementNameInput && inputTypeSelect) {
 
                             const htmlName = formElementNameInput.value;
 
                             const selectedOption = inputTypeSelect.options[inputTypeSelect.selectedIndex].value;
 
-                            if (!formElementInput.value || !selectedOption) {
+                            if (!htmlName || !selectedOption) {
                                 return;
                             }
                             results.push({
-                                htmlId: htmlId,
                                 htmlName: htmlName,
                                 htmlInputType: selectedOption
                             });
@@ -183,20 +174,18 @@ window.formVisibilityGroups = function () {
                     return results;
                 },
 
-                findOperators() {
-                    const operatorData = document.getElementById('operatorData');
+                operatorsList(fieldId) {
+                    const field = this.fieldOptions.find(f => f.value === fieldId);
 
-                    if (operatorData) {
-                        try {
-                            const masterList = JSON.parse(operatorData.getAttribute('data-operators'));
-                            this.allOperatorOptions = masterList;
-                            return masterList;
-                        } catch (e) {
-                            console.error("Error parsing operator data:", e);
-                        }
-                    }
+                    if (!field) return [];
 
-                    return [];
+                    const mapping = this.operatorMapping();
+
+                    if (!mapping[field.type]) return [];
+
+                    return this.allOperatorOptions.filter(x =>
+                        mapping[field.type].includes(x.value.toLowerCase())
+                    );
                 },
 
                 operatorMapping() {
@@ -225,81 +214,22 @@ window.formVisibilityGroups = function () {
                     };
                 },
 
-                operatorsList(fieldId) {
-                    const field = this.fieldOptions.find(f => f.value === fieldId);
-
-                    if (!field) return [];
-
-                    const mapping = this.operatorMapping();
-
-                    if (!mapping[field.type]) return [];
-
-                    return this.allOperatorOptions.filter(x =>
-                        mapping[field.type].includes(x.value.toLowerCase())
-                    );
-                },
-
-                populateGroupsFromInputs() {
-                    const inputs = document.querySelectorAll(`[name^="${this.prefix}Groups["][name*="${this.widgetId}"]`);
-
-                    let groupsMap = new Map();
-
-                    inputs.forEach(input => {
-                        const match = input.name.match(/Groups\[(\d+)\]\.Rules\[(\d+)\]\.(Field|Operator|Value)/);
-                        if (!match) return;
-
-                        const groupIndex = Number(match[1]);
-
-                        const ruleIndex = Number(match[2]);
-
-                        const fieldType = match[3].toLowerCase();
-
-                        if (!groupsMap.has(groupIndex)) {
-                            groupsMap.set(groupIndex, { rules: [] });
-                        }
-
-                        if (!groupsMap.get(groupIndex).rules[ruleIndex]) {
-                            groupsMap.get(groupIndex).rules[ruleIndex] = { field: "", operator: "", value: "" };
-                        }
-
-                        groupsMap.get(groupIndex).rules[ruleIndex][fieldType.toLowerCase()] = input.value;
-                    });
-
-                    this.groups = Array.from(groupsMap.values());
-                },
-
-                syncWithNewInputs(savedData) {
-                    try {
-                        const currentInputs = this.getInputs();
-                        const matchedGroups = [];
-                        // For each input in the form, find every group that references it
-                        currentInputs.forEach(input => {
-                            if (!Array.isArray(savedData)) {
-                                return;
-                            }
-
-                            const referencingGroups = savedData.filter(group =>
-                                group.rules.some(rule => rule.field === input.htmlId)
-                            );
-
-                            matchedGroups.push(...referencingGroups);
+                toggleTabEvent() {
+                    const tabElements = document.querySelectorAll('a[data-bs-toggle="tab"]');
+                    for (let i = 0; i < tabElements.length; i++) {
+                        tabElements[i].addEventListener('shown.bs.tab', (e) => {
+                            console.log('New Tab is active:', e.target);
+                            var container = e.target.closest('.content-part-wrapper-form-part');
+                            var inputs = this.getInputs(container || document);
+                            this.fieldOptions = inputs.map(input => {
+                                return {
+                                    value: input.htmlName,
+                                    text: input.htmlName,
+                                    type: input.htmlInputType
+                                };
+                            });
+                            console.log('Updated fieldOptions after tab switch:', this.fieldOptions);
                         });
-
-                        const uniqueGroups = [];
-                        const foundGroup = new Set();
-
-                        for (const group of matchedGroups) {
-                            if (!foundGroup.has(group.id)) {
-                                foundGroup.add(group.id);
-                                uniqueGroups.push(group);
-                            }
-                        }
-
-                        return uniqueGroups;
-
-                    } catch (e) {
-                        console.error(e);
-                        return [];
                     }
                 },
             },
@@ -308,36 +238,11 @@ window.formVisibilityGroups = function () {
                 if (config.prefix) {
                     this.prefix = config.prefix + '.';
                 }
-
-                this.$nextTick(() => {
-                    this.populateFields();
-                    this.operatorOptions = this.findOperators();
-
-                    const savedKeys = Object.keys(localStorage).filter(key => key.startsWith(`savedGroups_${this.widgetId}`));
-
-                    const savedGroups = savedKeys.length > 0 ? localStorage.getItem(savedKeys[savedKeys.length - 1]) : null;
-
-                    if (savedGroups) {
-                        try {
-                            const savedData = JSON.parse(savedGroups);
-                            this.groups = this.syncWithNewInputs(savedData);
-                        } catch (e) {
-                            console.error("Error parsing saved groups:", e);
-                        }
-                    } else {
-                        this.populateGroupsFromInputs();
-                    }
-
-                    this.$watch(
-                        "groups",
-                        (newGroups) => {
-                            if (!newGroups || newGroups.length === 0) {
-                                return;
-                            }
-                            localStorage.setItem(`savedGroups_${this.widgetId}`, JSON.stringify(newGroups));
-                        }, { deep: true }
-                    );
-                });
+                this.toggleTabEvent()
+                this.groups = config.groupOptions || [];
+                this.operatorOptions = config.operatorOptions || [];
+                this.allOperatorOptions = config.operatorOptions || [];
+                this.populateFields();
             }, template: config.template
         });
         return app;

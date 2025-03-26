@@ -3,12 +3,6 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 window.formVisibilityGroups = function () {
   var defaultConfig = {
     template: "\n           <div>\n        <ul class=\"list-group\">\n            <!-- Loop through each group -->\n            <li class=\"list-group-item\" v-for=\"(group, groupIndex) in groups\" :key=\"groupIndex\">\n                <div class=\"d-flex justify-content-between mb-2\">\n                    <span>Group {{ groupIndex + 1 }}</span>\n                    <input type=\"hidden\" :name=\"prefix + 'Groups[' + groupIndex + '].IsRemoved'\" value=\"false\" />\n                    <button type=\"button\" class=\"btn btn-sm btn-danger\" @click=\"removeGroup(groupIndex)\">\n                        <i class=\"fa-solid fa-trash\"></i> Remove Group\n                    </button>\n                </div>\n\n                <!-- Loop through each rule -->\n                <ul class=\"list-group mb-3\">\n                    <!-- Loop through each rule in the group -->\n                    <li class=\"list-group-item\" v-for=\"(rule, ruleIndex) in group.rules\" :key=\"ruleIndex\">\n                        <div class=\"row\">\n                            <div class=\"col\">\n                                <select class=\"form-select\" v-model=\"rule.field\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Field'\">\n                                    <option value=\"\">Select Field</option>\n                                    <option v-for=\"option in fieldOptions\" :value=\"option.value\">\n                                        {{ option.text }}\n                                    </option>\n                                </select>\n                            </div>\n\n                            <div class=\"col\">\n                                <select class=\"form-select\" v-model=\"rule.operator\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Operator'\">\n                                    <option value=\"\">Select Operator</option>\n                                    <option v-for=\"option in operatorsList(rule.field)\" :value=\"option.value\">\n                                        {{ option.text }}\n                                    </option>\n                                </select>\n                            </div>\n\n                            <div class=\"col\">\n                                <input type=\"text\" class=\"form-control\" v-model=\"rule.value\" placeholder=\"Value\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Value'\" />\n                            </div>\n\n                            <div class=\"col-auto\">\n                                <input type=\"hidden\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].IsRemoved'\" value=\"false\" />\n                                <button type=\"button\" class=\"btn btn-sm btn-danger\" @click=\"removeRule(groupIndex, ruleIndex)\">\n                                    <i class=\"fa-solid fa-trash\"></i> Remove Rule\n                                </button>\n                            </div>\n                        </div>\n                    </li>\n                    <li class=\"list-group-item\">\n                        <div class=\"d-flex justify-content-end mb-2\">\n                            <button type=\"button\" class=\"btn btn-sm btn-secondary\" @click=\"addRule(groupIndex)\">\n                                <i class=\"fa-solid fa-circle-plus\"></i> New Rule\n                            </button>\n                        </div>\n                    </li>\n                </ul>\n            </li>\n            <li class=\"list-group-item\">\n                <div class=\"d-flex justify-content-end\">\n                    <button type=\"button\" class=\"btn btn-sm btn-primary\" @click=\"addGroup()\">\n                        <i class=\"fa-solid fa-circle-plus\"></i> New Group\n                    </button>\n                </div>\n            </li>\n        </ul>\n    </div>\n        "
@@ -24,12 +18,11 @@ window.formVisibilityGroups = function () {
       el: config.appElementSelector,
       data: function data() {
         return {
-          groups: [],
+          groups: config.groupOptions || [],
           fieldOptions: config.fieldOptions || [],
-          operatorOptions: [],
-          allOperatorOptions: [],
+          operatorOptions: config.operatorOptions || [],
+          allOperatorOptions: config.operatorOptions || [],
           prefix: '',
-          // widgetId: config.appElementSelector.replace('#', '')
           widgetId: config.widgetId
         };
       },
@@ -40,7 +33,6 @@ window.formVisibilityGroups = function () {
       },
       methods: {
         addGroup: function addGroup() {
-          console.log("[VisibilityGroups] addGroup triggered");
           var newGroup = {
             id: 'group-' + groupCounter++,
             rules: [{
@@ -69,31 +61,28 @@ window.formVisibilityGroups = function () {
           this.groups[groupIndex].rules.splice(ruleIndex, 1);
         },
         populateFields: function populateFields() {
-          var inputs = this.getInputs();
+          var inputs = this.getInputs(document);
           this.fieldOptions = inputs.map(function (input) {
             return {
-              value: input.htmlId,
+              value: input.htmlName,
               text: input.htmlName,
               type: input.htmlInputType
             };
           });
         },
-        getInputs: function getInputs() {
-          var widgetElements = document.querySelectorAll('.widget-template');
+        getInputs: function getInputs(el) {
+          var widgetElements = el.querySelectorAll('.widget-template');
           var results = [];
           widgetElements.forEach(function (widget) {
-            var formElementInput = widget.querySelector('input[name$="FormElementPart.Id"]');
             var formElementNameInput = widget.querySelector('input[name$="FormInputElementPart.Name"]');
             var inputTypeSelect = widget.querySelector('select[name$="InputPart.Type"]');
-            if (formElementInput && inputTypeSelect) {
-              var htmlId = formElementInput.value;
+            if (formElementNameInput && inputTypeSelect) {
               var htmlName = formElementNameInput.value;
               var selectedOption = inputTypeSelect.options[inputTypeSelect.selectedIndex].value;
-              if (!formElementInput.value || !selectedOption) {
+              if (!htmlName || !selectedOption) {
                 return;
               }
               results.push({
-                htmlId: htmlId,
                 htmlName: htmlName,
                 htmlInputType: selectedOption
               });
@@ -101,18 +90,16 @@ window.formVisibilityGroups = function () {
           });
           return results;
         },
-        findOperators: function findOperators() {
-          var operatorData = document.getElementById('operatorData');
-          if (operatorData) {
-            try {
-              var masterList = JSON.parse(operatorData.getAttribute('data-operators'));
-              this.allOperatorOptions = masterList;
-              return masterList;
-            } catch (e) {
-              console.error("Error parsing operator data:", e);
-            }
-          }
-          return [];
+        operatorsList: function operatorsList(fieldId) {
+          var field = this.fieldOptions.find(function (f) {
+            return f.value === fieldId;
+          });
+          if (!field) return [];
+          var mapping = this.operatorMapping();
+          if (!mapping[field.type]) return [];
+          return this.allOperatorOptions.filter(function (x) {
+            return mapping[field.type].includes(x.value.toLowerCase());
+          });
         },
         operatorMapping: function operatorMapping() {
           return {
@@ -139,105 +126,35 @@ window.formVisibilityGroups = function () {
             submit: []
           };
         },
-        operatorsList: function operatorsList(fieldId) {
-          var field = this.fieldOptions.find(function (f) {
-            return f.value === fieldId;
-          });
-          if (!field) return [];
-          var mapping = this.operatorMapping();
-          if (!mapping[field.type]) return [];
-          return this.allOperatorOptions.filter(function (x) {
-            return mapping[field.type].includes(x.value.toLowerCase());
-          });
-        },
-        populateGroupsFromInputs: function populateGroupsFromInputs() {
-          var inputs = document.querySelectorAll("[name^=\"".concat(this.prefix, "Groups[\"][name*=\"").concat(this.widgetId, "\"]"));
-          var groupsMap = new Map();
-          inputs.forEach(function (input) {
-            var match = input.name.match(/Groups\[(\d+)\]\.Rules\[(\d+)\]\.(Field|Operator|Value)/);
-            if (!match) return;
-            var groupIndex = Number(match[1]);
-            var ruleIndex = Number(match[2]);
-            var fieldType = match[3].toLowerCase();
-            if (!groupsMap.has(groupIndex)) {
-              groupsMap.set(groupIndex, {
-                rules: []
+        toggleTabEvent: function toggleTabEvent() {
+          var _this = this;
+          var tabElements = document.querySelectorAll('a[data-bs-toggle="tab"]');
+          for (var i = 0; i < tabElements.length; i++) {
+            tabElements[i].addEventListener('shown.bs.tab', function (e) {
+              console.log('New Tab is active:', e.target);
+              var container = e.target.closest('.content-part-wrapper-form-part');
+              var inputs = _this.getInputs(container || document);
+              _this.fieldOptions = inputs.map(function (input) {
+                return {
+                  value: input.htmlName,
+                  text: input.htmlName,
+                  type: input.htmlInputType
+                };
               });
-            }
-            if (!groupsMap.get(groupIndex).rules[ruleIndex]) {
-              groupsMap.get(groupIndex).rules[ruleIndex] = {
-                field: "",
-                operator: "",
-                value: ""
-              };
-            }
-            groupsMap.get(groupIndex).rules[ruleIndex][fieldType.toLowerCase()] = input.value;
-          });
-          this.groups = Array.from(groupsMap.values());
-        },
-        syncWithNewInputs: function syncWithNewInputs(savedData) {
-          try {
-            var currentInputs = this.getInputs();
-            var matchedGroups = [];
-            // For each input in the form, find every group that references it
-            currentInputs.forEach(function (input) {
-              if (!Array.isArray(savedData)) {
-                return;
-              }
-              var referencingGroups = savedData.filter(function (group) {
-                return group.rules.some(function (rule) {
-                  return rule.field === input.htmlId;
-                });
-              });
-              matchedGroups.push.apply(matchedGroups, _toConsumableArray(referencingGroups));
+              console.log('Updated fieldOptions after tab switch:', _this.fieldOptions);
             });
-            var uniqueGroups = [];
-            var foundGroup = new Set();
-            for (var _i = 0, _matchedGroups = matchedGroups; _i < _matchedGroups.length; _i++) {
-              var group = _matchedGroups[_i];
-              if (!foundGroup.has(group.id)) {
-                foundGroup.add(group.id);
-                uniqueGroups.push(group);
-              }
-            }
-            return uniqueGroups;
-          } catch (e) {
-            console.error(e);
-            return [];
           }
         }
       },
       mounted: function mounted() {
-        var _this = this;
         if (config.prefix) {
           this.prefix = config.prefix + '.';
         }
-        this.$nextTick(function () {
-          _this.populateFields();
-          _this.operatorOptions = _this.findOperators();
-          var savedKeys = Object.keys(localStorage).filter(function (key) {
-            return key.startsWith("savedGroups_".concat(_this.widgetId));
-          });
-          var savedGroups = savedKeys.length > 0 ? localStorage.getItem(savedKeys[savedKeys.length - 1]) : null;
-          if (savedGroups) {
-            try {
-              var savedData = JSON.parse(savedGroups);
-              _this.groups = _this.syncWithNewInputs(savedData);
-            } catch (e) {
-              console.error("Error parsing saved groups:", e);
-            }
-          } else {
-            _this.populateGroupsFromInputs();
-          }
-          _this.$watch("groups", function (newGroups) {
-            if (!newGroups || newGroups.length === 0) {
-              return;
-            }
-            localStorage.setItem("savedGroups_".concat(_this.widgetId), JSON.stringify(newGroups));
-          }, {
-            deep: true
-          });
-        });
+        this.toggleTabEvent();
+        this.groups = config.groupOptions || [];
+        this.operatorOptions = config.operatorOptions || [];
+        this.allOperatorOptions = config.operatorOptions || [];
+        this.populateFields();
       },
       template: config.template
     });

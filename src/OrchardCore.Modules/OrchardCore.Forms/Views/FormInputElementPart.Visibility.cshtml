@@ -1,13 +1,8 @@
 @using OrchardCore.Forms.ViewModels
 @model FormInputElementVisibilityViewModel
 
-@{
-    int groupIndex = 0;
-}
-
 @foreach (var group in Model.Groups)
 {
-    int ruleIndex = 0;
     foreach (var rule in group.Rules)
     {
         string containerId = Guid.NewGuid().ToString("N");
@@ -19,10 +14,7 @@
              data-value="@rule.Value"
              data-action="@Model.Action">
         </div>
-
-        ruleIndex++;
     }
-    groupIndex++;
 }
 
 <script>
@@ -92,7 +84,6 @@
                 triggerValue = inputFieldRule.value?.trim().toLowerCase() || "";
             }
 
-            // declare outside of loop
             let someRulePassed = false;
 
             rules.forEach(ruleElement => {
@@ -105,16 +96,13 @@
                 if (inputFieldRule.type === "number") {
                     ruleValue = parseFloat(ruleValueRaw);
                 }
-                console.log(`Evaluating rule for "${targetInput}": current value = "${triggerValue}", operator = "${operator}", rule value = "${ruleValue}"`);
 
                 let rulePassed = false;
 
                 switch (operator) {
                     case null:
                     case "":
-                    console.warn(`⚠️ No operator selected for "${targetInput}". Skipping rule.`);
                     return;
-
                     case "is":
                     rulePassed = (triggerValue === ruleValue);
                     break;
@@ -146,7 +134,7 @@
                     rulePassed = triggerValue < ruleValue;
                     break;
                     default:
-                    console.warn(`⚠️ Unknown operator for "${targetInput}": ${operator}`);
+                    console.warn(`Unknown operator for "${targetInput}": ${operator}`);
                     break;
                 }
 

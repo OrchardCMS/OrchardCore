@@ -166,12 +166,13 @@ public sealed class Migrations : DataMigration
             .WithPart("ValidationPart")
             .Stereotype("Widget"));
 
-        // Apply visibility settings to Inputs INSIDE FlowPart & BagPart
+        // visibility settings to Inputs INSIDE FlowPart
         await _contentDefinitionManager.AlterTypeDefinitionAsync("FlowInput", type => type
             .WithPart("FormInputElementVisibilityPart", part => part
             .WithPosition("6"))
         );
 
+        // visibility settings to Inputs INSIDE BagPart
         await _contentDefinitionManager.AlterTypeDefinitionAsync("BagInput", type => type
             .WithPart("FormInputElementVisibilityPart", part => part
             .WithPosition("6"))
@@ -282,13 +283,11 @@ public sealed class Migrations : DataMigration
 
     public async Task<int> UpdateFrom4Async()
     {
-        // Ensure visibility settings exist
         await _contentDefinitionManager.AlterPartDefinitionAsync("FormInputElementVisibilityPart", part => part
             .Attachable()
             .WithDescription("Provides a way to add advanced visibility settings.")
         );
 
-        // ✅ Apply visibility settings to standalone inputs (Widgets)
         await _contentDefinitionManager.AlterTypeDefinitionAsync("Select", type => type
             .WithPart("FormInputElementVisibilityPart", part => part
             .WithPosition("6"))
@@ -304,12 +303,13 @@ public sealed class Migrations : DataMigration
             .WithPosition("6"))
         );
 
-        // ✅ Apply visibility settings to Inputs INSIDE FlowPart & BagPart
+        // visibility settings to Inputs INSIDE FlowPart
         await _contentDefinitionManager.AlterTypeDefinitionAsync("FlowInput", type => type
             .WithPart("FormInputElementVisibilityPart", part => part
             .WithPosition("6"))
         );
 
+        // visibility settings to Inputs INSIDE BagPart
         await _contentDefinitionManager.AlterTypeDefinitionAsync("BagInput", type => type
             .WithPart("FormInputElementVisibilityPart", part => part
             .WithPosition("6"))

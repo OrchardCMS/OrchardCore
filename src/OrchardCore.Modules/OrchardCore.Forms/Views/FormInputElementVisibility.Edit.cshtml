@@ -19,18 +19,19 @@
     <div id="@(idPrefix)_groupsContainerId" data-groups='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Groups))'></div>
 </div>
 
-<div id="operatorData" style="display:none;"
-     data-operators='@Html.Raw(Json.Serialize(Model.Groups.First().Rules.First().Operators))'>
-</div>
-
 <script asp-name="form-visibility" asp-src="/OrchardCore.Forms/Scripts/form-visibility.min.js" src-debug="/OrchardCore.Forms/Scripts/form-visibility.js" at="Foot" depends-on="vuejs:2"></script>
 
 <script at="Foot">
     document.addEventListener('DOMContentLoaded', function () {
-        formVisibilityGroups.initialize({
-        appElementSelector: '#@(idPrefix)_groupsContainerId',
-        prefix: '@Html.NameForModel()',
-        widgetId: '@Html.NameForModel()'
-        });
+        var container = document.querySelector('#@(idPrefix)_groupsContainerId');
+        if (container) {
+            formVisibilityGroups.initialize({
+                appElementSelector: '#@(idPrefix)_groupsContainerId',
+                prefix: '@Html.NameForModel()',
+                widgetId: '@Html.NameForModel()',
+                groupOptions: @Html.Raw(Json.Serialize(Model.Groups)),
+                operatorOptions: @Html.Raw(Json.Serialize(Model.Groups.First().Rules.First().Operators)),
+            });
+        }
     });
 </script>
