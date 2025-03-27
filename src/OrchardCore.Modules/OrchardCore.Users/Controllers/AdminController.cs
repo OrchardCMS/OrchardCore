@@ -144,7 +144,7 @@ public sealed class AdminController : Controller
 
         options.UsersBulkAction =
         [
-            new SelectListItem() { Text = S["Approve"], Value = nameof(UsersBulkAction.Approve) },
+            new SelectListItem() { Text = S["Confirm email"], Value = nameof(UsersBulkAction.ConfirmEmail) },
             new SelectListItem() { Text = S["Enable"], Value = nameof(UsersBulkAction.Enable) },
             new SelectListItem() { Text = S["Disable"], Value = nameof(UsersBulkAction.Disable) },
             new SelectListItem() { Text = S["Delete"], Value = nameof(UsersBulkAction.Delete) },
@@ -241,7 +241,8 @@ public sealed class AdminController : Controller
                 switch (options.BulkAction)
                 {
                     case UsersBulkAction.None: break;
-                    case UsersBulkAction.Approve:
+                    case UsersBulkAction.Approve: break;
+                    case UsersBulkAction.ConfirmEmail:
                         if (canEditUser && await ConfirmUserEmailAsync(user))
                         {
                             await _notifier.SuccessAsync(H["The email for {0} has been successfully confirmed.", user.UserName]);
@@ -449,11 +450,11 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (await ConfirmUserEmailAsync(user)) 
+        if (await ConfirmUserEmailAsync(user))
         {
             await _notifier.SuccessAsync(H["The email for {0} has been successfully confirmed.", user.UserName]);
-        } 
-        else 
+        }
+        else
         {
             await _notifier.WarningAsync(H["The email for {0} is already confirmed.", user.UserName]);
         }
