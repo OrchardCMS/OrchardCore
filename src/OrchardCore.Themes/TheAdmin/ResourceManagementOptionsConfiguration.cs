@@ -3,7 +3,8 @@ using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Themes.TheAdmin;
 
-public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<ResourceManagementOptions>
+public sealed class ResourceManagementOptionsConfiguration
+    : IConfigureOptions<ResourceManagementOptions>
 {
     private static readonly ResourceManifest _manifest;
 
@@ -13,13 +14,16 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
         _manifest
             .DefineScript("admin")
-            .SetDependencies("bootstrap", "admin-main", "theme-manager", "jQuery", "Sortable")
-            .SetUrl("~/TheAdmin/js/TheAdmin.min.js", "~/TheAdmin/js/TheAdmin.js")
+            .SetDependencies("admin-main", "theme-manager", "jQuery", "Sortable")
+            .SetUrl("~/TheAdmin/js/theadmin/TheAdmin.min.js", "~/TheAdmin/js/theadmin/TheAdmin.js")
             .SetVersion("1.0.0");
 
         _manifest
             .DefineScript("admin-main")
-            .SetUrl("~/TheAdmin/js/TheAdmin-main.min.js", "~/TheAdmin/js/TheAdmin-main.js")
+            .SetUrl(
+                "~/TheAdmin/js/theadmin-main/TheAdmin-main.min.js",
+                "~/TheAdmin/js/theadmin-main/TheAdmin-main.js"
+            )
             .SetDependencies("theme-head", "js-cookie")
             .SetVersion("1.0.0");
 

@@ -97,10 +97,17 @@ public sealed class AdminController : Controller
             await _mediaFileStore.TryCreateDirectoryAsync(_mediaFileStore.Combine(_mediaOptions.AssetsUsersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(User)));
         }
 
-        var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
-            .WhereAwait(async e => e.IsDirectory && await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)e.Path));
+        var allowed = new List<IFileStoreEntry>();
+        
+        await foreach (var e in _mediaFileStore.GetDirectoryContentAsync(path))
+        {
+            if (e.IsDirectory && await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)e.Path))
+            {
+                allowed.Add(e);
+            }
+        }
 
-        return Ok(await allowed.Select(folder =>
+        return Ok(allowed.Select(folder =>
         {
             var isSpecial = IsSpecialFolder(folder.Path);
             return new MediaFolderViewModel()
@@ -114,7 +121,7 @@ public sealed class AdminController : Controller
                 CanCreateFolder = !isSpecial,
                 CanDeleteFolder = !isSpecial
             };
-        }).ToListAsync());
+        }));
     }
 
     public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path, string extensions)
@@ -137,14 +144,19 @@ public sealed class AdminController : Controller
 
         var allowedExtensions = GetRequestedExtensions(extensions, false);
 
-        var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
-            .WhereAwait(async e =>
-                !e.IsDirectory
+        var allowed = new List<object>();
+        
+        await foreach (var e in _mediaFileStore.GetDirectoryContentAsync(path))
+        {
+            if (!e.IsDirectory
                 && (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(e.Path)))
                 && await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)e.Path))
-            .Select(e => CreateFileResult(e));
+            {
+                allowed.Add(CreateFileResult(e));
+            }
+        }
 
-        return Ok(await allowed.ToListAsync());
+        return Ok(allowed);
     }
 
     public async Task<ActionResult<object>> GetMediaItem(string path)

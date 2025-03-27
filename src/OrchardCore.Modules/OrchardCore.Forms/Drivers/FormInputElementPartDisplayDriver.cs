@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Utilities;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 using OrchardCore.Forms.ViewModels;
@@ -35,8 +36,17 @@ public sealed class FormInputElementPartDisplayDriver : ContentPartDisplayDriver
         {
             context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Name), S["A value is required for Name."]);
         }
+        else
+        {
+            var safeName = viewModel.Name.GetSafeHTMLInputName();
 
-        part.Name = viewModel.Name?.Trim();
+            if (viewModel.Name != safeName)
+            {
+                context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Name), S["A Name contains invalid characters."]);
+            }
+        }
+
+        part.Name = viewModel.Name;
         part.ContentItem.DisplayText = part.Name;
 
         return Edit(part, context);

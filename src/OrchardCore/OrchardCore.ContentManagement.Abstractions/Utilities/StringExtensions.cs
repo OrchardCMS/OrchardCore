@@ -385,4 +385,27 @@ public static class StringExtensions
 
         return source.Remove(lastIndex, searchedValue.Length).Insert(lastIndex, replacedValue);
     }
+
+    private const string _validHtmlInputNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.[]";
+
+    public static string GetSafeHTMLInputName(this string input)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(input);
+
+        var inputSpan = input.AsSpan();
+
+        var sanitizedName = new StringBuilder(inputSpan.Length);
+
+        foreach (var c in inputSpan)
+        {
+            if (!_validHtmlInputNameCharacters.Contains(c))
+            {
+                continue;
+            }
+
+            sanitizedName.Append(c);
+        }
+
+        return sanitizedName.ToString();
+    }
 }

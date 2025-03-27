@@ -37,7 +37,7 @@
         <span asp-validation-for="ClientId" class="text-danger"></span>
     </div>
 
-    <div class="mb-3" asp-validation-class-for="ClientSecret">
+    <div class="mb-3" asp-validation-class-for="ClientSecret" id="ClientSecretWrapper">
         <label asp-for="ClientSecret" class="form-label">@T["Client Secret"]</label>
         <div class="input-group">
             <input type="password" asp-for="ClientSecret" class="form-control" autocomplete="new-password" />
@@ -336,7 +336,7 @@
         });
         function refreshClientSecret(defaultType) {
             var type = $("#Type");
-            $("#ClientSecret").parent().collapse(type.val() === '@OpenIddictConstants.ClientTypes.Confidential' ? "show" : "hide");
+            $("#ClientSecretWrapper").collapse(type.val() === '@OpenIddictConstants.ClientTypes.Confidential' ? "show" : "hide");
 
             var allowClientCredentialsFlow = $("#AllowClientCredentialsFlow");
             if ($("#Type").val() === '@OpenIddictConstants.ClientTypes.Confidential') {

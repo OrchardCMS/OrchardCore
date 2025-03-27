@@ -1029,13 +1029,13 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
             dfd.resolve(files);
           }).fail(errorHandler);
         },
-        readEntries = function readEntries() {
+        _readEntries = function readEntries() {
           dirReader.readEntries(function (results) {
             if (!results.length) {
               successHandler(entries);
             } else {
               entries = entries.concat(results);
-              readEntries();
+              _readEntries();
             }
           }, errorHandler);
         };
@@ -1054,7 +1054,7 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
         }
       } else if (entry.isDirectory) {
         dirReader = entry.createReader();
-        readEntries();
+        _readEntries();
       } else {
         // Return an empty list for file system items
         // other than files or directories:
@@ -1538,20 +1538,20 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
   // https://github.com/blueimp/jQuery-File-Upload/wiki/Setup#content-type-negotiation
   $.ajaxSetup({
     converters: {
-      'iframe text': function iframeText(iframe) {
+      'iframe text': function iframe_text(iframe) {
         return iframe && $(iframe[0].body).text();
       },
-      'iframe json': function iframeJson(iframe) {
+      'iframe json': function iframe_json(iframe) {
         return iframe && jsonAPI[jsonParse]($(iframe[0].body).text());
       },
-      'iframe html': function iframeHtml(iframe) {
+      'iframe html': function iframe_html(iframe) {
         return iframe && $(iframe[0].body).html();
       },
-      'iframe xml': function iframeXml(iframe) {
+      'iframe xml': function iframe_xml(iframe) {
         var xmlDoc = iframe && iframe[0];
         return xmlDoc && $.isXMLDoc(xmlDoc) ? xmlDoc : $.parseXML(xmlDoc.XMLDocument && xmlDoc.XMLDocument.xml || $(xmlDoc.body).html());
       },
-      'iframe script': function iframeScript(iframe) {
+      'iframe script': function iframe_script(iframe) {
         return iframe && $.globalEval($(iframe[0].body).text());
       }
     }
@@ -1560,9 +1560,9 @@ function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == 
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 var initialized;
 var mediaApp;
 var bus = new Vue();
@@ -1931,7 +1931,6 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                       }
                       //self.selectedMedia = null;
                     },
-
                     error: function error(_error4) {
                       console.error(_error4.responseText);
                     }
@@ -2040,10 +2039,12 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
           }
         });
       });
-      if (displayMediaApplication) {
-        document.getElementById('mediaApp').style.display = "";
-      }
       $(document).trigger('mediaApp:ready');
+      if (displayMediaApplication) {
+        setTimeout(function () {
+          document.getElementById("mediaApp").classList.remove("d-none");
+        }, 100);
+      }
     },
     error: function error(_error7) {
       console.error(_error7.responseText);
@@ -2107,9 +2108,9 @@ $(document).bind('dragover', function (e) {
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 // <folder> component
 Vue.component('folder', {
   template: "\n        <li :class=\"{selected: isSelected}\" \n                v-on:dragleave.prevent = \"handleDragLeave($event);\" \n                v-on:dragover.prevent.stop=\"handleDragOver($event);\" \n                v-on:drop.prevent.stop = \"moveMediaToFolder(model, $event)\" >\n            <div :class=\"{folderhovered: isHovered , treeroot: level == 1}\" >\n                <a href=\"javascript:;\" :style=\"{ padding".concat(document.dir == "ltr" ? "Left" : "Right", ":padding + 'px' }\" v-on:click=\"select\"  draggable=\"false\" class=\"folder-menu-item\">\n                  <span v-on:click.stop=\"toggle\" class=\"expand\" :class=\"{opened: open, closed: !open, empty: empty}\"><i v-if=\"open\" class=\"fa-solid fa-chevron-").concat(document.dir == "ltr" ? "right" : "left", "\"></i></span> \n                  <div class=\"folder-name ms-2\">{{model.name}}</div>\n                    <div class=\"btn-group folder-actions\" >\n                            <a v-cloak href=\"javascript:;\" class=\"btn btn-sm\" v-on:click=\"createFolder\" v-if=\"canCreateFolder && (isSelected || isRoot)\"><i class=\"fa-solid fa-plus\" aria-hidden=\"true\"></i></a>\n                            <a v-cloak href=\"javascript:;\" class=\"btn btn-sm\" v-on:click=\"deleteFolder\" v-if=\"canDeleteFolder && isSelected && !isRoot\"><i class=\"fa-solid fa-trash\" aria-hidden=\"true\"></i></a>\n                    </div>\n                </a>\n            </div>\n            <ol v-show=\"open\">\n                <folder v-for=\"folder in children\"\n                        :key=\"folder.path\"\n                        :model=\"folder\"\n                        :selected-in-media-app=\"selectedInMediaApp\"\n                        :level=\"level + 1\">\n                </folder>\n            </ol>\n        </li>\n        "),
@@ -2259,7 +2260,6 @@ Vue.component('folder', {
               success: function success() {
                 bus.$emit('mediaListMoved'); // MediaApp will listen to this, and then it will reload page so the moved medias won't be there anymore
               },
-
               error: function error(_error2) {
                 console.error(_error2.responseText);
                 bus.$emit('mediaListMoved', _error2.responseText);
@@ -2534,7 +2534,6 @@ Vue.component('pager', {
     sourceItems: function sourceItems() {
       this.current = 0; // resetting current page after receiving a new list of unpaged items
     },
-
     pageSize: function pageSize() {
       this.current = 0;
     }
@@ -2848,7 +2847,6 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
           } else {
             position = position - 8; // Adjust to hit the mouse pointer.
           }
-
           return position + 'px';
         } else {
           return '0';
@@ -2863,7 +2861,6 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
           } else {
             position = position + 5; // Adjust to hit the mouse pointer.
           }
-
           return position + 'px';
         } else {
           return '0';
@@ -3006,7 +3003,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
   //when hide modal detach media app to avoid issue on BagPart
   modalBodyElement.addEventListener('hidden.bs.modal', function (event) {
     $("#mediaApp").appendTo('body');
-    $("#mediaApp").hide();
+    document.getElementById("mediaApp").classList.add("d-none");
   });
   mediaFieldApps.push(mediaFieldApp = new Vue({
     el: mediaFieldEditor.get(0),
@@ -3146,12 +3143,14 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
           $('#allowedExtensions').val(this.allowedExtensions);
           $('#fileupload').attr('accept', this.allowedExtensions);
           $("#mediaApp").appendTo($(modalBodyElement).find('.modal-body'));
-          $("#mediaApp").show();
 
           // Reload current folder in case the allowed extensions have changed.
           mediaApp.refresh();
           var modal = new bootstrap.Modal(modalBodyElement);
           modal.show();
+          setTimeout(function () {
+            document.getElementById("mediaApp").classList.remove("d-none");
+          }, 100);
           $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
             self.addMediaFiles(mediaApp.selectedMedias);
 

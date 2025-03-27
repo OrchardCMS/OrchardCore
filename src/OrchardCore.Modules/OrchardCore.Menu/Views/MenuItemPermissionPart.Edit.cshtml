@@ -1,4 +1,6 @@
 @using System.Text.Json
+@using OrchardCore
+
 @model MenuItemPermissionViewModel
 
 @{
@@ -6,19 +8,16 @@
     var allItems = JConvert.SerializeObject(Model.AllItems, JOptions.CamelCase);
 }
 
-<script asp-name="vuejs" at="Foot" version="2"></script>
-<script asp-name="vue-multiselect" at="Foot"></script>
-<script asp-name="menu-permission-picker" asp-src="~/OrchardCore.Menu/Scripts/menu-permission-picker.min.js" debug-src="~/OrchardCore.Menu/Scripts/menu-permission-picker.js" at="Foot" depends-on="vuejs:2,vue-multiselect"></script>
-<style asp-name="menu-permission-picker" asp-src="~/OrchardCore.Menu/Styles/menu-permission-picker.min.css" debug-src="~/OrchardCore.Menu/Styles/menu-permission-picker.css" depends-on="vue-multiselect"></style>
+<script asp-name="menu-permission-picker" asp-src="~/OrchardCore.Menu/Scripts/menu-permission-picker.min.js" debug-src="~/OrchardCore.Menu/Scripts/menu-permission-picker.js" at="Foot" depends-on="vuejs:2,vue-multiselect:2"></script>
+<style asp-name="menu-permission-picker" asp-src="~/OrchardCore.Menu/Styles/menu-permission-picker.min.css" debug-src="~/OrchardCore.Menu/Styles/menu-permission-picker.css" depends-on="vue-multiselect:2"></style>
 
-<div class="mb-3">
+<div class="@Orchard.GetWrapperClasses()">
 
-    <label asp-for="SelectedPermissionNames" class="form-label">@T["Permissions"]</label>
+    <label asp-for="SelectedPermissionNames" class="@Orchard.GetLabelClasses()">@T["Permissions"]</label>
+    <div class="@Orchard.GetEndClasses()">
+        <div id="PermissionPicker" class="vue-multiselect" data-selected-items="@selectedItems" data-all-items="@allItems" v-cloak>
 
-    <div id="PermissionPicker" class="vue-multiselect" data-selected-items="@selectedItems" data-all-items="@allItems" v-cloak>
-
-        <div class="mb-3">
-            <ul class="list-group w-xl-50 permission-picker-default__list" v-show="arrayOfItems.length">
+            <ul class="mb-1 list-group w-xl-50 permission-picker-default__list" v-show="arrayOfItems.length">
                 <li v-for="(item, i) in arrayOfItems"
                     class="list-group-item permission-picker-default__list-item d-flex align-items-start justify-content-between"
                     :key="item.name">
@@ -29,32 +28,32 @@
                     </div>
                 </li>
             </ul>
-        </div>
 
-        <div class="mb-3">
-            <div class="w-xl-50">
-                <input asp-for="SelectedPermissionNames" type="hidden" v-model="selectedNames" />
-                <vue-multiselect v-model="value"
-                                 :options="options"
-                                 track-by="name"
-                                 label="displayText"
-                                 placeholder="@T["Type to search"]"
-                                 @@select="onSelect"
-                                 :searchable="true"
-                                 :close-on-select="true"
-                                 :reset-after="true"
-                                 :show-labels="true"
-                                 :hide-selected="false"
-                                 select-label="@T["Select"]"
-                                 deselect-label="@T["Remove"]">
-                    <template slot="option" slot-scope="props">
-                        <div v-cloak><span>{{ props.option.displayText }}</span></div>
-                    </template>
-                    <template slot="noResult">
-                        @T["No result found"]
-                    </template>
-                </vue-multiselect>
-                <span class="hint">@T["The permissions required to display this menu item (optional)."]</span>
+            <div class="mb-3">
+                <div class="w-xl-50">
+                    <input asp-for="SelectedPermissionNames" type="hidden" v-model="selectedNames" />
+                    <vue-multiselect v-model="value"
+                                     :options="options"
+                                     track-by="name"
+                                     label="displayText"
+                                     placeholder="@T["Type to search"]"
+                                     @@select="onSelect"
+                                     :searchable="true"
+                                     :close-on-select="true"
+                                     :reset-after="true"
+                                     :show-labels="true"
+                                     :hide-selected="false"
+                                     select-label="@T["Select"]"
+                                     deselect-label="@T["Remove"]">
+                        <template slot="option" slot-scope="props">
+                            <div v-cloak><span>{{ props.option.displayText }}</span></div>
+                        </template>
+                        <template slot="noResult">
+                            @T["No result found"]
+                        </template>
+                    </vue-multiselect>
+                    <span class="hint">@T["The permissions required to display this menu item (optional)."]</span>
+                </div>
             </div>
         </div>
     </div>

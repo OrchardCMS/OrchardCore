@@ -12,7 +12,7 @@ using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.DisplayManagement.Liquid.Filters;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.Benchmark;
+namespace OrchardCore.Benchmarks;
 
 [MemoryDiagnoser]
 public class FluidShapeRenderBenchmark

@@ -29,6 +29,7 @@ internal sealed class EmailConfirmationRegistrationFormEvents : RegistrationForm
             return;
         }
 
+        context.CancelSignIn = true;
         await _userEmailConfirmationService.SendEmailConfirmationAsync(context.User);
     }
 }

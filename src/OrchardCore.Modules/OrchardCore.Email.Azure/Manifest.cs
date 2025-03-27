@@ -10,5 +10,5 @@ using OrchardCore.Modules.Manifest;
     [
         "OrchardCore.Email",
     ],
-    Category = "Messaging"
+    Category = "Communication"
 )]

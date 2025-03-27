@@ -141,6 +141,33 @@ Or to render the referenced content item:
         @await Orchard.DisplayAsync(contentItem, "Detail")
     }
     ```
+### `LinkField`
+
+Field used to display a link.
+
+#### `LinkFieldViewModel`
+
+| Property | Description                             |
+|----------|-----------------------------------------|
+| Url      | A valid URI for the href                |
+| Text     | The text to display                     |
+| Target   | The target attribute for the anchor tag, [Target](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#target) |
+
+!!! Note: By default the http and https are the only URIs permitted. In order to use other URIs like mailto and tel you must configure the [HTML Sanitizer](../Sanitizer/README.md). 
+
+#### Link Field Example 
+
+=== "Liquid"
+
+``` liquid
+<a href='{{Model.Url}}' Target={{Model.Target}}>{{Model.Text}}</a>
+```
+
+=== "Razor"
+
+```html
+<a href="@Model.Url" target="@Model.Target">@Model.Text</a>
+```
 
 ### `LocalizationSetContentPickerField`
 

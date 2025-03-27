@@ -56,11 +56,14 @@
 .workflow-canvas .jtk-connector {
   z-index: 4;
 }
-.workflow-canvas .jtk-endpoint, .workflow-canvas .endpointTargetLabel, .workflow-canvas .endpointSourceLabel {
+.workflow-canvas .jtk-endpoint,
+.workflow-canvas .endpointTargetLabel,
+.workflow-canvas .endpointSourceLabel {
   z-index: 21;
   cursor: pointer;
 }
-.workflow-canvas .endpointTargetLabel, .workflow-canvas .endpointSourceLabel {
+.workflow-canvas .endpointTargetLabel,
+.workflow-canvas .endpointSourceLabel {
   font-size: 8px;
 }
 .workflow-canvas .jtk-overlay {
@@ -96,7 +99,8 @@
 .workflow-canvas .activity header h4 .svg-inline--fa {
   margin-right: 0.5em;
 }
-.workflow-canvas .activity span, .workflow-canvas .activity em {
+.workflow-canvas .activity span,
+.workflow-canvas .activity em {
   /* Add an ellipsis on the workflow activity boxes. This makes the activities much easier to move when they have long text */
   white-space: nowrap;
   overflow: hidden;
@@ -111,7 +115,8 @@
   -ms-user-select: none;
   user-select: none;
 }
-.workflow-canvas path, .workflow-canvas .jtk-endpoint {
+.workflow-canvas path,
+.workflow-canvas .jtk-endpoint {
   cursor: pointer;
 }
 
@@ -127,4 +132,9 @@
 .jtk-connector.jtk-hover {
   stroke: #216477;
   fill: #216477;
+}
+
+.btn.activity-start-action.active {
+  background-color: #7ab02c;
+  border-color: #507b11;
 }

@@ -193,7 +193,7 @@ public sealed class NodeController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(AdminNodeEditViewModel model)
+    public async Task<IActionResult> Edit(AdminNodeEditViewModel model, string submit)
     {
         if (!await _authorizationService.AuthorizeAsync(User, AdminMenuPermissions.ManageAdminMenu))
         {
@@ -225,7 +225,15 @@ public sealed class NodeController : Controller
             await _adminMenuService.SaveAsync(adminMenu);
 
             await _notifier.SuccessAsync(H["Admin node updated successfully."]);
-            return RedirectToAction(nameof(List), new { id = model.AdminMenuId });
+            if (submit == "SaveAndContinue")
+            {
+                model.Editor = editor;
+                return View(model);
+            }
+            else
+            {
+                return RedirectToAction(nameof(List), new { id = model.AdminMenuId });
+            }
         }
 
         await _notifier.ErrorAsync(H["The admin node has validation errors."]);

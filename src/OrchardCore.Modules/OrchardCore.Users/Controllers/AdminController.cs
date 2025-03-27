@@ -144,7 +144,7 @@ public sealed class AdminController : Controller
 
         options.UsersBulkAction =
         [
-            new SelectListItem() { Text = S["Approve"], Value = nameof(UsersBulkAction.Approve) },
+            new SelectListItem() { Text = S["Confirm email"], Value = nameof(UsersBulkAction.ConfirmEmail) },
             new SelectListItem() { Text = S["Enable"], Value = nameof(UsersBulkAction.Enable) },
             new SelectListItem() { Text = S["Disable"], Value = nameof(UsersBulkAction.Disable) },
             new SelectListItem() { Text = S["Delete"], Value = nameof(UsersBulkAction.Delete) },
@@ -241,12 +241,11 @@ public sealed class AdminController : Controller
                 switch (options.BulkAction)
                 {
                     case UsersBulkAction.None: break;
-                    case UsersBulkAction.Approve:
-                        if (canEditUser && !await _userManager.IsEmailConfirmedAsync(user))
+                    case UsersBulkAction.Approve: break;
+                    case UsersBulkAction.ConfirmEmail:
+                        if (canEditUser && await ConfirmUserEmailAsync(user))
                         {
-                            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                            await _userManager.ConfirmEmailAsync(user, token);
-                            await _notifier.SuccessAsync(H["User {0} successfully approved.", user.UserName]);
+                            await _notifier.SuccessAsync(H["The email for {0} has been successfully confirmed.", user.UserName]);
                         }
                         break;
                     case UsersBulkAction.Delete:
@@ -439,6 +438,31 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost]
+    public async Task<IActionResult> ConfirmEmail(string id)
+    {
+        if (await _userManager.FindByIdAsync(id) is not User user)
+        {
+            return NotFound();
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
+        {
+            return Forbid();
+        }
+
+        if (await ConfirmUserEmailAsync(user))
+        {
+            await _notifier.SuccessAsync(H["The email for {0} has been successfully confirmed.", user.UserName]);
+        }
+        else
+        {
+            await _notifier.WarningAsync(H["The email for {0} is already confirmed.", user.UserName]);
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
     public async Task<IActionResult> Delete(string id)
     {
         if (await _userManager.FindByIdAsync(id) is not User user)
@@ -552,5 +576,18 @@ public sealed class AdminController : Controller
         }
 
         return RedirectToAction(nameof(Index));
+    }
+
+    private async Task<bool> ConfirmUserEmailAsync(User user)
+    {
+        if (await _userManager.IsEmailConfirmedAsync(user))
+        {
+            return false;
+        }
+
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        await _userManager.ConfirmEmailAsync(user, token);
+
+        return true;
     }
 }
