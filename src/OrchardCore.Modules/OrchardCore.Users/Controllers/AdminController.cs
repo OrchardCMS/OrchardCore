@@ -244,7 +244,7 @@ public sealed class AdminController : Controller
                     case UsersBulkAction.Approve:
                         if (canEditUser && await ConfirmUserEmailAsync(user))
                         {
-                            await _notifier.SuccessAsync(H["User {0} successfully approved.", user.UserName]);
+                            await _notifier.SuccessAsync(H["The email for {0} has been successfully confirmed.", user.UserName]);
                         }
                         break;
                     case UsersBulkAction.Delete:
@@ -437,7 +437,7 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Approve(string id)
+    public async Task<IActionResult> ConfirmEmail(string id)
     {
         if (await _userManager.FindByIdAsync(id) is not User user)
         {
@@ -449,9 +449,14 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        _ = await ConfirmUserEmailAsync(user);
-
-        await _notifier.SuccessAsync(H["User approved successfully."]);
+        if (await ConfirmUserEmailAsync(user)) 
+        {
+            await _notifier.SuccessAsync(H["The email for {0} has been successfully confirmed.", user.UserName]);
+        } 
+        else 
+        {
+            await _notifier.WarningAsync(H["The email for {0} is already confirmed.", user.UserName]);
+        }
 
         return RedirectToAction(nameof(Index));
     }

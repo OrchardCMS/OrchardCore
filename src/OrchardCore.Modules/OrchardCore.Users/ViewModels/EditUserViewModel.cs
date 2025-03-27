@@ -18,5 +18,4 @@ public class EditUserViewModel
 
     [BindNever]
     public bool IsNewRequest { get; set; }
-
 }
