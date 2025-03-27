@@ -6,17 +6,6 @@
 @using Microsoft.AspNetCore.Identity
 
 @inject IOptions<IdentityOptions> IdentityOptions
-@inject IOptions<RegistrationOptions> RegistrationOptions
-
-@if (RegistrationOptions.Value.UsersMustValidateEmail)
-{
-    <div class="mb-3">
-        <div class="form-check">
-            <input asp-for="EmailConfirmed" type="checkbox" class="form-check-input" asp-is-disabled="@Model.IsEditingDisabled">
-            <label class="form-check-label" asp-for="EmailConfirmed">@T["Email confirmed"]</label>
-        </div>
-    </div>
-}
 
 <div class="mb-3">
     <div class="form-check form-switch">
