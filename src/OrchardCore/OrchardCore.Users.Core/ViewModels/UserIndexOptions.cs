@@ -53,7 +53,7 @@ public enum UsersFilter
     Pending,
     EmailPending,
     Enabled,
-    Disabled
+    Disabled,
 }
 
 public enum UsersBulkAction
@@ -63,5 +63,6 @@ public enum UsersBulkAction
     Enable,
     Disable,
     Approve,
-    ChallengeEmail
+    ChallengeEmail,
+    ConfirmEmail,
 }

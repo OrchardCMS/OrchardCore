@@ -213,7 +213,7 @@ const normalizeSourceMap = async (assetConfig) => {
         if (stats.isFile()) {
             if (path.extname(filePath) === ".map") {
                 const fileContent = await fs.readFile(filePath, "utf8");
-                await fs.writeFile(filePath, fileContent.replace(/(?:\\[rn])+/g, "\\n"));
+                await fs.writeFile(filePath, fileContent.replace(/(?:\\r\\n)/g, "\\n"));
             }
         }
     }

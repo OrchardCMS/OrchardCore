@@ -144,7 +144,7 @@ public sealed class AdminController : Controller
 
         options.UsersBulkAction =
         [
-            new SelectListItem() { Text = S["Approve"], Value = nameof(UsersBulkAction.Approve) },
+            new SelectListItem() { Text = S["Confirm email"], Value = nameof(UsersBulkAction.ConfirmEmail) },
             new SelectListItem() { Text = S["Enable"], Value = nameof(UsersBulkAction.Enable) },
             new SelectListItem() { Text = S["Disable"], Value = nameof(UsersBulkAction.Disable) },
             new SelectListItem() { Text = S["Delete"], Value = nameof(UsersBulkAction.Delete) },
@@ -241,10 +241,11 @@ public sealed class AdminController : Controller
                 switch (options.BulkAction)
                 {
                     case UsersBulkAction.None: break;
-                    case UsersBulkAction.Approve:
+                    case UsersBulkAction.Approve: break;
+                    case UsersBulkAction.ConfirmEmail:
                         if (canEditUser && await ConfirmUserEmailAsync(user))
                         {
-                            await _notifier.SuccessAsync(H["User {0} successfully approved.", user.UserName]);
+                            await _notifier.SuccessAsync(H["The email for {0} has been successfully confirmed.", user.UserName]);
                         }
                         break;
                     case UsersBulkAction.Delete:
@@ -295,7 +296,7 @@ public sealed class AdminController : Controller
 
     [HttpPost]
     [ActionName(nameof(Create))]
-    public async Task<IActionResult> CreatePost([Bind(Prefix = "User.Password")] string password, [Bind(Prefix = "User.EmailConfirmed")] bool emailConfirmed)
+    public async Task<IActionResult> CreatePost([Bind(Prefix = "User.Password")] string password)
     {
         var user = new User();
 
@@ -316,11 +317,6 @@ public sealed class AdminController : Controller
         if (!ModelState.IsValid)
         {
             return View(shape);
-        }
-
-        if (emailConfirmed)
-        {
-            _ = await ConfirmUserEmailAsync(user);
         }
 
         await _notifier.SuccessAsync(H["User created successfully."]);
@@ -361,7 +357,7 @@ public sealed class AdminController : Controller
 
     [HttpPost]
     [ActionName(nameof(Edit))]
-    public async Task<IActionResult> EditPost(string id, string returnUrl, [Bind(Prefix = "User.EmailConfirmed")] bool emailConfirmed)
+    public async Task<IActionResult> EditPost(string id, string returnUrl)
     {
         // When no id is provided we assume the user is trying to edit their own profile.
         var editingOwnUser = false;
@@ -404,11 +400,6 @@ public sealed class AdminController : Controller
             return View(shape);
         }
 
-        if (emailConfirmed)
-        {
-            _ = await ConfirmUserEmailAsync(user);
-        }
-
         if (User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId)
         {
             await _signInManager.RefreshSignInAsync(user);
@@ -444,6 +435,31 @@ public sealed class AdminController : Controller
         var model = await _userDisplayManager.BuildDisplayAsync(user, _updateModelAccessor.ModelUpdater, "DetailAdmin");
 
         return View(model);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ConfirmEmail(string id)
+    {
+        if (await _userManager.FindByIdAsync(id) is not User user)
+        {
+            return NotFound();
+        }
+
+        if (!await _authorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, user))
+        {
+            return Forbid();
+        }
+
+        if (await ConfirmUserEmailAsync(user))
+        {
+            await _notifier.SuccessAsync(H["The email for {0} has been successfully confirmed.", user.UserName]);
+        }
+        else
+        {
+            await _notifier.WarningAsync(H["The email for {0} is already confirmed.", user.UserName]);
+        }
+
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
