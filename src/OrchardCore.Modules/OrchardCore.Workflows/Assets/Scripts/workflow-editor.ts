@@ -165,17 +165,7 @@ class WorkflowEditor extends WorkflowCanvas {
                             e.preventDefault();
                             const button = $(e.currentTarget);
 
-                            let isStart = button.is(".active");
-
-                            if (isStart) {
-                                button.removeClass("active");
-                                isStart = false;
-                            }
-                            else {
-                                button.addClass("active");
-                                isStart = true;
-                            }
-
+                            const isStart = button.is(".active");
                             activityElement.data("activity-start", isStart);
                             activityElement.toggleClass("activity-start", isStart);
                         });
