@@ -8,6 +8,9 @@
 
     Provides OpenId Connect client, server and management features.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS OpenId</PackageTags>
+    
+    <!-- Required to build on net10.0 with validation interceptors until it's part of the SDK -->
+    <InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.AspNetCore.Http.Validation.Generated</InterceptorsNamespaces>
   </PropertyGroup>
 
   <ItemGroup>

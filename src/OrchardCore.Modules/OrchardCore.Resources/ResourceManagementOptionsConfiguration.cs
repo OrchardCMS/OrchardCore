@@ -1018,6 +1018,12 @@ public sealed class ResourceManagementOptionsConfiguration
             .SetVersion("2.1.6");
 
         manifest
+            .DefineScript("vue-multiselect-wrapper")
+            .SetUrl("~/OrchardCore.Resources/Scripts/vue-multiselect-wrapper.min.js", "~/OrchardCore.Resources/Scripts/vue-multiselect-wrapper.js")
+            .SetDependencies("vuejs:2", "vue-multiselect:2", "vue-draggable:2")
+            .SetVersion("1.0.0");
+
+        manifest
             .DefineScript("vue-multiselect")
             .SetDependencies("vuejs:3")
             .SetUrl(
