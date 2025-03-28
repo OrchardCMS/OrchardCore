@@ -1,6 +1,6 @@
 @model CreateTypeViewModel
 
-<script asp-src="~/OrchardCore.ContentTypes/Scripts/autocomplete/autocomplete.js" at="Foot" depends-on="jQuery"></script>
+<script type="module" asp-src="~/OrchardCore.ContentTypes/Scripts/autocomplete/autocomplete.js" at="Foot" depends-on="jQuery"></script>
 <zone Name="Title"><h1>@RenderTitleSegments(T["New Content Type"])</h1></zone>
 
 <form asp-action="Create">

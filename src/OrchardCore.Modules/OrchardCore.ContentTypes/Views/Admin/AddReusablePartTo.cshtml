@@ -3,7 +3,7 @@
     int i = 0;
 }
 
-<script asp-src="~/OrchardCore.ContentTypes/Scripts/autocomplete/autocomplete.js" at="Foot" depends-on="jQuery"></script>
+<script type="module" asp-src="~/OrchardCore.ContentTypes/Scripts/autocomplete/autocomplete.js" at="Foot" depends-on="jQuery"></script>
 <zone Name="Title"><h1>@T["Add Named Part To \"{0}\"", Model.Type.DisplayName]</h1></zone>
 
 <form asp-action="AddReusablePartTo">
