@@ -6,6 +6,7 @@ public sealed class PermissionProvider : IPermissionProvider
 {
     private readonly IEnumerable<Permission> _allPermissions =
     [
+        MediaPermissions.AccessMediaApi,
         MediaPermissions.ManageMedia,
         MediaPermissions.ManageMediaFolder,
         MediaPermissions.ManageOthersMedia,
@@ -30,6 +31,7 @@ public sealed class PermissionProvider : IPermissionProvider
             Name = OrchardCoreConstants.Roles.Administrator,
             Permissions =
             [
+                MediaPermissions.AccessMediaApi,
                 MediaPermissions.ManageMediaFolder,
                 MediaPermissions.ManageMediaProfiles,
                 MediaPermissions.ViewMediaOptions,

@@ -221,6 +221,8 @@ public sealed class Startup : StartupBase
 
         // Use services.PostConfigure<MediaOptions>() to alter the media static file options event handlers.
         app.UseStaticFiles(mediaOptions.StaticFileOptions);
+
+        routes.MapMediaApi();
     }
 
     private static string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)

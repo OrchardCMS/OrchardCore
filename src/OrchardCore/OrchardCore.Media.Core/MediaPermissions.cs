@@ -4,6 +4,8 @@ namespace OrchardCore.Media;
 
 public static class MediaPermissions
 {
+    public static readonly Permission AccessMediaApi = new("AccessMediaApi", "Access media via the api");
+
     public static readonly Permission ManageMediaFolder = new("ManageMediaFolder", "Manage All Media Folders");
 
     public static readonly Permission ManageOthersMedia = new("ManageOthersMediaContent", "Manage Media For Others", [ManageMediaFolder]);
