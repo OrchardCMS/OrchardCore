@@ -272,6 +272,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("bootstrap")
+            .SetAttribute("type", "module")
             .SetDependencies("jQuery", "popper")
             .SetUrl(
                 "~/OrchardCore.Resources/Vendor/bootstrap-4.6.1/bootstrap.min.js",
@@ -338,6 +339,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("bootstrap")
+            .SetAttribute("type", "module")
             .SetDependencies("popperjs")
             .SetUrl(
                 "~/OrchardCore.Resources/Scripts/bootstrap.min.js",
