@@ -128,22 +128,20 @@ window.formVisibilityGroups = function () {
         },
         toggleTabEvent: function toggleTabEvent() {
           var _this = this;
-          var tabElements = document.querySelectorAll('a[data-bs-toggle="tab"]');
-          for (var i = 0; i < tabElements.length; i++) {
-            tabElements[i].addEventListener('shown.bs.tab', function (e) {
-              console.log('New Tab is active:', e.target);
-              var container = e.target.closest('.content-part-wrapper-form-part');
-              var inputs = _this.getInputs(container || document);
-              _this.fieldOptions = inputs.map(function (input) {
-                return {
-                  value: input.htmlName,
-                  text: input.htmlName,
-                  type: input.htmlInputType
-                };
-              });
-              console.log('Updated fieldOptions after tab switch:', _this.fieldOptions);
+          document.addEventListener('shown.bs.tab', function (event) {
+            if (!event.target.matches('[data-bs-toggle="tab"]')) {
+              return;
+            }
+            var container = event.target.closest('.content-part-wrapper-form-part');
+            var inputs = _this.getInputs(container || document);
+            _this.fieldOptions = inputs.map(function (input) {
+              return {
+                value: input.htmlName,
+                text: input.htmlName,
+                type: input.htmlInputType
+              };
             });
-          }
+          });
         }
       },
       mounted: function mounted() {
@@ -155,6 +153,7 @@ window.formVisibilityGroups = function () {
         this.operatorOptions = config.operatorOptions || [];
         this.allOperatorOptions = config.operatorOptions || [];
         this.populateFields();
+        console.log(this.groups);
       },
       template: config.template
     });

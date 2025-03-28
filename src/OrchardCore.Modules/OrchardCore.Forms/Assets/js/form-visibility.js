@@ -215,22 +215,18 @@ window.formVisibilityGroups = function () {
                 },
 
                 toggleTabEvent() {
-                    const tabElements = document.querySelectorAll('a[data-bs-toggle="tab"]');
-                    for (let i = 0; i < tabElements.length; i++) {
-                        tabElements[i].addEventListener('shown.bs.tab', (e) => {
-                            console.log('New Tab is active:', e.target);
-                            var container = e.target.closest('.content-part-wrapper-form-part');
-                            var inputs = this.getInputs(container || document);
-                            this.fieldOptions = inputs.map(input => {
-                                return {
-                                    value: input.htmlName,
-                                    text: input.htmlName,
-                                    type: input.htmlInputType
-                                };
-                            });
-                            console.log('Updated fieldOptions after tab switch:', this.fieldOptions);
-                        });
-                    }
+                    document.addEventListener('shown.bs.tab', (event) => {
+                        if (!event.target.matches('[data-bs-toggle="tab"]')) {
+                            return;
+                        }
+                        var container = event.target.closest('.content-part-wrapper-form-part');
+                        var inputs = this.getInputs(container || document);
+                        this.fieldOptions = inputs.map(input => ({
+                            value: input.htmlName,
+                            text: input.htmlName,
+                            type: input.htmlInputType
+                        }));
+                    });
                 },
             },
 
@@ -238,11 +234,14 @@ window.formVisibilityGroups = function () {
                 if (config.prefix) {
                     this.prefix = config.prefix + '.';
                 }
-                this.toggleTabEvent()
+                this.toggleTabEvent();
                 this.groups = config.groupOptions || [];
                 this.operatorOptions = config.operatorOptions || [];
                 this.allOperatorOptions = config.operatorOptions || [];
                 this.populateFields();
+
+                console.log(this.groups);
+
             }, template: config.template
         });
         return app;

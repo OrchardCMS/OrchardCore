@@ -1,5 +1,6 @@
 @using OrchardCore
 @using OrchardCore.Forms.ViewModels
+@using System.Text.Json
 
 @model FormInputElementVisibilityViewModel
 
@@ -16,22 +17,58 @@
 </div>
 
 <div class="input-visibility-settings">
-    <div id="@(idPrefix)_groupsContainerId" data-groups='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Groups))'></div>
+    <div id="@(idPrefix)_groupsContainerId"
+         class="main-group-container"
+         data-vue-app="formVisibility"
+         data-groups='@Html.Raw(JsonSerializer.Serialize(Model.Groups, JOptions.CamelCaseIndented))'
+         data-prefix="@Html.NameForModel()"
+         data-operator-options='@Html.Raw(JsonSerializer.Serialize(Model.Groups.First().Rules.First().Operators, JOptions.CamelCaseIndented))'></div>
 </div>
 
 <script asp-name="form-visibility" asp-src="/OrchardCore.Forms/Scripts/form-visibility.min.js" src-debug="/OrchardCore.Forms/Scripts/form-visibility.js" at="Foot" depends-on="vuejs:2"></script>
 
-<script at="Foot">
-    document.addEventListener('DOMContentLoaded', function () {
-        var container = document.querySelector('#@(idPrefix)_groupsContainerId');
-        if (container) {
-            formVisibilityGroups.initialize({
-                appElementSelector: '#@(idPrefix)_groupsContainerId',
-                prefix: '@Html.NameForModel()',
-                widgetId: '@Html.NameForModel()',
-                groupOptions: @Html.Raw(Json.Serialize(Model.Groups)),
-                operatorOptions: @Html.Raw(Json.Serialize(Model.Groups.First().Rules.First().Operators)),
-            });
+<script at="Foot" asp-name="InitializeGroups">
+
+    const flowWidgetObserver = new MutationObserver(function (mutationsList) {
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'childList') {
+                mutation.addedNodes.forEach(node => {
+                    if (node.nodeType === 1) { // Ensure it's an element node
+                        // Find all elements with data-widget-type="Input", including the node itself
+                        const containers = node.matches('.main-group-container')
+                            ? [node]
+                            : [...node.querySelectorAll('.main-group-container')];
+
+                       processContainers(containers);
+                    }
+                });
+            }
         }
     });
+
+    function processContainers(containers) {
+         containers.forEach(container => {
+            console.log("Container added:", container);
+            initializeOrUpdateVue(container);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () =>
+    {
+        const containers = [...document.querySelectorAll('.main-group-container')];
+        processContainers(containers);
+    });
+
+    function initializeOrUpdateVue(container) {
+        formVisibilityGroups.initialize({
+            appElementSelector: '#' + container.id,
+            prefix: container.getAttribute('data-prefix'),
+            widgetId: container.getAttribute('data-prefix'),
+            groupOptions: JSON.parse(container.getAttribute('data-groups') || '{}'),
+            operatorOptions: JSON.parse(container.getAttribute('data-operator-options') || '{}')
+        });
+    }
+
+    flowWidgetObserver.observe(document.body, { childList: true, subtree: true });
+
 </script>
