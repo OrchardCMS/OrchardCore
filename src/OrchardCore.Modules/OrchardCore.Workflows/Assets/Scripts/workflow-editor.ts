@@ -1,10 +1,10 @@
 ///<reference path='../Lib/jquery/typings.d.ts' />
 ///<reference path='../Lib/jsplumb/typings.d.ts' />
 
-import './workflow-models';
-import './activity-picker';
-import './workflow-url-generator';
-import WorkflowCanvas from './workflow-canvas';
+import "./workflow-models";
+import "./activity-picker";
+import "./workflow-url-generator";
+import WorkflowCanvas from "./workflow-canvas";
 
 // TODO: Re-implement this using a MVVM approach.
 class WorkflowEditor extends WorkflowCanvas {
@@ -13,7 +13,13 @@ class WorkflowEditor extends WorkflowCanvas {
     private hasDragged: boolean;
     private dragStart: JQuery.Coordinates;
 
-    constructor(protected container: HTMLElement, protected workflowType: Workflows.WorkflowType, private deleteActivityPrompt: string, private localId: string, loadLocalState: boolean) {
+    constructor(
+        protected container: HTMLElement,
+        protected workflowType: Workflows.WorkflowType,
+        private deleteActivityPrompt: string,
+        private localId: string,
+        loadLocalState: boolean,
+    ) {
         super(container, workflowType);
         const self = this;
 
@@ -23,11 +29,11 @@ class WorkflowEditor extends WorkflowCanvas {
             const plumber = this.createJsPlumbInstance();
 
             // Listen for new connections.
-            plumber.bind('connection', function (connInfo, originalEvent) {
+            plumber.bind("connection", function (connInfo, originalEvent) {
                 const connection: Connection = connInfo.connection;
                 const outcome: Workflows.Outcome = connection.getParameters().outcome;
 
-                const label: any = connection.getOverlay('label');
+                const label: any = connection.getOverlay("label");
                 label.setLabel(outcome.displayName);
             });
 
@@ -48,7 +54,7 @@ class WorkflowEditor extends WorkflowCanvas {
                 }
 
                 return true;
-            }
+            };
 
             // Suspend drawing and initialize.
             plumber.batch(() => {
@@ -65,7 +71,7 @@ class WorkflowEditor extends WorkflowCanvas {
 
                 activityElements.each((_, activityElement) => {
                     const $activityElement = $(activityElement);
-                    const activityId = $activityElement.data('activity-id');
+                    const activityId = $activityElement.data("activity-id");
                     const isDeleted = this.workflowType.removedActivities.indexOf(activityId) > -1;
 
                     if (isDeleted) {
@@ -85,8 +91,7 @@ class WorkflowEditor extends WorkflowCanvas {
 
                             activity.x = 50;
                             activity.y = 50;
-                        }
-                        else {
+                        } else {
                             // The available outcomes might have changed when editing an activity,
                             // so we need to check for that and update the client's activity outcomes if so.
                             const sameOutcomes = areEqualOutcomes(activity.outcomes, serverActivity.outcomes);
@@ -95,10 +100,7 @@ class WorkflowEditor extends WorkflowCanvas {
                                 activity.outcomes = serverActivity.outcomes;
                             }
 
-                            $activityElement
-                                .css({ left: activity.x, top: activity.y })
-                                .toggleClass('activity-start', activity.isStart)
-                                .data('activity-start', activity.isStart);
+                            $activityElement.css({ left: activity.x, top: activity.y }).toggleClass("activity-start", activity.isStart).data("activity-start", activity.isStart);
                         }
                     }
 
@@ -112,20 +114,24 @@ class WorkflowEditor extends WorkflowCanvas {
                         stop: (args: any) => {
                             this.hasDragged = this.dragStart.left != args.e.screenX || this.dragStart.top != args.e.screenY;
                             this.updateCanvasHeight();
-                        }
+                        },
                     });
 
                     // Configure the activity as a target.
                     plumber.makeTarget(activityElement, {
-                        dropOptions: { hoverClass: 'hover' },
-                        anchor: 'Continuous',
-                        endpoint: ['Blank', { radius: 8 }]
+                        dropOptions: { hoverClass: "hover" },
+                        anchor: "Continuous",
+                        endpoint: ["Blank", { radius: 8 }],
                     });
 
                     // Add source endpoints.
                     for (let outcome of activity.outcomes) {
                         const sourceEndpointOptions = this.getSourceEndpointOptions(activity, outcome);
-                        plumber.addEndpoint(activityElement, { connectorOverlays: [['Label', { label: outcome.displayName, cssClass: 'connection-label' }]] }, sourceEndpointOptions);
+                        plumber.addEndpoint(
+                            activityElement,
+                            { connectorOverlays: [["Label", { label: outcome.displayName, cssClass: "connection-label" }]] },
+                            sourceEndpointOptions,
+                        );
                     }
                 });
 
@@ -145,26 +151,26 @@ class WorkflowEditor extends WorkflowCanvas {
             activityElements.each((_, item) => {
                 var activityElement = $(item);
                 activityElement.popover({
-                    trigger: 'manual',
+                    trigger: "manual",
                     html: true,
                     content: () => {
-                        const $content: JQuery<Element> = activityElement.find('.activity-commands').clone();
-                        const startButton = $content.find('.activity-start-action');
-                        const isStart = activityElement.data('activity-start') === true;
-                        const activityId: number = activityElement.data('activity-id');
-                        startButton.attr('aria-pressed', activityElement.data('activity-start'));
-                        startButton.toggleClass('active', isStart);
+                        const $content: JQuery<Element> = activityElement.find(".activity-commands").clone();
+                        const startButton = $content.find(".activity-start-action");
+                        const isStart = activityElement.data("activity-start") === true;
+                        const activityId: number = activityElement.data("activity-id");
+                        startButton.attr("aria-pressed", activityElement.data("activity-start"));
+                        startButton.toggleClass("active", isStart);
 
-                        $content.on('click', '.activity-start-action', e => {
+                        $content.on("click", ".activity-start-action", (e) => {
                             e.preventDefault();
                             const button = $(e.currentTarget);
 
-                            const isStart = button.is('.active');
-                            activityElement.data('activity-start', isStart);
-                            activityElement.toggleClass('activity-start', isStart);
+                            const isStart = button.is(".active");
+                            activityElement.data("activity-start", isStart);
+                            activityElement.toggleClass("activity-start", isStart);
                         });
 
-                        $content.on('click', '.activity-delete-action', e => {
+                        $content.on("click", ".activity-delete-action", (e) => {
                             e.preventDefault();
 
                             // TODO: The prompts are really annoying. Consider showing some sort of small message balloon somewhere to undo the action instead.
@@ -174,19 +180,19 @@ class WorkflowEditor extends WorkflowCanvas {
 
                             self.workflowType.removedActivities.push(activityId);
                             plumber.remove(activityElement);
-                            activityElement.popover('dispose');
+                            activityElement.popover("dispose");
                         });
 
-                        $content.on('click', '[data-persist-workflow]', e => {
+                        $content.on("click", "[data-persist-workflow]", (e) => {
                             self.saveLocalState();
                         });
 
                         return $content.get(0);
-                    }
+                    },
                 });
             });
-           
-            $(container).on('click', '.activity', e => {
+
+            $(container).on("click", ".activity", (e) => {
                 if (this.hasDragged) {
                     this.hasDragged = false;
                     return;
@@ -194,39 +200,41 @@ class WorkflowEditor extends WorkflowCanvas {
 
                 // if any other popovers are visible, hide them
                 if (this.isPopoverVisible) {
-                    activityElements.popover('hide');
+                    activityElements.popover("hide");
                 }
 
                 const sender = $(e.currentTarget);
-                sender.popover('show');
+                sender.popover("show");
 
                 // handle clicking on the popover itself.
-                $('.popover').off('click').on('click', e2 => {
-                    e2.stopPropagation();
-                })
+                $(".popover")
+                    .off("click")
+                    .on("click", (e2) => {
+                        e2.stopPropagation();
+                    });
 
                 e.stopPropagation();
                 this.isPopoverVisible = true;
             });
 
-            $(container).on('dblclick', '.activity', e => {
+            $(container).on("dblclick", ".activity", (e) => {
                 const sender = $(e.currentTarget);
-                const hasEditor = sender.data('activity-has-editor');
+                const hasEditor = sender.data("activity-has-editor");
 
                 if (hasEditor) {
                     this.saveLocalState();
-                    sender.find('.activity-edit-action').get(0).click();
+                    sender.find(".activity-edit-action").get(0).click();
                 }
             });
 
             // Hide all popovers when clicking anywhere but on an activity.
-            $('body').on('click', e => {
-                activityElements.popover('hide');
+            $("body").on("click", (e) => {
+                activityElements.popover("hide");
                 this.isPopoverVisible = false;
             });
 
             // Save local changes if the event target has the 'data-persist-workflow' attribute.
-            $('body').on('click', '[data-persist-workflow]', e => {
+            $("body").on("click", "[data-persist-workflow]", (e) => {
                 this.saveLocalState();
             });
 
@@ -235,20 +243,20 @@ class WorkflowEditor extends WorkflowCanvas {
     }
 
     private getState = (): Workflows.WorkflowType => {
-        const $allActivityElements = $(this.container).find('.activity');
+        const $allActivityElements = $(this.container).find(".activity");
         const workflow: Workflows.WorkflowType = {
             id: this.workflowType.id,
             activities: [],
             transitions: [],
-            removedActivities: this.workflowType.removedActivities
+            removedActivities: this.workflowType.removedActivities,
         };
 
         // Collect activities.
         for (let i = 0; i < $allActivityElements.length; i++) {
             const $activityElement: JQuery = $($allActivityElements[i]);
-            const activityId: string = $activityElement.data('activity-id');
-            const activityIsStart: boolean = $activityElement.data('activity-start');
-            const activityIsEvent: boolean = $activityElement.data('activity-type') === 'Event';
+            const activityId: string = $activityElement.data("activity-id");
+            const activityIsStart: boolean = $activityElement.data("activity-start");
+            const activityIsEvent: boolean = $activityElement.data("activity-type") === "Event";
             const activityPosition: JQuery.Coordinates = $activityElement.position();
             const activity: Workflows.Activity = this.getActivity(activityId);
 
@@ -258,7 +266,7 @@ class WorkflowEditor extends WorkflowCanvas {
                 isEvent: activityIsEvent,
                 outcomes: activity.outcomes,
                 x: activityPosition.left,
-                y: activityPosition.top
+                y: activityPosition.top,
             });
         }
 
@@ -269,53 +277,53 @@ class WorkflowEditor extends WorkflowCanvas {
             var connection = allConnections[i];
             var sourceEndpoint: Endpoint = connection.endpoints[0];
             var sourceOutcomeName = sourceEndpoint.getParameters().outcome.name;
-            var sourceActivityId: string = $(connection.source).data('activity-id');
-            var destinationActivityId: string = $(connection.target).data('activity-id');
+            var sourceActivityId: string = $(connection.source).data("activity-id");
+            var destinationActivityId: string = $(connection.target).data("activity-id");
 
             workflow.transitions.push({
                 sourceActivityId: sourceActivityId,
                 destinationActivityId: destinationActivityId,
-                sourceOutcomeName: sourceOutcomeName
+                sourceOutcomeName: sourceOutcomeName,
             });
         }
 
         return workflow;
-    }
+    };
 
     public serialize = (): string => {
         const workflow: Workflows.WorkflowType = this.getState();
         return JSON.stringify(workflow);
-    }
+    };
 
     private saveLocalState = (): void => {
         sessionStorage[this.localId] = this.serialize();
-    }
+    };
 
     private loadLocalState = (): Workflows.WorkflowType => {
         return JSON.parse(sessionStorage[this.localId]);
-    }
+    };
 }
 
 $.fn.workflowEditor = function (this: JQuery): JQuery {
     this.each((index, element) => {
         var $element = $(element);
-        var workflowType: Workflows.WorkflowType = $element.data('workflow-type');
-        var deleteActivityPrompt: string = $element.data('workflow-delete-activity-prompt');
-        var localId: string = $element.data('workflow-local-id');
-        var loadLocalState: boolean = $element.data('workflow-load-local-state');
+        var workflowType: Workflows.WorkflowType = $element.data("workflow-type");
+        var deleteActivityPrompt: string = $element.data("workflow-delete-activity-prompt");
+        var localId: string = $element.data("workflow-local-id");
+        var loadLocalState: boolean = $element.data("workflow-load-local-state");
 
         workflowType.removedActivities = workflowType.removedActivities || [];
-        $element.data('workflowEditor', new WorkflowEditor(element, workflowType, deleteActivityPrompt, localId, loadLocalState));
+        $element.data("workflowEditor", new WorkflowEditor(element, workflowType, deleteActivityPrompt, localId, loadLocalState));
     });
 
     return this;
 };
 
 $(document).ready(function () {
-    const workflowEditor: WorkflowEditor = $('.workflow-canvas').workflowEditor().data('workflowEditor');
+    const workflowEditor: WorkflowEditor = $(".workflow-canvas").workflowEditor().data("workflowEditor");
 
-    $('#workflowEditorForm').on('submit', (s, e) => {
+    $("#workflowEditorForm").on("submit", (s, e) => {
         const state = workflowEditor.serialize();
-        $('#workflowStateInput').val(state);
+        $("#workflowStateInput").val(state);
     });
 });

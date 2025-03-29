@@ -1,7 +1,7 @@
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
 
-namespace OrchardCore.Tests.OrchardCore.Users;
+namespace OrchardCore.Tests.Modules.OrchardCore.Users;
 
 public class UserValidatorTests
 {

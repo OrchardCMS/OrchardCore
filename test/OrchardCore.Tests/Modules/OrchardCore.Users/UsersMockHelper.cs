@@ -1,4 +1,4 @@
-namespace OrchardCore.Tests.OrchardCore.Users;
+namespace OrchardCore.Tests.Modules.OrchardCore.Users;
 
 public static class UsersMockHelper
 {

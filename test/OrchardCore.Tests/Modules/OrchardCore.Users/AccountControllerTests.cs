@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using OrchardCore.Deployment.Services;
 using OrchardCore.Tests.Apis.Context;
+using OrchardCore.Tests.OrchardCore.Users;
 using OrchardCore.Users;
 using OrchardCore.Users.Controllers;
 using OrchardCore.Users.Handlers;
@@ -9,7 +9,7 @@ using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 
-namespace OrchardCore.Tests.OrchardCore.Users;
+namespace OrchardCore.Tests.Modules.OrchardCore.Users;
 
 public class AccountControllerTests
 {
@@ -406,7 +406,7 @@ public class AccountControllerTests
             {$"{nameof(RegisterUserForm)}.{nameof(model.ConfirmPassword)}", model.ConfirmPassword},
         };
 
-        return PostRequestHelper.CreateMessageWithCookies("Register", data, response);
+        return HttpRequestHelper.CreatePostMessageWithCookies("Register", data, response);
     }
 
     private static async Task<SiteContext> GetSiteContextAsync(RegistrationSettings settings, bool enableRegistrationFeature = true, bool requireUniqueEmail = true, bool enableExternalAuthentication = false)
@@ -457,48 +457,8 @@ public class AccountControllerTests
             ["steps"] = recipeSteps,
         };
 
-        var t = recipe.ToJsonString();
-
-        await RunRecipeAsync(context, recipe);
+        await RecipeHelpers.RunRecipeAsync(context, recipe);
 
         return context;
-    }
-
-    private static async Task RunRecipeAsync(SiteContext context, JsonObject data)
-    {
-        await context.UsingTenantScopeAsync(async scope =>
-        {
-            var tempArchiveName = PathExtensions.GetTempFileName() + ".json";
-            var tempArchiveFolder = PathExtensions.GetTempFileName();
-
-            try
-            {
-                using (var stream = new FileStream(tempArchiveName, FileMode.Create))
-                {
-                    var bytes = Encoding.UTF8.GetBytes(data.ToJsonString());
-
-                    await stream.WriteAsync(bytes);
-                }
-
-                Directory.CreateDirectory(tempArchiveFolder);
-                File.Move(tempArchiveName, Path.Combine(tempArchiveFolder, "Recipe.json"));
-
-                var deploymentManager = scope.ServiceProvider.GetRequiredService<IDeploymentManager>();
-
-                await deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
-            }
-            finally
-            {
-                if (File.Exists(tempArchiveName))
-                {
-                    File.Delete(tempArchiveName);
-                }
-
-                if (Directory.Exists(tempArchiveFolder))
-                {
-                    Directory.Delete(tempArchiveFolder, true);
-                }
-            }
-        });
     }
 }

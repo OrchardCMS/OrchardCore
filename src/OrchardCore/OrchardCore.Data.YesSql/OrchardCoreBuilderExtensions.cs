@@ -73,7 +73,7 @@ public static class OrchardCoreBuilderExtensions
                 {
                     case DatabaseProviderValue.SqlConnection:
                         storeConfiguration
-                            .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
+                            .UseSqlServer(shellSettings["ConnectionString"], yesSqlOptions.IsolationLevel, shellSettings["Schema"])
                             .UseBlockIdGenerator();
                         break;
                     case DatabaseProviderValue.Sqlite:
@@ -86,17 +86,17 @@ public static class OrchardCoreBuilderExtensions
                         var connectionString = SqliteHelper.GetConnectionString(sqliteOptions, databaseFolder, shellSettings);
 
                         storeConfiguration
-                            .UseSqLite(connectionString, IsolationLevel.ReadUncommitted)
+                            .UseSqLite(connectionString, yesSqlOptions.IsolationLevel)
                             .UseDefaultIdGenerator();
                         break;
                     case DatabaseProviderValue.MySql:
                         storeConfiguration
-                            .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
+                            .UseMySql(shellSettings["ConnectionString"], yesSqlOptions.IsolationLevel, shellSettings["Schema"])
                             .UseBlockIdGenerator();
                         break;
                     case DatabaseProviderValue.Postgres:
                         storeConfiguration
-                            .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted, shellSettings["Schema"])
+                            .UsePostgreSql(shellSettings["ConnectionString"], yesSqlOptions.IsolationLevel, shellSettings["Schema"])
                             .UseBlockIdGenerator();
                         break;
                     default:
@@ -192,6 +192,7 @@ public static class OrchardCoreBuilderExtensions
             IdentityColumnSize = Enum.Parse<IdentityColumnSize>(databaseTableOptions.IdentityColumnSize),
             Logger = loggerFactory.CreateLogger("YesSql"),
             ContentSerializer = new DefaultContentJsonSerializer(serializerOptions.Value.SerializerOptions),
+            IsolationLevel = yesSqlOptions.IsolationLevel,
         };
 
         if (yesSqlOptions.IdGenerator != null)

@@ -82,6 +82,12 @@ public class DocumentStore : IDocumentStore
     public async Task CancelAsync()
     {
         _canceled = true;
+
+        if (_session is null)
+        {
+            return;
+        }
+
         await _session.CancelAsync();
     }
 
