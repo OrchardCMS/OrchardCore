@@ -1,5 +1,7 @@
+using Json.Path;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.Search.Abstractions;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Services;
 
@@ -16,6 +18,36 @@ public class ElasticsearchQueryService
         _logger = logger;
     }
 
+    public async Task PopulateResultAsync(ElasticsearchSearchContext request, SearchResult result)
+    {
+        var searchResult = await _elasticIndexManager.SearchAsync(request);
+
+        result.ContentItemIds = [];
+
+        if (searchResult?.TopDocs is null || searchResult.TopDocs.Count == 0)
+        {
+            return;
+        }
+
+        result.Highlights = [];
+
+        foreach (var item in searchResult.TopDocs)
+        {
+            if (!item.Value.TryGetPropertyValue(nameof(ContentItem.ContentItemId), out var id) ||
+                !id.TryGetValue<string>(out var contentItemId))
+            {
+                continue;
+            }
+
+            if (item.Highlights is not null && item.Highlights.Count > 0)
+            {
+                result.Highlights[contentItemId] = item.Highlights;
+            }
+
+            result.ContentItemIds.Add(contentItemId);
+        }
+    }
+
     public async Task<IList<string>> GetContentItemIdsAsync(ElasticsearchSearchContext request)
     {
         var results = await _elasticIndexManager.SearchAsync(request);
@@ -29,12 +61,13 @@ public class ElasticsearchQueryService
 
         foreach (var item in results.TopDocs)
         {
-            if (!item.Value.TryGetPropertyValue(nameof(ContentItem.ContentItemId), out var contentItemId))
+            if (!item.Value.TryGetPropertyValue(nameof(ContentItem.ContentItemId), out var id) ||
+                !id.TryGetValue<string>(out var contentItemId))
             {
                 continue;
             }
 
-            contentItemIds.Add(contentItemId.GetValue<string>());
+            contentItemIds.Add(contentItemId);
         }
 
         return contentItemIds;
