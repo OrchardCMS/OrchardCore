@@ -420,7 +420,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("bootstrap-select")
-            .SetDependencies("jQuery")
+            .SetDependencies("jQuery", "bootstrap")
             .SetUrl(
                 "~/OrchardCore.Resources/Scripts/bootstrap-select.min.js",
                 "~/OrchardCore.Resources/Scripts/bootstrap-select.js"

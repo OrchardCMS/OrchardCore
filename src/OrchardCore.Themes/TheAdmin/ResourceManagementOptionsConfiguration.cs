@@ -13,7 +13,8 @@ public sealed class ResourceManagementOptionsConfiguration
         _manifest = new ResourceManifest();
 
         _manifest
-            .DefineScript("admin")
+            .DefineScript("the-admin")
+            .SetAttribute("type", "module")
             .SetDependencies("admin-main", "theme-manager", "jQuery", "Sortable")
             .SetUrl("~/TheAdmin/js/theadmin/TheAdmin.min.js", "~/TheAdmin/js/theadmin/TheAdmin.js")
             .SetVersion("1.0.0");
@@ -28,7 +29,7 @@ public sealed class ResourceManagementOptionsConfiguration
             .SetVersion("1.0.0");
 
         _manifest
-            .DefineStyle("admin")
+            .DefineStyle("the-admin")
             .SetUrl("~/TheAdmin/css/TheAdmin.min.css", "~/TheAdmin/css/TheAdmin.css")
             .SetVersion("1.0.0");
     }
