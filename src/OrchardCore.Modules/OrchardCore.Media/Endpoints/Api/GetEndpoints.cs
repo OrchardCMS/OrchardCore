@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
@@ -20,9 +21,12 @@ public class GetEndpoints : IEndpoint
 
     public static IEndpointRouteBuilder Map(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("api/media/folders/{path}", GetMediaFoldersAsync);
-        endpoints.MapGet("api/media/list/{path}", GetMediaItemsAsync);
-        endpoints.MapGet("api/media/{path}", GetMediaItemAsync);
+        endpoints.MapGet("api/media/folders", GetMediaFoldersAsync)
+            .AllowAnonymous();
+        endpoints.MapGet("api/media/list", GetMediaItemsAsync)
+            .AllowAnonymous();
+        endpoints.MapGet("api/media", GetMediaItemAsync)
+            .AllowAnonymous();
 
         return endpoints;
     }
@@ -38,7 +42,7 @@ public class GetEndpoints : IEndpoint
         HttpContext httpContext)
     {
         if (!await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.AccessMediaApi)
-                || !await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia, (object)path))
+            || !await authorizationService.AuthorizeAsync(httpContext.User, MediaPermissions.ManageMedia, (object)path))
         {
             return httpContext.ChallengeOrForbid("Api");
         }
@@ -48,7 +52,7 @@ public class GetEndpoints : IEndpoint
             path = string.Empty;
         }
 
-        if (await mediaFileStore.GetDirectoryInfoAsync(path) == null)
+        if (await mediaFileStore.GetDirectoryInfoAsync(path) is null)
         {
             return TypedResults.NotFound();
         }
@@ -73,7 +77,7 @@ public class GetEndpoints : IEndpoint
         {
             var isSpecial = IsSpecialFolder(folder.Path);
 
-            return Results.Json(new MediaFolderViewModel
+            return new MediaFolderViewModel
             {
                 Name = folder.Name,
                 Path = folder.Path,
@@ -83,7 +87,7 @@ public class GetEndpoints : IEndpoint
                 Length = folder.Length,
                 CanCreateFolder = !isSpecial,
                 CanDeleteFolder = !isSpecial
-            }, documentJsonSerializerOptions.Value.SerializerOptions);
+            };
         }));
 
         bool IsSpecialFolder(string path) => string.Equals(path, mediaOptions.Value.AssetsUsersFolder, StringComparison.OrdinalIgnoreCase)
