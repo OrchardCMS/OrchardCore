@@ -1,4 +1,3 @@
-import removeDiacritics from "./removeDiacritics";
 import "./menu";
 import "./resizeDetector";
 import * as bootstrap from "bootstrap";
@@ -164,34 +163,6 @@ $(function () {
     });
 })();
 
-function getTechnicalName(name) {
-    var result = "",
-        c;
-
-    if (!name || name.length == 0) {
-        return "";
-    }
-
-    name = removeDiacritics(name);
-
-    for (i = 0; i < name.length; i++) {
-        c = name[i];
-        if (isLetter(c) || (isNumber(c) && i > 0)) {
-            result += c;
-        }
-    }
-
-    return result;
-}
-
-function isLetter(str) {
-    return str.length === 1 && str.match(/[a-z]/i);
-}
-
-function isNumber(str) {
-    return str.length === 1 && str.match(/[0-9]/i);
-}
-
 //Prevent multi submissions on forms
 $("body").on("submit", "form.no-multisubmit", function (e) {
     var submittingClass = "submitting";
@@ -220,4 +191,4 @@ declare global {
 window.confirmDialog = confirmDialog;
 window.bootstrap = bootstrap;
 
-export { confirmDialog, getTechnicalName };
+export { confirmDialog };
