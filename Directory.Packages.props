@@ -46,7 +46,7 @@
     <PackageVersion Include="MiniProfiler.AspNetCore.Mvc" Version="4.5.4" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="ncrontab" Version="3.3.3" />
-    <PackageVersion Include="NJsonSchema" Version="11.1.0" />
+    <PackageVersion Include="NJsonSchema" Version="11.2.0" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="5.4.0" />
     <PackageVersion Include="NodaTime" Version="3.2.1" />
     <PackageVersion Include="OpenIddict.Core" Version="6.1.1" />
