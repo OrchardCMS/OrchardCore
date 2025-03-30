@@ -40,14 +40,7 @@
     <PackageVersion Include="Markdig" Version="0.38.0" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.8.0" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="3.3.1" />
-    <!--
-      Important: the version of the Microsoft.IdentityModel.Protocols.OpenIdConnect package MUST
-      match the IdentityModel version transitively referenced by OpenIddict to ensure we don't
-      accidentally end up referencing inconsistent versions (which is not supported by IM).
- 
-      See https://github.com/OrchardCMS/OrchardCore/pull/16057 for more information.
-    -->
-    <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.2.0" />
+    <PackageVersion Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.12.0" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageVersion Include="MimeKit" Version="4.8.0" />
@@ -58,12 +51,12 @@
     <PackageVersion Include="NJsonSchema" Version="11.0.2" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="5.3.14" />
     <PackageVersion Include="NodaTime" Version="3.2.0" />
-    <PackageVersion Include="OpenIddict.Core" Version="6.1.1" />
-    <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="6.1.1" />
-    <PackageVersion Include="OpenIddict.Server.DataProtection" Version="6.1.1" />
-    <PackageVersion Include="OpenIddict.Validation.AspNetCore" Version="6.1.1" />
-    <PackageVersion Include="OpenIddict.Validation.DataProtection" Version="6.1.1" />
-    <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="6.1.1" />
+    <PackageVersion Include="OpenIddict.Core" Version="7.0.0" />
+    <PackageVersion Include="OpenIddict.Server.AspNetCore" Version="7.0.0" />
+    <PackageVersion Include="OpenIddict.Server.DataProtection" Version="7.0.0" />
+    <PackageVersion Include="OpenIddict.Validation.AspNetCore" Version="7.0.0" />
+    <PackageVersion Include="OpenIddict.Validation.DataProtection" Version="7.0.0" />
+    <PackageVersion Include="OpenIddict.Validation.SystemNetHttp" Version="7.0.0" />
     <PackageVersion Include="OrchardCore.Translations.All" Version="2.1.0" />
     <PackageVersion Include="PdfPig" Version="0.1.9" />
     <PackageVersion Include="Serilog.AspNetCore" Version="8.0.3" />
