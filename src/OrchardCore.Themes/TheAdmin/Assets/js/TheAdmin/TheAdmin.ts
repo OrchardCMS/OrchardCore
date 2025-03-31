@@ -74,7 +74,7 @@ function confirmDialog({ callback, ...options }: { callback: (response: boolean)
 
 $(function () {
     $("body").on("click", '[data-url-af~="RemoveUrl"], a[itemprop~="RemoveUrl"]', function () {
-        var _this = $(this);
+        const _this = $(this);
         if (_this.filter('a[itemprop~="UnsafeUrl"]').length == 1) {
             console.warn("Please use data-url-af instead of itemprop attribute for confirm modals. Using itemprop will eventually become deprecated.");
         }
@@ -104,14 +104,14 @@ $(function () {
 });
 
 $(function () {
-    var magicToken = $("input[name=__RequestVerificationToken]").first();
+    const magicToken = $("input[name=__RequestVerificationToken]").first();
     if (magicToken) {
         $("body").on("click", 'a[data-url-af~="UnsafeUrl"], a[itemprop~="UnsafeUrl"]', function () {
-            var _this = $(this);
+            const _this = $(this);
             if (_this.filter('a[itemprop~="UnsafeUrl"]').length == 1) {
                 console.warn("Please use data-url-af instead of itemprop attribute for confirm modals. Using itemprop will eventually become deprecated.");
             }
-            var hrefParts = _this.attr("href")?.split("?");
+            const hrefParts = _this.attr("href")?.split("?");
 
             if (hrefParts == undefined) {
                 return false;
@@ -120,9 +120,9 @@ $(function () {
             let form = $('<form action="' + hrefParts[0] + '" method="POST" />');
             form.append(magicToken.clone());
             if (hrefParts.length > 1) {
-                var queryParts = hrefParts[1].split("&");
-                for (var i = 0; i < queryParts.length; i++) {
-                    var queryPartKVP = queryParts[i].split("=");
+                const queryParts = hrefParts[1].split("&");
+                for (let i = 0; i < queryParts.length; i++) {
+                    const queryPartKVP = queryParts[i].split("=");
                     //trusting hrefs in the page here
                     form.append($('<input type="hidden" name="' + decodeURIComponent(queryPartKVP[0]) + '" value="' + decodeURIComponent(queryPartKVP[1]) + '" />'));
                 }
@@ -131,7 +131,7 @@ $(function () {
             form.css({ position: "absolute", left: "-9999em" });
             $("body").append(form);
 
-            var unsafeUrlPrompt = _this.data("unsafe-url");
+            const unsafeUrlPrompt = _this.data("unsafe-url");
 
             if (unsafeUrlPrompt && unsafeUrlPrompt.length > 0) {
                 confirmDialog({
@@ -167,16 +167,16 @@ $(function () {
 
 (function () {
     // Tooltips
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 })();
 
 //Prevent multi submissions on forms
 $("body").on("submit", "form.no-multisubmit", function (e) {
-    var submittingClass = "submitting";
-    let form = $(this);
+    const submittingClass = "submitting";
+    const form = $(this);
 
     if (form.hasClass(submittingClass)) {
         e.preventDefault();
