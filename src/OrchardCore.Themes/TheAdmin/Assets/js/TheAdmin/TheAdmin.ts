@@ -1,6 +1,5 @@
 import "./menu";
 import "./resizeDetector";
-///<reference path='../../../../../../node_modules/@types/bootstrap/index.d.ts' />
 
 function confirmDialog({ callback, ...options }) {
     const defaultOptions = $("#confirmRemoveModalMetadata").data();
@@ -180,5 +179,13 @@ $("body").on("submit", "form.no-multisubmit", function (e) {
         form.removeClass(submittingClass);
     }, 5000);
 });
+
+declare global {
+    interface Window {
+        confirmDialog: typeof confirmDialog;
+    }
+}
+
+window.confirmDialog = confirmDialog;
 
 export { confirmDialog };
