@@ -2,7 +2,7 @@ import "./menu";
 import "./resizeDetector";
 ///<reference path="@types/bootstrap/index.d.ts" />
 
-function confirmDialog({ callback, ...options }) {
+function confirmDialog({ callback, ...options }: { callback: (response: boolean) => void; [key: string]: any }) {
     const defaultOptions = $("#confirmRemoveModalMetadata").data();
     const { title, message, okText, cancelText, okClass, cancelClass } = $.extend({}, defaultOptions, options);
 
@@ -38,27 +38,31 @@ function confirmDialog({ callback, ...options }) {
     </div>",
     ).appendTo("body");
 
-    var confirmModal = new bootstrap.Modal($("#confirmRemoveModal"), {
-        backdrop: "static",
-        keyboard: false,
-    });
+    const modalElement = document.getElementById("confirmRemoveModal");
 
-    confirmModal.show();
+    if (modalElement) {
+        const confirmModal = new bootstrap.Modal(modalElement, {
+            backdrop: "static",
+            keyboard: false,
+        });
 
-    document.getElementById("confirmRemoveModal").addEventListener("hidden.bs.modal", function () {
-        document.getElementById("confirmRemoveModal").remove();
-        confirmModal.dispose();
-    });
+        confirmModal.show();
 
-    $("#modalOkButton").click(function () {
-        callback(true);
-        confirmModal.hide();
-    });
+        document.getElementById("confirmRemoveModal")?.addEventListener("hidden.bs.modal", function () {
+            document.getElementById("confirmRemoveModal")?.remove();
+            confirmModal.dispose();
+        });
 
-    $("#modalCancelButton").click(function () {
-        callback(false);
-        confirmModal.hide();
-    });
+        $("#modalOkButton").click(function () {
+            callback(true);
+            confirmModal.hide();
+        });
+
+        $("#modalCancelButton").click(function () {
+            callback(false);
+            confirmModal.hide();
+        });
+    }
 }
 
 (function () {
@@ -80,16 +84,16 @@ $(function () {
         }
         confirmDialog({
             ..._this.data(),
-            callback: function (resp) {
+            callback: function (resp: any) {
                 if (resp) {
-                    var url = _this.attr("href");
+                    const url = _this.attr("href");
                     if (url == undefined) {
-                        var form = _this.parents("form");
+                        let form = _this.parents("form");
                         // This line is reuired in case we used the FormValueRequiredAttribute
                         form.append($('<input type="hidden" name="' + _this.attr("name") + '" value="' + _this.attr("value") + '" />'));
                         form.submit();
                     } else {
-                        window.location = url;
+                        window.location.href = url;
                     }
                 }
             },
@@ -107,8 +111,13 @@ $(function () {
             if (_this.filter('a[itemprop~="UnsafeUrl"]').length == 1) {
                 console.warn("Please use data-url-af instead of itemprop attribute for confirm modals. Using itemprop will eventually become deprecated.");
             }
-            var hrefParts = _this.attr("href").split("?");
-            var form = $('<form action="' + hrefParts[0] + '" method="POST" />');
+            var hrefParts = _this.attr("href")?.split("?");
+
+            if (hrefParts == undefined) {
+                return false;
+            }
+
+            let form = $('<form action="' + hrefParts[0] + '" method="POST" />');
             form.append(magicToken.clone());
             if (hrefParts.length > 1) {
                 var queryParts = hrefParts[1].split("&");
@@ -118,6 +127,7 @@ $(function () {
                     form.append($('<input type="hidden" name="' + decodeURIComponent(queryPartKVP[0]) + '" value="' + decodeURIComponent(queryPartKVP[1]) + '" />'));
                 }
             }
+
             form.css({ position: "absolute", left: "-9999em" });
             $("body").append(form);
 
@@ -126,7 +136,7 @@ $(function () {
             if (unsafeUrlPrompt && unsafeUrlPrompt.length > 0) {
                 confirmDialog({
                     ..._this.data(),
-                    callback: function (resp) {
+                    callback: function (resp: any) {
                         if (resp) {
                             form.submit();
                         }
@@ -139,7 +149,7 @@ $(function () {
             if (_this.filter('[data-url-af~="RemoveUrl"], a[itemprop~="RemoveUrl"]').length == 1) {
                 confirmDialog({
                     ..._this.data(),
-                    callback: function (resp) {
+                    callback: function (resp: any) {
                         if (resp) {
                             form.submit();
                         }
@@ -166,7 +176,7 @@ $(function () {
 //Prevent multi submissions on forms
 $("body").on("submit", "form.no-multisubmit", function (e) {
     var submittingClass = "submitting";
-    form = $(this);
+    let form = $(this);
 
     if (form.hasClass(submittingClass)) {
         e.preventDefault();
