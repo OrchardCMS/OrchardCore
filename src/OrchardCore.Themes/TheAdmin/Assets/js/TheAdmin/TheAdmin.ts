@@ -1,5 +1,6 @@
 import "./menu";
 import "./resizeDetector";
+///<reference path="@types/bootstrap/index.d.ts" />
 
 function confirmDialog({ callback, ...options }) {
     const defaultOptions = $("#confirmRemoveModalMetadata").data();
