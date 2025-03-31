@@ -8696,7 +8696,6 @@ span.field-validation-error {
 
 .input-validation-error {
   border-color: var(--bs-form-invalid-border-color);
-  padding-right: calc(1.5em + 0.75rem);
 }
 
 input:not([type=checkbox]):not([type=radio]).input-validation-error {

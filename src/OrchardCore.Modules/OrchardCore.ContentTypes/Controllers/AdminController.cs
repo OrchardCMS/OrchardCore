@@ -172,7 +172,7 @@ public sealed class AdminController : Controller
     public async Task<ActionResult> EditPost(
         string id, EditTypeViewModel viewModel, [Bind(Prefix = "submit.Save")] string submitSave)
     {
-        var stayOnSamePage = submitSave == "submit.SaveAndContinue";
+        var stayOnSamePage = submitSave == "SaveAndContinue";
         if (!await _authorizationService.AuthorizeAsync(User, ContentTypesPermissions.EditContentTypes))
         {
             return Forbid();
