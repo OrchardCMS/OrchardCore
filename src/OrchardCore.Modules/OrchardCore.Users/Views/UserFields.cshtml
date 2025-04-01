@@ -1,6 +1,16 @@
+@using Microsoft.AspNetCore.Identity
+
 @model SummaryAdminUserViewModel
 
+@inject UserManager<IUser> UserManager
+
 <h5 class="float-start">@Model.User.UserName <span class="hint dashed">@Model.User.Email</span></h5>
+@if (!await UserManager.IsEmailConfirmedAsync(Model.User))
+{
+    <span class="badge text-bg-warning ms-2" title="@T["Email not confirmed"]">
+        <i class="fa-solid fa-envelope-open" aria-hidden="true"></i> @T["Email not confirmed"]
+    </span>
+}
 @if (!Model.User.IsEnabled)
 {
     <span class="badge text-bg-danger ms-2" title="@T["Disabled"]">
