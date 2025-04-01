@@ -699,7 +699,7 @@ public sealed class ElasticsearchIndexManager
                 elasticTopDocs.TopDocs.Add(new ElasticsearchRecord(document)
                 {
                     Score = hit.Score,
-                    Highlights = hit?.Highlight
+                    Highlights = hit.Highlight,
                 });
 
                 continue;
@@ -713,7 +713,7 @@ public sealed class ElasticsearchIndexManager
             elasticTopDocs.TopDocs.Add(new ElasticsearchRecord(topDoc)
             {
                 Score = hit.Score,
-                Highlights = hit.Highlight
+                Highlights = hit.Highlight,
             });
         }
 
