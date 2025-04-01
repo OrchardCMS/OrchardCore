@@ -166,18 +166,6 @@ public sealed class Migrations : DataMigration
             .WithPart("ValidationPart")
             .Stereotype("Widget"));
 
-        // visibility settings to Inputs INSIDE FlowPart
-        await _contentDefinitionManager.AlterTypeDefinitionAsync("FlowInput", type => type
-            .WithPart("FormInputElementVisibilityPart", part => part
-            .WithPosition("6"))
-        );
-
-        // visibility settings to Inputs INSIDE BagPart
-        await _contentDefinitionManager.AlterTypeDefinitionAsync("BagInput", type => type
-            .WithPart("FormInputElementVisibilityPart", part => part
-            .WithPosition("6"))
-        );
-
         // Shortcut other migration steps on new content definition schemas.
         return 6;
     }
@@ -299,18 +287,6 @@ public sealed class Migrations : DataMigration
         );
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("TextArea", type => type
-            .WithPart("FormInputElementVisibilityPart", part => part
-            .WithPosition("6"))
-        );
-
-        // visibility settings to Inputs INSIDE FlowPart
-        await _contentDefinitionManager.AlterTypeDefinitionAsync("FlowInput", type => type
-            .WithPart("FormInputElementVisibilityPart", part => part
-            .WithPosition("6"))
-        );
-
-        // visibility settings to Inputs INSIDE BagPart
-        await _contentDefinitionManager.AlterTypeDefinitionAsync("BagInput", type => type
             .WithPart("FormInputElementVisibilityPart", part => part
             .WithPosition("6"))
         );
