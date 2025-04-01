@@ -233,6 +233,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("jQuery.nestedSortable")
+            .SetDependencies("jQuery-ui")
             .SetUrl("~/OrchardCore.Resources/Scripts/jquery.mjs.nestedSortable.js")
             .SetCdn(
                 "https://cdn.jsdelivr.net/npm/nestedSortable@1.3.4/jquery.mjs.nestedSortable.js"
@@ -420,7 +421,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("bootstrap-select")
-            .SetDependencies("jQuery")
+            .SetDependencies("jQuery", "bootstrap")
             .SetUrl(
                 "~/OrchardCore.Resources/Scripts/bootstrap-select.min.js",
                 "~/OrchardCore.Resources/Scripts/bootstrap-select.js"

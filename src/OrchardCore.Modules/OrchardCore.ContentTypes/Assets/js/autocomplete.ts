@@ -1,4 +1,4 @@
-import { getTechnicalName } from '@orchardcore/theadmin/js/TheAdmin/TheAdmin';
+import { getTechnicalName } from '@orchardcore/bloom/helpers/globals';
 
 const nameElement = document.querySelector('[data-name]') as HTMLInputElement;
 const displayNameElement = document.querySelector('[data-displayname]') as HTMLInputElement;
