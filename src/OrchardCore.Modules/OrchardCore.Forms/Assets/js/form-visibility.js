@@ -168,18 +168,24 @@ window.formVisibilityGroups = function () {
 
                 filteredFieldOptions() {
                     const widgetTemplate = this.$el.closest('.widget-template');
+
                     if (!widgetTemplate) return this.fieldOptions;
 
                     const containerName = widgetTemplate.querySelector('input[name$="FormInputElementPart.Name"]')?.value.trim() || "";
+
                     if (!containerName) return this.fieldOptions;
 
                     const filteredOptions = this.fieldOptions.filter(option => {
+
                         const optionValue = String(option.value || "").trim();
+
                         if (optionValue === containerName) {
                             return false;
                         }
+
                         return true;
                     });
+
                     return filteredOptions;
                 },
 
@@ -228,8 +234,11 @@ window.formVisibilityGroups = function () {
                         if (!event.target.matches('[data-bs-toggle="tab"]')) {
                             return;
                         }
+
                         var container = event.target.closest('.content-part-wrapper-form-part');
+
                         var inputs = this.getInputs(container || document);
+
                         this.fieldOptions = inputs.map(input => ({
                             value: input.htmlName,
                             text: input.htmlName,
