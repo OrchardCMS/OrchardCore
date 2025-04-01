@@ -5,7 +5,7 @@
 
 window.formVisibilityGroups = function () {
   var defaultConfig = {
-    template: "\n           <div>\n        <ul class=\"list-group\">\n            <!-- Loop through each group -->\n            <li class=\"list-group-item\" v-for=\"(group, groupIndex) in groups\" :key=\"groupIndex\">\n                <div class=\"d-flex justify-content-between mb-2\">\n                    <span>Group {{ groupIndex + 1 }}</span>\n                    <input type=\"hidden\" :name=\"prefix + 'Groups[' + groupIndex + '].IsRemoved'\" value=\"false\" />\n                    <button type=\"button\" class=\"btn btn-sm btn-danger\" @click=\"removeGroup(groupIndex)\">\n                        <i class=\"fa-solid fa-trash\"></i> Remove Group\n                    </button>\n                </div>\n\n                <!-- Loop through each rule -->\n                <ul class=\"list-group mb-3\">\n                    <!-- Loop through each rule in the group -->\n                    <li class=\"list-group-item\" v-for=\"(rule, ruleIndex) in group.rules\" :key=\"ruleIndex\">\n                        <div class=\"row\">\n                            <div class=\"col\">\n                                <select class=\"form-select\" v-model=\"rule.field\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Field'\">\n                                    <option value=\"\">Select Field</option>\n                                    <option v-for=\"option in fieldOptions\" :value=\"option.value\">\n                                        {{ option.text }}\n                                    </option>\n                                </select>\n                            </div>\n\n                            <div class=\"col\">\n                                <select class=\"form-select\" v-model=\"rule.operator\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Operator'\">\n                                    <option value=\"\">Select Operator</option>\n                                    <option v-for=\"option in operatorsList(rule.field)\" :value=\"option.value\">\n                                        {{ option.text }}\n                                    </option>\n                                </select>\n                            </div>\n\n                            <div class=\"col\">\n                                <input type=\"text\" class=\"form-control\" v-model=\"rule.value\" placeholder=\"Value\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Value'\" />\n                            </div>\n\n                            <div class=\"col-auto\">\n                                <input type=\"hidden\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].IsRemoved'\" value=\"false\" />\n                                <button type=\"button\" class=\"btn btn-sm btn-danger\" @click=\"removeRule(groupIndex, ruleIndex)\">\n                                    <i class=\"fa-solid fa-trash\"></i> Remove Rule\n                                </button>\n                            </div>\n                        </div>\n                    </li>\n                    <li class=\"list-group-item\">\n                        <div class=\"d-flex justify-content-end mb-2\">\n                            <button type=\"button\" class=\"btn btn-sm btn-secondary\" @click=\"addRule(groupIndex)\">\n                                <i class=\"fa-solid fa-circle-plus\"></i> New Rule\n                            </button>\n                        </div>\n                    </li>\n                </ul>\n            </li>\n            <li class=\"list-group-item\">\n                <div class=\"d-flex justify-content-end\">\n                    <button type=\"button\" class=\"btn btn-sm btn-primary\" @click=\"addGroup()\">\n                        <i class=\"fa-solid fa-circle-plus\"></i> New Group\n                    </button>\n                </div>\n            </li>\n        </ul>\n    </div>\n        "
+    template: "\n           <div>\n        <ul class=\"list-group\">\n            <!-- Loop through each group -->\n            <li class=\"list-group-item\" v-for=\"(group, groupIndex) in groups\" :key=\"groupIndex\">\n                <div class=\"d-flex justify-content-between mb-2\">\n                    <span>Group {{ groupIndex + 1 }}</span>\n                    <input type=\"hidden\" :name=\"prefix + 'Groups[' + groupIndex + '].IsRemoved'\" value=\"false\" />\n                    <button type=\"button\" class=\"btn btn-sm btn-danger\" @click=\"removeGroup(groupIndex)\">\n                        <i class=\"fa-solid fa-trash\"></i> Remove Group\n                    </button>\n                </div>\n\n                <!-- Loop through each rule -->\n                <ul class=\"list-group mb-3\">\n                    <!-- Loop through each rule in the group -->\n                    <li class=\"list-group-item\" v-for=\"(rule, ruleIndex) in group.rules\" :key=\"ruleIndex\">\n                        <div class=\"row\">\n                            <div class=\"col\">\n                                <select class=\"form-select\" v-model=\"rule.field\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Field'\">\n                                  <option value=\"\">Select Field</option>\n                                  <option v-for=\"option in filteredFieldOptions(rule.field)\" :value=\"option.value\">\n                                    {{ option.text }}\n                                  </option>\n                                </select>\n                            </div>\n                            <div class=\"col\">\n                                <select class=\"form-select\" v-model=\"rule.operator\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Operator'\">\n                                    <option value=\"\">Select Operator</option>\n                                    <option v-for=\"option in operatorsList(rule.field)\" :value=\"option.value\">\n                                        {{ option.text }}\n                                    </option>\n                                </select>\n                            </div>\n                            <div class=\"col\">\n                                <input type=\"text\" class=\"form-control\" v-model=\"rule.value\" placeholder=\"Value\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Value'\" />\n                            </div>\n                            <div class=\"col-auto\">\n                                <input type=\"hidden\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].IsRemoved'\" value=\"false\" />\n                                <button type=\"button\" class=\"btn btn-sm btn-danger\" @click=\"removeRule(groupIndex, ruleIndex)\">\n                                    <i class=\"fa-solid fa-trash\"></i> Remove Rule\n                                </button>\n                            </div>\n                        </div>\n                    </li>\n                    <li class=\"list-group-item\">\n                        <div class=\"d-flex justify-content-end mb-2\">\n                            <button type=\"button\" class=\"btn btn-sm btn-secondary\" @click=\"addRule(groupIndex)\">\n                                <i class=\"fa-solid fa-circle-plus\"></i> New Rule\n                            </button>\n                        </div>\n                    </li>\n                </ul>\n            </li>\n            <li class=\"list-group-item\">\n                <div class=\"d-flex justify-content-end\">\n                    <button type=\"button\" class=\"btn btn-sm btn-primary\" @click=\"addGroup()\">\n                        <i class=\"fa-solid fa-circle-plus\"></i> New Group\n                    </button>\n                </div>\n            </li>\n        </ul>\n    </div>\n        "
   };
   var initialize = function initialize(instanceConfig) {
     var config = Object.assign({}, defaultConfig, instanceConfig);
@@ -19,17 +19,13 @@ window.formVisibilityGroups = function () {
       data: function data() {
         return {
           groups: config.groupOptions || [],
-          fieldOptions: config.fieldOptions || [],
+          fieldOptions: config.FieldOptions || [],
           operatorOptions: config.operatorOptions || [],
           allOperatorOptions: config.operatorOptions || [],
           prefix: '',
-          widgetId: config.widgetId
+          widgetId: config.widgetId,
+          preloadedOptions: []
         };
-      },
-      computed: {
-        groupsJson: function groupsJson() {
-          return JSON.stringify(this.groups);
-        }
       },
       methods: {
         addGroup: function addGroup() {
@@ -90,6 +86,21 @@ window.formVisibilityGroups = function () {
           });
           return results;
         },
+        filteredFieldOptions: function filteredFieldOptions() {
+          var _widgetTemplate$query;
+          var widgetTemplate = this.$el.closest('.widget-template');
+          if (!widgetTemplate) return this.fieldOptions;
+          var containerName = ((_widgetTemplate$query = widgetTemplate.querySelector('input[name$="FormInputElementPart.Name"]')) === null || _widgetTemplate$query === void 0 ? void 0 : _widgetTemplate$query.value.trim()) || "";
+          if (!containerName) return this.fieldOptions;
+          var filteredOptions = this.fieldOptions.filter(function (option) {
+            var optionValue = String(option.value || "").trim();
+            if (optionValue === containerName) {
+              return false;
+            }
+            return true;
+          });
+          return filteredOptions;
+        },
         operatorsList: function operatorsList(fieldId) {
           var field = this.fieldOptions.find(function (f) {
             return f.value === fieldId;
@@ -145,6 +156,7 @@ window.formVisibilityGroups = function () {
         }
       },
       mounted: function mounted() {
+        var _this2 = this;
         if (config.prefix) {
           this.prefix = config.prefix + '.';
         }
@@ -153,7 +165,17 @@ window.formVisibilityGroups = function () {
         this.operatorOptions = config.operatorOptions || [];
         this.allOperatorOptions = config.operatorOptions || [];
         this.populateFields();
-        console.log(this.groups);
+        var observer = new MutationObserver(function (mutations) {
+          mutations.forEach(function (mutation) {
+            if (mutation.type === 'childList' && mutation.addedNodes.length) {
+              _this2.preloadedOptions = _this2.filteredFieldOptions();
+            }
+          });
+        });
+        observer.observe(this.$el, {
+          childList: true,
+          subtree: true
+        });
       },
       template: config.template
     });

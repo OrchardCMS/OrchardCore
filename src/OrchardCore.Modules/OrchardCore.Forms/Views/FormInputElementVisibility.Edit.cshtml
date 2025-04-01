@@ -22,7 +22,9 @@
          data-vue-app="formVisibility"
          data-groups='@Html.Raw(JsonSerializer.Serialize(Model.Groups, JOptions.CamelCaseIndented))'
          data-prefix="@Html.NameForModel()"
-         data-operator-options='@Html.Raw(JsonSerializer.Serialize(Model.Groups.First().Rules.First().Operators, JOptions.CamelCaseIndented))'></div>
+         data-operator-options='@Html.Raw(JsonSerializer.Serialize(Model.Groups.First().Rules.First().Operators, JOptions.CamelCaseIndented))'
+         data-name-field='@Html.Raw(JsonSerializer.Serialize(Model.Groups.First().Rules.First().Fields, JOptions.CamelCaseIndented))'>
+    </div>
 </div>
 
 <script asp-name="form-visibility" asp-src="/OrchardCore.Forms/Scripts/form-visibility.min.js" src-debug="/OrchardCore.Forms/Scripts/form-visibility.js" at="Foot" depends-on="vuejs:2"></script>
@@ -33,8 +35,7 @@
         for (const mutation of mutationsList) {
             if (mutation.type === 'childList') {
                 mutation.addedNodes.forEach(node => {
-                    if (node.nodeType === 1) { // Ensure it's an element node
-                        // Find all elements with data-widget-type="Input", including the node itself
+                    if (node.nodeType === 1) {
                         const containers = node.matches('.main-group-container')
                             ? [node]
                             : [...node.querySelectorAll('.main-group-container')];
@@ -48,7 +49,6 @@
 
     function processContainers(containers) {
          containers.forEach(container => {
-            console.log("Container added:", container);
             initializeOrUpdateVue(container);
         });
     }
@@ -65,10 +65,13 @@
             prefix: container.getAttribute('data-prefix'),
             widgetId: container.getAttribute('data-prefix'),
             groupOptions: JSON.parse(container.getAttribute('data-groups') || '{}'),
-            operatorOptions: JSON.parse(container.getAttribute('data-operator-options') || '{}')
+            FieldOptions: JSON.parse(container.getAttribute('data-name-field') || '{}'),
+            operatorOptions: JSON.parse(container.getAttribute('data-operator-options') || '{}'),
         });
     }
 
     flowWidgetObserver.observe(document.body, { childList: true, subtree: true });
 
+    Vue.config.productionTip = false;
+    Vue.config.devtools = false;
 </script>

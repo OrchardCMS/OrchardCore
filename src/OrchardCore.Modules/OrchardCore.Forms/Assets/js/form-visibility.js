@@ -22,13 +22,12 @@ window.formVisibilityGroups = function () {
                         <div class="row">
                             <div class="col">
                                 <select class="form-select" v-model="rule.field" :name="prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Field'">
-                                    <option value="">Select Field</option>
-                                    <option v-for="option in fieldOptions" :value="option.value">
-                                        {{ option.text }}
-                                    </option>
+                                  <option value="">Select Field</option>
+                                  <option v-for="option in filteredFieldOptions(rule.field)" :value="option.value">
+                                    {{ option.text }}
+                                  </option>
                                 </select>
                             </div>
-
                             <div class="col">
                                 <select class="form-select" v-model="rule.operator" :name="prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Operator'">
                                     <option value="">Select Operator</option>
@@ -37,11 +36,9 @@ window.formVisibilityGroups = function () {
                                     </option>
                                 </select>
                             </div>
-
                             <div class="col">
                                 <input type="text" class="form-control" v-model="rule.value" placeholder="Value" :name="prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Value'" />
                             </div>
-
                             <div class="col-auto">
                                 <input type="hidden" :name="prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].IsRemoved'" value="false" />
                                 <button type="button" class="btn btn-sm btn-danger" @click="removeRule(groupIndex, ruleIndex)">
@@ -85,18 +82,13 @@ window.formVisibilityGroups = function () {
             data() {
                 return {
                     groups: config.groupOptions || [],
-                    fieldOptions: config.fieldOptions || [],
+                    fieldOptions: config.FieldOptions || [],
                     operatorOptions: config.operatorOptions || [],
                     allOperatorOptions: config.operatorOptions || [],
                     prefix: '',
                     widgetId: config.widgetId,
+                    preloadedOptions: []
                 };
-            },
-
-            computed: {
-                groupsJson() {
-                    return JSON.stringify(this.groups);
-                }
             },
 
             methods: {
@@ -174,6 +166,23 @@ window.formVisibilityGroups = function () {
                     return results;
                 },
 
+                filteredFieldOptions() {
+                    const widgetTemplate = this.$el.closest('.widget-template');
+                    if (!widgetTemplate) return this.fieldOptions;
+
+                    const containerName = widgetTemplate.querySelector('input[name$="FormInputElementPart.Name"]')?.value.trim() || "";
+                    if (!containerName) return this.fieldOptions;
+
+                    const filteredOptions = this.fieldOptions.filter(option => {
+                        const optionValue = String(option.value || "").trim();
+                        if (optionValue === containerName) {
+                            return false;
+                        }
+                        return true;
+                    });
+                    return filteredOptions;
+                },
+
                 operatorsList(fieldId) {
                     const field = this.fieldOptions.find(f => f.value === fieldId);
 
@@ -239,14 +248,18 @@ window.formVisibilityGroups = function () {
                 this.operatorOptions = config.operatorOptions || [];
                 this.allOperatorOptions = config.operatorOptions || [];
                 this.populateFields();
-
-                console.log(this.groups);
-
+                const observer = new MutationObserver(mutations => {
+                    mutations.forEach(mutation => {
+                        if (mutation.type === 'childList' && mutation.addedNodes.length) {
+                            this.preloadedOptions = this.filteredFieldOptions();
+                        }
+                    });
+                });
+                observer.observe(this.$el, { childList: true, subtree: true });
             }, template: config.template
         });
         return app;
     };
-
     return {
         initialize: initialize
     };
