@@ -15,9 +15,17 @@
             <li class="list-group-item">
                 @if (Model.Highlights is not null && Model.Highlights.TryGetValue(contentItem.ContentItemId, out var highlights))
                 {
-                    <h2><a href="@Url.Action(null, metadata.DisplayRouteValues)">@contentItem.DisplayText</a></h2>
+                    <h2>
+                        <a href="@Url.Action(null, metadata.DisplayRouteValues)">@contentItem.DisplayText</a>
+                    </h2>
 
-                    @Html.Raw(string.Join(string.Empty, highlights.SelectMany(x => x.Value)))
+                    @foreach (var fragments in highlights.Values)
+                    {
+                        foreach (var fragment in fragments)
+                        {
+                            @Html.Raw(fragment)
+                        }
+                    }
                 }
                 else
                 {
