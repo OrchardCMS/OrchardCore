@@ -31,6 +31,12 @@
   },
   {
     "action": "copy",
+    "name": "bootstrap",
+    "source": "../../../node_modules/bootstrap/dist/css/bootstrap.min.css.map",
+    "tags": [ "resources", "css" ]
+  },
+  {
+    "action": "copy",
     "name": "bootstrap-rtl",
     "source": "../../../node_modules/bootstrap/dist/css/bootstrap.rtl.css",
     "tags": [ "resources", "css" ]
