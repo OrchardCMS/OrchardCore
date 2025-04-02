@@ -15,10 +15,10 @@
     <div class="col-sm-6">
         <label asp-for="Options" class="form-label">@T["Options"]</label>
         <select asp-for="Options" class="form-select">
-            <option value="@TitlePartOptions.Editable" selected="@(Model.Options == TitlePartOptions.Editable)">@T["Title is editable"]</option>
-            <option value="@TitlePartOptions.EditableRequired" selected="@(Model.Options == TitlePartOptions.EditableRequired)">@T["Title is editable and required"]</option>
-            <option value="@TitlePartOptions.GeneratedDisabled" selected="@(Model.Options == TitlePartOptions.GeneratedDisabled)">@T["Title is generated and input is disabled"]</option>
-            <option value="@TitlePartOptions.GeneratedHidden" selected="@(Model.Options == TitlePartOptions.GeneratedHidden)">@T["Title is generated and input is hidden"]</option>
+            <option value="@nameof(TitlePartOptions.Editable)" selected="@(Model.Options == TitlePartOptions.Editable)">@T["Title is editable"]</option>
+            <option value="@nameof(TitlePartOptions.EditableRequired)" selected="@(Model.Options == TitlePartOptions.EditableRequired)">@T["Title is editable and required"]</option>
+            <option value="@nameof(TitlePartOptions.GeneratedDisabled)" selected="@(Model.Options == TitlePartOptions.GeneratedDisabled)">@T["Title is generated and input is disabled"]</option>
+            <option value="@nameof(TitlePartOptions.GeneratedHidden)" selected="@(Model.Options == TitlePartOptions.GeneratedHidden)">@T["Title is generated and input is hidden"]</option>
         </select>
     </div>
 </div>
@@ -48,19 +48,19 @@
             mode: { name: "liquid" },
         });
 
-        enablePattern();
+        setPatternVisibility();
 
         document.getElementById('@Html.IdFor(x => x.Options)').addEventListener('change', function () {
-            enablePattern();
+            setPatternVisibility();
         });
     });
 
-    function enablePattern() {
+    function setPatternVisibility() {
         var selectedValue = document.getElementById('@Html.IdFor(x => x.Options)').value;
         var patternEditor = document.getElementById('patternEditor');
         switch (selectedValue) {
-            case '@TitlePartOptions.GeneratedDisabled':
-            case '@TitlePartOptions.GeneratedHidden':
+            case '@nameof(TitlePartOptions.GeneratedDisabled)':
+            case '@nameof(TitlePartOptions.GeneratedHidden)':
                 patternEditor.classList.remove('d-none');
                 break;
             default:
