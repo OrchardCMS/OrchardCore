@@ -19,5 +19,8 @@ public class SearchResultsViewModel : ShapeViewModel
     [BindNever]
     public IEnumerable<ContentItem> ContentItems { get; set; }
 
+    [BindNever]
+    public Dictionary<string, IReadOnlyDictionary<string, IReadOnlyCollection<string>>> Highlights { get; set; }
+
     public string Index { get; set; }
 }
