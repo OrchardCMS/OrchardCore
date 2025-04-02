@@ -38,8 +38,8 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="jquery">
-    $(function () {
+<script at="Foot">
+    document.addEventListener('DOMContentLoaded', function () {
         editor = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Pattern)'), {
             autoRefresh: true,
             lineNumbers: true,
@@ -50,20 +50,21 @@
 
         enablePattern();
 
-        $('#@Html.IdFor(x => x.Options)').on('change', function () {
+        document.getElementById('@Html.IdFor(x => x.Options)').addEventListener('change', function () {
             enablePattern();
         });
     });
 
     function enablePattern() {
-        var selectedValue = $('#@Html.IdFor(x => x.Options)').val();
+        var selectedValue = document.getElementById('@Html.IdFor(x => x.Options)').value;
+        var patternEditor = document.getElementById('patternEditor');
         switch (selectedValue) {
             case '@TitlePartOptions.GeneratedDisabled':
             case '@TitlePartOptions.GeneratedHidden':
-                $('#patternEditor').removeClass('d-none');
+                patternEditor.classList.remove('d-none');
                 break;
             default:
-                $('#patternEditor').addClass('d-none');
+                patternEditor.classList.add('d-none');
                 break;
         }
     }
