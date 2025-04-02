@@ -7,8 +7,8 @@
 <h5 class="float-start">@Model.User.UserName <span class="hint dashed">@Model.User.Email</span></h5>
 @if (!await UserManager.IsEmailConfirmedAsync(Model.User))
 {
-    <span class="badge text-bg-warning ms-2" title="@T["Confirmation of the email address '{0}' is pending.", Model.User.Email]">
-        <i class="fa-solid fa-envelope-open" aria-hidden="true"></i> @T["Pending"]
+    <span class="badge text-bg-warning ms-2" title="@T["The email address '{0}' has not been confirmed.", Model.User.Email]">
+        <i class="fa-solid fa-envelope-open" aria-hidden="true"></i> @T["Unconfirmed"]
     </span>
 }
 @if (!Model.User.IsEnabled)
