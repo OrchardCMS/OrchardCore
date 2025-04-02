@@ -18,30 +18,6 @@ public sealed class FormInputElementPartDisplayDriver : ContentPartDisplayDriver
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Display(FormInputElementPart part, BuildPartDisplayContext context)
-    {
-        var visibilityPart = part.ContentItem.As<FormInputElementVisibilityPart>();
-
-        return Initialize<FormInputElementVisibilityViewModel>("FormInputElementPart_Visibility", model =>
-        {
-            model.Action = visibilityPart?.Action ?? FormVisibilityAction.None;
-
-            model.Groups = visibilityPart?.Groups?.Select(group =>
-                new FormVisibilityRuleGroupViewModel
-                {
-                    Rules = group.Rules?.Select(rule =>
-                    {
-                        return new FormVisibilityRuleViewModel
-                        {
-                            Field = rule.Field,
-                            Operator = rule.Operator.ToString(),
-                            Value = rule.Values?.FirstOrDefault() ?? string.Empty,
-                        };
-                    }).ToList() ?? new List<FormVisibilityRuleViewModel>()
-                }).ToList() ?? new List<FormVisibilityRuleGroupViewModel>();
-        }).Location("Detail", "Content");
-    }
-
     public override IDisplayResult Edit(FormInputElementPart part, BuildPartEditorContext context)
     {
         return Initialize<FormInputElementPartEditViewModel>("FormInputElementPart_Fields_Edit", m =>
