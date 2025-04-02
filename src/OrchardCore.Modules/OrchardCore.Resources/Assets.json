@@ -110,6 +110,12 @@
     "tags": [ "resources", "js" ]
   },
   {
+    "action": "copy",
+    "name": "bootstrap-select",
+    "source": "../../../node_modules/bootstrap-select/dist/js/bootstrap-select.min.js.map",
+    "tags": [ "resources", "js" ]
+  },
+  {
     "action": "min",
     "name": "codemirror",
     "source": "../../../node_modules/codemirror/lib/codemirror.css",
