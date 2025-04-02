@@ -1147,6 +1147,7 @@ public sealed class ResourceManagementOptionsConfiguration
 
         manifest
             .DefineScript("fontawesome-iconpicker")
+            .SetDependencies("jquery")
             .SetUrl(
                 "~/OrchardCore.Resources/Scripts/fontawesome-iconpicker.min.js",
                 "~/OrchardCore.Resources/Scripts/fontawesome-iconpicker.js"
