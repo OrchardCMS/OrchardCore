@@ -209,7 +209,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
     {
         var contentType = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
 
-        if (contentType?.IsSecurable() ?? false)
+        if (contentType is null || !contentType.IsSecurable())
         {
             return true;
         }
