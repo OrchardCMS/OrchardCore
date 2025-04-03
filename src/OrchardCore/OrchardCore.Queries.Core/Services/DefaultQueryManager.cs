@@ -270,5 +270,12 @@ public sealed class DefaultQueryManager : IQueryManager
         {
             query.ReturnContentItems = returnContentItems.GetValue<bool>();
         }
+
+        var properties = data[nameof(Query.Properties)]?.AsObject();
+
+        if (properties is not null)
+        {
+            query.Properties = properties.Clone();
+        }
     }
 }
