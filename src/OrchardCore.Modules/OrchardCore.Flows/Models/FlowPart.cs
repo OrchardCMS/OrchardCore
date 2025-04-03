@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentManagement;
 
@@ -7,4 +8,8 @@ public class FlowPart : ContentPart
 {
     [BindNever]
     public List<ContentItem> Widgets { get; set; } = [];
+
+    [BindNever]
+    [JsonIgnore]
+    public string[] Prefixes { get; set; }
 }

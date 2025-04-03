@@ -47,7 +47,7 @@
                     //Input hidden
                     //Prefixes
                     HtmlFieldPrefix: htmlFieldPrefix,
-                    PrefixValue: htmlFieldPrefix + '-' + (index++).ToString(),
+                    PrefixValue: Model.Prefixes != null && Model.Prefixes.Length > index ? Model.Prefixes[index++] : htmlFieldPrefix + '-' + (index++).ToString(),
                     PrefixesId: Html.IdFor(x => x.Prefixes),
                     PrefixesName: Html.NameFor(x => x.Prefixes),
                     //Content Types
