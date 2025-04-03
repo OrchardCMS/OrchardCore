@@ -56,7 +56,7 @@ public sealed class CustomUserSettingsStep : NamedRecipeStepHandler
             foreach (var userSetting in userSettings.Cast<JsonObject>())
             {
                 var contentItem = userSetting.ToObject<ContentItem>();
-                user.Properties[contentItem.ContentType] = userSetting;
+                user.Properties[contentItem.ContentType] = userSetting.DeepClone();
             }
 
             await _session.SaveAsync(user);
