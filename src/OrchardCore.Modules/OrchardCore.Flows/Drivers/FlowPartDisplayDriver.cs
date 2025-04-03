@@ -87,6 +87,7 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
             model.FlowPart = flowPart;
             model.Updater = context.Updater;
             model.ContainedContentTypeDefinitions = containedContentTypes;
+            model.Prefixes = flowPart.Prefixes;
         });
     }
 
@@ -122,6 +123,7 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
         }
 
         part.Widgets = contentItems;
+        part.Prefixes = model.Prefixes;
 
         return Edit(part, context);
     }
