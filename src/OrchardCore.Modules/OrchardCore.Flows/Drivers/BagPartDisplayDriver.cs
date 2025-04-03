@@ -102,7 +102,9 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
             // Try to match the requested id with an existing id
             var existingContentItem = part.ContentItems.FirstOrDefault(x => string.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
 
-            if (existingContentItem == null && !await AuthorizeAsync(contentDefinitionManager, CommonPermissions.EditContent, contentItem))
+            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+            
+            if (existingContentItem == null && !await AuthorizeAsync(contentTypeDefinition, CommonPermissions.EditContent, contentItem))
             {
                 // at this point the user is somehow trying to add content with no privileges. ignore the request
                 continue;
@@ -113,7 +115,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
             // This prevents nested items which rely on the content item id, i.e. the media attached field, losing their reference point.
             if (existingContentItem != null)
             {
-                if (!await AuthorizeAsync(contentDefinitionManager, CommonPermissions.EditContent, existingContentItem))
+                if (!await AuthorizeAsync(contentTypeDefinition, CommonPermissions.EditContent, existingContentItem))
                 {
                     // at this point the user is somehow modifying existing content with no privileges.
                     // honor the existing data and ignore the data in the request
@@ -142,7 +144,9 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
                 continue;
             }
 
-            if (await AuthorizeAsync(contentDefinitionManager, CommonPermissions.DeleteContent, existingContentItem))
+            var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(existingContentItem.ContentType);
+            
+            if (await AuthorizeAsync(contentTypeDefinition, CommonPermissions.DeleteContent, existingContentItem))
             {
                 // at this point the user has permission to delete a securable item or the type isn't securable
                 // if the existing content id isn't in the requested ids, don't add the content item... meaning the user deleted it
@@ -187,13 +191,9 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
                 continue;
             }
 
-            if (contentTypeDefinition.IsSecurable())
-            {
-                widget.Viewable = await AuthorizeAsync(CommonPermissions.ViewContent, contentItem);
-                widget.Editable = await AuthorizeAsync(CommonPermissions.EditContent, contentItem);
-                widget.Deletable = await AuthorizeAsync(CommonPermissions.DeleteContent, contentItem);
-            }
-
+            widget.Viewable = await AuthorizeAsync(contentTypeDefinition, CommonPermissions.ViewContent, contentItem);
+            widget.Editable = await AuthorizeAsync(contentTypeDefinition, CommonPermissions.EditContent, contentItem);
+            widget.Deletable = await AuthorizeAsync(contentTypeDefinition, CommonPermissions.DeleteContent, contentItem);
             widget.ContentTypeDefinition = contentTypeDefinition;
 
             if (widget.Editable || widget.Viewable)
@@ -205,16 +205,14 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
         return widgets;
     }
 
-    private async Task<bool> AuthorizeAsync(IContentDefinitionManager contentDefinitionManager, Permission permission, ContentItem contentItem)
+    private async Task<bool> AuthorizeAsync(ContentTypeDefinition contentTypeDefinition, Permission permission, ContentItem contentItem)
     {
-        var contentType = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-
-        if (contentType?.IsSecurable() ?? false)
+        if (contentTypeDefinition is not null && contentTypeDefinition.IsSecurable())
         {
-            return true;
+            return await AuthorizeAsync(permission, contentItem);
         }
 
-        return await AuthorizeAsync(permission, contentItem);
+        return true;
     }
 
     private Task<bool> AuthorizeAsync(Permission permission, ContentItem contentItem)
