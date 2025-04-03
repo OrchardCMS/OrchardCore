@@ -189,9 +189,9 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
 
             if (contentTypeDefinition.IsSecurable())
             {
-                widget.Viewable = await AuthorizeAsync(CommonPermissions.ViewContent, contentItem);
-                widget.Editable = await AuthorizeAsync(CommonPermissions.EditContent, contentItem);
-                widget.Deletable = await AuthorizeAsync(CommonPermissions.DeleteContent, contentItem);
+                widget.Viewable = await AuthorizeAsync(contentDefinitionManager, CommonPermissions.ViewContent, contentItem);
+                widget.Editable = await AuthorizeAsync(contentDefinitionManager, CommonPermissions.EditContent, contentItem);
+                widget.Deletable = await AuthorizeAsync(contentDefinitionManager, CommonPermissions.DeleteContent, contentItem);
             }
 
             widget.ContentTypeDefinition = contentTypeDefinition;
