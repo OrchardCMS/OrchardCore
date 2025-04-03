@@ -207,12 +207,12 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
 
     private async Task<bool> AuthorizeAsync(ContentTypeDefinition contentTypeDefinition, Permission permission, ContentItem contentItem)
     {
-        if (contentTypeDefinition is null || !contentTypeDefinition.IsSecurable())
+        if (contentTypeDefinition is not null && contentTypeDefinition.IsSecurable())
         {
-            return true;
+            return await AuthorizeAsync(permission, contentItem);
         }
 
-        return await AuthorizeAsync(permission, contentItem);
+        return true;
     }
 
     private Task<bool> AuthorizeAsync(Permission permission, ContentItem contentItem)
