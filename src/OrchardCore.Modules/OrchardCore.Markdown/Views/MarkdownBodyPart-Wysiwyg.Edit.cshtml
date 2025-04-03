@@ -24,7 +24,7 @@
     </div>
 </div>
 
-<script at="Foot" depends-on="easymde-mediatoolbar">
+<script at="Foot" depends-on="jQuery, easymde-mediatoolbar">
     $(function () {
         var markdownElement = document.getElementById("@Html.IdFor(m => m.Markdown)");
         var isRtl = '' + @(culture.IsRightToLeft() ? "true" : "false") + '';
@@ -44,7 +44,7 @@
                 $(document).trigger('contentpreview:render');
             });
 
-            if (isRtl)
+            if (isRtl === 'true')
             {
                 $('.editor-toolbar').attr('style', 'direction:rtl;text-align:right');
                 $('.CodeMirror').attr('style', 'text-align:right');
