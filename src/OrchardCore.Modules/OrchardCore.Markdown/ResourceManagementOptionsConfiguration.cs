@@ -26,7 +26,7 @@ public sealed class ResourceManagementOptionsConfiguration : IConfigureOptions<R
 
         _manifest
             .DefineScript("easymde-mediatoolbar")
-            .SetDependencies("easymde")
+            .SetDependencies("easymde", "jQuery")
             .SetUrl(
                 "~/OrchardCore.Markdown/Scripts/mde.mediatoolbar.min.js",
                 "~/OrchardCore.Markdown/Scripts/mde.mediatoolbar.js"
