@@ -144,8 +144,8 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
                 continue;
             }
 
-            //retrieve content type definition
             var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(existingContentItem.ContentType);
+            
             if (await AuthorizeAsync(contentTypeDefinition, CommonPermissions.DeleteContent, existingContentItem))
             {
                 // at this point the user has permission to delete a securable item or the type isn't securable
