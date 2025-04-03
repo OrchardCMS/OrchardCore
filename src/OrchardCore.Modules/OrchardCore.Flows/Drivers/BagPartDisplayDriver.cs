@@ -102,8 +102,8 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
             // Try to match the requested id with an existing id
             var existingContentItem = part.ContentItems.FirstOrDefault(x => string.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
 
-            //retrieve content type definition
             var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
+            
             if (existingContentItem == null && !await AuthorizeAsync(contentTypeDefinition, CommonPermissions.EditContent, contentItem))
             {
                 // at this point the user is somehow trying to add content with no privileges. ignore the request
