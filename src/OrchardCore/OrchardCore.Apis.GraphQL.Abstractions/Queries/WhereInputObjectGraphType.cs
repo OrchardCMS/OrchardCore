@@ -77,6 +77,10 @@ public class WhereInputObjectGraphType<TSourceType> : InputObjectGraphType<TSour
             AddMultiValueFilters(graphType, fieldName, description);
             AddStringFilters(graphType, fieldName, description);
         }
+        else if (graphType == typeof(IdGraphType))
+        {
+            AddMultiValueFilters(graphType, fieldName, description);
+        }
         else if (graphType == typeof(DateTimeGraphType) ||
             graphType == typeof(DateGraphType) ||
             graphType == typeof(DateOnlyGraphType) ||
