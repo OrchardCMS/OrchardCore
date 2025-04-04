@@ -199,7 +199,7 @@ public sealed class AdminController : Controller
                 ?? Array.Empty<PlacementNode>();
 
             var emptyNodesIndexes = Array.FindAll(placementNodes, IsEmpty)
-                .Select(node => Array.IndexOf(placementNodes, node));
+                .Select(node => Array.IndexOf(placementNodes, node) + 1);
 
             if (emptyNodesIndexes.Any()) {
 
