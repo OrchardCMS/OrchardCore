@@ -4,6 +4,6 @@
   "type": "module",
   "dependencies": {
     "@popperjs/core": "2.11.8",
-    "bootstrap": "5.3.4"
+    "bootstrap": "5.3.5"
   }
 }
