@@ -196,23 +196,26 @@ public sealed class AdminController : Controller
         try
         {
             var placementNodes = JConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes)
-                ?? Enumerable.Empty<PlacementNode>();
+                ?? Array.Empty<PlacementNode>();
 
-            // Remove empty nodes.
-            placementNodes = placementNodes.Where(node => !IsEmpty(node));
+            var emptyNodesIndexes = Array.FindAll(placementNodes, IsEmpty)
+                .Select(node => Array.IndexOf(placementNodes, node));
 
-            if (placementNodes.Any())
+            if (emptyNodesIndexes.Any()) {
+
+                await _notifier.WarningAsync(
+                    H.Plural(emptyNodesIndexes.Count(), "The placement rule at index {1} is empty.", "The placements rules at indexes {1} are empty.", string.Join(", ", emptyNodesIndexes)));
+                await _notifier.InformationAsync(H["Valid placement must contain either place, shape, wrappers or alternates."]);
+                return View(viewModel);
+            }
+
+            if (placementNodes.Length > 0)
             {
                 // Save.
                 await _placementsManager.UpdateShapePlacementsAsync(viewModel.ShapeType, placementNodes);
                 viewModel.Creating = false;
 
                 await _notifier.SuccessAsync(H["The \"{0}\" placement have been saved.", viewModel.ShapeType]);
-            }
-            else if (viewModel.Creating)
-            {
-                await _notifier.WarningAsync(H["The \"{0}\" placement is empty.", viewModel.ShapeType]);
-                return View(viewModel);
             }
             else
             {
@@ -320,7 +323,6 @@ public sealed class AdminController : Controller
             && (node.Alternates == null || node.Alternates.Length == 0)
             && (node.Wrappers == null || node.Wrappers.Length == 0);
     }
-
 
     private static bool FilterEquals(object node, string value)
     {
