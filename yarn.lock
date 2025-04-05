@@ -2465,7 +2465,7 @@ __metadata:
     "@orchardcore/assets-manager": "workspace:^"
     "@popperjs/core": "npm:2.11.8"
     all-contributors-cli: "npm:^6.26.1"
-    bootstrap: "npm:5.3.4"
+    bootstrap: "npm:5.3.5"
     child_process: "npm:^1.0.2"
     es6-promise: "npm:4.2.8"
     eslint: "npm:^9.21.0"
@@ -5788,15 +5788,6 @@ __metadata:
   peerDependencies:
     "@popperjs/core": ^2.10.2
   checksum: 10/ae710b996976e37ff66f202437f12aae8abd9d12b7226c039cc1419345af16e3e4e5109200e2b62de0728670ccbb23ea23fceccae03e36f53ff3f9c698c6ccf0
-  languageName: node
-  linkType: hard
-
-"bootstrap@npm:5.3.4":
-  version: 5.3.4
-  resolution: "bootstrap@npm:5.3.4"
-  peerDependencies:
-    "@popperjs/core": ^2.11.8
-  checksum: 10/ec29b5d6815e849d82545eee831c6b7c14a31d7307bf570862ae6ff0d5f8249801a62220dbf6481d8d34253b44d316fb02fa912addfc902c846ef8d6c9dd7d5e
   languageName: node
   linkType: hard
 
