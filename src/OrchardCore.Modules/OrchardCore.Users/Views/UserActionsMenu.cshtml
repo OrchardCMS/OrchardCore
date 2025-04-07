@@ -14,7 +14,14 @@
 @if (canEdit)
 {
     <li>
-        <a asp-action="EditPassword" asp-route-id="@Model.User.UserId" class="dropdown-item">@T["Change password"]</a>
+        @if (isCurrentUser)
+        {
+            <a asp-controller="Account" asp-action="ChangePassword" asp-route-returnUrl="@FullRequestPath" class="dropdown-item">@T["Change password"]</a>
+        }
+        else
+        {
+            <a asp-action="EditPassword" asp-route-id="@Model.User.UserId" class="dropdown-item">@T["Change password"]</a>
+        }
     </li>
     if (isLockedOut)
     {
