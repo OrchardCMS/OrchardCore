@@ -97,4 +97,6 @@ public interface IUserService
     /// <param name="reportError">The error reported in case failure happened during the create process.</param>
     /// <returns></returns>
     Task<IUser> RegisterAsync(RegisterUserForm model, Action<string, string> reportError);
+
+    Task<IEnumerable<IUser>> GetUsersAsync();
 }

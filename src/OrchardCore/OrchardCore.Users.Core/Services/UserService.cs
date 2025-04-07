@@ -370,4 +370,6 @@ public sealed class UserService : IUserService
 
         return user;
     }
+
+    public Task<IEnumerable<IUser>> GetUsersAsync() => Task.FromResult<IEnumerable<IUser>>(_userManager.Users);
 }

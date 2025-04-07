@@ -23,7 +23,8 @@ public class UserStore :
     IUserTwoFactorRecoveryCodeStore<IUser>,
     IUserTwoFactorStore<IUser>,
     IUserAuthenticatorKeyStore<IUser>,
-    IUserPhoneNumberStore<IUser>
+    IUserPhoneNumberStore<IUser>,
+    IQueryableUserStore<IUser>
 {
     private const string TokenProtector = "OrchardCore.UserStore.Token";
     private const string InternalLoginProvider = "[OrchardCoreUserStore]";
@@ -55,6 +56,9 @@ public class UserStore :
     }
 
     public IEnumerable<IUserEventHandler> Handlers { get; private set; }
+
+    public IQueryable<IUser> Users => _session.Query<User>().ListAsync().GetAwaiter().GetResult()
+        .AsQueryable<IUser>();
 
     public void Dispose()
     {
