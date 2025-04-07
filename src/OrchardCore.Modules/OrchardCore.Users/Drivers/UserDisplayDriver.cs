@@ -4,13 +4,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Modules;
 using OrchardCore.Mvc.ModelBinding;
-using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 
@@ -22,8 +19,6 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly INotifier _notifier;
     private readonly IAuthorizationService _authorizationService;
-    private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
-    private readonly ILogger _logger;
 
     internal readonly IHtmlLocalizer H;
     internal readonly IStringLocalizer S;
@@ -32,8 +27,6 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
         UserManager<IUser> userManager,
         IHttpContextAccessor httpContextAccessor,
         INotifier notifier,
-        ILogger<UserDisplayDriver> logger,
-        IEnumerable<IUserEventHandler> userEventHandlers,
         IAuthorizationService authorizationService,
         IHtmlLocalizer<UserDisplayDriver> htmlLocalizer,
         IStringLocalizer<UserDisplayDriver> stringLocalizer)
@@ -42,8 +35,6 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
         _httpContextAccessor = httpContextAccessor;
         _notifier = notifier;
         _authorizationService = authorizationService;
-        _logger = logger;
-        _userEventHandlers = userEventHandlers;
         H = htmlLocalizer;
         S = stringLocalizer;
     }
@@ -122,19 +113,11 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
             else
             {
                 user.IsEnabled = model.IsEnabled;
-                var userContext = new UserContext(user);
-                // TODO This handler should be invoked through the create or update methods.
-                // otherwise it will not be invoked when a workflow, or other operation, changes this value.
-                await _userEventHandlers.InvokeAsync((handler, context) => handler.DisabledAsync(context), userContext, _logger);
             }
         }
         else if (!isEditingDisabled && model.IsEnabled && !user.IsEnabled)
         {
             user.IsEnabled = model.IsEnabled;
-            var userContext = new UserContext(user);
-            // TODO This handler should be invoked through the create or update methods.
-            // otherwise it will not be invoked when a workflow, or other operation, changes this value.
-            await _userEventHandlers.InvokeAsync((handler, context) => handler.EnabledAsync(context), userContext, _logger);
         }
 
         return await EditAsync(user, context);
