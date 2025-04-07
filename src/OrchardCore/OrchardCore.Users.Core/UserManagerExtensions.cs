@@ -68,4 +68,14 @@ public static class UserManagerExtensions
 
         return userNeedUpdate;
     }
+
+    public static IEnumerable<IUser> GetUsersNotInRolesAsync(this UserManager<IUser> userManager)
+    {
+        ArgumentNullException.ThrowIfNull(userManager);
+
+        return userManager.Users
+            .OfType<User>()
+            .Where(u => u.RoleNames == null || !u.RoleNames.Any())
+            .ToList();
+    }
 }
