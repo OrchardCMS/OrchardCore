@@ -190,7 +190,7 @@ Now, your project explorer should look like the image below.
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <base href="/" />
                 <link rel="stylesheet" href="OrchardCore.Resources/Styles/bootstrap.min.css" />
-                <link rel="stylesheet" href="_content/OCBlazorLib/OCBlazorLib.bundle.scp.css" />
+                <link rel="stylesheet" href="_content/OCBlazor.styles.css" />
                 <HeadOutlet />
             </head>
             
