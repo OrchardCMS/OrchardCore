@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageVersion Include="AngleSharp" Version="1.2.0" />
-    <PackageVersion Include="AWSSDK.S3" Version="3.7.415.28" />
+    <PackageVersion Include="AWSSDK.S3" Version="3.7.416.5" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.400" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.0.1" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.1" />
@@ -25,7 +25,7 @@
     <PackageVersion Include="GraphQL.DataLoader" Version="8.4.1" />
     <PackageVersion Include="GraphQL.MicrosoftDI" Version="8.4.1" />
     <PackageVersion Include="GraphQL.SystemTextJson" Version="8.4.1" />
-    <PackageVersion Include="Jint" Version="4.2.1" />
+    <PackageVersion Include="Jint" Version="4.2.2" />
     <PackageVersion Include="JsonPath.Net" Version="2.1.1" />
     <PackageVersion Include="HtmlSanitizer" Version="9.1.878-beta" />
     <PackageVersion Include="Irony" Version="1.5.3" />
@@ -65,8 +65,8 @@
     <PackageVersion Include="StyleCop.Analyzers" Version="1.1.118" />
     <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
     <PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
-    <PackageVersion Include="xunit.v3" Version="2.0.0" />
-    <PackageVersion Include="xunit.analyzers" Version="1.20.0" />
+    <PackageVersion Include="xunit.v3" Version="2.0.1" />
+    <PackageVersion Include="xunit.analyzers" Version="1.21.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.2" />
     <PackageVersion Include="YesSql" Version="5.3.0" />
     <PackageVersion Include="YesSql.Abstractions" Version="5.3.0" />
