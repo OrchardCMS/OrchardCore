@@ -82,6 +82,6 @@ public sealed class CulturePickerStartup : StartupBase
     {
         services.AddDisplayDriver<Navbar, AdminCulturePickerNavbarDisplayDriver>();
 
-        services.AddSingleton<IConfigureOptions<RequestLocalizationOptions>, RequestLocalizationOptionsConfigurations>();
+        services.AddTransient<IConfigureOptions<RequestLocalizationOptions>, RequestLocalizationOptionsConfigurations>();
     }
 }
