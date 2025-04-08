@@ -233,7 +233,7 @@ public class OpenIdServerService : IOpenIdServerService
         {
             results.Add(new ValidationResult(S["The pushed authorization endpoint can only be enabled when the authorization endpoint is enabled."], new[]
             {
-                nameof(settings.PushedAuthorizationEndpointPath)
+                nameof(settings.PushedAuthorizationEndpointPath),
             }));
         }
 
@@ -241,7 +241,7 @@ public class OpenIdServerService : IOpenIdServerService
         {
             results.Add(new ValidationResult(S["The pushed authorization endpoint must be enabled when enforcing pushed authorization requests."], new[]
             {
-                nameof(settings.RequirePushedAuthorizationRequests)
+                nameof(settings.RequirePushedAuthorizationRequests),
             }));
         }
 
