@@ -810,7 +810,6 @@ public sealed class AdminController : Controller, IUpdateModel
         {
             items.Add(new SelectListItem(S["All content types"], string.Empty));
         }
-        ;
 
         foreach (var definition in definitions)
         {
