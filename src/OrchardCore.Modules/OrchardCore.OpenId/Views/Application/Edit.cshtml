@@ -156,6 +156,16 @@
             </div>
         </div>
 
+        <div class="mb-3">
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" asp-for="RequirePushedAuthorizationRequests" checked="@Model.RequirePushedAuthorizationRequests">
+                <label class="form-check-label" asp-for="RequirePushedAuthorizationRequests">@T["Require Pushed Authorization Requests"]</label>
+            </div>
+            <div class="hint">
+                @T["Ensure that the client/client library supports PAR before enabling this option."]
+            </div>
+        </div>
+
         <div class="mb-3" asp-validation-class-for="ConsentType">
             <label asp-for="ConsentType" class="form-label">@T["Consent type"]</label>
             <select asp-for="ConsentType" class="form-select">

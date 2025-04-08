@@ -180,7 +180,8 @@ public sealed class ApplicationController : Controller
             Roles = model.RoleEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
             Scopes = model.ScopeEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
             Type = model.Type,
-            RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange
+            RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange,
+            RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests
         };
 
         await _applicationManager.UpdateDescriptorFromSettings(settings);
@@ -243,7 +244,8 @@ public sealed class ApplicationController : Controller
             PostLogoutRedirectUris = string.Join(" ", await _applicationManager.GetPostLogoutRedirectUrisAsync(application)),
             RedirectUris = string.Join(" ", await _applicationManager.GetRedirectUrisAsync(application)),
             Type = await _applicationManager.GetClientTypeAsync(application),
-            RequireProofKeyForCodeExchange = await HasRequirementAsync(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange)
+            RequireProofKeyForCodeExchange = await HasRequirementAsync(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange),
+            RequirePushedAuthorizationRequests = await HasRequirementAsync(OpenIddictConstants.Requirements.Features.PushedAuthorizationRequests)
         };
 
         var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
@@ -347,7 +349,8 @@ public sealed class ApplicationController : Controller
             Roles = model.RoleEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
             Scopes = model.ScopeEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
             Type = model.Type,
-            RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange
+            RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange,
+            RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests
         };
 
         await _applicationManager.UpdateDescriptorFromSettings(settings, application);

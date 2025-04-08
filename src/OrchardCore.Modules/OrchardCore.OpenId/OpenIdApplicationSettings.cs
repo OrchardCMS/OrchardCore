@@ -25,6 +25,7 @@ public class OpenIdApplicationSettings
     public bool AllowIntrospectionEndpoint { get; set; }
     public bool AllowRevocationEndpoint { get; set; }
     public bool RequireProofKeyForCodeExchange { get; set; }
+    public bool RequirePushedAuthorizationRequests { get; set; }
 }
 
 internal static class OpenIdApplicationExtensions
@@ -113,10 +114,12 @@ internal static class OpenIdApplicationExtensions
         if (model.AllowAuthorizationCodeFlow || model.AllowHybridFlow || model.AllowImplicitFlow)
         {
             descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Authorization);
+            descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.PushedAuthorization);
         }
         else
         {
             descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Authorization);
+            descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.PushedAuthorization);
         }
 
         if (model.AllowAuthorizationCodeFlow || model.AllowHybridFlow ||
@@ -207,6 +210,15 @@ internal static class OpenIdApplicationExtensions
         else
         {
             descriptor.Requirements.Remove(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange);
+        }
+
+        if (model.RequirePushedAuthorizationRequests)
+        {
+            descriptor.Requirements.Add(OpenIddictConstants.Requirements.Features.PushedAuthorizationRequests);
+        }
+        else
+        {
+            descriptor.Requirements.Remove(OpenIddictConstants.Requirements.Features.PushedAuthorizationRequests);
         }
 
         descriptor.Roles.Clear();

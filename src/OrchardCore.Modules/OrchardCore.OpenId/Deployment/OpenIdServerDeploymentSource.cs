@@ -39,6 +39,7 @@ public sealed class OpenIdServerDeploymentSource
             EnableTokenEndpoint = !string.IsNullOrWhiteSpace(settings.TokenEndpointPath),
             EnableUserInfoEndpoint = !string.IsNullOrWhiteSpace(settings.UserinfoEndpointPath),
             EnableIntrospectionEndpoint = !string.IsNullOrWhiteSpace(settings.IntrospectionEndpointPath),
+            EnablePushedAuthorizationEndpoint = !string.IsNullOrWhiteSpace(settings.PushedAuthorizationEndpointPath),
             EnableRevocationEndpoint = !string.IsNullOrWhiteSpace(settings.RevocationEndpointPath),
 
             AllowAuthorizationCodeFlow = settings.AllowAuthorizationCodeFlow,
@@ -52,6 +53,7 @@ public sealed class OpenIdServerDeploymentSource
             DisableRollingRefreshTokens = settings.DisableRollingRefreshTokens,
             UseReferenceAccessTokens = settings.UseReferenceAccessTokens,
             RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange,
+            RequirePushedAuthorizationRequests = settings.RequirePushedAuthorizationRequests
         };
 
         result.Steps.Add(new JsonObject

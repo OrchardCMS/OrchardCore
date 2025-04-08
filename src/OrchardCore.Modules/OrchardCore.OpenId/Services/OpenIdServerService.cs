@@ -65,19 +65,21 @@ public class OpenIdServerService : IOpenIdServerService
             return settings.ToObject<OpenIdServerSettings>(JOptions.Default);
         }
 
-        // If the OpenID server settings haven't been populated yet, the authorization,
-        // logout, token, userinfo, introspection and revocation endpoints are assumed to be enabled by default.
-        // In this case, only the authorization code and refresh token flows are used.
+        // If the OpenID server settings haven't been populated yet, the
+        // commonly-used endpoints are assumed to be enabled by default.
+        //
+        // In this case, only the authorization code and refresh token flows are enabled by default.
         return new OpenIdServerSettings
         {
             AllowAuthorizationCodeFlow = true,
             AllowRefreshTokenFlow = true,
             AuthorizationEndpointPath = "/connect/authorize",
-            LogoutEndpointPath = "/connect/logout",
-            TokenEndpointPath = "/connect/token",
-            UserinfoEndpointPath = "/connect/userinfo",
             IntrospectionEndpointPath = "/connect/introspect",
-            RevocationEndpointPath = "/connect/revoke"
+            LogoutEndpointPath = "/connect/logout",
+            PushedAuthorizationEndpointPath = "/connect/par",
+            RevocationEndpointPath = "/connect/revoke",
+            TokenEndpointPath = "/connect/token",
+            UserinfoEndpointPath = "/connect/userinfo"
         };
     }
 
@@ -224,6 +226,22 @@ public class OpenIdServerService : IOpenIdServerService
             results.Add(new ValidationResult(S["Access token encryption can only be disabled when using JWT tokens."], new[]
             {
                 nameof(settings.DisableAccessTokenEncryption)
+            }));
+        }
+
+        if (settings.PushedAuthorizationEndpointPath.HasValue && !settings.AuthorizationEndpointPath.HasValue)
+        {
+            results.Add(new ValidationResult(S["The pushed authorization endpoint can only be enabled when the authorization endpoint is enabled."], new[]
+            {
+                nameof(settings.PushedAuthorizationEndpointPath)
+            }));
+        }
+
+        if (settings.RequirePushedAuthorizationRequests && !settings.PushedAuthorizationEndpointPath.HasValue)
+        {
+            results.Add(new ValidationResult(S["The pushed authorization endpoint must be enabled when enforcing pushed authorization requests."], new[]
+            {
+                nameof(settings.RequirePushedAuthorizationRequests)
             }));
         }
 
