@@ -29,14 +29,14 @@ public sealed class TemplateContentTypeDefinitionDriver : ContentTypeDefinitionD
                 new ContentSettingsEntry
                 {
                     Key = $"{stereotype}__{contentTypeDefinition.Name}",
-                    Description = S["Template for a {0} content item in detail views", contentTypeDefinition.DisplayName]
+                    Description = S["Template for a {0} content item in detail views", contentTypeDefinition.DisplayName],
                 });
 
             model.ContentSettingsEntries.Add(
                 new ContentSettingsEntry
                 {
                     Key = $"{stereotype}_Summary__{contentTypeDefinition.Name}",
-                    Description = S["Template for a {0} content item in summary views", contentTypeDefinition.DisplayName]
+                    Description = S["Template for a {0} content item in summary views", contentTypeDefinition.DisplayName],
                 });
         }).Location("Shortcuts");
     }

@@ -435,7 +435,7 @@ public sealed class TenantApiController : ControllerBase
                 { SetupConstants.DatabaseConnectionString, connectionString },
                 { SetupConstants.DatabaseTablePrefix, tablePrefix },
                 { SetupConstants.DatabaseSchema, schema },
-            }
+            },
         };
 
         var executionId = await _setupService.SetupAsync(setupContext);

@@ -181,7 +181,7 @@ public class AutorouteEntries : IAutorouteEntries
                     .Where(i => i.Published && i.Path != null)
                     .Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath)
                     {
-                        DocumentId = i.DocumentId
+                        DocumentId = i.DocumentId,
                     });
 
                 RemoveEntries(entriesToRemove);
@@ -218,7 +218,7 @@ public class AutorouteEntries : IAutorouteEntries
 
                 var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath)
                 {
-                    DocumentId = i.DocumentId
+                    DocumentId = i.DocumentId,
                 });
 
                 AddEntries(entries);

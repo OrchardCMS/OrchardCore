@@ -24,7 +24,7 @@ public enum BulkAction
 {
     Disable,
     Enable,
-    Remove
+    Remove,
 }
 
 public class ShellSettingsEntry

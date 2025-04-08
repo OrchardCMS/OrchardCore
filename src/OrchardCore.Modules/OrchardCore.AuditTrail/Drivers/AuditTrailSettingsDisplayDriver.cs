@@ -66,12 +66,10 @@ public sealed class AuditTrailSettingsDisplayDriver : SiteDisplayDriver<AuditTra
                                 LocalizedName = auditTrailEvent.LocalizedName(_serviceProvider),
                                 Description = auditTrailEvent.Description(_serviceProvider),
                                 IsEnabled = auditTrailEvent.IsMandatory || (settings?.IsEnabled ?? auditTrailEvent.IsEnabledByDefault),
-                                IsMandatory = auditTrailEvent.IsMandatory
+                                IsMandatory = auditTrailEvent.IsMandatory,
                             };
-                        })
-                    .ToArray()
-                })
-            .ToArray();
+                        }).ToArray(),
+                }).ToArray();
 
             model.Categories = categoriesViewModel;
             model.ClientIpAddressAllowed = settings.ClientIpAddressAllowed;

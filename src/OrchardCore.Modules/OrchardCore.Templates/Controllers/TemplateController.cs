@@ -122,7 +122,7 @@ public sealed class TemplateController : Controller
     public ActionResult IndexFilterPOST(TemplateIndexViewModel model)
         => RedirectToAction(nameof(Index), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     public async Task<IActionResult> Create(string name = null, bool adminTemplates = false, string returnUrl = null)

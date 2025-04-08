@@ -17,7 +17,7 @@ public static class SmsServiceExtensions
         var message = new SmsMessage
         {
             To = to,
-            Body = body
+            Body = body,
         };
 
         return smsService.SendAsync(message);

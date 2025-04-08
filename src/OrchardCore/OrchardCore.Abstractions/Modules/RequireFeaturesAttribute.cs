@@ -18,7 +18,7 @@ public class RequireFeaturesAttribute : Attribute
     {
         RequiredFeatureNames = new List<string>(otherFeatureNames)
         {
-            featureName
+            featureName,
         };
     }
 

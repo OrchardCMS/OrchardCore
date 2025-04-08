@@ -64,8 +64,8 @@ public static class PageConventionCollectionExtensions
                     {
                         AttributeRouteModel = new AttributeRouteModel
                         {
-                            Template = template
-                        }
+                            Template = template,
+                        },
                     });
                 }
             }

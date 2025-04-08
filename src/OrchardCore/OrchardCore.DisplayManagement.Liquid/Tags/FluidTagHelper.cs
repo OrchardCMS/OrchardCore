@@ -41,7 +41,7 @@ public static class FluidTagHelper
         {
             var args = new List<FilterArgument>(arguments)
             {
-                [0] = new FilterArgument(mapping, arguments[0].Expression)
+                [0] = new FilterArgument(mapping, arguments[0].Expression),
             };
 
             arguments = args;

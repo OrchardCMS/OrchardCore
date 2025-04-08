@@ -55,7 +55,7 @@ public class SitemapIndexTypeBuilder : SitemapTypeBuilderBase<SitemapIndex>
 
             var routeValues = new RouteValueDictionary(_sitemapsOptions.GlobalRouteValues)
             {
-                [_sitemapsOptions.SitemapIdKey] = containedSitemap.SitemapId
+                [_sitemapsOptions.SitemapIdKey] = containedSitemap.SitemapId,
             };
 
             loc.Add(context.HostPrefix + context.UrlHelper.Action(routeValues["Action"].ToString(), routeValues));

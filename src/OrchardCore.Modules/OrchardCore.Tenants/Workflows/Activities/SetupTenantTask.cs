@@ -205,7 +205,7 @@ public class SetupTenantTask : TenantTask
                 { SetupConstants.DatabaseConnectionString, databaseConnectionString },
                 { SetupConstants.DatabaseTablePrefix, databaseTablePrefix },
                 { SetupConstants.DatabaseSchema, databaseSchema },
-            }
+            },
         };
 
         var executionId = await SetupService.SetupAsync(setupContext);

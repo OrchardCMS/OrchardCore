@@ -8,7 +8,7 @@ public class BlockingActivity
         {
             ActivityId = activity.ActivityId,
             IsStart = activity.IsStart,
-            Name = activity.Name
+            Name = activity.Name,
         };
     }
 

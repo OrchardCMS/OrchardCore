@@ -48,7 +48,7 @@ public class NotifyEntryConverter : JsonConverter<NotifyEntry>
         var o = new JsonObject
         {
             { nameof(NotifyEntry.Type), notifyEntry.Type.ToString() },
-            { nameof(NotifyEntry.Message), notifyEntry.ToHtmlString(_htmlEncoder) }
+            { nameof(NotifyEntry.Message), notifyEntry.ToHtmlString(_htmlEncoder) },
         };
 
         o.WriteTo(writer);

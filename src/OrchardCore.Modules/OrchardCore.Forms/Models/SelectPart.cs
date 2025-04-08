@@ -20,5 +20,5 @@ public enum SelectEditorOption
 {
     Dropdown,
     Checkbox,
-    Radio
+    Radio,
 }

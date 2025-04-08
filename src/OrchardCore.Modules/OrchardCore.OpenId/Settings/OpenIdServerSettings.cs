@@ -44,6 +44,6 @@ public class OpenIdServerSettings
     public enum TokenFormat
     {
         DataProtection = 0,
-        JsonWebToken = 1
+        JsonWebToken = 1,
     }
 }

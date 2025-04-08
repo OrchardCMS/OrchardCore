@@ -169,7 +169,7 @@ public sealed class AdminController : Controller
         var viewModel = new EditShapePlacementViewModel
         {
             ShapeType = shapeType,
-            Nodes = JConvert.SerializeObject(placementNodes, JOptions.Indented)
+            Nodes = JConvert.SerializeObject(placementNodes, JOptions.Indented),
         };
 
         ViewData["ReturnUrl"] = returnUrl;

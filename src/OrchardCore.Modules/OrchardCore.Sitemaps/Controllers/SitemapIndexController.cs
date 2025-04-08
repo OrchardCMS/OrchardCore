@@ -113,7 +113,7 @@ public sealed class SitemapIndexController : Controller
     public ActionResult ListFilterPOST(ListSitemapIndexViewModel model)
         => RedirectToAction(nameof(List), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     public async Task<IActionResult> Create()

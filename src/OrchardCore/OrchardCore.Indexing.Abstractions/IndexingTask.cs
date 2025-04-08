@@ -3,7 +3,7 @@ namespace OrchardCore.Indexing;
 public enum IndexingTaskTypes
 {
     Update = 0,
-    Delete = 1
+    Delete = 1,
 }
 
 public class IndexingTask

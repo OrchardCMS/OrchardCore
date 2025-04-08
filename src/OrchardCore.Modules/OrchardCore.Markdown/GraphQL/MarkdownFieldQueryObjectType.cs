@@ -74,7 +74,7 @@ public class MarkdownFieldQueryObjectType : ObjectGraphType<MarkdownField>
                 Html = html,
                 Field = ctx.Source,
                 Part = ctx.Source.ContentItem.Get<ContentPart>(partName),
-                PartFieldDefinition = contentPartFieldDefinition
+                PartFieldDefinition = contentPartFieldDefinition,
             };
 
             html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
@@ -85,7 +85,7 @@ public class MarkdownFieldQueryObjectType : ObjectGraphType<MarkdownField>
             new Context
             {
                 ["ContentItem"] = ctx.Source.ContentItem,
-                ["PartFieldDefinition"] = contentPartFieldDefinition
+                ["PartFieldDefinition"] = contentPartFieldDefinition,
             });
 
         if (settings.SanitizeHtml)

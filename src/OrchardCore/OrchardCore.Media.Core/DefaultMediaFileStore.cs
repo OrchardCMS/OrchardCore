@@ -61,7 +61,7 @@ public class DefaultMediaFileStore : IMediaFileStore
     {
         var creatingContext = new MediaCreatingContext
         {
-            Path = path
+            Path = path,
         };
 
         await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaCreatingDirectoryAsync(context), creatingContext, _logger);
@@ -71,7 +71,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         var createdContext = new MediaCreatedContext
         {
             Path = path,
-            Result = result
+            Result = result,
         };
 
         await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaCreatedDirectoryAsync(context), createdContext, _logger);
@@ -83,7 +83,7 @@ public class DefaultMediaFileStore : IMediaFileStore
     {
         var deletingContext = new MediaDeletingContext
         {
-            Path = path
+            Path = path,
         };
 
         await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletingFileAsync(context), deletingContext, _logger);
@@ -93,7 +93,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         var deletedContext = new MediaDeletedContext
         {
             Path = path,
-            Result = result
+            Result = result,
         };
 
         await _mediaEventHandlers.InvokeAsync((handler, deletedContext) => handler.MediaDeletedFileAsync(deletedContext), deletedContext, _logger);
@@ -105,7 +105,7 @@ public class DefaultMediaFileStore : IMediaFileStore
     {
         var deletingContext = new MediaDeletingContext
         {
-            Path = path
+            Path = path,
         };
 
         await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaDeletingDirectoryAsync(context), deletingContext, _logger);
@@ -115,7 +115,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         var deletedContext = new MediaDeletedContext
         {
             Path = path,
-            Result = result
+            Result = result,
         };
 
         await _mediaEventHandlers.InvokeAsync((handler, deletedContext) => handler.MediaDeletedDirectoryAsync(deletedContext), deletedContext, _logger);
@@ -128,7 +128,7 @@ public class DefaultMediaFileStore : IMediaFileStore
         var context = new MediaMoveContext
         {
             OldPath = oldPath,
-            NewPath = newPath
+            NewPath = newPath,
         };
 
         await _mediaEventHandlers.InvokeAsync((handler, context) => handler.MediaMovingAsync(context), context, _logger);
@@ -164,7 +164,7 @@ public class DefaultMediaFileStore : IMediaFileStore
             {
                 var context = new MediaCreatingContext
                 {
-                    Path = path
+                    Path = path,
                 };
 
                 foreach (var mediaCreatingEventHandler in _mediaCreatingEventHandlers)

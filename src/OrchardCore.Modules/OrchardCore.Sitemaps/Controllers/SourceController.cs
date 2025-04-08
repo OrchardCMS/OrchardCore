@@ -73,7 +73,7 @@ public sealed class SourceController : Controller
             SitemapSource = source,
             SitemapSourceId = source.Id,
             SitemapSourceType = sourceType,
-            Editor = await _displayManager.BuildEditorAsync(source, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "")
+            Editor = await _displayManager.BuildEditorAsync(source, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", ""),
         };
 
         model.Editor.SitemapSource = source;

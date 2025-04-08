@@ -54,7 +54,7 @@ public class CultureDictionaryRecord
         return new CultureDictionaryRecordKey
         {
             MessageId = messageId,
-            Context = context
+            Context = context,
         };
     }
 }

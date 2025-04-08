@@ -35,7 +35,7 @@ public class RecipeDeploymentTargetHandler : IDeploymentTargetHandler
         {
             FileProvider = fileProvider,
             BasePath = "",
-            RecipeFileInfo = fileProvider.GetFileInfo("Recipe.json")
+            RecipeFileInfo = fileProvider.GetFileInfo("Recipe.json"),
         };
 
         var environment = new Dictionary<string, object>();

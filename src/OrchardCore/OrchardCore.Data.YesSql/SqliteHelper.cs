@@ -58,7 +58,7 @@ public static class SqliteHelper
             DataSource = string.IsNullOrEmpty(databaseFolder) ? databaseName : Path.Combine(databaseFolder, databaseName),
             Cache = SqliteCacheMode.Shared,
             Pooling = sqliteOptions.UseConnectionPooling,
-            Mode = sqliteOpenMode
+            Mode = sqliteOpenMode,
         };
     }
 }

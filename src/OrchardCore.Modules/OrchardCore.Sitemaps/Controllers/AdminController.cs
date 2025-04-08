@@ -100,7 +100,7 @@ public sealed class AdminController : Controller
         {
             Sitemaps = results.Select(sm => new SitemapListEntry { SitemapId = sm.SitemapId, Name = sm.Name, Enabled = sm.Enabled }).ToList(),
             Options = options,
-            Pager = await _shapeFactory.PagerAsync(pager, count, routeData)
+            Pager = await _shapeFactory.PagerAsync(pager, count, routeData),
         };
 
         model.Options.ContentsBulkAction =
@@ -116,7 +116,7 @@ public sealed class AdminController : Controller
     public ActionResult ListFilterPOST(ListSitemapViewModel model)
         => RedirectToAction(nameof(List), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     public async Task<IActionResult> Display(string sitemapId)

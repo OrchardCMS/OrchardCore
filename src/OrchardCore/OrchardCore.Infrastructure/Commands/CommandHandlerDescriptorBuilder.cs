@@ -29,7 +29,7 @@ public class CommandHandlerDescriptorBuilder
         {
             Names = GetCommandNames(methodInfo),
             MethodInfo = methodInfo,
-            HelpText = GetCommandHelpText(methodInfo)
+            HelpText = GetCommandHelpText(methodInfo),
         };
     }
 

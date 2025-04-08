@@ -61,7 +61,7 @@ public sealed class DefaultAuditTrailAdminListQueryService : IAuditTrailAdminLis
         var result = new AuditTrailEventQueryResult
         {
             Events = events,
-            TotalCount = totalCount
+            TotalCount = totalCount,
         };
 
         options.AuditTrailSorts = _adminListOptions.SortOptions.Values.Where(x => x.SelectListItem != null).Select(opt => opt.SelectListItem(_serviceProvider, opt, options)).ToList();

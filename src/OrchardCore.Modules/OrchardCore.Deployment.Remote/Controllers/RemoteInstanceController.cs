@@ -81,7 +81,7 @@ public sealed class RemoteInstanceController : Controller
         {
             RemoteInstances = remoteInstances,
             Pager = pagerShape,
-            Options = options
+            Options = options,
         };
 
         model.Options.ContentsBulkAction =

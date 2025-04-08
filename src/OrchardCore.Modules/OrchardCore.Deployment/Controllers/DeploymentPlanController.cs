@@ -102,7 +102,7 @@ public sealed class DeploymentPlanController : Controller
         {
             DeploymentPlans = results.Select(x => new DeploymentPlanEntry { DeploymentPlan = x }).ToList(),
             Options = options,
-            Pager = pagerShape
+            Pager = pagerShape,
         };
 
         model.Options.DeploymentPlansBulkAction =

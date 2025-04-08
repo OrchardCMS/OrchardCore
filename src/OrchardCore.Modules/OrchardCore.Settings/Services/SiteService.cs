@@ -58,7 +58,7 @@ public class SiteService : ISiteService
             TimeZoneId = _clock.GetSystemTimeZone().TimeZoneId,
             PageSize = 10,
             MaxPageSize = 100,
-            MaxPagedCount = 0
+            MaxPagedCount = 0,
         });
     }
 }

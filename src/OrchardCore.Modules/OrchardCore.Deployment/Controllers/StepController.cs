@@ -70,7 +70,7 @@ public sealed class StepController : Controller
             DeploymentStep = step,
             DeploymentStepId = step.Id,
             DeploymentStepType = type,
-            Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty)
+            Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty),
         };
 
         model.Editor.DeploymentStep = step;
@@ -147,7 +147,7 @@ public sealed class StepController : Controller
             DeploymentStep = step,
             DeploymentStepId = step.Id,
             DeploymentStepType = step.GetType().Name,
-            Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "")
+            Editor = await _displayManager.BuildEditorAsync(step, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", ""),
         };
 
         model.Editor.DeploymentStep = step;

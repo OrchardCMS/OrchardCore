@@ -78,7 +78,7 @@ public sealed class RewriteRulesManager : IRewriteRulesManager
         {
             Id = id,
             Source = source,
-            Order = await GetNextOrderSequence()
+            Order = await GetNextOrderSequence(),
         };
 
         var initializingContext = new InitializingRewriteRuleContext(rule, data);

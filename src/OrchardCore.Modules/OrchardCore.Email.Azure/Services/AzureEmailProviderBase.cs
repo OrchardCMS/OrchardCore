@@ -75,7 +75,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
         { ".xlsm", "application/vnd.ms-excel.sheet.macroEnabled.12" },
         { ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" },
         { ".xml", "application/xml" },
-        { ".zip", "application/zip" }
+        { ".zip", "application/zip" },
     };
 
     private readonly AzureEmailOptions _providerOptions;
@@ -201,7 +201,7 @@ public abstract class AzureEmailProviderBase : IEmailProvider
         var content = new EmailContent(message.Subject)
         {
             PlainText = message.TextBody,
-            Html = message.HtmlBody
+            Html = message.HtmlBody,
         };
 
         var emailMessage = new EmailMessage(

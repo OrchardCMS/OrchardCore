@@ -30,7 +30,7 @@ public sealed class PlacementContentPartFieldDefinitionDisplayDriver : ContentPa
                 {
                     ShapeType = shapeType,
                     Differentiator = differentiator,
-                    Description = S["Placement for the {0} field in a {1}", displayName, partName]
+                    Description = S["Placement for the {0} field in a {1}", displayName, partName],
                 });
 
             model.ContentSettingsEntries.Add(
@@ -39,7 +39,7 @@ public sealed class PlacementContentPartFieldDefinitionDisplayDriver : ContentPa
                     ShapeType = shapeType,
                     Differentiator = differentiator,
                     DisplayType = "Detail",
-                    Description = S["Placement for the {0} field in a {1} in detail views", displayName, partName]
+                    Description = S["Placement for the {0} field in a {1} in detail views", displayName, partName],
                 });
 
             model.ContentSettingsEntries.Add(
@@ -48,7 +48,7 @@ public sealed class PlacementContentPartFieldDefinitionDisplayDriver : ContentPa
                     ShapeType = shapeType,
                     Differentiator = differentiator,
                     DisplayType = "Summary",
-                    Description = S["Placement for the {0} field in a {1} in summary views", displayName, partName]
+                    Description = S["Placement for the {0} field in a {1} in summary views", displayName, partName],
                 });
 
             model.ContentSettingsEntries.Add(
@@ -56,7 +56,7 @@ public sealed class PlacementContentPartFieldDefinitionDisplayDriver : ContentPa
                 {
                     ShapeType = $"{shapeType}_Edit",
                     Differentiator = differentiator,
-                    Description = S["Placement in admin editor for the {0} field in a {1}", displayName, partName]
+                    Description = S["Placement in admin editor for the {0} field in a {1}", displayName, partName],
                 });
 
         }).Location("Shortcuts");
