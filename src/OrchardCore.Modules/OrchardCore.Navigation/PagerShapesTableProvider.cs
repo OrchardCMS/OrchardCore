@@ -50,7 +50,6 @@ public class PagerShapesTableProvider : ShapeTableProvider
                 {
                     displaying.Shape.Metadata.Alternates.Add("Pager__" + pagerId.EncodeAlternateElement());
                 }
-                ;
             });
 
         builder.Describe("Pager_Gap")
