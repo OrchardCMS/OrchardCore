@@ -105,6 +105,12 @@ public sealed class OpenIdServerConfiguration : IConfigureOptions<Authentication
                 settings.IntrospectionEndpointPath.ToUriComponent()[1..], UriKind.Relative));
         }
 
+        if (settings.PushedAuthorizationEndpointPath.HasValue)
+        {
+            options.PushedAuthorizationEndpointUris.Add(new Uri(
+                settings.PushedAuthorizationEndpointPath.ToUriComponent()[1..], UriKind.Relative));
+        }
+
         if (settings.RevocationEndpointPath.HasValue)
         {
             options.RevocationEndpointUris.Add(new Uri(
@@ -173,6 +179,7 @@ public sealed class OpenIdServerConfiguration : IConfigureOptions<Authentication
         }
 
         options.RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange;
+        options.RequirePushedAuthorizationRequests = settings.RequirePushedAuthorizationRequests;
 
         options.Scopes.Add(Scopes.Email);
         options.Scopes.Add(Scopes.Phone);

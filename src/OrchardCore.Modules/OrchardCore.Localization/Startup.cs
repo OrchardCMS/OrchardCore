@@ -3,10 +3,8 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using OrchardCore.Admin;
 using OrchardCore.Admin.Models;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Localization.Drivers;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.Services;
@@ -80,20 +78,10 @@ public sealed class ContentLanguageHeaderStartup : StartupBase
 [Feature("OrchardCore.Localization.AdminCulturePicker")]
 public sealed class CulturePickerStartup : StartupBase
 {
-    private readonly ShellSettings _shellSettings;
-    private readonly AdminOptions _adminOptions;
-
-    public CulturePickerStartup(IOptions<AdminOptions> adminOptions, ShellSettings shellSettings)
-    {
-        _shellSettings = shellSettings;
-        _adminOptions = adminOptions.Value;
-    }
-
     public override void ConfigureServices(IServiceCollection services)
     {
         services.AddDisplayDriver<Navbar, AdminCulturePickerNavbarDisplayDriver>();
 
-        services.Configure<RequestLocalizationOptions>(options =>
-            options.AddInitialRequestCultureProvider(new AdminCookieCultureProvider(_shellSettings, _adminOptions)));
+        services.AddTransient<IConfigureOptions<RequestLocalizationOptions>, RequestLocalizationOptionsConfigurations>();
     }
 }

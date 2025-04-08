@@ -20,6 +20,7 @@ public class OpenIdServerSettingsStepModel
     public bool EnableLogoutEndpoint { get; set; }
     public bool EnableUserInfoEndpoint { get; set; }
     public bool EnableIntrospectionEndpoint { get; set; }
+    public bool EnablePushedAuthorizationEndpoint { get; set; }
     public bool EnableRevocationEndpoint { get; set; }
     public bool AllowPasswordFlow { get; set; }
     public bool AllowClientCredentialsFlow { get; set; }
@@ -29,6 +30,7 @@ public class OpenIdServerSettingsStepModel
     public bool AllowImplicitFlow { get; set; }
     public bool DisableRollingRefreshTokens { get; set; }
     public bool RequireProofKeyForCodeExchange { get; set; }
+    public bool RequirePushedAuthorizationRequests { get; set; }
 
     public bool UseReferenceAccessTokens { get; set; }
 }

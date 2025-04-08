@@ -181,6 +181,7 @@ public sealed class ApplicationController : Controller
             Scopes = model.ScopeEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
             Type = model.Type,
             RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange,
+            RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests,
         };
 
         await _applicationManager.UpdateDescriptorFromSettings(settings);
@@ -244,6 +245,7 @@ public sealed class ApplicationController : Controller
             RedirectUris = string.Join(" ", await _applicationManager.GetRedirectUrisAsync(application)),
             Type = await _applicationManager.GetClientTypeAsync(application),
             RequireProofKeyForCodeExchange = await HasRequirementAsync(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange),
+            RequirePushedAuthorizationRequests = await HasRequirementAsync(OpenIddictConstants.Requirements.Features.PushedAuthorizationRequests),
         };
 
         var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
@@ -348,6 +350,7 @@ public sealed class ApplicationController : Controller
             Scopes = model.ScopeEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
             Type = model.Type,
             RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange,
+            RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests,
         };
 
         await _applicationManager.UpdateDescriptorFromSettings(settings, application);
