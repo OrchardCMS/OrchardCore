@@ -53,7 +53,7 @@ public sealed class OpenIdServerDeploymentSource
             DisableRollingRefreshTokens = settings.DisableRollingRefreshTokens,
             UseReferenceAccessTokens = settings.UseReferenceAccessTokens,
             RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange,
-            RequirePushedAuthorizationRequests = settings.RequirePushedAuthorizationRequests
+            RequirePushedAuthorizationRequests = settings.RequirePushedAuthorizationRequests,
         };
 
         result.Steps.Add(new JsonObject
