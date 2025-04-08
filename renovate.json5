@@ -9,6 +9,19 @@
     // See https://docs.renovatebot.com/configuration-options/#configmigration.
     configMigration: true,
     packageRules: [
+        // Such updates should never break, so are usually safe to automerge (unless another group below overrides it
+        // for a given dependency).
+        {
+            groupName: 'Non-Breaking Dependency Versions',
+            matchUpdateTypes: ['minor', 'patch', 'pin', 'pinDigest'],
+            'automerge': true,
+        },
+        // Minor dependencies are ought to be non-breaking but can be (like
+        // https://github.com/OrchardCMS/OrchardCore/pull/17584), so better to keep them separate.
+        {
+            groupName: 'Minor Dependency Versions',
+            matchUpdateTypes: ['minor'],
+        },
         // Disable certain updates.
         {
             // The .NET 8 versions of these packages need to stay on 8.x. We maintain a separate reference to the 
