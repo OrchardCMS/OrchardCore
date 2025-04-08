@@ -181,7 +181,7 @@ public sealed class ApplicationController : Controller
             Scopes = model.ScopeEntries.Where(x => x.Selected).Select(x => x.Name).ToArray(),
             Type = model.Type,
             RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange,
-            RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests
+            RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests,
         };
 
         await _applicationManager.UpdateDescriptorFromSettings(settings);
