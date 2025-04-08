@@ -52,9 +52,9 @@ public class RuleBenchmark
             [
                 new HomepageCondition
                 {
-                    Value = true
+                    Value = true,
                 }
-            ]
+            ],
         };
     }
 

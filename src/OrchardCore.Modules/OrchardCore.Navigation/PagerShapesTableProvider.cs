@@ -33,7 +33,7 @@ public class PagerShapesTableProvider : ShapeTableProvider
                 if (displaying.Shape.TryGetProperty("PagerId", out string pagerId) && !string.IsNullOrEmpty(pagerId))
                 {
                     displaying.Shape.Metadata.Alternates.Add("Pager__" + pagerId.EncodeAlternateElement());
-                };
+                }
             });
 
         builder.Describe("PagerSlim")
@@ -49,7 +49,7 @@ public class PagerShapesTableProvider : ShapeTableProvider
                 if (displaying.Shape.TryGetProperty("PagerId", out string pagerId) && !string.IsNullOrEmpty(pagerId))
                 {
                     displaying.Shape.Metadata.Alternates.Add("Pager__" + pagerId.EncodeAlternateElement());
-                };
+                }
             });
 
         builder.Describe("Pager_Gap")
@@ -199,7 +199,7 @@ public class PagerShapes : IShapeAttributeProvider
         shape.Metadata.Type = "List";
 
         // first and previous pages
-        if ((Page > 1) && (routeData.ContainsKey(pageKey)))
+        if ((Page > 1) && routeData.ContainsKey(pageKey))
         {
             routeData.Remove(pageKey); // to keep from having "pagenum=1" in the query string
         }
@@ -210,7 +210,7 @@ public class PagerShapes : IShapeAttributeProvider
             Value = firstText,
             RouteValues = new RouteValueDictionary(routeData),
             Pager = shape,
-            Disabled = Page < 2
+            Disabled = Page < 2,
         }));
 
         if (noFollow)
@@ -231,7 +231,7 @@ public class PagerShapes : IShapeAttributeProvider
             Value = previousText,
             RouteValues = new RouteValueDictionary(routeData),
             Pager = shape,
-            Disabled = Page < 2
+            Disabled = Page < 2,
         }));
 
         if (noFollow)
@@ -247,7 +247,7 @@ public class PagerShapes : IShapeAttributeProvider
             await shape.AddAsync(await shapeFactory.CreateAsync("Pager_Gap", Arguments.From(new
             {
                 Value = gapText,
-                Pager = shape
+                Pager = shape,
             })));
         }
 
@@ -272,7 +272,7 @@ public class PagerShapes : IShapeAttributeProvider
                     {
                         Value = p,
                         RouteValues = new RouteValueDictionary(routeData),
-                        Pager = shape
+                        Pager = shape,
                     }));
 
                     if (noFollow)
@@ -288,7 +288,7 @@ public class PagerShapes : IShapeAttributeProvider
                     {
                         Value = p,
                         RouteValues = new RouteValueDictionary(routeData),
-                        Pager = shape
+                        Pager = shape,
                     }));
 
                     if (p > currentPage)
@@ -311,7 +311,7 @@ public class PagerShapes : IShapeAttributeProvider
             await shape.AddAsync(await shapeFactory.CreateAsync("Pager_Gap", Arguments.From(new
             {
                 Value = gapText,
-                Pager = shape
+                Pager = shape,
             })));
         }
 
@@ -322,7 +322,7 @@ public class PagerShapes : IShapeAttributeProvider
             Value = nextText,
             RouteValues = new RouteValueDictionary(routeData),
             Pager = shape,
-            Disabled = Page >= totalPageCount && !ShowNext
+            Disabled = Page >= totalPageCount && !ShowNext,
         }));
 
         if (noFollow)
@@ -339,7 +339,7 @@ public class PagerShapes : IShapeAttributeProvider
             Value = lastText,
             RouteValues = new RouteValueDictionary(routeData),
             Pager = shape,
-            Disabled = Page >= totalPageCount
+            Disabled = Page >= totalPageCount,
         }));
 
         if (noFollow)
@@ -385,7 +385,7 @@ public class PagerShapes : IShapeAttributeProvider
         {
             var beforeRouteData = new RouteValueDictionary(routeData)
             {
-                ["before"] = before
+                ["before"] = before,
             };
 
             beforeRouteData.Remove("after");
@@ -394,7 +394,7 @@ public class PagerShapes : IShapeAttributeProvider
             {
                 Value = previousText,
                 RouteValues = beforeRouteData,
-                Pager = shape
+                Pager = shape,
             }));
 
             if (noFollow)
@@ -414,7 +414,7 @@ public class PagerShapes : IShapeAttributeProvider
         {
             var afterRouteData = new RouteValueDictionary(routeData)
             {
-                ["after"] = after
+                ["after"] = after,
             };
 
             afterRouteData.Remove("before");
@@ -423,7 +423,7 @@ public class PagerShapes : IShapeAttributeProvider
             {
                 Value = nextText,
                 RouteValues = afterRouteData,
-                Pager = shape
+                Pager = shape,
             }));
 
             if (noFollow)

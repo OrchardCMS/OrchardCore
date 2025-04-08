@@ -83,7 +83,7 @@ public enum ContentsStatus
     Published,
     AllVersions,
     Latest,
-    Owner
+    Owner,
 }
 
 public enum ContentsBulkAction
@@ -91,5 +91,5 @@ public enum ContentsBulkAction
     None,
     PublishNow,
     Unpublish,
-    Remove
+    Remove,
 }

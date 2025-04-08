@@ -32,7 +32,7 @@ public class WorkflowTypeIndexProvider : IndexProvider<WorkflowType>
                         WorkflowTypeId = workflowType.WorkflowTypeId,
                         Name = workflowType.Name,
                         IsEnabled = workflowType.IsEnabled,
-                        HasStart = workflowType.Activities.Any(x => x.IsStart)
+                        HasStart = workflowType.Activities.Any(x => x.IsStart),
                     }
             );
 
@@ -45,7 +45,7 @@ public class WorkflowTypeIndexProvider : IndexProvider<WorkflowType>
                         Name = workflowType.Name,
                         IsEnabled = workflowType.IsEnabled,
                         StartActivityId = x.ActivityId,
-                        StartActivityName = x.Name
+                        StartActivityName = x.Name,
                     })
             );
     }

@@ -14,5 +14,5 @@ public enum DocumentIndexOptions
     None = 0,
     Store = 1,
     Sanitize = 2,
-    Keyword = 4
+    Keyword = 4,
 }

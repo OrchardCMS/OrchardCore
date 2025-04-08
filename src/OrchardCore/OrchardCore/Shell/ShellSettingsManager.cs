@@ -74,7 +74,8 @@ public class ShellSettingsManager : IShellSettingsManager, IDisposable
                 };
 
                 allSettings.Add(shellSettings);
-            };
+            }
+            ;
 
             return allSettings;
         }
@@ -144,7 +145,7 @@ public class ShellSettingsManager : IShellSettingsManager, IDisposable
 
             var shellSettings = new ShellSettings()
             {
-                Name = settings.Name
+                Name = settings.Name,
             };
 
             configuration.Bind(shellSettings);

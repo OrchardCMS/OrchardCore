@@ -45,7 +45,7 @@ public class LiquidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeatu
         feature.ViewDescriptors.Add(new CompiledViewDescriptor
         {
             RelativePath = DefaultRazorViewPath,
-            Item = new TenantRazorCompiledItem(typeof(LiquidPage), DefaultLiquidViewPath)
+            Item = new TenantRazorCompiledItem(typeof(LiquidPage), DefaultLiquidViewPath),
         });
 
         foreach (var path in _sharedPaths)
@@ -56,7 +56,7 @@ public class LiquidViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeatu
                 feature.ViewDescriptors.Add(new CompiledViewDescriptor
                 {
                     RelativePath = viewPath,
-                    Item = new TenantRazorCompiledItem(typeof(LiquidPage), viewPath)
+                    Item = new TenantRazorCompiledItem(typeof(LiquidPage), viewPath),
                 });
             }
         }

@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.UrlRewriting.Models;
+namespace OrchardCore.UrlRewriting.Models;
 
 public sealed class SavedRewriteRuleContext : RewriteRuleContextBase
 {

@@ -7,7 +7,7 @@ using OrchardCore.Modules.Manifest;
     Version = ManifestConstants.OrchardCoreVersion,
     Dependencies =
     [
-        "OrchardCore.ContentTypes", 
+        "OrchardCore.ContentTypes",
         "OrchardCore.HomeRoute",
     ],
     Category = "Navigation"

@@ -39,7 +39,7 @@ public sealed class SitemapCacheController : Controller
 
         var model = new ListSitemapCacheViewModel
         {
-            CachedFileNames = (await _sitemapCacheProvider.ListAsync()).ToArray()
+            CachedFileNames = (await _sitemapCacheProvider.ListAsync()).ToArray(),
         };
 
         return View(model);

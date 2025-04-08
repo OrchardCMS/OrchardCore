@@ -50,21 +50,21 @@ public class OpenIdClientService : IOpenIdClientService
         {
             results.Add(new ValidationResult(S["The authority cannot be null or empty."], new[]
             {
-                nameof(settings.Authority)
+                nameof(settings.Authority),
             }));
         }
         else if (!settings.Authority.IsAbsoluteUri || !settings.Authority.IsWellFormedOriginalString())
         {
             results.Add(new ValidationResult(S["The authority must be a valid absolute URL."], new[]
             {
-                nameof(settings.Authority)
+                nameof(settings.Authority),
             }));
         }
         else if (!string.IsNullOrEmpty(settings.Authority.Query) || !string.IsNullOrEmpty(settings.Authority.Fragment))
         {
             results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[]
             {
-                nameof(settings.Authority)
+                nameof(settings.Authority),
             }));
         }
 
@@ -72,7 +72,7 @@ public class OpenIdClientService : IOpenIdClientService
         {
             results.Add(new ValidationResult(S["The response type cannot be null or empty."], new[]
             {
-                nameof(settings.ResponseType)
+                nameof(settings.ResponseType),
             }));
         }
         else if (settings.ResponseType != OpenIdConnectResponseType.Code && settings.ResponseType != OpenIdConnectResponseType.CodeIdToken &&
@@ -81,7 +81,7 @@ public class OpenIdClientService : IOpenIdClientService
         {
             results.Add(new ValidationResult(S["Unknown response type ."], new[]
             {
-                nameof(settings.ResponseType)
+                nameof(settings.ResponseType),
             }));
         }
 
@@ -89,7 +89,7 @@ public class OpenIdClientService : IOpenIdClientService
         {
             results.Add(new ValidationResult(S["The response mode cannot be null or empty."], new[]
             {
-                nameof(settings.ResponseMode)
+                nameof(settings.ResponseMode),
             }));
         }
         else if (settings.ResponseMode != OpenIdConnectResponseMode.FormPost && settings.ResponseMode != OpenIdConnectResponseMode.Fragment &&
@@ -97,7 +97,7 @@ public class OpenIdClientService : IOpenIdClientService
         {
             results.Add(new ValidationResult(S["Unknown response mode."], new[]
             {
-                nameof(settings.ResponseMode)
+                nameof(settings.ResponseMode),
             }));
         }
 

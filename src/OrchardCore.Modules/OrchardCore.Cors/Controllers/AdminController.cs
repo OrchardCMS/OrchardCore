@@ -76,7 +76,7 @@ public sealed class AdminController : Controller
 
         var viewModel = new CorsSettingsViewModel
         {
-            Policies = list.ToArray()
+            Policies = list.ToArray(),
         };
 
         return View(viewModel);
@@ -123,7 +123,7 @@ public sealed class AdminController : Controller
         }
         var corsSettings = new CorsSettings()
         {
-            Policies = corsPolicies
+            Policies = corsPolicies,
         };
 
         await _corsService.UpdateSettingsAsync(corsSettings);

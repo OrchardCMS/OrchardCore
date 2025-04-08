@@ -195,7 +195,7 @@ public class SetupService : ISetupService
         // It is used to initialize the database before the recipe is run.
         var shellDescriptor = new ShellDescriptor
         {
-            Features = context.EnabledFeatures.Select(id => new ShellFeature(id)).ToList()
+            Features = context.EnabledFeatures.Select(id => new ShellFeature(id)).ToList(),
         };
 
         string executionId;

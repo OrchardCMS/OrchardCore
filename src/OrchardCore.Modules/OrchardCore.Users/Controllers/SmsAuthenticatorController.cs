@@ -222,7 +222,7 @@ public sealed class SmsAuthenticatorController : TwoFactorAuthenticationBaseCont
         await DistributedCache.SetAsync(key, data,
             new DistributedCacheEntryOptions()
             {
-                AbsoluteExpirationRelativeToNow = new TimeSpan(0, 10, 0)
+                AbsoluteExpirationRelativeToNow = new TimeSpan(0, 10, 0),
             });
     }
 

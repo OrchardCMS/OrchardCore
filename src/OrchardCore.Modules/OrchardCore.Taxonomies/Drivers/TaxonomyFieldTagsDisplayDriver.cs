@@ -64,7 +64,7 @@ public sealed class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<T
                     ContentItemId = te.ContentItemId,
                     Selected = te.Selected,
                     DisplayText = te.Term.DisplayText,
-                    IsLeaf = te.IsLeaf
+                    IsLeaf = te.IsLeaf,
                 });
 
                 model.TagTermEntries = JNode.FromObject(tagTermEntries, JOptions.CamelCase).ToJsonString(JOptions.Default);

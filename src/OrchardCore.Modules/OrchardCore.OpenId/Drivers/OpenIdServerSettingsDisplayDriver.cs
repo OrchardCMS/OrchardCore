@@ -83,7 +83,7 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
                     NotAfter = certificate.NotAfter,
                     ThumbPrint = certificate.Thumbprint,
                     HasPrivateKey = certificate.HasPrivateKey,
-                    Archived = certificate.Archived
+                    Archived = certificate.Archived,
                 });
             }
         }).Location("Content:2");

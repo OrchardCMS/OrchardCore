@@ -40,20 +40,20 @@ public class OpenIdApplicationIndexProvider : IndexProvider<OpenIdApplication>
             .Map(application => new OpenIdApplicationIndex
             {
                 ApplicationId = application.ApplicationId,
-                ClientId = application.ClientId
+                ClientId = application.ClientId,
             });
 
         context.For<OpenIdAppByLogoutUriIndex, string>()
             .Map(application => application.PostLogoutRedirectUris.Select(uri => new OpenIdAppByLogoutUriIndex
             {
                 LogoutRedirectUri = uri,
-                Count = 1
+                Count = 1,
             }))
             .Group(index => index.LogoutRedirectUri)
             .Reduce(group => new OpenIdAppByLogoutUriIndex
             {
                 LogoutRedirectUri = group.Key,
-                Count = group.Sum(x => x.Count)
+                Count = group.Sum(x => x.Count),
             })
             .Delete((index, map) =>
             {
@@ -65,13 +65,13 @@ public class OpenIdApplicationIndexProvider : IndexProvider<OpenIdApplication>
             .Map(application => application.RedirectUris.Select(uri => new OpenIdAppByRedirectUriIndex
             {
                 RedirectUri = uri,
-                Count = 1
+                Count = 1,
             }))
             .Group(index => index.RedirectUri)
             .Reduce(group => new OpenIdAppByRedirectUriIndex
             {
                 RedirectUri = group.Key,
-                Count = group.Sum(x => x.Count)
+                Count = group.Sum(x => x.Count),
             })
             .Delete((index, map) =>
             {
@@ -83,13 +83,13 @@ public class OpenIdApplicationIndexProvider : IndexProvider<OpenIdApplication>
             .Map(application => application.Roles.Select(role => new OpenIdAppByRoleNameIndex
             {
                 RoleName = role,
-                Count = 1
+                Count = 1,
             }))
             .Group(index => index.RoleName)
             .Reduce(group => new OpenIdAppByRoleNameIndex
             {
                 RoleName = group.Key,
-                Count = group.Sum(x => x.Count)
+                Count = group.Sum(x => x.Count),
             })
             .Delete((index, map) =>
             {

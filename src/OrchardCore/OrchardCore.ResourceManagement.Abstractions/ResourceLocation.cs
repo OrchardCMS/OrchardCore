@@ -5,5 +5,5 @@ public enum ResourceLocation
     Unspecified,
     Foot,
     Head,
-    Inline
+    Inline,
 }

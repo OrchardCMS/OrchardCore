@@ -56,7 +56,7 @@ public class GoogleAuthenticationService : IGoogleAuthenticationService
         {
             results.Add(new ValidationResult(S["The Client ID is required."], new[]
             {
-                nameof(settings.ClientID)
+                nameof(settings.ClientID),
             }));
         }
 
@@ -64,7 +64,7 @@ public class GoogleAuthenticationService : IGoogleAuthenticationService
         {
             results.Add(new ValidationResult(S["The Client Secret is required."], new[]
             {
-                nameof(settings.ClientSecret)
+                nameof(settings.ClientSecret),
             }));
         }
 

@@ -49,7 +49,7 @@ public sealed class PreviewPartSettingsDisplayDriver : ContentTypePartDefinition
         {
             context.Builder.WithSettings(new PreviewPartSettings
             {
-                Pattern = model.Pattern
+                Pattern = model.Pattern,
             });
         }
 

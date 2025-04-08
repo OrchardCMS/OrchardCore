@@ -28,7 +28,7 @@ public static class ServiceCollectionExtensions
                         attempt.RetryDelay.Add(TimeSpan.FromSeconds(0.5 * attempt.AttemptNumber));
 
                         return ValueTask.CompletedTask;
-                    }
+                    },
                 })
             );
 

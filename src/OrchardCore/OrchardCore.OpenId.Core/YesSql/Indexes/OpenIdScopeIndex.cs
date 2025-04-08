@@ -28,20 +28,20 @@ public class OpenIdScopeIndexProvider : IndexProvider<OpenIdScope>
             .Map(scope => new OpenIdScopeIndex
             {
                 Name = scope.Name,
-                ScopeId = scope.ScopeId
+                ScopeId = scope.ScopeId,
             });
 
         context.For<OpenIdScopeByResourceIndex, string>()
             .Map(scope => scope.Resources.Select(resource => new OpenIdScopeByResourceIndex
             {
                 Resource = resource,
-                Count = 1
+                Count = 1,
             }))
             .Group(index => index.Resource)
             .Reduce(group => new OpenIdScopeByResourceIndex
             {
                 Resource = group.Key,
-                Count = group.Sum(x => x.Count)
+                Count = group.Sum(x => x.Count),
             })
             .Delete((index, map) =>
             {

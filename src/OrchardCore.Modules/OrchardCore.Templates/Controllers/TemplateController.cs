@@ -104,7 +104,7 @@ public sealed class TemplateController : Controller
         {
             Templates = templates.Select(x => new TemplateEntry { Name = x.Key, Template = x.Value }).ToList(),
             Options = options,
-            Pager = pagerShape
+            Pager = pagerShape,
         };
 
         model.Options.ContentsBulkAction =
@@ -122,7 +122,7 @@ public sealed class TemplateController : Controller
     public ActionResult IndexFilterPOST(TemplateIndexViewModel model)
         => RedirectToAction(nameof(Index), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     public async Task<IActionResult> Create(string name = null, bool adminTemplates = false, string returnUrl = null)
@@ -140,7 +140,7 @@ public sealed class TemplateController : Controller
         var model = new TemplateViewModel
         {
             AdminTemplates = adminTemplates,
-            Name = name
+            Name = name,
         };
 
         ViewData["ReturnUrl"] = returnUrl;
@@ -219,7 +219,7 @@ public sealed class TemplateController : Controller
             AdminTemplates = adminTemplates,
             Name = name,
             Content = template.Content,
-            Description = template.Description
+            Description = template.Description,
         };
 
         ViewData["ReturnUrl"] = returnUrl;

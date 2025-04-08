@@ -35,7 +35,7 @@ public class CommandParametersParser : ICommandParametersParser
         return new CommandParameters
         {
             Arguments = arguments,
-            Switches = switches
+            Switches = switches,
         };
     }
 }

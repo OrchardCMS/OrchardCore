@@ -33,7 +33,7 @@ public class ContentItemSerializer : IWorkflowValueSerializer
             context.Output = JObject.FromObject(new
             {
                 Type = "Content",
-                ContentId = content.ContentItem.ContentItemId
+                ContentId = content.ContentItem.ContentItemId,
             });
         }
 

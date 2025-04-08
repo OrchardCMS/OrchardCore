@@ -85,7 +85,7 @@ public sealed class TaxonomyContentsAdminListDisplayDriver : DisplayDriver<Conte
                             {
                                 Text = S["Show all"],
                                 Value = "Taxonomy:" + taxonomy.ContentItemId,
-                            }
+                            },
                         };
 
                     foreach (var term in termEntries)
@@ -154,7 +154,7 @@ public sealed class TaxonomyContentsAdminListDisplayDriver : DisplayDriver<Conte
             {
                 DisplayText = contentItem.DisplayText,
                 ContentItemId = contentItem.ContentItemId,
-                Level = level
+                Level = level,
             };
 
             termEntries.Add(termEntry);

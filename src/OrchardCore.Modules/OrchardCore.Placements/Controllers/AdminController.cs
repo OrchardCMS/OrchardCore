@@ -69,7 +69,7 @@ public sealed class AdminController : Controller
 
         var shapeList = shapeTypes.Select(entry => new ShapePlacementViewModel
         {
-            ShapeType = entry.Key
+            ShapeType = entry.Key,
         }).ToList();
 
         if (!string.IsNullOrWhiteSpace(options.Search))
@@ -113,7 +113,7 @@ public sealed class AdminController : Controller
     public ActionResult IndexFilterPOST(ListShapePlacementsViewModel model)
         => RedirectToAction(nameof(Index), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     public async Task<IActionResult> Create(string suggestion, string returnUrl = null)
@@ -129,7 +129,7 @@ public sealed class AdminController : Controller
         {
             Creating = true,
             ShapeType = suggestion,
-            Nodes = JConvert.SerializeObject(template, JOptions.Indented)
+            Nodes = JConvert.SerializeObject(template, JOptions.Indented),
         };
 
         ViewData["ReturnUrl"] = returnUrl;
@@ -150,7 +150,7 @@ public sealed class AdminController : Controller
             var generatedNode = new PlacementNode
             {
                 DisplayType = displayType,
-                Differentiator = differentiator
+                Differentiator = differentiator,
             };
 
             if (!string.IsNullOrEmpty(contentType))
@@ -169,7 +169,7 @@ public sealed class AdminController : Controller
         var viewModel = new EditShapePlacementViewModel
         {
             ShapeType = shapeType,
-            Nodes = JConvert.SerializeObject(placementNodes, JOptions.Indented)
+            Nodes = JConvert.SerializeObject(placementNodes, JOptions.Indented),
         };
 
         ViewData["ReturnUrl"] = returnUrl;

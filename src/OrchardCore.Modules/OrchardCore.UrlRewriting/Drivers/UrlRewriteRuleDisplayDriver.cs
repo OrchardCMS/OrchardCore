@@ -83,7 +83,7 @@ public sealed class UrlRewriteRuleDisplayDriver : DisplayDriver<RewriteRule>
             SubstitutionPattern = model.SubstitutionPattern,
             IsCaseInsensitive = model.IsCaseInsensitive,
             QueryStringPolicy = model.QueryStringPolicy,
-            SkipFurtherRules = model.SkipFurtherRules
+            SkipFurtherRules = model.SkipFurtherRules,
         });
 
         return Edit(rule, context);

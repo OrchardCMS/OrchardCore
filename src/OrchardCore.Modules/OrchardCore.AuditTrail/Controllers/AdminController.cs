@@ -60,7 +60,7 @@ public sealed class AdminController : Controller
 
         var options = new AuditTrailIndexOptions
         {
-            FilterResult = queryFilterResult
+            FilterResult = queryFilterResult,
         };
 
         // This is used by Contents feature for routing so needs to be passed into the options.

@@ -111,7 +111,7 @@ public class OpenIdServerService : IOpenIdServerService
             {
                 results.Add(new ValidationResult(S["The authority must be a valid absolute URL."], new[]
                 {
-                    nameof(settings.Authority)
+                    nameof(settings.Authority),
                 }));
             }
 
@@ -119,7 +119,7 @@ public class OpenIdServerService : IOpenIdServerService
             {
                 results.Add(new ValidationResult(S["The authority cannot contain a query string or a fragment."], new[]
                 {
-                    nameof(settings.Authority)
+                    nameof(settings.Authority),
                 }));
             }
         }
@@ -136,28 +136,28 @@ public class OpenIdServerService : IOpenIdServerService
             {
                 results.Add(new ValidationResult(S["The certificate cannot be found."], new[]
                 {
-                    nameof(settings.SigningCertificateThumbprint)
+                    nameof(settings.SigningCertificateThumbprint),
                 }));
             }
             else if (!certificate.HasPrivateKey)
             {
                 results.Add(new ValidationResult(S["The certificate doesn't contain the required private key."], new[]
                 {
-                    nameof(settings.SigningCertificateThumbprint)
+                    nameof(settings.SigningCertificateThumbprint),
                 }));
             }
             else if (certificate.Archived)
             {
                 results.Add(new ValidationResult(S["The certificate is not valid because it is marked as archived."], new[]
                 {
-                    nameof(settings.SigningCertificateThumbprint)
+                    nameof(settings.SigningCertificateThumbprint),
                 }));
             }
             else if (certificate.NotBefore > DateTime.Now || certificate.NotAfter < DateTime.Now)
             {
                 results.Add(new ValidationResult(S["The certificate is not valid for current date."], new[]
                 {
-                    nameof(settings.SigningCertificateThumbprint)
+                    nameof(settings.SigningCertificateThumbprint),
                 }));
             }
         }
@@ -166,7 +166,7 @@ public class OpenIdServerService : IOpenIdServerService
         {
             results.Add(new ValidationResult(S["The password flow cannot be enabled when the token endpoint is disabled."], new[]
             {
-                nameof(settings.AllowPasswordFlow)
+                nameof(settings.AllowPasswordFlow),
             }));
         }
 
@@ -174,7 +174,7 @@ public class OpenIdServerService : IOpenIdServerService
         {
             results.Add(new ValidationResult(S["The client credentials flow cannot be enabled when the token endpoint is disabled."], new[]
             {
-                nameof(settings.AllowClientCredentialsFlow)
+                nameof(settings.AllowClientCredentialsFlow),
             }));
         }
 
@@ -182,7 +182,7 @@ public class OpenIdServerService : IOpenIdServerService
         {
             results.Add(new ValidationResult(S["The authorization code flow cannot be enabled when the authorization and token endpoints are disabled."], new[]
             {
-                nameof(settings.AllowAuthorizationCodeFlow)
+                nameof(settings.AllowAuthorizationCodeFlow),
             }));
         }
 
@@ -192,7 +192,7 @@ public class OpenIdServerService : IOpenIdServerService
             {
                 results.Add(new ValidationResult(S["The refresh token flow cannot be enabled when the token endpoint is disabled."], new[]
                 {
-                    nameof(settings.AllowRefreshTokenFlow)
+                    nameof(settings.AllowRefreshTokenFlow),
                 }));
             }
 
@@ -200,7 +200,7 @@ public class OpenIdServerService : IOpenIdServerService
             {
                 results.Add(new ValidationResult(S["The refresh token flow can only be enabled if the password, authorization code or hybrid flows are enabled."], new[]
                 {
-                    nameof(settings.AllowRefreshTokenFlow)
+                    nameof(settings.AllowRefreshTokenFlow),
                 }));
             }
         }
@@ -209,7 +209,7 @@ public class OpenIdServerService : IOpenIdServerService
         {
             results.Add(new ValidationResult(S["The implicit flow cannot be enabled when the authorization endpoint is disabled."], new[]
             {
-                nameof(settings.AllowImplicitFlow)
+                nameof(settings.AllowImplicitFlow),
             }));
         }
 
@@ -217,7 +217,7 @@ public class OpenIdServerService : IOpenIdServerService
         {
             results.Add(new ValidationResult(S["The hybrid flow cannot be enabled when the authorization and token endpoints are disabled."], new[]
             {
-                nameof(settings.AllowHybridFlow)
+                nameof(settings.AllowHybridFlow),
             }));
         }
 
@@ -225,7 +225,7 @@ public class OpenIdServerService : IOpenIdServerService
         {
             results.Add(new ValidationResult(S["Access token encryption can only be disabled when using JWT tokens."], new[]
             {
-                nameof(settings.DisableAccessTokenEncryption)
+                nameof(settings.DisableAccessTokenEncryption),
             }));
         }
 
@@ -233,7 +233,7 @@ public class OpenIdServerService : IOpenIdServerService
         {
             results.Add(new ValidationResult(S["The pushed authorization endpoint can only be enabled when the authorization endpoint is enabled."], new[]
             {
-                nameof(settings.PushedAuthorizationEndpointPath)
+                nameof(settings.PushedAuthorizationEndpointPath),
             }));
         }
 
@@ -241,7 +241,7 @@ public class OpenIdServerService : IOpenIdServerService
         {
             results.Add(new ValidationResult(S["The pushed authorization endpoint must be enabled when enforcing pushed authorization requests."], new[]
             {
-                nameof(settings.RequirePushedAuthorizationRequests)
+                nameof(settings.RequirePushedAuthorizationRequests),
             }));
         }
 
@@ -638,7 +638,7 @@ public class OpenIdServerService : IOpenIdServerService
             {
                 ExportPolicy = CngExportPolicies.AllowPlaintextExport,
                 KeyCreationOptions = CngKeyCreationOptions.MachineKey,
-                Parameters = { new CngProperty("Length", BitConverter.GetBytes(size), CngPropertyOptions.None) }
+                Parameters = { new CngProperty("Length", BitConverter.GetBytes(size), CngPropertyOptions.None) },
             });
 
             return new RSACng(key);

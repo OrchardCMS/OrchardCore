@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using System.Text.Json.Settings;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.CompiledQueries;
@@ -11,7 +10,6 @@ using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 using YesSql;
 using YesSql.Services;
@@ -407,7 +405,7 @@ public class DefaultContentManager : IContentManager
                     _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Publishing {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
                 }
             }
-            
+
             return false;
         }
 
@@ -479,9 +477,9 @@ public class DefaultContentManager : IContentManager
                     _updateModelAccessor.ModelUpdater.ModelState.AddModelError("", S["Unpublishing {0} '{1}' was cancelled.", typeDefinition.DisplayName, contentItem.DisplayText]);
                 }
             }
-            
+
             return false;
-         }
+        }
 
         publishedItem.Published = false;
         publishedItem.ModifiedUtc = _clock.UtcNow;
@@ -865,7 +863,7 @@ public class DefaultContentManager : IContentManager
         var context = new ContentItemAspectContext
         {
             ContentItem = content.ContentItem,
-            Aspect = aspect
+            Aspect = aspect,
         };
 
         await Handlers.InvokeAsync((handler, context) => handler.GetContentItemAspectAsync(context), context, _logger);

@@ -49,7 +49,7 @@ public sealed class DownloadController : Controller
         var model = new DisplayJsonContentItemViewModel
         {
             ContentItem = contentItem,
-            ContentItemJson = JObject.FromObject(contentItem).ToString()
+            ContentItemJson = JObject.FromObject(contentItem).ToString(),
         };
 
         return View(model);

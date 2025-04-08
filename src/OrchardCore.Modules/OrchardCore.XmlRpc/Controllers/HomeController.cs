@@ -43,7 +43,7 @@ public sealed class HomeController : Controller
         {
             Encoding = Encoding.UTF8,
             OmitXmlDeclaration = false,
-            Indent = true
+            Indent = true,
         };
 
         // Save to an intermediate MemoryStream to preserve the encoding declaration.
@@ -66,7 +66,7 @@ public sealed class HomeController : Controller
             Url = Url,
             ControllerContext = ControllerContext,
             HttpContext = HttpContext,
-            RpcMethodCall = request
+            RpcMethodCall = request,
         };
 
         try

@@ -34,7 +34,7 @@ public class AwsFileStore : IFileStore
             var objectMetadata = await _amazonS3Client.GetObjectMetadataAsync(new GetObjectMetadataRequest
             {
                 BucketName = _options.BucketName,
-                Key = this.Combine(_basePrefix, path)
+                Key = this.Combine(_basePrefix, path),
             });
 
             return new AwsFile(path, objectMetadata.ContentLength, objectMetadata.LastModified);
@@ -58,7 +58,7 @@ public class AwsFileStore : IFileStore
             BucketName = _options.BucketName,
             Prefix = NormalizePrefix(this.Combine(_basePrefix, path)),
             MaxKeys = 1,
-            FetchOwner = false
+            FetchOwner = false,
         });
 
         return awsDirectory.S3Objects.Count > 0 ? new AwsDirectory(path, _clock.UtcNow) : null;
@@ -110,7 +110,7 @@ public class AwsFileStore : IFileStore
             var response = await _amazonS3Client.PutObjectAsync(new PutObjectRequest
             {
                 BucketName = _options.BucketName,
-                Key = NormalizePrefix(this.Combine(_basePrefix, path))
+                Key = NormalizePrefix(this.Combine(_basePrefix, path)),
             });
 
             return response.IsSuccessful();
@@ -128,7 +128,7 @@ public class AwsFileStore : IFileStore
             var response = await _amazonS3Client.DeleteObjectAsync(new DeleteObjectRequest
             {
                 BucketName = _options.BucketName,
-                Key = this.Combine(_basePrefix, path)
+                Key = this.Combine(_basePrefix, path),
             });
 
             return response.IsDeleteSuccessful();
@@ -149,7 +149,7 @@ public class AwsFileStore : IFileStore
         var listObjectsResponse = await _amazonS3Client.ListObjectsV2Async(new ListObjectsV2Request
         {
             BucketName = _options.BucketName,
-            Prefix = NormalizePrefix(this.Combine(_basePrefix, path))
+            Prefix = NormalizePrefix(this.Combine(_basePrefix, path)),
         });
 
         if (listObjectsResponse.S3Objects.Count > 0)
@@ -158,7 +158,7 @@ public class AwsFileStore : IFileStore
             {
                 BucketName = _options.BucketName,
                 Objects = listObjectsResponse.S3Objects
-                    .Select(metadata => new KeyVersion { Key = metadata.Key }).ToList()
+                    .Select(metadata => new KeyVersion { Key = metadata.Key }).ToList(),
             };
 
             var response = await _amazonS3Client.DeleteObjectsAsync(deleteObjectsRequest);
@@ -186,7 +186,7 @@ public class AwsFileStore : IFileStore
             await _amazonS3Client.GetObjectMetadataAsync(new GetObjectMetadataRequest
             {
                 BucketName = _options.BucketName,
-                Key = this.Combine(_basePrefix, srcPath)
+                Key = this.Combine(_basePrefix, srcPath),
             });
         }
         catch (AmazonS3Exception)
@@ -199,7 +199,7 @@ public class AwsFileStore : IFileStore
             var listObjects = await _amazonS3Client.ListObjectsV2Async(new ListObjectsV2Request
             {
                 BucketName = _options.BucketName,
-                Prefix = this.Combine(_basePrefix, dstPath)
+                Prefix = this.Combine(_basePrefix, dstPath),
             });
 
             if (listObjects.S3Objects.Count > 0)
@@ -212,7 +212,7 @@ public class AwsFileStore : IFileStore
                 SourceBucket = _options.BucketName,
                 SourceKey = this.Combine(_basePrefix, srcPath),
                 DestinationBucket = _options.BucketName,
-                DestinationKey = this.Combine(_basePrefix, dstPath)
+                DestinationKey = this.Combine(_basePrefix, dstPath),
             });
 
             if (!copyObjectResponse.IsSuccessful())
@@ -254,7 +254,7 @@ public class AwsFileStore : IFileStore
                 var listObjects = await _amazonS3Client.ListObjectsV2Async(new ListObjectsV2Request
                 {
                     BucketName = _options.BucketName,
-                    Prefix = this.Combine(_basePrefix, path)
+                    Prefix = this.Combine(_basePrefix, path),
                 });
 
                 if (listObjects.S3Objects.Count > 0)
@@ -267,7 +267,7 @@ public class AwsFileStore : IFileStore
             {
                 BucketName = _options.BucketName,
                 Key = this.Combine(_basePrefix, path),
-                InputStream = inputStream
+                InputStream = inputStream,
             });
 
             if (!response.IsSuccessful())

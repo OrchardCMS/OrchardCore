@@ -67,7 +67,7 @@ public class JsonSerializerTests
                 LoginInfos =
                 [
                     loginInfo
-                ]
+                ],
             };
 
             var session = scope.ServiceProvider.GetRequiredService<YesSql.ISession>();

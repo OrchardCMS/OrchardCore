@@ -685,7 +685,7 @@ public class UserStore :
             userToken = new UserToken
             {
                 LoginProvider = loginProvider,
-                Name = name
+                Name = name,
             };
 
             u.UserTokens.Add(userToken);

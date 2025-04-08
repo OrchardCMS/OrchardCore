@@ -4,5 +4,5 @@ public enum ResourcePosition
 {
     ByDependency,
     First,
-    Last
+    Last,
 }

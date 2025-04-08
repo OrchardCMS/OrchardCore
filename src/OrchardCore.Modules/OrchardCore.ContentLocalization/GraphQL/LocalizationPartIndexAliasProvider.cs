@@ -11,7 +11,7 @@ public class LocalizationPartIndexAliasProvider : IIndexAliasProvider
         {
             Alias = "localizationPart",
             Index = nameof(LocalizedContentItemIndex),
-            IndexType = typeof(LocalizedContentItemIndex)
+            IndexType = typeof(LocalizedContentItemIndex),
         }
     ];
 

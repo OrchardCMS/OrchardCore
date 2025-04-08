@@ -313,7 +313,7 @@ public class ViewMediaFolderAuthorizationHandlerTests
         mockMediaOptions.Setup(o => o.Value).Returns(new MediaOptions
         {
             AssetsUsersFolder = UsersFolder,
-            AllowedFileExtensions = [".png"]
+            AllowedFileExtensions = [".png"],
         });
 
         var mockUserAssetFolderNameProvider = new Mock<IUserAssetFolderNameProvider>();

@@ -91,7 +91,7 @@ public class MenuShapes : ShapeTableProvider
                     {
                         ContentItem = contentItem,
                         Level = 0,
-                        Menu = menu
+                        Menu = menu,
                     }));
 
                     shape.Metadata.Differentiator = differentiator;
@@ -132,7 +132,7 @@ public class MenuShapes : ShapeTableProvider
                         {
                             ContentItem = contentItem,
                             Level = level + 1,
-                            Menu = menu
+                            Menu = menu,
                         }));
 
                         shape.Metadata.Differentiator = differentiator;

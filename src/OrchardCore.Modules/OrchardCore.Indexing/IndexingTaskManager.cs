@@ -62,7 +62,7 @@ public class IndexingTaskManager : IIndexingTaskManager
         {
             CreatedUtc = _clock.UtcNow,
             ContentItemId = contentItem.ContentItemId,
-            Type = type
+            Type = type,
         };
 
         if (_tasksQueue.Count == 0)

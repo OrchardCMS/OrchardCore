@@ -98,7 +98,7 @@ public class OpenIdValidationService : IOpenIdValidationService
             {
                 results.Add(new ValidationResult(S["The specified authority is not valid."], new[]
                 {
-                    nameof(settings.Authority)
+                    nameof(settings.Authority),
                 }));
             }
 

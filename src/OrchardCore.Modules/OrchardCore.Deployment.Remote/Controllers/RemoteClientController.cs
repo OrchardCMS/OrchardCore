@@ -88,7 +88,7 @@ public sealed class RemoteClientController : Controller
         {
             RemoteClients = remoteClients,
             Pager = pagerShape,
-            Options = options
+            Options = options,
         };
 
         model.Options.ContentsBulkAction =
@@ -104,7 +104,7 @@ public sealed class RemoteClientController : Controller
     public ActionResult IndexFilterPOST(RemoteClientIndexViewModel model)
         => RedirectToAction(nameof(Index), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     public async Task<IActionResult> Create()

@@ -5,5 +5,5 @@ public enum CacheMode
     FromConfiguration,
     Enabled,
     DebugEnabled,
-    Disabled
+    Disabled,
 }

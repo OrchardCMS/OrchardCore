@@ -59,7 +59,7 @@ public static class ShellPipelineExtensions
 
         var shellPipeline = new ShellRequestPipeline
         {
-            Next = builder.Build()
+            Next = builder.Build(),
         };
 
         return shellPipeline;

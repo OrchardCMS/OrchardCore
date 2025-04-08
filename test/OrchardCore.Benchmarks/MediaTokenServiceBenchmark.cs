@@ -35,7 +35,7 @@ public class MediaTokenServiceBenchmark
             new BackgroundColorWebProcessor(),
             new QualityWebProcessor(),
             new ImageVersionProcessor(),
-            new TokenCommandProcessor()
+            new TokenCommandProcessor(),
         };
 
         _mediaTokenService = new MediaTokenService(memoryCache, options, processors);

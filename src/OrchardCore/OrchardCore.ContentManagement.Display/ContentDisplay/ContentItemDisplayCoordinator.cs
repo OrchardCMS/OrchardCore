@@ -201,7 +201,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
         var partsShape = await context.ShapeFactory.CreateAsync("ContentZone",
             Arguments.From(new
             {
-                Identifier = contentItem.ContentItemId
+                Identifier = contentItem.ContentItemId,
             }));
 
         contentShape.Zones["Parts"] = partsShape;
@@ -292,7 +292,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
         var partsShape = await context.ShapeFactory.CreateAsync("ContentZone",
             Arguments.From(new
             {
-                Identifier = contentItem.ContentItemId
+                Identifier = contentItem.ContentItemId,
             }));
 
         contentShape.Zones["Parts"] = partsShape;

@@ -20,7 +20,7 @@ public abstract class AccountBaseController : Controller
                 ["UserName"] = user.UserName,
                 ["ExternalClaims"] = info?.Principal?.GetSerializableClaims() ?? [],
                 ["Roles"] = u.RoleNames,
-                ["Provider"] = info?.LoginProvider
+                ["Provider"] = info?.LoginProvider,
             };
 
             await workflowManager.TriggerEventAsync(

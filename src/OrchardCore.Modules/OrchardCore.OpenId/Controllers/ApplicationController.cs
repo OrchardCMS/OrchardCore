@@ -75,7 +75,7 @@ public sealed class ApplicationController : Controller
             applications.Add(new OpenIdApplicationEntry
             {
                 DisplayName = await _applicationManager.GetDisplayNameAsync(application),
-                Id = await _applicationManager.GetPhysicalIdAsync(application)
+                Id = await _applicationManager.GetPhysicalIdAsync(application),
             });
         }
 
@@ -107,7 +107,7 @@ public sealed class ApplicationController : Controller
             {
                 model.RoleEntries.Add(new CreateOpenIdApplicationViewModel.RoleEntry
                 {
-                    Name = role
+                    Name = role,
                 });
             }
         }
@@ -120,7 +120,7 @@ public sealed class ApplicationController : Controller
         {
             model.ScopeEntries.Add(new CreateOpenIdApplicationViewModel.ScopeEntry
             {
-                Name = await _scopeManager.GetNameAsync(scope)
+                Name = await _scopeManager.GetNameAsync(scope),
             });
         }
 
@@ -258,7 +258,7 @@ public sealed class ApplicationController : Controller
                 model.RoleEntries.Add(new EditOpenIdApplicationViewModel.RoleEntry
                 {
                     Name = role,
-                    Selected = roles.Contains(role, StringComparer.OrdinalIgnoreCase)
+                    Selected = roles.Contains(role, StringComparer.OrdinalIgnoreCase),
                 });
             }
         }
@@ -274,7 +274,7 @@ public sealed class ApplicationController : Controller
             model.ScopeEntries.Add(new EditOpenIdApplicationViewModel.ScopeEntry
             {
                 Name = scopeName,
-                Selected = await _applicationManager.HasPermissionAsync(application, OpenIddictConstants.Permissions.Prefixes.Scope + scopeName)
+                Selected = await _applicationManager.HasPermissionAsync(application, OpenIddictConstants.Permissions.Prefixes.Scope + scopeName),
             });
         }
 

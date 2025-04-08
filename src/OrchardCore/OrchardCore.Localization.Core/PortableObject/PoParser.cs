@@ -16,7 +16,7 @@ public class PoParser
         {
             { 'n', '\n' },
             { 'r', '\r' },
-            { 't', '\t' }
+            { 't', '\t' },
         }.ToFrozenDictionary();
     }
 
@@ -220,6 +220,6 @@ public class PoParser
         MessageContext,
         Translation,
         Text,
-        Other
+        Other,
     }
 }

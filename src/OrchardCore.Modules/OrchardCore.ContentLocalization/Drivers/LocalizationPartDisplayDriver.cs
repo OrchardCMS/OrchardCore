@@ -90,7 +90,7 @@ public sealed class LocalizationPartDisplayDriver : ContentPartDisplayDriver<Loc
             {
                 IsDeleted = true,
                 Culture = CultureInfo.GetCultureInfo(culture),
-                ContentItemId = ci?.ContentItemId
+                ContentItemId = ci?.ContentItemId,
             };
         }).OfType<LocalizationLinksViewModel>().ToList();
 

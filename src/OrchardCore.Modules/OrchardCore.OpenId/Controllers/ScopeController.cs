@@ -64,7 +64,7 @@ public sealed class ScopeController : Controller
                 Description = await _scopeManager.GetDescriptionAsync(scope),
                 DisplayName = await _scopeManager.GetDisplayNameAsync(scope),
                 Id = await _scopeManager.GetPhysicalIdAsync(scope),
-                Name = await _scopeManager.GetNameAsync(scope)
+                Name = await _scopeManager.GetNameAsync(scope),
             });
         }
 
@@ -110,7 +110,7 @@ public sealed class ScopeController : Controller
         {
             Description = model.Description,
             DisplayName = model.DisplayName,
-            Name = model.Name
+            Name = model.Name,
         };
 
         if (!string.IsNullOrEmpty(model.Resources))
@@ -156,7 +156,7 @@ public sealed class ScopeController : Controller
             Description = await _scopeManager.GetDescriptionAsync(scope),
             DisplayName = await _scopeManager.GetDisplayNameAsync(scope),
             Id = await _scopeManager.GetPhysicalIdAsync(scope),
-            Name = await _scopeManager.GetNameAsync(scope)
+            Name = await _scopeManager.GetNameAsync(scope),
         };
 
         var resources = (await _scopeManager.GetResourcesAsync(scope))

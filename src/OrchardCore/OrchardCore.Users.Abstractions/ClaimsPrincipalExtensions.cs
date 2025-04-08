@@ -22,7 +22,7 @@ public static class ClaimsPrincipalExtensions
             Properties = c.Properties.ToArray(),
             Type = c.Type,
             Value = c.Value,
-            ValueType = c.ValueType
+            ValueType = c.ValueType,
         });
     }
 }

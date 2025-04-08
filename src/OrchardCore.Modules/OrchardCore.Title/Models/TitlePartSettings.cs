@@ -7,7 +7,7 @@ public enum TitlePartOptions
     Editable,
     GeneratedDisabled,
     GeneratedHidden,
-    EditableRequired
+    EditableRequired,
 }
 
 public class TitlePartSettings

@@ -60,7 +60,7 @@ public class HtmlBodyPartHandler : ContentPartHandler<HtmlBodyPart>
                     new Context
                     {
                         ["ContentItem"] = part.ContentItem,
-                        ["TypePartDefinition"] = contentTypePartDefinition
+                        ["TypePartDefinition"] = contentTypePartDefinition,
                     });
 
                 bodyAspect.Body = new HtmlString(html);

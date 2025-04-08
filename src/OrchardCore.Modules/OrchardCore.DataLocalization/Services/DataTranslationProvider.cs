@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Localization.Data;
 using OrchardCore.Localization;
+using OrchardCore.Localization.Data;
 
 namespace OrchardCore.DataLocalization.Services;
 

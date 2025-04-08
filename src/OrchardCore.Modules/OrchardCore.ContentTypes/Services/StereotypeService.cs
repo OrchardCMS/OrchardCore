@@ -39,7 +39,7 @@ public class StereotypeService : IStereotypeService
             providerStereotypes.Add(new StereotypeDescription
             {
                 Stereotype = stereotype,
-                DisplayName = stereotype
+                DisplayName = stereotype,
             });
         }
 

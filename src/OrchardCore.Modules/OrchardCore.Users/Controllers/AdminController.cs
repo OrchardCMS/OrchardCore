@@ -92,7 +92,7 @@ public sealed class AdminController : Controller
 
         var options = new UserIndexOptions
         {
-            FilterResult = queryFilterResult
+            FilterResult = queryFilterResult,
         };
 
         options.FilterResult.MapTo(options);
@@ -174,7 +174,7 @@ public sealed class AdminController : Controller
                 {
                     Text = roleName,
                     Value = roleName.Contains(' ') ? $"\"{roleName}\"" : roleName,
-                    Selected = string.Equals(options.SelectedRole?.Trim('"'), roleName, StringComparison.OrdinalIgnoreCase)
+                    Selected = string.Equals(options.SelectedRole?.Trim('"'), roleName, StringComparison.OrdinalIgnoreCase),
                 }),
         ];
 

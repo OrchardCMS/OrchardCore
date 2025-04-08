@@ -178,7 +178,7 @@ public class GroupShapes : IShapeAttributeProvider
         var localNavigation = await shapeFactory.CreateAsync("LocalNavigation", Arguments.From(new
         {
             shape.Identifier,
-            Tabs = shape.Groupings
+            Tabs = shape.Groupings,
         }));
 
         var htmlContentBuilder = new HtmlContentBuilder();

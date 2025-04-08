@@ -48,7 +48,7 @@ public class UserEventHandler : UserEventHandlerBase, ILoginFormEvent
                 new AuditTrailUserEvent
                 {
                     UserId = string.Empty,
-                    UserName = userName
+                    UserName = userName,
                 }
             );
 

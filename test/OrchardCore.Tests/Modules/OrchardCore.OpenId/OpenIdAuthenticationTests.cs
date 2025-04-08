@@ -282,7 +282,7 @@ public class OpenIdAuthenticationTests
             var requestData = new Dictionary<string, string>
             {
                 { "client_id", clientId },
-                { "request_uri", await GetRequestUriAsync(httpClient, clientId, redirectUri, codeChallenge) }
+                { "request_uri", await GetRequestUriAsync(httpClient, clientId, redirectUri, codeChallenge) },
             };
 
             var authorizeRequestMessage = HttpRequestHelper.CreatePostMessage("connect/authorize", requestData);

@@ -5,7 +5,7 @@ namespace OrchardCore.Alias.Settings;
 public enum AliasPartOptions
 {
     Editable,
-    GeneratedDisabled
+    GeneratedDisabled,
 }
 
 public class AliasPartSettings

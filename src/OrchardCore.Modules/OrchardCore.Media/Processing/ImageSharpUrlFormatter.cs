@@ -12,7 +12,7 @@ public enum ResizeMode
     Pad,
     BoxPad,
     Min,
-    Stretch
+    Stretch,
 }
 
 public enum Format
@@ -23,7 +23,7 @@ public enum Format
     Jpg,
     Png,
     Tga,
-    WebP
+    WebP,
 }
 
 internal sealed class ImageSharpUrlFormatter

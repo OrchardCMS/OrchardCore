@@ -26,7 +26,7 @@ public class AutoSetupService : IAutoSetupService
         _setupService = setupService;
         _logger = logger;
     }
-    
+
     public async Task<(SetupContext, bool)> SetupTenantAsync(TenantSetupOptions setupOptions, ShellSettings shellSettings)
     {
         var setupContext = await GetSetupContextAsync(setupOptions, shellSettings);
@@ -52,7 +52,7 @@ public class AutoSetupService : IAutoSetupService
 
         return (setupContext, false);
     }
-   
+
     public async Task<ShellSettings> CreateTenantSettingsAsync(TenantSetupOptions setupOptions)
     {
         using var shellSettings = _shellSettingsManager
@@ -75,7 +75,7 @@ public class AutoSetupService : IAutoSetupService
 
         return shellSettings;
     }
-    
+
     public async Task<SetupContext> GetSetupContextAsync(TenantSetupOptions options, ShellSettings shellSettings)
     {
         var recipe = (await _setupService.GetSetupRecipesAsync())
@@ -85,7 +85,7 @@ public class AutoSetupService : IAutoSetupService
         {
             Recipe = recipe,
             ShellSettings = shellSettings,
-            Errors = new Dictionary<string, string>()
+            Errors = new Dictionary<string, string>(),
         };
 
         if (shellSettings.IsDefaultShell())

@@ -16,7 +16,7 @@ public class RequiresPermissionValidationRuleTests
     internal static readonly Dictionary<string, Permission> _permissions = new()
     {
         { "permissionOne",  new Permission("TestPermissionOne", "TestPermissionOne") },
-        { "permissionTwo",  new Permission("TestPermissionTwo", "TestPermissionTwo") }
+        { "permissionTwo",  new Permission("TestPermissionTwo", "TestPermissionTwo") },
     };
 
     [Fact]
@@ -25,7 +25,7 @@ public class RequiresPermissionValidationRuleTests
         var options = BuildExecutionOptions("query { test { noPermissions } }",
                         new PermissionsContext
                         {
-                            UsePermissionsContext = true
+                            UsePermissionsContext = true,
                         });
 
         var executer = new DocumentExecuter();
@@ -49,7 +49,7 @@ public class RequiresPermissionValidationRuleTests
                         new PermissionsContext
                         {
                             UsePermissionsContext = true,
-                            AuthorizedPermissions = new[] { _permissions[fieldName] }
+                            AuthorizedPermissions = new[] { _permissions[fieldName] },
                         });
 
         var executer = new DocumentExecuter();
@@ -70,7 +70,7 @@ public class RequiresPermissionValidationRuleTests
         var options = BuildExecutionOptions("query { test { permissionOne } }",
             new PermissionsContext
             {
-                UsePermissionsContext = true
+                UsePermissionsContext = true,
             });
 
         var executer = new DocumentExecuter();
@@ -87,7 +87,7 @@ public class RequiresPermissionValidationRuleTests
                         new PermissionsContext
                         {
                             UsePermissionsContext = true,
-                            AuthorizedPermissions = _permissions.Values
+                            AuthorizedPermissions = _permissions.Values,
                         });
 
         var executer = new DocumentExecuter();
@@ -125,9 +125,9 @@ public class RequiresPermissionValidationRuleTests
             Schema = new ValidationSchema(),
             UserContext = new GraphQLUserContext
             {
-                User = new ClaimsPrincipal(new StubIdentity())
+                User = new ClaimsPrincipal(new StubIdentity()),
             },
-            ValidationRules = DocumentValidator.CoreRules.Concat(serviceProvider.GetServices<IValidationRule>())
+            ValidationRules = DocumentValidator.CoreRules.Concat(serviceProvider.GetServices<IValidationRule>()),
         };
     }
 
