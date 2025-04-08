@@ -13,7 +13,7 @@
         // for a given dependency).
         {
             groupName: 'Non-Breaking Dependency Versions',
-            matchUpdateTypes: ['minor', 'patch', 'pin', 'pinDigest'],
+            matchUpdateTypes: ['patch', 'pin', 'pinDigest'],
             'automerge': true,
         },
         // Minor dependencies are ought to be non-breaking but can be (like
