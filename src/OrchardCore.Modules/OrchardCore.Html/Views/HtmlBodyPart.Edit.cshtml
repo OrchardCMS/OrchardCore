@@ -5,8 +5,6 @@
     var culture = await Orchard.GetContentCultureAsync(Model.ContentItem);
 }
 
-@await DisplayAsync(await New.ShortcodeModal())
-
 <div class="@Orchard.GetWrapperClasses()">
     <label asp-for="Html" class="@Orchard.GetLabelClasses()">@Model.TypePartDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
@@ -24,10 +22,10 @@
 <script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
-<script at="Foot">
+<script at="Foot" depends-on="jQuery">
     $(function () {
         var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Html)');
-    @* When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
+        // When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist.
         if (optionsTextArea) {
             var editor = CodeMirror.fromTextArea(optionsTextArea, {
                 autoCloseTags: true,
@@ -38,8 +36,6 @@
                 styleActiveLine: true,
                 mode: { name: "htmlmixed" }
             });
-
-            initializeCodeMirrorShortcodeWrapper(editor);
 
             editor.on('change', function (cmEditor) {
                 cmEditor.save();

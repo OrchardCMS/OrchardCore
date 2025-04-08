@@ -8,7 +8,6 @@
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Html)_FieldWrapper">
     <label asp-for="Html" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
-        @await DisplayAsync(await New.ShortcodeModal())
         <textarea asp-for="Html" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
@@ -40,8 +39,6 @@
                 styleActiveLine: true,
                 mode: { name: "htmlmixed" }
             });
-
-            initializeCodeMirrorShortcodeWrapper(editor);
 
             editor.on('change', function (cmEditor) {
                 cmEditor.save();

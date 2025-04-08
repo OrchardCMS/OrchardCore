@@ -10,10 +10,9 @@
 }
 
 <div class="@Orchard.GetFieldWrapperClasses(Model.PartFieldDefinition)" id="@Html.IdFor(x => x.Markdown)_FieldWrapper">
-    @await DisplayAsync(await New.ShortcodeModal())
     <label asp-for="Markdown" class="@Orchard.GetLabelClasses()">@Model.PartFieldDefinition.DisplayName()</label>
     <div class="@Orchard.GetEndClasses()">
-        <textarea asp-for="Markdown" rows="5" class="form-control content-preview-text shortcode-modal-input" dir="@culture.GetLanguageDirection()"></textarea>
+        <textarea asp-for="Markdown" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
         @if (!string.IsNullOrEmpty(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
