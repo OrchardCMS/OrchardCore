@@ -5,12 +5,14 @@ using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Localization;
 
-public class RequestLocalizationOptionsConfigurations : IConfigureOptions<RequestLocalizationOptions>
+internal sealed class RequestLocalizationOptionsConfigurations : IConfigureOptions<RequestLocalizationOptions>
 {
     private readonly ShellSettings _shellSettings;
     private readonly AdminOptions _adminOptions;
 
-    public RequestLocalizationOptionsConfigurations(ShellSettings shellSettings, IOptions<AdminOptions> adminOptions)
+    public RequestLocalizationOptionsConfigurations(
+        ShellSettings shellSettings,
+        IOptions<AdminOptions> adminOptions)
     {
         _shellSettings = shellSettings;
         _adminOptions = adminOptions.Value;
