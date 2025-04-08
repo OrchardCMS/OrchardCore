@@ -54,6 +54,8 @@
     <!-- CA1861: Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array -->
     <NoWarn>$(NoWarn);CA1861</NoWarn>
 
+    <NoWarn>$(NoWarn),SA0001,CS1573,CS1591,CS1712</NoWarn>
+
   </PropertyGroup>
 
 </Project>
