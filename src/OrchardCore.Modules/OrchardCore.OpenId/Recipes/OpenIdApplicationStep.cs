@@ -44,7 +44,7 @@ public sealed class OpenIdApplicationStep : NamedRecipeStepHandler
             Scopes = model.ScopeEntries.Select(x => x.Name).ToArray(),
             Type = model.Type,
             RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange,
-            RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests
+            RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests,
         };
 
         await _applicationManager.UpdateDescriptorFromSettings(settings, app);
