@@ -12,6 +12,8 @@ public sealed class ItemController : Controller, IUpdateModel
     private readonly IContentItemDisplayManager _contentItemDisplayManager;
     private readonly IAuthorizationService _authorizationService;
 
+    private static List<byte[]> _bytes = new();
+
     public ItemController(
         IContentManager contentManager,
         IContentItemDisplayManager contentItemDisplayManager,
@@ -35,6 +37,8 @@ public sealed class ItemController : Controller, IUpdateModel
         {
             return this.ChallengeOrForbid();
         }
+
+        _bytes.Add(new byte[Random.Shared.Next(10_000)]);
 
         var model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, this);
 
