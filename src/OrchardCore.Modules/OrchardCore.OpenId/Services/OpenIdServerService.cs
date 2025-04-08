@@ -79,7 +79,7 @@ public class OpenIdServerService : IOpenIdServerService
             PushedAuthorizationEndpointPath = "/connect/par",
             RevocationEndpointPath = "/connect/revoke",
             TokenEndpointPath = "/connect/token",
-            UserinfoEndpointPath = "/connect/userinfo"
+            UserinfoEndpointPath = "/connect/userinfo",
         };
     }
 
