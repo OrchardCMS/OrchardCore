@@ -245,7 +245,7 @@ public sealed class ApplicationController : Controller
             RedirectUris = string.Join(" ", await _applicationManager.GetRedirectUrisAsync(application)),
             Type = await _applicationManager.GetClientTypeAsync(application),
             RequireProofKeyForCodeExchange = await HasRequirementAsync(OpenIddictConstants.Requirements.Features.ProofKeyForCodeExchange),
-            RequirePushedAuthorizationRequests = await HasRequirementAsync(OpenIddictConstants.Requirements.Features.PushedAuthorizationRequests)
+            RequirePushedAuthorizationRequests = await HasRequirementAsync(OpenIddictConstants.Requirements.Features.PushedAuthorizationRequests),
         };
 
         var roleService = HttpContext.RequestServices?.GetService<IRoleService>();
