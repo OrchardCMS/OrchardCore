@@ -22,7 +22,7 @@ public class RecentBlogPostsQueryTests
                 builder
                     .Weld(new ContainedPart
                     {
-                        ListContentItemId = context.BlogContentItemId
+                        ListContentItemId = context.BlogContentItemId,
                     });
             });
 

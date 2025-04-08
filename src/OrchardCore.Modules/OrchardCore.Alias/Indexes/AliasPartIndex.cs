@@ -77,7 +77,7 @@ public class AliasPartIndexProvider : ContentHandlerBase, IIndexProvider, IScope
                     Alias = part.Alias.ToLowerInvariant(),
                     ContentItemId = contentItem.ContentItemId,
                     Latest = contentItem.Latest,
-                    Published = contentItem.Published
+                    Published = contentItem.Published,
                 };
             });
     }

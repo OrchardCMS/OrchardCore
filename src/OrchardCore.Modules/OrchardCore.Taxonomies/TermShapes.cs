@@ -141,7 +141,7 @@ public class TermShapes : ShapeTableProvider
                         Term = termShape,
                         TermContentItem = termContentItem,
                         Terms = childTerms ?? [],
-                        TaxonomyContentItem = taxonomyContentItem
+                        TaxonomyContentItem = taxonomyContentItem,
                     }));
 
                     shape.Metadata.Differentiator = differentiator;
@@ -178,7 +178,7 @@ public class TermShapes : ShapeTableProvider
                             TaxonomyContentItem = taxonomyContentItem,
                             TermContentItem = termContentItem,
                             Term = termShape,
-                            Terms = childTerms ?? []
+                            Terms = childTerms ?? [],
                         }));
 
                         shape.Metadata.Differentiator = differentiator;

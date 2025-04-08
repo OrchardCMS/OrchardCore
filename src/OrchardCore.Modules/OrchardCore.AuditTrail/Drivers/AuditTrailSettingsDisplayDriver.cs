@@ -98,9 +98,9 @@ public sealed class AuditTrailSettingsDisplayDriver : SiteDisplayDriver<AuditTra
                         {
                             Name = settings.Name,
                             Category = settings.Category,
-                            IsEnabled = settings.IsEnabled
+                            IsEnabled = settings.IsEnabled,
                         })
-                        .ToArray()
+                        .ToArray(),
                 })
                 .ToArray();
 

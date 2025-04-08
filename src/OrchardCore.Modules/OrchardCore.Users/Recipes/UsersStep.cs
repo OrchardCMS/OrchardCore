@@ -38,7 +38,7 @@ public sealed class UsersStep : NamedRecipeStepHandler
             {
                 user = new User
                 {
-                    UserId = importedUser.UserId
+                    UserId = importedUser.UserId,
                 };
             }
 

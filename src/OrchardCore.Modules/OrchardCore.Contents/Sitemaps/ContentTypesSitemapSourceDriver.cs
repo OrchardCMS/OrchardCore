@@ -42,7 +42,7 @@ public sealed class ContentTypesSitemapSourceDriver : DisplayDriver<SitemapSourc
             .Select(ctd => new ContentTypeLimitedSitemapEntryViewModel
             {
                 ContentTypeName = ctd.Name,
-                ContentTypeDisplayName = ctd.DisplayName
+                ContentTypeDisplayName = ctd.DisplayName,
             })
             .OrderBy(ctd => ctd.ContentTypeDisplayName)
             .ToArray();

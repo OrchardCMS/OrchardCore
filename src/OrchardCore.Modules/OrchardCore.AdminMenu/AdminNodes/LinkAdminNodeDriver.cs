@@ -37,7 +37,7 @@ public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
                 .Select(p => new PermissionViewModel
                 {
                     Name = p.Name,
-                    DisplayText = p.Description
+                    DisplayText = p.Description,
                 }).ToArray();
 
             var permissions = await _permissionService.GetPermissionsAsync();
@@ -46,7 +46,7 @@ public sealed class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
                 .Select(p => new PermissionViewModel
                 {
                     Name = p.Name,
-                    DisplayText = p.Description
+                    DisplayText = p.Description,
                 }).ToArray();
         }).Location("Content");
     }

@@ -97,7 +97,7 @@ public sealed class RemoteInstanceController : Controller
     public ActionResult IndexFilterPOST(RemoteInstanceIndexViewModel model)
         => RedirectToAction(nameof(Index), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     public async Task<IActionResult> Create()
@@ -157,7 +157,7 @@ public sealed class RemoteInstanceController : Controller
             Name = remoteInstance.Name,
             ClientName = remoteInstance.ClientName,
             ApiKey = remoteInstance.ApiKey,
-            Url = remoteInstance.Url
+            Url = remoteInstance.Url,
         };
 
         return View(model);

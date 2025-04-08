@@ -83,7 +83,7 @@ public sealed class LayerFilter : IAsyncResultFilter
                 cacheEntry = new CacheEntry()
                 {
                     Identifier = layerState.Identifier,
-                    Widgets = await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published)
+                    Widgets = await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published),
                 };
 
                 _memoryCache.Set(WidgetsKey, cacheEntry);
@@ -136,7 +136,7 @@ public sealed class LayerFilter : IAsyncResultFilter
                     var wrapper = new WidgetWrapper
                     {
                         Widget = contentItem,
-                        Content = widgetContent
+                        Content = widgetContent,
                     };
 
                     wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + contentItem.ContentType);

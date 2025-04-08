@@ -77,7 +77,7 @@ public class HttpRequestTask : TaskActivity<HttpRequestTask>
         { 508, "Loop Detected" },
         { 510, "Not Extended" },
         { 511, "Network Authentication Required" },
-        { 599, "Network Connect Timeout Error" }
+        { 599, "Network Connect Timeout Error" },
     };
 
     private readonly IWorkflowExpressionEvaluator _expressionEvaluator;

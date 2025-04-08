@@ -160,7 +160,7 @@ public sealed class SqlQueryFieldTypeProvider : ISchemaBuilder
             Description = S["Represents the {0} Query : {1}", query.Source, query.Name],
             ResolvedType = new ListGraphType(typeType),
             Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
-            Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>)
+            Type = typeof(ListGraphType<ObjectGraphType<JsonObject>>),
         };
 
         async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)
@@ -200,7 +200,7 @@ public sealed class SqlQueryFieldTypeProvider : ISchemaBuilder
             Description = S["Represents the {0} Query : {1}", query.Source, query.Name],
             ResolvedType = typeType.ResolvedType,
             Resolver = new LockedAsyncFieldResolver<object, object>(ResolveAsync),
-            Type = typeType.Type
+            Type = typeType.Type,
         };
 
         async ValueTask<object> ResolveAsync(IResolveFieldContext<object> context)

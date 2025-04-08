@@ -100,7 +100,7 @@ public class AliasPartHandler : ContentPartHandler<AliasPart>
             {
                 Alias = part.Alias,
                 AliasPart = part,
-                ContentItem = part.ContentItem
+                ContentItem = part.ContentItem,
             };
 
             part.Alias = await _liquidTemplateManager.RenderStringAsync(pattern, NullEncoder.Default, model,

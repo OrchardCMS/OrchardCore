@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Search.Elasticsearch.Core.Models;
+namespace OrchardCore.Search.Elasticsearch.Core.Models;
 
 public enum ElasticsearchConnectionType
 {

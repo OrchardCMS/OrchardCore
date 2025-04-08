@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Search.AzureAI.Models;
+namespace OrchardCore.Search.AzureAI.Models;
 
 public class AzureAISearchIndexSettingsUpdateContext
 {

@@ -201,7 +201,7 @@ public sealed class AdminController : Controller
                 SitemapId = _sitemapIdGenerator.GenerateUniqueId(),
                 Name = model.Name,
                 Path = model.Path,
-                Enabled = model.Enabled
+                Enabled = model.Enabled,
             };
 
             await _sitemapManager.UpdateSitemapAsync(sitemap);
@@ -232,7 +232,7 @@ public sealed class AdminController : Controller
             SitemapId = sitemap.SitemapId,
             Name = sitemap.Name,
             Enabled = sitemap.Enabled,
-            Path = sitemap.Path
+            Path = sitemap.Path,
         };
 
         return View(model);

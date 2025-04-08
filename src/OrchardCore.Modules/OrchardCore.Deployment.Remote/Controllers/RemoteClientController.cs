@@ -88,7 +88,7 @@ public sealed class RemoteClientController : Controller
         {
             RemoteClients = remoteClients,
             Pager = pagerShape,
-            Options = options
+            Options = options,
         };
 
         model.Options.ContentsBulkAction =

@@ -14,7 +14,7 @@ public class ContentItemTag
     {
         var list = new List<FilterArgument>(argumentsList)
         {
-            _typeArgument
+            _typeArgument,
         };
 
         return ShapeTag.WriteToAsync(list, writer, encoder, context);

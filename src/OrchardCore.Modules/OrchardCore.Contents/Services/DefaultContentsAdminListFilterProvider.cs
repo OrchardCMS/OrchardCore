@@ -90,7 +90,8 @@ public sealed class DefaultContentsAdminListFilterProvider : IContentsAdminListF
                             case ContentsOrder.Title:
                                 query.With<ContentItemIndex>().OrderBy(cr => cr.DisplayText).ThenBy(cr => cr.Id);
                                 break;
-                        };
+                        }
+                        ;
                     }
                     else
                     {

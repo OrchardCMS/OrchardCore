@@ -26,7 +26,7 @@ internal sealed class TrackingConsentValue : FluidValue
 {
     public override FluidValues Type => FluidValues.Object;
 
-    public override bool Equals(FluidValue other) 
+    public override bool Equals(FluidValue other)
         => other is TrackingConsentValue;
 
     public override bool ToBooleanValue() => true;

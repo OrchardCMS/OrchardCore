@@ -441,11 +441,11 @@ public class ContentItemsFieldTypeTests : IAsyncLifetime
                     {
                         Name = "where",
                         Description = "filters the animals",
-                        ResolvedType = where
+                        ResolvedType = where,
                     }
-                ]
+                ],
             },
-            RequestServices = services
+            RequestServices = services,
         };
     }
 
@@ -522,7 +522,7 @@ public class AnimalIndexProvider : IndexProvider<ContentItem>
                 {
                     Name = contentItem.As<Animal>() != null
                         ? contentItem.As<Animal>().Name
-                        : contentItem.As<AnimalPart>().Name
+                        : contentItem.As<AnimalPart>().Name,
                 };
             });
     }
@@ -548,7 +548,7 @@ public class AnimalTraitsIndexProvider : IndexProvider<ContentItem>
                     return new AnimalTraitsIndex
                     {
                         IsHappy = contentItem.As<Animal>().IsHappy,
-                        IsScary = contentItem.As<Animal>().IsScary
+                        IsScary = contentItem.As<Animal>().IsScary,
                     };
                 }
 
@@ -557,7 +557,7 @@ public class AnimalTraitsIndexProvider : IndexProvider<ContentItem>
                 return new AnimalTraitsIndex
                 {
                     IsHappy = animalPartSuffix.IsHappy,
-                    IsScary = animalPartSuffix.IsScary
+                    IsScary = animalPartSuffix.IsScary,
                 };
             });
     }
@@ -571,19 +571,19 @@ public class MultipleAliasIndexProvider : IIndexAliasProvider
         {
             Alias = "cats",
             Index = nameof(AnimalIndex),
-            IndexType = typeof(AnimalIndex)
+            IndexType = typeof(AnimalIndex),
         },
         new IndexAlias
         {
             Alias = "dogs",
             Index = nameof(AnimalIndex),
-            IndexType = typeof(AnimalIndex)
+            IndexType = typeof(AnimalIndex),
         },
         new IndexAlias
         {
             Alias = nameof(AnimalPart),
             Index = nameof(AnimalIndex),
-            IndexType = typeof(AnimalIndex)
+            IndexType = typeof(AnimalIndex),
         }
     ];
 
@@ -601,19 +601,19 @@ public class MultipleIndexesIndexProvider : IIndexAliasProvider
         {
             Alias = "animals.name",
             Index = $"Name",
-            IndexType = typeof(AnimalIndex)
+            IndexType = typeof(AnimalIndex),
         },
         new IndexAlias
         {
             Alias = "animals.isHappy",
             Index = $"IsHappy",
-            IndexType = typeof(AnimalTraitsIndex)
+            IndexType = typeof(AnimalTraitsIndex),
         },
         new IndexAlias
         {
             Alias = "animals.isScary",
             Index = $"IsScary",
-            IndexType = typeof(AnimalTraitsIndex)
+            IndexType = typeof(AnimalTraitsIndex),
         }
     ];
 

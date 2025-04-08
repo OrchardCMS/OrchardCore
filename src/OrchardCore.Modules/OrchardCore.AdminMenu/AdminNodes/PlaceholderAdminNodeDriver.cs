@@ -35,7 +35,7 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
                 .Select(p => new PermissionViewModel
                 {
                     Name = p.Name,
-                    DisplayText = p.Description
+                    DisplayText = p.Description,
                 }).ToArray();
 
             var permissions = await _permissionService.GetPermissionsAsync();
@@ -44,7 +44,7 @@ public sealed class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, Placeho
                 .Select(p => new PermissionViewModel
                 {
                     Name = p.Name,
-                    DisplayText = p.Description
+                    DisplayText = p.Description,
                 }).ToArray();
         }).Location("Content");
     }

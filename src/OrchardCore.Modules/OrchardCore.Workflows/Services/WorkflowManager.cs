@@ -73,12 +73,12 @@ public class WorkflowManager : IWorkflowManager
             Status = WorkflowStatus.Idle,
             State = JObject.FromObject(new WorkflowState
             {
-                ActivityStates = workflowType.Activities.ToDictionary(x => x.ActivityId, x => x.Properties)
+                ActivityStates = workflowType.Activities.ToDictionary(x => x.ActivityId, x => x.Properties),
             }, _jsonSerializerOptions),
             CorrelationId = correlationId,
             LockTimeout = workflowType.LockTimeout,
             LockExpiration = workflowType.LockExpiration,
-            CreatedUtc = _clock.UtcNow
+            CreatedUtc = _clock.UtcNow,
         };
 
         workflow.WorkflowId = _workflowIdGenerator.GenerateUniqueId(workflow);
@@ -126,7 +126,7 @@ public class WorkflowManager : IWorkflowManager
         var context = new ActivityContext
         {
             ActivityRecord = activityRecord,
-            Activity = activity
+            Activity = activity,
         };
 
         return Task.FromResult(context);

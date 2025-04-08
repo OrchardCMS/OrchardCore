@@ -114,7 +114,7 @@ public sealed class AdminController : Controller
     public ActionResult IndexFilterPOST(ShortcodeTemplateIndexViewModel model)
         => RedirectToAction(nameof(Index), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     [Admin("Shortcodes/Create", "Shortcodes.Create")]
@@ -174,7 +174,7 @@ public sealed class AdminController : Controller
                 Hint = model.Hint,
                 Usage = _htmlSanitizerService.Sanitize(model.Usage),
                 DefaultValue = model.DefaultValue,
-                Categories = JConvert.DeserializeObject<string[]>(model.SelectedCategories)
+                Categories = JConvert.DeserializeObject<string[]>(model.SelectedCategories),
             };
 
             await _shortcodeTemplatesManager.UpdateShortcodeTemplateAsync(model.Name, template);
@@ -213,7 +213,7 @@ public sealed class AdminController : Controller
             Hint = template.Hint,
             Usage = template.Usage,
             DefaultValue = template.DefaultValue,
-            Categories = template.Categories
+            Categories = template.Categories,
         };
 
         return View(model);

@@ -37,9 +37,9 @@ public class RuleTests
             [
                 new HomepageCondition
                 {
-                    Value = isHomepage
+                    Value = isHomepage,
                 }
-            ]
+            ],
         };
 
         var services = CreateRuleServiceCollection()
@@ -69,7 +69,7 @@ public class RuleTests
             Conditions =
             [
                 new BooleanCondition { Value = boolean }
-            ]
+            ],
         };
 
         var services = CreateRuleServiceCollection()
@@ -98,9 +98,9 @@ public class RuleTests
                     [
                         new BooleanCondition { Value = first },
                         new BooleanCondition { Value = second }
-                    ]
+                    ],
                 }
-            ]
+            ],
         };
 
         var services = CreateRuleServiceCollection()
@@ -126,9 +126,9 @@ public class RuleTests
                 new UrlCondition
                 {
                     Value = path,
-                    Operation = new StringEqualsOperator()
+                    Operation = new StringEqualsOperator(),
                 }
-            ]
+            ],
         };
 
         var services = CreateRuleServiceCollection()
@@ -159,9 +159,9 @@ public class RuleTests
             [
                 new JavascriptCondition
                 {
-                    Script = script
+                    Script = script,
                 }
-            ]
+            ],
         };
 
         var services = CreateRuleServiceCollection()

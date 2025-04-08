@@ -45,7 +45,7 @@ public class SecurityHeadersApplicationBuilderExtensionsTests
                 $"{PermissionsPolicyValue.Microphone}={PermissionsPolicyOriginValue.Any}",
                 $"{PermissionsPolicyValue.SpeakerSelection}={PermissionsPolicyOriginValue.Self} https://www.domain1.com https://www.domain2.com"
             ],
-            ReferrerPolicy = ReferrerPolicyValue.Origin
+            ReferrerPolicy = ReferrerPolicyValue.Origin,
         };
         var applicationBuilder = CreateApplicationBuilder();
 
@@ -80,7 +80,7 @@ public class SecurityHeadersApplicationBuilderExtensionsTests
                 {
                     { "camera", "self"},
                     { "microphone", "*" },
-                    { "speaker", "self https://www.domain1.com https://www.domain2.com"}
+                    { "speaker", "self https://www.domain1.com https://www.domain2.com"},
                 })
                 .AddReferrerPolicy(ReferrerPolicyValue.Origin);
         });

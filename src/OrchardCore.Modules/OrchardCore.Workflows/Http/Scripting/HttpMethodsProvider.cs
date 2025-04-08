@@ -72,7 +72,7 @@ public class HttpMethodsProvider : IGlobalMethodProvider
             {
                 httpContextAccessor.HttpContext.Items[WorkflowHttpResult.Instance] = WorkflowHttpResult.Instance;
                 httpContextAccessor.HttpContext.Response.WriteAsync(text).GetAwaiter().GetResult();
-            })
+            }),
         };
 
         _absoluteUrlMethod = new GlobalMethod

@@ -35,7 +35,7 @@ public class SitemapIndexTypeBuilder : SitemapTypeBuilderBase<SitemapIndex>
         {
             ResponseElement = new XElement(_namespace + "sitemapindex",
                 new XAttribute(XNamespace.Xmlns + "xsi", _schemaInstance),
-                new XAttribute(_schemaInstance + "schemaLocation", _schemaLocation))
+                new XAttribute(_schemaInstance + "schemaLocation", _schemaLocation)),
         };
 
         var indexSource = sitemap.SitemapSources.FirstOrDefault() as SitemapIndexSource;

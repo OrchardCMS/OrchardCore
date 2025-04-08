@@ -10,6 +10,6 @@ public class FlowPartSettingsViewModel
     public NameValueCollection ContentTypes { get; set; }
 
     public string[] ContainedContentTypes { get; set; } = [];
-    
+
     public bool CollapseContainedItems { get; set; }
 }

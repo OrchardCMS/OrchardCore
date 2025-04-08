@@ -61,7 +61,8 @@ public sealed class DefaultUsersAdminListFilterProvider : IUsersAdminListFilterP
                             case UsersOrder.Email:
                                 query.With<UserIndex>().OrderBy(u => u.NormalizedEmail);
                                 break;
-                        };
+                        }
+                        ;
                     }
                     else
                     {

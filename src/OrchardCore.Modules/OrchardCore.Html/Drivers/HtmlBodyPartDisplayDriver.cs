@@ -94,7 +94,7 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
             new Context
             {
                 ["ContentItem"] = htmlBodyPart.ContentItem,
-                ["TypePartDefinition"] = context.TypePartDefinition
+                ["TypePartDefinition"] = context.TypePartDefinition,
             });
     }
 }

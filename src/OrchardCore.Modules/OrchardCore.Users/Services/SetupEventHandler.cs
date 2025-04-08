@@ -24,7 +24,7 @@ public class SetupEventHandler : ISetupEventHandler
             UserName = context.Properties.TryGetValue(SetupConstants.AdminUsername, out var adminUserName) ? adminUserName?.ToString() : string.Empty,
             UserId = context.Properties.TryGetValue(SetupConstants.AdminUserId, out var adminUserId) ? adminUserId?.ToString() : string.Empty,
             Email = context.Properties.TryGetValue(SetupConstants.AdminEmail, out var adminEmail) ? adminEmail?.ToString() : string.Empty,
-            EmailConfirmed = true
+            EmailConfirmed = true,
         };
 
         user.RoleNames.Add(OrchardCoreConstants.Roles.Administrator);

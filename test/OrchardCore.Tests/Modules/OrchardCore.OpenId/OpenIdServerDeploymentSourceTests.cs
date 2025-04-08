@@ -46,7 +46,7 @@ public class OpenIdServerDeploymentSourceTests
         var result = new OpenIdServerSettings
         {
             Authority = new Uri(authority),
-            AccessTokenFormat = tokenFormat
+            AccessTokenFormat = tokenFormat,
         };
 
         if (initializeAllProperties)

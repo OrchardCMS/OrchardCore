@@ -60,7 +60,7 @@ public sealed class FullTextAspectSettingsDisplayDriver : ContentTypeDefinitionD
                 IncludeFullTextTemplate = model.IncludeFullTextTemplate,
                 FullTextTemplate = model.FullTextTemplate,
                 IncludeDisplayText = model.IncludeDisplayText,
-                IncludeBodyAspect = model.IncludeBodyAspect
+                IncludeBodyAspect = model.IncludeBodyAspect,
             });
         }
 

@@ -21,7 +21,7 @@ public class ContentTypeSelection
                 new ContentTypeSelection
                 {
                     IsSelected = selectedContentTypes.Contains(x.Name),
-                    ContentTypeDefinition = x
+                    ContentTypeDefinition = x,
                 })
             .OrderBy(type => type.ContentTypeDefinition.DisplayName)
             .ToArray();

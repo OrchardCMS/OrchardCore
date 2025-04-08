@@ -54,7 +54,7 @@ public sealed class HtmlFieldTrumbowygEditorSettingsDriver : ContentPartFieldDef
                 var settings = new HtmlFieldTrumbowygEditorSettings
                 {
                     InsertMediaWithUrl = model.InsertMediaWithUrl,
-                    Options = options
+                    Options = options,
                 };
 
                 context.Builder.WithSettings(settings);

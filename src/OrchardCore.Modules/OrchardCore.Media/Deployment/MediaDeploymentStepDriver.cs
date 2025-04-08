@@ -63,7 +63,7 @@ public sealed class MediaDeploymentStepDriver : DisplayDriver<DeploymentStep, Me
             {
                 Name = e.Name,
                 Path = e.Path,
-                Parent = parent
+                Parent = parent,
             };
 
             mediaStoreEntry.Entries = e.IsDirectory

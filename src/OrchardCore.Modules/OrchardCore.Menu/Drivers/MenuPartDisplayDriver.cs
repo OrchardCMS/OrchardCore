@@ -114,7 +114,7 @@ public sealed class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
         {
             newObj[nameof(MenuItemsListPart)] = new JsonObject
             {
-                [nameof(MenuItemsListPart.MenuItems)] = new JsonArray()
+                [nameof(MenuItemsListPart.MenuItems)] = new JsonArray(),
             };
         }
 

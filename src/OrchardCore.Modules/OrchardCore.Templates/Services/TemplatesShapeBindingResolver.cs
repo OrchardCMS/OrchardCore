@@ -65,7 +65,7 @@ public class TemplatesShapeBindingResolver : IShapeBindingResolver
         {
             BindingName = shapeType,
             BindingSource = shapeType,
-            BindingAsync = displayContext => _liquidTemplateManager.RenderHtmlContentAsync(template.Content, _htmlEncoder, displayContext.Value)
+            BindingAsync = displayContext => _liquidTemplateManager.RenderHtmlContentAsync(template.Content, _htmlEncoder, displayContext.Value),
         };
     }
 }

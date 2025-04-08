@@ -118,7 +118,7 @@ public sealed class DeploymentPlanController : Controller
     public ActionResult IndexFilterPOST(DeploymentPlanIndexViewModel model)
         => RedirectToAction(nameof(Index), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     [HttpPost, ActionName(nameof(Index))]
@@ -257,7 +257,7 @@ public sealed class DeploymentPlanController : Controller
         var model = new EditDeploymentPlanViewModel
         {
             Id = deploymentPlan.Id,
-            Name = deploymentPlan.Name
+            Name = deploymentPlan.Name,
         };
 
         return View(model);

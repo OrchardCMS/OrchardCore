@@ -912,7 +912,7 @@ public class SqlParser
     private enum FormattingModes
     {
         SelectClause,
-        FromClause
+        FromClause,
     }
 
     private void ClearSelectStatement()

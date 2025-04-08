@@ -37,7 +37,7 @@ public sealed class AuditTrailPartSettingsDisplayDriver : ContentTypePartDefinit
 
         context.Builder.WithSettings(new AuditTrailPartSettings
         {
-            ShowCommentInput = viewModel.ShowCommentInput
+            ShowCommentInput = viewModel.ShowCommentInput,
         });
 
         return Edit(model, context);

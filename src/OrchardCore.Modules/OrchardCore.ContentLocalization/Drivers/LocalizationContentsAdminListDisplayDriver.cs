@@ -42,8 +42,8 @@ public sealed class LocalizationContentsAdminListDisplayDriver : DisplayDriver<C
                 {
                     Text = S["All cultures"],
                     Value = string.Empty,
-                    Selected = string.IsNullOrEmpty(m.SelectedCulture)
-                }
+                    Selected = string.IsNullOrEmpty(m.SelectedCulture),
+                },
             };
             cultures.AddRange(supportedCultures.Select(culture => new SelectListItem()
             {

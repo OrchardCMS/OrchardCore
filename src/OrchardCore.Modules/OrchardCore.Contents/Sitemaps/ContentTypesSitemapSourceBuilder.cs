@@ -110,7 +110,8 @@ public class ContentTypesSitemapSourceBuilder : SitemapSourceBuilderBase<Content
             }
 
             return false;
-        };
+        }
+        ;
 
         return false;
     }

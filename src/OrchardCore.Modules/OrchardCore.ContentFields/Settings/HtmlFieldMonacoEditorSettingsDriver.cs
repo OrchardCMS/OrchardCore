@@ -31,7 +31,7 @@ public sealed class HtmlFieldMonacoEditorSettingsDriver : ContentPartFieldDefini
                 settings.Options = JConvert.SerializeObject(new
                 {
                     automaticLayout = true,
-                    language = "html"
+                    language = "html",
                 }, JOptions.Indented);
             }
 
@@ -57,7 +57,7 @@ public sealed class HtmlFieldMonacoEditorSettingsDriver : ContentPartFieldDefini
                 jsonSettings["language"] = "html";
                 var settings = new HtmlFieldMonacoEditorSettings
                 {
-                    Options = jsonSettings.ToString()
+                    Options = jsonSettings.ToString(),
                 };
                 context.Builder.WithSettings(settings);
             }
