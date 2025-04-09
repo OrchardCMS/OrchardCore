@@ -43,7 +43,6 @@ public class AzureAISearchIndexingService
 
     public async Task ProcessContentItemsAsync(params string[] indexNames)
     {
-        var lastTaskId = long.MaxValue;
         var indexSettings = new List<AzureAISearchIndexSettings>();
         var indexesDocument = await _azureAISearchIndexSettingsService.LoadDocumentAsync();
 
@@ -53,7 +52,7 @@ public class AzureAISearchIndexingService
         }
         else
         {
-            indexSettings = indexesDocument.IndexSettings.Where(x => indexNames.Contains(x.Key, StringComparer.OrdinalIgnoreCase))
+            indexSettings = indexesDocument.IndexSettings.Where(x => indexNames.Contains(x.Value.IndexName, StringComparer.OrdinalIgnoreCase))
                 .Select(x => x.Value)
                 .ToList();
         }
@@ -64,11 +63,7 @@ public class AzureAISearchIndexingService
         }
 
         // Find the lowest task id to process.
-        foreach (var indexSetting in indexSettings)
-        {
-            var taskId = indexSetting.GetLastTaskId();
-            lastTaskId = Math.Min(lastTaskId, taskId);
-        }
+        var lastTaskId = indexSettings.Min(indexSetting => indexSetting.As<ContentIndexingMetadata>().LastTaskId);
 
         var tasks = new List<IndexingTask>();
 
@@ -137,7 +132,7 @@ public class AzureAISearchIndexingService
                     // Update the document from the index if its lastIndexId is smaller than the current task id.
                     foreach (var settings in indexSettings)
                     {
-                        if (settings.GetLastTaskId() >= task.Id)
+                        if (settings.As<ContentIndexingMetadata>().LastTaskId >= task.Id)
                         {
                             continue;
                         }
@@ -202,7 +197,10 @@ public class AzureAISearchIndexingService
                 if (!resultTracker.Contains(index.Key))
                 {
                     // We know none of the previous batches failed to update this index.
-                    settings.SetLastTaskId(lastTaskId);
+                    settings.Alter<ContentIndexingMetadata>(metadata =>
+                    {
+                        metadata.LastTaskId = lastTaskId;
+                    });
 
                     await _azureAISearchIndexSettingsService.UpdateAsync(settings);
                 }
