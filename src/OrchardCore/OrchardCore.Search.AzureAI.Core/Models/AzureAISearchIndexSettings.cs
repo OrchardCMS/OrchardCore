@@ -18,11 +18,11 @@ public class AzureAISearchIndexSettings : Entity
 
     public IList<AzureAISearchIndexMap> IndexMappings { get; init; } = [];
 
-    [Obsolete("This property will be removed in a future release.")]
+    [Obsolete("This method will be removed in a future release.")]
     public long GetLastTaskId()
         => this.As<ContentIndexingMetadata>().LastTaskId;
 
-    [Obsolete("This property will be removed in a future release.")]
+    [Obsolete("This method will be removed in a future release.")]
     public void SetLastTaskId(long lastTaskId)
         => this.Alter<ContentIndexingMetadata>(metadata =>
         {
