@@ -27,7 +27,7 @@
 <script at="Foot" depends-on="jQuery, easymde-mediatoolbar">
     $(function () {
         var markdownElement = document.getElementById("@Html.IdFor(m => m.Markdown)");
-        var isRtl = '' + @(culture.IsRightToLeft() ? "true" : "false") + '';
+        var isRtl = '@(culture.IsRightToLeft() ? "true" : "false")';
 
         // When part is rendered by a flow part only the elements scripts are rendered, so the html element will not exist.
         if (markdownElement) {
