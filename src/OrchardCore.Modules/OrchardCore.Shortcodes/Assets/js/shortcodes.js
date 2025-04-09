@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputs = document.querySelectorAll('.shortcode-modal-input');
     inputs.forEach(input => {
         input.insertAdjacentHTML('beforebegin', shortcodeWrapperTemplate);
-        input.parentElement.insertAdjacentHTML('beforeend', shortcodeBtnTemplate);
+        input.parentElement.insertAdjacentHTML('beforeend', shortcodeBtnTemplate);        
     });
 
     const buttons = document.querySelectorAll('.shortcode-modal-btn');
@@ -138,5 +138,8 @@ function initializeCodeMirrorShortcodeWrapper(editor) {
         shortcodesApp.init(defaultValue => {
             editor.replaceSelection(defaultValue);   
         });   
-    });  
+    });
+
+    // makes sure the shortcode button is positioned correctly.
+    codemirrorWrapper.parentElement.parentElement.style.position = 'relative';
 }
