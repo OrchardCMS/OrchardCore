@@ -62,7 +62,7 @@ public class AzureAISearchIndexSettingsService
 
         var document = await LoadDocumentAsync();
 
-        if (document.IndexSettings.Values.Any(x => x.IndexName == settings.IndexName && x.Source == settings.Source && x.Id != settings.Id))
+        if (document.IndexSettings.Values.Any(x => x.IndexName == settings.IndexName && x.Id != settings.Id))
         {
             throw new InvalidOperationException("Another index with the same name already exists.");
         }
@@ -87,7 +87,7 @@ public class AzureAISearchIndexSettingsService
 
         var document = await LoadDocumentAsync();
 
-        if (document.IndexSettings.Values.Any(x => x.IndexName == settings.IndexName && x.Source == settings.Source && x.Id != settings.Id))
+        if (document.IndexSettings.Values.Any(x => x.IndexName == settings.IndexName && x.Id != settings.Id))
         {
             throw new InvalidOperationException("Another index with the same name already exists.");
         }
