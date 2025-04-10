@@ -16,25 +16,62 @@ public sealed class RolesMigrations : DataMigration
     private static readonly string _alternativeAdminRoleName = "SiteOwner";
 
     private readonly SystemRoleOptions _systemRoleOptions;
+    private readonly ShellSettings _shellSettings;
     private readonly ILogger _logger;
 
     public RolesMigrations(
         IOptions<SystemRoleOptions> systemRoleOptions,
+        ShellSettings shellSettings,
         ILogger<RolesMigrations> logger)
     {
         _systemRoleOptions = systemRoleOptions.Value;
+        _shellSettings = shellSettings;
         _logger = logger;
     }
 
-#pragma warning disable CA1822 // Mark members as static
     public int Create()
-#pragma warning restore CA1822 // Mark members as static
+    {
+        // Only run this migration logic if tenant initialization is already complete.
+        // Skipping it during initialization avoids interfering with default role assignments
+        // such as the 'Administrator' system role.
+        if (!_shellSettings.IsInitializing())
+        {
+            MigrateSystemRoles();
+        }
+
+        return 1;
+    }
+
+    private void MigrateSystemRoles()
     {
         ShellScope.AddDeferredTask(async scope =>
         {
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IRole>>();
 
             var roles = roleManager.Roles.ToList();
+            var shouldMigrate = false;
+
+            foreach (var role in roles)
+            {
+                if (role is not Role r || r.RoleClaims is null || r.RoleClaims.Count == 0)
+                {
+                    continue;
+                }
+
+                if (r.RoleClaims.Any(x => x.ClaimValue == "SiteOwner"))
+                {
+                    shouldMigrate = true;
+
+                    break;
+                }
+            }
+
+            if (!shouldMigrate)
+            {
+                // At this point, none of the roles contain the legacy 'SiteOwner' permission.
+                // No need to migrate.
+                return;
+            }
 
             var adminRoles = new List<Role>();
             var adminSystemRoleName = _systemRoleOptions.SystemAdminRoleName;
@@ -63,7 +100,6 @@ public sealed class RolesMigrations : DataMigration
                         {
                             RoleName = adminSystemRoleName,
                         });
-
                     }
                     else
                     {
@@ -122,8 +158,6 @@ public sealed class RolesMigrations : DataMigration
                 await shellHost.ReleaseShellContextAsync(shellSettings);
             }
         });
-
-        return 1;
     }
 
     private static string GenerateNewAdminRoleName(List<IRole> roles)
