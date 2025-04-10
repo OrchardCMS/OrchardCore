@@ -204,7 +204,6 @@ public sealed class AccountController : AccountBaseController
         return RedirectToLocal(returnUrl);
     }
 
-    [Admin]
     public IActionResult ChangePassword(string returnUrl = null)
     {
         ViewData["ReturnUrl"] = returnUrl;
@@ -212,7 +211,6 @@ public sealed class AccountController : AccountBaseController
         return View();
     }
 
-    [Admin]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model, string returnUrl = null)
