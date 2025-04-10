@@ -21,10 +21,6 @@ const insertAtCaret = (element, myValue) => {
     }
 };
 
-const shortcodeWrapperTemplate = `
-<div class="shortcode-modal-wrapper"></div>
-`;
-
 const shortcodeBtnTemplate = `
 <button type="button" class="shortcode-modal-btn btn btn-sm">
     <span class="icon-shortcode"></span>
@@ -35,7 +31,11 @@ const shortcodeBtnTemplate = `
 document.addEventListener('DOMContentLoaded', () => {
     const inputs = document.querySelectorAll('.shortcode-modal-input');
     inputs.forEach(input => {
-        input.insertAdjacentHTML('beforebegin', shortcodeWrapperTemplate);
+        const wrapper = document.createElement('div');
+        wrapper.classList.add('shortcode-modal-wrapper');
+        input.parentElement.insertBefore(wrapper, input);
+        wrapper.appendChild(input);
+
         input.parentElement.insertAdjacentHTML('beforeend', shortcodeBtnTemplate);        
     });
 
@@ -132,14 +132,15 @@ function initializeShortcodesApp(element) {
 function initializeCodeMirrorShortcodeWrapper(editor) {
     const codemirrorWrapper = editor.display.wrapper;
 
-    codemirrorWrapper.insertAdjacentHTML('beforebegin', shortcodeWrapperTemplate);
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('shortcode-modal-wrapper');
+    codemirrorWrapper.parentElement.insertBefore(wrapper, codemirrorWrapper);
+    wrapper.appendChild(codemirrorWrapper);
+
     codemirrorWrapper.parentElement.insertAdjacentHTML('beforeend', shortcodeBtnTemplate);
     codemirrorWrapper.parentElement.querySelector('.shortcode-modal-btn').addEventListener('click', () => {
         shortcodesApp.init(defaultValue => {
             editor.replaceSelection(defaultValue);   
         });   
     });
-
-    // makes sure the shortcode button is positioned correctly.
-    codemirrorWrapper.parentElement.parentElement.style.position = 'relative';
 }
