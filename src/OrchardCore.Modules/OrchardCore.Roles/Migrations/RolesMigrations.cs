@@ -31,7 +31,7 @@ public sealed class RolesMigrations : DataMigration
 
     public int Create()
     {
-        // Only run this migration logic if tenant initialization is already complete.
+        // Only run this migration logic for existing tenants.
         // Skipping it during initialization avoids interfering with default role assignments
         // such as the 'Administrator' system role.
         if (!_shellSettings.IsInitializing())
