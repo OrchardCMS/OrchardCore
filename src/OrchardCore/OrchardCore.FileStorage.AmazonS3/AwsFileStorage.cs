@@ -204,7 +204,7 @@ public class AwsFileStore : IFileStore
 
             if (listObjects.S3Objects.Count > 0)
             {
-                throw new FileStoreException($"Cannot copy file '{srcPath}' because a file already exists in the new path '{dstPath}'.");
+                throw new ExistsFileStoreException($"Cannot copy file '{srcPath}' because a file already exists in the new path '{dstPath}'.");
             }
 
             var copyObjectResponse = await _amazonS3Client.CopyObjectAsync(new CopyObjectRequest
@@ -259,7 +259,7 @@ public class AwsFileStore : IFileStore
 
                 if (listObjects.S3Objects.Count > 0)
                 {
-                    throw new FileStoreException($"Cannot create file '{path}' because it already exists.");
+                    throw new ExistsFileStoreException($"Cannot create file '{path}' because it already exists.");
                 }
             }
 
