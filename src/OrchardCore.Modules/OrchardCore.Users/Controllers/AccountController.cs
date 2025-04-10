@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -203,6 +204,7 @@ public sealed class AccountController : AccountBaseController
         return RedirectToLocal(returnUrl);
     }
 
+    [Admin]
     public IActionResult ChangePassword(string returnUrl = null)
     {
         ViewData["ReturnUrl"] = returnUrl;
@@ -210,6 +212,7 @@ public sealed class AccountController : AccountBaseController
         return View();
     }
 
+    [Admin]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model, string returnUrl = null)
