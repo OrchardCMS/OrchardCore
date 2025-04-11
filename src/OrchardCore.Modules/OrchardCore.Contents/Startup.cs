@@ -1,3 +1,4 @@
+using System.Reflection;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +18,6 @@ using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Core;
 using OrchardCore.Contents.Deployment;
 using OrchardCore.Contents.Drivers;
-using OrchardCore.Contents.Endpoints.Api;
 using OrchardCore.Contents.Feeds.Builders;
 using OrchardCore.Contents.Handlers;
 using OrchardCore.Contents.Indexing;
@@ -46,6 +46,7 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
+using OrchardCore.Routing.Extensions;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings.Deployment;
 using OrchardCore.Sitemaps.Builders;
@@ -213,9 +214,7 @@ public sealed class Startup : StartupBase
 
     public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
     {
-        routes.AddGetContentEndpoint()
-            .AddCreateContentEndpoint()
-            .AddDeleteContentEndpoint();
+        routes.MapApiEndpoints();
 
         var itemControllerName = typeof(ItemController).ControllerName();
 

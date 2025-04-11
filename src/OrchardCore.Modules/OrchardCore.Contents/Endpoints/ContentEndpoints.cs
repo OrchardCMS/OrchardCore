@@ -1,38 +1,63 @@
-using System.Security.Claims;
-using System.Text.Json.Settings;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Json;
+using OrchardCore.Routing.Extensions;
+using OrchardCore.Modules;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Json;
-using OrchardCore.Modules;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using OrchardCore.ContentManagement.Handlers;
+using System.Text.Json.Settings;
+using Microsoft.AspNetCore.Routing;
+using OrchardCore.Routing;
+using Microsoft.AspNetCore.Mvc;
 
-namespace OrchardCore.Contents.Endpoints.Api;
+namespace OrchardCore.Contents.Endpoints;
 
-public static class CreateEndpoint
+public sealed class ContentEndpoints : IEndpoint
 {
+    
     private static readonly JsonMergeSettings _updateJsonMergeSettings = new()
     {
         MergeArrayHandling = MergeArrayHandling.Replace,
     };
 
-    public static IEndpointRouteBuilder AddCreateContentEndpoint(this IEndpointRouteBuilder builder)
-    {
-        builder.MapPost("api/content", HandleAsync)
-            .AllowAnonymous()
-            .DisableAntiforgery();
+    public void Map(IEndpointRouteBuilder builder) => builder.MapGroup(this)
+        .MapGet(GetContentAsync, "{contentItemId}")
+        .MapPost(CreateContentAsync)
+        .MapDelete(DeleteContentAsync, "{contentItemId}");
 
-        return builder;
+    private static async Task<IResult> GetContentAsync(
+        string contentItemId,
+        IContentManager contentManager,
+        IAuthorizationService authorizationService,
+        HttpContext httpContext,
+        IOptions<DocumentJsonSerializerOptions> options)
+    {
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi))
+        {
+            return httpContext.ChallengeOrForbid("Api");
+        }
+
+        var contentItem = await contentManager.GetAsync(contentItemId);
+        if (contentItem == null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.ViewContent, contentItem))
+        {
+            return httpContext.ChallengeOrForbid("Api");
+        }
+
+        return Results.Json(contentItem, options.Value.SerializerOptions);
     }
 
-    [Authorize(AuthenticationSchemes = "Api")]
-    private static async Task<IResult> HandleAsync(
+    private static async Task<IResult> CreateContentAsync(
         ContentItem model,
         IContentManager contentManager,
         IAuthorizationService authorizationService,
@@ -69,6 +94,7 @@ public static class CreateEndpoint
             {
                 return httpContext.ChallengeOrForbid("Api");
             }
+
             contentItem.Merge(model);
 
             var result = await contentManager.ValidateAsync(contentItem);
@@ -128,6 +154,35 @@ public static class CreateEndpoint
         {
             await contentManager.SaveDraftAsync(contentItem);
         }
+
+        return Results.Json(contentItem, options.Value.SerializerOptions);
+    }
+
+    private static async Task<IResult> DeleteContentAsync(
+        string contentItemId,
+        IContentManager contentManager,
+        IAuthorizationService authorizationService,
+        HttpContext httpContext,
+        IOptions<DocumentJsonSerializerOptions> options)
+    {
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.AccessContentApi))
+        {
+            return httpContext.ChallengeOrForbid("Api");
+        }
+
+        var contentItem = await contentManager.GetAsync(contentItemId);
+
+        if (contentItem == null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        if (!await authorizationService.AuthorizeAsync(httpContext.User, CommonPermissions.DeleteContent, contentItem))
+        {
+            return httpContext.ChallengeOrForbid("Api");
+        }
+
+        await contentManager.RemoveAsync(contentItem);
 
         return Results.Json(contentItem, options.Value.SerializerOptions);
     }
