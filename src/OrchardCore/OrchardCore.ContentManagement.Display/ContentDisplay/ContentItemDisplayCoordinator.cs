@@ -156,7 +156,7 @@ public class ContentItemDisplayCoordinator : IContentDisplayHandler
 
                 if (contentPartShape == null)
                 {
-                    // Part is explicitly hidden in placement
+                    // Part is explicitly hidden in placement.
                     continue;
                 }
 
