@@ -498,7 +498,7 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> EditPassword(string id)
     {
-        if (await _userManager.FindByIdAsync(id) is not User user)
+        if (await _userManager.FindByNameAsync(id) is not User user)
         {
             return NotFound();
         }
@@ -508,13 +508,13 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var model = new ResetPasswordViewModel { UsernameOrEmail = user.UserName };
+        var model = new EditPasswordViewModel { UsernameOrEmail = user.UserName };
 
         return View(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> EditPassword(ResetPasswordViewModel model)
+    public async Task<IActionResult> EditPassword(EditPasswordViewModel model)
     {
         if (await _userService.GetUserAsync(model.UsernameOrEmail) is not User user)
         {
@@ -526,13 +526,19 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
+        // Exclude validating the current password while changing the current user password
+        if (user.UserName != User.Identity.Name)
+        {
+            ModelState.Remove(nameof(EditPasswordViewModel.CurrentPassword));
+        }
+
         if (ModelState.IsValid)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             if (await _userService.ResetPasswordAsync(model.UsernameOrEmail, token, model.NewPassword, ModelState.AddModelError))
             {
-                await _notifier.SuccessAsync(H["Password updated correctly."]);
+                await _notifier.SuccessAsync(H["Your password has been changed successfully."]);
 
                 return RedirectToAction(nameof(Index));
             }

@@ -3,7 +3,7 @@
 @if (!Site.As<LoginSettings>().DisableLocalLogin)
 {
     <li>
-        <a class="dropdown-item" asp-area="@UserConstants.Features.Users" asp-controller="Account" asp-action="ChangePassword" asp-route-returnUrl="@FullRequestPath">
+        <a class="dropdown-item" asp-action="EditPassword" asp-route-id="@User.Identity.Name">
             <i class="fa-solid fa-key fa-fw" aria-hidden="true"></i> @T["Change password"]
         </a>
     </li>
