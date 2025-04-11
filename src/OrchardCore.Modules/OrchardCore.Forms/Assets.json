@@ -22,5 +22,11 @@
       "Assets/js/form-visibility.js"
     ],
     "output": "wwwroot/Scripts/form-visibility.js"
+  },
+  {
+    "inputs": [
+      "Assets/js/form-visibility-rules.js"
+    ],
+    "output": "wwwroot/Scripts/form-visibility-rules.js"
   }
 ]

@@ -1,0 +1,15 @@
+@using OrchardCore
+@using System.Text.Json
+@using OrchardCore.Forms.ViewModels
+
+@model FormInputElementVisibilityDisplayViewModel
+
+<script asp-name="form-visibility-rules" asp-src="/OrchardCore.Forms/Scripts/form-visibility-rules.min.js" src-debug="/OrchardCore.Forms/Scripts/form-visibility-rules.js" at="Foot"></script>
+
+<script at="Foot" depends-on="form-visibility-rules">
+    document.addEventListener("DOMContentLoaded", function () {
+        window.formVisibilityGroupRules.initialize(
+            JSON.parse('@Html.Raw(JsonSerializer.Serialize(Model, JOptions.CamelCase))')
+        );
+    });
+</script>

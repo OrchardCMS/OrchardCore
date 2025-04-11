@@ -1,12 +1,9 @@
 @using OrchardCore
+@using OrchardCore.Forms.Models
 @using OrchardCore.Forms.ViewModels
 @using System.Text.Json
 
 @model FormInputElementVisibilityViewModel
-
-@{
-    var idPrefix = Html.IdForModel();
-}
 
 <div class="@Orchard.GetWrapperClasses()">
     <label asp-for="Action" class="@Orchard.GetLabelClasses()">@T["Action"]</label>
@@ -16,14 +13,11 @@
     </div>
 </div>
 
-<div class="input-visibility-settings">
-    <div id="@(idPrefix)_groupsContainerId"
-         class="main-group-container"
-         data-vue-app="formVisibility"
-         data-groups='@Html.Raw(JsonSerializer.Serialize(Model.Groups, JOptions.CamelCaseIndented))'
+<div class="input-visibility-settings" data-prefix="@Html.NameForModel()">
+    <div class="main-group-container"
+         data-groups='@Html.Raw(JsonSerializer.Serialize(Model.Groups ?? [], JOptions.CamelCaseIndented))'
          data-prefix="@Html.NameForModel()"
-         data-operator-options='@Html.Raw(JsonSerializer.Serialize(Model.Groups.First().Rules.First().Operators, JOptions.CamelCaseIndented))'
-         data-name-field='@Html.Raw(JsonSerializer.Serialize(Model.Groups.First().Rules.First().Fields, JOptions.CamelCaseIndented))'>
+         data-operator-options='@Html.Raw(JsonSerializer.Serialize(Model.Operators ?? [], JOptions.CamelCaseIndented))'>
     </div>
 </div>
 
@@ -31,47 +25,79 @@
 
 <script at="Foot" asp-name="InitializeGroups">
 
-    const flowWidgetObserver = new MutationObserver(function (mutationsList) {
-        for (const mutation of mutationsList) {
-            if (mutation.type === 'childList') {
-                mutation.addedNodes.forEach(node => {
-                    if (node.nodeType === 1) {
-                        const containers = node.matches('.main-group-container')
-                            ? [node]
-                            : [...node.querySelectorAll('.main-group-container')];
-
-                       processContainers(containers);
-                    }
-                });
-            }
-        }
-    });
-
     function processContainers(containers) {
-         containers.forEach(container => {
+        containers.forEach(container => {
             initializeOrUpdateVue(container);
+            actionVisibilitySettings(container)
         });
     }
 
     document.addEventListener('DOMContentLoaded', () =>
     {
+        const flowWidgetObserver = new MutationObserver(function (mutationsList) {
+            for (const mutation of mutationsList) {
+                if (mutation.type === 'childList') {
+                    mutation.addedNodes.forEach(node => {
+                        if (node.nodeType === 1) {
+                            const containers = node.matches('.main-group-container')
+                                ? [node]
+                                : [...node.querySelectorAll('.main-group-container')];
+
+                        processContainers(containers);
+                        }
+                    });
+                }
+            }
+            document.querySelectorAll('.main-group-container').forEach(container => actionVisibilitySettings(container));
+        });
+
+        flowWidgetObserver.observe(document.body, { childList: true, subtree: true });
+
+        Vue.config.productionTip = false;
+        Vue.config.devtools = false;
+
         const containers = [...document.querySelectorAll('.main-group-container')];
         processContainers(containers);
+
     });
 
     function initializeOrUpdateVue(container) {
         formVisibilityGroups.initialize({
-            appElementSelector: '#' + container.id,
+            appElementSelector: container,
             prefix: container.getAttribute('data-prefix'),
             widgetId: container.getAttribute('data-prefix'),
             groupOptions: JSON.parse(container.getAttribute('data-groups') || '{}'),
-            FieldOptions: JSON.parse(container.getAttribute('data-name-field') || '{}'),
             operatorOptions: JSON.parse(container.getAttribute('data-operator-options') || '{}'),
         });
     }
 
-    flowWidgetObserver.observe(document.body, { childList: true, subtree: true });
+    function actionVisibilitySettings(container) {
+        // Get the data-prefix from the container.
+        var prefix = container.getAttribute('data-prefix');
+        if (!prefix) {
+            console.log("No data-prefix found on container. Exiting.", prefix);
+            return;
+        }
+        // Build the select element's expected name.
+        var findPrefix = prefix + ".Action";
+        var actionElement = document.querySelector('select[name="' + findPrefix + '"]');
+        if (!actionElement) {
+            return;
+        }
+        // Get the visibility container tied to this instance only by matching its data-prefix.
+        var visibilityContainer = document.querySelector('.input-visibility-settings[data-prefix="' + prefix + '"]');
+        if (!visibilityContainer) {
+            return;
+        }
 
-    Vue.config.productionTip = false;
-    Vue.config.devtools = false;
+        actionElement.addEventListener("change", function(e) {
+            if (e.target.value === "None") {
+                visibilityContainer.classList.add("d-none");
+            } else {
+                visibilityContainer.classList.remove("d-none");
+            }
+        });
+        actionElement.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
 </script>

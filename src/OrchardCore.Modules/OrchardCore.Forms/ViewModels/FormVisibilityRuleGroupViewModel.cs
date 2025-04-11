@@ -2,5 +2,5 @@ namespace OrchardCore.Forms.ViewModels;
 
 public class FormVisibilityRuleGroupViewModel
 {
-    public List<FormVisibilityRuleViewModel> Rules { get; set; }
+    public IEnumerable<FormVisibilityRuleViewModel> Rules { get; set; }
 }

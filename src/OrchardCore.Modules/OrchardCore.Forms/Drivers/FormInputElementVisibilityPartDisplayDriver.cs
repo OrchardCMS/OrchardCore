@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.Views;
@@ -18,68 +19,81 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
         S = stringLocalizer;
     }
 
-    public override IDisplayResult Edit(FormInputElementVisibilityPart part, BuildPartEditorContext context)
+    public override IDisplayResult Display(FormInputElementVisibilityPart part, BuildPartDisplayContext context)
     {
-        part.Groups ??= part.Groups ?? new List<FormVisibilityRuleGroup>();
-        if (!part.Groups.Any())
+        return Initialize<FormInputElementVisibilityDisplayViewModel>("FormInputElementVisibilityPartVisibility", model =>
         {
-            part.Groups = new List<FormVisibilityRuleGroup>
+            if (part.ContentItem.TryGet<FormInputElementVisibilityPart>(out var visibilityPart) &&
+            visibilityPart.Action != FormVisibilityAction.None)
             {
-               new FormVisibilityRuleGroup
-               {
-                  Rules = new List<FormVisibilityRule>
-                  {
-                    new FormVisibilityRule
-                    {
-                      Field = "",
-                      Operator = FormVisibilityOperator.Is,
-                      Values = Array.Empty<string>()
-                    }
-                  }
-               }
-            };
-        }
+                var name = part.ContentItem.As<FormInputElementPart>()?.Name;
 
-        return Initialize<FormInputElementVisibilityViewModel>("FormInputElementVisibility_Edit", model =>
-        {
-            model.Action = part.Action;
-            model.Actions = new List<SelectListItem>
-            {
-              new SelectListItem(S["None"], nameof(FormVisibilityAction.None)),
-              new SelectListItem(S["Show"], nameof(FormVisibilityAction.Show)),
-              new SelectListItem(S["Hide"], nameof(FormVisibilityAction.Hide)),
-            };
-
-            model.Groups = part.Groups.Select(group =>
-            {
-                return new FormVisibilityRuleGroupViewModel
+                if (string.IsNullOrEmpty(name))
                 {
-                    Rules = group.Rules.Select(rule =>
-                    {
-                        return new FormVisibilityRuleViewModel
+                    model.Action = FormVisibilityAction.None;
+
+                    return;
+                }
+
+                model.ElementName = name;
+                model.Action = visibilityPart.Action;
+
+                model.Groups = (visibilityPart.Groups ?? []).Select(group =>
+                new FormVisibilityRuleGroupDisplayViewModel
+                {
+                    Rules = (group.Rules.Select(rule =>
+                        new FormVisibilityRuleDisplayViewModel
                         {
                             Field = rule.Field,
-                            // Enum comes as a INT value, so we need to parse it ToString()
                             Operator = rule.Operator.ToString(),
-                            Value = rule.Values?.FirstOrDefault() ?? string.Empty,
-                            Fields = new List<FormVisibilityFieldViewModel>(),
-                            Operators = new List<SelectListItem>
-                            {
-                               new SelectListItem(S["Is"], nameof(FormVisibilityOperator.Is)),
-                               new SelectListItem(S["Is not"], nameof(FormVisibilityOperator.IsNot)),
-                               new SelectListItem(S["Empty"], nameof(FormVisibilityOperator.Empty)),
-                               new SelectListItem(S["Not empty"], nameof(FormVisibilityOperator.NotEmpty)),
-                               new SelectListItem(S["Contains"], nameof(FormVisibilityOperator.Contains)),
-                               new SelectListItem(S["Does not contain"], nameof(FormVisibilityOperator.DoesNotContain)),
-                               new SelectListItem(S["Starts with"], nameof(FormVisibilityOperator.StartsWith)),
-                               new SelectListItem(S["Ends with"], nameof(FormVisibilityOperator.EndsWith)),
-                               new SelectListItem(S["Greater than"], nameof(FormVisibilityOperator.GreaterThan)),
-                               new SelectListItem(S["Less than"], nameof(FormVisibilityOperator.LessThan)),
-                            }
-                        };
-                    }).ToList()
-                };
-            }).ToList();
+                            Value = rule.Values?.FirstOrDefault()
+                        }
+                    ))
+                });
+            }
+        }).Location("Detail", "Content");
+    }
+
+    public override IDisplayResult Edit(FormInputElementVisibilityPart part, BuildPartEditorContext context)
+    {
+        return Initialize<FormInputElementVisibilityViewModel>("FormInputElementVisibility_Edit", model =>
+        {
+            var operators = new List<SelectListItem>()
+            {
+                new(S["Is"], nameof(FormVisibilityOperator.Is)),
+                new(S["Is not"], nameof(FormVisibilityOperator.IsNot)),
+                new(S["Empty"], nameof(FormVisibilityOperator.Empty)),
+                new(S["Not empty"], nameof(FormVisibilityOperator.NotEmpty)),
+                new(S["Contains"], nameof(FormVisibilityOperator.Contains)),
+                new(S["Does not contain"], nameof(FormVisibilityOperator.DoesNotContain)),
+                new(S["Starts with"], nameof(FormVisibilityOperator.StartsWith)),
+                new(S["Ends with"], nameof(FormVisibilityOperator.EndsWith)),
+                new(S["Greater than"], nameof(FormVisibilityOperator.GreaterThan)),
+                new(S["Less than"], nameof(FormVisibilityOperator.LessThan)),
+            };
+
+            model.Operators = operators;
+            model.Action = part.Action;
+            model.Actions =
+            [
+                new(S["Always Visible"], nameof(FormVisibilityAction.None)),
+                new(S["Conditionally Show"], nameof(FormVisibilityAction.Show)),
+                new(S["Conditionally Hide"], nameof(FormVisibilityAction.Hide)),
+            ];
+
+            model.Groups = (part.Groups ?? [])
+                .Select(group => new FormVisibilityRuleGroupViewModel
+                {
+                    Rules = (group.Rules ?? [])
+                    .Select(rule => new FormVisibilityRuleViewModel
+                    {
+                        Field = rule.Field,
+                        Operator = rule.Operator.ToString() ?? string.Empty,
+                        Value = rule.Values?.FirstOrDefault() ?? string.Empty,
+                        Fields = [],
+                        Operators = operators,
+                    })
+                });
         }).Location("Parts:0#Visibility Settings;5");
     }
 
@@ -91,28 +105,28 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
 
         part.Action = model.Action;
 
-        part.Groups = (model.Groups ?? new List<FormVisibilityRuleGroupViewModel>())
-            .Select(x =>
+        part.Groups = (model.Groups ?? Enumerable.Empty<FormVisibilityRuleGroupViewModel>()).Select(group =>
+        {
+            return new FormVisibilityRuleGroup
             {
-                return new FormVisibilityRuleGroup
+                Rules = group.Rules?.Select(rule =>
                 {
-                    Rules = x.Rules.Select(r =>
+                    var parsedOperator = FormVisibilityOperator.Is;
+                    if (!string.IsNullOrWhiteSpace(rule.Operator))
                     {
-                        var parsedOperator = FormVisibilityOperator.Is;
-                        if (!string.IsNullOrWhiteSpace(r.Operator))
-                        {
-                            parsedOperator = Enum.Parse<FormVisibilityOperator>(r.Operator);
-                        }
-                        // Enum comes as a INT value, so we need to parse it ToString()
-                        return new FormVisibilityRule
-                        {
-                            Field = r.Field,
-                            Operator = parsedOperator,
-                            Values = GetValues(r.Value),
-                        };
-                    }).ToList()
-                };
-            }).ToList();
+                        parsedOperator = Enum.Parse<FormVisibilityOperator>(rule.Operator);
+                    }
+
+                    return new FormVisibilityRule
+                    {
+                        Field = rule.Field,
+                        Operator = parsedOperator,
+                        Values = GetValues(rule.Value),
+                    };
+                })
+            };
+        });
+
         return Edit(part, context);
     }
 
@@ -122,7 +136,10 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
         {
             try
             {
-                var jsonArray = new[] { value };
+                var jsonArray = new[]
+                {
+                    value
+                };
                 return jsonArray;
             }
             catch { }
