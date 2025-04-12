@@ -247,6 +247,7 @@ public class PagerShapes : IShapeAttributeProvider
             await shape.AddAsync(await shapeFactory.CreateAsync("Pager_Gap", Arguments.From(new
             {
                 Value = gapText,
+                RouteValues = new RouteValueDictionary(routeData),
                 Pager = shape,
             })));
         }
@@ -311,6 +312,7 @@ public class PagerShapes : IShapeAttributeProvider
             await shape.AddAsync(await shapeFactory.CreateAsync("Pager_Gap", Arguments.From(new
             {
                 Value = gapText,
+                RouteValues = new RouteValueDictionary(routeData),
                 Pager = shape,
             })));
         }
