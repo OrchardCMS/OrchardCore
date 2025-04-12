@@ -50,15 +50,14 @@ public sealed class UserMenuDisplayDriver : DisplayDriver<UserMenu>
                 .Location("Detail", "Content:1.1")
                 .Differentiator("Dashboard"));
 
-            results.Add(View("UserMenuItems__AdminChangePassword", model)
+            results.Add(View("UserMenuItems__ChangePassword", model)
                 .Location("Detail", "Content:10")
                 .Location("DetailAdmin", "Content:10")
-                .Differentiator("AdminChangePassword"));
+                .Differentiator("ChangePassword"));
         }
         else
         {
             results.Add(View("UserMenuItems__ChangePassword", model)
-                .Location("Detail", "Content:10")
                 .Location("DetailAdmin", "Content:10")
                 .Differentiator("ChangePassword"));
         }
