@@ -14,7 +14,7 @@
 @if (canEdit)
 {
     <li>
-        <a asp-action="EditPassword" asp-route-id="@Model.User.UserName" class="dropdown-item">@T["Change password"]</a>
+        <a asp-action="EditPassword" asp-route-id="@Model.User.UserId" class="dropdown-item">@T["Change password"]</a>
     </li>
     if (isLockedOut)
     {

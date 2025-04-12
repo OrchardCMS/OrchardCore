@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using GraphQLParser;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -498,7 +499,7 @@ public sealed class AdminController : Controller
 
     public async Task<IActionResult> EditPassword(string id)
     {
-        if (await _userManager.FindByNameAsync(id) is not User user)
+        if (await _userManager.FindByIdAsync(id) is not User user)
         {
             return NotFound();
         }
@@ -528,13 +529,25 @@ public sealed class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-            if (await _userService.ResetPasswordAsync(model.UsernameOrEmail, token, model.NewPassword, ModelState.AddModelError))
+            if (user.UserName == model.UsernameOrEmail)
             {
-                await _notifier.SuccessAsync(H["The password has been changed successfully."]);
+                if (await _userService.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword, ModelState.AddModelError))
+                {
+                    await _notifier.SuccessAsync(H["The password has been changed successfully."]);
 
-                return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            else
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                if (await _userService.ResetPasswordAsync(model.UsernameOrEmail, token, model.NewPassword, ModelState.AddModelError))
+                {
+                    await _notifier.SuccessAsync(H["The password has been changed successfully."]);
+
+                    return RedirectToAction(nameof(Index));
+                }
             }
         }
 
