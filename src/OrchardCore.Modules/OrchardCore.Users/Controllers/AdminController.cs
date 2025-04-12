@@ -526,19 +526,13 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        // Exclude validating the current password while changing the current user password
-        if (user.UserName != User.Identity.Name)
-        {
-            ModelState.Remove(nameof(EditPasswordViewModel.CurrentPassword));
-        }
-
         if (ModelState.IsValid)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             if (await _userService.ResetPasswordAsync(model.UsernameOrEmail, token, model.NewPassword, ModelState.AddModelError))
             {
-                await _notifier.SuccessAsync(H["Your password has been changed successfully."]);
+                await _notifier.SuccessAsync(H["The password has been changed successfully."]);
 
                 return RedirectToAction(nameof(Index));
             }
