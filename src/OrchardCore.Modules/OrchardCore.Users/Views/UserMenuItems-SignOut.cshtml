@@ -1,11 +1,22 @@
+@using OrchardCore.Admin
 @using OrchardCore.Users.Models
+@inject IAuthorizationService AuthorizationService
 
 @if (!Site.As<LoginSettings>().DisableLocalLogin)
 {
     <li>
-        <a class="dropdown-item" asp-action="EditPassword" asp-route-id="@User.Identity.Name">
-            <i class="fa-solid fa-key fa-fw" aria-hidden="true"></i> @T["Change password"]
-        </a>
+        @if (await AuthorizationService.AuthorizeAsync(User, AdminPermissions.AccessAdminPanel))
+        {
+            <a class="dropdown-item" asp-area="@UserConstants.Features.Users" asp-controller="Admin" asp-action="EditPassword" asp-route-id="@User.Identity.Name">
+                <i class="fa-solid fa-key fa-fw" aria-hidden="true"></i> @T["Change password"]
+            </a>
+        }
+        else
+        {
+            <a class="dropdown-item" asp-area="@UserConstants.Features.Users" asp-controller="Account" asp-action="ChangePassword" asp-route-returnUrl="@FullRequestPath">
+                <i class="fa-solid fa-key fa-fw" aria-hidden="true"></i> @T["Change password"]
+            </a>
+        }
     </li>
 }
 <li>
