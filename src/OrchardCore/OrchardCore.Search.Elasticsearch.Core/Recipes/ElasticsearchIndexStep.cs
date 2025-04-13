@@ -26,20 +26,33 @@ public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        if (context.Step["Indices"] is not JsonArray jsonArray)
-        {
-            return;
-        }
+        // Elasticserach uses the term "Indices" for the plural of index, but the common spelling in US English is
+        // "Indexes". So both are supported to avoid unnecessary spelling problems.
+        var indexes = context.Step["Indexes"] as JsonArray ??
+                      context.Step["Indices"] as JsonArray ??
+                      [];
 
-        foreach (var index in jsonArray)
-        {
-            var elasticIndexSettings = index.ToObject<Dictionary<string, ElasticIndexSettings>>().FirstOrDefault();
+        // Get all properties of each objects inside the indexes array. The property name is treated as the index name.
+        var settings = indexes
+            .SelectMany(index => index.ToObject<Dictionary<string, ElasticIndexSettings>>())
+            .Select(pair => WithIndexName(pair.Value, pair.Key));
 
-            if (!await _elasticIndexManager.ExistsAsync(elasticIndexSettings.Key))
+        // Create the described index only if it doesn't already exist for the current tenant prefix.
+        foreach (var setting in settings)
+        {
+            if (!await _elasticIndexManager.ExistsAsync(setting.IndexName))
             {
-                elasticIndexSettings.Value.IndexName = elasticIndexSettings.Key;
-                await _elasticIndexingService.CreateIndexAsync(elasticIndexSettings.Value);
+                await _elasticIndexingService.CreateIndexAsync(setting);
             }
         }
+    }
+
+    /// <summary>
+    /// Assigns <paramref name="name"/> to <see cref="ElasticIndexSettings.IndexName"/> of <paramref name="settings"/>.
+    /// </summary>
+    private static ElasticIndexSettings WithIndexName(ElasticIndexSettings settings, string name)
+    {
+        settings.IndexName = name;
+        return settings;
     }
 }
