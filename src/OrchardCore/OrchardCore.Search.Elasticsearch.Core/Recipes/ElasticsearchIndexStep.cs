@@ -53,6 +53,7 @@ public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
     private static ElasticIndexSettings WithIndexName(ElasticIndexSettings settings, string name)
     {
         settings.IndexName = name;
+
         return settings;
     }
 }
