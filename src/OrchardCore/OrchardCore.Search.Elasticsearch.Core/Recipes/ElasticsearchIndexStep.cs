@@ -29,8 +29,8 @@ public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
         // Elasticserach uses the term "Indices" for the plural of index, but the common spelling in US English is
         // "Indexes". So both are supported to avoid unnecessary spelling problems.
         var indexes = context.Step["Indexes"] as JsonArray ??
-                      context.Step["Indices"] as JsonArray ??
-                      [];
+                context.Step["Indices"] as JsonArray ??
+                [];
 
         // Get all properties of each objects inside the indexes array. The property name is treated as the index name.
         var settings = indexes
