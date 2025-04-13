@@ -35,7 +35,7 @@ public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
         // Get all properties of each objects inside the indexes array. The property name is treated as the index name.
         var settings = indexes
             .SelectMany(index => index.ToObject<Dictionary<string, ElasticIndexSettings>>())
-            .Select(pair => WithIndexName(pair.Value, pair.Key));
+            .Select(WithIndexName);
 
         // Create the described index only if it doesn't already exist for the current tenant prefix.
         foreach (var setting in settings)
