@@ -47,10 +47,10 @@ public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
         }
     }
 
-    private static ElasticIndexSettings WithIndexName(ElasticIndexSettings settings, string name)
+    private static ElasticIndexSettings WithIndexName(KeyValuePair<string, ElasticIndexSettings> pair)
     {
-        settings.IndexName = name;
+        pair.Value.IndexName = pair.Key;
 
-        return settings;
+        return pair.Value;
     }
 }
