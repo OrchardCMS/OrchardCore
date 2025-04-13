@@ -47,9 +47,6 @@ public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
         }
     }
 
-    /// <summary>
-    /// Assigns <paramref name="name"/> to <see cref="ElasticIndexSettings.IndexName"/> of <paramref name="settings"/>.
-    /// </summary>
     private static ElasticIndexSettings WithIndexName(ElasticIndexSettings settings, string name)
     {
         settings.IndexName = name;
