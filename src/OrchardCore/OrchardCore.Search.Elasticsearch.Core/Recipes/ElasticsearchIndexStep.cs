@@ -1,4 +1,3 @@
-using System.Text.Json.Nodes;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Search.Elasticsearch.Core.Models;
@@ -26,16 +25,7 @@ public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
 
     protected override async Task HandleAsync(RecipeExecutionContext context)
     {
-        // Elasticserach uses the term "Indices" for the plural of index, but the common spelling in US English is
-        // "Indexes". So both are supported to avoid unnecessary spelling problems.
-        var indexes = context.Step["Indexes"] as JsonArray ??
-                context.Step["Indices"] as JsonArray ??
-                [];
-
-        // Get all properties of each objects inside the indexes array. The property name is treated as the index name.
-        var settings = indexes
-            .SelectMany(index => index.ToObject<Dictionary<string, ElasticIndexSettings>>())
-            .Select(WithIndexName);
+        var settings = context.GetIndexSettings<ElasticIndexSettings>();
 
         // Create the described index only if it doesn't already exist for the current tenant prefix.
         foreach (var setting in settings)
@@ -45,12 +35,5 @@ public sealed class ElasticsearchIndexStep : NamedRecipeStepHandler
                 await _elasticIndexingService.CreateIndexAsync(setting);
             }
         }
-    }
-
-    private static ElasticIndexSettings WithIndexName(KeyValuePair<string, ElasticIndexSettings> pair)
-    {
-        pair.Value.IndexName = pair.Key;
-
-        return pair.Value;
     }
 }
