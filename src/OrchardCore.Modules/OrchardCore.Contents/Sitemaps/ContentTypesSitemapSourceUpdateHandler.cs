@@ -32,7 +32,6 @@ public class ContentTypesSitemapSourceUpdateHandler : ISitemapSourceUpdateHandle
         }
 
         var contentTypeName = contentItem.ContentType;
-
         var sitemapNeedsUpdate = false;
 
         foreach (var sitemap in sitemaps)
