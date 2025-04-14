@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageVersion Include="AngleSharp" Version="1.2.0" />
-    <PackageVersion Include="AWSSDK.S3" Version="3.7.416.5" />
+    <PackageVersion Include="AWSSDK.S3" Version="3.7.416.9" />
     <PackageVersion Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.400" />
     <PackageVersion Include="Azure.Communication.Email" Version="1.0.1" />
     <PackageVersion Include="Azure.Communication.Sms" Version="1.0.1" />
@@ -19,7 +19,7 @@
     <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
     <PackageVersion Include="Castle.Core" Version="5.2.1" />
     <PackageVersion Include="DocumentFormat.OpenXml" Version="3.3.0" />
-    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.17.3" />
+    <PackageVersion Include="Elastic.Clients.Elasticsearch" Version="8.17.4" />
     <PackageVersion Include="Fluid.Core" Version="2.21.0" />
     <PackageVersion Include="GraphQL" Version="8.4.1" />
     <PackageVersion Include="GraphQL.DataLoader" Version="8.4.1" />
@@ -29,7 +29,7 @@
     <PackageVersion Include="JsonPath.Net" Version="2.1.1" />
     <PackageVersion Include="HtmlSanitizer" Version="9.1.878-beta" />
     <PackageVersion Include="Irony" Version="1.5.3" />
-    <PackageVersion Include="libphonenumber-csharp" Version="9.0.2" />
+    <PackageVersion Include="libphonenumber-csharp" Version="9.0.3" />
     <PackageVersion Include="Lorem.Universal.NET" Version="4.0.80" />
     <PackageVersion Include="Lucene.Net" Version="4.8.0-beta00017" />
     <PackageVersion Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00017" />
@@ -143,7 +143,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="9.0.4" />
 
     <!-- dotnet/extensions repository -->
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.3.0" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.4.0" />
     
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
