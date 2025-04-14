@@ -18,9 +18,7 @@ public sealed class EmailOptionsConfiguration : IConfigureOptions<EmailOptions>
 
     public void Configure(EmailOptions options)
     {
-        var emailSettings = _siteService.GetSettingsAsync<EmailSettings>()
-            .GetAwaiter()
-            .GetResult();
+        var emailSettings = _siteService.GetSettings<EmailSettings>();
 
         if (!string.IsNullOrEmpty(emailSettings.DefaultProviderName)
             && _emailProviderOptions.Providers.TryGetValue(emailSettings.DefaultProviderName, out var provider)
