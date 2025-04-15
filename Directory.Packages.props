@@ -39,7 +39,7 @@
     <PackageVersion Include="MailKit" Version="4.8.0" />
     <PackageVersion Include="Markdig" Version="0.38.0" />
     <PackageVersion Include="Microsoft.Extensions.Azure" Version="1.8.0" />
-    <PackageVersion Include="Microsoft.Identity.Web" Version="3.3.1" NoWarn="NU1902" />
+    <PackageVersion Include="Microsoft.Identity.Web" Version="3.3.1" />
     <!--
       Important: the version of the Microsoft.IdentityModel.Protocols.OpenIdConnect package MUST
       match the IdentityModel version transitively referenced by OpenIddict to ensure we don't
