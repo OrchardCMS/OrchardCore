@@ -496,7 +496,7 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    public async Task<IActionResult> EditPassword(string id)
+    public async Task<IActionResult> EditPassword(string id, string returnUrl)
     {
         if (await _userManager.FindByIdAsync(id) is not User user)
         {
@@ -510,11 +510,13 @@ public sealed class AdminController : Controller
 
         var model = new EditPasswordViewModel { UsernameOrEmail = user.UserName };
 
+        ViewData["ReturnUrl"] = returnUrl;
+
         return View(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> EditPassword(EditPasswordViewModel model)
+    public async Task<IActionResult> EditPassword(EditPasswordViewModel model, string returnUrl)
     {
         if (await _userService.GetUserAsync(model.UsernameOrEmail) is not User user)
         {
@@ -534,6 +536,11 @@ public sealed class AdminController : Controller
                 {
                     await _notifier.SuccessAsync(H["The password has been changed successfully."]);
 
+                    if (!string.IsNullOrEmpty(returnUrl))
+                    {
+                        return this.LocalRedirect(returnUrl, true);
+                    }
+
                     return RedirectToAction(nameof(Index));
                 }
             }
@@ -544,6 +551,11 @@ public sealed class AdminController : Controller
                 if (await _userService.ResetPasswordAsync(model.UsernameOrEmail, token, model.NewPassword, ModelState.AddModelError))
                 {
                     await _notifier.SuccessAsync(H["The password has been changed successfully."]);
+
+                    if (!string.IsNullOrEmpty(returnUrl))
+                    {
+                        return this.LocalRedirect(returnUrl, true);
+                    }
 
                     return RedirectToAction(nameof(Index));
                 }
