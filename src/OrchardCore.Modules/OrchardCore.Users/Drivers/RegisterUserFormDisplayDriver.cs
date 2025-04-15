@@ -13,8 +13,7 @@ public sealed class RegisterUserFormDisplayDriver : DisplayDriver<RegisterUserFo
 {
     private readonly UserManager<IUser> _userManager;
     private readonly IdentityOptions _identityOptions;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public RegisterUserFormDisplayDriver(
         UserManager<IUser> userManager,

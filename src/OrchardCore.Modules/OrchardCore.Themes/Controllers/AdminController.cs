@@ -20,8 +20,7 @@ public sealed class AdminController : Controller
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public AdminController(
         ISiteThemeService siteThemeService,

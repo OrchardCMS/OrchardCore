@@ -18,8 +18,7 @@ public sealed class RoleLoginSettingsDisplayDriver : SiteDisplayDriver<RoleLogin
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IRoleService _roleService;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
         => LoginSettingsDisplayDriver.GroupId;

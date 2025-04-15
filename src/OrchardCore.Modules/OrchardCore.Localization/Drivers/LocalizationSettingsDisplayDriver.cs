@@ -27,9 +27,8 @@ public sealed class LocalizationSettingsDisplayDriver : SiteDisplayDriver<Locali
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly CultureOptions _cultureOptions;
-
-    internal readonly IHtmlLocalizer H;
-    internal readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
         => GroupId;

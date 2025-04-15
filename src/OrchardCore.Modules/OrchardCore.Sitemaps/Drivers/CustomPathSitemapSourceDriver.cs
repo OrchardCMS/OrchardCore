@@ -9,7 +9,7 @@ namespace OrchardCore.Sitemaps.Drivers;
 
 public sealed class CustomPathSitemapSourceDriver : DisplayDriver<SitemapSource, CustomPathSitemapSource>
 {
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public CustomPathSitemapSourceDriver(IStringLocalizer<CustomPathSitemapSourceDriver> localizer)
     {

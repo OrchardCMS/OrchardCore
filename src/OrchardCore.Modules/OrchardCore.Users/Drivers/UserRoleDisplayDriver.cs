@@ -20,8 +20,7 @@ public sealed class UserRoleDisplayDriver : DisplayDriver<User>
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly INotifier _notifier;
     private readonly IAuthorizationService _authorizationService;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public UserRoleDisplayDriver(
         UserManager<IUser> userManager,

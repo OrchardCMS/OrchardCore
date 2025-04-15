@@ -23,8 +23,7 @@ public sealed class ValidationConfigurationController : Controller
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public ValidationConfigurationController(
         IAuthorizationService authorizationService,

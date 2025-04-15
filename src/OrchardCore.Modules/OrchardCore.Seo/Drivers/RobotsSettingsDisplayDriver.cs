@@ -16,8 +16,7 @@ public sealed class RobotsSettingsDisplayDriver : SiteDisplayDriver<RobotsSettin
     private readonly IAuthorizationService _authorizationService;
     private readonly IStaticFileProvider _staticFileProvider;
     private readonly INotifier _notifier;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     protected override string SettingsGroupId
         => SeoConstants.RobotsSettingsGroupId;

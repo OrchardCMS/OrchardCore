@@ -26,8 +26,7 @@ public sealed class ElasticSettingsDisplayDriver : SiteDisplayDriver<ElasticSett
     private readonly IAuthorizationService _authorizationService;
     private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
     private readonly ElasticsearchClient _elasticClient;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
         => SearchConstants.SearchSettingsGroupId;

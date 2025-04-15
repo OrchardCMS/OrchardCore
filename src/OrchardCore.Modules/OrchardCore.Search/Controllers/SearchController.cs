@@ -28,8 +28,7 @@ public sealed class SearchController : Controller
     private readonly IEnumerable<ISearchHandler> _searchHandlers;
     private readonly IShapeFactory _shapeFactory;
     private readonly ILogger _logger;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public SearchController(
         IAuthorizationService authorizationService,

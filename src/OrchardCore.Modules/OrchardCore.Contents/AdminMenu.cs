@@ -35,8 +35,7 @@ public sealed class AdminMenu : AdminNavigationProvider
     private readonly LinkGenerator _linkGenerator;
     private readonly IAuthorizationService _authorizationService;
     private readonly ISiteService _siteService;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public AdminMenu(
         IContentDefinitionManager contentDefinitionManager,

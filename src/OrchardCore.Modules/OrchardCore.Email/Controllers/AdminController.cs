@@ -19,9 +19,8 @@ public sealed class AdminController : Controller
     private readonly EmailProviderOptions _providerOptions;
     private readonly IEmailService _emailService;
     private readonly IEmailProviderResolver _emailProviderResolver;
-
-    internal readonly IHtmlLocalizer H;
-    internal readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
 
     public AdminController(
         IAuthorizationService authorizationService,

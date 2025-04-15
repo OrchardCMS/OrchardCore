@@ -23,8 +23,7 @@ public sealed class AutoroutePartDisplayDriver : ContentPartDisplayDriver<Autoro
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly YesSql.ISession _session;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public AutoroutePartDisplayDriver(
         IOptions<AutorouteOptions> options,

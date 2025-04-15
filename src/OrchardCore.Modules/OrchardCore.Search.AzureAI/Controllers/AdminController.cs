@@ -34,9 +34,8 @@ public sealed class AdminController : Controller
     private readonly IDisplayManager<AzureAISearchIndexSettings> _displayManager;
     private readonly AzureAISearchOptions _azureAISearchOptions;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-
-    internal readonly IStringLocalizer S;
-    internal readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
 
     public AdminController(
         ISiteService siteService,

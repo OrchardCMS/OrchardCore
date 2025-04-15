@@ -10,8 +10,7 @@ namespace OrchardCore.Queries.Drivers;
 public sealed class QueryDisplayDriver : DisplayDriver<Query>
 {
     private readonly IQueryManager _queryManager;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public QueryDisplayDriver(
         IQueryManager queryManager,

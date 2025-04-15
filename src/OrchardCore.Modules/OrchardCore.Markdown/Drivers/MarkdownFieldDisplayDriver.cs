@@ -24,8 +24,7 @@ public sealed class MarkdownFieldDisplayDriver : ContentFieldDisplayDriver<Markd
     private readonly IHtmlSanitizerService _htmlSanitizerService;
     private readonly IShortcodeService _shortcodeService;
     private readonly IMarkdownService _markdownService;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public MarkdownFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
         HtmlEncoder htmlEncoder,

@@ -13,8 +13,7 @@ namespace OrchardCore.Alias.Drivers;
 public sealed class AliasPartDisplayDriver : ContentPartDisplayDriver<AliasPart>
 {
     private readonly ISession _session;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public AliasPartDisplayDriver(
         ISession session,

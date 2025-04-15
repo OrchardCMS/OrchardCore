@@ -22,8 +22,7 @@ public sealed class ActivityController : Controller
     private readonly IActivityDisplayManager _activityDisplayManager;
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public ActivityController
     (

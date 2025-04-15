@@ -17,8 +17,7 @@ namespace OrchardCore.ContentFields.Drivers;
 public sealed class UserPickerFieldDisplayDriver : ContentFieldDisplayDriver<UserPickerField>
 {
     private readonly ISession _session;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public UserPickerFieldDisplayDriver(
         ISession session,

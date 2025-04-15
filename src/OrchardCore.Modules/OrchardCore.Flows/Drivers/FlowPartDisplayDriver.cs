@@ -22,8 +22,7 @@ public sealed class FlowPartDisplayDriver : ContentPartDisplayDriver<FlowPart>
     private readonly IServiceProvider _serviceProvider;
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public FlowPartDisplayDriver(
         IContentDefinitionManager contentDefinitionManager,

@@ -12,7 +12,7 @@ namespace OrchardCore.Search.AzureAI.Drivers;
 
 internal sealed class ContentAzureAISearchIndexSettingsDisplayDriver : DisplayDriver<AzureAISearchIndexSettings>
 {
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public ContentAzureAISearchIndexSettingsDisplayDriver(IStringLocalizer<ContentAzureAISearchIndexSettingsDisplayDriver> stringLocalizer)
     {

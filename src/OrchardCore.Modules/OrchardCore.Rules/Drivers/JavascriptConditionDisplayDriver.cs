@@ -16,9 +16,8 @@ public sealed class JavascriptConditionDisplayDriver : DisplayDriver<Condition, 
 {
     private readonly INotifier _notifier;
     private readonly JavascriptConditionEvaluator _evaluator;
-
-    internal readonly IHtmlLocalizer H;
-    internal readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
 
     public JavascriptConditionDisplayDriver(
         IHtmlLocalizer<JavascriptConditionDisplayDriver> htmlLocalizer,

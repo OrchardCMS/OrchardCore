@@ -7,8 +7,7 @@ namespace OrchardCore.AdminMenu;
 public sealed class AdminMenu : AdminNavigationProvider
 {
     private readonly AdminMenuNavigationProvidersCoordinator _adminMenuNavigationProviderCoordinator;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public AdminMenu(
         AdminMenuNavigationProvidersCoordinator adminMenuNavigationProviderCoordinator,

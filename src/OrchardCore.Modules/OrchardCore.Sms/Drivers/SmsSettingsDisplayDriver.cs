@@ -18,8 +18,6 @@ public sealed class SmsSettingsDisplayDriver : SiteDisplayDriver<SmsSettings>
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
 
-    internal readonly IStringLocalizer S;
-
     private readonly SmsProviderOptions _smsProviderOptions;
 
     protected override string SettingsGroupId
@@ -29,14 +27,12 @@ public sealed class SmsSettingsDisplayDriver : SiteDisplayDriver<SmsSettings>
         IShellReleaseManager shellReleaseManager,
         IHttpContextAccessor httpContextAccessor,
         IAuthorizationService authorizationService,
-        IOptions<SmsProviderOptions> smsProviders,
-        IStringLocalizer<SmsSettingsDisplayDriver> stringLocalizer)
+        IOptions<SmsProviderOptions> smsProviders)
     {
         _shellReleaseManager = shellReleaseManager;
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
         _smsProviderOptions = smsProviders.Value;
-        S = stringLocalizer;
     }
 
     public override IDisplayResult Edit(ISite site, SmsSettings settings, BuildEditorContext context)

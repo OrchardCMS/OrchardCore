@@ -17,8 +17,7 @@ public sealed class LinkMenuItemPartDisplayDriver : ContentPartDisplayDriver<Lin
     private readonly IActionContextAccessor _actionContextAccessor;
     private readonly IHtmlSanitizerService _htmlSanitizerService;
     private readonly HtmlEncoder _htmlEncoder;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public LinkMenuItemPartDisplayDriver(
         IUrlHelperFactory urlHelperFactory,

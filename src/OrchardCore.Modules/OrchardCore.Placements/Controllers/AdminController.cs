@@ -30,9 +30,8 @@ public sealed class AdminController : Controller
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
-
-    internal readonly IHtmlLocalizer H;
-    internal readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
 
     public AdminController(
         ILogger<AdminController> logger,

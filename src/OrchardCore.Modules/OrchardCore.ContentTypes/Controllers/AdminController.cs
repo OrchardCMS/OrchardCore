@@ -27,9 +27,8 @@ public sealed class AdminController : Controller
     private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-
-    internal readonly IHtmlLocalizer H;
-    internal readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
 
     public AdminController(
         IContentDefinitionDisplayManager contentDefinitionDisplayManager,

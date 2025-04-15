@@ -22,9 +22,8 @@ public sealed class EmailConfirmationController : Controller
     private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
     private readonly UserEmailService _userEmailService;
     private readonly ILogger _logger;
-
-    internal readonly IHtmlLocalizer H;
-    internal readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
 
     public EmailConfirmationController(
         UserManager<IUser> userManager,

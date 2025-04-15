@@ -26,8 +26,6 @@ public sealed class AdminController : Controller
     private readonly IDisplayManager<AuditTrailEvent> _displayManager;
     private readonly IDisplayManager<AuditTrailIndexOptions> _auditTrailOptionsDisplayManager;
 
-    internal readonly IStringLocalizer S;
-
     public AdminController(
         IOptions<PagerOptions> pagerOptions,
         IShapeFactory shapeFactory,
@@ -36,8 +34,7 @@ public sealed class AdminController : Controller
         IAuthorizationService authorizationService,
         IAuditTrailAdminListQueryService auditTrailAdminListQueryService,
         IDisplayManager<AuditTrailEvent> displayManager,
-        IDisplayManager<AuditTrailIndexOptions> auditTrailOptionsDisplayManager,
-        IStringLocalizer<AdminController> stringLocalizer)
+        IDisplayManager<AuditTrailIndexOptions> auditTrailOptionsDisplayManager)
     {
         _pagerOptions = pagerOptions.Value;
         _shapeFactory = shapeFactory;
@@ -47,7 +44,6 @@ public sealed class AdminController : Controller
         _auditTrailAdminListQueryService = auditTrailAdminListQueryService;
         _displayManager = displayManager;
         _auditTrailOptionsDisplayManager = auditTrailOptionsDisplayManager;
-        S = stringLocalizer;
     }
 
     [Admin("AuditTrail/{correlationId?}", "AuditTrailIndex")]

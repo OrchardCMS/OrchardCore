@@ -12,8 +12,7 @@ public sealed class AdminMenu : AdminNavigationProvider
     private static readonly ConcurrentDictionary<string, RouteValueDictionary> _routeValues = [];
 
     private readonly CustomSettingsService _customSettingsService;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public AdminMenu(
         IStringLocalizer<AdminMenu> localizer,

@@ -14,7 +14,7 @@ namespace OrchardCore.Spatial.Drivers;
 
 public sealed class GeoPointFieldDisplayDriver : ContentFieldDisplayDriver<GeoPointField>
 {
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public GeoPointFieldDisplayDriver(IStringLocalizer<GeoPointFieldDisplayDriver> localizer)
     {

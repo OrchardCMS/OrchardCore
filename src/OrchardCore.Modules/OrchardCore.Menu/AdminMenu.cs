@@ -14,7 +14,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         { "Options.CanCreateSelectedContentType", true },
     };
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {

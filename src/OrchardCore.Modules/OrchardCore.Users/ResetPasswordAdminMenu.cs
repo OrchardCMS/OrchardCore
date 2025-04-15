@@ -13,7 +13,7 @@ public sealed class ResetPasswordAdminMenu : AdminNavigationProvider
         { "groupId", ResetPasswordSettingsDisplayDriver.GroupId },
     };
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public ResetPasswordAdminMenu(IStringLocalizer<ResetPasswordAdminMenu> stringLocalizer)
     {

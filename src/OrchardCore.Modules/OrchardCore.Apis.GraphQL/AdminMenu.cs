@@ -5,7 +5,7 @@ namespace OrchardCore.Apis.GraphQL;
 
 public sealed class AdminMenu : AdminNavigationProvider
 {
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {

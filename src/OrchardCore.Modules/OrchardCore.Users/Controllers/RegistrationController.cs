@@ -19,23 +19,16 @@ public sealed class RegistrationController : Controller
     private readonly IEnumerable<ILoginFormEvent> _loginFormEvents;
     private readonly IUserService _userService;
 
-    internal readonly IStringLocalizer S;
-    internal readonly IHtmlLocalizer H;
-
     public RegistrationController(
         IDisplayManager<RegisterUserForm> registerUserDisplayManager,
         IUpdateModelAccessor updateModelAccessor,
         IEnumerable<ILoginFormEvent> loginFormEvents,
-        IUserService userService,
-        IHtmlLocalizer<RegistrationController> htmlLocalizer,
-        IStringLocalizer<RegistrationController> stringLocalizer)
+        IUserService userService)
     {
         _registerUserDisplayManager = registerUserDisplayManager;
         _updateModelAccessor = updateModelAccessor;
         _loginFormEvents = loginFormEvents;
         _userService = userService;
-        H = htmlLocalizer;
-        S = stringLocalizer;
     }
 
     [AllowAnonymous]

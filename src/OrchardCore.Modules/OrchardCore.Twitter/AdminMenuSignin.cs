@@ -12,7 +12,7 @@ public sealed class AdminMenuSignIn : AdminNavigationProvider
         { "groupId", TwitterConstants.Features.Signin },
     };
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public AdminMenuSignIn(IStringLocalizer<AdminMenuSignIn> stringLocalizer)
     {

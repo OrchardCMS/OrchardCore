@@ -48,9 +48,8 @@ public sealed class AdminController : Controller
     private readonly ILogger _logger;
     private readonly IOptions<TemplateOptions> _templateOptions;
     private readonly ILocalizationService _localizationService;
-
-    internal readonly IStringLocalizer S;
-    internal readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
 
     public AdminController(
         IContentDefinitionManager contentDefinitionManager,

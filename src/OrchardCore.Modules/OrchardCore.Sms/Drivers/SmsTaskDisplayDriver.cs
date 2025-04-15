@@ -15,8 +15,7 @@ public sealed class SmsTaskDisplayDriver : ActivityDisplayDriver<SmsTask, SmsTas
 {
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly ILiquidTemplateManager _liquidTemplateManager;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public SmsTaskDisplayDriver(
         IPhoneFormatValidator phoneFormatValidator,

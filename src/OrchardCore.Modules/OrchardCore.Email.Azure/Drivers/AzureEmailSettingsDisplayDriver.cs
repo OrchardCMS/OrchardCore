@@ -26,8 +26,7 @@ public sealed class AzureEmailSettingsDisplayDriver : SiteDisplayDriver<AzureEma
     private readonly IAuthorizationService _authorizationService;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IEmailAddressValidator _emailValidator;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public AzureEmailSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,

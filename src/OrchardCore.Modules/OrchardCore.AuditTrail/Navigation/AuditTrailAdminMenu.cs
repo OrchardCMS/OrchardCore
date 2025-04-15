@@ -20,7 +20,7 @@ public sealed class AuditTrailAdminMenu : AdminNavigationProvider
         { "groupId", AuditTrailSettingsGroup.Id },
     };
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public AuditTrailAdminMenu(IStringLocalizer<AuditTrailAdminMenu> stringLocalizer)
     {

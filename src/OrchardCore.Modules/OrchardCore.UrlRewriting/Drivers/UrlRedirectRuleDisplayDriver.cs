@@ -11,7 +11,7 @@ namespace OrchardCore.UrlRewriting.Drivers;
 
 public sealed class UrlRedirectRuleDisplayDriver : DisplayDriver<RewriteRule>
 {
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public UrlRedirectRuleDisplayDriver(IStringLocalizer<UrlRedirectRuleDisplayDriver> stringLocalizer)
     {

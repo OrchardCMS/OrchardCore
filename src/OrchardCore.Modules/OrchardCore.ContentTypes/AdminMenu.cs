@@ -10,7 +10,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 {
     private static readonly string _adminControllerName = typeof(AdminController).ControllerName();
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public AdminMenu(IStringLocalizer<AdminMenu> stringLocalizer)
     {

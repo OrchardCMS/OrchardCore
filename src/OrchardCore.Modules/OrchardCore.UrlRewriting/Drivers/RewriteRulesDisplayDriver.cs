@@ -11,8 +11,7 @@ namespace OrchardCore.UrlRewriting.Drivers;
 public sealed class RewriteRulesDisplayDriver : DisplayDriver<RewriteRule>
 {
     private readonly IShellReleaseManager _shellReleaseManager;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public RewriteRulesDisplayDriver(
         IShellReleaseManager shellReleaseManager,

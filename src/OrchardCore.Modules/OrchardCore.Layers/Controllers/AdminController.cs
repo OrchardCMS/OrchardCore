@@ -41,9 +41,8 @@ public sealed class AdminController : Controller
     private readonly IEnumerable<IConditionFactory> _conditionFactories;
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
-
-    internal readonly IStringLocalizer S;
-    internal readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
 
     public AdminController(
         IContentDefinitionManager contentDefinitionManager,

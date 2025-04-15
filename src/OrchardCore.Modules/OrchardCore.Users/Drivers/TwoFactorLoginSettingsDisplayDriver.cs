@@ -14,8 +14,7 @@ public sealed class TwoFactorLoginSettingsDisplayDriver : SiteDisplayDriver<TwoF
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
         => LoginSettingsDisplayDriver.GroupId;

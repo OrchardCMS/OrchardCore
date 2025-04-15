@@ -12,7 +12,7 @@ public sealed class GoogleAnalyticsAdminMenu : AdminNavigationProvider
         { "groupId", GoogleConstants.Features.GoogleAnalytics },
     };
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public GoogleAnalyticsAdminMenu(IStringLocalizer<GoogleAnalyticsAdminMenu> stringLocalizer)
     {

@@ -22,8 +22,7 @@ public sealed class AzureAISearchSettingsDisplayDriver : SiteDisplayDriver<Azure
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly IShellReleaseManager _shellReleaseManager;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
         => SearchConstants.SearchSettingsGroupId;

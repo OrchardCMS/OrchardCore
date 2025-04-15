@@ -12,7 +12,7 @@ public sealed class GoogleAuthenticationAdminMenu : AdminNavigationProvider
         { "groupId", GoogleConstants.Features.GoogleAuthentication },
     };
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public GoogleAuthenticationAdminMenu(IStringLocalizer<GoogleAuthenticationAdminMenu> stringLocalizer)
     {

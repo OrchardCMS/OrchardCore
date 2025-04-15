@@ -28,8 +28,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
     private readonly ILogger _logger;
     private readonly INotifier _notifier;
     private readonly IAuthorizationService _authorizationService;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public BagPartDisplayDriver(
         IContentManager contentManager,

@@ -12,7 +12,7 @@ public sealed class AdminMenuGitHubLogin : AdminNavigationProvider
         { "groupId", GitHubConstants.Features.GitHubAuthentication },
     };
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public AdminMenuGitHubLogin(IStringLocalizer<AdminMenuGitHubLogin> stringLocalizer)
     {

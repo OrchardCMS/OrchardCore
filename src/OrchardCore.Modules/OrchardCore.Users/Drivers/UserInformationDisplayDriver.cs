@@ -18,8 +18,7 @@ public sealed class UserInformationDisplayDriver : DisplayDriver<User>
     private readonly IAuthorizationService _authorizationService;
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly ISiteService _siteService;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public UserInformationDisplayDriver(
         IHttpContextAccessor httpContextAccessor,

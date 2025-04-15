@@ -17,8 +17,7 @@ public sealed class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaFie
 {
     private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
     private readonly ILogger _logger;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public MediaFieldDisplayDriver(AttachedMediaFieldFileService attachedMediaFieldFileService,
         IStringLocalizer<MediaFieldDisplayDriver> localizer,

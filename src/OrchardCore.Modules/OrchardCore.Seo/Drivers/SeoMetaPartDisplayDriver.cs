@@ -12,7 +12,7 @@ namespace OrchardCore.Seo.Drivers;
 
 public sealed class SeoMetaPartDisplayDriver : ContentPartDisplayDriver<SeoMetaPart>
 {
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public SeoMetaPartDisplayDriver(IStringLocalizer<SeoMetaPartDisplayDriver> stringLocalizer)
     {
