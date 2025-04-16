@@ -43,7 +43,7 @@ jobs:
       # NuGetAudit is intentionally not disabled here like it is for other CI builds, because we need to address any
       # vulnerable packages before releasing a new version.
       run: |
-        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=false /p:RunAnalyzers=true -p:Version=${{ steps.get_version.outputs.VERSION }}
+        dotnet build -c Release -warnaserror /p:TreatWarningsAsErrors=true /p:RunAnalyzers=true /p:NoWarn=NU1902 -p:Version=${{ steps.get_version.outputs.VERSION }}
     - name: Unit Tests
       run: |
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
