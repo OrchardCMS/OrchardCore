@@ -1,7 +1,7 @@
 namespace OrchardCore.Setup.Services;
 
 /// <summary>
-/// Contract that represents a setup user id generator.
+/// Contract that represents a setup user id generator that will be used during the setup process.
 /// </summary>
 public interface ISetupUserIdGenerator
 {
