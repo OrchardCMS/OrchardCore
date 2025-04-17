@@ -143,7 +143,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Authorization" Version="9.0.4" />
 
     <!-- dotnet/extensions repository -->
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.3.0" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.4.0" />
     
     <!-- Serilog.AspNetCore -->
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
