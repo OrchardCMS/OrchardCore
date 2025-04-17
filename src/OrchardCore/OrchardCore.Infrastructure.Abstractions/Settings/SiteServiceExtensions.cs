@@ -27,7 +27,11 @@ public static class SiteServiceExtensions
     /// Gets the site settings from the cache.
     /// </summary>
     public static ISite GetSiteSettings(this ISiteService siteService)
-        => siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
+    {
+        var task = siteService.GetSiteSettingsAsync();
+
+        return task.IsCompletedSuccessfully ? task.Result : task.GetAwaiter().GetResult();
+    }
 
     /// <summary>
     /// Gets an instance of the specified settings if it exists.
