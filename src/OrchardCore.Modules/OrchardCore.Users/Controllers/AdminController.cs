@@ -562,6 +562,8 @@ public sealed class AdminController : Controller
             }
         }
 
+        ViewData["ReturnUrl"] = returnUrl;
+
         return View(model);
     }
 
