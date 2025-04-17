@@ -3,41 +3,118 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+function _readOnlyError(name) { throw new TypeError("\"" + name + "\" is read-only"); }
 window.formVisibilityGroupRules = function () {
   function initialize(data) {
-    if (!data.elementName || data.action == 'None' || !data.groups.length) {
-      return;
-    }
     var inputElement = getInputByName(data.elementName);
     if (!inputElement) {
       return;
     }
-    // here we have the inputs Name
-    data.groups.forEach(function (group) {
-      group.rules.forEach(function (rule) {
-        var ruleElement = getInputByName(rule.field);
-        if (!ruleElement) {
-          console.warn("Rule element not found: ".concat(data.elementName));
-          return;
-        }
-        userInputValue(ruleElement, rule, validateRule, getInputByName, data);
-
-        // does this value meet that rule
-        if (!validateRule(ruleElement.value, rule)) {
-          console.log("Rule Not met: ".concat(rule.field, " ").concat(rule.operator, " ").concat(rule.value));
-          return;
-        }
-      });
-    });
-
-    // find widgetContainer show or hide
     var widgetContainer = inputElement.closest('.widget');
     if (widgetContainer) {
-      if (data.action.toLowerCase() === 'show') {
-        widgetContainer.classList.remove('d-none');
-      } else if (data.action.toLowerCase() === 'hide') {
-        widgetContainer.classList.add('d-none');
+      // const wasVisible = !widgetContainer.classList.contains('d-none');
+      var wasVisible = isElementVisible(widgetContainer);
+      widgetContainer.setAttribute('data-original-is-visible', String(wasVisible));
+      console.log("\u270F\uFE0F Captured data-original-is-visible=\"".concat(wasVisible, "\""), widgetContainer);
+    }
+    processGroups(data, inputElement, widgetContainer, true);
+  }
+  function processGroups(data, inputElement, widgetContainer, addHandlers) {
+    //if (addHandlers) {
+    //    // const wasVisible = !widgetContainer.classList.contains('d-none');
+    //    const wasVisible = isElementVisible(widgetContainer);
+
+    //    widgetContainer.setAttribute('data-original-is-visible', String(wasVisible));
+    //    console.log(`✏️ Captured data-original-is-visible="${wasVisible}"`, widgetContainer);
+    //}
+
+    var anyGroupRuleMet = false;
+    data.groups.forEach(function (group) {
+      var _group$rules;
+      var groupPassed = true;
+      (_group$rules = group.rules) === null || _group$rules === void 0 || _group$rules.forEach(function (rule) {
+        var fieldElement = getInputByName(rule.field);
+        if (!fieldElement) {
+          console.warn("Field element not found: ".concat(rule.field, ". Ignoring the bad field."));
+          return;
+        }
+        var fieldValue = fieldElement.type === 'checkbox' ? fieldElement.checked ? "true" : "false" : fieldElement.value;
+        if (!validateRule(fieldValue, rule)) {
+          groupPassed = false;
+        }
+        var fields = document.querySelectorAll('.dynamic-visibility-condition');
+        for (var i = 0; i < fields.length; i++) {
+          var field = fields[i];
+          if (field.Name != inputElement.Name) {
+            fields[i].dispatchEvent(new Event('change'));
+            fields[i].dispatchEvent(new Event('keyup'));
+          }
+        }
+        if (addHandlers) {
+          fieldElement.classList.add('dynamic-visibility-condition');
+          fieldElement.addEventListener('change', function (e) {
+            processGroups(data, inputElement, widgetContainer, false);
+          });
+          fieldElement.addEventListener('keyup', function (e) {
+            processGroups(data, inputElement, widgetContainer, false);
+          });
+        }
+      });
+      anyGroupRuleMet = anyGroupRuleMet || groupPassed;
+    });
+    if (addHandlers) {
+      inputElement.dispatchEvent(new Event('change'));
+    }
+
+    // we do not have a data-original-is-visible attribute at the moment you first hit the “Show” logic. In the processGroups
+    // Since originalState is null, the restoreOriginalState falls into the “else” branch
+    var originalState = widgetContainer.getAttribute('data-original-is-visible');
+    console.log('widgetContainer is:', widgetContainer, 'action:', data.action, 'originalState:', originalState);
+    if (widgetContainer) {
+      if (data.action === 'Show') {
+        if (anyGroupRuleMet) {
+          widgetContainer.classList.remove('d-none');
+        } else {
+          console.log("\uD83D\uDEE0 [".concat(data.elementName, "] rules failed \u2192 restoreOriginalState"));
+          restoreOriginalState(widgetContainer);
+        }
+      } else if (data.action === 'Hide') {
+        if (anyGroupRuleMet) {
+          widgetContainer.classList.add('d-none');
+        } else {
+          console.log("\uD83D\uDEE0 [".concat(data.elementName, "] rules failed \u2192 restoreOriginalState"));
+          restoreOriginalState(widgetContainer);
+        }
+      } else {
+        widgetContainer.getAttribute('data-original-is-visible'), _readOnlyError("originalState");
+        if (originalState === 'true') {
+          widgetContainer.classList.remove('d-none');
+        } else if (originalState === 'false') {
+          widgetContainer.classList.add('d-none');
+        } else {
+          widgetContainer.setAttribute('data-original-is-visible', true);
+          widgetContainer.classList.remove('d-none');
+        }
       }
+    }
+  }
+  function restoreOriginalState(container) {
+    //  var originalState = container.getAttribute('data-original-is-visible');
+    var originalState = container.getAttribute('data-original-is-visible') === 'true';
+    console.log('🔄 [restoreOriginalState] originally visible?', originalState, container);
+
+    //if (originalState === 'true') {
+    //    container.classList.add('d-none');
+    //} else {
+    //    container.setAttribute('data-original-is-visible', true);
+    //    container.classList.remove('d-none');
+    //}
+
+    if (originalState) {
+      container.classList.remove('d-none');
+    } else {
+      container.setAttribute('data-original-is-visible', true);
+      container.classList.add('d-none');
     }
   }
   function getInputByName(name) {
@@ -48,61 +125,54 @@ window.formVisibilityGroupRules = function () {
       console.warn("Rule operator is missing for rule", rule);
       return false;
     }
-    var operator = rule.operator.toLowerCase();
-    var lowerInputValue = inputValue ? inputValue.toLowerCase() : "";
-    var lowerRuleValue = rule.value ? rule.value.toLowerCase() : "";
-    var numberInputValue = parseFloat(inputValue);
-    var numberRuleValue = parseFloat(rule.value);
-    switch (operator) {
-      case 'is':
+    var lowerInputValue = inputValue ? inputValue.trim() : "";
+    var lowerRuleValue = rule.value ? rule.value.trim() : "";
+    switch (rule.operator) {
+      case 'Is':
         return lowerInputValue === lowerRuleValue;
-      case 'isnot':
+      case 'IsNot':
         return lowerInputValue !== lowerRuleValue;
-      case 'contains':
+      case 'Contains':
         return lowerInputValue.includes(lowerRuleValue);
-      case 'doesnotcontain':
+      case 'DoesNotContain':
         return !lowerInputValue.includes(lowerRuleValue);
-      case 'startswith':
+      case 'StartsWith':
         return lowerInputValue.startsWith(lowerRuleValue);
-      case 'endswith':
+      case 'EndsWith':
         return lowerInputValue.endsWith(lowerRuleValue);
-      case 'greaterthan':
+      case 'GreaterThan':
+        var numberInputValue = parseFloat(inputValue);
+        var numberRuleValue = parseFloat(rule.value);
         if (!isNaN(numberInputValue) && !isNaN(numberRuleValue)) {
           return numberInputValue > numberRuleValue;
         }
         return inputValue > rule.value;
-      case 'lessthan':
+      case 'LessThan':
+        var numberInputValue = parseFloat(inputValue);
+        var numberRuleValue = parseFloat(rule.value);
         if (!isNaN(numberInputValue) && !isNaN(numberRuleValue)) {
           return numberInputValue < numberRuleValue;
         }
         return inputValue < rule.value;
-      case 'empty':
+      case 'Empty':
         return lowerInputValue === "";
-      case 'notempty':
+      case 'NotEmpty':
         return lowerInputValue !== "";
       default:
         console.warn("validateRule: Unknown operator \"".concat(rule.operator, "\" in rule"), rule);
         return false;
     }
   }
+  function isElementVisible(el) {
+    if (!el) return false;
+    var style = getComputedStyle(el);
+    if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+      return false;
+    }
+    var rect = el.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0;
+  }
   return {
     initialize: initialize
   };
 }();
-function userInputValue(ruleElement, rule, validateRule, getInputByName, data) {
-  function handleRuleEvent(event) {
-    var currentValue;
-    if (event.target.type === 'checkbox') {
-      currentValue = event.target.checked ? 'true' : 'false';
-    } else {
-      currentValue = event.target.value;
-    }
-    if (validateRule(currentValue, rule)) {
-      getInputByName(data.elementName).closest('.widget').classList.remove('d-none');
-    } else {
-      getInputByName(data.elementName).closest('.widget').classList.add('d-none');
-    }
-  }
-  ruleElement.addEventListener('keyup', handleRuleEvent);
-  ruleElement.addEventListener('change', handleRuleEvent);
-}

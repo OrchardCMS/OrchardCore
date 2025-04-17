@@ -1,45 +1,143 @@
 window.formVisibilityGroupRules = (function () {
     function initialize(data) {
 
-        if (!data.elementName || data.action == 'None' || !data.groups.length) {
-            return;
-        }
-
         const inputElement = getInputByName(data.elementName);
-
         if (!inputElement) {
             return;
         }
-        // here we have the inputs Name
+
+        const widgetContainer = inputElement.closest('.widget');
+
+        if (widgetContainer) {
+            // const wasVisible = !widgetContainer.classList.contains('d-none');
+            const wasVisible = isElementVisible(widgetContainer);
+
+            widgetContainer.setAttribute('data-original-is-visible', String(wasVisible));
+            console.log(`✏️ Captured data-original-is-visible="${wasVisible}"`, widgetContainer);
+        }
+
+        processGroups(data, inputElement, widgetContainer, true);
+    }
+
+    function processGroups(data, inputElement, widgetContainer, addHandlers) {
+
+        //if (addHandlers) {
+        //    // const wasVisible = !widgetContainer.classList.contains('d-none');
+        //    const wasVisible = isElementVisible(widgetContainer);
+
+        //    widgetContainer.setAttribute('data-original-is-visible', String(wasVisible));
+        //    console.log(`✏️ Captured data-original-is-visible="${wasVisible}"`, widgetContainer);
+        //}
+
+        let anyGroupRuleMet = false;
+
         data.groups.forEach(group => {
 
-            group.rules.forEach(rule => {
+            let groupPassed = true;
 
-                const ruleElement = getInputByName(rule.field);
+            group.rules?.forEach(rule => {
 
-                if (!ruleElement) {
-                    console.warn(`Rule element not found: ${data.elementName}`);
+                const fieldElement = getInputByName(rule.field);
+                if (!fieldElement) {
+                    console.warn(`Field element not found: ${rule.field}. Ignoring the bad field.`);
                     return;
                 }
 
-                userInputValue(ruleElement, rule, validateRule, getInputByName, data);
+                const fieldValue = fieldElement.type === 'checkbox'
+                    ? (fieldElement.checked ? "true" : "false")
+                    : fieldElement.value;
 
-                // does this value meet that rule
-                if (!validateRule(ruleElement.value, rule)) {
-                    console.log(`Rule Not met: ${rule.field} ${rule.operator} ${rule.value}`);
-                    return;
+                if (!validateRule(fieldValue, rule)) {
+                    groupPassed = false;
                 }
+
+                const fields = document.querySelectorAll('.dynamic-visibility-condition');
+
+                for (let i = 0; i < fields.length; i++) {
+
+                    var field = fields[i];
+                    if (field.Name != inputElement.Name) {
+
+                        fields[i].dispatchEvent(new Event('change'));
+                        fields[i].dispatchEvent(new Event('keyup'));
+                    }
+                }
+
+                if (addHandlers) {
+
+                    fieldElement.classList.add('dynamic-visibility-condition');
+
+                    fieldElement.addEventListener('change', (e) => {
+                        processGroups(data, inputElement, widgetContainer, false);
+                    });
+
+                    fieldElement.addEventListener('keyup', (e) => {
+                        processGroups(data, inputElement, widgetContainer, false);
+                    });
+                }
+
             });
+            anyGroupRuleMet = anyGroupRuleMet || groupPassed;
         });
 
-        // find widgetContainer show or hide
-        const widgetContainer = inputElement.closest('.widget');
+        if (addHandlers) {
+            inputElement.dispatchEvent(new Event('change'));
+        }
+
+        // we do not have a data-original-is-visible attribute at the moment you first hit the “Show” logic. In the processGroups
+        // Since originalState is null, the restoreOriginalState falls into the “else” branch
+        const originalState = widgetContainer.getAttribute('data-original-is-visible');
+        console.log('widgetContainer is:', widgetContainer, 'action:', data.action, 'originalState:', originalState);
         if (widgetContainer) {
-            if (data.action.toLowerCase() === 'show') {
-                widgetContainer.classList.remove('d-none');
-            } else if (data.action.toLowerCase() === 'hide') {
-                widgetContainer.classList.add('d-none');
+            if (data.action === 'Show') {
+                if (anyGroupRuleMet) {
+                    widgetContainer.classList.remove('d-none');
+                } else {
+                    console.log(`🛠 [${data.elementName}] rules failed → restoreOriginalState`);
+                    restoreOriginalState(widgetContainer);
+                }
             }
+            else if (data.action === 'Hide') {
+                if (anyGroupRuleMet) {
+                    widgetContainer.classList.add('d-none');
+                } else {
+                    console.log(`🛠 [${data.elementName}] rules failed → restoreOriginalState`);
+                    restoreOriginalState(widgetContainer);
+                }
+            } else {
+                originalState = widgetContainer.getAttribute('data-original-is-visible');
+
+                if (originalState === 'true') {
+                    widgetContainer.classList.remove('d-none');
+                }
+                else if (originalState === 'false') {
+                    widgetContainer.classList.add('d-none');
+                }
+                else {
+                    widgetContainer.setAttribute('data-original-is-visible', true);
+                    widgetContainer.classList.remove('d-none');
+                }
+            }
+        }
+    }
+
+    function restoreOriginalState(container) {
+        //  var originalState = container.getAttribute('data-original-is-visible');
+        const originalState = container.getAttribute('data-original-is-visible') === 'true';
+        console.log('🔄 [restoreOriginalState] originally visible?', originalState, container);
+
+        //if (originalState === 'true') {
+        //    container.classList.add('d-none');
+        //} else {
+        //    container.setAttribute('data-original-is-visible', true);
+        //    container.classList.remove('d-none');
+        //}
+
+        if (originalState) {
+            container.classList.remove('d-none');
+        } else {
+            container.setAttribute('data-original-is-visible', true);
+            container.classList.add('d-none');
         }
     }
 
@@ -54,51 +152,51 @@ window.formVisibilityGroupRules = (function () {
             return false;
         }
 
-        var operator = rule.operator.toLowerCase();
+        var lowerInputValue = inputValue ? inputValue.trim() : "";
 
-        var lowerInputValue = inputValue ? inputValue.toLowerCase() : "";
+        var lowerRuleValue = rule.value ? rule.value.trim() : "";
 
-        var lowerRuleValue = rule.value ? rule.value.toLowerCase() : "";
-
-        var numberInputValue = parseFloat(inputValue);
-
-        var numberRuleValue = parseFloat(rule.value);
-
-        switch (operator) {
-            case 'is':
+        switch (rule.operator) {
+            case 'Is':
                 return lowerInputValue === lowerRuleValue;
 
-            case 'isnot':
+            case 'IsNot':
                 return lowerInputValue !== lowerRuleValue;
 
-            case 'contains':
+            case 'Contains':
                 return lowerInputValue.includes(lowerRuleValue);
 
-            case 'doesnotcontain':
+            case 'DoesNotContain':
                 return !lowerInputValue.includes(lowerRuleValue);
 
-            case 'startswith':
+            case 'StartsWith':
                 return lowerInputValue.startsWith(lowerRuleValue);
 
-            case 'endswith':
+            case 'EndsWith':
                 return lowerInputValue.endsWith(lowerRuleValue);
 
-            case 'greaterthan':
+            case 'GreaterThan':
+                var numberInputValue = parseFloat(inputValue);
+                var numberRuleValue = parseFloat(rule.value);
+
                 if (!isNaN(numberInputValue) && !isNaN(numberRuleValue)) {
                     return numberInputValue > numberRuleValue;
                 }
                 return inputValue > rule.value;
 
-            case 'lessthan':
+            case 'LessThan':
+                var numberInputValue = parseFloat(inputValue);
+                var numberRuleValue = parseFloat(rule.value);
+
                 if (!isNaN(numberInputValue) && !isNaN(numberRuleValue)) {
                     return numberInputValue < numberRuleValue;
                 }
                 return inputValue < rule.value;
 
-            case 'empty':
+            case 'Empty':
                 return lowerInputValue === "";
 
-            case 'notempty':
+            case 'NotEmpty':
                 return lowerInputValue !== "";
 
             default:
@@ -107,29 +205,18 @@ window.formVisibilityGroupRules = (function () {
         }
     }
 
+    function isElementVisible(el) {
+        if (!el) return false;
+        const style = getComputedStyle(el);
+        if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+            return false;
+        }
+        const rect = el.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0;
+    }
+
     return {
         initialize: initialize
     };
 
 })();
-
-function userInputValue(ruleElement, rule, validateRule, getInputByName, data) {
-    function handleRuleEvent(event) {
-        let currentValue;
-
-        if (event.target.type === 'checkbox') {
-            currentValue = event.target.checked ? 'true' : 'false';
-        } else {
-            currentValue = event.target.value;
-        }
-
-        if (validateRule(currentValue, rule)) {
-            getInputByName(data.elementName).closest('.widget').classList.remove('d-none');
-        } else {
-            getInputByName(data.elementName).closest('.widget').classList.add('d-none');
-        }
-    }
-
-    ruleElement.addEventListener('keyup', handleRuleEvent);
-    ruleElement.addEventListener('change', handleRuleEvent);
-}

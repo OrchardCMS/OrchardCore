@@ -29,8 +29,8 @@ window.formVisibilityGroups = function () {
                                     </select>
                                 </div>
                                 <div class="col" :class="{'d-none': !rule.field}">
-                                    <select class="form-select" v-model="rule.operator
-                                    " :name="prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Operator'">
+                                    <select class="form-select" v-model="rule.operator"
+                                    :name="prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Operator'">
                                         <option value="">Select Operator</option>
                                         <option v-for="option in operatorsList(rule.field)" :value="option.value">
                                             {{ option.text }}
@@ -212,35 +212,36 @@ window.formVisibilityGroups = function () {
                     if (!mapping[field.type]) return [];
 
                     return this.allOperatorOptions.filter(x =>
-                        mapping[field.type].includes(x.value.toLowerCase())
+                        mapping[field.type].includes(x.value)
+                        // lowercase here maybe needed
                     );
                 },
 
                 operatorMapping() {
                     return {
-                        checkbox: ["is", "isnot"],
-                        text: ["is", "isnot", "empty", "notempty", "contains", "doesnotcontain", "startswith", "endswith"],
-                        number: ["is", "isnot", "greaterthan", "lessthan"],
-                        email: ["is", "isnot", "empty", "notempty"],
-                        tel: ["is", "isnot"],
-                        date: ["is", "isnot", "greaterthan", "lessthan"],
-                        time: ["is", "isnot", "greaterthan", "lessthan"],
-                        "datetime": ["is", "isnot", "greaterthan", "lessthan"],
-                        "datetime-local": ["is", "isnot", "greaterthan", "lessthan"],
-                        month: ["is", "isnot"],
-                        week: ["is", "isnot"],
-                        hidden: ["is", "isnot"],
-                        password: ["is", "isnot", "empty", "notempty"],
-                        color: ["is", "isnot"],
-                        range: ["is", "isnot", "greaterthan", "lessthan"],
-                        file: ["is", "isnot"],
-                        url: ["is", "isnot", "contains"],
-                        image: ["is", "isnot"],
-                        reset: ["is", "isnot"],
-                        search: ["is", "isnot", "contains"],
-                        dropdown: ["is", "isnot", "empty", "notempty", "contains", "doesnotcontain", "startswith", "endswith"],
-                        textarea: ["is", "isnot", "empty", "notempty", "contains", "doesnotcontain", "startswith", "endswith"],
-                        submit: [],
+                        checkbox: ["Is", "IsNot"],
+                        text: ["Is", "IsNot", "Empty", "NotEmpty", "Contains", "DoesNotContain", "StartsWith", "EndsWith"],
+                        number: ["Is", "IsNot", "GreaterThan", "LessThan"],
+                        email: ["Is", "IsNot", "Empty", "NotEmpty"],
+                        tel: ["Is", "IsNot"],
+                        date: ["Is", "IsNot", "GreaterThan", "LessThan"],
+                        time: ["Is", "IsNot", "GreaterThan", "LessThan"],
+                        "datetime": ["Is", "IsNot", "GreaterThan", "LessThan"],
+                        "datetime-local": ["Is", "IsNot", "GreaterThan", "LessThan"],
+                        month: ["Is", "IsNot"],
+                        week: ["Is", "IsNot"],
+                        hidden: ["Is", "IsNot"],
+                        password: ["Is", "IsNot", "Empty", "NotEmpty"],
+                        color: ["Is", "IsNot"],
+                        range: ["Is", "IsNot", "GreaterThan", "LessThan"],
+                        file: ["Is", "IsNot"],
+                        url: ["Is", "IsNot", "Contains"],
+                        image: ["Is", "IsNot"],
+                        reset: ["Is", "IsNot"],
+                        search: ["Is", "IsNot", "Contains"],
+                        dropdown: ["Is", "IsNot", "Empty", "NotEmpty", "Contains", "DoesNotContain", "StartsWith", "EndsWith"],
+                        textarea: ["Is", "IsNot", "Empty", "NotEmpty", "Contains", "DoesNotContain", "StartsWith", "EndsWith"],
+                        submit: []
                     };
                 },
 
@@ -267,9 +268,9 @@ window.formVisibilityGroups = function () {
                         return false;
                     }
 
-                    const check = operator.toLowerCase();
+                    const check = operator;
 
-                    if (check === 'empty' || check === 'notempty') {
+                    if (check === 'Empty' || check === 'NotEmpty') {
                         return false;
                     }
 

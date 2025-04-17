@@ -28,13 +28,6 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
             {
                 var name = part.ContentItem.As<FormInputElementPart>()?.Name;
 
-                if (string.IsNullOrEmpty(name))
-                {
-                    model.Action = FormVisibilityAction.None;
-
-                    return;
-                }
-
                 model.ElementName = name;
                 model.Action = visibilityPart.Action;
 
@@ -76,9 +69,9 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
             model.Action = part.Action;
             model.Actions =
             [
-                new(S["Always Visible"], nameof(FormVisibilityAction.None)),
-                new(S["Conditionally Show"], nameof(FormVisibilityAction.Show)),
-                new(S["Conditionally Hide"], nameof(FormVisibilityAction.Hide)),
+                new(S["Always visible"], nameof(FormVisibilityAction.None)),
+                new(S["Conditionally show"], nameof(FormVisibilityAction.Show)),
+                new(S["Conditionally hide"], nameof(FormVisibilityAction.Hide)),
             ];
 
             model.Groups = (part.Groups ?? [])

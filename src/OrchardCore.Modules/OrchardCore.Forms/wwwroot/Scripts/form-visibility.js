@@ -5,7 +5,7 @@
 
 window.formVisibilityGroups = function () {
   var defaultConfig = {
-    template: "\n        <div class=\"mb-3\">\n            <!-- Loop through each group -->\n            <div class=\"card mb-1\" v-for=\"(group, groupIndex) in groups\" :key=\"groupIndex\">\n                <div class=\"card-header d-flex justify-content-between align-items-center\">\n                    <span>Group {{ groupIndex + 1 }}</span>\n                    <input type=\"hidden\" :name=\"prefix + 'Groups[' + groupIndex + '].IsRemoved'\" value=\"false\" />\n                    <button type=\"button\" class=\"btn btn-sm btn-danger\" @click=\"removeGroup(groupIndex)\">\n                        <i class=\"fa-solid fa-trash\"></i>\n                    </button>\n                </div>\n                        \n                <div class=\"card-body\">\n\n                    <!-- Loop through each rule -->\n                    <ul class=\"list-group w-100\">\n                        <!-- Loop through each rule in the group -->\n                        <li class=\"list-group-item\" v-for=\"(rule, ruleIndex) in group.rules\" :key=\"ruleIndex\">\n                            <div class=\"row\">\n                                <div class=\"col\">\n                                    <select class=\"form-select\" v-model=\"rule.field\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Field'\">\n                                        <option value=\"\">Select Field</option>\n                                    <option v-for=\"option in filteredFieldOptions(rule.field)\" :value=\"option.value\">\n                                        {{ option.text }}\n                                        </option>\n                                    </select>\n                                </div>\n                                <div class=\"col\" :class=\"{'d-none': !rule.field}\">\n                                    <select class=\"form-select\" v-model=\"rule.operator\n                                    \" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Operator'\">\n                                        <option value=\"\">Select Operator</option>\n                                        <option v-for=\"option in operatorsList(rule.field)\" :value=\"option.value\">\n                                            {{ option.text }}\n                                        </option>\n                                    </select>\n                                </div>\n                                <div class=\"col\" :class=\"{'d-none': !shouldShowValue(rule.operator)}\">\n                                    <input type=\"text\" class=\"form-control\" v-model=\"rule.value\" placeholder=\"Value\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Value'\" />\n                                </div>\n                                <div class=\"col-auto\">\n                                    <input type=\"hidden\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].IsRemoved'\" value=\"false\" />\n                                    <button type=\"button\" class=\"btn btn-sm btn-danger\" @click=\"removeRule(groupIndex, ruleIndex)\">\n                                        <i class=\"fa-solid fa-trash\"></i>\n                                    </button>\n                                </div>\n                            </div>\n                        </li>\n  \n                    </ul>\n                </div>\n\n                <div class=\"card-footer\">\n                    <div class=\"d-flex justify-content-end\">\n                        <button type=\"button\" class=\"btn btn-sm btn-primary\" @click=\"addRule(groupIndex)\">\n                            <i class=\"fa-solid fa-plus\"></i> New Rule\n                        </button>\n                    </div>\n                </div>\n            </div>\n            <div class=\"d-flex justify-content-end p-3\">\n                <button type=\"button\" class=\"btn btn-sm btn-primary\" @click=\"addGroup()\">\n                    <i class=\"fa-solid fa-circle-plus\"></i> New Group\n                </button>\n            </div>\n        </div>\n        "
+    template: "\n        <div class=\"mb-3\">\n            <!-- Loop through each group -->\n            <div class=\"card mb-1\" v-for=\"(group, groupIndex) in groups\" :key=\"groupIndex\">\n                <div class=\"card-header d-flex justify-content-between align-items-center\">\n                    <span>Group {{ groupIndex + 1 }}</span>\n                    <input type=\"hidden\" :name=\"prefix + 'Groups[' + groupIndex + '].IsRemoved'\" value=\"false\" />\n                    <button type=\"button\" class=\"btn btn-sm btn-danger\" @click=\"removeGroup(groupIndex)\">\n                        <i class=\"fa-solid fa-trash\"></i>\n                    </button>\n                </div>\n                        \n                <div class=\"card-body\">\n\n                    <!-- Loop through each rule -->\n                    <ul class=\"list-group w-100\">\n                        <!-- Loop through each rule in the group -->\n                        <li class=\"list-group-item\" v-for=\"(rule, ruleIndex) in group.rules\" :key=\"ruleIndex\">\n                            <div class=\"row\">\n                                <div class=\"col\">\n                                    <select class=\"form-select\" v-model=\"rule.field\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Field'\">\n                                        <option value=\"\">Select Field</option>\n                                    <option v-for=\"option in filteredFieldOptions(rule.field)\" :value=\"option.value\">\n                                        {{ option.text }}\n                                        </option>\n                                    </select>\n                                </div>\n                                <div class=\"col\" :class=\"{'d-none': !rule.field}\">\n                                    <select class=\"form-select\" v-model=\"rule.operator\"\n                                    :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Operator'\">\n                                        <option value=\"\">Select Operator</option>\n                                        <option v-for=\"option in operatorsList(rule.field)\" :value=\"option.value\">\n                                            {{ option.text }}\n                                        </option>\n                                    </select>\n                                </div>\n                                <div class=\"col\" :class=\"{'d-none': !shouldShowValue(rule.operator)}\">\n                                    <input type=\"text\" class=\"form-control\" v-model=\"rule.value\" placeholder=\"Value\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].Value'\" />\n                                </div>\n                                <div class=\"col-auto\">\n                                    <input type=\"hidden\" :name=\"prefix + 'Groups[' + groupIndex + '].Rules[' + ruleIndex + '].IsRemoved'\" value=\"false\" />\n                                    <button type=\"button\" class=\"btn btn-sm btn-danger\" @click=\"removeRule(groupIndex, ruleIndex)\">\n                                        <i class=\"fa-solid fa-trash\"></i>\n                                    </button>\n                                </div>\n                            </div>\n                        </li>\n  \n                    </ul>\n                </div>\n\n                <div class=\"card-footer\">\n                    <div class=\"d-flex justify-content-end\">\n                        <button type=\"button\" class=\"btn btn-sm btn-primary\" @click=\"addRule(groupIndex)\">\n                            <i class=\"fa-solid fa-plus\"></i> New Rule\n                        </button>\n                    </div>\n                </div>\n            </div>\n            <div class=\"d-flex justify-content-end p-3\">\n                <button type=\"button\" class=\"btn btn-sm btn-primary\" @click=\"addGroup()\">\n                    <i class=\"fa-solid fa-circle-plus\"></i> New Group\n                </button>\n            </div>\n        </div>\n        "
   };
   var initialize = function initialize(instanceConfig) {
     var config = Object.assign({}, defaultConfig, instanceConfig);
@@ -117,33 +117,35 @@ window.formVisibilityGroups = function () {
           var mapping = this.operatorMapping();
           if (!mapping[field.type]) return [];
           return this.allOperatorOptions.filter(function (x) {
-            return mapping[field.type].includes(x.value.toLowerCase());
-          });
+            return mapping[field.type].includes(x.value);
+          }
+          // lowercase here maybe needed
+          );
         },
         operatorMapping: function operatorMapping() {
           return {
-            checkbox: ["is", "isnot"],
-            text: ["is", "isnot", "empty", "notempty", "contains", "doesnotcontain", "startswith", "endswith"],
-            number: ["is", "isnot", "greaterthan", "lessthan"],
-            email: ["is", "isnot", "empty", "notempty"],
-            tel: ["is", "isnot"],
-            date: ["is", "isnot", "greaterthan", "lessthan"],
-            time: ["is", "isnot", "greaterthan", "lessthan"],
-            "datetime": ["is", "isnot", "greaterthan", "lessthan"],
-            "datetime-local": ["is", "isnot", "greaterthan", "lessthan"],
-            month: ["is", "isnot"],
-            week: ["is", "isnot"],
-            hidden: ["is", "isnot"],
-            password: ["is", "isnot", "empty", "notempty"],
-            color: ["is", "isnot"],
-            range: ["is", "isnot", "greaterthan", "lessthan"],
-            file: ["is", "isnot"],
-            url: ["is", "isnot", "contains"],
-            image: ["is", "isnot"],
-            reset: ["is", "isnot"],
-            search: ["is", "isnot", "contains"],
-            dropdown: ["is", "isnot", "empty", "notempty", "contains", "doesnotcontain", "startswith", "endswith"],
-            textarea: ["is", "isnot", "empty", "notempty", "contains", "doesnotcontain", "startswith", "endswith"],
+            checkbox: ["Is", "IsNot"],
+            text: ["Is", "IsNot", "Empty", "NotEmpty", "Contains", "DoesNotContain", "StartsWith", "EndsWith"],
+            number: ["Is", "IsNot", "GreaterThan", "LessThan"],
+            email: ["Is", "IsNot", "Empty", "NotEmpty"],
+            tel: ["Is", "IsNot"],
+            date: ["Is", "IsNot", "GreaterThan", "LessThan"],
+            time: ["Is", "IsNot", "GreaterThan", "LessThan"],
+            "datetime": ["Is", "IsNot", "GreaterThan", "LessThan"],
+            "datetime-local": ["Is", "IsNot", "GreaterThan", "LessThan"],
+            month: ["Is", "IsNot"],
+            week: ["Is", "IsNot"],
+            hidden: ["Is", "IsNot"],
+            password: ["Is", "IsNot", "Empty", "NotEmpty"],
+            color: ["Is", "IsNot"],
+            range: ["Is", "IsNot", "GreaterThan", "LessThan"],
+            file: ["Is", "IsNot"],
+            url: ["Is", "IsNot", "Contains"],
+            image: ["Is", "IsNot"],
+            reset: ["Is", "IsNot"],
+            search: ["Is", "IsNot", "Contains"],
+            dropdown: ["Is", "IsNot", "Empty", "NotEmpty", "Contains", "DoesNotContain", "StartsWith", "EndsWith"],
+            textarea: ["Is", "IsNot", "Empty", "NotEmpty", "Contains", "DoesNotContain", "StartsWith", "EndsWith"],
             submit: []
           };
         },
@@ -168,8 +170,8 @@ window.formVisibilityGroups = function () {
           if (!operator) {
             return false;
           }
-          var check = operator.toLowerCase();
-          if (check === 'empty' || check === 'notempty') {
+          var check = operator;
+          if (check === 'Empty' || check === 'NotEmpty') {
             return false;
           }
           return true;
