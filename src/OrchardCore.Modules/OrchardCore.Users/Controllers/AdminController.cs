@@ -496,7 +496,7 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    public async Task<IActionResult> EditPassword(string id)
+    public async Task<IActionResult> EditPassword(string id, string returnUrl)
     {
         if (await _userManager.FindByIdAsync(id) is not User user)
         {
@@ -508,13 +508,15 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var model = new ResetPasswordViewModel { UsernameOrEmail = user.UserName };
+        var model = new EditPasswordViewModel { UsernameOrEmail = user.UserName };
+
+        ViewData["ReturnUrl"] = returnUrl;
 
         return View(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> EditPassword(ResetPasswordViewModel model)
+    public async Task<IActionResult> EditPassword(EditPasswordViewModel model, string returnUrl)
     {
         if (await _userService.GetUserAsync(model.UsernameOrEmail) is not User user)
         {
@@ -528,15 +530,39 @@ public sealed class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-            if (await _userService.ResetPasswordAsync(model.UsernameOrEmail, token, model.NewPassword, ModelState.AddModelError))
+            if (user.UserName == model.UsernameOrEmail)
             {
-                await _notifier.SuccessAsync(H["Password updated correctly."]);
+                if (await _userService.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword, ModelState.AddModelError))
+                {
+                    await _notifier.SuccessAsync(H["The password has been changed successfully."]);
 
-                return RedirectToAction(nameof(Index));
+                    if (!string.IsNullOrEmpty(returnUrl))
+                    {
+                        return this.LocalRedirect(returnUrl, true);
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            else
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                if (await _userService.ResetPasswordAsync(model.UsernameOrEmail, token, model.NewPassword, ModelState.AddModelError))
+                {
+                    await _notifier.SuccessAsync(H["The password has been changed successfully."]);
+
+                    if (!string.IsNullOrEmpty(returnUrl))
+                    {
+                        return this.LocalRedirect(returnUrl, true);
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
             }
         }
+
+        ViewData["ReturnUrl"] = returnUrl;
 
         return View(model);
     }
