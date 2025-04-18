@@ -79,7 +79,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
     [HttpPost]
     [AllowAnonymous]
-    [ValidateAntiForgeryToken]
     public IActionResult ExternalLogin(string provider, string returnUrl = null)
     {
         // Request a redirect to the external login provider.
@@ -271,7 +270,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
     [HttpPost]
     [AllowAnonymous]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> RegisterExternalLogin(RegisterExternalLoginViewModel model, string returnUrl = null)
     {
         var settings = await _siteService.GetSettingsAsync<ExternalRegistrationSettings>();
@@ -350,7 +348,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
 
     [HttpPost]
     [AllowAnonymous]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> LinkExternalLogin(LinkExternalLoginViewModel model, string returnUrl = null)
     {
         var info = await _signInManager.GetExternalLoginInfoAsync();
@@ -430,7 +427,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> LinkLogin(string provider)
     {
         // Clear the existing external cookie to ensure a clean login process.
@@ -482,7 +478,6 @@ public sealed class ExternalAuthenticationsController : AccountBaseController
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> RemoveLogin(RemoveLoginViewModel model)
     {
         var user = await _userManager.GetUserAsync(User);

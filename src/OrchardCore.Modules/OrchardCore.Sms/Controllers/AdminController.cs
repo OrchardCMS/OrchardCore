@@ -55,7 +55,6 @@ public sealed class AdminController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Test(SmsTestViewModel model)
     {
         if (!await _authorizationService.AuthorizeAsync(User, SmsPermissions.ManageSmsSettings))

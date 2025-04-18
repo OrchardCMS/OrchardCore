@@ -142,7 +142,6 @@ public sealed class ResetPasswordController : Controller
 
     [HttpPost]
     [AllowAnonymous]
-    [ValidateAntiForgeryToken]
     [ActionName(nameof(ResetPassword))]
     public async Task<IActionResult> ResetPasswordPOST()
     {
