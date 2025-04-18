@@ -10,5 +10,11 @@
     "name": "trumbowyg.media.url",
     "source": "Assets/trumbowyg.media.url.js",
     "tags": ["admin", "dashboard", "js"]
+  },
+  {
+    "action": "min",
+    "name": "codemirror-monokai-css",
+    "source": "../../../node_modules/codemirror/theme/monokai.css",
+    "tags": ["admin", "css"]
   }
 ]
