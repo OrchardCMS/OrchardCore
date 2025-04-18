@@ -8,26 +8,17 @@ window.formVisibilityGroupRules = (function () {
 
         const widgetContainer = inputElement.closest('.widget');
 
-        if (widgetContainer) {
-            // const wasVisible = !widgetContainer.classList.contains('d-none');
-            const wasVisible = isElementVisible(widgetContainer);
-
-            widgetContainer.setAttribute('data-original-is-visible', String(wasVisible));
-            console.log(`✏️ Captured data-original-is-visible="${wasVisible}"`, widgetContainer);
-        }
-
         processGroups(data, inputElement, widgetContainer, true);
     }
 
     function processGroups(data, inputElement, widgetContainer, addHandlers) {
 
-        //if (addHandlers) {
-        //    // const wasVisible = !widgetContainer.classList.contains('d-none');
-        //    const wasVisible = isElementVisible(widgetContainer);
-
-        //    widgetContainer.setAttribute('data-original-is-visible', String(wasVisible));
-        //    console.log(`✏️ Captured data-original-is-visible="${wasVisible}"`, widgetContainer);
-        //}
+        if (addHandlers) {
+            // capture the current visibility state of the container.
+            const visibilityFlag = isElementVisible(widgetContainer);
+            // The returned value, stored in visibilityFlag, is a Boolean(false if the widget is visible, true if it isn’t).
+            widgetContainer.setAttribute('data-original-is-visible', String(visibilityFlag));
+        }
 
         let anyGroupRuleMet = false;
 
@@ -84,60 +75,66 @@ window.formVisibilityGroupRules = (function () {
             inputElement.dispatchEvent(new Event('change'));
         }
 
-        // we do not have a data-original-is-visible attribute at the moment you first hit the “Show” logic. In the processGroups
-        // Since originalState is null, the restoreOriginalState falls into the “else” branch
         const originalState = widgetContainer.getAttribute('data-original-is-visible');
-        console.log('widgetContainer is:', widgetContainer, 'action:', data.action, 'originalState:', originalState);
+
+        console.log('originalState:', originalState, 'elementName:', data.elementName, 'anyGroupRuleMet:', anyGroupRuleMet, 'Action=', data.action);
+
+
         if (widgetContainer) {
+
             if (data.action === 'Show') {
+
                 if (anyGroupRuleMet) {
                     widgetContainer.classList.remove('d-none');
                 } else {
-                    console.log(`🛠 [${data.elementName}] rules failed → restoreOriginalState`);
+                    //   console.log(`🛠 [${data.elementName}] rules failed → restoreOriginalState`);
                     restoreOriginalState(widgetContainer);
                 }
+
             }
+
             else if (data.action === 'Hide') {
+
                 if (anyGroupRuleMet) {
                     widgetContainer.classList.add('d-none');
                 } else {
-                    console.log(`🛠 [${data.elementName}] rules failed → restoreOriginalState`);
-                    restoreOriginalState(widgetContainer);
+                    //    console.log(`🛠 [${data.elementName}] rules failed → restoreOriginalState`);
+                    //  restoreOriginalState(widgetContainer);
                 }
-            } else {
+
+            }
+
+            else {
+
                 originalState = widgetContainer.getAttribute('data-original-is-visible');
 
                 if (originalState === 'true') {
                     widgetContainer.classList.remove('d-none');
                 }
+
                 else if (originalState === 'false') {
                     widgetContainer.classList.add('d-none');
                 }
+
                 else {
-                    widgetContainer.setAttribute('data-original-is-visible', true);
+                    widgetContainer.setAttribute('data-original-is-visible');
                     widgetContainer.classList.remove('d-none');
                 }
+
             }
+
         }
     }
 
     function restoreOriginalState(container) {
-        //  var originalState = container.getAttribute('data-original-is-visible');
-        const originalState = container.getAttribute('data-original-is-visible') === 'true';
-        console.log('🔄 [restoreOriginalState] originally visible?', originalState, container);
 
-        //if (originalState === 'true') {
-        //    container.classList.add('d-none');
-        //} else {
-        //    container.setAttribute('data-original-is-visible', true);
-        //    container.classList.remove('d-none');
-        //}
+        var originalState = container.getAttribute('data-original-is-visible');
 
-        if (originalState) {
-            container.classList.remove('d-none');
-        } else {
-            container.setAttribute('data-original-is-visible', true);
+        if (originalState === 'true') {
             container.classList.add('d-none');
+        } else {
+            container.setAttribute('data-original-is-visible');
+            container.classList.remove('d-none');
         }
     }
 
