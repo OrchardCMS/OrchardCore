@@ -233,6 +233,17 @@ public class UserStore :
             await _session.SaveAsync(user);
             await _session.FlushAsync();
             await Handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
+
+            var enabled = (user as User).IsEnabled;
+            var userContext = new UserContext(user);
+            if (enabled)
+            {
+                await Handlers.InvokeAsync((handler, context) => handler.EnabledAsync(context), userContext, _logger);
+            }
+            else
+            {
+                await Handlers.InvokeAsync((handler, context) => handler.DisabledAsync(context), userContext, _logger);
+            }
         }
         catch (Exception e)
         {
