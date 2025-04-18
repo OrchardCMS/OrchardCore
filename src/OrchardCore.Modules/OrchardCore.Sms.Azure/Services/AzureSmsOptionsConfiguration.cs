@@ -22,9 +22,7 @@ public sealed class AzureSmsOptionsConfiguration : IConfigureOptions<AzureSmsOpt
 
     public void Configure(AzureSmsOptions options)
     {
-        var settings = _siteService.GetSettingsAsync<AzureSmsSettings>()
-            .GetAwaiter()
-            .GetResult();
+        var settings = _siteService.GetSettings<AzureSmsSettings>();
 
         options.IsEnabled = settings.IsEnabled;
         options.PhoneNumber = settings.PhoneNumber;

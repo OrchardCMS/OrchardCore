@@ -15,9 +15,7 @@ public sealed class RegistrationOptionsConfigurations : IConfigureOptions<Regist
 
     public void Configure(RegistrationOptions options)
     {
-        var settings = _siteService.GetSettingsAsync<RegistrationSettings>()
-            .GetAwaiter()
-            .GetResult();
+        var settings = _siteService.GetSettings<RegistrationSettings>();
 
         options.UsersMustValidateEmail = settings.UsersMustValidateEmail;
         options.UsersAreModerated = settings.UsersAreModerated;

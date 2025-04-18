@@ -22,7 +22,7 @@ internal sealed class HomeRouteValuesAddressScheme : IShellRouteValuesAddressSch
             return [];
         }
 
-        var homeRoute = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult().HomeRoute;
+        var homeRoute = _siteService.GetSiteSettings().HomeRoute;
 
         if (Match(homeRoute, address.ExplicitValues))
         {

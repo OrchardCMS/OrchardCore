@@ -18,7 +18,7 @@ public sealed class CacheOptionsConfiguration : IConfigureOptions<CacheOptions>
 
     public void Configure(CacheOptions options)
     {
-        var settings = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
+        var settings = _siteService.GetSiteSettings();
 
         switch (settings.CacheMode)
         {

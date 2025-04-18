@@ -15,9 +15,7 @@ public sealed class SearchSettingsConfiguration : IConfigureOptions<SearchSettin
 
     public void Configure(SearchSettings options)
     {
-        var settings = _siteService.GetSettingsAsync<SearchSettings>()
-            .GetAwaiter()
-            .GetResult();
+        var settings = _siteService.GetSettings<SearchSettings>();
 
         options.ProviderName = settings.ProviderName;
     }
