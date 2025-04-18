@@ -493,5 +493,12 @@
     "source": "Assets/Vendor/deprecated/*",
     "dest": "wwwroot/Scripts/",
     "tags": [ "resources", "js" ]
+  },
+  {
+    "action": "min",
+    "name": "codemirror",
+    "source": "../../../node_modules/codemirror/theme/monokai.css",
+    "dest": "wwwroot/Styles/codemirror/themes/monokai/",
+    "tags": ["admin", "css"]
   }
 ]
