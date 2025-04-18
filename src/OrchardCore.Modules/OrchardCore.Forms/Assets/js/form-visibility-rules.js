@@ -16,7 +16,6 @@ window.formVisibilityGroupRules = (function () {
         if (addHandlers) {
             // capture the current visibility state of the container.
             const visibilityFlag = isElementVisible(widgetContainer);
-            // The returned value, stored in visibilityFlag, is a Boolean(false if the widget is visible, true if it isn’t).
             widgetContainer.setAttribute('data-original-is-visible', String(visibilityFlag));
         }
 
@@ -79,7 +78,6 @@ window.formVisibilityGroupRules = (function () {
 
         console.log('originalState:', originalState, 'elementName:', data.elementName, 'anyGroupRuleMet:', anyGroupRuleMet, 'Action=', data.action);
 
-
         if (widgetContainer) {
 
             if (data.action === 'Show') {
@@ -87,8 +85,12 @@ window.formVisibilityGroupRules = (function () {
                 if (anyGroupRuleMet) {
                     widgetContainer.classList.remove('d-none');
                 } else {
-                    //   console.log(`🛠 [${data.elementName}] rules failed → restoreOriginalState`);
-                    restoreOriginalState(widgetContainer);
+                    console.log(`🛠 [${data.elementName}] rules failed → restoreOriginalState`);
+                    const formWrapper = widgetContainer.closest('.widget-form');
+                    // restore each child widget based on its saved flag
+                    formWrapper.querySelectorAll('.widget[data-original-is-visible]')
+                        .forEach(widget => restoreOriginalState(widget));
+                    //  restoreOriginalState(widgetForms);
                 }
 
             }
@@ -98,14 +100,18 @@ window.formVisibilityGroupRules = (function () {
                 if (anyGroupRuleMet) {
                     widgetContainer.classList.add('d-none');
                 } else {
-                    //    console.log(`🛠 [${data.elementName}] rules failed → restoreOriginalState`);
+                    const formWrapper = widgetContainer.closest('.widget-form');
+                    // restore each child widget based on its saved flag
+                    formWrapper.querySelectorAll('.widget[data-original-is-visible]')
+                        .forEach(widget => restoreOriginalState(widget));
                     //  restoreOriginalState(widgetContainer);
                 }
 
             }
 
             else {
-
+                // this never gets hit 
+                console.log(`Never seen`)
                 originalState = widgetContainer.getAttribute('data-original-is-visible');
 
                 if (originalState === 'true') {
@@ -117,7 +123,6 @@ window.formVisibilityGroupRules = (function () {
                 }
 
                 else {
-                    widgetContainer.setAttribute('data-original-is-visible');
                     widgetContainer.classList.remove('d-none');
                 }
 

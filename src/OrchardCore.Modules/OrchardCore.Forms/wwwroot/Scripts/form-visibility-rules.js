@@ -17,7 +17,6 @@ window.formVisibilityGroupRules = function () {
     if (addHandlers) {
       // capture the current visibility state of the container.
       var visibilityFlag = isElementVisible(widgetContainer);
-      // The returned value, stored in visibilityFlag, is a Boolean(false if the widget is visible, true if it isn’t).
       widgetContainer.setAttribute('data-original-is-visible', String(visibilityFlag));
     }
     var anyGroupRuleMet = false;
@@ -64,24 +63,34 @@ window.formVisibilityGroupRules = function () {
         if (anyGroupRuleMet) {
           widgetContainer.classList.remove('d-none');
         } else {
-          //   console.log(`🛠 [${data.elementName}] rules failed → restoreOriginalState`);
-          restoreOriginalState(widgetContainer);
+          console.log("\uD83D\uDEE0 [".concat(data.elementName, "] rules failed \u2192 restoreOriginalState"));
+          var formWrapper = widgetContainer.closest('.widget-form');
+          // restore each child widget based on its saved flag
+          formWrapper.querySelectorAll('.widget[data-original-is-visible]').forEach(function (widget) {
+            return restoreOriginalState(widget);
+          });
+          //  restoreOriginalState(widgetForms);
         }
       } else if (data.action === 'Hide') {
         if (anyGroupRuleMet) {
           widgetContainer.classList.add('d-none');
         } else {
-          //    console.log(`🛠 [${data.elementName}] rules failed → restoreOriginalState`);
+          var _formWrapper = widgetContainer.closest('.widget-form');
+          // restore each child widget based on its saved flag
+          _formWrapper.querySelectorAll('.widget[data-original-is-visible]').forEach(function (widget) {
+            return restoreOriginalState(widget);
+          });
           //  restoreOriginalState(widgetContainer);
         }
       } else {
+        // this never gets hit 
+        console.log("Never seen");
         widgetContainer.getAttribute('data-original-is-visible'), _readOnlyError("originalState");
         if (originalState === 'true') {
           widgetContainer.classList.remove('d-none');
         } else if (originalState === 'false') {
           widgetContainer.classList.add('d-none');
         } else {
-          widgetContainer.setAttribute('data-original-is-visible');
           widgetContainer.classList.remove('d-none');
         }
       }
