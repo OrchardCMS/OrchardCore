@@ -23,8 +23,7 @@ public sealed class TaxonomyContentsAdminListDisplayDriver : DisplayDriver<Conte
     private readonly ISiteService _siteService;
     private readonly IContentManager _contentManager;
     private readonly IContentDefinitionManager _contentDefinitionManager;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public TaxonomyContentsAdminListDisplayDriver(
         ISiteService siteService,

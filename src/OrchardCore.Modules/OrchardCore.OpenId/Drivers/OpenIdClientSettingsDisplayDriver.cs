@@ -26,8 +26,7 @@ public sealed class OpenIdClientSettingsDisplayDriver : SiteDisplayDriver<OpenId
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IOpenIdClientService _clientService;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
         => "OrchardCore.OpenId.Client";

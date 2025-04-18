@@ -48,9 +48,8 @@ public sealed class AdminController : Controller
     private readonly ElasticsearchQueryService _elasticQueryService;
     private readonly ElasticsearchConnectionOptions _elasticConnectionOptions;
     private readonly ILocalizationService _localizationService;
-
-    internal readonly IStringLocalizer S;
-    internal readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
 
     public AdminController(
         ISiteService siteService,

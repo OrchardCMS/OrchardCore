@@ -12,7 +12,7 @@ public sealed class GoogleTagManagerAdminMenu : AdminNavigationProvider
         { "groupId", GoogleConstants.Features.GoogleTagManager },
     };
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public GoogleTagManagerAdminMenu(IStringLocalizer<GoogleTagManagerAdminMenu> stringLocalizer)
     {

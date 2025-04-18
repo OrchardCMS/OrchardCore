@@ -25,9 +25,8 @@ public sealed class RemoteInstanceController : Controller
     private readonly IShapeFactory _shapeFactory;
     private readonly INotifier _notifier;
     private readonly RemoteInstanceService _service;
-
-    internal readonly IStringLocalizer S;
-    internal readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
 
     public RemoteInstanceController(
         RemoteInstanceService service,

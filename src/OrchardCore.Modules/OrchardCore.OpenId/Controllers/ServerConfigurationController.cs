@@ -23,8 +23,7 @@ public sealed class ServerConfigurationController : Controller
     private readonly IShellHost _shellHost;
     private readonly ShellSettings _shellSettings;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public ServerConfigurationController(
         IAuthorizationService authorizationService,

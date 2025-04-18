@@ -26,9 +26,7 @@ public sealed class AdminController : Controller
     private readonly IEnumerable<IRecipeEnvironmentProvider> _environmentProviders;
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
-
-    internal readonly IHtmlLocalizer H;
-    internal readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
 
     public AdminController(
         IShellHost shellHost,
@@ -40,8 +38,7 @@ public sealed class AdminController : Controller
         IEnumerable<IRecipeEnvironmentProvider> environmentProviders,
         INotifier notifier,
         ILogger<AdminController> logger,
-        IHtmlLocalizer<AdminController> htmlLocalizer,
-        IStringLocalizer<AdminController> stringLocalizer)
+        IHtmlLocalizer<AdminController> htmlLocalizer)
     {
         _shellHost = shellHost;
         _shellSettings = shellSettings;
@@ -53,7 +50,6 @@ public sealed class AdminController : Controller
         _notifier = notifier;
         _logger = logger;
         H = htmlLocalizer;
-        S = stringLocalizer;
     }
 
     [Admin("Recipes", "Recipes")]

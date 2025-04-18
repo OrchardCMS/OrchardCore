@@ -12,7 +12,7 @@ public sealed class AdminMenuMicrosoftAccount : AdminNavigationProvider
         { "groupId", MicrosoftAuthenticationConstants.Features.MicrosoftAccount },
     };
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public AdminMenuMicrosoftAccount(IStringLocalizer<AdminMenuMicrosoftAccount> stringLocalizer)
     {

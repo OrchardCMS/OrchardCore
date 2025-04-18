@@ -19,8 +19,7 @@ public sealed class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
     private readonly IContentDefinitionManager _contentDefinitionManager;
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public MenuPartDisplayDriver(
         IContentDefinitionManager contentDefinitionManager,

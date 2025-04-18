@@ -12,7 +12,7 @@ public sealed class AdminMenuPixel : AdminNavigationProvider
         { "groupId", FacebookConstants.PixelSettingsGroupId },
     };
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public AdminMenuPixel(
         IStringLocalizer<AdminMenuLogin> stringLocalizer)

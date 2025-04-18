@@ -18,8 +18,7 @@ public sealed class HtmlMenuItemPartDisplayDriver : ContentPartDisplayDriver<Htm
     private readonly IActionContextAccessor _actionContextAccessor;
     private readonly IHtmlSanitizerService _htmlSanitizerService;
     private readonly HtmlEncoder _htmlencoder;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public HtmlMenuItemPartDisplayDriver(
         IUrlHelperFactory urlHelperFactory,

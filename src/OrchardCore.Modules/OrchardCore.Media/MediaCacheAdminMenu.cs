@@ -5,7 +5,7 @@ namespace OrchardCore.Media;
 
 public sealed class MediaCacheAdminMenu : AdminNavigationProvider
 {
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public MediaCacheAdminMenu(IStringLocalizer<MediaCacheAdminMenu> stringLocalizer)
     {

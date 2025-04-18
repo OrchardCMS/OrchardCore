@@ -13,7 +13,7 @@ public sealed class RegistrationAdminMenu : AdminNavigationProvider
         { "groupId", RegistrationSettingsDisplayDriver.GroupId },
     };
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public RegistrationAdminMenu(IStringLocalizer<RegistrationAdminMenu> stringLocalizer)
     {

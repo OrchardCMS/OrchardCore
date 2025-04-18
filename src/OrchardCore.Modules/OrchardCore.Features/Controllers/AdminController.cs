@@ -24,9 +24,8 @@ public sealed class AdminController : Controller
     private readonly IShellFeaturesManager _shellFeaturesManager;
     private readonly AdminOptions _adminOptions;
     private readonly INotifier _notifier;
-
-    internal readonly IStringLocalizer S;
-    internal readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
 
     public AdminController(
         IAuthorizationService authorizationService,

@@ -18,8 +18,7 @@ public sealed class LocalizationSetContentPickerFieldDisplayDriver : ContentFiel
 {
     private readonly IContentManager _contentManager;
     private readonly IContentLocalizationManager _contentLocalizationManager;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public LocalizationSetContentPickerFieldDisplayDriver(
         IContentManager contentManager,

@@ -5,7 +5,7 @@ namespace OrchardCore.OpenId;
 
 public sealed class ValidationAdminMenu : AdminNavigationProvider
 {
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public ValidationAdminMenu(IStringLocalizer<ValidationAdminMenu> stringLocalizer)
     {

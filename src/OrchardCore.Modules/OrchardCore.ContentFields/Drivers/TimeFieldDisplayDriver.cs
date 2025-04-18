@@ -12,7 +12,7 @@ namespace OrchardCore.ContentFields.Drivers;
 
 public sealed class TimeFieldDisplayDriver : ContentFieldDisplayDriver<TimeField>
 {
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public TimeFieldDisplayDriver(IStringLocalizer<TimeFieldDisplayDriver> localizer)
     {

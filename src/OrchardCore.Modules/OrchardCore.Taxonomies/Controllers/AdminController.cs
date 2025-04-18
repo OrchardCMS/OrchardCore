@@ -25,8 +25,7 @@ public sealed class AdminController : Controller
     private readonly ISession _session;
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public AdminController(
         ISession session,

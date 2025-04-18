@@ -24,9 +24,8 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
     private readonly IAuthorizationService _authorizationService;
     private readonly IEnumerable<IUserEventHandler> _userEventHandlers;
     private readonly ILogger _logger;
-
-    internal readonly IHtmlLocalizer H;
-    internal readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
 
     public UserDisplayDriver(
         UserManager<IUser> userManager,

@@ -11,8 +11,7 @@ namespace OrchardCore.Liquid.Drivers;
 public sealed class LiquidPartDisplayDriver : ContentPartDisplayDriver<LiquidPart>
 {
     private readonly ILiquidTemplateManager _liquidTemplateManager;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public LiquidPartDisplayDriver(
         ILiquidTemplateManager liquidTemplateManager,

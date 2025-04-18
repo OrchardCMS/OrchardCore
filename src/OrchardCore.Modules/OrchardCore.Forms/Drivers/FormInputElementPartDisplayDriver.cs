@@ -11,7 +11,7 @@ namespace OrchardCore.Forms.Drivers;
 
 public sealed class FormInputElementPartDisplayDriver : ContentPartDisplayDriver<FormInputElementPart>
 {
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public FormInputElementPartDisplayDriver(IStringLocalizer<FormInputElementPartDisplayDriver> stringLocalizer)
     {

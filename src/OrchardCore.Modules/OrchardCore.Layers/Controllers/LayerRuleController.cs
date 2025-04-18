@@ -22,8 +22,7 @@ public sealed class LayerRuleController : Controller
     private readonly IConditionIdGenerator _conditionIdGenerator;
     private readonly INotifier _notifier;
     private readonly IUpdateModelAccessor _updateModelAccessor;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public LayerRuleController(
         IAuthorizationService authorizationService,

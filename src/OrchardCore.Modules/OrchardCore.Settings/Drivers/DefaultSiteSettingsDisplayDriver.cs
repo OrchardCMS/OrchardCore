@@ -12,8 +12,7 @@ public sealed class DefaultSiteSettingsDisplayDriver : DisplayDriver<ISite>
     public const string GroupId = "general";
 
     private readonly IShellReleaseManager _shellReleaseManager;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public DefaultSiteSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,

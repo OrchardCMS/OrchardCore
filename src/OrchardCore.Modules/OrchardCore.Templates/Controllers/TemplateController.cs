@@ -27,9 +27,8 @@ public sealed class TemplateController : Controller
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
-
-    internal readonly IStringLocalizer S;
-    internal readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
 
     public TemplateController(
         IAuthorizationService authorizationService,

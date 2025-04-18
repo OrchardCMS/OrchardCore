@@ -14,8 +14,7 @@ public sealed class SitemapCacheController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly ISitemapCacheProvider _sitemapCacheProvider;
     private readonly INotifier _notifier;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public SitemapCacheController(
         IAuthorizationService authorizationService,

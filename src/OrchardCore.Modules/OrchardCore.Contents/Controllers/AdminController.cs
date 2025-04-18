@@ -38,9 +38,8 @@ public sealed class AdminController : Controller, IUpdateModel
     private readonly IDisplayManager<ContentOptionsViewModel> _contentOptionsDisplayManager;
     private readonly ISession _session;
     private readonly INotifier _notifier;
-
-    internal readonly IHtmlLocalizer H;
-    internal readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
 
     public AdminController(
         IAuthorizationService authorizationService,

@@ -16,8 +16,7 @@ public sealed class AdminController : Controller
     private readonly IContentLocalizationManager _contentLocalizationManager;
     private readonly INotifier _notifier;
     private readonly IAuthorizationService _authorizationService;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public AdminController(
         IContentManager contentManager,

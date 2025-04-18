@@ -13,7 +13,7 @@ public sealed class ClientAdminMenu : AdminNavigationProvider
     };
 
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public ClientAdminMenu(IStringLocalizer<ClientAdminMenu> stringLocalizer)
     {

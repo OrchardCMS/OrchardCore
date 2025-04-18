@@ -16,8 +16,7 @@ public sealed class MediaCacheController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly IMediaFileStoreCache _mediaFileStoreCache;
     private readonly INotifier _notifier;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public MediaCacheController(
         IAuthorizationService authorizationService,

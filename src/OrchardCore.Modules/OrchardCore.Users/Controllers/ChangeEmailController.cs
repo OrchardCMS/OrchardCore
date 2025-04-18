@@ -16,8 +16,7 @@ public sealed class ChangeEmailController : Controller
     private readonly IUserService _userService;
     private readonly UserManager<IUser> _userManager;
     private readonly ISiteService _siteService;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public ChangeEmailController(
         IUserService userService,

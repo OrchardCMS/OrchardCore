@@ -7,8 +7,7 @@ namespace OrchardCore.Tenants;
 public sealed class FeatureProfilesAdminMenu : AdminNavigationProvider
 {
     private readonly ShellSettings _shellSettings;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public FeatureProfilesAdminMenu(
         ShellSettings shellSettings,

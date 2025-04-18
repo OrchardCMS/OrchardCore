@@ -25,8 +25,7 @@ public sealed class ContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<
     private readonly ILiquidTemplateManager _templateManager;
     private readonly IAuthorizationService _authorizationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public ContentPickerFieldDisplayDriver(
         IContentManager contentManager,

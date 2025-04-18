@@ -31,8 +31,7 @@ public sealed class AdminController : Controller
     private readonly IFileVersionProvider _fileVersionProvider;
     private readonly IServiceProvider _serviceProvider;
     private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public AdminController(
         IMediaFileStore mediaFileStore,

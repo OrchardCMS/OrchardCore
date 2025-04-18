@@ -12,7 +12,7 @@ public sealed class AdminMenuLogin : AdminNavigationProvider
         { "groupId", FacebookConstants.Features.Login },
     };
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public AdminMenuLogin(IStringLocalizer<AdminMenuLogin> stringLocalizer)
     {

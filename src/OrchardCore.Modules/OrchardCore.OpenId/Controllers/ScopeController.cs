@@ -22,8 +22,7 @@ public sealed class ScopeController : Controller
     private readonly IOpenIdScopeManager _scopeManager;
     private readonly IShapeFactory _shapeFactory;
     private readonly PagerOptions _pagerOptions;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public ScopeController(
         IOpenIdScopeManager scopeManager,

@@ -26,9 +26,8 @@ public sealed class TwilioSettingsDisplayDriver : SiteDisplayDriver<TwilioSettin
     private readonly IPhoneFormatValidator _phoneFormatValidator;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly INotifier _notifier;
-
-    internal readonly IHtmlLocalizer H;
-    internal readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
 
     protected override string SettingsGroupId
         => SmsSettings.GroupId;

@@ -8,7 +8,7 @@ public sealed class AdminMenu : AdminNavigationProvider
 {
     private readonly ShellSettings _shellSettings;
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public AdminMenu(
         ShellSettings shellSettings,

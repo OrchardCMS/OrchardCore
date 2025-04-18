@@ -20,8 +20,7 @@ public sealed class HttpsSettingsDisplayDriver : SiteDisplayDriver<HttpsSettings
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
     private readonly INotifier _notifier;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public HttpsSettingsDisplayDriver(
         IShellReleaseManager shellReleaseManager,

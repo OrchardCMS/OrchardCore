@@ -29,9 +29,8 @@ public sealed class MediaProfilesController : Controller
     private readonly PagerOptions _pagerOptions;
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
-
-    internal readonly IStringLocalizer S;
-    internal readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
 
     public MediaProfilesController(
         IAuthorizationService authorizationService,

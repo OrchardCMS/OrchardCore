@@ -12,7 +12,7 @@ namespace OrchardCore.ContentFields.Drivers;
 
 public sealed class TextFieldDisplayDriver : ContentFieldDisplayDriver<TextField>
 {
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public TextFieldDisplayDriver(IStringLocalizer<TextFieldDisplayDriver> localizer)
     {

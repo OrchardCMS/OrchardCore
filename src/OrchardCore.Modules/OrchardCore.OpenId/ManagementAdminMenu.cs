@@ -5,7 +5,7 @@ namespace OrchardCore.OpenId;
 
 public sealed class ManagementAdminMenu : AdminNavigationProvider
 {
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public ManagementAdminMenu(IStringLocalizer<ManagementAdminMenu> stringLocalizer)
     {

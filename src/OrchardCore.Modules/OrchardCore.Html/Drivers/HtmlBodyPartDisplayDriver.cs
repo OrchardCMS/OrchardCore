@@ -22,8 +22,7 @@ public sealed class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBod
     private readonly IHtmlSanitizerService _htmlSanitizerService;
     private readonly HtmlEncoder _htmlEncoder;
     private readonly IShortcodeService _shortcodeService;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public HtmlBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
         IHtmlSanitizerService htmlSanitizerService,

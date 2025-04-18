@@ -33,9 +33,8 @@ public sealed class AdminController : Controller
     private readonly INotifier _notifier;
     private readonly IShapeFactory _shapeFactory;
     private readonly IHtmlSanitizerService _htmlSanitizerService;
-
-    internal readonly IStringLocalizer S;
-    internal readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
 
     public AdminController(
         IAuthorizationService authorizationService,

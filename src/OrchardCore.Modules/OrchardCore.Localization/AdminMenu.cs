@@ -16,7 +16,7 @@ public sealed class AdminMenu : AdminNavigationProvider
         { "groupId", LocalizationSettingsDisplayDriver.GroupId },
     };
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     /// <summary>
     /// Creates a new instance of the <see cref="AdminMenu"/>.

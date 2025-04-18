@@ -26,9 +26,8 @@ public sealed class AdminController : Controller
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly IEnumerable<IUrlRewriteRuleSource> _urlRewritingRuleSources;
     private readonly IRewriteRulesManager _rewriteRulesManager;
-
-    internal readonly IStringLocalizer S;
-    internal readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
 
     public AdminController(
         IDisplayManager<RewriteRule> rewriteRuleDisplayManager,

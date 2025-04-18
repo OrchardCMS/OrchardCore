@@ -15,8 +15,7 @@ public sealed class OpenIdValidationSettingsDisplayDriver : DisplayDriver<OpenId
     private readonly IShellHost _shellHost;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAuthorizationService _authorizationService;
-
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public OpenIdValidationSettingsDisplayDriver(
         IShellHost shellHost,

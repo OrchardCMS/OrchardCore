@@ -13,7 +13,7 @@ public sealed class ChangeEmailAdminMenu : AdminNavigationProvider
         { "groupId", ChangeEmailSettingsDisplayDriver.GroupId },
     };
 
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public ChangeEmailAdminMenu(IStringLocalizer<ChangeEmailAdminMenu> stringLocalizer)
     {

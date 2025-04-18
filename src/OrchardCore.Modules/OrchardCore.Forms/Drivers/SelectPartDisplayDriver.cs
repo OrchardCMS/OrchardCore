@@ -10,7 +10,7 @@ namespace OrchardCore.Forms.Drivers;
 
 public sealed class SelectPartDisplayDriver : ContentPartDisplayDriver<SelectPart>
 {
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public SelectPartDisplayDriver(IStringLocalizer<SelectPartDisplayDriver> stringLocalizer)
     {

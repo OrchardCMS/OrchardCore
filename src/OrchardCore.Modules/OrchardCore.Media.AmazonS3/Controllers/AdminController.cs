@@ -13,8 +13,7 @@ public sealed class AdminController : Controller
     private readonly IAuthorizationService _authorizationService;
     private readonly AwsStorageOptions _options;
     private readonly INotifier _notifier;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public AdminController(
         IAuthorizationService authorizationService,

@@ -23,8 +23,7 @@ public sealed class ExportRemoteInstanceController : Controller
     private readonly RemoteInstanceService _service;
     private readonly INotifier _notifier;
     private readonly IHttpClientFactory _httpClientFactory;
-
-    internal readonly IHtmlLocalizer H;
+    private readonly IHtmlLocalizer H;
 
     public ExportRemoteInstanceController(
         IAuthorizationService authorizationService,

@@ -30,9 +30,8 @@ public sealed class AdminController : Controller
     private readonly IDisplayManager<Query> _displayManager;
     private readonly IUpdateModelAccessor _updateModelAccessor;
     private readonly IShapeFactory _shapeFactory;
-
-    internal readonly IStringLocalizer S;
-    internal readonly IHtmlLocalizer H;
+    private readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
 
     public AdminController(
         IDisplayManager<Query> displayManager,

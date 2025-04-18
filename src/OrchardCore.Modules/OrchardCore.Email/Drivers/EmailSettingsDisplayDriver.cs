@@ -23,8 +23,6 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
     private readonly IShellReleaseManager _shellReleaseManager;
     private readonly EmailProviderOptions _emailProviders;
 
-    internal readonly IStringLocalizer S;
-
     protected override string SettingsGroupId
         => EmailSettings.GroupId;
 
@@ -34,8 +32,7 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
         IOptions<EmailProviderOptions> emailProviders,
         IOptions<EmailOptions> emailOptions,
         IEmailProviderResolver emailProviderResolver,
-        IShellReleaseManager shellReleaseManager,
-        IStringLocalizer<EmailSettingsDisplayDriver> stringLocalizer)
+        IShellReleaseManager shellReleaseManager)
     {
         _httpContextAccessor = httpContextAccessor;
         _authorizationService = authorizationService;
@@ -43,7 +40,6 @@ public sealed class EmailSettingsDisplayDriver : SiteDisplayDriver<EmailSettings
         _emailProviderResolver = emailProviderResolver;
         _emailProviders = emailProviders.Value;
         _shellReleaseManager = shellReleaseManager;
-        S = stringLocalizer;
     }
     public override async Task<IDisplayResult> EditAsync(ISite site, EmailSettings settings, BuildEditorContext context)
     {

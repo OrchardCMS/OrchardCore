@@ -22,9 +22,7 @@ public sealed class ImportRemoteInstanceController : Controller
     private readonly INotifier _notifier;
     private readonly ILogger _logger;
     private readonly IDataProtector _dataProtector;
-
-    internal readonly IHtmlLocalizer H;
-    internal readonly IStringLocalizer S;
+    private readonly IHtmlLocalizer H;
 
     public ImportRemoteInstanceController(
         IDataProtectionProvider dataProtectionProvider,
@@ -32,7 +30,6 @@ public sealed class ImportRemoteInstanceController : Controller
         IDeploymentManager deploymentManager,
         INotifier notifier,
         IHtmlLocalizer<ImportRemoteInstanceController> htmlLocalizer,
-        IStringLocalizer<ImportRemoteInstanceController> stringLocalizer,
         ILogger<ImportRemoteInstanceController> logger)
     {
         _deploymentManager = deploymentManager;
@@ -40,7 +37,6 @@ public sealed class ImportRemoteInstanceController : Controller
         _logger = logger;
         _remoteClientService = remoteClientService;
         H = htmlLocalizer;
-        S = stringLocalizer;
         _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
     }
 

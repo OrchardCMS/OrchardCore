@@ -10,7 +10,7 @@ namespace OrchardCore.Title.Drivers;
 
 public sealed class TitlePartDisplayDriver : ContentPartDisplayDriver<TitlePart>
 {
-    internal readonly IStringLocalizer S;
+    private readonly IStringLocalizer S;
 
     public TitlePartDisplayDriver(IStringLocalizer<TitlePartDisplayDriver> localizer)
     {
