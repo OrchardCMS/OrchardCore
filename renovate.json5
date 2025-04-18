@@ -22,6 +22,7 @@
             groupName: 'Minor Dependency Versions',
             matchUpdateTypes: ['minor'],
         },
+
         // Disable certain updates.
         {
             // The .NET 8 versions of these packages need to stay on 8.x. We maintain a separate reference to the 
@@ -49,6 +50,13 @@
             ],
             enabled: false,
         },
+        {
+            // See the the comment in global.json on why this is disabled.
+            groupName: 'global.json',
+            matchFileNames: ['global.json'],
+            enabled: false,
+        },
+
         // Groups of packages that we want to update together.
         {
             groupName: 'Azure.Communication packages',
