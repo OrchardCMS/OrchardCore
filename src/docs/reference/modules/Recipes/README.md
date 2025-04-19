@@ -1,8 +1,8 @@
-# Recipes (`OrchardCore.Recipes`)
+	# Recipes (`OrchardCore.Recipes`)
 
 ## Recipe file
 
-A recipe is a json file used to execute different import and configuration steps.
+A recipe is a JSON file used to execute different import and configuration steps.
 
 You can add it in a `Recipes` folder with a name like this `{RecipeName}.recipe.json` and it will be available in the Configuration > Recipes admin page.
 
@@ -37,8 +37,8 @@ A recipe file should look like this:
 !!! note
     Recipes, despite being JSON files, may contain comments:
     ```json
-    // This is a comment.
-```
+        // This is a comment.
+    ```
 
 ## Recipe steps
 
@@ -59,15 +59,19 @@ Here are the available recipe steps:
 The Feature step allows you to disable/enable some features.
 
 ```json
-    {
-        "name": "feature",
-        "disable": [],
-        "enable": [
-            "OrchardCore.Admin",
-            "YourTheme",
-            "TheAdmin"
-        ]
-    }
+{
+    "steps": [
+        {
+            "name": "feature",
+            "disable": [],
+            "enable": [
+                "OrchardCore.Admin",
+                "YourTheme",
+                "TheAdmin"
+            ]
+        }
+    ]
+}
 ```
 
 !!! warning
@@ -78,45 +82,62 @@ The Feature step allows you to disable/enable some features.
 The Themes step allows you to set the admin and the site themes.
 
 ```json
-    {
-      "name": "themes",
-      "admin": "TheAdmin",
-      "site": "YourTheme"
-    }
-```
+{
+    "steps": [
+        {
+          "name": "themes",
+          "admin": "TheAdmin",
+          "site": "YourTheme"
+        }
+    ]
+}
 
 ### Settings Step
 
 The Settings step allows you to set multiple settings.
 
 ```json
-    {
-      "name": "settings",
-      "HomeRoute": {
-        "Action": "Display",
-        "Controller": "Item",
-        "Area": "OrchardCore.Contents",
-        "ContentItemId": "[js: variables('blogContentItemId')]"
-      },
-      "LayerSettings": {
-        "Zones": [ "Content", "Footer" ]
-      }
-    }
+{
+    "steps": [
+        {
+          "name": "settings",
+          "HomeRoute": {
+            "Action": "Display",
+            "Controller": "Item",
+            "Area": "OrchardCore.Contents",
+            "ContentItemId": "[js: variables('blogContentItemId')]"
+          },
+          "LayerSettings": {
+            "Zones": [ "Content", "Footer" ]
+          }
+        }
+    ]
+}
 ```
-
 ### ContentDefinition Step
 
 The Content step allows you to import some content types.
 
 ```json
-    {
-        "name": "ContentDefinition",
-        "ContentTypes": [
+{
+    "steps": [
         {
-            "Name": "YourContentType",
-            ...
+            "name": "ContentDefinition",
+            "ContentTypes": [
+                {
+                    "Name": "YourContentType",
+                    ...
+                }   
+            ],
+            "ContentParts": [
+                {
+                    "Name": "YourContentPart",
+                    ...
+                }   
+            ]
         }
-    }
+    ]
+}
 ```
 
 ### Lucene Step
@@ -125,32 +146,36 @@ The Lucene index step allows you to run the Lucene indexation of content types.
 You can also set the default Lucene Settings.
 
 ```json
-    {
-      // Create the indices before the content items so they are indexed automatically.
-      "name": "lucene-index",
-      "Indices": [
+{
+    "steps": [
         {
-          "Search": {
-            "AnalyzerName": "standardanalyzer",
-            "IndexLatest": false,
-            "IndexedContentTypes": [
-              "Blog",
-              "BlogPost"
+          // Create the indices before the content items so they are indexed automatically.
+          "name": "lucene-index",
+          "Indices": [
+            {
+              "Search": {
+                "AnalyzerName": "standardanalyzer",
+                "IndexLatest": false,
+                "IndexedContentTypes": [
+                  "Blog",
+                  "BlogPost"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          // Create the search settings.
+          "name": "Settings",
+          "LuceneSettings": {
+            "SearchIndex": "Search",
+            "DefaultSearchFields": [
+              "Content.ContentItem.FullText"
             ]
           }
         }
-      ]
-    },
-    {
-      // Create the search settings.
-      "name": "Settings",
-      "LuceneSettings": {
-        "SearchIndex": "Search",
-        "DefaultSearchFields": [
-          "Content.ContentItem.FullText"
-        ]
-      }
-    }
+    ]
+}
 ```
 
 ### Reset Lucene Search Index Step
@@ -162,20 +187,28 @@ It doesn't delete existing entries from the index.
 The `includeAll` property indicates whether to include all available Lucene indices. When set to `true`, the `Indices` property can be omitted.
 
 ```json
-    {
-      "name": "lucene-index-reset",
-      "includeAll": false,
-      "Indices": [
-        "IndexName1", "IndexName2"
-      ]
-    }
+{
+    "steps": [
+        {
+          "name": "lucene-index-reset",
+          "includeAll": false,
+          "Indices": [
+            "IndexName1", "IndexName2"
+          ]
+        }
+    ]
+}
 ```
 
 ```json
-    {
-      "name": "lucene-index-reset",
-      "includeAll": true
-    }
+{
+    "steps": [
+        {
+          "name": "lucene-index-reset",
+          "includeAll": true
+        }
+    ]
+}
 ```
 
 ### Rebuild Lucene Search Index Step
@@ -186,20 +219,28 @@ Deletes and recreates the full index content.
 The `includeAll` property indicates whether to include all available Lucene indices. When set to `true`, the `Indices` property can be omitted.
 
 ```json
-    {
-      "name": "lucene-index-rebuild",
-      "includeAll": false,
-      "Indices": [
-        "IndexName1", "IndexName2"
-      ]
-    }
+{
+    "steps": [
+        {
+          "name": "lucene-index-rebuild",
+          "includeAll": false,
+          "Indices": [
+            "IndexName1", "IndexName2"
+          ]
+        }
+    ]
+}
 ```
 
 ```json
-    {
-      "name": "lucene-index-rebuild",
-      "includeAll": true
-    }
+{
+    "steps": [
+        {
+          "name": "lucene-index-rebuild",
+          "includeAll": true
+        }
+    ]
+}
 ```
 
 ### Content Step
@@ -207,16 +248,20 @@ The `includeAll` property indicates whether to include all available Lucene indi
 The Content step allows you to create content items.
 
 ```json
-     {
-      "name": "content",
-      "Data": [
-        {
-          "ContentType": "Menu",
-          ...
-        },
-        ...
-      ]
-    }
+{
+    "steps": [
+         {
+          "name": "content",
+          "Data": [
+            {
+              "ContentType": "Menu",
+              ...
+            },
+            ...
+          ]
+        }
+    ]
+}
 ```
 
 !!! note
@@ -227,19 +272,23 @@ The Content step allows you to create content items.
 The Media step allows you to import media files to the tenant Media folder.
 
 ```json
-    {
-      "name": "media",
-      "Files": [
+{
+    "steps": [
         {
-          "TargetPath": "home-bg.jpg",
-          "SourcePath": "../wwwroot/img/home-bg.jpg"
-        },
-        {
-          "TargetPath": "post-bg.jpg",
-          "SourcePath": "../wwwroot/img/post-bg.jpg"
+          "name": "media",
+          "Files": [
+            {
+              "TargetPath": "home-bg.jpg",
+              "SourcePath": "../wwwroot/img/home-bg.jpg"
+            },
+            {
+              "TargetPath": "post-bg.jpg",
+              "SourcePath": "../wwwroot/img/post-bg.jpg"
+            }
+          ]
         }
-      ]
-    }
+    ]
+}
 ```
 
 ### Layers Step
@@ -247,21 +296,25 @@ The Media step allows you to import media files to the tenant Media folder.
 The Layers step allows you to create multiple layers.
 
 ```json
-    {
-      "name": "layers",
-      "Layers": [
+{
+    "steps": [
         {
-          "Name": "Always",
-          "Rule": "true",
-          "Description": "The widgets in this layer are displayed on any page of this site."
-        },
-        {
-          "Name": "Homepage",
-          "Rule": "isHomepage()",
-          "Description": "The widgets in this layer are only displayed on the homepage."
+          "name": "layers",
+          "Layers": [
+            {
+              "Name": "Always",
+              "Rule": "true",
+              "Description": "The widgets in this layer are displayed on any page of this site."
+            },
+            {
+              "Name": "Homepage",
+              "Rule": "isHomepage()",
+              "Description": "The widgets in this layer are only displayed on the homepage."
+            }
+          ]
         }
-      ]
-    }
+    ]
+}
 ```
 
 ### Queries Step
@@ -269,19 +322,23 @@ The Layers step allows you to create multiple layers.
 The Queries step allows you to create multiple Lucene or SQL queries.
 
 ```json
-    {
-      "name": "queries",
-      "Queries": [
+{
+    "steps": [
         {
-          "Source": "Lucene",
-          "Name": "RecentBlogPosts",
-          "Index": "Search",
-          "Template": "[file:text('Snippets/recentBlogPosts.json')]",
-          "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
-          "ReturnContentItems": true
+          "name": "queries",
+          "Queries": [
+            {
+              "Source": "Lucene",
+              "Name": "RecentBlogPosts",
+              "Index": "Search",
+              "Template": "[file:text('Snippets/recentBlogPosts.json')]",
+              "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
+              "ReturnContentItems": true
+            }
+          ]
         }
-      ]
-    }
+    ]
+}
 ```
 
 ### AdminMenu Step
@@ -289,19 +346,23 @@ The Queries step allows you to create multiple Lucene or SQL queries.
 The AdminMenu step allows you to create multiple admin menus.
 
 ```json
-    {
-      "name": "AdminMenu",
-      "data": [
+{
+    "steps": [
         {
-          "Id": "[js:uuid()]",
-          "Name": "Admin menu",
-          "Enabled": true,
-          "MenuItems": [
-              ...
+          "name": "AdminMenu",
+          "data": [
+            {
+              "Id": "[js:uuid()]",
+              "Name": "Admin menu",
+              "Enabled": true,
+              "MenuItems": [
+                  ...
+              ]
+            }
           ]
         }
-      ]
-    }
+    ]
+}
 ```
 
 ### Roles Step
@@ -309,19 +370,23 @@ The AdminMenu step allows you to create multiple admin menus.
 The Roles step allows you to set permissions to specific roles.
 
 ```json
-    {
-      "name": "Roles",
-      "Roles": [
+{
+    "steps": [
         {
-          "Name": "Anonymous",
-          "Description": "Anonymous role",
-          "Permissions": [
-            "ViewContent",
-            "QueryLuceneSearchIndex"
+          "name": "Roles",
+          "Roles": [
+            {
+              "Name": "Anonymous",
+              "Description": "Anonymous role",
+              "Permissions": [
+                "ViewContent",
+                "QueryLuceneSearchIndex"
+              ]
+            }
           ]
         }
-      ]
-    }
+    ]
+}
 ```
 
 !!! warning
@@ -332,15 +397,19 @@ The Roles step allows you to set permissions to specific roles.
 The Template and AdminTemplate steps allow you to create Liquid Templates.
 
 ```json
-    {
-      "name": "Templates",
-      "Templates": {
-        "Content__LandingPage": {
-          "Description": "A template for the Landing Page content type",
-          "Content": "[file:text('Snippets/landingpage.liquid')]"
+{
+    "steps": [
+        {
+          "name": "Templates",
+          "Templates": {
+            "Content__LandingPage": {
+              "Description": "A template for the Landing Page content type",
+              "Content": "[file:text('Snippets/landingpage.liquid')]"
+            }
+          }
         }
-      }
-    }
+    ]
+}
 ```
 
 ### Workflow Step
@@ -348,16 +417,20 @@ The Template and AdminTemplate steps allow you to create Liquid Templates.
 The WorkflowType step allows you to create a Workflow.
 
 ```json
-    {
-      "name": "WorkflowType",
-      "data": [
+{
+    "steps": [
         {
-          "WorkflowTypeId": "[js: variables('workflowTypeId')]",
-          "Name": "User Registration",
-          ...
+          "name": "WorkflowType",
+          "data": [
+            {
+              "WorkflowTypeId": "[js: variables('workflowTypeId')]",
+              "Name": "User Registration",
+              ...
+            }
+          ]
         }
-      ]
-    }
+    ]
+}
 ```
 
 ### Deployment Step
@@ -365,30 +438,36 @@ The WorkflowType step allows you to create a Workflow.
 The Deployment step allows you to create a deployment plan with deployment steps. Also see [Deployment](../Deployment/README.md).
 
 ```json
-    {
-    "name": "deployment",
-    "Plans": [
-    {
-        "Name": "Export",
-        "Steps": [
-            {
-                "Type": "CustomFileDeploymentStep",
-                "Step": {
-                "FileName": "Export",
-                "FileContent": "Export",
-                "Id": "[js: uuid()]",
-                "Name": "CustomFileDeploymentStep"
+{
+    "steps": [
+        {
+            "name":"deployment",
+            "Plans":[
+                {
+                    "Name":"Export",
+                    "Steps": [
+                        {
+                            "Type":"CustomFileDeploymentStep",
+                            "Step":{
+                                "FileName":"Export",
+                                "FileContent":"Export",
+                                "Id":"[js: uuid()]",
+                                "Name":"CustomFileDeploymentStep"
+                            }
+                        },
+                        {
+                            "Type":"AllContentDeploymentStep",
+                            "Step":{
+                                "Id":"[js: uuid()]",
+                                "Name":"AllContent"
+                            }
+                        }
+                    ]
                 }
-            },
-            {
-                "Type": "AllContentDeploymentStep",
-                "Step": {
-                "Id": "[js: uuid()]",
-                "Name": "AllContent"
-                }
-            }
-        ]
-    }
+            ]
+        }
+    ]
+}
 ```
 
 ### CustomSettings Step
@@ -396,27 +475,31 @@ The Deployment step allows you to create a deployment plan with deployment steps
 The CustomSettings step allows you to populate your custom settings with initial values.
 
 ```json
-    {
-      "name": "custom-settings",
-      "MyCustomSettings": {
-        "ContentItemId": "400d6c7pwj8675crzacd6gyywt",
-        "ContentItemVersionId": null,
-        "ContentType": "MyCustomSettings",
-        "DisplayText": "",
-        "Latest": false,
-        "Published": false,
-        "ModifiedUtc": null,
-        "PublishedUtc": null,
-        "CreatedUtc": null,
-        "Owner": "",
-        "Author": "",
-        "MyCustomSettingsPart": {
-          "MyTextField": {
-            "Text": "My custom text"
+{
+    "steps": [
+        {
+          "name": "custom-settings",
+          "MyCustomSettings": {
+            "ContentItemId": "400d6c7pwj8675crzacd6gyywt",
+            "ContentItemVersionId": null,
+            "ContentType": "MyCustomSettings",
+            "DisplayText": "",
+            "Latest": false,
+            "Published": false,
+            "ModifiedUtc": null,
+            "PublishedUtc": null,
+            "CreatedUtc": null,
+            "Owner": "",
+            "Author": "",
+            "MyCustomSettingsPart": {
+              "MyTextField": {
+                "Text": "My custom text"
+              }
+            }
           }
         }
-      }
-    }
+    ]
+}
 ```
 
 ### Recipes Step
@@ -424,19 +507,23 @@ The CustomSettings step allows you to populate your custom settings with initial
 The Recipes step allows you to execute other recipes from the current recipe. You can use this to modularize your recipes. E.g. instead of having a single large setup recipe you can put content into multiple smaller ones and execute them from the setup recipe.
 
 ```json
-    {
-      "name": "recipes",
-      "Values": [
+{
+    "steps": [
         {
-          "executionid": "MyApp",
-          "name": "MyApp.Pages"
-        },
-        {
-          "executionid": "MyApp",
-          "name": "MyApp.Blog"
+          "name": "recipes",
+          "Values": [
+            {
+              "executionid": "MyApp",
+              "name": "MyApp.Pages"
+            },
+            {
+              "executionid": "MyApp",
+              "name": "MyApp.Blog"
+            }
+          ]
         }
-      ]
-    }
+    ]
+}
 ```
 
 As `executionid` use a custom identifier to distinguish these recipe executions from others. As `name` use the `name` field from the given recipe's head (this is left blank when you export to recipes).
