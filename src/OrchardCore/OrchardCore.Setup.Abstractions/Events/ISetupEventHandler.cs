@@ -3,7 +3,7 @@ using OrchardCore.Setup.Services;
 namespace OrchardCore.Setup.Events;
 
 /// <summary>
-/// Contract for handling setup events.
+/// Represents a contract for handling setup events.
 /// </summary>
 public interface ISetupEventHandler
 {

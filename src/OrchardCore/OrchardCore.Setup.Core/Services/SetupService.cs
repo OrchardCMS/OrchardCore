@@ -19,7 +19,7 @@ using YesSql;
 namespace OrchardCore.Setup.Services;
 
 /// <summary>
-/// Represents a setup service.
+/// Represents a setup service, which is responsible for setting up the tenant.
 /// </summary>
 public class SetupService : ISetupService
 {
