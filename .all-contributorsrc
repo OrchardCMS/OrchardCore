@@ -3331,6 +3331,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "DarkParadoX",
+      "name": "DarkParadoX",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18313045?v=4",
+      "profile": "https://github.com/DarkParadoX",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
