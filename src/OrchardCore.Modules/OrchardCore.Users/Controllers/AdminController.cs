@@ -258,16 +258,14 @@ public sealed class AdminController : Controller
                     case UsersBulkAction.Disable:
                         if (!isSameUser && canEditUser)
                         {
-                            user.IsEnabled = false;
-                            await _userManager.UpdateAsync(user);
+                            await _userService.DisableAsync(user.UserName);
                             await _notifier.SuccessAsync(H["User {0} successfully disabled.", user.UserName]);
                         }
                         break;
                     case UsersBulkAction.Enable:
                         if (!isSameUser && canEditUser)
                         {
-                            user.IsEnabled = true;
-                            await _userManager.UpdateAsync(user);
+                            await _userService.EnableAsync(user.UserName);
                             await _notifier.SuccessAsync(H["User {0} successfully enabled.", user.UserName]);
                         }
                         break;
