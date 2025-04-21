@@ -485,8 +485,8 @@ public sealed class ResourceManagementOptionsConfiguration
         manifest
             .DefineStyle("monokai")
             .SetUrl(
-                "~/OrchardCore.Resources/Styles/codemirror/themes/monokai/monokai.min.css",
-                "~/OrchardCore.Resources/Styles/codemirror/themes/monokai/monokai.css"
+                "~/OrchardCore.Resources/Styles/codemirror/theme/monokai.min.css",
+                "~/OrchardCore.Resources/Styles/codemirror/theme/monokai.css"
             )
             .SetCdn(
                 "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/monokai.min.css",

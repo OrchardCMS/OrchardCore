@@ -498,7 +498,7 @@
     "action": "min",
     "name": "codemirror",
     "source": "../../../node_modules/codemirror/theme/monokai.css",
-    "dest": "wwwroot/Styles/codemirror/themes/monokai/",
+    "dest": "wwwroot/Styles/codemirror/theme/",
     "tags": ["admin", "css"]
   }
 ]
