@@ -3,118 +3,172 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _readOnlyError(name) { throw new TypeError("\"" + name + "\" is read-only"); }
 window.formVisibilityGroupRules = function () {
   function initialize(data) {
     var inputElement = getInputByName(data.elementName);
-    if (!inputElement) {
+    if (!inputElement || data.action === 'None') {
       return;
+    }
+    if (inputElement.type == 'checkbox' || inputElement.type == 'radio') {
+      inputElement.setAttribute('data-default-value', inputElement.checked ? 'on' : 'off');
+    } else {
+      inputElement.setAttribute('data-default-value', inputElement.value);
     }
     var widgetContainer = inputElement.closest('.widget');
     processGroups(data, inputElement, widgetContainer, true);
+    triggerProperChangeEvent(inputElement);
+  }
+
+  // File: formUtils.js
+
+  /**
+   * Triggers appropriate event(s) on ANY form field.
+   * @param {HTMLElement} element - The target form element.
+   */
+  function triggerProperChangeEvent(element) {
+    var tagName = element.tagName.toUpperCase();
+    var type = (element.type || '').toLowerCase();
+
+    // 1) Non‑textual controls: fire only 'change' on final value
+    if (tagName === 'SELECT' ||
+    // dropdowns
+    type === 'checkbox' ||
+    // boolean toggles
+    type === 'radio' ||
+    // radio buttons
+    type === 'file' // file selectors
+    ) {
+      element.dispatchEvent(new Event('change'));
+      return;
+    }
+
+    // 2) Text‑like inputs: immediate + key events
+    if (tagName === 'INPUT' || tagName === 'TEXTAREA') {
+      // all text‑based <input> types (text, email, search, etc.)
+      element.dispatchEvent(new Event('input')); // fires on every keystroke, paste, drag‑drop
+      element.dispatchEvent(new Event('keyup')); // legacy key hooks, if you need them
+      return;
+    }
+
+    // 3) Fallback: anything else that supports 'input'
+    element.dispatchEvent(new Event('input'));
+  }
+
+  /**
+   * Attaches the appropriate listener(s) on ANY form field.
+   * @param {HTMLElement} element  - The target form element.
+   * @param {Function}    callback - The listener callback.
+   */
+  function addProperListeners(element, callback) {
+    var tagName = element.tagName.toUpperCase();
+    var type = (element.type || '').toLowerCase();
+
+    // 1) SELECT: only final value matters
+    if (tagName === 'SELECT') {
+      element.addEventListener('change', callback);
+      return;
+    }
+
+    // 2) CHECKBOX / RADIO: toggle events
+    if (tagName === 'INPUT') {
+      if (type === 'checkbox' || type === 'radio') {
+        element.addEventListener('change', callback);
+        element.addEventListener('click', callback);
+        return;
+      }
+
+      // 3) FILE INPUT: only fires 'change' on selection
+      if (type === 'file') {
+        element.addEventListener('change', callback);
+        return;
+      }
+      element.addEventListener('input', callback);
+      element.addEventListener('keyup', callback);
+      return;
+    }
+
+    // 5) TEXTAREA: treat like text‑input
+    if (tagName === 'TEXTAREA') {
+      element.addEventListener('input', callback);
+      element.addEventListener('keyup', callback);
+      return;
+    }
+
+    // 6) Fallback: any other element with 'input' support
+    element.addEventListener('input', callback);
   }
   function processGroups(data, inputElement, widgetContainer, addHandlers) {
-    if (addHandlers) {
-      // capture the current visibility state of the container.
-      var visibilityFlag = isElementVisible(widgetContainer);
-      widgetContainer.setAttribute('data-original-is-visible', String(visibilityFlag));
-    }
+    console.log('processGroup was called.', data, inputElement, widgetContainer, addHandlers);
     var anyGroupRuleMet = false;
     data.groups.forEach(function (group) {
       var _group$rules;
       var groupPassed = true;
       (_group$rules = group.rules) === null || _group$rules === void 0 || _group$rules.forEach(function (rule) {
+        console.log('rule is being processed. ', rule);
         var fieldElement = getInputByName(rule.field);
         if (!fieldElement) {
           console.warn("Field element not found: ".concat(rule.field, ". Ignoring the bad field."));
           return;
         }
         var fieldValue = fieldElement.type === 'checkbox' ? fieldElement.checked ? "true" : "false" : fieldElement.value;
-        if (!validateRule(fieldValue, rule)) {
+        var validationResult = validateRule(fieldValue, rule);
+        console.log('currentField value', fieldValue, validationResult);
+        if (groupPassed && !validationResult) {
+          console.log('The group failed');
           groupPassed = false;
         }
-        var fields = document.querySelectorAll('.dynamic-visibility-condition');
-        for (var i = 0; i < fields.length; i++) {
-          var field = fields[i];
-          if (field.Name != inputElement.Name) {
-            fields[i].dispatchEvent(new Event('change'));
-            fields[i].dispatchEvent(new Event('keyup'));
-          }
-        }
         if (addHandlers) {
-          fieldElement.classList.add('dynamic-visibility-condition');
-          fieldElement.addEventListener('change', function (e) {
-            processGroups(data, inputElement, widgetContainer, false);
-          });
-          fieldElement.addEventListener('keyup', function (e) {
+          console.log('adding change and keyup handlers.');
+          addProperListeners(fieldElement, function (e) {
+            console.log('field change event was called');
             processGroups(data, inputElement, widgetContainer, false);
           });
         }
       });
+      console.log('before setting anyGroupRuleMet', anyGroupRuleMet, groupPassed, anyGroupRuleMet || groupPassed);
       anyGroupRuleMet = anyGroupRuleMet || groupPassed;
     });
-    if (addHandlers) {
-      inputElement.dispatchEvent(new Event('change'));
-    }
-    var originalState = widgetContainer.getAttribute('data-original-is-visible');
-    console.log('originalState:', originalState, 'elementName:', data.elementName, 'anyGroupRuleMet:', anyGroupRuleMet, 'Action=', data.action);
+    console.log('processGroups is at the stage before processing widgetContainer', data.action, widgetContainer);
     if (widgetContainer) {
+      console.log('Processing widgetContainer', data.action, anyGroupRuleMet);
       if (data.action === 'Show') {
         if (anyGroupRuleMet) {
           widgetContainer.classList.remove('d-none');
         } else {
-          console.log("\uD83D\uDEE0 [".concat(data.elementName, "] rules failed \u2192 restoreOriginalState"));
-          var formWrapper = widgetContainer.closest('.widget-form');
-          // restore each child widget based on its saved flag
-          formWrapper.querySelectorAll('.widget[data-original-is-visible]').forEach(function (widget) {
-            return restoreOriginalState(widget);
-          });
-          //  restoreOriginalState(widgetForms);
+          widgetContainer.classList.add('d-none');
+          restoreOriginalState(inputElement);
         }
       } else if (data.action === 'Hide') {
         if (anyGroupRuleMet) {
           widgetContainer.classList.add('d-none');
-        } else {
-          var _formWrapper = widgetContainer.closest('.widget-form');
-          // restore each child widget based on its saved flag
-          _formWrapper.querySelectorAll('.widget[data-original-is-visible]').forEach(function (widget) {
-            return restoreOriginalState(widget);
-          });
-          //  restoreOriginalState(widgetContainer);
-        }
-      } else {
-        // this never gets hit 
-        console.log("Never seen");
-        widgetContainer.getAttribute('data-original-is-visible'), _readOnlyError("originalState");
-        if (originalState === 'true') {
-          widgetContainer.classList.remove('d-none');
-        } else if (originalState === 'false') {
-          widgetContainer.classList.add('d-none');
+          restoreOriginalState(inputElement);
         } else {
           widgetContainer.classList.remove('d-none');
         }
       }
     }
   }
-  function restoreOriginalState(container) {
-    var originalState = container.getAttribute('data-original-is-visible');
-    if (originalState === 'true') {
-      container.classList.add('d-none');
+  function restoreOriginalState(inputElement) {
+    var orgValue = inputElement.getAttribute('data-default-value') || '';
+    if (inputElement.type == 'checkbox' || inputElement.type == 'radio') {
+      inputElement.checked = orgValue == 'on';
     } else {
-      container.setAttribute('data-original-is-visible');
-      container.classList.remove('d-none');
+      inputElement.value = orgValue;
     }
+    triggerProperChangeEvent(inputElement);
   }
   function getInputByName(name) {
     return document.querySelector("input[name=\"".concat(name, "\"],select[name=\"").concat(name, "\"],textarea[name=\"").concat(name, "\"]"));
   }
   function validateRule(inputValue, rule) {
+    console.log("Validating rule:", rule, "with inputValue:", inputValue);
     if (!rule.operator) {
       console.warn("Rule operator is missing for rule", rule);
       return false;
     }
-    var lowerInputValue = inputValue ? inputValue.trim() : "";
-    var lowerRuleValue = rule.value ? rule.value.trim() : "";
+    var lowerInputValue = inputValue ? inputValue.trim().toLowerCase() : "";
+    var lowerRuleValue = rule.value ? rule.value.trim().toLowerCase() : "";
+    console.log('valies comparison', lowerInputValue, lowerRuleValue);
     switch (rule.operator) {
       case 'Is':
         return lowerInputValue === lowerRuleValue;
