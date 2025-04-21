@@ -351,3 +351,139 @@ Runs additional recipes within the current one, allowing modular reuse.
   ]
 }
 ```
+
+---
+
+## Recipe Migrations
+
+**Recipe migrations** allow you to perform updates using Orchard Core recipe files. These migrations are especially useful for updating metadata such as content types, workflows, settings, or any other component that can be updated via a recipe.
+
+While many changes can be made through the admin UI, recipe migrations provide a repeatable and versioned way to apply updates, ideal for deployment automation or environment setup.
+
+---
+
+### Basic Concept
+
+A recipe migration is implemented by creating a `DataMigration` class in your module or theme. Inside this class, you call into the `IRecipeMigrator` service to execute recipe files.
+
+Recipe files must be stored in a `Migrations` folder within your project, and they are typically written in JSON format using the standard Orchard recipe schema.
+
+---
+
+### Setup
+
+1. **Create a migration class**:
+   - Inherit from `OrchardCore.Data.Migration.DataMigration` (in the `OrchardCore.Data.Abstractions` package).
+   - Inject the `IRecipeMigrator` service.
+   - Implement one or more of the following methods:
+     - `CreateAsync()` – the first migration, must return `1`
+     - `UpdateFrom<version>Async()` – used for incremental migrations
+
+2. **Create migration recipe files**:
+   - Place them in a `Migrations` folder (same level as your migration class).
+   - Name them clearly to reflect the version or purpose.
+
+---
+
+### Example: Media Asset Migration
+
+Let's say we want to deploy media assets as part of a module. Here’s how we’d structure this:
+
+#### Migration Class
+
+```csharp
+public sealed class Migrations : DataMigration
+{
+    private readonly IRecipeMigrator _recipeMigrator;
+
+    public Migrations(IRecipeMigrator recipeMigrator)
+    {
+        _recipeMigrator = recipeMigrator;
+    }
+
+    public async Task<int> CreateAsync()
+    {
+        await _recipeMigrator.ExecuteAsync("migration.recipe.json", this);
+        return 1;
+    }
+
+    public async Task<int> UpdateFrom1Async()
+    {
+        await _recipeMigrator.ExecuteAsync("migrationV2.recipe.json", this);
+        return 2;
+    }
+}
+```
+
+!!! note 
+    **Important**: Method names like `UpdateFrom1Async()` are **case-sensitive** and must follow the naming convention exactly in order to be discovered and executed.
+
+---
+
+### Recipe Files
+
+Place the following JSON files in a folder named `Migrations`.
+
+#### **Migrations/migration.recipe.json**
+
+Initial migration adds two media files:
+
+```json
+{
+  "steps": [
+    {
+      "name": "media",
+      "Files": [
+        {
+          "TargetPath": "about/1.jpg",
+          "SourcePath": "../wwwroot/img/about/1.jpg"
+        },
+        {
+          "TargetPath": "about/2.jpg",
+          "SourcePath": "../wwwroot/img/about/2.jpg"
+        }
+      ]
+    }
+  ]
+}
+```
+
+#### **Migrations/migrationV2.recipe.json**
+
+Second migration adds another image:
+
+```json
+{
+  "steps": [
+    {
+      "name": "media",
+      "Files": [
+        {
+          "TargetPath": "about/1.jpg",
+          "SourcePath": "../wwwroot/img/about/1.jpg"
+        },
+        {
+          "TargetPath": "about/2.jpg",
+          "SourcePath": "../wwwroot/img/about/2.jpg"
+        },
+        {
+          "TargetPath": "about/3.jpg",
+          "SourcePath": "../wwwroot/img/about/3.jpg"
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/uJobH9izfLI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/qPCBgHQYz1g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/A13Li0CblK8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/2c5pbXuJJb0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
