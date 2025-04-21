@@ -1,37 +1,42 @@
-# 📦 OrchardCore.Recipes
+# Orchard Core Recipe Reference Guide
 
-The `OrchardCore.Recipes` module provides a powerful way to automate configuration, setup, and content provisioning for Orchard Core tenants and modules using **recipe files** (JSON format).
+## Overview
 
----
-
-## 📁 What is a Recipe?
-
-A **recipe** is a `.recipe.json` file that contains one or more steps to configure a tenant—install features, create content types, import content, set themes, etc.
-
-Place your recipe files in a folder named `Recipes` inside your module or theme. They will appear in the **Admin UI** under **Configuration > Recipes**.
-
-File naming convention:
-```
-{RecipeName}.recipe.json
-```
+The `OrchardCore.Recipes` module allows you to automate Orchard Core tenant setup and configuration using JSON-based recipe files. Recipes can install features, set themes, create content types, provision content, and much more.
 
 ---
 
-## 🧬 Recipe File Structure
+## What is a Recipe?
 
-A typical recipe file looks like this:
+A recipe is a `.recipe.json` file placed in a Recipes folder within your module or theme. Recipes are picked up by Orchard Core and can be executed via the admin panel or automatically during tenant setup.
+
+### Key Properties
+
+| Property         | Type     | Description                                                                 |
+|------------------|----------|-----------------------------------------------------------------------------|
+| `name`           | string   | The unique internal name of the recipe. Used for identifying the recipe in code. |
+| `displayName`    | string   | The friendly name shown in the admin UI during setup.                      |
+| `description`    | string   | A short description of what the recipe does. Displayed in the setup UI.    |
+| `author`         | string   | The name of the recipe creator or organization.                            |
+| `website`        | string   | URL to the website or documentation for the recipe.                        |
+| `version`        | string   | Semantic version (e.g., `1.0.0`) representing the recipe version.           |
+| `issetuprecipe`  | boolean  | Indicates if this recipe should be available during tenant setup.          |
+| `tags`           | array    | Keywords for categorizing the recipe in the UI (e.g., `["blog", "theme"]`). |
+| `variables`      | object   | Key-value pairs to define reusable values throughout the recipe.           |
+| `steps`          | array    | An ordered list of step objects that define the actions the recipe will perform. Each step has a `name` and step-specific parameters. |
+
+### Example:
 
 ```json
 {
-  "name": "MyRecipe",
-  "displayName": "My Custom Setup",
-  "description": "Installs content, features, and config.",
-  "author": "Dev Team",
-  "website": "https://example.com",
-  "version": "2.0",
+  "name": "Blog",
+  "displayName": "Blog Site",
+  "description": "Creates a simple blog with custom content types, widgets, and pages.",
+  "author": "Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
   "issetuprecipe": true,
-  "categories": [ "default" ],
-  "tags": [ "blog", "landing" ],
+  "tags": [ "blog", "content", "theme" ],
   "variables": {
     "siteId": "[js:uuid()]"
   },
@@ -41,41 +46,29 @@ A typical recipe file looks like this:
 }
 ```
 
-### 🔍 Key Properties
 
-| Property         | Description                                                                 |
-|------------------|-----------------------------------------------------------------------------|
-| `name`           | Internal name of the recipe.                                                |
-| `displayName`    | Display name shown in the admin panel.                                     |
-| `description`    | Description shown in the admin panel.                                      |
-| `issetuprecipe`  | Set to `true` to make this recipe available during **tenant setup**.       |
-| `variables`      | Define dynamic values (e.g., UUIDs) to reuse in steps.                     |
-| `steps`          | Array of recipe steps to execute.                                          |
+## Recipe Helpers
 
-> 💡 **Note:** Recipes support JavaScript-based variable helpers (see [Recipe Helpers](#recipe-helpers) below).  
-> ✅ You can include `// comments` in recipe JSON files—OrchardCore uses a relaxed JSON parser.
+These helpers allow dynamic expressions inside recipe values using a special syntax.
 
----
-
-## 🧱 Implementing Custom Recipe Steps
-
-To create a custom recipe step:
-
-1. Implement `IRecipeStepHandler` and its `ExecuteAsync` method:
-   ```csharp
-   public Task ExecuteAsync(RecipeExecutionContext context)
-   ```
-
-2. Or inherit from `NamedRecipeStepHandler` to create a reusable step handler for a specific named step.
+| Helper         | Example Usage                                          | Description                                                                 |
+|----------------|--------------------------------------------------------|-----------------------------------------------------------------------------|
+| `js:`          | `"ContentItemId": "[js:variables('homePageId')]"`      | Evaluates a JavaScript expression. Common for referencing `variables`.      |
+| `file:`        | `"Content": "[file:text('Snippets/homepage.liquid')]"` | Loads content from an external file. Often used for Liquid templates.       |
+| `env:`         | `"value": "[env:MyEnvironmentVariable]"`               | Injects values from environment variables.                                  |
+| `appsettings:` | `"value": "[appsettings:OrchardCore:SiteName]"`        | Reads configuration from `appsettings.json`.                                |
+| `localization:`| `"value": "[localization:WelcomeTitle]"`               | Retrieves localized strings by key.                                         |
+| `uuid()`       | `"Id": "[js:uuid()]"`                                  | Generates a new unique identifier (UUID/GUID).                              |
 
 ---
 
-## 🧩 Built-in Recipe Steps
+## Built-in Recipe Steps
 
-Here's a list of supported steps and usage examples:
+Each step is a JSON object in the `steps` array. Here are all built-in types:
 
-### ✅ Feature Step
-Enable or disable OrchardCore features (modules or themes):
+### `feature`
+
+Enables or disables features (modules/themes).
 
 ```json
 {
@@ -85,12 +78,11 @@ Enable or disable OrchardCore features (modules or themes):
 }
 ```
 
-> ⚠️ Don’t forget to enable your custom theme if you're using one.
-
 ---
 
-### 🎨 Themes Step
-Set admin and frontend themes:
+### `themes`
+
+Sets the active frontend and admin themes.
 
 ```json
 {
@@ -102,8 +94,9 @@ Set admin and frontend themes:
 
 ---
 
-### ⚙️ Settings Step
-Configure system settings:
+### `settings`
+
+Configures core site settings (like homepage route, culture, time zone, etc).
 
 ```json
 {
@@ -112,18 +105,16 @@ Configure system settings:
     "Action": "Display",
     "Controller": "Item",
     "Area": "OrchardCore.Contents",
-    "ContentItemId": "[js:variables('blogContentItemId')]"
-  },
-  "LayerSettings": {
-    "Zones": [ "Content", "Footer" ]
+    "ContentItemId": "[js:variables('homeId')]"
   }
 }
 ```
 
 ---
 
-### 📐 ContentDefinition Step
-Define content types and parts:
+### `ContentDefinition`
+
+Defines or updates content types and content parts.
 
 ```json
 {
@@ -135,9 +126,10 @@ Define content types and parts:
 
 ---
 
-### 🔍 Lucene Index Steps
+### `lucene-index`
 
-#### Create Index:
+Creates or configures Lucene search indexes.
+
 ```json
 {
   "name": "lucene-index",
@@ -145,7 +137,12 @@ Define content types and parts:
 }
 ```
 
-#### Reset Index:
+---
+
+### `lucene-index-reset`
+
+Clears index content.
+
 ```json
 {
   "name": "lucene-index-reset",
@@ -153,31 +150,37 @@ Define content types and parts:
 }
 ```
 
-#### Rebuild Index:
+---
+
+### `lucene-index-rebuild`
+
+Rebuilds Lucene indexes to reflect current content.
+
 ```json
 {
   "name": "lucene-index-rebuild",
-  "includeAll": false,
-  "Indices": [ "Index1", "Index2" ]
+  "Indices": [ "Search" ]
 }
 ```
 
 ---
 
-### 📝 Content Step
-Import content items:
+### `content`
+
+Imports content items such as pages, blogs, or menus.
 
 ```json
 {
   "name": "content",
-  "Data": [ { "ContentType": "Menu", ... } ]
+  "Data": [ { "ContentType": "Page", "DisplayText": "About", ... } ]
 }
 ```
 
 ---
 
-### 📁 Media Step
-Copy media files to tenant's Media folder:
+### `media`
+
+Uploads files into the Media library.
 
 ```json
 {
@@ -190,8 +193,9 @@ Copy media files to tenant's Media folder:
 
 ---
 
-### 🎯 Layers Step
-Define visibility rules for widgets:
+### `layers`
+
+Defines layer rules for conditional widget placement.
 
 ```json
 {
@@ -205,8 +209,9 @@ Define visibility rules for widgets:
 
 ---
 
-### 📊 Queries Step
-Create reusable Lucene or SQL queries:
+### `queries`
+
+Adds Lucene or SQL queries to be reused by widgets or APIs.
 
 ```json
 {
@@ -214,9 +219,9 @@ Create reusable Lucene or SQL queries:
   "Queries": [
     {
       "Source": "Lucene",
-      "Name": "RecentBlogPosts",
+      "Name": "RecentPosts",
       "Index": "Search",
-      "Template": "[file:text('Snippets/recentBlogPosts.json')]",
+      "Template": "[file:text('Snippets/recentPosts.json')]",
       "ReturnContentItems": true
     }
   ]
@@ -225,8 +230,9 @@ Create reusable Lucene or SQL queries:
 
 ---
 
-### 🧭 AdminMenu Step
-Define custom menus in the admin panel:
+### `AdminMenu`
+
+Defines items in the admin menu for organizing admin tools.
 
 ```json
 {
@@ -234,7 +240,7 @@ Define custom menus in the admin panel:
   "data": [
     {
       "Id": "[js:uuid()]",
-      "Name": "My Admin Menu",
+      "Name": "Tools",
       "MenuItems": [ ... ]
     }
   ]
@@ -243,28 +249,27 @@ Define custom menus in the admin panel:
 
 ---
 
-### 👥 Roles Step
-Define roles and permissions:
+### `Roles`
+
+Creates user roles and assigns permissions.
 
 ```json
 {
   "name": "Roles",
   "Roles": [
     {
-      "Name": "Anonymous",
-      "Permissions": [ "ViewContent", "QueryLuceneSearchIndex" ]
+      "Name": "Editor",
+      "Permissions": [ "EditOwnContent", "PublishContent" ]
     }
   ]
 }
 ```
 
-> ⚠️ As of v1.6, **default roles are not created automatically**. Define them explicitly in your setup recipe.
-
 ---
 
-### 🧪 Templates Step
+### `Templates`
 
-Create Liquid templates:
+Defines or updates Liquid templates.
 
 ```json
 {
@@ -280,8 +285,9 @@ Create Liquid templates:
 
 ---
 
-### 🔄 Workflow Step
-Provision workflows:
+### `WorkflowType`
+
+Defines custom workflows to automate user or content events.
 
 ```json
 {
@@ -297,15 +303,16 @@ Provision workflows:
 
 ---
 
-### 📦 Deployment Step
-Define deployment plans:
+### `deployment`
+
+Defines deployment plans to export/import content and settings.
 
 ```json
 {
   "name": "deployment",
   "Plans": [
     {
-      "Name": "Export",
+      "Name": "ExportSite",
       "Steps": [ ... ]
     }
   ]
@@ -314,17 +321,17 @@ Define deployment plans:
 
 ---
 
-### ⚙️ CustomSettings Step
+### `custom-settings`
 
-Initialize your own content-based settings:
+Updates content-based settings stored in a custom content item.
 
 ```json
 {
   "name": "custom-settings",
-  "MyCustomSettings": {
-    "ContentType": "MyCustomSettings",
-    "MyCustomSettingsPart": {
-      "MyTextField": { "Text": "Hello" }
+  "MySiteSettings": {
+    "ContentType": "MySiteSettings",
+    "MySettingsPart": {
+      "SomeTextField": { "Text": "Hello World" }
     }
   }
 }
@@ -332,9 +339,9 @@ Initialize your own content-based settings:
 
 ---
 
-### 🍱 Recipes Step
+### `recipes`
 
-Execute other recipes modularly:
+Runs additional recipes within the current one, allowing modular reuse.
 
 ```json
 {
@@ -344,67 +351,3 @@ Execute other recipes modularly:
   ]
 }
 ```
-
----
-
-## 🔧 Recipe Helpers
-
-Use helpers to inject dynamic values into your recipe:
-
-| Helper            | Description                                                      |
-|-------------------|------------------------------------------------------------------|
-| `uuid()`          | Generates a unique ID                                            |
-| `base64(string)`  | Decodes Base64                                                   |
-| `html(string)`    | Decodes HTML-encoded content                                     |
-| `gzip(string)`    | Decompresses gzip/Base64-encoded content                         |
-
-Example:
-```json
-"ContentItemId": "[js:uuid()]"
-```
-
----
-
-## 🚀 Recipe Migrations
-
-Use recipe migrations to **update content/config programmatically** via recipe files.
-
-Steps:
-
-1. Create a class inheriting from `DataMigration`.
-2. Inject `IRecipeMigrator`.
-3. Implement `CreateAsync` and versioned `UpdateFrom{version}Async` methods.
-
-```csharp
-public sealed class Migrations : DataMigration
-{
-    private readonly IRecipeMigrator _recipeMigrator;
-
-    public Migrations(IRecipeMigrator recipeMigrator) => _recipeMigrator = recipeMigrator;
-
-    public async Task<int> CreateAsync()
-    {
-        await _recipeMigrator.ExecuteAsync("migration.recipe.json", this);
-        return 1;
-    }
-
-    public async Task<int> UpdateFrom1Async()
-    {
-        await _recipeMigrator.ExecuteAsync("migrationV2.recipe.json", this);
-        return 2;
-    }
-}
-```
-
-Your migration recipe files go in the `Migrations` folder of your project.
-
----
-
-## 🎥 Videos
-
-Watch these walkthroughs:
-
-- [Orchard Core Recipes Intro](https://www.youtube.com/embed/uJobH9izfLI)
-- [Modular Recipes](https://www.youtube.com/embed/qPCBgHQYz1g)
-- [Custom Features](https://www.youtube.com/embed/A13Li0CblK8)
-- [Recipe Migrations](https://www.youtube.com/embed/2c5pbXuJJb0)
