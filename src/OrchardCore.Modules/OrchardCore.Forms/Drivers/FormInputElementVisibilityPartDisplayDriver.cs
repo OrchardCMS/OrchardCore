@@ -39,9 +39,9 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
                         {
                             Field = rule.Field,
                             Operator = rule.Operator.ToString(),
-                            Value = rule.Values?.FirstOrDefault()
+                            Value = rule.Values?.FirstOrDefault(),
                         }
-                    ))
+                    )),
                 });
             }
         }).Location("Detail", "Content");
@@ -85,7 +85,7 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
                         Value = rule.Values?.FirstOrDefault() ?? string.Empty,
                         Fields = [],
                         Operators = operators,
-                    })
+                    }),
                 });
         }).Location("Parts:0#Visibility Settings;5");
     }
@@ -105,6 +105,7 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
                 Rules = group.Rules?.Select(rule =>
                 {
                     var parsedOperator = FormVisibilityOperator.Is;
+
                     if (!string.IsNullOrWhiteSpace(rule.Operator))
                     {
                         parsedOperator = Enum.Parse<FormVisibilityOperator>(rule.Operator);
@@ -116,7 +117,7 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
                         Operator = parsedOperator,
                         Values = GetValues(rule.Value),
                     };
-                })
+                }),
             };
         });
 

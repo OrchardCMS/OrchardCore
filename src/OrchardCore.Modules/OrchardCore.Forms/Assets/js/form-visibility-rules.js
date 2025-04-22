@@ -133,7 +133,6 @@ window.formVisibilityGroupRules = (function () {
                 if (addHandlers) {
 
                     addProperListeners(fieldElement, (e) => {
-
                         processGroups(data, inputElement, widgetContainer, false);
                     });
                 }
@@ -169,8 +168,9 @@ window.formVisibilityGroupRules = (function () {
 
         var originalValue = inputElement.getAttribute('data-default-value') || '';
 
-        if (inputElement.type.toLowerCase() === 'checkbox' || inputElement.type.toLowerCase() === 'radio') {
+        var type = inputElement.type.toLowerCase();
 
+        if (type === 'checkbox' || type === 'radio') {
             inputElement.checked = originalValue == 'on';
         } else {
             inputElement.value = originalValue;
@@ -246,5 +246,4 @@ window.formVisibilityGroupRules = (function () {
     return {
         initialize: initialize
     };
-
 })();

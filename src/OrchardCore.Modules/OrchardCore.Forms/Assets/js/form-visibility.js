@@ -193,7 +193,6 @@ window.formVisibilityGroups = function () {
                         setValues.add(optionValue);
 
                         return true;
-
                     });
 
                     return filteredOptions;
@@ -300,5 +299,4 @@ window.formVisibilityGroups = function () {
     return {
         initialize: initialize
     };
-
 }();
