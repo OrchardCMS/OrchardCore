@@ -119,7 +119,7 @@ window.formVisibilityGroupRules = (function () {
                     return;
                 }
 
-                const fieldValue = fieldElement.type === 'checkbox'
+                const fieldValue = fieldElement.type.toLowerCase() === 'checkbox'
                     ? (fieldElement.checked ? "true" : "false")
                     : fieldElement.value;
 
