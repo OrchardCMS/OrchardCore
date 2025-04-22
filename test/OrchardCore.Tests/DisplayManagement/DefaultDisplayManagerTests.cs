@@ -77,7 +77,7 @@ public class DefaultDisplayManagerTests
     {
         return new DisplayContext
         {
-            Value = shape
+            Value = shape,
         };
     }
 
@@ -91,12 +91,12 @@ public class DefaultDisplayManagerTests
 
         var descriptor = new ShapeDescriptor
         {
-            ShapeType = "Foo"
+            ShapeType = "Foo",
         };
         descriptor.Bindings["Foo"] = new ShapeBinding
         {
             BindingName = "Foo",
-            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!"))
+            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!")),
         };
         AddShapeDescriptor(descriptor);
 
@@ -115,7 +115,7 @@ public class DefaultDisplayManagerTests
         _additionalBindings["Baz"] = new ShapeBinding
         {
             BindingName = "Baz",
-            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi from IShapeBindingResolver."))
+            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi from IShapeBindingResolver.")),
         };
 
         var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
@@ -141,12 +141,12 @@ public class DefaultDisplayManagerTests
 
         var descriptor = new ShapeDescriptor
         {
-            ShapeType = "Foo"
+            ShapeType = "Foo",
         };
         descriptor.Bindings["Foo"] = new ShapeBinding
         {
             BindingName = "Foo",
-            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!"))
+            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!")),
         };
         AddShapeDescriptor(descriptor);
 
@@ -171,20 +171,20 @@ public class DefaultDisplayManagerTests
                     dynamic dynamicShape = context.Shape;
                     dynamicShape.Data = "some data";
                     return Task.CompletedTask;
-                }
-            }
+                },
+            },
         };
         descriptor.Bindings["Foo"] = new ShapeBinding
         {
             BindingName = "Foo",
-            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Is there any data ?"))
+            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Is there any data ?")),
         };
         AddShapeDescriptor(descriptor);
 
         _additionalBindings["Foo"] = new ShapeBinding
         {
             BindingName = "Foo",
-            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString($"Yes there is {((dynamic)ctx.Value).Data}."))
+            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString($"Yes there is {((dynamic)ctx.Value).Data}.")),
         };
 
         var result = await displayManager.ExecuteAsync(CreateDisplayContext(shape));
@@ -205,12 +205,12 @@ public class DefaultDisplayManagerTests
 
         var descriptor = new ShapeDescriptor
         {
-            ShapeType = "Foo"
+            ShapeType = "Foo",
         };
         descriptor.Bindings["Foo"] = new ShapeBinding
         {
             BindingName = "Foo",
-            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!"))
+            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!")),
         };
         AddShapeDescriptor(descriptor);
 
@@ -234,18 +234,18 @@ public class DefaultDisplayManagerTests
                 {
                         context.Shape.Metadata.Alternates.Add("Bar");
                         return Task.CompletedTask;
-                }
-            }
+                },
+            },
         };
         descriptor.Bindings["Foo"] = new ShapeBinding
         {
             BindingName = "Foo",
-            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Foo"))
+            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Foo")),
         };
         descriptor.Bindings["Bar"] = new ShapeBinding
         {
             BindingName = "Bar",
-            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Bar"))
+            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Bar")),
         };
         AddShapeDescriptor(descriptor);
 
@@ -269,18 +269,18 @@ public class DefaultDisplayManagerTests
                 {
                         context.Shape.Metadata.Alternates.Add("Bar");
                         return Task.CompletedTask;
-                }
-            }
+                },
+            },
         };
         descriptor.Bindings["Foo"] = new ShapeBinding
         {
             BindingName = "Foo",
-            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Foo"))
+            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Foo")),
         };
         descriptor.Bindings["Bar"] = new ShapeBinding
         {
             BindingName = "Bar",
-            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Bar"))
+            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Bar")),
         };
         AddShapeDescriptor(descriptor);
 
@@ -298,17 +298,17 @@ public class DefaultDisplayManagerTests
 
         var descriptor = new ShapeDescriptor
         {
-            ShapeType = "Foo"
+            ShapeType = "Foo",
         };
         descriptor.Bindings["Foo"] = new ShapeBinding
         {
             BindingName = "Foo",
-            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!"))
+            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!")),
         };
         descriptor.Bindings["Foo__2"] = new ShapeBinding
         {
             BindingName = "Foo__2",
-            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hello again!"))
+            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hello again!")),
         };
         AddShapeDescriptor(descriptor);
 
@@ -329,7 +329,7 @@ public class DefaultDisplayManagerTests
 
         var descriptor = new ShapeDescriptor
         {
-            ShapeType = "Foo"
+            ShapeType = "Foo",
         };
         AddBinding(descriptor, "Foo", ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!")));
         AddBinding(descriptor, "Foo__1", ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hello (1)!")));
@@ -345,7 +345,7 @@ public class DefaultDisplayManagerTests
         descriptor.Bindings[bindingName] = new ShapeBinding
         {
             BindingName = bindingName,
-            BindingAsync = binding
+            BindingAsync = binding,
         };
     }
 
@@ -359,7 +359,7 @@ public class DefaultDisplayManagerTests
 
         var descriptor = new ShapeDescriptor
         {
-            ShapeType = "Foo"
+            ShapeType = "Foo",
         };
         AddBinding(descriptor, "Foo", ctx => Task.FromResult<IHtmlContent>(new HtmlString("yarg")));
         AddShapeDescriptor(descriptor);
@@ -386,14 +386,14 @@ public class DefaultDisplayManagerTests
 
         var descriptorFoo = new ShapeDescriptor
         {
-            ShapeType = "Foo"
+            ShapeType = "Foo",
         };
         AddBinding(descriptorFoo, "Foo", ctx => Task.FromResult<IHtmlContent>(new HtmlString("alpha")));
         AddShapeDescriptor(descriptorFoo);
 
         var descriptorBar = new ShapeDescriptor
         {
-            ShapeType = "Bar"
+            ShapeType = "Bar",
         };
         AddBinding(descriptorBar, "Bar", ctx => Task.FromResult<IHtmlContent>(new HtmlString("beta")));
         AddShapeDescriptor(descriptorBar);
@@ -419,7 +419,7 @@ public class DefaultDisplayManagerTests
 
         var descriptorFoo = new ShapeDescriptor
         {
-            ShapeType = "Foo"
+            ShapeType = "Foo",
         };
         AddBinding(descriptorFoo, "Foo", ctx => Task.FromResult<IHtmlContent>(new HtmlString("alpha")));
         AddShapeDescriptor(descriptorFoo);

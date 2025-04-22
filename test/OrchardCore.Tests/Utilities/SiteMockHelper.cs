@@ -9,7 +9,7 @@ public static class SiteMockHelper
     {
         var properties = new JsonObject
         {
-            [obj.GetType().Name] = JObject.FromObject(obj)
+            [obj.GetType().Name] = JObject.FromObject(obj),
         };
 
         var mockSite = new Mock<ISite>();

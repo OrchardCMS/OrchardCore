@@ -1,15 +1,15 @@
 [
   {
-    "inputs": [
-      "Assets/scss/SelectOptionsEditor/selectOptionsEditor.scss"
-    ],
-    "output": "wwwroot/Styles/selectOptionsEditor.css"
+    "action": "min",
+    "name": "selectOptionsEditor",
+    "source": "Assets/js/SelectOptionsEditor/selectOptionsEditor.js",
+    "tags": ["admin", "dashboard", "js"]
   },
   {
-    "inputs": [
-      "Assets/js/SelectOptionsEditor/selectOptionsEditor.js"
-    ],
-    "output": "wwwroot/Scripts/selectOptionsEditor.js"
+    "action": "min",
+    "name": "formElementLabelManager",
+    "source": "Assets/js/formElementLabelManager.js",
+    "tags": ["admin", "dashboard", "js"]
   },
   {
     "inputs": [

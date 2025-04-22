@@ -15,5 +15,5 @@ public enum MergeNullValueHandling
     /// <summary>
     /// The content's null value properties will be merged.
     /// </summary>
-    Merge = 1
+    Merge = 1,
 }

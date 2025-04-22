@@ -198,7 +198,7 @@ public class ShellContext : IDisposable, IAsyncDisposable
     {
         Normal,
         FromLastScope,
-        FromDependency
+        FromDependency,
     }
 
     /// <summary>

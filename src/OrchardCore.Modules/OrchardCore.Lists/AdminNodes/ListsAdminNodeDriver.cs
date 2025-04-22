@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Lists.Models;
+using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Lists.AdminNodes;
@@ -11,9 +13,14 @@ public sealed class ListsAdminNodeDriver : DisplayDriver<MenuItem, ListsAdminNod
 {
     private readonly IContentDefinitionManager _contentDefinitionManager;
 
-    public ListsAdminNodeDriver(IContentDefinitionManager contentDefinitionManager)
+    internal readonly IStringLocalizer S;
+
+    public ListsAdminNodeDriver(
+        IContentDefinitionManager contentDefinitionManager,
+        IStringLocalizer<ListsAdminNodeDriver> stringLocalizer)
     {
         _contentDefinitionManager = contentDefinitionManager;
+        S = stringLocalizer;
     }
 
     public override Task<IDisplayResult> DisplayAsync(ListsAdminNode treeNode, BuildDisplayContext context)
@@ -45,6 +52,15 @@ public sealed class ListsAdminNodeDriver : DisplayDriver<MenuItem, ListsAdminNod
             m => m.AddContentTypeAsParent,
             m => m.IconForParentLink);
 
+        if (string.IsNullOrEmpty(model.ContentType))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.ContentType), S["Content type field is required."]);
+        }
+        else if (!await IsValidContentTypeAsync(model.ContentType))
+        {
+            context.Updater.ModelState.AddModelError(Prefix, nameof(model.ContentType), S["Invalid Content type provided."]);
+        }
+
         treeNode.ContentType = model.ContentType;
         treeNode.IconForContentItems = model.IconForContentItems;
         treeNode.AddContentTypeAsParent = model.AddContentTypeAsParent;
@@ -58,7 +74,19 @@ public sealed class ListsAdminNodeDriver : DisplayDriver<MenuItem, ListsAdminNod
         return (await _contentDefinitionManager.ListTypeDefinitionsAsync())
             .Where(ctd => ctd.Parts.Any(p => p.PartDefinition.Name.Equals(nameof(ListPart), StringComparison.OrdinalIgnoreCase)))
             .OrderBy(ctd => ctd.DisplayName)
-            .Select(ctd => new SelectListItem { Value = ctd.Name, Text = ctd.DisplayName })
+            .Select(ctd => new SelectListItem(ctd.DisplayName, ctd.Name))
             .ToList();
+    }
+
+    private async Task<bool> IsValidContentTypeAsync(string contentType)
+    {
+        var definition = await _contentDefinitionManager.GetTypeDefinitionAsync(contentType);
+
+        if (definition is null)
+        {
+            return false;
+        }
+
+        return definition.Parts.Any(p => p.PartDefinition.Name.Equals(nameof(ListPart), StringComparison.OrdinalIgnoreCase));
     }
 }

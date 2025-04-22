@@ -9,6 +9,20 @@
     // See https://docs.renovatebot.com/configuration-options/#configmigration.
     configMigration: true,
     packageRules: [
+        // Such updates should never break, so are usually safe to automerge (unless another group below overrides it
+        // for a given dependency).
+        {
+            groupName: 'Non-Breaking Dependency Versions',
+            matchUpdateTypes: ['patch', 'pin', 'pinDigest'],
+            'automerge': true,
+        },
+        // Minor dependencies are ought to be non-breaking but can be (like
+        // https://github.com/OrchardCMS/OrchardCore/pull/17584), so better to keep them separate.
+        {
+            groupName: 'Minor Dependency Versions',
+            matchUpdateTypes: ['minor'],
+        },
+
         // Disable certain updates.
         {
             // The .NET 8 versions of these packages need to stay on 8.x. We maintain a separate reference to the 
@@ -36,6 +50,13 @@
             ],
             enabled: false,
         },
+        {
+            // See the the comment in global.json on why this is disabled.
+            groupName: 'global.json',
+            matchFileNames: ['global.json'],
+            enabled: false,
+        },
+
         // Groups of packages that we want to update together.
         {
             groupName: 'Azure.Communication packages',
@@ -94,9 +115,12 @@
             ],
         },
     ],
-    // We only need updates once a week.
+    // With GitHub Actions, concurrency is not really an issue.
+    prHourlyLimit: 0,
+    // Between 0:00 and 6:00 UTC on Sundays. Large time window to ensure that Renovate runs at least once then:
+    // https://docs.renovatebot.com/configuration-options/#schedule.
     schedule: [
-        'before 5am on Sunday',
+        '* 0-6 * * 7',
     ],
     addLabels: ['dependencies'],
 }

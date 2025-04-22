@@ -70,7 +70,7 @@ public sealed class AutoroutePartSettingsDisplayDriver : ContentTypePartDefiniti
                 AllowDisabled = model.AllowDisabled,
                 AllowRouteContainedItems = model.AllowRouteContainedItems,
                 ManageContainedItemRoutes = model.ManageContainedItemRoutes,
-                AllowAbsolutePath = model.AllowAbsolutePath
+                AllowAbsolutePath = model.AllowAbsolutePath,
             });
         }
 

@@ -18,8 +18,8 @@ public class DefaultHealthChecksResponseWriter : IHealthChecksResponseWriter
             {
                 Name = item.Key,
                 Status = item.Value.Status.ToString(),
-                Description = item.Value.Description
-            })
+                Description = item.Value.Description,
+            }),
         };
 
         context.Response.ContentType = MediaTypeNames.Application.Json;

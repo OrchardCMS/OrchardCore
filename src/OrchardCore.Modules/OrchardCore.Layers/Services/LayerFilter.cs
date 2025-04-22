@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Admin;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -82,7 +83,7 @@ public sealed class LayerFilter : IAsyncResultFilter
                 cacheEntry = new CacheEntry()
                 {
                     Identifier = layerState.Identifier,
-                    Widgets = await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published)
+                    Widgets = await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published),
                 };
 
                 _memoryCache.Set(WidgetsKey, cacheEntry);
@@ -124,18 +125,21 @@ public sealed class LayerFilter : IAsyncResultFilter
                 if (widgetDefinitions.TryGetValue(widget.ContentItem.ContentType, out var definition) &&
                     (!definition.IsSecurable() || await _authorizationService.AuthorizeAsync(context.HttpContext.User, CommonPermissions.ViewContent, widget.ContentItem)))
                 {
-                    var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, updater);
+                    // Note: We clone the cached content item to avoid sharing the same instance across threads when rendering widgets.
+                    var contentItem = widget.ContentItem.Clone();
+
+                    var widgetContent = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, updater);
 
                     widgetContent.Classes.Add("widget");
-                    widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
+                    widgetContent.Classes.Add("widget-" + contentItem.ContentType.HtmlClassify());
 
                     var wrapper = new WidgetWrapper
                     {
-                        Widget = widget.ContentItem,
-                        Content = widgetContent
+                        Widget = contentItem,
+                        Content = widgetContent,
                     };
 
-                    wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + widget.ContentItem.ContentType);
+                    wrapper.Metadata.Alternates.Add("Widget_Wrapper__" + contentItem.ContentType);
                     wrapper.Metadata.Alternates.Add("Widget_Wrapper__Zone__" + widget.Zone);
 
                     var contentZone = layout.Zones[widget.Zone];

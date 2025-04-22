@@ -25,7 +25,7 @@ public class AutorouteTransformer : DynamicRouteValueTransformer
         {
             var routeValues = new RouteValueDictionary(_options.GlobalRouteValues)
             {
-                [_options.ContentItemIdKey] = entry.ContentItemId
+                [_options.ContentItemIdKey] = entry.ContentItemId,
             };
 
             if (!string.IsNullOrEmpty(entry.JsonPath))

@@ -81,7 +81,7 @@ public static class GetIntellisenseEndpoint
                 Encoding.UTF8.GetBytes(filters),
                 "].forEach(value=>{if(!liquidFilters.includes(value)){ liquidFilters.push(value);}});["u8.ToArray(),
                 Encoding.UTF8.GetBytes(tags),
-                "].forEach(value=>{if(!liquidTags.includes(value)){ liquidTags.push(value);}});"u8.ToArray()
+                "].forEach(value=>{if(!liquidTags.includes(value)){ liquidTags.push(value);}});"u8.ToArray(),
             }).SelectMany(x => x).ToArray();
 
         return scriptBytes;

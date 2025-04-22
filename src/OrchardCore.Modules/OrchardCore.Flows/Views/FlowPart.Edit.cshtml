@@ -47,14 +47,11 @@
                     //Input hidden
                     //Prefixes
                     HtmlFieldPrefix: htmlFieldPrefix,
-                    PrefixValue: htmlFieldPrefix + '-' + (index++).ToString(),
-                    PrefixesId: Html.IdFor(x => x.Prefixes),
+                    PrefixValue: Model.Prefixes != null && Model.Prefixes.Length > index ? Model.Prefixes[index++] : htmlFieldPrefix + '-' + (index++).ToString(),
                     PrefixesName: Html.NameFor(x => x.Prefixes),
                     //Content Types
-                    ContentTypesId: Html.IdFor(x => x.ContentTypes),
                     ContentTypesName: Html.NameFor(x => x.ContentTypes),
                     //Content Items
-                    ContentItemsId: Html.IdFor(x => x.ContentItems),
                     ContentItemsName: Html.NameFor(x => x.ContentItems)
                 );
                 @await DisplayAsync(contentCard)
@@ -102,7 +99,7 @@
             var contentItem = await ContentManager.NewAsync(type.Name);
             await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, "", Guid.NewGuid().ToString("n")));
         }
-        
+
         <script asp-name="flowpart-edit" at="Foot"></script>
         <style asp-name="flowpart-edit" at="Head"></style>
     }
@@ -122,7 +119,7 @@
         }
 
         @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
-                           if ($('#@widgetTemplatePlaceholderId').length == 1) {
+        if ($('#@widgetTemplatePlaceholderId').length == 1) {
             $("#@widgetTemplatePlaceholderId").sortable({
                 handle: ".widget-editor-handle",
                 cursor: "move",
@@ -161,13 +158,10 @@
                     lastContainer.toggleClass('widget-dropzone-hint');
                     widgetDragItem.find('.card').first().toggleClass('border-primary');
 
-                    if (lastContainer[0] != this && this.dataset.widgetTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) >= 0) {
-
-                        widgetItemDestId = widgetDragItem.parent().attr('id');
-
-                        if (widgetItemDestId !== widgetItemSourceId) {
-
-                            var inputs = widgetDragItem.children("input[name*='FlowPart']");
+                    widgetItemDestId = widgetDragItem.parent().attr('id');
+                    if (widgetItemDestId !== widgetItemSourceId) {
+                        if (lastContainer[0] != this && this.dataset.widgetTypes.split(';').indexOf(draggedWidget[0].dataset.contentType) >= 0) {
+                            var inputs = widgetDragItem.children("input[name*='@partName']");
 
                             var destination = $('#' + widgetItemDestId);
                             var source = $('#' + widgetItemSourceId);
@@ -182,39 +176,50 @@
 
                                 if (source.length > 0) {
                                     inputs.each(function (index, item) {
-                                        $(this).attr('id', $(this).attr('id').replace(sourceGuid, destGuid));
+                                        if ($(this).attr('id') !== undefined) {
+                                            $(this).attr('id', $(this).attr('id').replace(sourceGuid, destGuid));
+                                        }
+
                                         $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, destNameGuid));
                                     });
 
                                 } else {
 
                                     inputs.each(function (index, item) {
-                                        $(this).attr('id', destGuid + $(this).attr('id'));
+                                        if ($(this).attr('id') !== undefined) {
+                                            $(this).attr('id', destGuid + $(this).attr('id'));
+                                        }
+
                                         $(this).attr('name', destNameGuid + $(this).attr('name'));
                                     });
                                 }
-
                             }
                             else if (source.length > 0) {
                                 inputs.each(function (index, item) {
-                                    $(this).attr('id', $(this).attr('id').replace(sourceGuid, ''));
+                                    if ($(this).attr('id') !== undefined) {
+                                        $(this).attr('id', $(this).attr('id').replace(sourceGuid, ''));
+                                    }
+
                                     $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, ''));
                                 });
                             }
-
                         }
-
-                        $(document).trigger('contentpreview:render');
-                        widgetItemDestId = null;
+                        else {
+                            event.preventDefault();
+                        }
                     }
-                    else {
-                        event.preventDefault();
+
+                    if (lastContainer[0] != this)
+                    {
+                        $(document).trigger('contentpreview:render');
                     }
 
                     //clear the global variables
                     widgetDragItem = null;
+                    draggedWidget = null;
                     lastContainer = null;
                     widgetItemSourceId = null;
+                    widgetItemDestId = null;
                 },
                 over: function (event, ui) {
                     var $self = $(this);

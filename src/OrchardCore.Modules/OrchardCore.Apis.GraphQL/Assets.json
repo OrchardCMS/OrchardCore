@@ -1,0 +1,8 @@
+[
+  {
+    "action": "webpack",
+    "name": "graphiql",
+    "config": "/Assets/webpack.config.js",
+    "tags": ["admin", "dashboard", "js"]
+  }
+]

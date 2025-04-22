@@ -28,7 +28,7 @@ public class AutorouteContentHandler : ContentHandlerBase
                     { "Controller", "Item" },
                     { "Action", "Display" },
                     { "ContentItemId", entry.ContentItemId},
-                    { "ContainedContentItemId", entry.ContainedContentItemId }
+                    { "ContainedContentItemId", entry.ContainedContentItemId },
                 };
             }
         });

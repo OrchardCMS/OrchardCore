@@ -52,7 +52,7 @@ public sealed class HtmlBodyPartMonacoEditorSettingsDriver : ContentTypePartDefi
                 jsonSettings["language"] = "html";
                 var settings = new HtmlBodyPartMonacoEditorSettings
                 {
-                    Options = jsonSettings.ToString()
+                    Options = jsonSettings.ToString(),
                 };
                 context.Builder.WithSettings(settings);
             }

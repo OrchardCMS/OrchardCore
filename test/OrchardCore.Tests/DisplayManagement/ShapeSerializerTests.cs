@@ -54,7 +54,7 @@ public class ShapeSerializerTests
 
         var beta = await shape.CreateAsync("Beta", Arguments.From(new
         {
-            Alpha = alpha
+            Alpha = alpha,
         }));
 
         await alpha.AddAsync(beta);

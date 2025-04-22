@@ -51,7 +51,7 @@ public static partial class OrchardCoreBuilderExtensions
 
             foreach (var permission in permissions)
             {
-                if(!permissionNames.Add(permission.Name))
+                if (!permissionNames.Add(permission.Name))
                 {
                     logger ??= serviceProvider.GetRequiredService<ILogger<IPermissionProvider>>();
 

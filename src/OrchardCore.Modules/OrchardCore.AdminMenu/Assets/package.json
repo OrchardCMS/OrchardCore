@@ -1,0 +1,10 @@
+{
+  "name": "@orchardcore/adminmenu",
+  "version": "1.0.0",
+  "dependencies": {
+    "@popperjs/core": "2.11.8",
+    "bootstrap": "5.3.5",
+    "fontawesome-iconpicker": "3.2.0",
+    "vue": "2.6.14"
+  }
+}

@@ -64,6 +64,8 @@
     }
 
     var passwordTooltip = T["Password must have at least {0}.", passwordOptions];
+
+    var passwordOptionsJSON = @Json.Serialize(options.Password).ToString();
 }
 <form asp-action="Index">
 
@@ -79,7 +81,7 @@
                     <label for="culturesList" class="form-label mt-2">@T["Change language"]</label>
                 </div>
                 <div class="col">
-                    <select id="culturesList" class="form-select" onchange="setLocalizationUrl()">
+                    <select id="culturesList" class="form-select">
                         @foreach (var culture in LocOptions.Value.SupportedUICultures.OrderBy(x => x.NativeName))
                         {
                             var uriString = UriHelper.BuildRelative(Context.Request.PathBase, Context.Request.Path, queryString.Add("ui-culture", culture.Name));
@@ -223,7 +225,7 @@
             <div class="mb-3 col-md-6" asp-validation-class-for="Password">
                 <label asp-for="Password" class="form-label">@T["Password"]</label>
                 <div class="input-group">
-                    <input asp-for="Password" class="form-control" autocomplete="new-password" data-bs-toggle="popover" data-bs-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-bs-content="@passwordTooltip" required pattern="@passwordRegex" />
+                    <input asp-for="Password" class="form-control" autocomplete="new-password" data-strength="@(passwordOptionsJSON)" data-bs-toggle="popover" data-bs-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-bs-content="@passwordTooltip" required pattern="@passwordRegex" />
                     <button tabindex="-1" class="btn btn-secondary" type="button" id="togglePassword"><i class="icon fa fa-eye"></i></button>
                 </div>
                 <div id="passwordStrength"></div>
@@ -247,38 +249,6 @@
         </div>
     </div>
 </form>
-<script src="~/OrchardCore.Setup/Scripts/setup.min.js"></script>
-<script>
-    $(function () {
-        $('#Password').strength({
-            minLength: @(options.Password.RequiredLength),
-            upperCase: @(options.Password.RequireUppercase ? "true" : "false"),
-            lowerCase: @(options.Password.RequireLowercase ? "true" : "false"),
-            numbers: @(options.Password.RequireDigit ? "true" : "false"),
-            specialchars: @(options.Password.RequireNonAlphanumeric ? "true" : "false"),
-            target: '#passwordStrength',
-            style: "margin-top: 7px; height: 7px; border-radius: 5px"
-        });
-
-        $('#Password').popover({
-            trigger: 'focus'
-        });
-
-        toggleConnectionString = document.querySelector('#toggleConnectionString');
-        if (toggleConnectionString) {
-            toggleConnectionString.addEventListener('click', function (e) {
-                togglePasswordVisibility(document.querySelector('#ConnectionString'), document.querySelector('#toggleConnectionString'))
-            });
-        }
-
-        togglePassword = document.querySelector('#togglePassword');
-        togglePassword.addEventListener('click', function (e) {
-            togglePasswordVisibility(document.querySelector('#Password'), document.querySelector('#togglePassword'))
-        });
-
-        togglePasswordConfirmation = document.querySelector('#togglePasswordConfirmation');
-        togglePasswordConfirmation.addEventListener('click', function (e) {
-            togglePasswordVisibility(document.querySelector('#PasswordConfirmation'), document.querySelector('#togglePasswordConfirmation'))
-        });
-    })
-</script>
+<script src="~/OrchardCore.Setup/Scripts/setup/setup.min.js" type="module"></script>
+<script src="~/OrchardCore.Resources/Scripts/popper.min.js"></script>
+<script src="~/OrchardCore.Resources/Scripts/bootstrap.min.js"></script>

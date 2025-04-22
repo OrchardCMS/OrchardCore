@@ -28,5 +28,5 @@ public class ContentOptions
 public enum ContentsBulkAction
 {
     None,
-    Delete
+    Delete,
 }

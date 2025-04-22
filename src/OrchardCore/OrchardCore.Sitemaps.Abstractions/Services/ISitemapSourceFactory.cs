@@ -25,7 +25,7 @@ public class SitemapSourceFactory<TSitemapSource> : ISitemapSourceFactory where 
     {
         return new TSitemapSource()
         {
-            Id = _sitemapIdGenerator.GenerateUniqueId()
+            Id = _sitemapIdGenerator.GenerateUniqueId(),
         };
     }
 }

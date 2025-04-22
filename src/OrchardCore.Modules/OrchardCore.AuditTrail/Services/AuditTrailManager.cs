@@ -96,7 +96,7 @@ public class AuditTrailManager : IAuditTrailManager
             ClientIpAddress = string.IsNullOrEmpty(createContext.ClientIpAddress)
                 ? await GetClientIpAddressAsync()
                 : createContext.ClientIpAddress,
-            CreatedUtc = createContext.CreatedUtc ?? _clock.UtcNow
+            CreatedUtc = createContext.CreatedUtc ?? _clock.UtcNow,
         };
 
         auditTrailEvent.Put(createContext.AuditTrailEventItem);

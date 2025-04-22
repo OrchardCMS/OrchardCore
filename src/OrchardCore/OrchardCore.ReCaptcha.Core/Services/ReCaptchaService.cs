@@ -92,7 +92,7 @@ public sealed class ReCaptchaService
             var content = new FormUrlEncodedContent(new Dictionary<string, string>
             {
                 { "secret", _reCaptchaSettings.SecretKey },
-                { "response", responseToken }
+                { "response", responseToken },
             });
 
             var httpClient = _httpClientFactory.CreateClient(nameof(ReCaptchaService));

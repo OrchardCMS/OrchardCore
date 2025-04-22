@@ -67,7 +67,6 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
 
         return Initialize<EditUserViewModel>("UserFields_Edit", model =>
         {
-            model.EmailConfirmed = user.EmailConfirmed;
             model.IsEnabled = user.IsEnabled;
             model.IsNewRequest = context.IsNew;
             // The current user cannot disable themselves, nor can a user without permission to manage this user disable them.
@@ -136,15 +135,6 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
             // TODO This handler should be invoked through the create or update methods.
             // otherwise it will not be invoked when a workflow, or other operation, changes this value.
             await _userEventHandlers.InvokeAsync((handler, context) => handler.EnabledAsync(context), userContext, _logger);
-        }
-
-        if (context.Updater.ModelState.IsValid)
-        {
-            if (model.EmailConfirmed && !await _userManager.IsEmailConfirmedAsync(user))
-            {
-                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                await _userManager.ConfirmEmailAsync(user, token);
-            }
         }
 
         return await EditAsync(user, context);

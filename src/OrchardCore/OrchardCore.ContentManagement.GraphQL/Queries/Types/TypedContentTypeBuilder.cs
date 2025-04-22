@@ -86,9 +86,9 @@ public sealed class TypedContentTypeBuilder : IContentTypeBuilder
                                     Source = resolvedPart,
                                     FieldDefinition = field,
                                     UserContext = context.UserContext,
-                                    RequestServices = context.RequestServices
+                                    RequestServices = context.RequestServices,
                                 });
-                            })
+                            }),
                         };
 
                         contentItemType.AddField(rolledUpField);
@@ -135,7 +135,7 @@ public sealed class TypedContentTypeBuilder : IContentTypeBuilder
                     {
                         Type = inputGraphTypeResolved.GetType(),
                         Name = partFieldName,
-                        Description = inputGraphTypeResolved.Description
+                        Description = inputGraphTypeResolved.Description,
                     }.WithPartNameMetaData(partName));
                 }
             }

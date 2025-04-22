@@ -1,0 +1,10 @@
+{
+  "name": "@orchardcore/setup",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@popperjs/core": "2.11.8",
+    "bootstrap": "5.3.5",
+    "jquery": "3.7.1"
+  }
+}

@@ -15,7 +15,7 @@ public class GeoPointFieldIndexHandler : ContentFieldIndexHandler<GeoPointField>
             value = new DocumentIndex.GeoPoint
             {
                 Longitude = (decimal)field.Longitude,
-                Latitude = (decimal)field.Latitude
+                Latitude = (decimal)field.Latitude,
             };
         }
 

@@ -4,5 +4,5 @@ public enum BagPartSettingType
 {
     None,
     ContentTypes,
-    Stereotypes
+    Stereotypes,
 }

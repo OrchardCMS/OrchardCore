@@ -116,7 +116,7 @@ public sealed class MenuController : Controller
     public ActionResult IndexFilterPOST(AdminMenuListViewModel model)
         => RedirectToAction(nameof(List), new RouteValueDictionary
         {
-            {_optionsSearch, model.Options.Search }
+            {_optionsSearch, model.Options.Search },
         });
 
     public async Task<IActionResult> Create()
@@ -169,7 +169,7 @@ public sealed class MenuController : Controller
         var model = new AdminMenuEditViewModel
         {
             Id = adminMenu.Id,
-            Name = adminMenu.Name
+            Name = adminMenu.Name,
         };
 
         return View(model);

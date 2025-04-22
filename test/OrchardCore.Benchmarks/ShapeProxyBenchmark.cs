@@ -8,7 +8,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Navigation;
 
-namespace OrchardCore.Benchmark;
+namespace OrchardCore.Benchmarks;
 
 /*
 | Method                       | Mean       | Error      | StdDev    | Gen0   | Allocated |

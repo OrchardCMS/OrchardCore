@@ -50,7 +50,7 @@ public sealed class MediaFieldSettingsDriver : ContentPartFieldDefinitionDisplay
                     {
                         Extension = extension,
                         ContentType = contentType,
-                        IsSelected = settings.AllowedExtensions != null && settings.AllowedExtensions.Contains(extension)
+                        IsSelected = settings.AllowedExtensions != null && settings.AllowedExtensions.Contains(extension),
                     };
 
                     var index = contentType.IndexOf('/');

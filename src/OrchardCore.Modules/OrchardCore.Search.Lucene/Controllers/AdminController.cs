@@ -25,7 +25,6 @@ using OrchardCore.Routing;
 using OrchardCore.Search.Lucene.Model;
 using OrchardCore.Search.Lucene.Services;
 using OrchardCore.Search.Lucene.ViewModels;
-using YesSql;
 
 namespace OrchardCore.Search.Lucene.Controllers;
 
@@ -34,7 +33,6 @@ public sealed class AdminController : Controller
 {
     private const string _optionsSearch = "Options.Search";
 
-    private readonly ISession _session;
     private readonly LuceneIndexManager _luceneIndexManager;
     private readonly LuceneIndexingService _luceneIndexingService;
     private readonly IAuthorizationService _authorizationService;
@@ -55,7 +53,6 @@ public sealed class AdminController : Controller
     internal readonly IHtmlLocalizer H;
 
     public AdminController(
-        ISession session,
         IContentDefinitionManager contentDefinitionManager,
         LuceneIndexManager luceneIndexManager,
         LuceneIndexingService luceneIndexingService,
@@ -74,7 +71,6 @@ public sealed class AdminController : Controller
         IOptions<TemplateOptions> templateOptions,
         ILocalizationService localizationService)
     {
-        _session = session;
         _luceneIndexManager = luceneIndexManager;
         _luceneIndexingService = luceneIndexingService;
         _authorizationService = authorizationService;
@@ -129,7 +125,7 @@ public sealed class AdminController : Controller
         {
             Indexes = results,
             Options = options,
-            Pager = await _shapeFactory.PagerAsync(pager, count, routeData)
+            Pager = await _shapeFactory.PagerAsync(pager, count, routeData),
         };
 
         model.Options.ContentsBulkAction =
@@ -147,7 +143,7 @@ public sealed class AdminController : Controller
     public ActionResult IndexFilterPOST(AdminIndexViewModel model)
         => RedirectToAction(nameof(Index), new RouteValueDictionary
         {
-            { _optionsSearch, model.Options.Search }
+            { _optionsSearch, model.Options.Search },
         });
 
     public async Task<ActionResult> Edit(string indexName = null)
@@ -183,7 +179,7 @@ public sealed class AdminController : Controller
                 .Select(x => new SelectListItem { Text = x.Name, Value = x.Name }),
             IndexedContentTypes = IsCreate ? (await _contentDefinitionManager.ListTypeDefinitionsAsync())
                 .Select(x => x.Name).ToArray() : settings.IndexedContentTypes,
-            StoreSourceData = !IsCreate && settings.StoreSourceData
+            StoreSourceData = !IsCreate && settings.StoreSourceData,
         };
 
         return View(model);
@@ -222,7 +218,7 @@ public sealed class AdminController : Controller
                 .Select(c => new SelectListItem
                 {
                     Text = $"{c} ({CultureInfo.GetCultureInfo(c).DisplayName})",
-                    Value = c
+                    Value = c,
                 }).Prepend(new SelectListItem { Text = S["Any culture"], Value = "any" });
             model.Analyzers = _luceneAnalyzerManager.GetAnalyzers()
                 .Select(x => new SelectListItem { Text = x.Name, Value = x.Name });

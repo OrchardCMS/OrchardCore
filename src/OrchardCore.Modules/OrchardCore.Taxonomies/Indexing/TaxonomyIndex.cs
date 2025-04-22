@@ -103,7 +103,7 @@ public class TaxonomyIndexProvider : IndexProvider<ContentItem>, IScopedIndexPro
                             ContentField = fieldDefinition.Name,
                             TermContentItemId = termContentItemId,
                             Published = contentItem.Published,
-                            Latest = contentItem.Latest
+                            Latest = contentItem.Latest,
                         });
                     }
                 }

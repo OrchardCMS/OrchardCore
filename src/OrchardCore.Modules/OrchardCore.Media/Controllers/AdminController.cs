@@ -97,10 +97,17 @@ public sealed class AdminController : Controller
             await _mediaFileStore.TryCreateDirectoryAsync(_mediaFileStore.Combine(_mediaOptions.AssetsUsersFolder, _userAssetFolderNameProvider.GetUserAssetFolderName(User)));
         }
 
-        var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
-            .WhereAwait(async e => e.IsDirectory && await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)e.Path));
+        var allowed = new List<IFileStoreEntry>();
 
-        return Ok(await allowed.Select(folder =>
+        await foreach (var e in _mediaFileStore.GetDirectoryContentAsync(path))
+        {
+            if (e.IsDirectory && await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)e.Path))
+            {
+                allowed.Add(e);
+            }
+        }
+
+        return Ok(allowed.Select(folder =>
         {
             var isSpecial = IsSpecialFolder(folder.Path);
             return new MediaFolderViewModel()
@@ -112,9 +119,9 @@ public sealed class AdminController : Controller
                 LastModifiedUtc = folder.LastModifiedUtc,
                 Length = folder.Length,
                 CanCreateFolder = !isSpecial,
-                CanDeleteFolder = !isSpecial
+                CanDeleteFolder = !isSpecial,
             };
-        }).ToListAsync());
+        }));
     }
 
     public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path, string extensions)
@@ -137,14 +144,19 @@ public sealed class AdminController : Controller
 
         var allowedExtensions = GetRequestedExtensions(extensions, false);
 
-        var allowed = _mediaFileStore.GetDirectoryContentAsync(path)
-            .WhereAwait(async e =>
-                !e.IsDirectory
+        var allowed = new List<object>();
+
+        await foreach (var e in _mediaFileStore.GetDirectoryContentAsync(path))
+        {
+            if (!e.IsDirectory
                 && (allowedExtensions.Count == 0 || allowedExtensions.Contains(Path.GetExtension(e.Path)))
                 && await _authorizationService.AuthorizeAsync(User, MediaPermissions.ManageMediaFolder, (object)e.Path))
-            .Select(e => CreateFileResult(e));
+            {
+                allowed.Add(CreateFileResult(e));
+            }
+        }
 
-        return Ok(await allowed.ToListAsync());
+        return Ok(allowed);
     }
 
     public async Task<ActionResult<object>> GetMediaItem(string path)
@@ -208,7 +220,7 @@ public sealed class AdminController : Controller
                             name = file.FileName,
                             size = file.Length,
                             folder = path,
-                            error = S["This file extension is not allowed: {0}", extension].ToString()
+                            error = S["This file extension is not allowed: {0}", extension].ToString(),
                         });
 
                         if (_logger.IsEnabled(LogLevel.Information))
@@ -247,6 +259,18 @@ public sealed class AdminController : Controller
 
                         result.Add(CreateFileResult(mediaFile));
                     }
+                    catch (ExistsFileStoreException ex)
+                    {
+                        _logger.LogWarning(ex, "An error occurred while uploading a media");
+
+                        result.Add(new
+                        {
+                            name = fileName,
+                            size = file.Length,
+                            folder = path,
+                            error = ex.Message,
+                        });
+                    }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "An error occurred while uploading a media");
@@ -256,7 +280,7 @@ public sealed class AdminController : Controller
                             name = fileName,
                             size = file.Length,
                             folder = path,
-                            error = ex.Message
+                            error = ex.Message,
                         });
                     }
                     finally
@@ -494,7 +518,7 @@ public sealed class AdminController : Controller
             mime = contentType ?? "application/octet-stream",
             mediaText = string.Empty,
             anchor = new { x = 0.5f, y = 0.5f },
-            attachedFileName = string.Empty
+            attachedFileName = string.Empty,
         };
     }
 

@@ -43,7 +43,7 @@ public sealed class DeploymentPlanDeploymentSource
                                   select new
                                   {
                                       Type = GetStepType(deploymentStepFactories, step),
-                                      Step = step
+                                      Step = step,
                                   }).ToArray(),
                      }).ToArray();
 

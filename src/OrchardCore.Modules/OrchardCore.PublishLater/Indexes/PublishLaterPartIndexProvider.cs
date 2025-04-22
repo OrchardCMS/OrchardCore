@@ -73,7 +73,7 @@ public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider,
                     ContentItemId = part.ContentItem.ContentItemId,
                     ScheduledPublishDateTimeUtc = part.ScheduledPublishUtc,
                     Published = part.ContentItem.Published,
-                    Latest = part.ContentItem.Latest
+                    Latest = part.ContentItem.Latest,
                 };
             });
     }

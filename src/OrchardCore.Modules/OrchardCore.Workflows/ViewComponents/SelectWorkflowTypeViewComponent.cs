@@ -20,7 +20,7 @@ public class SelectWorkflowTypeViewComponent : ViewComponent
         var model = new SelectWorkflowTypeViewModel
         {
             HtmlName = htmlName,
-            WorkflowTypeSelections = selections
+            WorkflowTypeSelections = selections,
         };
 
         return View(model);

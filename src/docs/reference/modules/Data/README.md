@@ -37,6 +37,7 @@ OrchardCore uses the `YesSql` library to interact with the configured database p
 | `VersionAccessorFactory`    | You can provide your own version accessor factory.                                                                                            |
 | `ContentSerializer`         | You can provide your own content serializer.                                                                                                  |
 | `EnableThreadSafetyChecks`  | Gets or sets the `EnableThreadSafetyChecks` option in YesSql, which aids in diagnosing concurrency or race condition issues.                  |
+| `IsolationLevel`            | Gets or sets the transaction isolation level to use by default. The default value is `ReadCommitted`.                                         |
 
 For example, you can change the default command-page-size from `500` to `1000` by adding the following code to your startup code.
 

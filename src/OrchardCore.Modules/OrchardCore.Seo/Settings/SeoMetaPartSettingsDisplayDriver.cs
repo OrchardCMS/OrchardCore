@@ -40,7 +40,7 @@ public sealed class SeoMetaPartSettingsDisplayDriver : ContentTypePartDefinition
             DisplayCustomMetaTags = model.DisplayCustomMetaTags,
             DisplayOpenGraph = model.DisplayOpenGraph,
             DisplayTwitter = model.DisplayTwitter,
-            DisplayGoogleSchema = model.DisplayGoogleSchema
+            DisplayGoogleSchema = model.DisplayGoogleSchema,
         });
 
         return Edit(contentTypePartDefinition, context);

@@ -12,13 +12,13 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Liquid.Filters;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid.Drivers;
+using OrchardCore.Liquid.Endpoints.Scripts;
 using OrchardCore.Liquid.Filters;
 using OrchardCore.Liquid.Handlers;
 using OrchardCore.Liquid.Indexing;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.Services;
 using OrchardCore.Liquid.ViewModels;
-using OrchardCore.Liquid.Endpoints.Scripts;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Liquid;

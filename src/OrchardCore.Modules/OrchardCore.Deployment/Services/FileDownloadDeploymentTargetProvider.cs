@@ -23,9 +23,9 @@ public class FileDownloadDeploymentTargetProvider : IDeploymentTargetProvider
                     {
                         area = "OrchardCore.Deployment",
                         controller = "ExportFile",
-                        action = "Execute"
+                        action = "Execute",
                     })
-                )
+                ),
             }
         );
     }

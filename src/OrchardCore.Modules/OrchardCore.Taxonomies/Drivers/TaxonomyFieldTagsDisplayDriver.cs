@@ -48,13 +48,23 @@ public sealed class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<T
             if (model.Taxonomy != null)
             {
                 var termEntries = new List<TermEntry>();
-                TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, model.Taxonomy.As<TaxonomyPart>().Terms, 0);
+
+                var terms = model.Taxonomy.As<TaxonomyPart>().Terms;
+
+                // Maintain the listed order in the field, then concatenate the remaining content items.
+                var sortedTerms = terms
+                    .Where(x => field.TermContentItemIds.Contains(x.ContentItemId))
+                    .OrderBy(x => Array.IndexOf(field.TermContentItemIds, x.ContentItemId))
+                    .Concat(terms.Where(x => !field.TermContentItemIds.Contains(x.ContentItemId)))
+                    .ToArray();
+
+                TaxonomyFieldDriverHelper.PopulateTermEntries(termEntries, field, sortedTerms, 0);
                 var tagTermEntries = termEntries.Select(te => new TagTermEntry
                 {
                     ContentItemId = te.ContentItemId,
                     Selected = te.Selected,
                     DisplayText = te.Term.DisplayText,
-                    IsLeaf = te.IsLeaf
+                    IsLeaf = te.IsLeaf,
                 });
 
                 model.TagTermEntries = JNode.FromObject(tagTermEntries, JOptions.CamelCase).ToJsonString(JOptions.Default);

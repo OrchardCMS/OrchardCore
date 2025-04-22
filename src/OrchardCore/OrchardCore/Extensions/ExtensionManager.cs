@@ -185,7 +185,7 @@ public sealed class ExtensionManager : IExtensionManager
                 {
                     ExtensionInfo = extensionInfo,
                     Assembly = module.Assembly,
-                    ExportedTypes = module.Assembly.ExportedTypes
+                    ExportedTypes = module.Assembly.ExportedTypes,
                 };
 
                 loadedExtensions.TryAdd(module.Name, entry);

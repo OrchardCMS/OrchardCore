@@ -5,7 +5,7 @@ public enum ContentsStatus
     Published,
     Latest,
     Draft,
-    Owner
+    Owner,
 }
 
 public class ContainedItemOptions

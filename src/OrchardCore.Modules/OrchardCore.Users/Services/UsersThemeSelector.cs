@@ -84,7 +84,7 @@ public class UsersThemeSelector : IThemeSelector
             return new ThemeSelectorResult
             {
                 Priority = useSiteTheme ? -100 : 100,
-                ThemeName = adminThemeName
+                ThemeName = adminThemeName,
             };
         }
 

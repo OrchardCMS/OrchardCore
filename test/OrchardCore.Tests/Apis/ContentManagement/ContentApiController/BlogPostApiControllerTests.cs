@@ -101,7 +101,7 @@ public class BlogPostApiControllerTests
         contentItem
             .Weld(new ContainedPart
             {
-                ListContentItemId = context.BlogContentItemId
+                ListContentItemId = context.BlogContentItemId,
             });
 
         var blogFields = new ContentPart();

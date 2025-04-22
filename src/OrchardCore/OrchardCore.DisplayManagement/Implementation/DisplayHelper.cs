@@ -84,7 +84,7 @@ public class DisplayHelper : DynamicObject, IDisplayHelper
         {
             DisplayHelper = this,
             Value = shape,
-            ServiceProvider = _serviceProvider
+            ServiceProvider = _serviceProvider,
         };
 
         return _htmlDisplay.ExecuteAsync(context);

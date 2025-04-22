@@ -27,7 +27,7 @@ public class SiteThemeSelector : IThemeSelector
         return new ThemeSelectorResult
         {
             Priority = 0,
-            ThemeName = currentThemeName
+            ThemeName = currentThemeName,
         };
     }
 }

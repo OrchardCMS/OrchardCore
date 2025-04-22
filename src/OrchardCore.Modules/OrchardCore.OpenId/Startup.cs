@@ -80,7 +80,7 @@ public sealed class ClientStartup : StartupBase
             ServiceDescriptor.Singleton<IConfigureOptions<OpenIdConnectOptions>, OpenIdClientConfiguration>(),
 
             // Built-in initializers:
-            ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>()
+            ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>(),
         });
     }
 }
@@ -102,13 +102,14 @@ public sealed class ServerStartup : StartupBase
         services.TryAddSingleton<IOpenIdServerService, OpenIdServerService>();
 
         services.AddDataMigration<DefaultScopesMigration>();
+        services.AddDataMigration<PushedAuthorizationRequestsMigration>();
+
         // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
         services.TryAddEnumerable(new[]
         {
             ServiceDescriptor.Scoped<IRoleRemovedEventHandler, OpenIdApplicationRoleRemovedEventHandler>(),
             ServiceDescriptor.Scoped<IDisplayDriver<OpenIdServerSettings>, OpenIdServerSettingsDisplayDriver>(),
-
-            ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>()
+            ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>(),
         });
 
         services.AddRecipeExecutionStep<OpenIdServerSettingsStep>()
@@ -127,7 +128,7 @@ public sealed class ServerStartup : StartupBase
             ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdServerConfiguration>(),
             ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerOptions>, OpenIdServerConfiguration>(),
             ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerAspNetCoreOptions>, OpenIdServerConfiguration>(),
-            ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerDataProtectionOptions>, OpenIdServerConfiguration>()
+            ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictServerDataProtectionOptions>, OpenIdServerConfiguration>(),
         });
     }
 
@@ -242,7 +243,7 @@ public sealed class ValidationStartup : StartupBase
             ServiceDescriptor.Singleton<IConfigureOptions<AuthenticationOptions>, OpenIdValidationConfiguration>(),
             ServiceDescriptor.Singleton<IConfigureOptions<ApiAuthorizationOptions>, OpenIdValidationConfiguration>(),
             ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationOptions>, OpenIdValidationConfiguration>(),
-            ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationDataProtectionOptions>, OpenIdValidationConfiguration>()
+            ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationDataProtectionOptions>, OpenIdValidationConfiguration>(),
         });
     }
 }

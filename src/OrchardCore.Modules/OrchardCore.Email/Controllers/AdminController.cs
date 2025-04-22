@@ -6,7 +6,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Email.Core;
 using OrchardCore.Email.Core.Services;
 using OrchardCore.Email.ViewModels;
 
@@ -115,7 +114,7 @@ public sealed class AdminController : Controller
             To = testSettings.To,
             Bcc = testSettings.Bcc,
             Cc = testSettings.Cc,
-            ReplyTo = testSettings.ReplyTo
+            ReplyTo = testSettings.ReplyTo,
         };
 
         if (!string.IsNullOrWhiteSpace(testSettings.From))
@@ -130,7 +129,7 @@ public sealed class AdminController : Controller
 
         if (!string.IsNullOrWhiteSpace(testSettings.Body))
         {
-            message.Body = testSettings.Body;
+            message.TextBody = testSettings.Body;
         }
 
         return message;

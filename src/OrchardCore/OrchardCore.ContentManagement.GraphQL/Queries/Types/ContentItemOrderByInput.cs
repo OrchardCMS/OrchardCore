@@ -26,7 +26,7 @@ public sealed class ContentItemOrderByInput : InputObjectGraphType
 public enum OrderByDirection
 {
     Ascending,
-    Descending
+    Descending,
 }
 
 public class OrderByDirectionGraphType : EnumerationGraphType

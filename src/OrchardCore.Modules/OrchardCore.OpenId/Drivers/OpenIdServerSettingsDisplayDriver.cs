@@ -54,6 +54,7 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
             model.EnableTokenEndpoint = settings.TokenEndpointPath.HasValue;
             model.EnableUserInfoEndpoint = settings.UserinfoEndpointPath.HasValue;
             model.EnableIntrospectionEndpoint = settings.IntrospectionEndpointPath.HasValue;
+            model.EnablePushedAuthorizationEndpoint = settings.PushedAuthorizationEndpointPath.HasValue;
             model.EnableRevocationEndpoint = settings.RevocationEndpointPath.HasValue;
 
             model.AllowAuthorizationCodeFlow = settings.AllowAuthorizationCodeFlow;
@@ -67,6 +68,7 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
             model.DisableRollingRefreshTokens = settings.DisableRollingRefreshTokens;
             model.UseReferenceAccessTokens = settings.UseReferenceAccessTokens;
             model.RequireProofKeyForCodeExchange = settings.RequireProofKeyForCodeExchange;
+            model.RequirePushedAuthorizationRequests = settings.RequirePushedAuthorizationRequests;
 
             foreach (var (certificate, location, name) in await _serverService.GetAvailableCertificatesAsync())
             {
@@ -81,7 +83,7 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
                     NotAfter = certificate.NotAfter,
                     ThumbPrint = certificate.Thumbprint,
                     HasPrivateKey = certificate.HasPrivateKey,
-                    Archived = certificate.Archived
+                    Archived = certificate.Archived,
                 });
             }
         }).Location("Content:2");
@@ -120,6 +122,8 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
             new PathString("/connect/userinfo") : PathString.Empty;
         settings.IntrospectionEndpointPath = model.EnableIntrospectionEndpoint ?
             new PathString("/connect/introspect") : PathString.Empty;
+        settings.PushedAuthorizationEndpointPath = model.EnablePushedAuthorizationEndpoint ?
+            new PathString("/connect/par") : PathString.Empty;
         settings.RevocationEndpointPath = model.EnableRevocationEndpoint ?
             new PathString("/connect/revoke") : PathString.Empty;
 
@@ -134,6 +138,7 @@ public sealed class OpenIdServerSettingsDisplayDriver : DisplayDriver<OpenIdServ
         settings.DisableRollingRefreshTokens = model.DisableRollingRefreshTokens;
         settings.UseReferenceAccessTokens = model.UseReferenceAccessTokens;
         settings.RequireProofKeyForCodeExchange = model.RequireProofKeyForCodeExchange;
+        settings.RequirePushedAuthorizationRequests = model.RequirePushedAuthorizationRequests;
 
         return await EditAsync(settings, context);
     }

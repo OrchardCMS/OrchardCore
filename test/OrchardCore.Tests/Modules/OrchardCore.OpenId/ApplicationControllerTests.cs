@@ -122,7 +122,7 @@ public class ApplicationControllerTests
             AllowAuthorizationCodeFlow = true,
             ClientId = "123",
             DisplayName = "Name",
-            RedirectUris = uris
+            RedirectUris = uris,
         };
 
         ValidateControllerModel(controller, model);

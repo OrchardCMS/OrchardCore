@@ -88,6 +88,10 @@ public abstract class WhereInputObjectGraphType<TSourceType> : InputObjectGraphT
             AddMultiValueFilters(graphType, fieldName, description, aliasName, contentPart, contentField);
             AddStringFilters(graphType, fieldName, description, aliasName, contentPart, contentField);
         }
+        else if (graphType == typeof(IdGraphType))
+        {
+            AddMultiValueFilters(graphType, fieldName, description, aliasName, contentPart, contentField);
+        }
         else if (graphType == typeof(DateTimeGraphType) ||
             graphType == typeof(DateGraphType) ||
             graphType == typeof(DateOnlyGraphType) ||
@@ -120,7 +124,8 @@ public abstract class WhereInputObjectGraphType<TSourceType> : InputObjectGraphT
 
     private void AddMultiValueFilters(Type graphType, string fieldName, string description, string aliasName, string contentPart, string contentField)
     {
-        AddFilterFields(graphType, MultiValueComparisonOperators, fieldName, description, aliasName, contentPart, contentField);
+        var wrappedType = typeof(ListGraphType<>).MakeGenericType(graphType);
+        AddFilterFields(wrappedType, MultiValueComparisonOperators, fieldName, description, aliasName, contentPart, contentField);
     }
 
     private void AddFilterFields(

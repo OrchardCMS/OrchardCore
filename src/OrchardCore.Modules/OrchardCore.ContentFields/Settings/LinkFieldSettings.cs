@@ -30,5 +30,5 @@ public enum LinkTextMode
     Static,
 
     // Use the url
-    Url
+    Url,
 }

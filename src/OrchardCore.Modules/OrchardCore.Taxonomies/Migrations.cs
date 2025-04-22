@@ -30,14 +30,14 @@ public sealed class Migrations : DataMigration
                 .WithPosition("2")
                 .WithSettings(new AliasPartSettings
                 {
-                    Pattern = "{{ Model.ContentItem | display_text | slugify }}"
+                    Pattern = "{{ Model.ContentItem | display_text | slugify }}",
                 }))
             .WithPart("AutoroutePart", part => part
                 .WithPosition("3")
                 .WithSettings(new AutoroutePartSettings
                 {
                     Pattern = "{{ Model.ContentItem | display_text | slugify }}",
-                    AllowRouteContainedItems = true
+                    AllowRouteContainedItems = true,
                 }))
             .WithPart("TaxonomyPart", part => part.WithPosition("4"))
         );
@@ -96,7 +96,7 @@ public sealed class Migrations : DataMigration
                 .WithSettings(new AutoroutePartSettings
                 {
                     Pattern = "{{ Model.ContentItem | display_text | slugify }}",
-                    AllowRouteContainedItems = true
+                    AllowRouteContainedItems = true,
                 }))
             .WithPart("TaxonomyPart", part => part.WithPosition("4"))
         );

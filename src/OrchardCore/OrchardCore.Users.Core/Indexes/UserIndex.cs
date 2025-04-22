@@ -30,7 +30,7 @@ public class UserIndexProvider : IndexProvider<User>
                     IsEnabled = user.IsEnabled,
                     IsLockoutEnabled = user.IsLockoutEnabled,
                     LockoutEndUtc = user.LockoutEndUtc,
-                    AccessFailedCount = user.AccessFailedCount
+                    AccessFailedCount = user.AccessFailedCount,
                 };
             });
     }

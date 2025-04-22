@@ -84,7 +84,7 @@ public sealed class AdminController : Controller
                     Enabled = isEnabled,
                     CanUninstall = installThemes,
                     IsAdmin = isAdmin,
-                    IsCurrent = isCurrent
+                    IsCurrent = isCurrent,
                 };
 
                 return themeEntry;
@@ -95,7 +95,7 @@ public sealed class AdminController : Controller
         {
             CurrentSiteTheme = currentSiteTheme,
             CurrentAdminTheme = currentAdminTheme,
-            Themes = themes
+            Themes = themes,
         };
 
         return View(model);

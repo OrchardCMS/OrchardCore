@@ -15,7 +15,6 @@ public class TemplateEntry
 {
     public string Name { get; set; }
     public Template Template { get; set; }
-    public bool IsChecked { get; set; }
 }
 
 public class ContentOptions
@@ -35,5 +34,5 @@ public class ContentOptions
 public enum ContentsBulkAction
 {
     None,
-    Remove
+    Remove,
 }

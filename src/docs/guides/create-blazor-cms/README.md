@@ -190,7 +190,7 @@ Now, your project explorer should look like the image below.
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <base href="/" />
                 <link rel="stylesheet" href="OrchardCore.Resources/Styles/bootstrap.min.css" />
-                <link rel="stylesheet" href="_content/OCBlazorLib/OCBlazorLib.bundle.scp.css" />
+                <link rel="stylesheet" href="_content/OCBlazor.styles.css" />
                 <HeadOutlet />
             </head>
             
@@ -632,7 +632,7 @@ In our `OCBlazorLib` blazor Library project, Let's enrich our `/content` page to
 - In `OCBlazorLib.csproj` Add a NuGet package reference to `OrchardCore.ContentManagement`
 
 ```dotnetcli
-dotnet add ./OCBlazorLib/OCBlazorLib.csproj package OrchardCore.ContentManagement --version 2.1.5
+dotnet add ./OCBlazorLib/OCBlazorLib.csproj package OrchardCore.ContentManagement --version 2.1.7
 ```
 
 - Add the following `using` statements in `_Imports.razor`

@@ -23,14 +23,21 @@ public sealed class Migrations : DataMigration
 
         await _contentDefinitionManager.AlterTypeDefinitionAsync("Form", type => type
             .WithPart("TitlePart", part => part
-                .WithSettings(new TitlePartSettings { RenderTitle = false })
+                .WithSettings(new TitlePartSettings
+                {
+                    RenderTitle = false,
+                })
                 .WithPosition("0")
             )
-            .WithPart("FormElementPart", part =>
-               part.WithPosition("1")
+            .WithPart("FormElementPart", part => part
+                .WithPosition("1")
             )
-            .WithPart("FormPart")
-            .WithPart("FlowPart")
+            .WithPart("FormPart", part => part
+                .WithPosition("2")
+            )
+            .WithPart("FlowPart", part => part
+                .WithPosition("3")
+            )
             .Stereotype("Widget"));
 
         // FormElement

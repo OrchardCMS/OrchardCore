@@ -23,14 +23,14 @@ public class ThemingViewsFeatureProvider : IApplicationFeatureProvider<ViewsFeat
         {
             ExpirationTokens = Array.Empty<IChangeToken>(),
             RelativePath = "/_ViewStart" + RazorViewEngine.ViewExtension,
-            Item = new TenantRazorCompiledItem(typeof(ThemeViewStart), "/_ViewStart")
+            Item = new TenantRazorCompiledItem(typeof(ThemeViewStart), "/_ViewStart"),
         });
 
         feature.ViewDescriptors.Add(new CompiledViewDescriptor()
         {
             ExpirationTokens = Array.Empty<IChangeToken>(),
             RelativePath = '/' + ThemeLayoutFileName,
-            Item = new TenantRazorCompiledItem(typeof(ThemeLayout), '/' + ThemeLayoutFileName)
+            Item = new TenantRazorCompiledItem(typeof(ThemeLayout), '/' + ThemeLayoutFileName),
         });
     }
 }

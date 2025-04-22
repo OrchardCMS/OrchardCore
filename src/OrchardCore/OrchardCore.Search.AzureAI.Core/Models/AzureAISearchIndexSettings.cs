@@ -1,7 +1,13 @@
+using OrchardCore.Entities;
+
 namespace OrchardCore.Search.AzureAI.Models;
 
-public class AzureAISearchIndexSettings
+public class AzureAISearchIndexSettings : Entity
 {
+    public string Id { get; set; }
+
+    public string Source { get; set; }
+
     public string IndexName { get; set; }
 
     public string IndexFullName { get; set; }
@@ -10,21 +16,18 @@ public class AzureAISearchIndexSettings
 
     public string QueryAnalyzerName { get; set; }
 
-    public bool IndexLatest { get; set; }
+    public IList<AzureAISearchIndexMap> IndexMappings { get; init; } = [];
 
-    public string[] IndexedContentTypes { get; set; }
-
-    public string Culture { get; set; }
-
-    public IList<AzureAISearchIndexMap> IndexMappings { get; set; }
-
-    private long _lastTaskId;
-
+    [Obsolete("This method will be removed in a future release.")]
     public long GetLastTaskId()
-        => _lastTaskId;
+        => this.As<ContentIndexingMetadata>().LastTaskId;
 
+    [Obsolete("This method will be removed in a future release.")]
     public void SetLastTaskId(long lastTaskId)
-        => _lastTaskId = lastTaskId;
+        => this.Alter<ContentIndexingMetadata>(metadata =>
+        {
+            metadata.LastTaskId = lastTaskId;
+        });
 
     // The dictionary key should be indexingKey Not AzureFieldKey.
     public Dictionary<string, IEnumerable<AzureAISearchIndexMap>> GetMaps()

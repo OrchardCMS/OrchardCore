@@ -30,7 +30,7 @@ public sealed class MediaDeploymentStepDriver : DisplayDriver<DeploymentStep, Me
             model.IncludeAll = step.IncludeAll;
             model.FilePaths = step.FilePaths;
             model.DirectoryPaths = step.DirectoryPaths;
-            model.Entries = await GetMediaStoreEntries();
+            model.Entries = await GetMediaStoreEntries().ToListAsync();
         }).Location("Content");
     }
 
@@ -55,25 +55,22 @@ public sealed class MediaDeploymentStepDriver : DisplayDriver<DeploymentStep, Me
         return Edit(step, context);
     }
 
-    private async Task<IList<MediaStoreEntryViewModel>> GetMediaStoreEntries(string path = null, MediaStoreEntryViewModel parent = null)
+    private async IAsyncEnumerable<MediaStoreEntryViewModel> GetMediaStoreEntries(string path = null, MediaStoreEntryViewModel parent = null)
     {
-        var mediaStoreEntries = await _mediaFileStore.GetDirectoryContentAsync(path)
-            .SelectAwait(async e =>
+        await foreach (var e in _mediaFileStore.GetDirectoryContentAsync(path))
+        {
+            var mediaStoreEntry = new MediaStoreEntryViewModel
             {
-                var mediaStoreEntry = new MediaStoreEntryViewModel
-                {
-                    Name = e.Name,
-                    Path = e.Path,
-                    Parent = parent
-                };
+                Name = e.Name,
+                Path = e.Path,
+                Parent = parent,
+            };
 
-                mediaStoreEntry.Entries = e.IsDirectory
-                    ? await GetMediaStoreEntries(e.Path, mediaStoreEntry)
-                    : [];
+            mediaStoreEntry.Entries = e.IsDirectory
+                ? await GetMediaStoreEntries(e.Path, mediaStoreEntry).ToListAsync()
+                : [];
 
-                return mediaStoreEntry;
-            }).ToListAsync();
-
-        return mediaStoreEntries;
+            yield return mediaStoreEntry;
+        }
     }
 }

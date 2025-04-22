@@ -365,7 +365,7 @@ public sealed class ShellHost : IShellHost, IDisposable, IAsyncDisposable
         foreach (var settings in allSettings)
         {
             AddAndRegisterShell(new ShellContext.PlaceHolder { Settings = settings, PreCreated = true });
-        };
+        }
 
         if (_logger.IsEnabled(LogLevel.Information))
         {
