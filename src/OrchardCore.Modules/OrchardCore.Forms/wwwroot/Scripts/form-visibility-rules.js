@@ -18,66 +18,37 @@ window.formVisibilityGroupRules = function () {
     processGroups(data, inputElement, widgetContainer, true);
     triggerProperChangeEvent(inputElement);
   }
-
-  // File: formUtils.js
-
-  /**
-   * Triggers appropriate event(s) on ANY form field.
-   * @param {HTMLElement} element - The target form element.
-   */
   function triggerProperChangeEvent(element) {
     var tagName = element.tagName.toUpperCase();
     var type = (element.type || '').toLowerCase();
-
-    // 1) Non‑textual controls: fire only 'change' on final value
-    if (tagName === 'SELECT' ||
-    // dropdowns
-    type === 'checkbox' ||
-    // boolean toggles
-    type === 'radio' ||
-    // radio buttons
-    type === 'file' // file selectors
-    ) {
+    if (tagName === 'SELECT' || type === 'checkbox' || type === 'radio' || type === 'file') {
       element.dispatchEvent(new Event('change'));
       return;
     }
-
-    // 2) Text‑like inputs: immediate + key events
     if (tagName === 'INPUT' || tagName === 'TEXTAREA') {
-      // all text‑based <input> types (text, email, search, etc.)
-      element.dispatchEvent(new Event('input')); // fires on every keystroke, paste, drag‑drop
-      element.dispatchEvent(new Event('keyup')); // legacy key hooks, if you need them
+      element.dispatchEvent(new Event('input'));
+      element.dispatchEvent(new Event('keyup'));
       return;
     }
-
-    // 3) Fallback: anything else that supports 'input'
     element.dispatchEvent(new Event('input'));
   }
-
-  /**
-   * Attaches the appropriate listener(s) on ANY form field.
-   * @param {HTMLElement} element  - The target form element.
-   * @param {Function}    callback - The listener callback.
-   */
   function addProperListeners(element, callback) {
     var tagName = element.tagName.toUpperCase();
     var type = (element.type || '').toLowerCase();
-
-    // 1) SELECT: only final value matters
     if (tagName === 'SELECT') {
+      if (type === 'checkbox') {
+        element.addEventListener('change', callback);
+        return;
+      }
       element.addEventListener('change', callback);
       return;
     }
-
-    // 2) CHECKBOX / RADIO: toggle events
     if (tagName === 'INPUT') {
       if (type === 'checkbox' || type === 'radio') {
         element.addEventListener('change', callback);
         element.addEventListener('click', callback);
         return;
       }
-
-      // 3) FILE INPUT: only fires 'change' on selection
       if (type === 'file') {
         element.addEventListener('change', callback);
         return;
@@ -86,25 +57,19 @@ window.formVisibilityGroupRules = function () {
       element.addEventListener('keyup', callback);
       return;
     }
-
-    // 5) TEXTAREA: treat like text‑input
     if (tagName === 'TEXTAREA') {
       element.addEventListener('input', callback);
       element.addEventListener('keyup', callback);
       return;
     }
-
-    // 6) Fallback: any other element with 'input' support
     element.addEventListener('input', callback);
   }
   function processGroups(data, inputElement, widgetContainer, addHandlers) {
-    console.log('processGroup was called.', data, inputElement, widgetContainer, addHandlers);
     var anyGroupRuleMet = false;
     data.groups.forEach(function (group) {
       var _group$rules;
       var groupPassed = true;
       (_group$rules = group.rules) === null || _group$rules === void 0 || _group$rules.forEach(function (rule) {
-        console.log('rule is being processed. ', rule);
         var fieldElement = getInputByName(rule.field);
         if (!fieldElement) {
           console.warn("Field element not found: ".concat(rule.field, ". Ignoring the bad field."));
@@ -112,25 +77,18 @@ window.formVisibilityGroupRules = function () {
         }
         var fieldValue = fieldElement.type === 'checkbox' ? fieldElement.checked ? "true" : "false" : fieldElement.value;
         var validationResult = validateRule(fieldValue, rule);
-        console.log('currentField value', fieldValue, validationResult);
         if (groupPassed && !validationResult) {
-          console.log('The group failed');
           groupPassed = false;
         }
         if (addHandlers) {
-          console.log('adding change and keyup handlers.');
           addProperListeners(fieldElement, function (e) {
-            console.log('field change event was called');
             processGroups(data, inputElement, widgetContainer, false);
           });
         }
       });
-      console.log('before setting anyGroupRuleMet', anyGroupRuleMet, groupPassed, anyGroupRuleMet || groupPassed);
       anyGroupRuleMet = anyGroupRuleMet || groupPassed;
     });
-    console.log('processGroups is at the stage before processing widgetContainer', data.action, widgetContainer);
     if (widgetContainer) {
-      console.log('Processing widgetContainer', data.action, anyGroupRuleMet);
       if (data.action === 'Show') {
         if (anyGroupRuleMet) {
           widgetContainer.classList.remove('d-none');
@@ -149,11 +107,11 @@ window.formVisibilityGroupRules = function () {
     }
   }
   function restoreOriginalState(inputElement) {
-    var orgValue = inputElement.getAttribute('data-default-value') || '';
+    var originalValue = inputElement.getAttribute('data-default-value') || '';
     if (inputElement.type == 'checkbox' || inputElement.type == 'radio') {
-      inputElement.checked = orgValue == 'on';
+      inputElement.checked = originalValue == 'on';
     } else {
-      inputElement.value = orgValue;
+      inputElement.value = originalValue;
     }
     triggerProperChangeEvent(inputElement);
   }
@@ -161,14 +119,12 @@ window.formVisibilityGroupRules = function () {
     return document.querySelector("input[name=\"".concat(name, "\"],select[name=\"").concat(name, "\"],textarea[name=\"").concat(name, "\"]"));
   }
   function validateRule(inputValue, rule) {
-    console.log("Validating rule:", rule, "with inputValue:", inputValue);
     if (!rule.operator) {
       console.warn("Rule operator is missing for rule", rule);
       return false;
     }
     var lowerInputValue = inputValue ? inputValue.trim().toLowerCase() : "";
     var lowerRuleValue = rule.value ? rule.value.trim().toLowerCase() : "";
-    console.log('valies comparison', lowerInputValue, lowerRuleValue);
     switch (rule.operator) {
       case 'Is':
         return lowerInputValue === lowerRuleValue;
@@ -204,15 +160,6 @@ window.formVisibilityGroupRules = function () {
         console.warn("validateRule: Unknown operator \"".concat(rule.operator, "\" in rule"), rule);
         return false;
     }
-  }
-  function isElementVisible(el) {
-    if (!el) return false;
-    var style = getComputedStyle(el);
-    if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
-      return false;
-    }
-    var rect = el.getBoundingClientRect();
-    return rect.width > 0 && rect.height > 0;
   }
   return {
     initialize: initialize
