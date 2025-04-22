@@ -1,4 +1,5 @@
 namespace OrchardCore.Forms.ViewModels;
+
 public class FormVisibilityRuleDisplayViewModel
 {
     public string Field { get; set; }
