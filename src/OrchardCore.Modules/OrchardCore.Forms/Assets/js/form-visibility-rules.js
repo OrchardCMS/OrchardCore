@@ -170,7 +170,6 @@ window.formVisibilityGroupRules = (function () {
         var originalValue = inputElement.getAttribute('data-default-value') || '';
 
         if (inputElement.type == 'checkbox' || inputElement.type == 'radio') {
-
             inputElement.checked = originalValue == 'on';
         } else {
             inputElement.value = originalValue;
