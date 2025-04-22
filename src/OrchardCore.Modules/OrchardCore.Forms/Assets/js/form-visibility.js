@@ -177,7 +177,9 @@ window.formVisibilityGroups = function () {
 
                     const containerName = widgetTemplate.querySelector('input[name$="FormInputElementPart.Name"]')?.value.trim() || "";
 
-                    if (!containerName) return this.fieldOptions;
+                    if (!containerName) {
+                        return this.fieldOptions;
+                    }
 
                     const setValues = new Set();
 
