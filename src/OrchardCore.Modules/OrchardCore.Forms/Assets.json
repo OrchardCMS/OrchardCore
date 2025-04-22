@@ -20,18 +20,14 @@
   {
     "action": "min",
     "name": "form-visibility",
-    "inputs": [
-      "Assets/js/form-visibility.js"
-    ],
+    "source": "Assets/js/form-visibility.js",
     "output": "wwwroot/Scripts/form-visibility.js",
     "tags": [ "forms", "js" ]
   },
   {
     "action": "min",
     "name": "form-visibility-rules",
-    "inputs": [
-      "Assets/js/form-visibility-rules.js"
-    ],
+    "source": "Assets/js/form-visibility-rules.js",
     "output": "wwwroot/Scripts/form-visibility-rules.js",
     "tags": [ "forms", "js" ]
   }

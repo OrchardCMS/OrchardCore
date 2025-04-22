@@ -34,14 +34,14 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
                 model.Groups = (visibilityPart.Groups ?? []).Select(group =>
                 new FormVisibilityRuleGroupDisplayViewModel
                 {
-                    Rules = (group.Rules.Select(rule =>
+                    Rules = group.Rules.Select(rule =>
                         new FormVisibilityRuleDisplayViewModel
                         {
                             Field = rule.Field,
                             Operator = rule.Operator.ToString(),
                             Value = rule.Values?.FirstOrDefault(),
                         }
-                    )),
+                    ),
                 });
             }
         }).Location("Detail", "Content");
@@ -132,7 +132,7 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
             {
                 var jsonArray = new[]
                 {
-                    value
+                    value,
                 };
                 return jsonArray;
             }
