@@ -24,21 +24,30 @@ public static class SiteServiceExtensions
         => (await siteService.GetSiteSettingsAsync()).As<T>(name);
 
     /// <summary>
-    /// Gets the site settings from the cache.
+    /// Synchronously gets the site settings for reading.
     /// </summary>
+    /// <remarks>
+    /// This method should only be used in synchronous code paths. Prefer using <see cref="ISiteService.GetSiteSettingsAsync"/> in asynchronous code.
+    /// </remarks>
     public static ISite GetSiteSettings(this ISiteService siteService)
     {
+        // Site settings are preloaded by the tenant event handler PreloadSiteSettingsTenantEventHandler to ensure
+        // that the database access is asynchronous. This ensures that site settings can be safely retrieved
+        // synchronously afterward.
         var task = siteService.GetSiteSettingsAsync();
 
         return task.IsCompletedSuccessfully ? task.Result : task.GetAwaiter().GetResult();
     }
 
     /// <summary>
-    /// Gets an instance of the specified settings if it exists.
+    /// Synchronously gets an instance of the specified settings for reading, if it exists.
     /// </summary>
     /// <typeparam name="T">The type of the settings to attempt to get.</typeparam>
     /// <param name="siteService">The site service.</param>
     /// <returns>An instance of the given type if one exists.</returns>
+    /// <remarks>
+    /// This method should only be used in synchronous code paths. Prefer using <see cref="GetSettingsAsync{T}(ISiteService)"/> in asynchronous code.
+    /// </remarks>
     public static T GetSettings<T>(this ISiteService siteService) where T : new()
         => siteService.GetSiteSettings().As<T>();
 }

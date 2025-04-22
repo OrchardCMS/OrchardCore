@@ -3,12 +3,12 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.Settings.Services;
 
-internal sealed class TenantEventHandler : ModularTenantEvents
+internal sealed class PreloadSiteSettingsTenantEventHandler : ModularTenantEvents
 {
     private readonly ISiteService _siteService;
     private readonly ShellSettings _shellSettings;
 
-    public TenantEventHandler(ISiteService siteService, ShellSettings shellSettings)
+    public PreloadSiteSettingsTenantEventHandler(ISiteService siteService, ShellSettings shellSettings)
     {
         _siteService = siteService;
         _shellSettings = shellSettings;
