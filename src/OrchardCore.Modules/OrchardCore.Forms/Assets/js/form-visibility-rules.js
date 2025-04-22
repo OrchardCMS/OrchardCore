@@ -245,5 +245,4 @@ window.formVisibilityGroupRules = (function () {
     return {
         initialize: initialize
     };
-
 })();
