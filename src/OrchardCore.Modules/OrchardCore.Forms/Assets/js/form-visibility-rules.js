@@ -7,7 +7,7 @@ window.formVisibilityGroupRules = (function () {
             return;
         }
 
-        if (inputElement.type == 'checkbox' || inputElement.type == 'radio') {
+        if (inputElement.type.toLowerCase() === 'checkbox' || inputElement.type.toLowerCase() === 'radio') {
             inputElement.setAttribute('data-default-value', inputElement.checked ? 'on' : 'off');
         } else {
             inputElement.setAttribute('data-default-value', inputElement.value);
@@ -169,7 +169,8 @@ window.formVisibilityGroupRules = (function () {
 
         var originalValue = inputElement.getAttribute('data-default-value') || '';
 
-        if (inputElement.type == 'checkbox' || inputElement.type == 'radio') {
+        if (inputElement.type.toLowerCase() === 'checkbox' || inputElement.type.toLowerCase() === 'radio') {
+
             inputElement.checked = originalValue == 'on';
         } else {
             inputElement.value = originalValue;
@@ -189,9 +190,9 @@ window.formVisibilityGroupRules = (function () {
             return false;
         }
 
-        var lowerInputValue = inputValue ? inputValue.trim().toLowerCase() : "";
+        var lowerInputValue = inputValue ? inputValue.trim().toLowerCase() : '';
 
-        var lowerRuleValue = rule.value ? rule.value.trim().toLowerCase() : "";
+        var lowerRuleValue = rule.value ? rule.value.trim().toLowerCase() : '';
 
         switch (rule.operator) {
             case 'Is':
@@ -231,10 +232,10 @@ window.formVisibilityGroupRules = (function () {
                 return inputValue < rule.value;
 
             case 'Empty':
-                return lowerInputValue === "";
+                return lowerInputValue === '';
 
             case 'NotEmpty':
-                return lowerInputValue !== "";
+                return lowerInputValue !== '';
 
             default:
                 console.warn(`validateRule: Unknown operator "${rule.operator}" in rule`, rule);
@@ -245,4 +246,5 @@ window.formVisibilityGroupRules = (function () {
     return {
         initialize: initialize
     };
+
 })();

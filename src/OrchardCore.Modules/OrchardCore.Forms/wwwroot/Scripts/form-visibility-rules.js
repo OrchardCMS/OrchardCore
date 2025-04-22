@@ -9,7 +9,7 @@ window.formVisibilityGroupRules = function () {
     if (!inputElement || data.action === 'None') {
       return;
     }
-    if (inputElement.type == 'checkbox' || inputElement.type == 'radio') {
+    if (inputElement.type.toLowerCase() === 'checkbox' || inputElement.type.toLowerCase() === 'radio') {
       inputElement.setAttribute('data-default-value', inputElement.checked ? 'on' : 'off');
     } else {
       inputElement.setAttribute('data-default-value', inputElement.value);
@@ -19,7 +19,7 @@ window.formVisibilityGroupRules = function () {
     triggerProperChangeEvent(inputElement);
   }
   function triggerProperChangeEvent(element) {
-    var tagName = element.tagName.toUpperCase();
+    var tagName = element.tagName;
     var type = (element.type || '').toLowerCase();
     if (tagName === 'SELECT' || type === 'checkbox' || type === 'radio' || type === 'file') {
       element.dispatchEvent(new Event('change'));
@@ -33,7 +33,7 @@ window.formVisibilityGroupRules = function () {
     element.dispatchEvent(new Event('input'));
   }
   function addProperListeners(element, callback) {
-    var tagName = element.tagName.toUpperCase();
+    var tagName = element.tagName;
     var type = (element.type || '').toLowerCase();
     if (tagName === 'SELECT') {
       if (type === 'checkbox') {
@@ -75,7 +75,7 @@ window.formVisibilityGroupRules = function () {
           console.warn("Field element not found: ".concat(rule.field, ". Ignoring the bad field."));
           return;
         }
-        var fieldValue = fieldElement.type === 'checkbox' ? fieldElement.checked ? "true" : "false" : fieldElement.value;
+        var fieldValue = fieldElement.type.toLowerCase() === 'checkbox' ? fieldElement.checked ? "true" : "false" : fieldElement.value;
         var validationResult = validateRule(fieldValue, rule);
         if (groupPassed && !validationResult) {
           groupPassed = false;
@@ -108,7 +108,7 @@ window.formVisibilityGroupRules = function () {
   }
   function restoreOriginalState(inputElement) {
     var originalValue = inputElement.getAttribute('data-default-value') || '';
-    if (inputElement.type == 'checkbox' || inputElement.type == 'radio') {
+    if (inputElement.type.toLowerCase() === 'checkbox' || inputElement.type.toLowerCase() === 'radio') {
       inputElement.checked = originalValue == 'on';
     } else {
       inputElement.value = originalValue;
@@ -123,8 +123,8 @@ window.formVisibilityGroupRules = function () {
       console.warn("Rule operator is missing for rule", rule);
       return false;
     }
-    var lowerInputValue = inputValue ? inputValue.trim().toLowerCase() : "";
-    var lowerRuleValue = rule.value ? rule.value.trim().toLowerCase() : "";
+    var lowerInputValue = inputValue ? inputValue.trim().toLowerCase() : '';
+    var lowerRuleValue = rule.value ? rule.value.trim().toLowerCase() : '';
     switch (rule.operator) {
       case 'Is':
         return lowerInputValue === lowerRuleValue;
@@ -153,9 +153,9 @@ window.formVisibilityGroupRules = function () {
         }
         return inputValue < rule.value;
       case 'Empty':
-        return lowerInputValue === "";
+        return lowerInputValue === '';
       case 'NotEmpty':
-        return lowerInputValue !== "";
+        return lowerInputValue !== '';
       default:
         console.warn("validateRule: Unknown operator \"".concat(rule.operator, "\" in rule"), rule);
         return false;

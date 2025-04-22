@@ -76,8 +76,6 @@ window.formVisibilityGroups = function () {
             return;
         }
 
-        let groupCounter = 0;
-
         const app = new Vue({
             el: config.appElementSelector,
             data() {
@@ -95,9 +93,7 @@ window.formVisibilityGroups = function () {
             methods: {
                 addGroup() {
                     var newGroup = {
-                        id: 'group-' + (groupCounter++),
                         rules: [{
-                            id: 'rule-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
                             field: '',
                             operator: '',
                             value: ''
@@ -110,7 +106,6 @@ window.formVisibilityGroups = function () {
 
                 addRule(groupIndex) {
                     const newRule = {
-                        id: 'rule-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
                         field: '',
                         operator: '',
                         value: ''
@@ -215,13 +210,12 @@ window.formVisibilityGroups = function () {
 
                     return this.allOperatorOptions.filter(x =>
                         mapping[field.type].includes(x.value)
-                        // lowercase here maybe needed
                     );
                 },
 
                 operatorMapping() {
                     return {
-                        radio: ["Is", "IsNot"],
+                        radio: ["Is", "IsNot", "Empty", "NotEmpty", "Contains", "DoesNotContain", "StartsWith", "EndsWith"],
                         checkbox: ["Is", "IsNot"],
                         text: ["Is", "IsNot", "Empty", "NotEmpty", "Contains", "DoesNotContain", "StartsWith", "EndsWith"],
                         number: ["Is", "IsNot", "GreaterThan", "LessThan"],
@@ -302,7 +296,9 @@ window.formVisibilityGroups = function () {
         });
         return app;
     };
+
     return {
         initialize: initialize
     };
+
 }();

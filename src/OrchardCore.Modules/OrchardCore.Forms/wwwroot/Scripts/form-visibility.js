@@ -13,7 +13,6 @@ window.formVisibilityGroups = function () {
       console.error('appElementSelector is required');
       return;
     }
-    var groupCounter = 0;
     var app = new Vue({
       el: config.appElementSelector,
       data: function data() {
@@ -30,9 +29,7 @@ window.formVisibilityGroups = function () {
       methods: {
         addGroup: function addGroup() {
           var newGroup = {
-            id: 'group-' + groupCounter++,
             rules: [{
-              id: 'rule-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
               field: '',
               operator: '',
               value: ''
@@ -43,7 +40,6 @@ window.formVisibilityGroups = function () {
         },
         addRule: function addRule(groupIndex) {
           var newRule = {
-            id: 'rule-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
             field: '',
             operator: '',
             value: ''
@@ -94,7 +90,9 @@ window.formVisibilityGroups = function () {
           var widgetTemplate = this.$el.closest('.widget-template');
           if (!widgetTemplate) return this.fieldOptions;
           var containerName = ((_widgetTemplate$query = widgetTemplate.querySelector('input[name$="FormInputElementPart.Name"]')) === null || _widgetTemplate$query === void 0 ? void 0 : _widgetTemplate$query.value.trim()) || "";
-          if (!containerName) return this.fieldOptions;
+          if (!containerName) {
+            return this.fieldOptions;
+          }
           var setValues = new Set();
           var filteredOptions = this.fieldOptions.filter(function (option) {
             var optionValue = String(option.value || "").trim();
@@ -118,13 +116,11 @@ window.formVisibilityGroups = function () {
           if (!mapping[field.type]) return [];
           return this.allOperatorOptions.filter(function (x) {
             return mapping[field.type].includes(x.value);
-          }
-          // lowercase here maybe needed
-          );
+          });
         },
         operatorMapping: function operatorMapping() {
           return {
-            radio: ["Is", "IsNot"],
+            radio: ["Is", "IsNot", "Empty", "NotEmpty", "Contains", "DoesNotContain", "StartsWith", "EndsWith"],
             checkbox: ["Is", "IsNot"],
             text: ["Is", "IsNot", "Empty", "NotEmpty", "Contains", "DoesNotContain", "StartsWith", "EndsWith"],
             number: ["Is", "IsNot", "GreaterThan", "LessThan"],
