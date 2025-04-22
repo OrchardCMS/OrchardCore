@@ -8,7 +8,6 @@ window.formVisibilityGroupRules = (function () {
         }
 
         if (inputElement.type == 'checkbox' || inputElement.type == 'radio') {
-
             inputElement.setAttribute('data-default-value', inputElement.checked ? 'on' : 'off');
         } else {
             inputElement.setAttribute('data-default-value', inputElement.value);
