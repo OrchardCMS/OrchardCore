@@ -47,7 +47,7 @@ window.formVisibilityGroupRules = (function () {
 
     function addProperListeners(element, callback) {
 
-        const tagName = element.tagName.toUpperCase();
+        const tagName = element.tagName;
 
         const type = (element.type || '').toLowerCase();
 
