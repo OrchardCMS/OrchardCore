@@ -137,6 +137,7 @@ internal sealed class FormInputElementVisibilityPartDisplayDriver : ContentPartD
             }
             catch { }
         }
-        return Array.Empty<string>();
+
+        return [];
     }
 }
