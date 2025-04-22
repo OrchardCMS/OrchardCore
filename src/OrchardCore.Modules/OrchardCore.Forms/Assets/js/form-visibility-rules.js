@@ -153,7 +153,6 @@ window.formVisibilityGroupRules = (function () {
                     restoreOriginalState(inputElement);
                 }
             }
-
             else if (data.action === 'Hide') {
 
                 if (anyGroupRuleMet) {
