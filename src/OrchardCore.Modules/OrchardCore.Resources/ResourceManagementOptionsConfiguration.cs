@@ -1206,16 +1206,16 @@ public sealed class ResourceManagementOptionsConfiguration
         switch (_resourceOptions.ResourceDebugMode)
         {
             case ResourceDebugMode.Enabled:
-            options.DebugMode = true;
-            break;
+                options.DebugMode = true;
+                break;
 
             case ResourceDebugMode.Disabled:
-            options.DebugMode = false;
-            break;
+                options.DebugMode = false;
+                break;
 
             case ResourceDebugMode.FromConfiguration:
-            options.DebugMode = !_env.IsProduction();
-            break;
+                options.DebugMode = !_env.IsProduction();
+                break;
         }
 
         options.UseCdn = _resourceOptions.UseCdn;

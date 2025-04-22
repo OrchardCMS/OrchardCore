@@ -6609,8 +6609,7 @@ readers do not read off random characters that represent icons */
 .fa-freebsd:before {
   content: "\f3a4"; }
 
-.fa-
-js:before {
+.fa-vuejs:before {
   content: "\f41f"; }
 
 .fa-accusoft:before {
