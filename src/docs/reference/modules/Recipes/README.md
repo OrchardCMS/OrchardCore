@@ -53,11 +53,11 @@ These helpers allow dynamic expressions inside recipe values using a special syn
 
 | Helper         | Example Usage                                          | Description                                                                 |
 |----------------|--------------------------------------------------------|-----------------------------------------------------------------------------|
-| `js:`          | `"ContentItemId": "[js:variables('homePageId')]"`      | Evaluates a JavaScript expression. Common for referencing `variables`.      |
-| `file:`        | `"Content": "[file:text('Snippets/homepage.liquid')]"` | Loads content from an external file. Often used for Liquid templates.       |
-| `env:`         | `"value": "[env:MyEnvironmentVariable]"`               | Injects values from environment variables.                                  |
-| `appsettings:` | `"value": "[appsettings:OrchardCore:SiteName]"`        | Reads configuration from `appsettings.json`.                                |
-| `localization:`| `"value": "[localization:WelcomeTitle]"`               | Retrieves localized strings by key.                                         |
+| `js`          | `"ContentItemId": "[js:variables('homePageId')]"`      | Evaluates a JavaScript expression. Common for referencing `variables`.      |
+| `file`        | `"Content": "[file:text('Snippets/homepage.liquid')]"` | Loads content from an external file. Often used for Liquid templates.       |
+| `env`         | `"value": "[env:MyEnvironmentVariable]"`               | Injects values from environment variables.                                  |
+| `appsettings` | `"value": "[appsettings:OrchardCore:SiteName]"`        | Reads configuration from `appsettings.json`.                                |
+| `localization`| `"value": "[localization:WelcomeTitle]"`               | Retrieves localized strings by key.                                         |
 | `uuid()`       | `"Id": "[js:uuid()]"`                                  | Generates a new unique identifier (UUID/GUID).                              |
 
 ---
