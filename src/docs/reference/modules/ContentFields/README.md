@@ -56,6 +56,8 @@ Access field values in templates:
     var fieldValue = Model.ContentItem.Content.Article.MyField.Text;
     ```
 
+From a field's shape (see Shape Type in the table listing all fields), you can also access properties specific to each view model.
+
 ### Common Field Properties
 
 All field view models expose these properties:
@@ -66,11 +68,14 @@ All field view models expose these properties:
 | `Part`                | The ContentPart containing the field                                                                |
 | `PartFieldDefinition` | The field definition (includes access to Content Type)                                              |
 
+Some view models have special properties that are computed from the actual field data and which are more useful for templating.
+
 ## Field Examples
 
 ### `HtmlField`
 
 #### `DisplayHtmlFieldViewModel`
+
 | Property | Description                                                   |
 |----------|---------------------------------------------------------------|
 | `Html`   | Processed HTML (after liquid tag processing)                  |
