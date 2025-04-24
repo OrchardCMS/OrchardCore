@@ -3349,6 +3349,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "amrali21",
+      "name": "amrali21",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18468966?v=4",
+      "profile": "http://amrmoneer21.me/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true,
