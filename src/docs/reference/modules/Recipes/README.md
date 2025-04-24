@@ -41,10 +41,13 @@ A recipe is a `.recipe.json` file placed in a Recipes folder within your module 
     "siteId": "[js:uuid()]"
   },
   "steps": [
-    ...
+    // Here you can add your steps which will be executed in the provided order.
   ]
 }
 ```
+
+!!! note
+    Recipes, despite being JSON files, may contain comments: `// This is a comment.`
 
 
 ## Recipe Helpers
@@ -53,14 +56,27 @@ These helpers allow dynamic expressions inside recipe values using a special syn
 
 | Helper         | Example Usage                                          | Description                                                                 |
 |----------------|--------------------------------------------------------|-----------------------------------------------------------------------------|
-| `js`          | `"ContentItemId": "[js:variables('homePageId')]"`      | Evaluates a JavaScript expression. Common for referencing `variables`.      |
-| `file`        | `"Content": "[file:text('Snippets/homepage.liquid')]"` | Loads content from an external file. Often used for Liquid templates.       |
-| `env`         | `"value": "[env:MyEnvironmentVariable]"`               | Injects values from environment variables.                                  |
-| `appsettings` | `"value": "[appsettings:OrchardCore:SiteName]"`        | Reads configuration from `appsettings.json`.                                |
-| `localization`| `"value": "[localization:WelcomeTitle]"`               | Retrieves localized strings by key.                                         |
-| `uuid()`       | `"Id": "[js:uuid()]"`                                  | Generates a new unique identifier (UUID/GUID).                              |
+| `js`           | `"ContentItemId": "[js:variables('homePageId')]"`      | Evaluates a JavaScript expression. Common for referencing `variables`.      |
+| `file`         | `"Content": "[file:text('Snippets/homepage.liquid')]"` | Loads content from an external file. Often used for Liquid templates.       |
+| `env`          | `"value": "[env:MyEnvironmentVariable]"`               | Injects values from environment variables.                                  |
+| `appsettings`  | `"value": "[appsettings:OrchardCore:SiteName]"`        | Reads configuration from `appsettings.json`.                                |
+| `localization` | `"value": "[localization:WelcomeTitle]"`               | Retrieves localized strings by key.                                         |
+| `uuid`         | `"Id": "[js:uuid()]"`                                  | Generates a new unique identifier (UUID/GUID).                              |
+| `base64`       | `"data": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]"`                                  | Decodes the specified string from Base64 encoding. Use https://www.base64-image.de/ to convert your files to base64.                              |
+| `html`         | `"html": "[js:html('&lt;p&gt;Hello &amp; welcome&lt;/p&gt;')]"`                                  | Decodes the specified string from HTML encoding..                              |
+| `gzip`         | `"data": "[js:gzip('data')]"`                                  | Decodes the specified string from gzip/base64 encoding. Use http://www.txtwizard.net/compression to gzip your strings.                              |
 
 ---
+
+## Custom Recipes
+
+To create a new recipe step, implement the `IRecipeStepHandler` interface and its `ExecuteAsync` method:
+
+```csharp
+public async Task ExecuteAsync(RecipeExecutionContext context)
+```
+
+Alternatively, you can extend `NamedRecipeStepHandler` and implement the required abstract method, providing additional functionality for named steps.
 
 ## Built-in Recipe Steps
 
@@ -77,6 +93,9 @@ Enables or disables features (modules/themes).
   "disable": []
 }
 ```
+
+!!! warning
+    If you want to use your own theme (e.g., `YourTheme`), make sure to enable its feature; otherwise, the theme layout will not work after the recipe is executed.
 
 ---
 
@@ -106,7 +125,11 @@ Configures core site settings (like homepage route, culture, time zone, etc).
     "Controller": "Item",
     "Area": "OrchardCore.Contents",
     "ContentItemId": "[js:variables('homeId')]"
+  },
+  "LayerSettings": {
+    "Zones": [ "Content", "Footer" ]
   }
+  // You may add other settings here
 }
 ```
 
@@ -131,10 +154,34 @@ Defines or updates content types and content parts.
 Creates or configures Lucene search indexes.
 
 ```json
-{
-  "name": "lucene-index",
-  "Indices": [ { "Search": { ... } } ]
-}
+[
+  {
+    // Create the indices before the content items so they are indexed automatically.
+    "name": "lucene-index",
+    "Indices": [
+      {
+        "Search": {
+          "AnalyzerName": "standardanalyzer",
+          "IndexLatest": false,
+          "IndexedContentTypes": [
+            "Blog",
+            "BlogPost"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    // Create the search settings.
+    "name": "Settings",
+    "LuceneSettings": {
+      "SearchIndex": "Search",
+      "DefaultSearchFields": [
+        "Content.ContentItem.FullText"
+      ]
+    }
+  }
+]
 ```
 
 ---
@@ -149,6 +196,8 @@ Clears index content.
   "includeAll": true
 }
 ```
+
+The `includeAll` property indicates whether to include all available Lucene indices. When set to `true`, the `Indices` property can be omitted.
 
 ---
 
@@ -175,6 +224,9 @@ Imports content items such as pages, blogs, or menus.
   "Data": [ { "ContentType": "Page", "DisplayText": "About", ... } ]
 }
 ```
+
+!!! note
+    There is also `QueryBasedContentDeploymentStep` which produces exactly the same output as the Content Step, but based on a provided Query.
 
 ---
 
@@ -305,7 +357,7 @@ Defines custom workflows to automate user or content events.
 
 ### `deployment`
 
-Defines deployment plans to export/import content and settings.
+Defines deployment plans to export/import content and settings. Also see [Deployment](../Deployment/README.md).
 
 ```json
 {
@@ -313,7 +365,24 @@ Defines deployment plans to export/import content and settings.
   "Plans": [
     {
       "Name": "ExportSite",
-      "Steps": [ ... ]
+      "Steps": [
+        {
+          "Type": "CustomFileDeploymentStep",
+          "Step": {
+            "FileName": "Export",
+            "FileContent": "Export",
+            "Id": "[js: uuid()]",
+            "Name": "CustomFileDeploymentStep"
+          }
+        },
+        {
+          "Type": "AllContentDeploymentStep",
+          "Step": {
+            "Id": "[js: uuid()]",
+            "Name": "AllContent"
+          }
+        }
+      ]
     }
   ]
 }
@@ -351,6 +420,7 @@ Runs additional recipes within the current one, allowing modular reuse.
   ]
 }
 ```
+As `executionid` use a custom identifier to distinguish these recipe executions from others. As `name` use the `name` field from the given recipe's head (this is left blank when you export to recipes).
 
 ---
 
