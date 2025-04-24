@@ -695,6 +695,22 @@ The default parameter is a text that is appended to the current value of the tit
 `position` is where the value is appended, in this example at the beginning.  
 `separator` is a string that is used to separate all the fragments of the title.
 
+### `page_title_add_segment`
+
+Adds a segment to the page title without rendering it.
+
+Input
+
+```liquid
+{% page_title_add_segment "Segment", position: "before" %}
+```
+
+The default parameter is a text that is appended to the current value of the title.
+`position` specifies where the value is appended; in this example, it is appended at the beginning.
+You can also use `position: "after"` to append the segment at the end of the title.
+
+The page title is rendered when the `page_title` tag is called.
+
 ## Shape Tags
 
 ### `shape_clear_alternates`
