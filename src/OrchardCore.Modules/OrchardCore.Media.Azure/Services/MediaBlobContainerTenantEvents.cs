@@ -64,7 +64,7 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
 
         var blobContainer = new BlobContainerClient(_options.ConnectionString, _options.ContainerName);
 
-        if (_options.RemoveFilesFromBasePath)
+        if (_options.RemoveFilesFromBasePath && !_options.RemoveContainer)
         {
             try
             {
@@ -86,7 +86,7 @@ public sealed class MediaBlobContainerTenantEvents : ModularTenantEvents
             }
         }
 
-        if (_options.RemoveContainer)
+        if (_options.RemoveContainer && !_options.RemoveFilesFromBasePath)
         {
             try
             {
