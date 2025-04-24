@@ -215,7 +215,7 @@ window.formVisibilityGroups = function () {
                 operatorMapping() {
                     return {
                         radio: ["Is", "IsNot", "Empty", "NotEmpty", "Contains", "DoesNotContain", "StartsWith", "EndsWith"],
-                        checkbox: ["Is", "IsNot"],
+                        checkbox: ["Is", "IsNot", "Contains", "DoesNotContain"],
                         text: ["Is", "IsNot", "Empty", "NotEmpty", "Contains", "DoesNotContain", "StartsWith", "EndsWith"],
                         number: ["Is", "IsNot", "GreaterThan", "LessThan"],
                         email: ["Is", "IsNot", "Empty", "NotEmpty"],
