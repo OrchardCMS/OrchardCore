@@ -15,6 +15,10 @@ window.formVisibilityGroupRules = (function () {
 
         const widgetContainer = inputElement.closest('.widget');
 
+        if (widgetContainer && !widgetContainer.dataset.originalDisplay) {
+            widgetContainer.dataset.originalDisplay = getComputedStyle(widgetContainer).display;
+        }
+
         processGroups(data, inputElement, widgetContainer, true);
 
         triggerProperChangeEvent(inputElement);
@@ -26,10 +30,17 @@ window.formVisibilityGroupRules = (function () {
 
         const type = (element.type || '').toLowerCase();
 
-        if (tagName === 'SELECT' || type === 'checkbox' || type === 'radio' || type === 'file') {
+        if (tagName === 'SELECT' || type === 'file') {
 
             element.dispatchEvent(new Event('change'));
 
+            return;
+        }
+
+        if (type === 'checkbox' || type === 'radio') {
+            document.querySelectorAll(`input[name="${element.name}"]`).forEach(element => {
+                element.dispatchEvent(new Event('change'));
+            });
             return;
         }
 
@@ -67,12 +78,29 @@ window.formVisibilityGroupRules = (function () {
 
         if (tagName === 'INPUT') {
 
-            if ((type === 'checkbox' || type === 'radio')) {
+            if (type === 'checkbox') {
 
-                element.addEventListener('change', callback);
+                var checkboxes = document.querySelectorAll(`input[name="${element.name}"]`);
 
-                element.addEventListener('click', callback);
+                for (var i = 0; i < checkboxes.length; i++) {
 
+                    var checkbox = checkboxes[i];
+
+                    checkbox.addEventListener('change', callback);
+                }
+                return;
+            }
+
+            if (type === 'radio') {
+
+                var radioButtons = document.querySelectorAll(`input[name="${element.name}"]`);
+
+                for (var i = 0; i < radioButtons.length; i++) {
+
+                    var radio = radioButtons[i];
+
+                    radio.addEventListener('change', callback);
+                }
                 return;
             }
 
@@ -119,9 +147,29 @@ window.formVisibilityGroupRules = (function () {
                     return;
                 }
 
-                const fieldValue = fieldElement.type.toLowerCase() === 'checkbox'
-                    ? (fieldElement.checked ? "true" : "false")
-                    : fieldElement.value;
+                if (fieldElement.type.toLowerCase() === 'radio') {
+
+                    var selectedRadio = document.querySelector('input[name="' + rule.field + '"]:checked');
+
+                    fieldValue = selectedRadio ? selectedRadio.value : '';
+
+                } else if (fieldElement.type.toLowerCase() === 'checkbox') {
+
+                    const findCheckboxes = `input[name="${rule.field}"]`;
+
+                    var checkboxWidget = document.querySelectorAll(findCheckboxes);
+
+                    if (checkboxWidget.length > 1) {
+
+                        var checkedBoxes = document.querySelectorAll(`${findCheckboxes}:checked`);
+
+                        fieldValue = Array.from(checkedBoxes).map(checkbox => checkbox.value).join(',');
+                    } else {
+                        fieldValue = fieldElement.checked ? "true" : "false";
+                    }
+                } else {
+                    fieldValue = fieldElement.value;
+                }
 
                 var validationResult = validateRule(fieldValue, rule);
 
@@ -146,19 +194,19 @@ window.formVisibilityGroupRules = (function () {
             if (data.action === 'Show') {
 
                 if (anyGroupRuleMet) {
-                    widgetContainer.classList.remove('d-none');
+                    showElement(widgetContainer);
                 } else {
-                    widgetContainer.classList.add('d-none');
+                    hideElement(widgetContainer);
                     restoreOriginalState(inputElement);
                 }
             }
             else if (data.action === 'Hide') {
 
                 if (anyGroupRuleMet) {
-                    widgetContainer.classList.add('d-none');
+                    hideElement(widgetContainer);
                     restoreOriginalState(inputElement);
                 } else {
-                    widgetContainer.classList.remove('d-none');
+                    showElement(widgetContainer);
                 }
             }
         }
@@ -171,12 +219,30 @@ window.formVisibilityGroupRules = (function () {
         var type = inputElement.type.toLowerCase();
 
         if (type === 'checkbox' || type === 'radio') {
-            inputElement.checked = originalValue == 'on';
+            document.querySelectorAll(`input[name="${inputElement.name}"]`)
+                .forEach(element => {
+                    element.checked = (originalValue === 'on');
+                });
         } else {
             inputElement.value = originalValue;
         }
 
         triggerProperChangeEvent(inputElement);
+    }
+
+    function hideElement(element) {
+
+        if (!element.dataset.originalDisplay) {
+
+            element.dataset.originalDisplay = getComputedStyle(element).display;
+        }
+
+        element.style.display = "none";
+    }
+
+    function showElement(element) {
+
+        element.style.display = element.dataset.originalDisplay || "block";
     }
 
     function getInputByName(name) {
