@@ -148,7 +148,9 @@ The following configuration values are used by default and can be customized:
         // Activates an event to create the container if it does not already exist.
         "CreateContainer": true,
         // Whether the 'Container' is deleted if the tenant is removed, false by default.
-        "RemoveContainer": true
+        "RemoveContainer": true,
+        // Whether the files under the given base path are deleted if the tenant is removed, false by default.
+        "RemoveFilesFromBasePath": true
     }
   }
 }
