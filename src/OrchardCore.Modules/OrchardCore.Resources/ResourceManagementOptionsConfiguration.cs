@@ -483,6 +483,22 @@ public sealed class ResourceManagementOptionsConfiguration
             .SetVersion(CodeMirrorVersion);
 
         manifest
+            .DefineStyle("monokai")
+            .SetUrl(
+                "~/OrchardCore.Resources/Styles/codemirror/theme/monokai.min.css",
+                "~/OrchardCore.Resources/Styles/codemirror/theme/monokai.css"
+            )
+            .SetCdn(
+                "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/monokai.min.css",
+                "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/monokai.css"
+            )
+            .SetCdnIntegrity(
+                "sha384-05WuhgjXiqmZzcQ3vQRQ39HN356Yqb+SnhvELzFtpwS5b2IlqE8QsOO5LCSJ2znj",
+                "sha384-TvEldXruOSfbCQy2x7urguD4uK2Pd6WSyfNEJ6DxgYUTkxlJi/Wr3VD1x9mHwDn2"
+            )
+            .SetVersion(CodeMirrorVersion);
+
+        manifest
             .DefineScript("codemirror")
             .SetUrl(
                 "~/OrchardCore.Resources/Scripts/codemirror/codemirror.min.js",

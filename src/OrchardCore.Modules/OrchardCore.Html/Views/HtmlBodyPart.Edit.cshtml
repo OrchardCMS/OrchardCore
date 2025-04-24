@@ -16,6 +16,7 @@
 </div>
 
 <style asp-name="codemirror"></style>
+<style asp-name="monokai"></style>
 <script asp-name="codemirror" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-addon-edit-closetag" at="Foot"></script>
@@ -27,8 +28,8 @@
 <script at="Foot">
     $(function () {
         var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Html)');
-    @* When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
-        if (optionsTextArea) {
+        @* When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
+            if (optionsTextArea) {
             var editor = CodeMirror.fromTextArea(optionsTextArea, {
                 autoCloseTags: true,
                 autoRefresh: true,
@@ -38,6 +39,21 @@
                 styleActiveLine: true,
                 mode: { name: "htmlmixed" }
             });
+
+            var html = document.documentElement;
+            const mutationObserver = new MutationObserver(setTheme);
+            mutationObserver.observe(html, { attributes: true });
+
+            function setTheme() {
+                var theme = html.dataset.bsTheme;
+                if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    editor.setOption('theme', 'monokai');
+                } else {
+                    editor.setOption('theme', 'default');
+                }
+            }
+
+            setTheme();
 
             initializeCodeMirrorShortcodeWrapper(editor);
 
