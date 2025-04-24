@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-361-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-362-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key))!
@@ -501,6 +501,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="16.66%"><a href="https://github.com/DarkParadoX"><img src="https://avatars.githubusercontent.com/u/18313045?v=4?s=100" width="100px;" alt="DarkParadoX"/><br /><sub><b>DarkParadoX</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=DarkParadoX" title="Code">💻</a></td>
+      <td align="center" valign="top" width="16.66%"><a href="https://github.com/mg-i-roc-maz"><img src="https://avatars.githubusercontent.com/u/116784643?v=4?s=100" width="100px;" alt="Rocco Mazzeo"/><br /><sub><b>Rocco Mazzeo</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=mg-i-roc-maz" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
