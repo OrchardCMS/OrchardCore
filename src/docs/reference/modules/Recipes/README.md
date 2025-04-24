@@ -1,48 +1,74 @@
 # Recipes (`OrchardCore.Recipes`)
 
-## Recipe file
+## Overview
 
-A recipe is a json file used to execute different import and configuration steps.
+The `OrchardCore.Recipes` module allows you to automate Orchard Core tenant setup and configuration using JSON-based recipe files. Recipes can install features, set themes, create content types, provision content, and much more.
 
-You can add it in a `Recipes` folder with a name like this `{RecipeName}.recipe.json` and it will be available in the Configuration > Recipes admin page.
+---
 
-## Recipe format
+## What is a Recipe?
 
-A recipe file should look like this:
+A recipe is a `.recipe.json` file placed in a Recipes folder within your module or theme. Recipes are picked up by Orchard Core and can be executed via the admin panel or automatically during tenant setup.
+
+### Key Properties
+
+| Property         | Type     | Description                                                                 |
+|------------------|----------|-----------------------------------------------------------------------------|
+| `name`           | string   | The unique internal name of the recipe. Used for identifying the recipe in code, including when executing it from other recipes. |
+| `displayName`    | string   | The friendly name shown in the admin UI or during setup.                      |
+| `description`    | string   | A short description of what the recipe does. Displayed in the admin and setup UIs.    |
+| `author`         | string   | The name of the recipe creator or organization.                            |
+| `website`        | string   | URL to the website or documentation for the recipe.                        |
+| `version`        | string   | Semantic version (e.g., `1.0.0`) representing the recipe version.           |
+| `issetuprecipe`  | boolean  | Indicates if this recipe should be available during tenant setup.          |
+| `tags`           | array    | Keywords for categorizing the recipe in the UI (e.g., `["blog", "theme"]`). |
+| `variables`      | object   | Key-value pairs to define reusable values throughout the recipe.           |
+| `steps`          | array    | An ordered list of step objects that define the actions the recipe will perform. Each step has a `name` and step-specific parameters. |
+
+### Example:
 
 ```json
 {
-  "name": "Name",
-  "displayName": "Display Name of the recipe",
-  "description": "Description of the recipe",
-  "author": "Author",
-  "website": "https://website.net",
-  "version": "2.0",
-  "issetuprecipe": true|false,
-  "categories": [ "default" ],
-  "tags": [ "tag" ],
+  "name": "Blog",
+  "displayName": "Blog Site",
+  "description": "Creates a simple blog with custom content types, widgets, and pages.",
+  "author": "Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0",
+  "issetuprecipe": true,
+  "tags": [ "blog", "content", "theme" ],
   "variables": {
-    "variable1": "[js:uuid()]",
-    ...
+    "siteId": "[js:uuid()]"
   },
   "steps": [
-      ...
+    // Here you can add your steps which will be executed in the provided order.
   ]
 }
 ```
 
 !!! note
-    if `issetuprecipe` is equal to true, the recipe will be available in the Recipes list during the setup.
+    Recipes, despite being JSON files, may contain comments: `// This is a comment.`
 
-!!! note
-    Recipes, despite being JSON files, may contain comments:
-    ```json
-    // This is a comment.
-```
 
-## Recipe steps
+## Recipe Helpers
 
-A recipe can execute multiple steps.
+These helpers allow dynamic expressions inside recipe values using a special syntax.
+
+| Helper         | Example Usage                                          | Description                                                                 |
+|----------------|--------------------------------------------------------|-----------------------------------------------------------------------------|
+| `js`           | `"ContentItemId": "[js:variables('homePageId')]"`      | Evaluates a JavaScript expression. Common for referencing `variables`.      |
+| `file`         | `"Content": "[file:text('Snippets/homepage.liquid')]"` | Loads content from an external file. Often used for Liquid templates.       |
+| `env`          | `"value": "[env:MyEnvironmentVariable]"`               | Injects values from environment variables.                                  |
+| `appsettings`  | `"value": "[appsettings:OrchardCore:SiteName]"`        | Reads configuration from `appsettings.json`.                                |
+| `localization` | `"value": "[localization:WelcomeTitle]"`               | Retrieves localized strings by key.                                         |
+| `uuid`         | `"Id": "[js:uuid()]"`                                  | Generates a new unique identifier (UUID/GUID).                              |
+| `base64`       | `"data": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]"`                                  | Decodes the specified string from Base64 encoding. Use https://www.base64-image.de/ to convert your files to base64.                              |
+| `html`         | `"html": "[js:html('&lt;p&gt;Hello &amp; welcome&lt;/p&gt;')]"`                                  | Decodes the specified string from HTML encoding..                              |
+| `gzip`         | `"data": "[js:gzip('data')]"`                                  | Decodes the specified string from gzip/base64 encoding. Use http://www.txtwizard.net/compression to gzip your strings.                              |
+
+---
+
+## Custom Recipes
 
 To create a new recipe step, implement the `IRecipeStepHandler` interface and its `ExecuteAsync` method:
 
@@ -52,438 +78,388 @@ public async Task ExecuteAsync(RecipeExecutionContext context)
 
 Alternatively, you can extend `NamedRecipeStepHandler` and implement the required abstract method, providing additional functionality for named steps.
 
-Here are the available recipe steps:
+## Built-in Recipe Steps
 
-### Feature Step
+Each step is a JSON object in the `steps` array. Here are all built-in types:
 
-The Feature step allows you to disable/enable some features.
+### `feature`
+
+Enables or disables features (modules/themes).
 
 ```json
-    {
-        "name": "feature",
-        "disable": [],
-        "enable": [
-            "OrchardCore.Admin",
-            "YourTheme",
-            "TheAdmin"
-        ]
-    }
+{
+  "name": "feature",
+  "enable": [ "OrchardCore.Admin", "MyCustomTheme" ],
+  "disable": []
+}
 ```
 
 !!! warning
-    If you want to use your own theme (Ex: `YourTheme`), do not forget to enable its feature or else, the theme layout will not be working after the execution of the recipe.
+    If you want to use your own theme (e.g., `YourTheme`), make sure to enable its feature; otherwise, the theme layout will not work after the recipe is executed.
 
-### Themes Step
+---
 
-The Themes step allows you to set the admin and the site themes.
+### `themes`
+
+Sets the active frontend and admin themes.
 
 ```json
-    {
-      "name": "themes",
-      "admin": "TheAdmin",
-      "site": "YourTheme"
-    }
+{
+  "name": "themes",
+  "admin": "TheAdmin",
+  "site": "MyCustomTheme"
+}
 ```
 
-### Settings Step
+---
 
-The Settings step allows you to set multiple settings.
+### `settings`
+
+Configures core site settings (like homepage route, culture, time zone, etc).
 
 ```json
-    {
-      "name": "settings",
-      "HomeRoute": {
-        "Action": "Display",
-        "Controller": "Item",
-        "Area": "OrchardCore.Contents",
-        "ContentItemId": "[js: variables('blogContentItemId')]"
-      },
-      "LayerSettings": {
-        "Zones": [ "Content", "Footer" ]
+{
+  "name": "settings",
+  "HomeRoute": {
+    "Action": "Display",
+    "Controller": "Item",
+    "Area": "OrchardCore.Contents",
+    "ContentItemId": "[js:variables('homeId')]"
+  },
+  "LayerSettings": {
+    "Zones": [ "Content", "Footer" ]
+  }
+  // You may add other settings here
+}
+```
+
+---
+
+### `ContentDefinition`
+
+Defines or updates content types and content parts.
+
+```json
+{
+  "name": "ContentDefinition",
+  "ContentTypes": [ { "Name": "Article", ... } ],
+  "ContentParts": [ { "Name": "BodyPart", ... } ]
+}
+```
+
+---
+
+### `lucene-index`
+
+Creates or configures Lucene search indexes.
+
+```json
+[
+  {
+    // Create the indices before the content items so they are indexed automatically.
+    "name": "lucene-index",
+    "Indices": [
+      {
+        "Search": {
+          "AnalyzerName": "standardanalyzer",
+          "IndexLatest": false,
+          "IndexedContentTypes": [
+            "Blog",
+            "BlogPost"
+          ]
+        }
       }
-    }
-```
-
-### ContentDefinition Step
-
-The Content step allows you to import some content types.
-
-```json
-    {
-        "name": "ContentDefinition",
-        "ContentTypes": [
-        {
-            "Name": "YourContentType",
-            ...
-        }
-    }
-```
-
-### Lucene Step
-
-The Lucene index step allows you to run the Lucene indexation of content types.  
-You can also set the default Lucene Settings.
-
-```json
-    {
-      // Create the indices before the content items so they are indexed automatically.
-      "name": "lucene-index",
-      "Indices": [
-        {
-          "Search": {
-            "AnalyzerName": "standardanalyzer",
-            "IndexLatest": false,
-            "IndexedContentTypes": [
-              "Blog",
-              "BlogPost"
-            ]
-          }
-        }
+    ]
+  },
+  {
+    // Create the search settings.
+    "name": "Settings",
+    "LuceneSettings": {
+      "SearchIndex": "Search",
+      "DefaultSearchFields": [
+        "Content.ContentItem.FullText"
       ]
-    },
-    {
-      // Create the search settings.
-      "name": "Settings",
-      "LuceneSettings": {
-        "SearchIndex": "Search",
-        "DefaultSearchFields": [
-          "Content.ContentItem.FullText"
-        ]
-      }
     }
+  }
+]
 ```
 
-### Reset Lucene Search Index Step
+---
 
-This Reset Lucene Index Step resets a Lucene index.
-Restarts the indexing process from the beginning in order to update current content items.
-It doesn't delete existing entries from the index.
+### `lucene-index-reset`
+
+Clears index content.
+
+```json
+{
+  "name": "lucene-index-reset",
+  "includeAll": true
+}
+```
 
 The `includeAll` property indicates whether to include all available Lucene indices. When set to `true`, the `Indices` property can be omitted.
 
+---
+
+### `lucene-index-rebuild`
+
+Rebuilds Lucene indexes to reflect current content.
+
 ```json
-    {
-      "name": "lucene-index-reset",
-      "includeAll": false,
-      "Indices": [
-        "IndexName1", "IndexName2"
-      ]
-    }
+{
+  "name": "lucene-index-rebuild",
+  "Indices": [ "Search" ]
+}
 ```
 
-```json
-    {
-      "name": "lucene-index-reset",
-      "includeAll": true
-    }
-```
+---
 
-### Rebuild Lucene Search Index Step
+### `content`
 
-This Rebuild Lucene Index Step rebuilds a Lucene index.
-Deletes and recreates the full index content.
-
-The `includeAll` property indicates whether to include all available Lucene indices. When set to `true`, the `Indices` property can be omitted.
+Imports content items such as pages, blogs, or menus.
 
 ```json
-    {
-      "name": "lucene-index-rebuild",
-      "includeAll": false,
-      "Indices": [
-        "IndexName1", "IndexName2"
-      ]
-    }
-```
-
-```json
-    {
-      "name": "lucene-index-rebuild",
-      "includeAll": true
-    }
-```
-
-### Content Step
-
-The Content step allows you to create content items.
-
-```json
-     {
-      "name": "content",
-      "Data": [
-        {
-          "ContentType": "Menu",
-          ...
-        },
-        ...
-      ]
-    }
+{
+  "name": "content",
+  "Data": [ { "ContentType": "Page", "DisplayText": "About", ... } ]
+}
 ```
 
 !!! note
     There is also `QueryBasedContentDeploymentStep` which produces exactly the same output as the Content Step, but based on a provided Query.
 
-### Media Step
+---
 
-The Media step allows you to import media files to the tenant Media folder.
+### `media`
 
-```json
-    {
-      "name": "media",
-      "Files": [
-        {
-          "TargetPath": "home-bg.jpg",
-          "SourcePath": "../wwwroot/img/home-bg.jpg"
-        },
-        {
-          "TargetPath": "post-bg.jpg",
-          "SourcePath": "../wwwroot/img/post-bg.jpg"
-        }
-      ]
-    }
-```
-
-### Layers Step
-
-The Layers step allows you to create multiple layers.
-
-```json
-    {
-      "name": "layers",
-      "Layers": [
-        {
-          "Name": "Always",
-          "Rule": "true",
-          "Description": "The widgets in this layer are displayed on any page of this site."
-        },
-        {
-          "Name": "Homepage",
-          "Rule": "isHomepage()",
-          "Description": "The widgets in this layer are only displayed on the homepage."
-        }
-      ]
-    }
-```
-
-### Queries Step
-
-The Queries step allows you to create multiple Lucene or SQL queries.
-
-```json
-    {
-      "name": "queries",
-      "Queries": [
-        {
-          "Source": "Lucene",
-          "Name": "RecentBlogPosts",
-          "Index": "Search",
-          "Template": "[file:text('Snippets/recentBlogPosts.json')]",
-          "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
-          "ReturnContentItems": true
-        }
-      ]
-    }
-```
-
-### AdminMenu Step
-
-The AdminMenu step allows you to create multiple admin menus.
-
-```json
-    {
-      "name": "AdminMenu",
-      "data": [
-        {
-          "Id": "[js:uuid()]",
-          "Name": "Admin menu",
-          "Enabled": true,
-          "MenuItems": [
-              ...
-          ]
-        }
-      ]
-    }
-```
-
-### Roles Step
-
-The Roles step allows you to set permissions to specific roles.
-
-```json
-    {
-      "name": "Roles",
-      "Roles": [
-        {
-          "Name": "Anonymous",
-          "Description": "Anonymous role",
-          "Permissions": [
-            "ViewContent",
-            "QueryLuceneSearchIndex"
-          ]
-        }
-      ]
-    }
-```
-
-!!! warning
-    As of version 1.6, the default roles are no longer auto created. Setup recipe must define the default roles to be used. The `Roles` feature will automatically map all known permissions to the defined roles each time a feature is enabled.
-
-### Template and AdminTemplate Step
-
-The Template and AdminTemplate steps allow you to create Liquid Templates.
-
-```json
-    {
-      "name": "Templates",
-      "Templates": {
-        "Content__LandingPage": {
-          "Description": "A template for the Landing Page content type",
-          "Content": "[file:text('Snippets/landingpage.liquid')]"
-        }
-      }
-    }
-```
-
-### Workflow Step
-
-The WorkflowType step allows you to create a Workflow.
-
-```json
-    {
-      "name": "WorkflowType",
-      "data": [
-        {
-          "WorkflowTypeId": "[js: variables('workflowTypeId')]",
-          "Name": "User Registration",
-          ...
-        }
-      ]
-    }
-```
-
-### Deployment Step
-
-The Deployment step allows you to create a deployment plan with deployment steps. Also see [Deployment](../Deployment/README.md).
-
-```json
-    {
-    "name": "deployment",
-    "Plans": [
-    {
-        "Name": "Export",
-        "Steps": [
-            {
-                "Type": "CustomFileDeploymentStep",
-                "Step": {
-                "FileName": "Export",
-                "FileContent": "Export",
-                "Id": "[js: uuid()]",
-                "Name": "CustomFileDeploymentStep"
-                }
-            },
-            {
-                "Type": "AllContentDeploymentStep",
-                "Step": {
-                "Id": "[js: uuid()]",
-                "Name": "AllContent"
-                }
-            }
-        ]
-    }
-```
-
-### CustomSettings Step
-
-The CustomSettings step allows you to populate your custom settings with initial values.
-
-```json
-    {
-      "name": "custom-settings",
-      "MyCustomSettings": {
-        "ContentItemId": "400d6c7pwj8675crzacd6gyywt",
-        "ContentItemVersionId": null,
-        "ContentType": "MyCustomSettings",
-        "DisplayText": "",
-        "Latest": false,
-        "Published": false,
-        "ModifiedUtc": null,
-        "PublishedUtc": null,
-        "CreatedUtc": null,
-        "Owner": "",
-        "Author": "",
-        "MyCustomSettingsPart": {
-          "MyTextField": {
-            "Text": "My custom text"
-          }
-        }
-      }
-    }
-```
-
-### Recipes Step
-
-The Recipes step allows you to execute other recipes from the current recipe. You can use this to modularize your recipes. E.g. instead of having a single large setup recipe you can put content into multiple smaller ones and execute them from the setup recipe.
-
-```json
-    {
-      "name": "recipes",
-      "Values": [
-        {
-          "executionid": "MyApp",
-          "name": "MyApp.Pages"
-        },
-        {
-          "executionid": "MyApp",
-          "name": "MyApp.Blog"
-        }
-      ]
-    }
-```
-
-As `executionid` use a custom identifier to distinguish these recipe executions from others. As `name` use the `name` field from the given recipe's head (this is left blank when you export to recipes).
-
-### Other settings Step
-
-Here are other available steps:
-
-- `Command`
-- `FacebookLoginSettings`
-- `FacebookSettings`
-- `GitHubAuthentication`
-- `GoogleAnalyticsSettings`
-- `GoogleAuthenticationSettings`
-- `AzureADSettings`
-- `MicrosoftAccountSettings`
-- `OpenIdApplication`
-- `OpenIdClientSettings`
-- `OpenIdServerSettings`
-- `Twitter`
-
-## Recipe helpers
-
-Recipes can use script helpers like this:
+Uploads files into the Media library.
 
 ```json
 {
-    "ContentItemId": "[js: uuid()]"
+  "name": "media",
+  "Files": [
+    { "TargetPath": "logo.jpg", "SourcePath": "../wwwroot/img/logo.jpg" }
+  ]
 }
 ```
 
-| Name             | Description                                                                                                              |
-|------------------|--------------------------------------------------------------------------------------------------------------------------|
-| `uuid()`         | Generates a unique identifier for a content item.                                                                        |
-| `base64(string)` | Decodes the specified string from Base64 encoding. Use <https://www.base64-image.de/> to convert your files to base64.   |
-| `html(string)`   | Decodes the specified string from HTML encoding.                                                                         |
-| `gzip(string)`   | Decodes the specified string from gzip/base64 encoding. Use <http://www.txtwizard.net/compression> to gzip your strings. |
+---
+
+### `layers`
+
+Defines layer rules for conditional widget placement.
+
+```json
+{
+  "name": "layers",
+  "Layers": [
+    { "Name": "Always", "Rule": "true" },
+    { "Name": "Homepage", "Rule": "isHomepage()" }
+  ]
+}
+```
+
+---
+
+### `queries`
+
+Adds Lucene or SQL queries to be reused by widgets or APIs.
+
+```json
+{
+  "name": "queries",
+  "Queries": [
+    {
+      "Source": "Lucene",
+      "Name": "RecentPosts",
+      "Index": "Search",
+      "Template": "[file:text('Snippets/recentPosts.json')]",
+      "ReturnContentItems": true
+    }
+  ]
+}
+```
+
+---
+
+### `AdminMenu`
+
+Defines items in the admin menu for organizing admin tools.
+
+```json
+{
+  "name": "AdminMenu",
+  "data": [
+    {
+      "Id": "[js:uuid()]",
+      "Name": "Tools",
+      "MenuItems": [ ... ]
+    }
+  ]
+}
+```
+
+---
+
+### `Roles`
+
+Creates user roles and assigns permissions.
+
+```json
+{
+  "name": "Roles",
+  "Roles": [
+    {
+      "Name": "Editor",
+      "Permissions": [ "EditOwnContent", "PublishContent" ]
+    }
+  ]
+}
+```
+
+---
+
+### `Templates`
+
+Defines or updates Liquid templates.
+
+```json
+{
+  "name": "Templates",
+  "Templates": {
+    "Content__LandingPage": {
+      "Description": "Landing page layout",
+      "Content": "[file:text('Snippets/landingpage.liquid')]"
+    }
+  }
+}
+```
+
+---
+
+### `WorkflowType`
+
+Defines custom workflows to automate user or content events.
+
+```json
+{
+  "name": "WorkflowType",
+  "data": [
+    {
+      "WorkflowTypeId": "[js:variables('workflowTypeId')]",
+      "Name": "User Registration"
+    }
+  ]
+}
+```
+
+---
+
+### `deployment`
+
+Defines deployment plans to export/import content and settings. Also see [Deployment](../Deployment/README.md).
+
+```json
+{
+  "name": "deployment",
+  "Plans": [
+    {
+      "Name": "ExportSite",
+      "Steps": [
+        {
+          "Type": "CustomFileDeploymentStep",
+          "Step": {
+            "FileName": "Export",
+            "FileContent": "Export",
+            "Id": "[js: uuid()]",
+            "Name": "CustomFileDeploymentStep"
+          }
+        },
+        {
+          "Type": "AllContentDeploymentStep",
+          "Step": {
+            "Id": "[js: uuid()]",
+            "Name": "AllContent"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
+
+### `custom-settings`
+
+Updates content-based settings stored in a custom content item.
+
+```json
+{
+  "name": "custom-settings",
+  "MySiteSettings": {
+    "ContentType": "MySiteSettings",
+    "MySettingsPart": {
+      "SomeTextField": { "Text": "Hello World" }
+    }
+  }
+}
+```
+
+---
+
+### `recipes`
+
+Runs additional recipes within the current one, allowing modular reuse.
+
+```json
+{
+  "name": "recipes",
+  "Values": [
+    { "executionid": "MyApp", "name": "MyApp.Pages" }
+  ]
+}
+```
+As `executionid` use a custom identifier to distinguish these recipe executions from others. As `name` use the `name` field from the given recipe's head (this is left blank when you export to recipes).
+
+---
 
 ## Recipe Migrations
 
-A recipe migration is a way to perform updates via a recipe file. The most common uses for this would be to update metadata like content types or workflows, but one could update anything that is updateable via a recipe.
+**Recipe migrations** allow you to perform updates using Orchard Core recipe files. These migrations are especially useful for updating metadata such as content types, workflows, settings, or any other component that can be updated via a recipe.
 
-Let's consider a simple scenario: adding a new asset. Now one could do this via the admin UI interface, but the purpose here is to demonstrate all the moving parts involved in a recipe migration.
+While many changes can be made through the admin UI, recipe migrations provide a repeatable and versioned way to apply updates, ideal for deployment automation or environment setup.
 
-In your module or theme project, create a class that inherits from `OrchardCore.Data.Migration.DataMigration` (found in the `OrchardCore.Data.Abstractions` package). Add a dependency for the `IRecipeMigrator` service to this class. Provide `CreateAsync()` and/or `UpdateAsync()` methods that return `Task<int>` to provide the migration steps. The class can placed anywhere in your project, but the recipe JSON files must be placed in a folder named `Migrations`.
+---
 
-Here is an example of how initial and subsequent migrations can be authored. Use the `CreateAsync()` method to provide the very first migration that runs and ensure that this method always returns 1. Use the `UpdateFrom<version>Async()` to provide subsequent migrations; in this example, we have a migration that updates from version 1 to 2. The method names are case-sensitive and the naming convention must be followed for the migrations to be discovered and executed.
+### Basic Concept
+
+A recipe migration is implemented by creating a `DataMigration` class in your module or theme. Inside this class, you call into the `IRecipeMigrator` service to execute recipe files.
+
+Recipe files must be stored in a `Migrations` folder within your project, and they are typically written in JSON format using the standard Orchard recipe schema.
+
+---
+
+### Setup
+
+1. **Create a migration class**:
+   - Inherit from `OrchardCore.Data.Migration.DataMigration` (in the `OrchardCore.Data.Abstractions` package).
+   - Inject the `IRecipeMigrator` service.
+   - Implement one or more of the following methods:
+     - `CreateAsync()` – the first migration, must return `1`
+     - `UpdateFrom<version>Async()` – used for incremental migrations
+
+2. **Create migration recipe files**:
+   - Place them in a `Migrations` folder (same level as your migration class).
+   - Name them clearly to reflect the version or purpose.
+
+---
+
+### Example: Media Asset Migration
+
+Let's say we want to deploy media assets as part of a module. Here’s how we’d structure this:
+
+#### Migration Class
 
 ```csharp
 public sealed class Migrations : DataMigration
@@ -498,68 +474,79 @@ public sealed class Migrations : DataMigration
     public async Task<int> CreateAsync()
     {
         await _recipeMigrator.ExecuteAsync("migration.recipe.json", this);
-
         return 1;
     }
 
     public async Task<int> UpdateFrom1Async()
     {
         await _recipeMigrator.ExecuteAsync("migrationV2.recipe.json", this);
-
         return 2;
     }
 }
 ```
 
-And here are the migration recipes referenced in the code above:
+!!! note 
+    **Important**: Method names like `UpdateFrom1Async()` are **case-sensitive** and must follow the naming convention exactly in order to be discovered and executed.
 
-**Migrations/migration.recipe.json**
+---
 
-```json
-{
-    "steps": [
-        {
-          "name": "media",
-          "Files": [
-            {
-                "TargetPath": "about/1.jpg",
-                "SourcePath": "../wwwroot/img/about/1.jpg"
-            },
-            {
-                "TargetPath": "about/2.jpg",
-                "SourcePath": "../wwwroot/img/about/2.jpg"
-            }
-          ]
-        }
-    ]
-}
-```
+### Recipe Files
 
-**Migrations/migrationV2.recipe.json**
+Place the following JSON files in a folder named `Migrations`.
+
+#### **Migrations/migration.recipe.json**
+
+Initial migration adds two media files:
 
 ```json
 {
-    "steps": [
+  "steps": [
+    {
+      "name": "media",
+      "Files": [
         {
-          "name": "media",
-          "Files": [
-            {
-                "TargetPath": "about/1.jpg",
-                "SourcePath": "../wwwroot/img/about/1.jpg"
-            },
-            {
-                "TargetPath": "about/2.jpg",
-                "SourcePath": "../wwwroot/img/about/2.jpg"
-            },
-            {
-                "TargetPath": "about/3.jpg",
-                "SourcePath": "../wwwroot/img/about/3.jpg"
-            }
-          ]
+          "TargetPath": "about/1.jpg",
+          "SourcePath": "../wwwroot/img/about/1.jpg"
+        },
+        {
+          "TargetPath": "about/2.jpg",
+          "SourcePath": "../wwwroot/img/about/2.jpg"
         }
-    ]
+      ]
+    }
+  ]
 }
 ```
+
+#### **Migrations/migrationV2.recipe.json**
+
+Second migration adds another image:
+
+```json
+{
+  "steps": [
+    {
+      "name": "media",
+      "Files": [
+        {
+          "TargetPath": "about/1.jpg",
+          "SourcePath": "../wwwroot/img/about/1.jpg"
+        },
+        {
+          "TargetPath": "about/2.jpg",
+          "SourcePath": "../wwwroot/img/about/2.jpg"
+        },
+        {
+          "TargetPath": "about/3.jpg",
+          "SourcePath": "../wwwroot/img/about/3.jpg"
+        }
+      ]
+    }
+  ]
+}
+```
+
+---
 
 ## Videos
 
