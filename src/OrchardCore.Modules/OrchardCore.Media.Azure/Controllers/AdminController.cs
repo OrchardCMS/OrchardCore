@@ -33,6 +33,7 @@ public sealed class AdminController : Controller
         {
             CreateContainer = _options.CreateContainer,
             RemoveContainer = _options.RemoveContainer,
+            RemoveFilesFromBasePath = _options.RemoveFilesFromBasePath,
             ContainerName = _options.ContainerName,
             ConnectionString = _options.ConnectionString,
             BasePath = _options.BasePath,

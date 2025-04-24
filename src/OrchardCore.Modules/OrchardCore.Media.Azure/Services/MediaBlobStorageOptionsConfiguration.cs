@@ -26,5 +26,6 @@ internal sealed class MediaBlobStorageOptionsConfiguration : BlobStorageOptionsC
     protected override void FurtherConfigure(MediaBlobStorageOptions rawOptions, MediaBlobStorageOptions options)
     {
         options.RemoveContainer = rawOptions.RemoveContainer;
+        options.RemoveFilesFromBasePath = rawOptions.RemoveFilesFromBasePath;
     }
 }

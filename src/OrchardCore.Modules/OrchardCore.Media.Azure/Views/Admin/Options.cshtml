@@ -51,3 +51,11 @@
         <span class="hint">@T["Whether a blob container is removed on tenant deletion if it exists."]</span>
     </div>
 </div>
+
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" asp-for="RemoveFilesFromBasePath" checked="@Model.RemoveFilesFromBasePath" disabled />
+        <label class="form-check-label" asp-for="RemoveFilesFromBasePath">@T["Remove Files From Base Path"]</label>
+        <span class="hint">@T["Whether only the media files under the base path are removed on tenant deletion."]</span>
+    </div>
+</div>
