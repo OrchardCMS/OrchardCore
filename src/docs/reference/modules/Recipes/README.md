@@ -1,4 +1,4 @@
-# Orchard Core Recipe Reference Guide
+# Recipes (`OrchardCore.Recipes`)
 
 ## Overview
 
