@@ -149,7 +149,7 @@ The following configuration values are used by default and can be customized:
         "CreateContainer": true,
         // Whether the 'Container' is deleted if the tenant is removed, false by default.
         "RemoveContainer": true,
-        // Whether the files under the given base path are deleted if the tenant is removed, false by default.
+        // Whether only the files under the given base path are deleted instead of the container if the tenant is removed, false by default.
         "RemoveFilesFromBasePath": true
     }
   }
