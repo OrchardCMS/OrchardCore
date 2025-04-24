@@ -22,4 +22,9 @@ internal sealed class MediaBlobStorageOptionsConfiguration : BlobStorageOptionsC
     protected override MediaBlobStorageOptions GetRawOptions()
         => _shellConfiguration.GetSection("OrchardCore_Media_Azure")
         .Get<MediaBlobStorageOptions>();
+
+    protected override void FurtherConfigure(MediaBlobStorageOptions rawOptions, MediaBlobStorageOptions options)
+    {
+        options.RemoveContainer = rawOptions.RemoveContainer;
+    }
 }
