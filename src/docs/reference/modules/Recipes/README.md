@@ -15,7 +15,7 @@ A recipe is a `.recipe.json` file placed in a Recipes folder within your module 
 | Property         | Type     | Description                                                                 |
 |------------------|----------|-----------------------------------------------------------------------------|
 | `name`           | string   | The unique internal name of the recipe. Used for identifying the recipe in code, including when executing it from other recipes. |
-| `displayName`    | string   | The friendly name shown in the admin UI during setup.                      |
+| `displayName`    | string   | The friendly name shown in the admin UI or during setup.                      |
 | `description`    | string   | A short description of what the recipe does. Displayed in the setup UI.    |
 | `author`         | string   | The name of the recipe creator or organization.                            |
 | `website`        | string   | URL to the website or documentation for the recipe.                        |
