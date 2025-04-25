@@ -21,9 +21,7 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
     internal readonly IStringLocalizer S;
 
     public UserDisplayDriver(
-        UserManager<IUser> userManager,
         IHttpContextAccessor httpContextAccessor,
-        INotifier notifier,
         IAuthorizationService authorizationService,
         IHtmlLocalizer<UserDisplayDriver> htmlLocalizer,
         IStringLocalizer<UserDisplayDriver> stringLocalizer)
