@@ -430,7 +430,7 @@ public class ContentDefinitionService : IContentDefinitionService
             ContentPartName = partName,
             ContentFieldTypeName = fieldTypeName,
             ContentFieldName = fieldName,
-            ContentFieldDisplayName = displayName
+            ContentFieldDisplayName = displayName,
         }, _logger);
     }
 
@@ -455,7 +455,7 @@ public class ContentDefinitionService : IContentDefinitionService
         var context = new ContentFieldDetachedContext
         {
             ContentPartName = partName,
-            ContentFieldName = fieldName
+            ContentFieldName = fieldName,
         };
 
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentFieldDetached(ctx), context, _logger);
@@ -476,7 +476,7 @@ public class ContentDefinitionService : IContentDefinitionService
         var context = new ContentPartFieldUpdatedContext
         {
             ContentPartName = partViewModel.Name,
-            ContentFieldName = fieldViewModel.Name
+            ContentFieldName = fieldViewModel.Name,
         };
 
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentPartFieldUpdated(ctx), context, _logger);
@@ -500,7 +500,7 @@ public class ContentDefinitionService : IContentDefinitionService
         var context = new ContentTypePartUpdatedContext
         {
             ContentTypeName = typeDefinition.Name,
-            ContentPartName = typePartViewModel.Name
+            ContentPartName = typePartViewModel.Name,
         };
 
         _contentDefinitionEventHandlers.Invoke((handler, ctx) => handler.ContentTypePartUpdated(ctx), context, _logger);
@@ -533,7 +533,7 @@ public class ContentDefinitionService : IContentDefinitionService
 
         var context = new ContentTypeUpdatedContext
         {
-            ContentTypeDefinition = typeDefinition
+            ContentTypeDefinition = typeDefinition,
         };
 
         _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentTypeUpdated(context), context, _logger);
@@ -560,7 +560,7 @@ public class ContentDefinitionService : IContentDefinitionService
 
         _contentDefinitionEventHandlers.Invoke((handler, context) => handler.ContentPartUpdated(context), new ContentPartUpdatedContext
         {
-            ContentPartDefinition = partDefinition
+            ContentPartDefinition = partDefinition,
         }, _logger);
     }
 

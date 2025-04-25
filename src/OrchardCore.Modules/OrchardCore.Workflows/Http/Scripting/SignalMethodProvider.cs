@@ -57,7 +57,7 @@ public class TokenMethodProvider : IGlobalMethodProvider
                 }
 
                 return securityTokenService.CreateToken(payload, TimeSpan.FromDays(days));
-            })
+            }),
         };
     }
 

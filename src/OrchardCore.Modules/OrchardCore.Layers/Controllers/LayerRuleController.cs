@@ -79,7 +79,7 @@ public sealed class LayerRuleController : Controller
             Name = name,
             ConditionGroupId = conditionGroup.ConditionId,
             ConditionType = type,
-            Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty)
+            Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: true, string.Empty, string.Empty),
         };
 
         return View(model);
@@ -157,7 +157,7 @@ public sealed class LayerRuleController : Controller
         var model = new LayerRuleEditViewModel
         {
             Name = name,
-            Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "")
+            Editor = await _displayManager.BuildEditorAsync(condition, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", ""),
         };
 
         return View(model);

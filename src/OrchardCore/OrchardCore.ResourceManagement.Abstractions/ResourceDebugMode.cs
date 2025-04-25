@@ -4,5 +4,5 @@ public enum ResourceDebugMode
 {
     FromConfiguration,
     Enabled,
-    Disabled
+    Disabled,
 }

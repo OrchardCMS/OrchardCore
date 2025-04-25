@@ -11,7 +11,7 @@ public class AliasPartIndexAliasProvider : IIndexAliasProvider
         {
             Alias = "aliasPart",
             Index = "AliasPartIndex",
-            IndexType = typeof(AliasPartIndex)
+            IndexType = typeof(AliasPartIndex),
         }
     ];
 

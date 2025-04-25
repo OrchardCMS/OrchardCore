@@ -83,14 +83,18 @@ A sample of OpenID Connect Settings recipe step:
       "EncryptionCertificateThumbprint": "BC34460ABEA2D576EA68E8FFCFEEB3F45C94FB0F",
       "EnableTokenEndpoint": true,
       "EnableAuthorizationEndpoint": false,
+      "EnableIntrospectionEndpoint": false,
       "EnableLogoutEndpoint": true,
+      "EnablePushedAuthorizationEndpoint": false,
+      "EnableRevocationEndpoint": false,
       "EnableUserInfoEndpoint": true,
       "AllowPasswordFlow": true,
       "AllowClientCredentialsFlow": false,
       "AllowAuthorizationCodeFlow": false,
       "AllowRefreshTokenFlow": false,
       "AllowImplicitFlow": false,
-      "RequireProofKeyForCodeExchange" : false
+      "RequireProofKeyForCodeExchange": false,
+      "RequirePushedAuthorizationRequests": false,
 }
 ```
 
@@ -140,7 +144,8 @@ A sample of OpenID Connect App recipe step:
       "AllowAuthorizationCodeFlow": false,
       "AllowRefreshTokenFlow": false,
       "AllowImplicitFlow": false,
-      "RequireProofKeyForCodeExchange": false
+      "RequireProofKeyForCodeExchange": false,
+      "RequirePushedAuthorizationRequests": false,
 }
 ```
 

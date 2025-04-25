@@ -21,7 +21,7 @@ public class DefaultTimeZoneSelector : ITimeZoneSelector
         return Task.FromResult(new TimeZoneSelectorResult
         {
             Priority = 0,
-            TimeZoneId = async () => (await _siteService.GetSiteSettingsAsync())?.TimeZoneId
+            TimeZoneId = async () => (await _siteService.GetSiteSettingsAsync())?.TimeZoneId,
         });
     }
 }

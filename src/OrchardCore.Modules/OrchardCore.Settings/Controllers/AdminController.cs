@@ -58,7 +58,7 @@ public sealed class AdminController : Controller
         var viewModel = new AdminIndexViewModel
         {
             GroupId = groupId,
-            Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, string.Empty)
+            Shape = await _siteSettingsDisplayManager.BuildEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, string.Empty),
         };
 
         return View(viewModel);
@@ -78,7 +78,7 @@ public sealed class AdminController : Controller
         var viewModel = new AdminIndexViewModel
         {
             GroupId = groupId,
-            Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, string.Empty)
+            Shape = await _siteSettingsDisplayManager.UpdateEditorAsync(site, _updateModelAccessor.ModelUpdater, false, groupId, string.Empty),
         };
 
         if (ModelState.IsValid)

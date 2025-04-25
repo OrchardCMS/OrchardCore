@@ -61,7 +61,7 @@ public class MarkdownBodyQueryObjectType : ObjectGraphType<MarkdownBodyPart>
                 Markdown = ctx.Source.Markdown,
                 Html = html,
                 MarkdownBodyPart = ctx.Source,
-                ContentItem = ctx.Source.ContentItem
+                ContentItem = ctx.Source.ContentItem,
             };
 
             html = await liquidTemplateManager.RenderStringAsync(html, htmlEncoder, model,
@@ -72,7 +72,7 @@ public class MarkdownBodyQueryObjectType : ObjectGraphType<MarkdownBodyPart>
             new Context
             {
                 ["ContentItem"] = ctx.Source.ContentItem,
-                ["PartFieldDefinition"] = contentTypePartDefinition
+                ["PartFieldDefinition"] = contentTypePartDefinition,
             });
 
         if (settings.SanitizeHtml)

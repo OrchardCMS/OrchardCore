@@ -179,7 +179,7 @@ public sealed class Startup : StartupBase
                 {
                     {"Area", "OrchardCore.Contents"},
                     {"Controller", "Item"},
-                    {"Action", "Display"}
+                    {"Action", "Display"},
                 };
 
                 options.ContentItemIdKey = "contentItemId";

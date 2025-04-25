@@ -103,7 +103,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
             var existingContentItem = part.ContentItems.FirstOrDefault(x => string.Equals(x.ContentItemId, model.ContentItems[i], StringComparison.OrdinalIgnoreCase));
 
             var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(contentItem.ContentType);
-            
+
             if (existingContentItem == null && !await AuthorizeAsync(contentTypeDefinition, CommonPermissions.EditContent, contentItem))
             {
                 // at this point the user is somehow trying to add content with no privileges. ignore the request
@@ -145,7 +145,7 @@ public sealed class BagPartDisplayDriver : ContentPartDisplayDriver<BagPart>
             }
 
             var contentTypeDefinition = await contentDefinitionManager.GetTypeDefinitionAsync(existingContentItem.ContentType);
-            
+
             if (await AuthorizeAsync(contentTypeDefinition, CommonPermissions.DeleteContent, existingContentItem))
             {
                 // at this point the user has permission to delete a securable item or the type isn't securable

@@ -54,7 +54,7 @@ public abstract class ContentActivity : Activity
 
     public override Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
     {
-        if(input != null && input.TryGetValue(ContentEventConstants.ContentEventInputKey, out var contentEventObj))
+        if (input != null && input.TryGetValue(ContentEventConstants.ContentEventInputKey, out var contentEventObj))
         {
             InlineEvent = contentEventObj switch
             {

@@ -76,7 +76,7 @@ public sealed class SecureMediaPermissions : IPermissionProvider
                 {
                     MediaPermissions.ViewMedia,
                     MediaPermissions.ViewOthersMedia,
-                }
+                },
             },
             new PermissionStereotype
             {
@@ -84,7 +84,7 @@ public sealed class SecureMediaPermissions : IPermissionProvider
                 Permissions = new[]
                 {
                     MediaPermissions.ViewOwnMedia,
-                }
+                },
             },
             new PermissionStereotype
             {
@@ -92,8 +92,8 @@ public sealed class SecureMediaPermissions : IPermissionProvider
                 Permissions = new[]
                 {
                     MediaPermissions.ViewMedia,
-                }
-            }
+                },
+            },
         };
     }
 
@@ -140,7 +140,7 @@ public sealed class SecureMediaPermissions : IPermissionProvider
             MediaPermissions.ViewMedia,
             new (MediaPermissions.ViewRootMedia.Name, MediaPermissions.ViewRootMedia.Description, viewRootImpliedBy),
             MediaPermissions.ViewOthersMedia,
-            MediaPermissions.ViewOwnMedia
+            MediaPermissions.ViewOwnMedia,
         };
 
         await foreach (var entry in _fileStore.GetDirectoryContentAsync())

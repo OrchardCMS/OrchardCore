@@ -53,7 +53,7 @@ public sealed class TwitterStartup : StartupBase
                         attempt.RetryDelay.Add(TimeSpan.FromSeconds(0.5 * attempt.AttemptNumber));
 
                         return ValueTask.CompletedTask;
-                    }
+                    },
                 })
             );
     }

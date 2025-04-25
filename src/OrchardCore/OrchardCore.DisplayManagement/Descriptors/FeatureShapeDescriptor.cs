@@ -123,7 +123,7 @@ public class ShapeDescriptor
 
         return new PlacementInfo
         {
-            Location = DefaultPlacement
+            Location = DefaultPlacement,
         };
     }
 

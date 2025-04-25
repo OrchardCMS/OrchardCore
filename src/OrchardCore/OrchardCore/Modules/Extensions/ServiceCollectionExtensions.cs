@@ -231,7 +231,7 @@ public static class ServiceCollectionExtensions
                     var fileProviders = new List<IStaticFileProvider>
                     {
                         new ModuleProjectStaticFileProvider(appContext),
-                        new ModuleEmbeddedStaticFileProvider(appContext)
+                        new ModuleEmbeddedStaticFileProvider(appContext),
                     };
                     fileProvider = new ModuleCompositeStaticFileProvider(fileProviders);
                 }

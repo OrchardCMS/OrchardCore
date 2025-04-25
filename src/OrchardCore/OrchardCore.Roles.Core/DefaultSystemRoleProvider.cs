@@ -47,7 +47,7 @@ public sealed class DefaultSystemRoleProvider : ISystemRoleProvider
                     RoleName = OrchardCoreConstants.Roles.Anonymous,
                     RoleDescription = "A system role representing all non-authenticated users.",
                 }
-            }
+            },
         }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
     }
 

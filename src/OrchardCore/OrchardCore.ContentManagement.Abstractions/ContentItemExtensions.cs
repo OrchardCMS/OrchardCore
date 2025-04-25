@@ -250,7 +250,7 @@ public static class ContentItemExtensions
             CreatedUtc = contentItem.CreatedUtc,
             ModifiedUtc = contentItem.ModifiedUtc,
             PublishedUtc = contentItem.PublishedUtc,
-            Data = contentItem.Data.Clone()
+            Data = contentItem.Data.Clone(),
         };
     }
 }

@@ -63,7 +63,7 @@ public sealed class QueryBasedContentDeploymentSource
             var jObj = new JsonObject
             {
                 ["name"] = "content",
-                ["data"] = data
+                ["data"] = data,
             };
 
             result.Steps.Add(jObj);

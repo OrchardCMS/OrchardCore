@@ -77,7 +77,7 @@ public sealed class AdminController : Controller
 
         var model = new BuildEditorViewModel
         {
-            EditorShape = contentCard
+            EditorShape = contentCard,
         };
 
         return View("Display", model);

@@ -1,13 +1,10 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Data.Documents;
+using OrchardCore.Search.Models;
 
 namespace OrchardCore.Search.Lucene.Model;
 
-public class LuceneIndexSettings
+public class LuceneIndexSettings : IndexSettingsBase
 {
-    [JsonIgnore]
-    public string IndexName { get; set; }
-
     public string AnalyzerName { get; set; }
 
     public bool IndexLatest { get; set; }

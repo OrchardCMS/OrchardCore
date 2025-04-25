@@ -154,7 +154,7 @@ public sealed class DefaultQueryManager : IQueryManager
         var result = new ListQueryResult
         {
             Count = records.Count(),
-            Records = records.Skip(skip).Take(pageSize).ToArray()
+            Records = records.Skip(skip).Take(pageSize).ToArray(),
         };
 
         foreach (var record in result.Records)

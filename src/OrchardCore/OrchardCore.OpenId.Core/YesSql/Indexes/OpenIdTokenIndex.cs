@@ -36,7 +36,7 @@ public class OpenIdTokenIndexProvider : IndexProvider<OpenIdToken>
                 ReferenceId = token.ReferenceId,
                 Status = token.Status,
                 Subject = token.Subject,
-                Type = token.Type
+                Type = token.Type,
             });
     }
 }

@@ -102,7 +102,7 @@ public sealed class MarkdownBodyPartDisplayDriver : ContentPartDisplayDriver<Mar
             new Context
             {
                 ["ContentItem"] = markdownBodyPart.ContentItem,
-                ["TypePartDefinition"] = context.TypePartDefinition
+                ["TypePartDefinition"] = context.TypePartDefinition,
             });
 
         if (settings.SanitizeHtml)

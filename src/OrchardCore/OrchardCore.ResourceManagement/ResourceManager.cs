@@ -46,7 +46,7 @@ public class ResourceManager : IResourceManager
             settings = new RequireSettings(_options)
             {
                 Type = resourceType,
-                Name = resourceName
+                Name = resourceName,
             };
             _required[key] = settings;
         }
@@ -347,7 +347,7 @@ public class ResourceManager : IResourceManager
             {
                 Settings = settings,
                 Resource = (ResourceDefinition)entry.Key,
-                FileVersionProvider = _fileVersionProvider
+                FileVersionProvider = _fileVersionProvider,
             };
         }
 

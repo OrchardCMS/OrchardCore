@@ -20,7 +20,7 @@ public class ShortcodeTemplatesDescriptorProvider : IShortcodeDescriptorProvider
                 Hint = kvp.Value.Hint,
                 DefaultValue = kvp.Value.DefaultValue,
                 Usage = kvp.Value.Usage,
-                Categories = kvp.Value.Categories
+                Categories = kvp.Value.Categories,
             });
     }
 }

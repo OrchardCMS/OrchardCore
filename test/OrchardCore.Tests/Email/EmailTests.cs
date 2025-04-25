@@ -14,7 +14,7 @@ public class EmailTests
         {
             To = "info@oc.com",
             Subject = "Test",
-            TextBody = "Test Message"
+            TextBody = "Test Message",
         };
 
         // Act
@@ -32,7 +32,7 @@ public class EmailTests
         {
             Cc = "info@oc.com",
             Subject = "Test",
-            TextBody = "Test Message"
+            TextBody = "Test Message",
         };
 
         // Act
@@ -50,7 +50,7 @@ public class EmailTests
         {
             Bcc = "info@oc.com",
             Subject = "Test",
-            TextBody = "Test Message"
+            TextBody = "Test Message",
         };
 
         // Act
@@ -67,7 +67,7 @@ public class EmailTests
         {
             To = "info@oc.com",
             Subject = "Test",
-            TextBody = "Test Message"
+            TextBody = "Test Message",
         };
 
         await SendEmailAsync(message, "Your Name <youraddress@host.com>");
@@ -113,7 +113,7 @@ public class EmailTests
             To = "info@oc.com",
             Subject = "Test",
             TextBody = "Test Message",
-            From = "sebastienros@gmail.com,hishamco_2007@hotmail.com"
+            From = "sebastienros@gmail.com,hishamco_2007@hotmail.com",
         };
         var content = await SendEmailAsync(message, "Hisham Bin Ateya <hishamco_2007@hotmail.com>");
 
@@ -146,7 +146,7 @@ public class EmailTests
             To = "info@oc.com",
             Subject = "Test",
             TextBody = "Test Message",
-            From = "Sebastien Ros <sebastienros@gmail.com>"
+            From = "Sebastien Ros <sebastienros@gmail.com>",
         };
         var content = await SendEmailAsync(message, "Your Name <youraddress@host.com>");
 
@@ -176,12 +176,12 @@ public class EmailTests
         var message = new MailMessage
         {
             Subject = "Test",
-            TextBody = "Test Message"
+            TextBody = "Test Message",
         };
 
         var options = new SmtpOptions
         {
-            DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
+            DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
         };
 
         var smtp = CreateSmtpService(options);
@@ -201,11 +201,11 @@ public class EmailTests
         {
             To = "info@oc.com",
             Subject = "Test",
-            TextBody = "Test Message"
+            TextBody = "Test Message",
         };
         var settings = new SmtpOptions
         {
-            DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory
+            DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
         };
 
         var smtp = CreateSmtpService(settings);
@@ -226,7 +226,7 @@ public class EmailTests
             To = "info@oc.com",
             Subject = "Test",
             TextBody = "Plain text Message",
-            HtmlBody = "<p>HTML Message</p>"
+            HtmlBody = "<p>HTML Message</p>",
         };
 
         // Act

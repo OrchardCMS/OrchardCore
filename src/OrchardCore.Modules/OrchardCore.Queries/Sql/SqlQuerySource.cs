@@ -53,7 +53,7 @@ public sealed class SqlQuerySource : IQuerySource
 
         var sqlQueryResults = new SQLQueryResults
         {
-            Items = []
+            Items = [],
         };
 
         var tokenizedQuery = await _liquidTemplateManager.RenderStringAsync(metadata.Template, NullEncoder.Default,

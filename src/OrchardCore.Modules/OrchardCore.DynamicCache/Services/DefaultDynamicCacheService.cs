@@ -104,7 +104,7 @@ public class DefaultDynamicCacheService : IDynamicCacheService
         {
             AbsoluteExpiration = context.ExpiresOn,
             SlidingExpiration = context.ExpiresSliding,
-            AbsoluteExpirationRelativeToNow = context.ExpiresAfter
+            AbsoluteExpirationRelativeToNow = context.ExpiresAfter,
         };
 
         // Default duration is sliding expiration (permanent as long as it's used)
@@ -123,7 +123,7 @@ public class DefaultDynamicCacheService : IDynamicCacheService
 
             _memoryCache.Set(FailoverKey, true, new MemoryCacheEntryOptions()
             {
-                AbsoluteExpirationRelativeToNow = _dynamicCacheOptions.FailoverRetryLatency
+                AbsoluteExpirationRelativeToNow = _dynamicCacheOptions.FailoverRetryLatency,
             });
 
             return;
@@ -183,7 +183,7 @@ public class DefaultDynamicCacheService : IDynamicCacheService
 
             _memoryCache.Set(FailoverKey, true, new MemoryCacheEntryOptions()
             {
-                AbsoluteExpirationRelativeToNow = _dynamicCacheOptions.FailoverRetryLatency
+                AbsoluteExpirationRelativeToNow = _dynamicCacheOptions.FailoverRetryLatency,
             });
         }
 

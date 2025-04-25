@@ -244,7 +244,7 @@ public sealed class TwoFactorAuthenticationController : TwoFactorAuthenticationB
             {
                 u.Put(new TwoFactorPreference()
                 {
-                    DefaultProvider = model.PreferredProvider
+                    DefaultProvider = model.PreferredProvider,
                 });
 
                 await UserManager.UpdateAsync(u);

@@ -98,7 +98,7 @@ public class ElasticsearchService : ISearchService
                 var tokenizedContent = await _liquidTemplateManager.RenderStringAsync(searchSettings.DefaultQuery, _javaScriptEncoder,
                     new Dictionary<string, FluidValue>()
                     {
-                        ["term"] = new StringValue(term)
+                        ["term"] = new StringValue(term),
                     });
 
                 try
@@ -118,7 +118,7 @@ public class ElasticsearchService : ISearchService
                 {
                     Fields = searchSettings.DefaultSearchFields,
                     Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index),
-                    Query = term
+                    Query = term,
                 };
             }
 
@@ -126,7 +126,7 @@ public class ElasticsearchService : ISearchService
             {
                 Fields = searchSettings.DefaultSearchFields,
                 Analyzer = await _elasticIndexSettingsService.GetQueryAnalyzerAsync(index),
-                Query = term
+                Query = term,
             };
 
             var searchContext = new ElasticsearchSearchContext(index, query)

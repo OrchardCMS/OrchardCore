@@ -104,7 +104,7 @@ public class RazorShapeTemplateViewEngine : IShapeTemplateViewEngine
                 metadataProvider: new EmptyModelMetadataProvider(),
                 modelState: new ModelStateDictionary())
             {
-                Model = model
+                Model = model,
             },
             new TempDataDictionary(
                 actionContext.HttpContext,

@@ -173,7 +173,7 @@ public sealed class AdminController : Controller
         {
             ShellSettingsEntries = results,
             Options = options,
-            Pager = pagerShape
+            Pager = pagerShape,
         };
 
         // We populate the SelectLists
@@ -220,7 +220,7 @@ public sealed class AdminController : Controller
             { "Options.Status", model.Options.Status },
             { "Options.OrderBy", model.Options.OrderBy },
             { "Options.Search", model.Options.Search },
-            { "Options.TenantsStates", model.Options.TenantsStates }
+            { "Options.TenantsStates", model.Options.TenantsStates },
         });
 
     [HttpPost]
@@ -386,7 +386,7 @@ public sealed class AdminController : Controller
                 {
                     Name = shellSettings.Name,
                     ShellSettings = shellSettings,
-                    Token = dataProtector.Protect(shellSettings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)))
+                    Token = dataProtector.Protect(shellSettings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0))),
                 };
 
                 return Redirect(HttpContext.GetEncodedUrl(entry));
@@ -433,7 +433,7 @@ public sealed class AdminController : Controller
             RequestUrlHost = shellSettings.RequestUrlHost,
             RequestUrlPrefix = shellSettings.RequestUrlPrefix,
             FeatureProfiles = currentFeatureProfiles,
-            FeatureProfilesItems = featureProfiles
+            FeatureProfilesItems = featureProfiles,
         };
 
         // The user can change the 'preset' database information only if the

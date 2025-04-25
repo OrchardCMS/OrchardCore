@@ -111,7 +111,7 @@ public abstract class SmtpEmailProviderBase : IEmailProvider
         var body = new BodyBuilder
         {
             TextBody = message.TextBody,
-            HtmlBody = message.HtmlBody
+            HtmlBody = message.HtmlBody,
         };
 
         foreach (var attachment in message.Attachments)

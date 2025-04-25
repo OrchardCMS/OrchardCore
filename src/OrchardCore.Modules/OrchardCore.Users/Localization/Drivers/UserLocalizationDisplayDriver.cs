@@ -35,7 +35,7 @@ public sealed class UserLocalizationDisplayDriver : SectionDisplayDriver<User, U
                 new SelectListItem
                 {
                     Text = CultureInfo.GetCultureInfo(culture).DisplayName + " (" + culture + ")",
-                    Value = culture
+                    Value = culture,
                 }).ToList();
 
             cultureList.Insert(0, new SelectListItem()

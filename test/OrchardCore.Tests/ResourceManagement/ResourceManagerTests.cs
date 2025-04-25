@@ -471,7 +471,7 @@ public class ResourceManagerTests
         var linkEntry = new LinkEntry
         {
             Rel = "foo",
-            Href = "bar.ext"
+            Href = "bar.ext",
         };
 
         resourceManager.RegisterLink(linkEntry);

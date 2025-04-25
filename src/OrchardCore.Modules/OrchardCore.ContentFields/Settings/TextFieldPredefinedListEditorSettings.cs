@@ -12,7 +12,7 @@ public class TextFieldPredefinedListEditorSettings
 public enum EditorOption
 {
     Radio,
-    Dropdown
+    Dropdown,
 }
 
 public class ListValueOption

@@ -71,7 +71,7 @@ public sealed class AdminController : Controller
 
         return View("List", new ListContentTypesViewModel
         {
-            Types = await _contentDefinitionService.GetTypesAsync()
+            Types = await _contentDefinitionService.GetTypesAsync(),
         });
     }
 
@@ -260,7 +260,7 @@ public sealed class AdminController : Controller
             PartSelections = (await _contentDefinitionService.GetPartsAsync(metadataPartsOnly: false))
                 .Where(cpd => !typePartNames.Contains(cpd.Name, StringComparer.OrdinalIgnoreCase) && cpd.PartDefinition != null && cpd.PartDefinition.GetSettings<ContentPartSettings>().Attachable)
                 .Select(cpd => new PartSelectionViewModel { PartName = cpd.Name, PartDisplayName = cpd.DisplayName, PartDescription = cpd.Description })
-                .ToList()
+                .ToList(),
         };
 
         return View(viewModel);
@@ -292,7 +292,7 @@ public sealed class AdminController : Controller
             PartSelections = reusableParts
                 .Select(cpd => new PartSelectionViewModel { PartName = cpd.Name, PartDisplayName = cpd.DisplayName, PartDescription = cpd.Description })
                 .ToList(),
-            SelectedPartName = reusableParts.FirstOrDefault()?.Name
+            SelectedPartName = reusableParts.FirstOrDefault()?.Name,
         };
 
         return View(viewModel);
@@ -454,7 +454,7 @@ public sealed class AdminController : Controller
         return View(new ListContentPartsViewModel
         {
             // Only user-defined parts (not code as they are not configurable).
-            Parts = await _contentDefinitionService.GetPartsAsync(metadataPartsOnly: true)
+            Parts = await _contentDefinitionService.GetPartsAsync(metadataPartsOnly: true),
         });
     }
 
@@ -630,7 +630,7 @@ public sealed class AdminController : Controller
         var viewModel = new AddFieldViewModel
         {
             Part = partViewModel.PartDefinition,
-            Fields = fields.Select(field => field.Name).OrderBy(name => name).ToList()
+            Fields = fields.Select(field => field.Name).OrderBy(name => name).ToList(),
         };
 
         ViewData["ReturnUrl"] = returnUrl;
@@ -749,7 +749,7 @@ public sealed class AdminController : Controller
             DisplayMode = partFieldDefinition.DisplayMode(),
             DisplayName = partFieldDefinition.DisplayName(),
             PartFieldDefinition = partFieldDefinition,
-            Shape = await _contentDefinitionDisplayManager.BuildPartFieldEditorAsync(partFieldDefinition, _updateModelAccessor.ModelUpdater)
+            Shape = await _contentDefinitionDisplayManager.BuildPartFieldEditorAsync(partFieldDefinition, _updateModelAccessor.ModelUpdater),
         };
 
         ViewData["ReturnUrl"] = returnUrl;
@@ -918,7 +918,7 @@ public sealed class AdminController : Controller
             DisplayName = typePartDefinition.DisplayName(),
             Description = typePartDefinition.Description(),
             TypePartDefinition = typePartDefinition,
-            Shape = await _contentDefinitionDisplayManager.BuildTypePartEditorAsync(typePartDefinition, _updateModelAccessor.ModelUpdater)
+            Shape = await _contentDefinitionDisplayManager.BuildTypePartEditorAsync(typePartDefinition, _updateModelAccessor.ModelUpdater),
         };
 
         return View(typePartViewModel);

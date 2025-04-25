@@ -72,7 +72,7 @@ public class MarkdownBodyPartHandler : ContentPartHandler<MarkdownBodyPart>
                     new Context
                     {
                         ["ContentItem"] = part.ContentItem,
-                        ["TypePartDefinition"] = contentTypePartDefinition
+                        ["TypePartDefinition"] = contentTypePartDefinition,
                     });
 
                 if (settings.SanitizeHtml)

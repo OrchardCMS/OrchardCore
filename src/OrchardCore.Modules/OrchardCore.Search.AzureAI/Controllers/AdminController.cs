@@ -120,7 +120,7 @@ public sealed class AdminController : Controller
             model.Indexes.Add(new AzureAIIndexEntry
             {
                 Index = index,
-                Shape = await _displayManager.BuildDisplayAsync(index, _updateModelAccessor.ModelUpdater, "SummaryAdmin")
+                Shape = await _displayManager.BuildDisplayAsync(index, _updateModelAccessor.ModelUpdater, "SummaryAdmin"),
             });
         }
 
@@ -140,7 +140,7 @@ public sealed class AdminController : Controller
         => RedirectToAction(nameof(Index),
             new RouteValueDictionary
             {
-                { _optionsSearch, model.Options.Search }
+                { _optionsSearch, model.Options.Search },
             });
 
 

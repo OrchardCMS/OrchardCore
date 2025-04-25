@@ -11,7 +11,7 @@ public class ContainedPartIndexAliasProvider : IIndexAliasProvider
         {
             Alias = "containedPart",
             Index = nameof(ContainedPartIndex),
-            IndexType = typeof(ContainedPartIndex)
+            IndexType = typeof(ContainedPartIndex),
         }
     ];
 

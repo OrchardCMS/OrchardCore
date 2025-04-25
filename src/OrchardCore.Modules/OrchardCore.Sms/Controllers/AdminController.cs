@@ -80,7 +80,7 @@ public sealed class AdminController : Controller
                 var result = await provider.SendAsync(new SmsMessage()
                 {
                     To = model.PhoneNumber,
-                    Body = S["This is a test SMS message."]
+                    Body = S["This is a test SMS message."],
                 });
 
                 if (result.Succeeded)

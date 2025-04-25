@@ -76,7 +76,7 @@ public sealed class AdminController : Controller
             model.Rules.Add(new RewriteRuleEntry
             {
                 Rule = rule,
-                Shape = await _rewriteRuleDisplayManager.BuildDisplayAsync(rule, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin)
+                Shape = await _rewriteRuleDisplayManager.BuildDisplayAsync(rule, _updateModelAccessor.ModelUpdater, OrchardCoreConstants.DisplayType.SummaryAdmin),
             });
         }
 

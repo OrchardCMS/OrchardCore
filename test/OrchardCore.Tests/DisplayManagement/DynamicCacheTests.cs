@@ -90,7 +90,7 @@ public class DynamicCacheTests
     {
         return new DisplayContext
         {
-            Value = shape
+            Value = shape,
         };
     }
 
@@ -103,12 +103,12 @@ public class DynamicCacheTests
 
         var descriptor = new ShapeDescriptor
         {
-            ShapeType = shapeType
+            ShapeType = shapeType,
         };
         descriptor.Bindings[shapeType] = new ShapeBinding
         {
             BindingName = shapeType,
-            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!"))
+            BindingAsync = ctx => Task.FromResult<IHtmlContent>(new HtmlString("Hi there!")),
         };
         AddShapeDescriptor(descriptor);
 
@@ -148,7 +148,7 @@ public class DynamicCacheTests
 
         var descriptor = new ShapeDescriptor
         {
-            ShapeType = shapeType
+            ShapeType = shapeType,
         };
         descriptor.Bindings[shapeType] = new ShapeBinding
         {
@@ -157,7 +157,7 @@ public class DynamicCacheTests
             {
                 bindCalled++;
                 return Task.FromResult<IHtmlContent>(new HtmlString("Hi there!"));
-            }
+            },
         };
         AddShapeDescriptor(descriptor);
 

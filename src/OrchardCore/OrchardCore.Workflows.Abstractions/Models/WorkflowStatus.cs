@@ -11,5 +11,5 @@ public enum WorkflowStatus
     Halted,
     Finished,
     Faulted,
-    Aborted
+    Aborted,
 }

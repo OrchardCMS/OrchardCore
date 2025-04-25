@@ -943,7 +943,7 @@ public class JsonDynamicTests
             var getTestContent = new GlobalMethod
             {
                 Name = "getTestContent",
-                Method = sp => () => GetContentTestData()
+                Method = sp => () => GetContentTestData(),
             };
             var scriptingEngine = scope.ServiceProvider.GetRequiredService<IScriptingEngine>();
             var scriptingScope = scriptingEngine.CreateScope([getTestContent], scope.ServiceProvider, null, null);

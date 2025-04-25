@@ -1,4 +1,4 @@
-﻿using Elastic.Clients.Elasticsearch;
+using Elastic.Clients.Elasticsearch;
 using OrchardCore.Contents.Indexing;
 using OrchardCore.Indexing;
 

@@ -59,7 +59,7 @@ public static class LocalizationServiceCollectionExtensions
 
         return services;
     }
-       
+
     /// <summary>
     /// Registers the services to enable localization using data storage.
     /// </summary>
@@ -72,7 +72,7 @@ public static class LocalizationServiceCollectionExtensions
         services.AddTransient<DataResourceManager>();
         services.AddSingleton<IDataLocalizerFactory, DataLocalizerFactory>();
 
-        services.AddTransient(sp => 
+        services.AddTransient(sp =>
         {
             var dataLocalizerFactory = sp.GetService<IDataLocalizerFactory>();
             return dataLocalizerFactory.Create();

@@ -145,7 +145,7 @@ public class SiteContext : IDisposable
         // In that case it would skip calling ActivatingAsync, ActivatedAsync, InitializingAsync, InitializedAsync events
         var contentItem = new ContentItem
         {
-            ContentType = contentType
+            ContentType = contentType,
         };
 
         func(contentItem);

@@ -10,7 +10,7 @@ public class DefaultCalendarSelector : ICalendarSelector
     private static readonly Task<CalendarSelectorResult> _calendarResult = Task.FromResult(new CalendarSelectorResult
     {
         Priority = 0,
-        CalendarName = () => Task.FromResult(BclCalendars.GetCalendarName(CultureInfo.CurrentUICulture.Calendar))
+        CalendarName = () => Task.FromResult(BclCalendars.GetCalendarName(CultureInfo.CurrentUICulture.Calendar)),
     });
 
     /// <inheritdocs />

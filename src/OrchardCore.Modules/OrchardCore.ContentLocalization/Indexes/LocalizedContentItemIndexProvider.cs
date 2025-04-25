@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement;
 using OrchardCore.Data;
 using YesSql.Indexes;
 
@@ -89,7 +89,7 @@ public class LocalizedContentItemIndexProvider : ContentHandlerBase, IIndexProvi
                     LocalizationSet = !partRemoved ? part.LocalizationSet : null,
                     ContentItemId = contentItem.ContentItemId,
                     Published = contentItem.Published,
-                    Latest = contentItem.Latest
+                    Latest = contentItem.Latest,
                 };
             });
     }

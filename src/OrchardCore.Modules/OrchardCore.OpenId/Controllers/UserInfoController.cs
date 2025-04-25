@@ -50,7 +50,7 @@ public sealed class UserInfoController : Controller
             {
                 [OpenIddictServerAspNetCoreConstants.Properties.Error] = Errors.InvalidRequest,
                 [OpenIddictServerAspNetCoreConstants.Properties.ErrorDescription] =
-                    "The userinfo endpoint can only be used with access tokens representing users."
+                    "The userinfo endpoint can only be used with access tokens representing users.",
             }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
         }
 

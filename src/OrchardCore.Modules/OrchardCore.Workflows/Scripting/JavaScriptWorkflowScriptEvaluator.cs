@@ -39,7 +39,7 @@ public class JavaScriptWorkflowScriptEvaluator : IWorkflowScriptEvaluator
             await _workflowContextHandlers.InvokeAsync((h, expressionContext) => h.EvaluatingScriptAsync(expressionContext), expressionContext, _logger);
 
             var methodProviders = scopedMethodProviders.Concat(expressionContext.ScopedMethodProviders);
-        
+
             // Some types cannot be cast (e.g., null to bool), so we need to catch the exception and return the default value.
             return (T)_scriptingManager.Evaluate(directive, null, null, methodProviders);
         }

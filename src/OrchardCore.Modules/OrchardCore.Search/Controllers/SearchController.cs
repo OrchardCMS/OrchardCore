@@ -91,7 +91,7 @@ public sealed class SearchController : Controller
                     Terms = viewModel.Terms,
                     Placeholder = searchSettings.Placeholder,
                     Index = viewModel.Index,
-                }
+                },
             });
         }
 

@@ -48,7 +48,7 @@ public class AccountControllerTests
             var context = new UpdateUserContext(user, "TestLoginProvider", externalClaims, user.Properties.DeepClone() as JsonObject)
             {
                 UserClaims = user.UserClaims,
-                UserRoles = userRoles
+                UserRoles = userRoles,
             };
 
             context.UserProperties["Test"] = 111;
@@ -83,7 +83,7 @@ public class AccountControllerTests
                             }
                         };
                     }
-                    """
+                    """,
             };
             scriptExternalLoginEventHandler.UpdateUserInternal(context, loginSettings);
 
@@ -141,7 +141,7 @@ public class AccountControllerTests
                             }
                         }
                     };
-                    """
+                    """,
             };
             scriptExternalLoginEventHandler.UpdateUserInternal(updateContext, loginSettings);
 
@@ -426,9 +426,9 @@ public class AccountControllerTests
                     UserSettings = new IdentityUserSettings
                     {
                         RequireUniqueEmail = requireUniqueEmail,
-                    }
+                    },
                 })},
-            }
+            },
         };
 
         if (enableRegistrationFeature || enableExternalAuthentication)

@@ -18,7 +18,7 @@ public class DeploymentPlanIndexProvider : IndexProvider<DeploymentPlan>
             {
                 return new DeploymentPlanIndex
                 {
-                    Name = deploymentPlan.Name
+                    Name = deploymentPlan.Name,
                 };
             });
     }

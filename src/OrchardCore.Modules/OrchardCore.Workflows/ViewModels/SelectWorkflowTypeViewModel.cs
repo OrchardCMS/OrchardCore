@@ -21,7 +21,7 @@ public class WorkflowTypeSelection
             .Select(x => new WorkflowTypeSelection
             {
                 IsSelected = x.WorkflowTypeId == selectedWorkflowTypeId,
-                WorkflowType = x
+                WorkflowType = x,
             })
             .OrderBy(x => x.WorkflowType.Name)
             .ToList();

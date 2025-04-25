@@ -52,7 +52,7 @@ public class TemplateShortcodeProvider : IShortcodeProvider
             [identifier] = new StringValue(""),
             ["Args"] = new ObjectValue(model.Args),
             ["Content"] = new ObjectValue(new Content(model.Content)),
-            ["Context"] = new ObjectValue(model.Context)
+            ["Context"] = new ObjectValue(model.Context),
         };
 
         var result = await _liquidTemplateManager.RenderStringAsync(template.Content, _htmlEncoder, model, parameters);

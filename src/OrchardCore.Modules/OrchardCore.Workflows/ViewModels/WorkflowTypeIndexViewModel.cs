@@ -34,17 +34,17 @@ public class WorkflowTypeIndexOptions
 public enum WorkflowTypeOrder
 {
     Name,
-    Creation
+    Creation,
 }
 
 public enum WorkflowTypeFilter
 {
-    All
+    All,
 }
 
 public enum WorkflowTypeBulkAction
 {
     None,
     Export,
-    Delete
+    Delete,
 }

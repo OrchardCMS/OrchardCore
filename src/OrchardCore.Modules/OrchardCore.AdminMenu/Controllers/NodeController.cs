@@ -106,7 +106,7 @@ public sealed class NodeController : Controller
             AdminNode = treeNode,
             AdminNodeId = treeNode.UniqueId,
             AdminNodeType = type,
-            Editor = await _displayManager.BuildEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", "")
+            Editor = await _displayManager.BuildEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: true, "", ""),
         };
 
         return View(model);
@@ -184,7 +184,7 @@ public sealed class NodeController : Controller
             AdminNodeType = treeNode.GetType().Name,
             Priority = treeNode.Priority,
             Position = treeNode.Position,
-            Editor = await _displayManager.BuildEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", "")
+            Editor = await _displayManager.BuildEditorAsync(treeNode, updater: _updateModelAccessor.ModelUpdater, isNew: false, "", ""),
         };
 
         model.Editor.TreeNode = treeNode;

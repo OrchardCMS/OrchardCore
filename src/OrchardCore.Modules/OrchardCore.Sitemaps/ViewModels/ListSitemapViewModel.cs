@@ -33,5 +33,5 @@ public class ContentOptions
 public enum ContentsBulkAction
 {
     None,
-    Remove
+    Remove,
 }
