@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using AspNet.Security.OAuth.GitHub;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
@@ -44,7 +45,7 @@ public class GitHubOptionsConfiguration :
         options.AddScheme(GitHubDefaults.AuthenticationScheme, builder =>
         {
             builder.DisplayName = "GitHub";
-            builder.HandlerType = typeof(GitHubHandler);
+            builder.HandlerType = typeof(GitHubAuthenticationHandler);
         });
     }
 
