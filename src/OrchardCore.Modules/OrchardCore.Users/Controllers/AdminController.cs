@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using GraphQLParser;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -540,11 +539,11 @@ public sealed class AdminController : Controller
 
         if (ModelState.IsValid)
         {
-            var passowrdChanged = sameUser
+            var passwordChanged = sameUser
                 ? await _userService.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword, ModelState.AddModelError)
                 : await _userService.ResetPasswordAsync(model.UsernameOrEmail, await _userManager.GeneratePasswordResetTokenAsync(user), model.NewPassword, ModelState.AddModelError);
 
-            if (passowrdChanged)
+            if (passwordChanged)
             {
                 await _notifier.SuccessAsync(H["The password has been changed successfully."]);
 
