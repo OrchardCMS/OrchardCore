@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -15,9 +14,7 @@ namespace OrchardCore.Users.Drivers;
 
 public sealed class UserDisplayDriver : DisplayDriver<User>
 {
-    private readonly UserManager<IUser> _userManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly INotifier _notifier;
     private readonly IAuthorizationService _authorizationService;
 
     internal readonly IHtmlLocalizer H;
@@ -31,9 +28,7 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
         IHtmlLocalizer<UserDisplayDriver> htmlLocalizer,
         IStringLocalizer<UserDisplayDriver> stringLocalizer)
     {
-        _userManager = userManager;
         _httpContextAccessor = httpContextAccessor;
-        _notifier = notifier;
         _authorizationService = authorizationService;
         H = htmlLocalizer;
         S = stringLocalizer;
@@ -58,10 +53,7 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
 
         return Initialize<EditUserViewModel>("UserFields_Edit", model =>
         {
-            model.IsEnabled = user.IsEnabled;
             model.IsNewRequest = context.IsNew;
-            // The current user cannot disable themselves, nor can a user without permission to manage this user disable them.
-            model.IsEditingDisabled = IsCurrentUser(user);
         })
        .Location("Content:1.5");
     }
@@ -97,34 +89,6 @@ public sealed class UserDisplayDriver : DisplayDriver<User>
             return await EditAsync(user, context);
         }
 
-        var isEditingDisabled = IsCurrentUser(user);
-
-        if (!isEditingDisabled && !model.IsEnabled && user.IsEnabled)
-        {
-            var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(OrchardCoreConstants.Roles.Administrator))
-                .Cast<User>()
-                .Where(user => user.IsEnabled)
-                .ToList();
-
-            if (enabledUsersOfAdminRole.Count == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)
-            {
-                await _notifier.WarningAsync(H["Cannot disable the only enabled administrator."]);
-            }
-            else
-            {
-                user.IsEnabled = model.IsEnabled;
-            }
-        }
-        else if (!isEditingDisabled && model.IsEnabled && !user.IsEnabled)
-        {
-            user.IsEnabled = model.IsEnabled;
-        }
-
         return await EditAsync(user, context);
-    }
-
-    private bool IsCurrentUser(User user)
-    {
-        return _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) == user.UserId;
     }
 }
