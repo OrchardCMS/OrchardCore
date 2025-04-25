@@ -401,6 +401,16 @@ public sealed class UserService : IUserService
     {
         ArgumentNullException.ThrowIfNull(user);
 
+        var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(OrchardCoreConstants.Roles.Administrator))
+            .Cast<User>()
+            .Where(user => user.IsEnabled)
+            .ToList();
+
+        if (enabledUsersOfAdminRole.Count == 1 && user.UserName == enabledUsersOfAdminRole.First().UserName)
+        {
+            return false;
+        }
+
         if (user is User u)
         {
             u.IsEnabled = false;
