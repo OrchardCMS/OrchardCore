@@ -1,3 +1,4 @@
+using AspNet.Security.OAuth.GitHub;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -36,7 +37,10 @@ public sealed class GitHubLoginStartup : StartupBase
 
         // Register the options initializers required by the GitHub Handler.
         // Orchard-specific initializers:
-        services.AddTransient<IConfigureOptions<AuthenticationOptions>, GitHubOptionsConfiguration>();
-        services.AddTransient<IConfigureOptions<GitHubOptions>, GitHubOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<AuthenticationOptions>, GitHubAuthenticationOptionsConfiguration>();
+        services.AddTransient<IConfigureOptions<GitHubAuthenticationOptions>, GitHubAuthenticationOptionsConfiguration>();
+
+        // Built-in initializers:
+        services.AddTransient<IPostConfigureOptions<GitHubAuthenticationOptions>, OAuthPostConfigureOptions<GitHubAuthenticationOptions, GitHubAuthenticationHandler>>();
     }
 }

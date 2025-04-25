@@ -33,7 +33,7 @@ public sealed class GitHubAuthenticationSettingsConfiguration : IConfigureOption
     {
         var settings = await _gitHubAuthenticationService.GetSettingsAsync();
 
-        if ((_gitHubAuthenticationService.ValidateSettings(settings)).Any(result => result != ValidationResult.Success))
+        if (_gitHubAuthenticationService.ValidateSettings(settings).Any(result => result != ValidationResult.Success))
         {
             return null;
         }

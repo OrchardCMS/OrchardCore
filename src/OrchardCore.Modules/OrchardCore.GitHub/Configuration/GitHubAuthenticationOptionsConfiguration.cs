@@ -8,18 +8,18 @@ using OrchardCore.GitHub.Settings;
 
 namespace OrchardCore.GitHub.Configuration;
 
-public class GitHubOptionsConfiguration :
+public class GitHubAuthenticationOptionsConfiguration :
     IConfigureOptions<AuthenticationOptions>,
-    IConfigureNamedOptions<GitHubOptions>
+    IConfigureNamedOptions<GitHubAuthenticationOptions>
 {
     private readonly GitHubAuthenticationSettings _gitHubAuthenticationSettings;
     private readonly IDataProtectionProvider _dataProtectionProvider;
     private readonly ILogger _logger;
 
-    public GitHubOptionsConfiguration(
+    public GitHubAuthenticationOptionsConfiguration(
         IOptions<GitHubAuthenticationSettings> gitHubAuthenticationSettings,
         IDataProtectionProvider dataProtectionProvider,
-        ILogger<GitHubOptionsConfiguration> logger)
+        ILogger<GitHubAuthenticationOptionsConfiguration> logger)
     {
         _gitHubAuthenticationSettings = gitHubAuthenticationSettings.Value;
         _dataProtectionProvider = dataProtectionProvider;
@@ -42,17 +42,17 @@ public class GitHubOptionsConfiguration :
         }
 
         // Register the OpenID Connect client handler in the authentication handlers collection.
-        options.AddScheme(GitHubDefaults.AuthenticationScheme, builder =>
+        options.AddScheme(GitHubAuthenticationDefaults.AuthenticationScheme, builder =>
         {
-            builder.DisplayName = "GitHub";
+            builder.DisplayName = GitHubAuthenticationDefaults.DisplayName;
             builder.HandlerType = typeof(GitHubAuthenticationHandler);
         });
     }
 
-    public void Configure(string name, GitHubOptions options)
+    public void Configure(string name, GitHubAuthenticationOptions options)
     {
         // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-        if (!string.Equals(name, GitHubDefaults.AuthenticationScheme, StringComparison.Ordinal))
+        if (!string.Equals(name, GitHubAuthenticationDefaults.AuthenticationScheme, StringComparison.Ordinal))
         {
             return;
         }
@@ -81,5 +81,6 @@ public class GitHubOptionsConfiguration :
         options.SaveTokens = _gitHubAuthenticationSettings.SaveTokens;
     }
 
-    public void Configure(GitHubOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
+    public void Configure(GitHubAuthenticationOptions options)
+        => Debug.Fail("This infrastructure method shouldn't be called.");
 }
