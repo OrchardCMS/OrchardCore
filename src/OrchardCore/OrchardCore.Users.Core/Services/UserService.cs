@@ -378,7 +378,7 @@ public sealed class UserService : IUserService
     /// <inheritdoc/>
     public async Task<bool> EnableAsync(IUser user)
     {
-        ArgumentNullException.ThrowIfNull(user, nameof(user));
+        ArgumentNullException.ThrowIfNull(user);
 
         if (user is User u)
         {
@@ -399,7 +399,7 @@ public sealed class UserService : IUserService
     /// <inheritdoc/>
     public async Task<bool> DisableAsync(IUser user)
     {
-        ArgumentNullException.ThrowIfNull(user, nameof(user));
+        ArgumentNullException.ThrowIfNull(user);
 
 if (user is User u)
         {
