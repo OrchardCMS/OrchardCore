@@ -101,12 +101,12 @@ public interface IUserService
     /// <summary>
     /// Enables a user with a specified username.
     /// </summary>
-    /// <param name="username">The username for the user to be enabled.</param>
-    Task<bool> EnableAsync(string username);
+    /// <param name="user">The user to be enabled.</param>
+    Task<bool> EnableAsync(IUser user);
 
     /// <summary>
     /// Disables a user with a specified username.
     /// </summary>
-    /// <param name="username">The username for the user to be disabled.</param>
-    Task<bool> DisableAsync(string username);
+    /// <param name="user">The user to be disabled.</param>
+    Task<bool> DisableAsync(IUser user);
 }

@@ -376,40 +376,38 @@ public sealed class UserService : IUserService
     }
 
     /// <inheritdoc/>
-    public async Task<bool> EnableAsync(string username)
-        => await ToggleAsync(username, isEnable: true);
-
-    /// <inheritdoc/>
-    public async Task<bool> DisableAsync(string username)
-        => await ToggleAsync(username, isEnable: false);
-
-    private async Task<bool> ToggleAsync(string username, bool isEnable)
+    public async Task<bool> EnableAsync(IUser user)
     {
-        ArgumentException.ThrowIfNullOrEmpty($"'{nameof(username)}' cannot be null or empty.", nameof(username));
+        ArgumentNullException.ThrowIfNull(user, nameof(user));
 
-        var user = await GetUserAsync(username) as User;
-        if (user is null)
-        {
-            return false;
-        }
-
-        user.IsEnabled = isEnable;
+        (user as User).IsEnabled = true;
 
         var result = await _userManager.UpdateAsync(user);
 
         if (result.Succeeded)
         {
             var userContext = new UserContext(user);
-            if (isEnable)
-            {
-                await _handlers.InvokeAsync((handler, context) => handler.EnabledAsync(context), userContext, _logger);
-            }
-            else
-            {
-                await _handlers.InvokeAsync((handler, context) => handler.DisabledAsync(context), userContext, _logger);
-            }
+            await _handlers.InvokeAsync((handler, context) => handler.EnabledAsync(context), userContext, _logger);
         }
-        
+
+        return result.Succeeded;
+    }
+
+    /// <inheritdoc/>
+    public async Task<bool> DisableAsync(IUser user)
+    {
+        ArgumentNullException.ThrowIfNull(user, nameof(user));
+
+        (user as User).IsEnabled = false;
+
+        var result = await _userManager.UpdateAsync(user);
+
+        if (result.Succeeded)
+        {
+            var userContext = new UserContext(user);
+            await _handlers.InvokeAsync((handler, context) => handler.DisabledAsync(context), userContext, _logger);
+        }
+
         return result.Succeeded;
     }
 }
