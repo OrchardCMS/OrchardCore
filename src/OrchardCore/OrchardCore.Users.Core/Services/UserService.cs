@@ -380,7 +380,10 @@ public sealed class UserService : IUserService
     {
         ArgumentNullException.ThrowIfNull(user, nameof(user));
 
-        (user as User).IsEnabled = true;
+        if (user is User u)
+        {
+            u.IsEnabled = true;
+        }
 
         var result = await _userManager.UpdateAsync(user);
 
@@ -398,7 +401,10 @@ public sealed class UserService : IUserService
     {
         ArgumentNullException.ThrowIfNull(user, nameof(user));
 
-        (user as User).IsEnabled = false;
+if (user is User u)
+        {
+            u.IsEnabled = false;
+        }
 
         var result = await _userManager.UpdateAsync(user);
 
