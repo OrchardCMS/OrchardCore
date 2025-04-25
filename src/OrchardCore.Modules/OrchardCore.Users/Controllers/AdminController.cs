@@ -496,7 +496,7 @@ public sealed class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    public async Task<IActionResult> EditPassword(string id)
+    public async Task<IActionResult> EditPassword(string id, string returnUrl)
     {
         if (await _userManager.FindByIdAsync(id) is not User user)
         {
@@ -508,13 +508,18 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        var model = new ResetPasswordViewModel { UsernameOrEmail = user.UserName };
+        var model = new EditPasswordViewModel
+        {
+            UsernameOrEmail = user.UserName,
+        };
+
+        ViewData["ReturnUrl"] = returnUrl;
 
         return View(model);
     }
 
     [HttpPost]
-    public async Task<IActionResult> EditPassword(ResetPasswordViewModel model)
+    public async Task<IActionResult> EditPassword(EditPasswordViewModel model, string returnUrl)
     {
         if (await _userService.GetUserAsync(model.UsernameOrEmail) is not User user)
         {
@@ -526,17 +531,32 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
+        var sameUser = user.UserName == User.Identity.Name;
+        if (!sameUser)
+        {
+            ModelState.Remove(nameof(EditPasswordViewModel.CurrentPassword));
+        }
+
         if (ModelState.IsValid)
         {
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var passwordChanged = sameUser
+                ? await _userService.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword, ModelState.AddModelError)
+                : await _userService.ResetPasswordAsync(model.UsernameOrEmail, await _userManager.GeneratePasswordResetTokenAsync(user), model.NewPassword, ModelState.AddModelError);
 
-            if (await _userService.ResetPasswordAsync(model.UsernameOrEmail, token, model.NewPassword, ModelState.AddModelError))
+            if (passwordChanged)
             {
-                await _notifier.SuccessAsync(H["Password updated correctly."]);
+                await _notifier.SuccessAsync(H["The password has been changed successfully."]);
+
+                if (!string.IsNullOrEmpty(returnUrl))
+                {
+                    return this.LocalRedirect(returnUrl, true);
+                }
 
                 return RedirectToAction(nameof(Index));
             }
         }
+
+        ViewData["ReturnUrl"] = returnUrl;
 
         return View(model);
     }
