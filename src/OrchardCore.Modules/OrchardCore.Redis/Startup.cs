@@ -8,11 +8,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Caching.Distributed;
+using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
+using OrchardCore.Redis.Migrations;
 using OrchardCore.Redis.Options;
 using OrchardCore.Redis.Services;
 using StackExchange.Redis;
@@ -120,6 +122,7 @@ public sealed class RedisDataProtectionStartup : StartupBase
     {
         if (services.Any(d => d.ServiceType == typeof(IRedisService)))
         {
+            services.AddDataMigration<KeyMigrations>();
             services.AddTransient<IConfigureOptions<KeyManagementOptions>, RedisKeyManagementOptionsSetup>();
         }
     }
