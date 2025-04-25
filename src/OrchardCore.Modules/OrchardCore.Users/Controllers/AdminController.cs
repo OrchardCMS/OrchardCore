@@ -597,13 +597,25 @@ public sealed class AdminController : Controller
             return Forbid();
         }
 
-        if (await _userService.DisableAsync(user))
+        var enabledUsersOfAdminRole = (await _userManager.GetUsersInRoleAsync(OrchardCoreConstants.Roles.Administrator))
+            .Cast<User>()
+            .Where(user => user.IsEnabled)
+            .ToList();
+
+        if (enabledUsersOfAdminRole.Count == 1 && user.UserId == enabledUsersOfAdminRole.First().UserId)
         {
-            await _notifier.SuccessAsync(H["User account was successfully disabled."]);
+            await _notifier.WarningAsync(H["Cannot disable the only enabled administrator."]);
         }
         else
         {
-            await _notifier.ErrorAsync(H["Could not disable the user."]);
+            if (await _userService.DisableAsync(user))
+            {
+                await _notifier.SuccessAsync(H["User account was successfully disabled."]);
+            }
+            else
+            {
+                await _notifier.ErrorAsync(H["Could not disable the user."]);
+            }
         }
 
         return RedirectToAction(nameof(Index));
