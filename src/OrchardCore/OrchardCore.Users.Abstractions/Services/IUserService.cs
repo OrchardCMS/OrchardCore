@@ -99,14 +99,14 @@ public interface IUserService
     Task<IUser> RegisterAsync(RegisterUserForm model, Action<string, string> reportError);
 
     /// <summary>
-    /// Enables a user with a specified username.
+    /// Enabled the given user.
     /// </summary>
-    /// <param name="user">The user to be enabled.</param>
+    /// <param name="user">The user to enable.</param>
     Task<bool> EnableAsync(IUser user);
 
     /// <summary>
-    /// Disables a user with a specified username.
+    /// Disables the given user
     /// </summary>
-    /// <param name="user">The user to be disabled.</param>
+    /// <param name="user">The user to disable.</param>
     Task<bool> DisableAsync(IUser user);
 }

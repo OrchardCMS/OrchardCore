@@ -9,7 +9,6 @@
     var isCurrentUser = Model.User.UserName == User.Identity.Name;
     var canEdit = await AuthorizationService.AuthorizeAsync(User, UsersPermissions.EditUsers, Model.User);
     var isLockedOut = await UserManager.IsLockedOutAsync(Model.User);
-    var isEnabled = Model.User.IsEnabled;
 }
 
 @if (canEdit)
@@ -17,7 +16,8 @@
     <li>
         <a asp-action="EditPassword" asp-route-id="@Model.User.UserId" class="dropdown-item">@T["Change password"]</a>
     </li>
-    if (isEnabled)
+    
+    if (Model.User.IsEnabled)
     {
         <li>
             <a asp-action="Disable" asp-route-id="@Model.User.UserId" class="dropdown-item" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Disable user"]" data-message="@T["Are you sure you want to disable this user?"]">@T["Disable"]</a>

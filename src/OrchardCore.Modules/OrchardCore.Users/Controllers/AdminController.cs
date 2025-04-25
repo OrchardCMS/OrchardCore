@@ -574,7 +574,7 @@ public sealed class AdminController : Controller
 
         if (await _userService.EnableAsync(user))
         {
-            await _notifier.SuccessAsync(H["User account was successfully enabled"]);
+            await _notifier.SuccessAsync(H["User account was successfully enabled."]);
         }
         else
         {
@@ -599,7 +599,7 @@ public sealed class AdminController : Controller
 
         if (await _userService.DisableAsync(user))
         {
-            await _notifier.SuccessAsync(H["User account was successfully disabled"]);
+            await _notifier.SuccessAsync(H["User account was successfully disabled."]);
         }
         else
         {

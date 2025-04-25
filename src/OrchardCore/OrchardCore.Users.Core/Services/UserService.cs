@@ -401,7 +401,7 @@ public sealed class UserService : IUserService
     {
         ArgumentNullException.ThrowIfNull(user);
 
-if (user is User u)
+        if (user is User u)
         {
             u.IsEnabled = false;
         }
