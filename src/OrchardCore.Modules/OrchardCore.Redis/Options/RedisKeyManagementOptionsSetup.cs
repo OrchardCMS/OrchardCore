@@ -28,6 +28,6 @@ public sealed class RedisKeyManagementOptionsSetup : IConfigureOptions<KeyManage
 
             return redis.Database;
         },
-        $"({redis.InstancePrefix}{_tenant}:DataProtection-Keys");
+        $"{redis.InstancePrefix}{_tenant}:DataProtection-Keys");
     }
 }

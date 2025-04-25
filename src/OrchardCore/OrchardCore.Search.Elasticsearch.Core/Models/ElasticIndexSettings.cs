@@ -1,13 +1,10 @@
-using System.Text.Json.Serialization;
 using OrchardCore.Data.Documents;
+using OrchardCore.Search.Models;
 
 namespace OrchardCore.Search.Elasticsearch.Core.Models;
 
-public class ElasticIndexSettings
+public class ElasticIndexSettings : IndexSettingsBase
 {
-    [JsonIgnore]
-    public string IndexName { get; set; }
-
     public string AnalyzerName { get; set; }
 
     public string QueryAnalyzerName { get; set; }

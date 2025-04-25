@@ -15,6 +15,9 @@
 
     <AnalysisLevel>latest-Recommended</AnalysisLevel>
 
+    <!-- Only treat analyzer warnings as errors -->
+    <WarningsAsErrors>$(WarningsAsErrors);CS*;CA*</WarningsAsErrors>
+
     <!-- The behavior could vary based on the current user's locale setting -->
     <NoWarn>$(NoWarn);CA1304;CA1305;CA1310</NoWarn>
 
